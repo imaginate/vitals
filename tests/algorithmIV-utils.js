@@ -41,7 +41,7 @@
 // The Public API
 ////////////////////////////////////////////////////////////////////////////////
 
-(function setupThePublicAPI(window, utilsModuleAPI) {
+;(function setupTheUtilsPublicAPI(window, utilsModuleAPI) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
@@ -102,7 +102,7 @@
 /* -----------------------------------------------------------------------------
  * The checkType Method (methods/checkType.js)
  * -------------------------------------------------------------------------- */
-Type
+
   /**
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.checkType)
@@ -460,7 +460,7 @@ Type
 /* -----------------------------------------------------------------------------
  * The isValidTypeString Method (methods/isValidTypeString.js)
  * -------------------------------------------------------------------------- */
-ValidTypeString
+
   /**
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.isValidTypeString)
@@ -510,7 +510,7 @@ ValidTypeString
 /* -----------------------------------------------------------------------------
  * The freezeObj Method (methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
-Obj
+
   /**
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.freezeObj)
@@ -521,7 +521,7 @@ Obj
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  var freezeObj = (function setupFreezeObj() {
+  utilsModuleAPI.freezeObj = (function setupFreezeObj() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -602,7 +602,7 @@ Obj
 /* -----------------------------------------------------------------------------
  * The hasOwnProp Method (methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
-OwnProp
+
   /**
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.hasOwnProp)
