@@ -41,7 +41,7 @@
 // The Public API
 ////////////////////////////////////////////////////////////////////////////////
 
-(function setupThePublicAPI(window, utilsModuleAPI) {
+;(function setupTheUtilsPublicAPI(window, utilsModuleAPI) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
