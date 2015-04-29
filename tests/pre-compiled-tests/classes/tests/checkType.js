@@ -101,19 +101,14 @@
     var testExclamationPoint = function() {
 
       /** @type {boolean} */
-      var pass;
-      /** @type {boolean} */
       var fail;
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(null, 'array');
-      pass = pass && aIV.utils.checkType(null, 'object');
-
       fail = aIV.utils.checkType(null, '!array');
       fail = fail || aIV.utils.checkType(null, '!object');
 
-      if (!pass || fail) {
+      if (fail) {
         errorMsg = 'Tests.checkType failed: ! check failed';
         results.addError(errorMsg);
       }
@@ -129,18 +124,13 @@
 
       /** @type {boolean} */
       var pass;
-      /** @type {boolean} */
-      var fail;
       /** @type {string} */
       var errorMsg;
 
       pass = aIV.utils.checkType(null, '?(string|number)');
       pass = pass && aIV.utils.checkType(null, '?string');
 
-      fail = aIV.utils.checkType(null, '(string|number)');
-      fail = fail || aIV.utils.checkType(null, 'string');
-
-      if (!pass || fail) {
+      if (!pass) {
         errorMsg = 'Tests.checkType failed: ? check failed';
         results.addError(errorMsg);
       }
