@@ -104,8 +104,8 @@
         nullable = false;
         nullableOverride = RegExps.exclamationPoint.test(type);
         if ( RegExps.questionMark.test(type) ) {
-          nullableOverride = !nullableOverride;
           nullable = !nullableOverride;
+          nullableOverride = !nullableOverride;
         }
         if (nullable && nullableOverride) {
           earlyPass = true;
@@ -226,6 +226,9 @@
      * @return {boolean} The evaluation result.
      */
     var checkTypeOf = function(val, type) {
+      if (val === null) {
+        return false;
+      }
       return (typeof val === type);
     };
 
