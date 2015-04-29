@@ -58,11 +58,16 @@ sed \
   -e "/insert-module-api/ r module-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
   -e "/insert-module-methods/ r module-methods.js" \
-  -e "/insert-tests/ r classes/tests.js" \
   -e "/insert-app/ r classes/app.js" \
   -e "/insert-elems/ r classes/elems.js" \
   -e "/insert-test-results/ r classes/test-results.js" \
-  -e "/insert-choice/ r classes/choice.js" <skeleton.js>algorithmIV-tests-temp.js
+  -e "/insert-choice/ r classes/choice.js" \
+  -e "/insert-tests-construct/ r classes/tests/construct-tests.js" \
+  -e "/insert-tests-checkType/ r classes/tests/checkType.js" \
+  -e "/insert-tests-isValidTypeString/ r classes/tests/isValidTypeString.js" \
+  -e "/insert-tests-freezeObj/ r classes/tests/freezeObj.js" \
+  -e "/insert-tests-hasOwnProp/ r classes/tests/hasOwnProp.js" \
+  -e "/insert-tests-freeze/ r classes/tests/freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 cp -u pre-compiled-tests/algorithmIV-tests-temp.js algorithmIV-tests.js
 rm -f pre-compiled-tests/algorithmIV-tests-temp.js
@@ -76,11 +81,16 @@ sed ^
   -e "/insert-module-api/ r module-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
   -e "/insert-module-methods/ r module-methods.js" ^
-  -e "/insert-tests/ r classes/tests.js" ^
   -e "/insert-app/ r classes/app.js" ^
   -e "/insert-elems/ r classes/elems.js" ^
   -e "/insert-test-results/ r classes/test-results.js" ^
-  -e "/insert-choice/ r classes/choice.js"  <skeleton.js>algorithmIV-tests-temp.js
+  -e "/insert-choice/ r classes/choice.js" ^
+  -e "/insert-tests-construct/ r classes\tests\construct-tests.js" ^
+  -e "/insert-tests-checkType/ r classes\tests\checkType.js" ^
+  -e "/insert-tests-isValidTypeString/ r classes\tests\isValidTypeString.js" ^
+  -e "/insert-tests-freezeObj/ r classes\tests\freezeObj.js" ^
+  -e "/insert-tests-hasOwnProp/ r classes\tests\hasOwnProp.js" ^
+  -e "/insert-tests-freeze/ r classes\tests\freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 copy /y pre-compiled-tests\algorithmIV-tests-temp.js algorithmIV-tests.js
 del /f pre-compiled-tests\algorithmIV-tests-temp.js
