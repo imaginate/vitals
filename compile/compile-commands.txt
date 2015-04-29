@@ -25,7 +25,7 @@ sed \
 cd ..
 cp -u pre-compiled-utils/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-utils/algorithmIV-utils-temp.js
-sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-utils.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
 rm -f sed*
 
 ## MS-DOS Commands
@@ -41,7 +41,7 @@ sed ^
 cd ..
 copy /y pre-compiled-utils\algorithmIV-utils-temp.js algorithmIV-utils.js
 del /f pre-compiled-utils\algorithmIV-utils-temp.js
-sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-utils.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
 del /f sed*
 
 ----------------------------------------------------------------
@@ -67,7 +67,7 @@ sed \
   -e "/insert-tests-isValidTypeString/ r classes/tests/isValidTypeString.js" \
   -e "/insert-tests-freezeObj/ r classes/tests/freezeObj.js" \
   -e "/insert-tests-hasOwnProp/ r classes/tests/hasOwnProp.js" \
-  -e "/insert-tests-freeze/ r classes/tests/freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
+  -e "/insert-tests-freeze-class/ r classes/tests/freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 cp -u pre-compiled-tests/algorithmIV-tests-temp.js algorithmIV-tests.js
 rm -f pre-compiled-tests/algorithmIV-tests-temp.js
@@ -90,7 +90,7 @@ sed ^
   -e "/insert-tests-isValidTypeString/ r classes\tests\isValidTypeString.js" ^
   -e "/insert-tests-freezeObj/ r classes\tests\freezeObj.js" ^
   -e "/insert-tests-hasOwnProp/ r classes\tests\hasOwnProp.js" ^
-  -e "/insert-tests-freeze/ r classes\tests\freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
+  -e "/insert-tests-freeze-class/ r classes\tests\freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 copy /y pre-compiled-tests\algorithmIV-tests-temp.js algorithmIV-tests.js
 del /f pre-compiled-tests\algorithmIV-tests-temp.js
