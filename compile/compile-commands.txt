@@ -1,0 +1,179 @@
+COMPILE AND MINIFY COMMANDS                                    |
+-------------------------------------------------------------- |
+Requirements:                                                  |
+GNU Sed (http://www.gnu.org/software/sed/)                     |
+Java (http://www.oracle.com/technetwork/java/javase/overview/) |
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+COMPILE TESTS/UTILS        |
+-------------------------- |    |
+File:                      |    |
+tests/algorithmIV-utils.js |    |
+----------------------------    v
+
+## UNIX Commands
+cd tests/pre-compiled-utils
+sed \
+  -e "/insert-public-api/ r public-api.js" \
+  -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-methods-checkType/ r methods/checkType.js" \
+  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
+  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
+  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" \
+  -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
+cd ..
+cp -u pre-compiled-utils/algorithmIV-utils-temp.js algorithmIV-utils.js
+rm -f pre-compiled-utils/algorithmIV-utils-temp.js
+sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-utils.js
+rm -f sed*
+
+## MS-DOS Commands
+cd tests/pre-compiled-utils
+sed ^
+  -e "/insert-public-api/ r public-api.js" ^
+  -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-methods-checkType/ r methods/checkType.js" ^
+  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
+  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
+  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" ^
+  -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
+cd ..
+copy /y pre-compiled-utils\algorithmIV-utils-temp.js algorithmIV-utils.js
+del /f pre-compiled-utils\algorithmIV-utils-temp.js
+sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-utils.js
+del /f sed*
+
+----------------------------------------------------------------
+COMPILE TESTS              |
+-------------------------- |    |
+File:                      |    |
+tests/algorithmIV-tests.js |    |
+----------------------------    v
+
+## UNIX Commands
+cd tests/pre-compiled-tests
+sed \
+  -e "/insert-public-api/ r public-api.js" \
+  -e "/insert-module-api/ r module-api.js" \
+  -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-module-methods/ r module-methods.js" \
+  -e "/insert-tests/ r classes/tests.js" \
+  -e "/insert-app/ r classes/app.js" \
+  -e "/insert-elems/ r classes/elems.js" \
+  -e "/insert-test-results/ r classes/test-results.js" \
+  -e "/insert-choice/ r classes/choice.js" <skeleton.js>algorithmIV-tests-temp.js
+cd ..
+cp -u pre-compiled-tests/algorithmIV-tests-temp.js algorithmIV-tests.js
+rm -f pre-compiled-tests/algorithmIV-tests-temp.js
+sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-tests.js
+rm -f sed*
+
+## MS-DOS Commands
+cd tests/pre-compiled-tests
+sed ^
+  -e "/insert-public-api/ r public-api.js" ^
+  -e "/insert-module-api/ r module-api.js" ^
+  -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-module-methods/ r module-methods.js" ^
+  -e "/insert-tests/ r classes/tests.js" ^
+  -e "/insert-app/ r classes/app.js" ^
+  -e "/insert-elems/ r classes/elems.js" ^
+  -e "/insert-test-results/ r classes/test-results.js" ^
+  -e "/insert-choice/ r classes/choice.js"  <skeleton.js>algorithmIV-tests-temp.js
+cd ..
+copy /y pre-compiled-tests\algorithmIV-tests-temp.js algorithmIV-tests.js
+del /f pre-compiled-tests\algorithmIV-tests-temp.js
+sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-tests.js
+del /f sed*
+
+----------------------------------------------------------------
+CREATE SRC              |
+----------------------- |    |
+Folder:                 |    |
+src/pre-compiled-parts/ |    |
+-------------------------    v
+
+## UNIX Commands
+cp -u tests/pre-compiled-utils/*.js src/pre-compiled-parts
+cp -u tests/pre-compiled-utils/methods/*.js src/pre-compiled-parts/methods
+cd src/pre-compiled-parts
+sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
+rm -f sed*
+
+## MS-DOS Commands
+copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
+copy /y tests\pre-compiled-utils\methods\*.js src\pre-compiled-parts\methods
+cd src\pre-compiled-parts
+sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
+del /f sed*
+
+----------------------------------------------------------------
+COMPILE SRC                |
+-------------------------- |    |
+File:                      |    |
+src/algorithmIV-utils.js   |    |
+----------------------------    v
+
+## UNIX Commands
+cd src/pre-compiled-parts
+sed \
+  -e "/insert-public-api/ r public-api.js" \
+  -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-methods-checkType/ r methods/checkType.js" \
+  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
+  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
+  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" \
+  -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
+cd ..
+cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
+rm -f pre-compiled-parts/algorithmIV-utils-temp.js
+
+## MS-DOS Commands
+cd src\pre-compiled-parts
+sed ^
+  -e "/insert-public-api/ r public-api.js" ^
+  -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-methods-checkType/ r methods/checkType.js" ^
+  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
+  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
+  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" ^
+  -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
+cd ..
+copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js
+del /f pre-compiled-parts\algorithmIV-utils-temp.js
+
+----------------------------------------------------------------
+MINIFY SRC                 |
+-------------------------- |    |
+File:                      |    |
+src/algorithmIV-utils.js   |    |
+----------------------------    v
+
+## UNIX Commands
+sed "3,26 d" <src/algorithmIV-utils.js>compile/algorithmIV-utils.js
+cd compile
+java \
+  -jar minifier.jar \
+  --js algorithmIV-utils.js \
+  --js_output_file algorithmIV-utils.min.js
+rm -f algorithmIV-utils.js
+cd ..
+sed \
+  -e "2 r compile/copyright.txt" \
+  -e "1,2 d" <compile/algorithmIV-utils.min.js>src/algorithmIV-utils.min.js
+rm -f compile/algorithmIV-utils.min.js
+
+## MS-DOS Commands
+sed "3,26 d" <src\algorithmIV-utils.js>compile\algorithmIV-utils.js
+cd compile
+java ^
+  -jar minifier.jar ^
+  --js algorithmIV-utils.js ^
+  --js_output_file algorithmIV-utils.min.js
+del /f algorithmIV-utils.js
+cd ..
+sed ^
+  -e "2 r compile\copyright.txt" ^
+  -e "1,2 d" <compile\algorithmIV-utils.min.js>src\algorithmIV-utils.min.js
+del /f compile\algorithmIV-utils.min.js
