@@ -61,7 +61,6 @@ sed \
   -e "/insert-app/ r classes/app.js" \
   -e "/insert-elems/ r classes/elems.js" \
   -e "/insert-test-results/ r classes/test-results.js" \
-  -e "/insert-choice/ r classes/choice.js" \
   -e "/insert-tests-construct/ r classes/tests/construct-tests.js" \
   -e "/insert-tests-checkType/ r classes/tests/checkType.js" \
   -e "/insert-tests-isValidTypeString/ r classes/tests/isValidTypeString.js" \
@@ -84,7 +83,6 @@ sed ^
   -e "/insert-app/ r classes/app.js" ^
   -e "/insert-elems/ r classes/elems.js" ^
   -e "/insert-test-results/ r classes/test-results.js" ^
-  -e "/insert-choice/ r classes/choice.js" ^
   -e "/insert-tests-construct/ r classes\tests\construct-tests.js" ^
   -e "/insert-tests-checkType/ r classes\tests\checkType.js" ^
   -e "/insert-tests-isValidTypeString/ r classes\tests\isValidTypeString.js" ^
@@ -98,11 +96,13 @@ sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-tests.js
 del /f sed*
 
 ----------------------------------------------------------------
-CREATE SRC              |
------------------------ |    |
-Folder:                 |    |
-src/pre-compiled-parts/ |    |
--------------------------    v
+CREATE & COMPILE SRC     |
+------------------------ |    |
+Folder:                  |    |
+src/pre-compiled-parts/  |    |
+File:                    |    |
+src/algorithmIV-utils.js |    |
+--------------------------    v
 
 ## UNIX Commands
 cp -u tests/pre-compiled-utils/*.js src/pre-compiled-parts
@@ -110,23 +110,6 @@ cp -u tests/pre-compiled-utils/methods/*.js src/pre-compiled-parts/methods
 cd src/pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
 rm -f sed*
-
-## MS-DOS Commands
-copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
-copy /y tests\pre-compiled-utils\methods\*.js src\pre-compiled-parts\methods
-cd src\pre-compiled-parts
-sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
-del /f sed*
-
-----------------------------------------------------------------
-COMPILE SRC                |
--------------------------- |    |
-File:                      |    |
-src/algorithmIV-utils.js   |    |
-----------------------------    v
-
-## UNIX Commands
-cd src/pre-compiled-parts
 sed \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
@@ -140,7 +123,11 @@ cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-parts/algorithmIV-utils-temp.js
 
 ## MS-DOS Commands
+copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
+copy /y tests\pre-compiled-utils\methods\*.js src\pre-compiled-parts\methods
 cd src\pre-compiled-parts
+sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
+del /f sed*
 sed ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
