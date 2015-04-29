@@ -71,7 +71,7 @@ sed \
 cd ..
 cp -u pre-compiled-tests/algorithmIV-tests-temp.js algorithmIV-tests.js
 rm -f pre-compiled-tests/algorithmIV-tests-temp.js
-sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-tests.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-tests.js
 rm -f sed*
 
 ## MS-DOS Commands
@@ -94,7 +94,7 @@ sed ^
 cd ..
 copy /y pre-compiled-tests\algorithmIV-tests-temp.js algorithmIV-tests.js
 del /f pre-compiled-tests\algorithmIV-tests-temp.js
-sed -i "s/^\/\/ insert-[a-z\-]*//" algorithmIV-tests.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-tests.js
 del /f sed*
 
 ----------------------------------------------------------------
