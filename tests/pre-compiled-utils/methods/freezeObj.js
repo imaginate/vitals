@@ -8,7 +8,7 @@
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  var freezeObj = (function setupFreezeObj() {
+  utilsModuleAPI.freezeObj = (function setupFreezeObj() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
