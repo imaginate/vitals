@@ -5,7 +5,7 @@
 
 
 ##Getting Started
-1. Download [algorithmIV-utils.min.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/algorithmIV-utils.min.js)
+1. Download [algorithmIV-utils.min.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/algorithmIV-utils.min.js)
 2. Add algorithmIV-utils.min.js to your HTML head before any scripts that will use the shortcuts
 ```html
 <html>
@@ -27,19 +27,25 @@ aIV.utils.hasOwnProp( theObject, theProperty );
 
 
 ##The Shortcuts
-- **[checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for the combination of the following native operators and methods: [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), and [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray).
-- **[isValidTypeString](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to aIV.utils.checkType.
-- **[freezeObj](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
-- **[hasOwnProp](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
+- **[checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for the combination of the following native operators and methods: [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), and [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray).
+- **[isValidTypeString](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to [aIV.utils.checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/checkType.js).
+- **[freezeObj](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
+- **[hasOwnProp](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
 
 
-##Contributing
-See [CONTRIBUTING.md](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/CONTRIBUTING.md).
+##Example
+```javascript
+aIV.utils.checkType(obj, '!object|function');
+// vs
+(obj && (typeof obj === 'object' || typeof obj === 'function'));
+```
 
 
 ##Contact Us
-- [Open an issue](https://github.com/imaginate/algorithmIV-javascript-shortcuts/issues) on GitHub
-- Send an email to [learn@algorithmiv.com](mailto:learn@algorithmiv.com)
+- **Contributing:** First read our [guideline for contributing](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/CONTRIBUTING.md) then open an issue or email us.
+- **API Questions:** First read the [Public API](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/public-api.js) then open an issue or email us.
+- **Bugs & Improvements:** [Open an issue](https://github.com/imaginate/algorithmIV-javascript-shortcuts/issues) on this GitHub repository.
+- **All Other Questions:** Send an email to [learn@algorithmiv.com](mailto:learn@algorithmiv.com).
 
 
 --
