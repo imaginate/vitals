@@ -15,6 +15,7 @@ tests/algorithmIV-utils.js |    |
 ## UNIX Commands
 cd tests/pre-compiled-utils
 sed \
+  -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
   -e "/insert-methods-checkType/ r methods/checkType.js" \
@@ -31,6 +32,7 @@ rm -f sed*
 ## MS-DOS Commands
 cd tests/pre-compiled-utils
 sed ^
+  -e "/insert-aIV-polyfills/ r dependencies\algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
   -e "/insert-methods-checkType/ r methods/checkType.js" ^
@@ -109,10 +111,12 @@ src/algorithmIV-utils.js |    |
 ## UNIX Commands
 cp -u tests/pre-compiled-utils/*.js src/pre-compiled-parts
 cp -u tests/pre-compiled-utils/methods/*.js src/pre-compiled-parts/methods
+cp -u tests/pre-compiled-utils/dependencies/*.js src/pre-compiled-parts/dependencies
 cd src/pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
 rm -f sed*
 sed \
+  -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
   -e "/insert-methods-checkType/ r methods/checkType.js" \
@@ -123,14 +127,18 @@ sed \
 cd ..
 cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-parts/algorithmIV-utils-temp.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
+rm -f sed*
 
 ## MS-DOS Commands
 copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
 copy /y tests\pre-compiled-utils\methods\*.js src\pre-compiled-parts\methods
+copy /y tests\pre-compiled-utils\dependencies\*.js src\pre-compiled-parts\dependencies
 cd src\pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
 del /f sed*
 sed ^
+  -e "/insert-aIV-polyfills/ r dependencies\algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
   -e "/insert-methods-checkType/ r methods/checkType.js" ^
@@ -141,6 +149,8 @@ sed ^
 cd ..
 copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js
 del /f pre-compiled-parts\algorithmIV-utils-temp.js
+sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
+del /f sed*
 
 ----------------------------------------------------------------
 MINIFY SRC                 |
@@ -150,7 +160,7 @@ src/algorithmIV-utils.js   |    |
 ----------------------------    v
 
 ## UNIX Commands
-sed "3,26 d" <src/algorithmIV-utils.js>compile/algorithmIV-utils.js
+sed "3,26 d;40,57 d" <src/algorithmIV-utils.js>compile/algorithmIV-utils.js
 cd compile
 java \
   -jar minifier.jar \
@@ -159,12 +169,14 @@ java \
 rm -f algorithmIV-utils.js
 cd ..
 sed \
-  -e "2 r compile/copyright.txt" \
-  -e "1,2 d" <compile/algorithmIV-utils.min.js>src/algorithmIV-utils.min.js
+  -e "1 r src/pre-compiled-parts/dependencies/algorithmIV-polyfills.min.js" \
+  -e "s/ blank line \*\///" \
+  -e "2 r compile/utils-copyright.txt" \
+  -e "1 d" <compile/algorithmIV-utils.min.js>src/algorithmIV-utils.min.js
 rm -f compile/algorithmIV-utils.min.js
 
 ## MS-DOS Commands
-sed "3,26 d" <src\algorithmIV-utils.js>compile\algorithmIV-utils.js
+sed "3,26 d;40,57 d" <src\algorithmIV-utils.js>compile\algorithmIV-utils.js
 cd compile
 java ^
   -jar minifier.jar ^
@@ -173,6 +185,8 @@ java ^
 del /f algorithmIV-utils.js
 cd ..
 sed ^
-  -e "2 r compile\copyright.txt" ^
-  -e "1,2 d" <compile\algorithmIV-utils.min.js>src\algorithmIV-utils.min.js
+  -e "1 r src\pre-compiled-parts\dependencies\algorithmIV-polyfills.min.js" ^
+  -e "s/ blank line \*\///" ^
+  -e "2 r compile\utils-copyright.txt" ^
+  -e "1 d" <compile\algorithmIV-utils.min.js>src\algorithmIV-utils.min.js
 del /f compile\algorithmIV-utils.min.js
