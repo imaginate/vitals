@@ -66,6 +66,7 @@ sed \
   -e "/insert-tests-isValidTypeString/ r classes/tests/isValidTypeString.js" \
   -e "/insert-tests-freezeObj/ r classes/tests/freezeObj.js" \
   -e "/insert-tests-hasOwnProp/ r classes/tests/hasOwnProp.js" \
+  -e "/insert-tests-new-tests/ r classes/tests/new-tests-here.js" \
   -e "/insert-tests-freeze-class/ r classes/tests/freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 cp -u pre-compiled-tests/algorithmIV-tests-temp.js algorithmIV-tests.js
@@ -88,6 +89,7 @@ sed ^
   -e "/insert-tests-isValidTypeString/ r classes\tests\isValidTypeString.js" ^
   -e "/insert-tests-freezeObj/ r classes\tests\freezeObj.js" ^
   -e "/insert-tests-hasOwnProp/ r classes\tests\hasOwnProp.js" ^
+  -e "/insert-tests-new-tests/ r classes\tests\new-tests-here.js" ^
   -e "/insert-tests-freeze-class/ r classes\tests\freeze-tests.js" <skeleton.js>algorithmIV-tests-temp.js
 cd ..
 copy /y pre-compiled-tests\algorithmIV-tests-temp.js algorithmIV-tests.js
