@@ -5,8 +5,8 @@
 
 
 ##Getting Started
-1. Download [algorithmIV-utils.min.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/algorithmIV-utils.min.js)
-2. Add algorithmIV-utils.min.js to your HTML head before any scripts that will use the shortcuts
+- Download [algorithmIV-utils.min.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/algorithmIV-utils.min.js)
+- Add algorithmIV-utils.min.js to your HTML head before any scripts that will use the shortcuts
 ```html
 <html>
     <head>
@@ -17,7 +17,7 @@
     <body>...</body>
 </html>
 ```
-3. Use aIV.utils to access our shortcuts at any time
+- Use aIV.utils to access our shortcuts at any time
 ```javascript
 aIV.utils.checkType( anyValue, theTypeString );
 aIV.utils.isValidTypeString( theTypeString );

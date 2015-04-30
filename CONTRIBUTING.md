@@ -5,19 +5,19 @@
 
 ##Directions
 **Initial steps:**
-1. Fork and clone the repo
-2. Create a new branch for your additions
-3. Add your code to [tests/pre-compiled-utils/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-utils)
-4. Compile the utils module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/compile/compile-commands.txt)
+- Fork and clone the repo
+- Create a new branch for your additions
+- Add your code to [tests/pre-compiled-utils/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-utils)
+- Compile the utils module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/1987aa9631f6699e6d9bf6d3804620edcb4efd9d/compile/compile-commands.txt#L8-46)
 
 **Unit Test steps:**
-1. Add new unit tests to [tests/pre-compiled-tests/classes/tests/new-tests-here.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/pre-compiled-tests/classes/tests/new-tests-here.js) or update existing unit tests in [tests/pre-compiled-tests/classes/tests/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-tests/classes/tests)
-2. Compile the tests module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/compile/compile-commands.txt)
+- Add new unit tests to [tests/pre-compiled-tests/classes/tests/new-tests-here.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/pre-compiled-tests/classes/tests/new-tests-here.js) or update existing unit tests in [tests/pre-compiled-tests/classes/tests/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-tests/classes/tests)
+- Compile the tests module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/1987aa9631f6699e6d9bf6d3804620edcb4efd9d/compile/compile-commands.txt#L47-99)
 
 **Final steps:**
-5. Load [tests/run-tests.html](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/run-tests.html) in your browser and click "Start Tests"
-7. Fix any bugs that are found and re-run the tests until they are all passing
-8. Submit a pull request
+- Load [tests/run-tests.html](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/run-tests.html) in your browser and click "Start Tests"
+- Fix any bugs that are found and re-run the tests until they are all passing
+- Submit a pull request
 
 
 ##Pointers
