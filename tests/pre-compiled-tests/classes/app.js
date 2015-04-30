@@ -61,9 +61,6 @@
     /** @type {string} */
     var prop;
 
-    // Clear the console
-    console.clear();
-
     // Clear the start message
     this.elems.clearUI();
 
