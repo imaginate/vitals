@@ -4,19 +4,18 @@
 
 
 ##Directions
-Initial steps:
+**Initial steps:**
 1. Fork and clone the repo
 2. Create a new branch for your additions
 3. Add your code to [tests/pre-compiled-utils/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-utils)
 4. Compile the utils module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/compile/compile-commands.txt)
 
-If new functionality has been added or more detailed tests are needed:
-1. Add or update the unit tests in [tests/pre-compiled-tests/classes/tests/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-tests/classes/tests)
+**Unit Test steps:**
+1. Add new unit tests to [tests/pre-compiled-tests/classes/tests/new-tests-here.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/pre-compiled-tests/classes/tests/new-tests-here.js) or update existing unit tests in [tests/pre-compiled-tests/classes/tests/](https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/tests/pre-compiled-tests/classes/tests)
 2. Compile the tests module using the commands found in [compile/compile-commands.txt](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/compile/compile-commands.txt)
 
-Final steps:
-5. Load [tests/run-tests.html](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/run-tests.html) in a browser
-6. Click "Start Tests"
+**Final steps:**
+5. Load [tests/run-tests.html](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/tests/run-tests.html) in your browser and click "Start Tests"
 7. Fix any bugs that are found and re-run the tests until they are all passing
 8. Submit a pull request
 
