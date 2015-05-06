@@ -117,6 +117,107 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    */
   var utilsModuleAPI = {};
 
+  /**
+   * -----------------------------------------------------
+   * Public Variable (defaults)
+   * -----------------------------------------------------
+   * @desc Holds each method's defaults.
+   * @type {!Object<string, *>}
+   * @struct
+   */
+  var defaults = {
+    getElemByClassRoot : document,
+    getElemsByClassRoot: document,
+    getElemByTagRoot   : document,
+    getElemsByTagRoot  : document
+  };
+
+/* -----------------------------------------------------------------------------
+ * The Set Method Defaults Method (set-defaults.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (utilsModuleAPI.set)
+   * -----------------------------------------------------
+   * @desc Allows you to set the default settings for each aIV.utils method.
+   * @param {!Object} settings - The default settings.
+   * @param {!(Document|Element)=} settings.getElemByClassRoot
+   * @param {!(Document|Element)=} settings.getElemsByClassRoot
+   * @param {!(Document|Element)=} settings.getElemByTagRoot
+   * @param {!(Document|Element)=} settings.getElemsByTagRoot
+   */
+  utilsModuleAPI.set = function(settings) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {!(Document|Element)} */
+    var elem;
+
+    if (!settings || typeof settings !== 'object') {
+      errorMsg = 'An aIV.utils.set call received an invalid settings ';
+      errorMsg += 'parameter (should be an object).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    // Set getElemByClassRoot
+    if ( settings.hasOwnProperty('getElemByClassRoot') ) {
+      elem = settings.getElemByClassRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemByClassRoot = settings.getElemByClassRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemByClassRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemsByClassRoot
+    if ( settings.hasOwnProperty('getElemsByClassRoot') ) {
+      elem = settings.getElemsByClassRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemsByClassRoot = settings.getElemsByClassRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemsByClassRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemByTagRoot
+    if ( settings.hasOwnProperty('getElemByTagRoot') ) {
+      elem = settings.getElemByTagRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemByTagRoot = settings.getElemByTagRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemByTagRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemsByTagRoot
+    if ( settings.hasOwnProperty('getElemsByTagRoot') ) {
+      elem = settings.getElemsByTagRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemsByTagRoot = settings.getElemsByTagRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemsByTagRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+  };
+
 /* -----------------------------------------------------------------------------
  * The checkType Method (methods/checkType.js)
  * -------------------------------------------------------------------------- */
@@ -665,7 +766,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
-   * @return {HTMLElement} The DOM element with the given id.
+   * @return {!HTMLElement} The DOM element with the given id.
    */
   utilsModuleAPI.getElemById = function(id) {
 
@@ -695,16 +796,16 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @param {string} classname - The class name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
-   * @return {HTMLElement} The selected DOM element.
+   * @return {!HTMLElement} The selected DOM element.
    */
   utilsModuleAPI.getElemByClass = function(classname, index, root) {
 
     /** @type {string} */
     var errorMsg;
-    /** @type {Array<HTMLElement>} */
+    /** @type {!Array<HTMLElement>} */
     var elems;
 
     if (!classname || typeof classname !== 'string') {
@@ -746,10 +847,10 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
    * @param {string} classname - The class name of the elements to select.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {Array<HTMLElement>} The selected DOM elements.
+   * @return {!Array<HTMLElement>} The selected DOM elements.
    */
   utilsModuleAPI.getElemsByClass = function(classname, index, root) {
 
@@ -784,16 +885,16 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @param {string} tag - The tag name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
-   * @return {HTMLElement} The selected DOM element.
+   * @return {!HTMLElement} The selected DOM element.
    */
   utilsModuleAPI.getElemByTag = function(tag, index, root) {
 
     /** @type {string} */
     var errorMsg;
-    /** @type {Array<HTMLElement>} */
+    /** @type {!Array<HTMLElement>} */
     var elems;
 
     if (!tag || typeof tag !== 'string') {
@@ -835,10 +936,10 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByTagName.
    * @param {string} tag - The tag name of the elements to select.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
-   * @return {Array<HTMLElement>} The selected DOM elements.
+   * @return {!Array<HTMLElement>} The selected DOM elements.
    */
   utilsModuleAPI.getElemsByTag = function(tag, root) {
 
