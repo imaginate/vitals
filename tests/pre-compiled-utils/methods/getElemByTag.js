@@ -18,6 +18,8 @@
     var errorMsg;
     /** @type {!Array<HTMLElement>} */
     var elems;
+    /** @type {HTMLElement} */
+    var elem;
 
     if (!tag || typeof tag !== 'string') {
       errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
@@ -44,5 +46,15 @@
       index = elems.length - 1;
     }
 
-    return elems[ index ];
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByTag call ';
+      errorMsg += 'received an invalid tag name parameter ';
+      errorMsg += '(i.e. no element with the tag name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
   };

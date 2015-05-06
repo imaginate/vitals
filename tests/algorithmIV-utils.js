@@ -772,15 +772,26 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /** @type {string} */
     var errorMsg;
+    /** @type {HTMLElement} */
+    var elem;
 
     if (!id || typeof id !== 'string') {
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
-      errorMsg += 'parameter.';
+      errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
       return;
     }
 
-    return document.getElementById(id);
+    elem = document.getElementById(id);
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
+      errorMsg += 'parameter (i.e. no element with the id was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
   };
 
 /* -----------------------------------------------------------------------------
@@ -807,6 +818,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     var errorMsg;
     /** @type {!Array<HTMLElement>} */
     var elems;
+    /** @type {HTMLElement} */
+    var elem;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
@@ -833,7 +846,17 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = elems.length - 1;
     }
 
-    return elems[ index ];
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByClass call ';
+      errorMsg += 'received an invalid class name parameter ';
+      errorMsg += '(i.e. no element with the class name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
   };
 
 /* -----------------------------------------------------------------------------
@@ -896,6 +919,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     var errorMsg;
     /** @type {!Array<HTMLElement>} */
     var elems;
+    /** @type {HTMLElement} */
+    var elem;
 
     if (!tag || typeof tag !== 'string') {
       errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
@@ -922,7 +947,17 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = elems.length - 1;
     }
 
-    return elems[ index ];
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByTag call ';
+      errorMsg += 'received an invalid tag name parameter ';
+      errorMsg += '(i.e. no element with the tag name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
   };
 
 /* -----------------------------------------------------------------------------

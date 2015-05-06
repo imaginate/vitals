@@ -18,6 +18,8 @@
     var errorMsg;
     /** @type {!Array<HTMLElement>} */
     var elems;
+    /** @type {HTMLElement} */
+    var elem;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
@@ -44,5 +46,15 @@
       index = elems.length - 1;
     }
 
-    return elems[ index ];
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByClass call ';
+      errorMsg += 'received an invalid class name parameter ';
+      errorMsg += '(i.e. no element with the class name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
   };
