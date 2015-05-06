@@ -7,16 +7,16 @@
    * @param {string} classname - The class name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
-   * @return {HTMLElement} The selected DOM element.
+   * @return {!HTMLElement} The selected DOM element.
    */
   utilsModuleAPI.getElemByClass = function(classname, index, root) {
 
     /** @type {string} */
     var errorMsg;
-    /** @type {Array<HTMLElement>} */
+    /** @type {!Array<HTMLElement>} */
     var elems;
 
     if (!classname || typeof classname !== 'string') {

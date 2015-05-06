@@ -5,10 +5,10 @@
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
    * @param {string} classname - The class name of the elements to select.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {Array<HTMLElement>} The selected DOM elements.
+   * @return {!Array<HTMLElement>} The selected DOM elements.
    */
   utilsModuleAPI.getElemsByClass = function(classname, index, root) {
 

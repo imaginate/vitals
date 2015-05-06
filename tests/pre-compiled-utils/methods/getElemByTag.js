@@ -7,16 +7,16 @@
    * @param {string} tag - The tag name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {(Document|Element)=} root - Limit the selections to this element's
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
-   * @return {HTMLElement} The selected DOM element.
+   * @return {!HTMLElement} The selected DOM element.
    */
   utilsModuleAPI.getElemByTag = function(tag, index, root) {
 
     /** @type {string} */
     var errorMsg;
-    /** @type {Array<HTMLElement>} */
+    /** @type {!Array<HTMLElement>} */
     var elems;
 
     if (!tag || typeof tag !== 'string') {

@@ -4,7 +4,7 @@
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
-   * @return {HTMLElement} The DOM element with the given id.
+   * @return {!HTMLElement} The DOM element with the given id.
    */
   utilsModuleAPI.getElemById = function(id) {
 
