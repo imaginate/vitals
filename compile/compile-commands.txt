@@ -18,6 +18,7 @@ sed \
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-methods-checkType/ r methods/checkType.js" \
   -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
   -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
@@ -40,6 +41,7 @@ sed ^
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-methods-checkType/ r methods/checkType.js" ^
   -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
   -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
@@ -121,6 +123,7 @@ sed \
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-methods-checkType/ r methods/checkType.js" \
   -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
   -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
@@ -148,6 +151,7 @@ sed ^
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-methods-checkType/ r methods/checkType.js" ^
   -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
   -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
