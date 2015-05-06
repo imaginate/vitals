@@ -99,10 +99,6 @@
         pass = false;
       }
 
-      if (!elem) {
-        pass = false;
-      }
-
       pass = pass && (elem.innerHTML === 'Pass');
 
       if (!pass) {
