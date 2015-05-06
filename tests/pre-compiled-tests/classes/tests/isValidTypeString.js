@@ -2,10 +2,10 @@
    * -------------------------------------------------
    * Public Method (Tests.isValidTypeString)
    * -------------------------------------------------
-   * @desc Checks aIV.utils.isValidTypeString method.
+   * @desc Tests the aIV.utils.isValidTypeString method.
    * @type {function}
    */
-  Tests.isValidTypeString = (function setupTestsIsValidTypeString() {
+  Tests.isValidTypeString = (function setupTests_isValidTypeString() {
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Private isValidTypeString Variables
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (isValidTypeString)
      * -------------------------------------------------
-     * @desc Checks aIV.utils.isValidTypeString method.
+     * @desc Tests the aIV.utils.isValidTypeString method.
      * @type {function}
      */
     var isValidTypeString = function() {

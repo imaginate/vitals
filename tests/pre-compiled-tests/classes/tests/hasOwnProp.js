@@ -2,10 +2,10 @@
    * -------------------------------------------------
    * Public Method (Tests.hasOwnProp)
    * -------------------------------------------------
-   * @desc Checks aIV.utils.hasOwnProp method.
+   * @desc Tests the aIV.utils.hasOwnProp method.
    * @type {function}
    */
-  Tests.hasOwnProp = (function setupTestsHasOwnProp() {
+  Tests.hasOwnProp = (function setupTests_hasOwnProp() {
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Private hasOwnProp Variables
@@ -27,7 +27,7 @@
      * -------------------------------------------------
      * Public Method (hasOwnProp)
      * -------------------------------------------------
-     * @desc Checks aIV.utils.hasOwnProp method.
+     * @desc Tests the aIV.utils.hasOwnProp method.
      * @type {function}
      */
     var hasOwnProp = function() {

@@ -2,10 +2,10 @@
    * -------------------------------------------------
    * Public Method (Tests.checkType)
    * -------------------------------------------------
-   * @desc Checks aIV.utils.checkType method.
+   * @desc Tests the aIV.utils.checkType method.
    * @type {function}
    */
-  Tests.checkType = (function setupTestsCheckType() {
+  Tests.checkType = (function setupTests_checkType() {
 
     ////////////////////////////////////////////////////////////////////////////
     // Define The Private checkType Variables
@@ -40,7 +40,7 @@
      * -------------------------------------------------
      * Public Method (checkType)
      * -------------------------------------------------
-     * @desc Checks aIV.utils.checkType method.
+     * @desc Tests the aIV.utils.checkType method.
      * @type {function}
      */
     var checkType = function() {

@@ -2,10 +2,10 @@
    * -------------------------------------------------
    * Public Method (Tests.freezeObj)
    * -------------------------------------------------
-   * @desc Checks aIV.utils.freezeObj method.
+   * @desc Tests the aIV.utils.freezeObj method.
    * @type {function}
    */
-  Tests.freezeObj = (function setupTestsFreezeObj() {
+  Tests.freezeObj = (function setupTests_freezeObj() {
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Private freezeObj Variables
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (freezeObj)
      * -------------------------------------------------
-     * @desc Checks aIV.utils.freezeObj method.
+     * @desc Tests the aIV.utils.freezeObj method.
      * @type {function}
      */
     var freezeObj = function() {
