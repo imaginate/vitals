@@ -146,6 +146,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @param {!(Document|Element)=} settings.getElemsByClassRoot
    * @param {!(Document|Element)=} settings.getElemByTagRoot
    * @param {!(Document|Element)=} settings.getElemsByTagRoot
+   * @return {boolean} The success of the new settings update.
    */
   utilsModuleAPI.set = function(settings) {
 
@@ -216,6 +217,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
         throw new TypeError(errorMsg);
       }
     }
+
+    return true;
   };
 
 /* -----------------------------------------------------------------------------
