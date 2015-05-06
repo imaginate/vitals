@@ -875,7 +875,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  utilsModuleAPI.getElemsByClass = function(classname, index, root) {
+  utilsModuleAPI.getElemsByClass = function(classname, root) {
 
     /** @type {string} */
     var errorMsg;
