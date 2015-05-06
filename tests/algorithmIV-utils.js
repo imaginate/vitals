@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.0)
+ * Algorithm IV JavaScript Shortcuts (v1.0.1)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.0
+ * @version 1.0.1
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -656,6 +656,211 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
+ * The getElemById Method (methods/getElemById.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemById)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method - document.getElementById.
+   * @param {string} id - The id of the element to select.
+   * @return {HTMLElement} The DOM element with the given id.
+   */
+  utilsModuleAPI.getElemById = function(id) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!id || typeof id !== 'string') {
+      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
+      errorMsg += 'parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    return document.getElementById(id);
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemByClass Method (methods/getElemByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName[ [index] ].
+   * @param {string} classname - The class name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
+   * @return {HTMLElement} The selected DOM element.
+   */
+  utilsModuleAPI.getElemByClass = function(classname, index, root) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {Array<HTMLElement>} */
+    var elems;
+
+    if (!classname || typeof classname !== 'string') {
+      errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (typeof index !== 'number' || index < -1) {
+      index = 0;
+    }
+    else {
+      Math.floor(index);
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemByClassRoot;
+    }
+
+    elems = root.getElementsByClassName(classname);
+
+    if (index < 0 || index >= elems.length) {
+      index = elems.length - 1;
+    }
+
+    return elems[ index ];
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByClass Method (methods/getElemsByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemsByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName.
+   * @param {string} classname - The class name of the elements to select.
+   * @param {(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
+   * @return {Array<HTMLElement>} The selected DOM elements.
+   */
+  utilsModuleAPI.getElemsByClass = function(classname, index, root) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!classname || typeof classname !== 'string') {
+      errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemsByClassRoot;
+    }
+
+    return root.getElementsByClassName(classname);
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemByTag Method (methods/getElemByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName[ [index] ].
+   * @param {string} tag - The tag name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
+   * @return {HTMLElement} The selected DOM element.
+   */
+  utilsModuleAPI.getElemByTag = function(tag, index, root) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {Array<HTMLElement>} */
+    var elems;
+
+    if (!tag || typeof tag !== 'string') {
+      errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
+      errorMsg += 'parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (typeof index !== 'number' || index < -1) {
+      index = 0;
+    }
+    else {
+      Math.floor(index);
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemByTagRoot;
+    }
+
+    elems = root.getElementsByTagName(tag);
+
+    if (index < 0 || index >= elems.length) {
+      index = elems.length - 1;
+    }
+
+    return elems[ index ];
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByTag Method (methods/getElemsByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemsByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName.
+   * @param {string} tag - The tag name of the elements to select.
+   * @param {(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
+   * @return {Array<HTMLElement>} The selected DOM elements.
+   */
+  utilsModuleAPI.getElemsByTag = function(tag, root) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!tag || typeof tag !== 'string') {
+      errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemsByTagRoot;
+    }
+
+    return root.getElementsByTagName(tag);
+  };
+
+/* -----------------------------------------------------------------------------
  * The RegExps Class (reg-exps.js)
  * -------------------------------------------------------------------------- */
 
@@ -835,6 +1040,26 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   RegExps.lowerAlphaAndPipe = /[^a-z\|]/g;
 
   utilsModuleAPI.freezeObj(RegExps, true);
+
+/* -----------------------------------------------------------------------------
+ * Deep Freeze The Utils Module API
+ * -------------------------------------------------------------------------- */
+
+  (function(utilsModuleAPI) {
+
+    /** @type {string} */
+    var prop;
+
+    Object.freeze(utilsModuleAPI);
+
+    for (prop in utilsModuleAPI) {
+      if (utilsModuleAPI.hasOwnProperty(prop) && utilsModuleAPI[ prop ] &&
+          (typeof utilsModuleAPI[ prop ] === 'object' ||
+           typeof utilsModuleAPI[ prop ] === 'function')) {
+        Object.freeze(utilsModuleAPI[ prop ]);
+      }
+    }
+  })(utilsModuleAPI);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Utils Module End
