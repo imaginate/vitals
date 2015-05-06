@@ -1,10 +1,10 @@
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts Tests (v1.0.0)
+ * Algorithm IV JavaScript Shortcuts Tests (v1.0.1)
  * -----------------------------------------------------------------------------
  * @file The module used to run all testing for aIV.utils.
  * @module aIVUtilsTests
- * @version 1.0.0
+ * @version 1.0.1
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -97,7 +97,6 @@
  * Deep Freeze The Tests Class
  * -------------------------------------------------------------------------- */
 
-  // Deep freeze Tests
   (function(Tests) {
 
     /** @type {string} */
