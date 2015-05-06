@@ -8,7 +8,7 @@
   var App = function() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // Define The Public Properties
+    // Define & Setup The Public Properties
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -18,7 +18,7 @@
      * @desc The DOM elements for this app.
      * @type {!Object}
      */
-    this.elems;
+    this.elems = new Elems();
 
     /**
      * ----------------------------------------------- 
@@ -27,13 +27,6 @@
      * @desc Saves the results of the tests.
      * @type {!Array<TestResults>}
      */
-    this.results;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Setup The Public Properties
-    ////////////////////////////////////////////////////////////////////////////
-
-    this.elems = new Elems();
     this.results = [];
 
     ////////////////////////////////////////////////////////////////////////////
