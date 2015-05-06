@@ -868,3 +868,364 @@
     return checkType;
 
   })();
+  /**
+   * -------------------------------------------------
+   * Public Method (Tests.freezeObj)
+   * -------------------------------------------------
+   * @desc Checks aIV.utils.freezeObj method.
+   * @type {function}
+   */
+  Tests.freezeObj = (function setupTestsFreezeObj() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private freezeObj Variables
+    ////////////////////////////////////////////////////////////////////////////
+
+    /** @type {!TestResults} */
+    var results = new TestResults('freezeObj', 2);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Public freezeObj Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -------------------------------------------------
+     * Public Method (freezeObj)
+     * -------------------------------------------------
+     * @desc Checks aIV.utils.freezeObj method.
+     * @type {function}
+     */
+    var freezeObj = function() {
+
+      testBasicFreeze();
+      testDeepFreeze();
+
+      // Save the results
+      app.results.push(results);
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private freezeObj Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testBasicFreeze)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testBasicFreeze = function() {
+
+      /** @type {!Object} */
+      var testObj;
+      /** @type {string} */
+      var errorMsg;
+
+      testObj = {};
+
+      aIV.utils.freezeObj(testObj);
+
+      if ( !Object.isFrozen(testObj) ) {
+        errorMsg = 'freezeObj failed to complete a basic freeze';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testDeepFreeze)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testDeepFreeze = function() {
+
+      /** @type {!Object} */
+      var testObj;
+      /** @type {string} */
+      var errorMsg;
+
+      testObj = {
+        testProp1: 'a random string',
+        testProp2: {
+          testProp3: {}
+        }
+      };
+
+      aIV.utils.freezeObj(testObj, true);
+
+      if (!Object.isFrozen(testObj) ||
+          !Object.isFrozen(testObj.testProp2) ||
+          !Object.isFrozen(testObj.testProp2.testProp3)) {
+        errorMsg = 'freezeObj failed to complete a deep freeze';
+        results.addError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The freezeObj Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return freezeObj;
+
+  })();
+  /**
+   * -------------------------------------------------
+   * Public Method (Tests.hasOwnProp)
+   * -------------------------------------------------
+   * @desc Checks aIV.utils.hasOwnProp method.
+   * @type {function}
+   */
+  Tests.hasOwnProp = (function setupTestsHasOwnProp() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private hasOwnProp Variables
+    ////////////////////////////////////////////////////////////////////////////
+
+    /** @type {!TestResults} */
+    var results = new TestResults('hasOwnProp', 2);
+
+    /** @type {!Object} */
+    var testObj = {
+      testProp1: true
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Public hasOwnProp Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -------------------------------------------------
+     * Public Method (hasOwnProp)
+     * -------------------------------------------------
+     * @desc Checks aIV.utils.hasOwnProp method.
+     * @type {function}
+     */
+    var hasOwnProp = function() {
+
+      testCatchFalse();
+      testPassTrue();
+
+      // Save the results
+      app.results.push(results);
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private hasOwnProp Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testCatchFalse)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testCatchFalse = function() {
+
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+
+      fail = aIV.utils.hasOwnProp(testObj, 'testProp2');
+      fail = fail || aIV.utils.hasOwnProp(testObj, 'prototype');
+
+      if (fail) {
+        errorMsg = 'hasOwnProp failed to return false for invalid properties';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testPassTrue)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testPassTrue = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.hasOwnProp(testObj, 'testProp1');
+
+      if (!pass) {
+        errorMsg = 'hasOwnProp failed to return true for valid properties';
+        results.addError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The hasOwnProp Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return hasOwnProp;
+
+  })();
+  /**
+   * -------------------------------------------------
+   * Public Method (Tests.isValidTypeString)
+   * -------------------------------------------------
+   * @desc Checks aIV.utils.isValidTypeString method.
+   * @type {function}
+   */
+  Tests.isValidTypeString = (function setupTestsIsValidTypeString() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private isValidTypeString Variables
+    ////////////////////////////////////////////////////////////////////////////
+
+    /** @type {!TestResults} */
+    var results = new TestResults('isValidTypeString', 5);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Public isValidTypeString Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -------------------------------------------------
+     * Public Method (isValidTypeString)
+     * -------------------------------------------------
+     * @desc Checks aIV.utils.isValidTypeString method.
+     * @type {function}
+     */
+    var isValidTypeString = function() {
+
+      testPrimitives();
+      testArrays();
+      testHashMaps();
+      testSpecialCharacters();
+      testInvalids();
+
+      // Save the results
+      app.results.push(results);
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private isValidTypeString Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testPrimitives)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testPrimitives = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.isValidTypeString('string');
+      pass = pass && aIV.utils.isValidTypeString('number');
+
+      if (!pass) {
+        errorMsg = 'isValidTypeString failed to pass valid primitive strings';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testArrays)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testArrays = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.isValidTypeString('array');
+      pass = pass && aIV.utils.isValidTypeString('objects');
+      pass = pass && aIV.utils.isValidTypeString('elements');
+
+      if (!pass) {
+        errorMsg = 'isValidTypeString failed to pass valid array strings';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testHashMaps)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testHashMaps = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.isValidTypeString('stringMap');
+      pass = pass && aIV.utils.isValidTypeString('objectMap');
+
+      if (!pass) {
+        errorMsg = 'isValidTypeString failed to pass valid hash map strings';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testSpecialCharacters)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testSpecialCharacters = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.isValidTypeString('array|string');
+      pass = pass && aIV.utils.isValidTypeString('!objectMap');
+      pass = pass && aIV.utils.isValidTypeString('?objects');
+      pass = pass && aIV.utils.isValidTypeString('string=');
+
+      if (!pass) {
+        errorMsg = 'isValidTypeString failed to pass valid strings with ';
+        errorMsg += 'special characters';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testInvalids)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testInvalids = function() {
+
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+
+      fail = aIV.utils.isValidTypeString('string array');
+      fail = fail || aIV.utils.isValidTypeString('num');
+      fail = fail || aIV.utils.isValidTypeString('string|object|num');
+
+      if (fail) {
+        errorMsg = 'isValidTypeString failed to catch invalid strings';
+        results.addError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The isValidTypeString Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return isValidTypeString;
+
+  })();
+

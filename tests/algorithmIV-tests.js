@@ -157,7 +157,7 @@
   var App = function() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // Define The Public Properties
+    // Define & Setup The Public Properties
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -167,7 +167,7 @@
      * @desc The DOM elements for this app.
      * @type {!Object}
      */
-    this.elems;
+    this.elems = new Elems();
 
     /**
      * ----------------------------------------------- 
@@ -176,13 +176,6 @@
      * @desc Saves the results of the tests.
      * @type {!Array<TestResults>}
      */
-    this.results;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Setup The Public Properties
-    ////////////////////////////////////////////////////////////////////////////
-
-    this.elems = new Elems();
     this.results = [];
 
     ////////////////////////////////////////////////////////////////////////////
@@ -331,33 +324,6 @@
      */
     this.start = getID('start');
 
-    /**
-     * ---------------------------------------------------
-     * Public Property (Elems.choose)
-     * ---------------------------------------------------
-     * @desc Element: #choose
-     * @type {HTMLElement}
-     */
-    this.choose = getID('choose');
-
-    /**
-     * ---------------------------------------------------
-     * Public Property (Elems.yes)
-     * ---------------------------------------------------
-     * @desc Element: #yes
-     * @type {HTMLElement}
-     */
-    this.yes = getID('yes');
-
-    /**
-     * ---------------------------------------------------
-     * Public Property (Elems.no)
-     * ---------------------------------------------------
-     * @desc Element: #no
-     * @type {HTMLElement}
-     */
-    this.no = getID('no');
-
     ////////////////////////////////////////////////////////////////////////////
     // End Of The Class Setup
     ////////////////////////////////////////////////////////////////////////////
@@ -390,7 +356,6 @@
     setTimeout(function() {
       that.msg.innerHTML = 'Tests are running.';
       that.start.style.display = 'none';
-      that.choose.style.display = 'none';
       that.ui.style.opacity = '1';
     }, 500);
   };
@@ -405,9 +370,10 @@
    * -----------------------------------------------------
    * @desc Contains the results for a test.
    * @param {string} type - The type of tests that were ran.
+   * @param {number=} amount - The number of tests that were ran.
    * @constructor
    */
-  var TestResults = function(type) {
+  var TestResults = function(type, amount) {
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Protected Properties
@@ -427,9 +393,13 @@
      * Protected Property (TestResults.errors)
      * -----------------------------------------------
      * @desc The test errors.
-     * @type {?strings}
+     * @type {!strings}
      */
-    var errors = null;
+    var errors = [];
+
+    if (typeof amount !== 'number' || amount < 0) {
+      amount = 0;
+    }
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public Methods
@@ -445,18 +415,35 @@
     this.reportResult = function() {
 
       /** @type {string} */
-      var name;
+      var classname;
+      /** @type {number} */
+      var passed;
       /** @type {string} */
       var msg;
       /** @type {string} */
       var report;
 
-      name = (result) ? 'green' : 'red';
-      msg = (result) ? 'Pass' : 'Fail';
-      report = '' +
-        '<li class="' + name + '">' +
-          type + ' =&gt; ' + msg +
-        '</li>';
+      classname = (errors.length) ? 'red' : 'green';
+
+      if (amount && amount > errors.length) {
+        passed = amount - errors.length;
+        report = '' +
+          '<li class="' + classname + '">' +
+            '<span class="title">' + type + '</span>' +
+            ' =&gt; ' +
+            '<span class="passed">' +
+              'Passed ' + passed + ' of ' + amount + ' Tests' +
+            '</span>' +
+          '</li>';
+      }
+      else {
+        msg = (result) ? 'Pass' : 'Fail';
+        report = '' +
+          '<li class="' + classname + '">' +
+            '<span class="title">' + type + '</span>' +
+            ' =&gt; ' + msg +
+          '</li>';
+      }
 
       return report;
     };
@@ -477,25 +464,24 @@
       /** @type {?string} */
       var report;
 
-      report = null;
+      len = errors.length;
 
-      if (errors && errors.length) {
-
-        // The type of results name
-        report = '<li>' + type;
-
-        // The errors
-        report += '<ol id="subErrors">';
-
-        len = errors.length;
-        i = -1;
-
-        while (++i < len) {
-          report += '<li>' + errors[i] + '</li>';
-        }
-
-        report += '</ol></li>';
+      if (!len) {
+        return null;
       }
+
+      // The type of results name
+      report = '<li>' + type;
+
+      // The errors
+      report += '<ol id="subErrors">';
+
+      i = -1;
+      while (++i < len) {
+        report += '<li>' + errors[i] + '</li>';
+      }
+
+      report += '</ol></li>';
 
       return report;
     };
@@ -539,12 +525,7 @@
         msg = 'No error message was provided.';
       }
 
-      if (errors) {
-        errors.push(msg);
-      }
-      else {
-        errors = [ msg ];
-      }
+      errors.push(msg);
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -566,7 +547,7 @@
   TestResults.prototype.constructor = TestResults;
 
 /* -----------------------------------------------------------------------------
- * The Tests Class Construct (classes/tests/construct-tests.js)
+ * Construct The Tests Class (classes/tests-construct.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -579,7 +560,7 @@
   var Tests = {};
 
 /* -----------------------------------------------------------------------------
- * The checkType Test (classes/tests/checkType.js)
+ * The Unit Tests (classes/tests/*.js) (classes/tests-methods.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -610,7 +591,7 @@
     // Setup The Private checkType Variables
     ////////////////////////////////////////////////////////////////////////////
 
-    results = new TestResults('Tests.checkType');
+    results = new TestResults('checkType', 27);
     elem = document.createElement('div');
     obj  = {};
     func = function() {};
@@ -1452,11 +1433,201 @@
     return checkType;
 
   })();
+  /**
+   * -------------------------------------------------
+   * Public Method (Tests.freezeObj)
+   * -------------------------------------------------
+   * @desc Checks aIV.utils.freezeObj method.
+   * @type {function}
+   */
+  Tests.freezeObj = (function setupTestsFreezeObj() {
 
-/* -----------------------------------------------------------------------------
- * The isValidTypeString Test (classes/tests/isValidTypeString.js)
- * -------------------------------------------------------------------------- */
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private freezeObj Variables
+    ////////////////////////////////////////////////////////////////////////////
 
+    /** @type {!TestResults} */
+    var results = new TestResults('freezeObj', 2);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Public freezeObj Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -------------------------------------------------
+     * Public Method (freezeObj)
+     * -------------------------------------------------
+     * @desc Checks aIV.utils.freezeObj method.
+     * @type {function}
+     */
+    var freezeObj = function() {
+
+      testBasicFreeze();
+      testDeepFreeze();
+
+      // Save the results
+      app.results.push(results);
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private freezeObj Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testBasicFreeze)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testBasicFreeze = function() {
+
+      /** @type {!Object} */
+      var testObj;
+      /** @type {string} */
+      var errorMsg;
+
+      testObj = {};
+
+      aIV.utils.freezeObj(testObj);
+
+      if ( !Object.isFrozen(testObj) ) {
+        errorMsg = 'freezeObj failed to complete a basic freeze';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testDeepFreeze)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testDeepFreeze = function() {
+
+      /** @type {!Object} */
+      var testObj;
+      /** @type {string} */
+      var errorMsg;
+
+      testObj = {
+        testProp1: 'a random string',
+        testProp2: {
+          testProp3: {}
+        }
+      };
+
+      aIV.utils.freezeObj(testObj, true);
+
+      if (!Object.isFrozen(testObj) ||
+          !Object.isFrozen(testObj.testProp2) ||
+          !Object.isFrozen(testObj.testProp2.testProp3)) {
+        errorMsg = 'freezeObj failed to complete a deep freeze';
+        results.addError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The freezeObj Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return freezeObj;
+
+  })();
+  /**
+   * -------------------------------------------------
+   * Public Method (Tests.hasOwnProp)
+   * -------------------------------------------------
+   * @desc Checks aIV.utils.hasOwnProp method.
+   * @type {function}
+   */
+  Tests.hasOwnProp = (function setupTestsHasOwnProp() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private hasOwnProp Variables
+    ////////////////////////////////////////////////////////////////////////////
+
+    /** @type {!TestResults} */
+    var results = new TestResults('hasOwnProp', 2);
+
+    /** @type {!Object} */
+    var testObj = {
+      testProp1: true
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Public hasOwnProp Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -------------------------------------------------
+     * Public Method (hasOwnProp)
+     * -------------------------------------------------
+     * @desc Checks aIV.utils.hasOwnProp method.
+     * @type {function}
+     */
+    var hasOwnProp = function() {
+
+      testCatchFalse();
+      testPassTrue();
+
+      // Save the results
+      app.results.push(results);
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Define & Setup The Private hasOwnProp Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testCatchFalse)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testCatchFalse = function() {
+
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+
+      fail = aIV.utils.hasOwnProp(testObj, 'testProp2');
+      fail = fail || aIV.utils.hasOwnProp(testObj, 'prototype');
+
+      if (fail) {
+        errorMsg = 'hasOwnProp failed to return false for invalid properties';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testPassTrue)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testPassTrue = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = aIV.utils.hasOwnProp(testObj, 'testProp1');
+
+      if (!pass) {
+        errorMsg = 'hasOwnProp failed to return true for valid properties';
+        results.addError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The hasOwnProp Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return hasOwnProp;
+
+  })();
   /**
    * -------------------------------------------------
    * Public Method (Tests.isValidTypeString)
@@ -1471,7 +1642,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('Tests.isValidTypeString');
+    var results = new TestResults('isValidTypeString', 5);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public isValidTypeString Method
@@ -1624,292 +1795,7 @@
   })();
 
 /* -----------------------------------------------------------------------------
- * The freezeObj Test (classes/tests/freezeObj.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -------------------------------------------------
-   * Public Method (Tests.freezeObj)
-   * -------------------------------------------------
-   * @desc Checks aIV.utils.freezeObj method.
-   * @type {function}
-   */
-  Tests.freezeObj = (function setupTestsFreezeObj() {
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private freezeObj Variables
-    ////////////////////////////////////////////////////////////////////////////
-
-    /** @type {!TestResults} */
-    var results = new TestResults('Tests.freezeObj');
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Public freezeObj Method
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * -------------------------------------------------
-     * Public Method (freezeObj)
-     * -------------------------------------------------
-     * @desc Checks aIV.utils.freezeObj method.
-     * @type {function}
-     */
-    var freezeObj = function() {
-
-      testBasicFreeze();
-      testDeepFreeze();
-
-      // Save the results
-      app.results.push(results);
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private freezeObj Methods
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (testBasicFreeze)
-     * ---------------------------------------------------
-     * @type {function}
-     */
-    var testBasicFreeze = function() {
-
-      /** @type {!Object} */
-      var testObj;
-      /** @type {string} */
-      var errorMsg;
-
-      testObj = {};
-
-      aIV.utils.freezeObj(testObj);
-
-      if ( !Object.isFrozen(testObj) ) {
-        errorMsg = 'freezeObj failed to complete a basic freeze';
-        results.addError(errorMsg);
-      }
-    };
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (testDeepFreeze)
-     * ---------------------------------------------------
-     * @type {function}
-     */
-    var testDeepFreeze = function() {
-
-      /** @type {!Object} */
-      var testObj;
-      /** @type {string} */
-      var errorMsg;
-
-      testObj = {
-        testProp1: 'a random string',
-        testProp2: {
-          testProp3: {}
-        }
-      };
-
-      aIV.utils.freezeObj(testObj, true);
-
-      if (!Object.isFrozen(testObj) ||
-          !Object.isFrozen(testObj.testProp2) ||
-          !Object.isFrozen(testObj.testProp2.testProp3)) {
-        errorMsg = 'freezeObj failed to complete a deep freeze';
-        results.addError(errorMsg);
-      }
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The End Of The freezeObj Module
-    ////////////////////////////////////////////////////////////////////////////
-
-    return freezeObj;
-
-  })();
-
-/* -----------------------------------------------------------------------------
- * The hasOwnProp Test (classes/tests/hasOwnProp.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -------------------------------------------------
-   * Public Method (Tests.hasOwnProp)
-   * -------------------------------------------------
-   * @desc Checks aIV.utils.hasOwnProp method.
-   * @type {function}
-   */
-  Tests.hasOwnProp = (function setupTestsHasOwnProp() {
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private hasOwnProp Variables
-    ////////////////////////////////////////////////////////////////////////////
-
-    /** @type {!TestResults} */
-    var results = new TestResults('Tests.hasOwnProp');
-
-    /** @type {!Object} */
-    var testObj = {
-      testProp1: true
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Public hasOwnProp Method
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * -------------------------------------------------
-     * Public Method (hasOwnProp)
-     * -------------------------------------------------
-     * @desc Checks aIV.utils.hasOwnProp method.
-     * @type {function}
-     */
-    var hasOwnProp = function() {
-
-      testCatchFalse();
-      testPassTrue();
-
-      // Save the results
-      app.results.push(results);
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private hasOwnProp Methods
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (testCatchFalse)
-     * ---------------------------------------------------
-     * @type {function}
-     */
-    var testCatchFalse = function() {
-
-      /** @type {boolean} */
-      var fail;
-      /** @type {string} */
-      var errorMsg;
-
-      fail = aIV.utils.hasOwnProp(testObj, 'testProp2');
-      fail = fail || aIV.utils.hasOwnProp(testObj, 'prototype');
-
-      if (fail) {
-        errorMsg = 'hasOwnProp failed to return false for invalid properties';
-        results.addError(errorMsg);
-      }
-    };
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (testPassTrue)
-     * ---------------------------------------------------
-     * @type {function}
-     */
-    var testPassTrue = function() {
-
-      /** @type {boolean} */
-      var pass;
-      /** @type {string} */
-      var errorMsg;
-
-      pass = aIV.utils.hasOwnProp(testObj, 'testProp1');
-
-      if (!pass) {
-        errorMsg = 'hasOwnProp failed to return true for valid properties';
-        results.addError(errorMsg);
-      }
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The End Of The hasOwnProp Module
-    ////////////////////////////////////////////////////////////////////////////
-
-    return hasOwnProp;
-
-  })();
-
-/* -----------------------------------------------------------------------------
- * The Location For New Tests (classes/tests/new-tests-here.js)
- * -------------------------------------------------------------------------- */
-
-
-// Replace all occurances of methodName with
-// the name of the method you are testing
-
-  /**
-   * -------------------------------------------------
-   * Public Method (Tests.methodName)
-   * -------------------------------------------------
-   * @desc Checks aIV.utils.methodName method.
-   * @type {function}
-   */
-  Tests.methodName = (function setupTestsMethodName() {
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private methodName Variables
-    ////////////////////////////////////////////////////////////////////////////
-
-    /** @type {!TestResults} */
-    var results = new TestResults('Tests.methodName');
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Public methodName Method
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * -------------------------------------------------
-     * Public Method (methodName)
-     * -------------------------------------------------
-     * @desc Checks aIV.utils.methodName method.
-     * @type {function}
-     */
-    var methodName = function() {
-
-      // Call your tests
-      testSomething();
-
-      // Save the results
-      app.results.push(results);
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // Define & Setup The Private methodName Methods
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (testSomething)
-     * ---------------------------------------------------
-     * @type {function}
-     */
-    var testSomething = function() {
-
-      /** @type {boolean} */
-      var pass;
-      /** @type {string} */
-      var errorMsg;
-      /** @type {string} */
-      var something;
-
-      pass = aIV.utils.methodName(something);
-
-      if (!pass) {
-        errorMsg = 'methodName failed to do something';
-        results.addError(errorMsg);
-      }
-    };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The End Of The methodName Module
-    ////////////////////////////////////////////////////////////////////////////
-
-// Replace the next line with: return methodName;
-    return function() {};
-
-  })();
-
-/* -----------------------------------------------------------------------------
- * The Tests Class Freeze (classes/tests/freeze-tests.js)
+ * Deep Freeze The Tests Class
  * -------------------------------------------------------------------------- */
 
   // Deep freeze Tests

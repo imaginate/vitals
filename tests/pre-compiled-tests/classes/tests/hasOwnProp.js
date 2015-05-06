@@ -12,7 +12,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('Tests.hasOwnProp');
+    var results = new TestResults('hasOwnProp', 2);
 
     /** @type {!Object} */
     var testObj = {

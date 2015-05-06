@@ -84,39 +84,35 @@
 // insert-test-results
 
 /* -----------------------------------------------------------------------------
- * The Tests Class Construct (classes/tests/construct-tests.js)
+ * Construct The Tests Class (classes/tests-construct.js)
  * -------------------------------------------------------------------------- */
 // insert-tests-construct
 
 /* -----------------------------------------------------------------------------
- * The checkType Test (classes/tests/checkType.js)
+ * The Unit Tests (classes/tests/*.js) (classes/tests-methods.js)
  * -------------------------------------------------------------------------- */
-// insert-tests-checkType
+// insert-tests-methods
 
 /* -----------------------------------------------------------------------------
- * The isValidTypeString Test (classes/tests/isValidTypeString.js)
+ * Deep Freeze The Tests Class
  * -------------------------------------------------------------------------- */
-// insert-tests-isValidTypeString
 
-/* -----------------------------------------------------------------------------
- * The freezeObj Test (classes/tests/freezeObj.js)
- * -------------------------------------------------------------------------- */
-// insert-tests-freezeObj
+  // Deep freeze Tests
+  (function(Tests) {
 
-/* -----------------------------------------------------------------------------
- * The hasOwnProp Test (classes/tests/hasOwnProp.js)
- * -------------------------------------------------------------------------- */
-// insert-tests-hasOwnProp
+    /** @type {string} */
+    var prop;
 
-/* -----------------------------------------------------------------------------
- * The Location For New Tests (classes/tests/new-tests-here.js)
- * -------------------------------------------------------------------------- */
-// insert-tests-new-tests
+    Object.freeze(Tests);
 
-/* -----------------------------------------------------------------------------
- * The Tests Class Freeze (classes/tests/freeze-tests.js)
- * -------------------------------------------------------------------------- */
-// insert-tests-freeze-class
+    for (prop in Tests) {
+      if (Tests.hasOwnProperty(prop) && Tests[ prop ] &&
+          (typeof Tests[ prop ] === 'object' ||
+           typeof Tests[ prop ] === 'function')) {
+        Object.freeze(Tests[ prop ]);
+      }
+    }
+  })(Tests);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Tests Module End

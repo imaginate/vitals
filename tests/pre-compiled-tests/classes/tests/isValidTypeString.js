@@ -12,7 +12,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('Tests.isValidTypeString');
+    var results = new TestResults('isValidTypeString', 5);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public isValidTypeString Method
