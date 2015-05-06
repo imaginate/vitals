@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.0)
+ * Algorithm IV JavaScript Shortcuts (v1.0.1)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.0
+ * @version 1.0.1
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -116,6 +116,110 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @struct
    */
   var utilsModuleAPI = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (defaults)
+   * -----------------------------------------------------
+   * @desc Holds each method's defaults.
+   * @type {!Object<string, *>}
+   * @struct
+   */
+  var defaults = {
+    getElemByClassRoot : document,
+    getElemsByClassRoot: document,
+    getElemByTagRoot   : document,
+    getElemsByTagRoot  : document
+  };
+
+/* -----------------------------------------------------------------------------
+ * The Set Method Defaults Method (set-defaults.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (utilsModuleAPI.set)
+   * -----------------------------------------------------
+   * @desc Allows you to set the default settings for each aIV.utils method.
+   * @param {!Object} settings - The default settings.
+   * @param {!(Document|Element)=} settings.getElemByClassRoot
+   * @param {!(Document|Element)=} settings.getElemsByClassRoot
+   * @param {!(Document|Element)=} settings.getElemByTagRoot
+   * @param {!(Document|Element)=} settings.getElemsByTagRoot
+   * @return {boolean} The success of the new settings update.
+   */
+  utilsModuleAPI.set = function(settings) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {!(Document|Element)} */
+    var elem;
+
+    if (!settings || typeof settings !== 'object') {
+      errorMsg = 'An aIV.utils.set call received an invalid settings ';
+      errorMsg += 'parameter (should be an object).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    // Set getElemByClassRoot
+    if ( settings.hasOwnProperty('getElemByClassRoot') ) {
+      elem = settings.getElemByClassRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemByClassRoot = settings.getElemByClassRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemByClassRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemsByClassRoot
+    if ( settings.hasOwnProperty('getElemsByClassRoot') ) {
+      elem = settings.getElemsByClassRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemsByClassRoot = settings.getElemsByClassRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemsByClassRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemByTagRoot
+    if ( settings.hasOwnProperty('getElemByTagRoot') ) {
+      elem = settings.getElemByTagRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemByTagRoot = settings.getElemByTagRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemByTagRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    // Set getElemsByTagRoot
+    if ( settings.hasOwnProperty('getElemsByTagRoot') ) {
+      elem = settings.getElemsByTagRoot;
+      if (elem instanceof Element || elem instanceof Document) {
+        defaults.getElemsByTagRoot = settings.getElemsByTagRoot;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'getElemsByTagRoot settings parameter ';
+        errorMsg += '(should be a Document or Element DOM Node).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
+    return true;
+  };
 
 /* -----------------------------------------------------------------------------
  * The checkType Method (methods/checkType.js)
@@ -656,6 +760,246 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
+ * The getElemById Method (methods/getElemById.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemById)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method - document.getElementById.
+   * @param {string} id - The id of the element to select.
+   * @return {!HTMLElement} The DOM element with the given id.
+   */
+  utilsModuleAPI.getElemById = function(id) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {HTMLElement} */
+    var elem;
+
+    if (!id || typeof id !== 'string') {
+      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
+      errorMsg += 'parameter (should be a string).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    elem = document.getElementById(id);
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
+      errorMsg += 'parameter (i.e. no element with the id was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemByClass Method (methods/getElemByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName[ [index] ].
+   * @param {string} classname - The class name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
+   * @return {!HTMLElement} The selected DOM element.
+   */
+  utilsModuleAPI.getElemByClass = function(classname, index, root) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {!Array<HTMLElement>} */
+    var elems;
+    /** @type {HTMLElement} */
+    var elem;
+
+    if (!classname || typeof classname !== 'string') {
+      errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (typeof index !== 'number' || index < -1) {
+      index = 0;
+    }
+    else {
+      Math.floor(index);
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemByClassRoot;
+    }
+
+    elems = root.getElementsByClassName(classname);
+
+    if (index < 0 || index >= elems.length) {
+      index = elems.length - 1;
+    }
+
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByClass call ';
+      errorMsg += 'received an invalid class name parameter ';
+      errorMsg += '(i.e. no element with the class name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByClass Method (methods/getElemsByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemsByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName.
+   * @param {string} classname - The class name of the elements to select.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
+   * @return {!Array<HTMLElement>} The selected DOM elements.
+   */
+  utilsModuleAPI.getElemsByClass = function(classname, root) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!classname || typeof classname !== 'string') {
+      errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemsByClassRoot;
+    }
+
+    return root.getElementsByClassName(classname);
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemByTag Method (methods/getElemByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName[ [index] ].
+   * @param {string} tag - The tag name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
+   * @return {!HTMLElement} The selected DOM element.
+   */
+  utilsModuleAPI.getElemByTag = function(tag, index, root) {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {!Array<HTMLElement>} */
+    var elems;
+    /** @type {HTMLElement} */
+    var elem;
+
+    if (!tag || typeof tag !== 'string') {
+      errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
+      errorMsg += 'parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (typeof index !== 'number' || index < -1) {
+      index = 0;
+    }
+    else {
+      Math.floor(index);
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemByTagRoot;
+    }
+
+    elems = root.getElementsByTagName(tag);
+
+    if (index < 0 || index >= elems.length) {
+      index = elems.length - 1;
+    }
+
+    elem = elems[ index ];
+
+    if (!elem) {
+      errorMsg = 'An aIV.utils.getElemByTag call ';
+      errorMsg += 'received an invalid tag name parameter ';
+      errorMsg += '(i.e. no element with the tag name was found).';
+      throw new RangeError(errorMsg);
+      return;
+    }
+
+    return elem;
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByTag Method (methods/getElemsByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getElemsByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName.
+   * @param {string} tag - The tag name of the elements to select.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
+   * @return {!Array<HTMLElement>} The selected DOM elements.
+   */
+  utilsModuleAPI.getElemsByTag = function(tag, root) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!tag || typeof tag !== 'string') {
+      errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
+      errorMsg += 'name parameter.';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!root || typeof root !== 'object' ||
+        (!(root instanceof Element) && !(root instanceof Document))) {
+      root = defaults.getElemsByTagRoot;
+    }
+
+    return root.getElementsByTagName(tag);
+  };
+
+/* -----------------------------------------------------------------------------
  * The RegExps Class (reg-exps.js)
  * -------------------------------------------------------------------------- */
 
@@ -835,6 +1179,26 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   RegExps.lowerAlphaAndPipe = /[^a-z\|]/g;
 
   utilsModuleAPI.freezeObj(RegExps, true);
+
+/* -----------------------------------------------------------------------------
+ * Deep Freeze The Utils Module API
+ * -------------------------------------------------------------------------- */
+
+  (function(utilsModuleAPI) {
+
+    /** @type {string} */
+    var prop;
+
+    Object.freeze(utilsModuleAPI);
+
+    for (prop in utilsModuleAPI) {
+      if (utilsModuleAPI.hasOwnProperty(prop) && utilsModuleAPI[ prop ] &&
+          (typeof utilsModuleAPI[ prop ] === 'object' ||
+           typeof utilsModuleAPI[ prop ] === 'function')) {
+        Object.freeze(utilsModuleAPI[ prop ]);
+      }
+    }
+  })(utilsModuleAPI);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Utils Module End
