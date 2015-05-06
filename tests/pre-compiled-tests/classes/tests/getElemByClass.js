@@ -74,6 +74,7 @@
 
       elem3 = document.createElement('test');
       elem3.className = 'getElemByClass';
+      elem3.id = 'getElemByClassElem';
       elem3.innerHTML = 'Elem3';
       elem3.style.display = 'none';
 
@@ -92,9 +93,14 @@
     var tearDownDOMForTests = function() {
 
       /** @type {!HTMLElement} */
+      var div;
+      /** @type {!HTMLElement} */
       var elem;
 
-      elem = document.getElementById('getElemByClass');
+      div = document.getElementById('getElemByClass');
+      elem = document.getElementById('getElemByClassElem');
+
+      document.body.removeChild(div);
       document.body.removeChild(elem);
     };
 
