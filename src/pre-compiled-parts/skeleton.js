@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.1)
+ * Algorithm IV JavaScript Shortcuts (v1.0.2)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.1
+ * @version 1.0.2
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -121,6 +121,21 @@
  * The getElemsByTag Method (dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemsByTag
+
+/* -----------------------------------------------------------------------------
+ * The makeElem Method (dom-methods/makeElem.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-makeElem
+
+/* -----------------------------------------------------------------------------
+ * The addElemText Method (dom-methods/addElemText.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-addElemText
+
+/* -----------------------------------------------------------------------------
+ * The DOM Helper Methods (dom-methods/helpers.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-helpers
 
 /* -----------------------------------------------------------------------------
  * The RegExps Class (reg-exps.js)
