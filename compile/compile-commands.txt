@@ -30,6 +30,7 @@ sed \
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" \
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-utils/algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -55,6 +56,7 @@ sed ^
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" ^
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-utils\algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -140,6 +142,7 @@ sed \
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" \
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -171,6 +174,7 @@ sed ^
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" ^
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js
