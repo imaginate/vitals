@@ -19,15 +19,15 @@ sed \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
   -e "/insert-set-defaults/ r set-defaults.js" \
-  -e "/insert-methods-checkType/ r methods/checkType.js" \
-  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
-  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
-  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" \
-  -e "/insert-methods-getElemById/ r methods/getElemById.js" \
-  -e "/insert-methods-getElemByClass/ r methods/getElemByClass.js" \
-  -e "/insert-methods-getElemsByClass/ r methods/getElemsByClass.js" \
-  -e "/insert-methods-getElemByTag/ r methods/getElemByTag.js" \
-  -e "/insert-methods-getElemsByTag/ r methods/getElemsByTag.js" \
+  -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
+  -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
+  -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" \
+  -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" \
+  -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" \
+  -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" \
+  -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" \
+  -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" \
+  -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-utils/algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -42,15 +42,15 @@ sed ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
   -e "/insert-set-defaults/ r set-defaults.js" ^
-  -e "/insert-methods-checkType/ r methods/checkType.js" ^
-  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
-  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
-  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" ^
-  -e "/insert-methods-getElemById/ r methods/getElemById.js" ^
-  -e "/insert-methods-getElemByClass/ r methods/getElemByClass.js" ^
-  -e "/insert-methods-getElemsByClass/ r methods/getElemsByClass.js" ^
-  -e "/insert-methods-getElemByTag/ r methods/getElemByTag.js" ^
-  -e "/insert-methods-getElemsByTag/ r methods/getElemsByTag.js" ^
+  -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
+  -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
+  -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" ^
+  -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" ^
+  -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" ^
+  -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" ^
+  -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" ^
+  -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" ^
+  -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-utils\algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -114,7 +114,8 @@ src/algorithmIV-utils.js |    |
 
 ## UNIX Commands
 cp -u tests/pre-compiled-utils/*.js src/pre-compiled-parts
-cp -u tests/pre-compiled-utils/methods/*.js src/pre-compiled-parts/methods
+cp -u tests/pre-compiled-utils/js-methods/*.js src/pre-compiled-parts/js-methods
+cp -u tests/pre-compiled-utils/dom-methods/*.js src/pre-compiled-parts/dom-methods
 cp -u tests/pre-compiled-utils/dependencies/*.js src/pre-compiled-parts/dependencies
 cd src/pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
@@ -124,15 +125,15 @@ sed \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
   -e "/insert-set-defaults/ r set-defaults.js" \
-  -e "/insert-methods-checkType/ r methods/checkType.js" \
-  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" \
-  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" \
-  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" \
-  -e "/insert-methods-getElemById/ r methods/getElemById.js" \
-  -e "/insert-methods-getElemByClass/ r methods/getElemByClass.js" \
-  -e "/insert-methods-getElemsByClass/ r methods/getElemsByClass.js" \
-  -e "/insert-methods-getElemByTag/ r methods/getElemByTag.js" \
-  -e "/insert-methods-getElemsByTag/ r methods/getElemsByTag.js" \
+  -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
+  -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
+  -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" \
+  -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" \
+  -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" \
+  -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" \
+  -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" \
+  -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" \
+  -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
@@ -142,7 +143,8 @@ rm -f sed*
 
 ## MS-DOS Commands
 copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
-copy /y tests\pre-compiled-utils\methods\*.js src\pre-compiled-parts\methods
+copy /y tests\pre-compiled-utils\js-methods\*.js src\pre-compiled-parts\js-methods
+copy /y tests\pre-compiled-utils\dom-methods\*.js src\pre-compiled-parts\dom-methods
 copy /y tests\pre-compiled-utils\dependencies\*.js src\pre-compiled-parts\dependencies
 cd src\pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
@@ -152,15 +154,15 @@ sed ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
   -e "/insert-set-defaults/ r set-defaults.js" ^
-  -e "/insert-methods-checkType/ r methods/checkType.js" ^
-  -e "/insert-methods-isValidTypeString/ r methods/isValidTypeString.js" ^
-  -e "/insert-methods-freezeObj/ r methods/freezeObj.js" ^
-  -e "/insert-methods-hasOwnProp/ r methods/hasOwnProp.js" ^
-  -e "/insert-methods-getElemById/ r methods/getElemById.js" ^
-  -e "/insert-methods-getElemByClass/ r methods/getElemByClass.js" ^
-  -e "/insert-methods-getElemsByClass/ r methods/getElemsByClass.js" ^
-  -e "/insert-methods-getElemByTag/ r methods/getElemByTag.js" ^
-  -e "/insert-methods-getElemsByTag/ r methods/getElemsByTag.js" ^
+  -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
+  -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
+  -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" ^
+  -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" ^
+  -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" ^
+  -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" ^
+  -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" ^
+  -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" ^
+  -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-reg-exps/ r reg-exps.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js

@@ -78,49 +78,49 @@
 // insert-set-defaults
 
 /* -----------------------------------------------------------------------------
- * The checkType Method (methods/checkType.js)
+ * The checkType Method (js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-checkType
+// insert-js-methods-checkType
 
 /* -----------------------------------------------------------------------------
- * The isValidTypeString Method (methods/isValidTypeString.js)
+ * The isValidTypeString Method (js-methods/isValidTypeString.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-isValidTypeString
+// insert-js-methods-isValidTypeString
 
 /* -----------------------------------------------------------------------------
- * The freezeObj Method (methods/freezeObj.js)
+ * The freezeObj Method (js-methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-freezeObj
+// insert-js-methods-freezeObj
 
 /* -----------------------------------------------------------------------------
- * The hasOwnProp Method (methods/hasOwnProp.js)
+ * The hasOwnProp Method (js-methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-hasOwnProp
+// insert-js-methods-hasOwnProp
 
 /* -----------------------------------------------------------------------------
- * The getElemById Method (methods/getElemById.js)
+ * The getElemById Method (dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-getElemById
+// insert-dom-methods-getElemById
 
 /* -----------------------------------------------------------------------------
- * The getElemByClass Method (methods/getElemByClass.js)
+ * The getElemByClass Method (dom-methods/getElemByClass.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-getElemByClass
+// insert-dom-methods-getElemByClass
 
 /* -----------------------------------------------------------------------------
- * The getElemsByClass Method (methods/getElemsByClass.js)
+ * The getElemsByClass Method (dom-methods/getElemsByClass.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-getElemsByClass
+// insert-dom-methods-getElemsByClass
 
 /* -----------------------------------------------------------------------------
- * The getElemByTag Method (methods/getElemByTag.js)
+ * The getElemByTag Method (dom-methods/getElemByTag.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-getElemByTag
+// insert-dom-methods-getElemByTag
 
 /* -----------------------------------------------------------------------------
- * The getElemsByTag Method (methods/getElemsByTag.js)
+ * The getElemsByTag Method (dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
-// insert-methods-getElemsByTag
+// insert-dom-methods-getElemsByTag
 
 /* -----------------------------------------------------------------------------
  * The RegExps Class (reg-exps.js)

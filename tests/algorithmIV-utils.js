@@ -222,7 +222,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The checkType Method (methods/checkType.js)
+ * The checkType Method (js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -583,7 +583,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   })();
 
 /* -----------------------------------------------------------------------------
- * The isValidTypeString Method (methods/isValidTypeString.js)
+ * The isValidTypeString Method (js-methods/isValidTypeString.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -633,7 +633,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The freezeObj Method (methods/freezeObj.js)
+ * The freezeObj Method (js-methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -725,7 +725,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   })();
 
 /* -----------------------------------------------------------------------------
- * The hasOwnProp Method (methods/hasOwnProp.js)
+ * The hasOwnProp Method (js-methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -760,7 +760,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The getElemById Method (methods/getElemById.js)
+ * The getElemById Method (dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -798,7 +798,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The getElemByClass Method (methods/getElemByClass.js)
+ * The getElemByClass Method (dom-methods/getElemByClass.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -863,7 +863,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The getElemsByClass Method (methods/getElemsByClass.js)
+ * The getElemsByClass Method (dom-methods/getElemsByClass.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -899,7 +899,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The getElemByTag Method (methods/getElemByTag.js)
+ * The getElemByTag Method (dom-methods/getElemByTag.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -964,7 +964,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
- * The getElemsByTag Method (methods/getElemsByTag.js)
+ * The getElemsByTag Method (dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
 
   /**
