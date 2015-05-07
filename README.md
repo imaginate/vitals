@@ -1,7 +1,7 @@
 #Simplify Your JavaScript & Write Less Code!
 
 
-####Algorithm IV's JavaScript shortcuts are a collection of methods that make programming in JavaScript easier. With an intuitive API and clear documentation we are sure you will appreciate the time you save using our shortcuts!
+####Algorithm IV's JavaScript & DOM shortcuts are a collection of methods that make programming in JavaScript easier. With an intuitive API and clear documentation we are sure you will appreciate the time you save using our shortcuts!
 
 
 ##Getting Started
@@ -21,8 +21,13 @@
 ```javascript
 aIV.utils.checkType( anyValue, theTypeString );
 aIV.utils.isValidTypeString( theTypeString );
-aIV.utils.freezeObj( theObject, applyDeepFreeze );
+aIV.utils.freezeObj( theObject [, applyDeepFreeze ]);
 aIV.utils.hasOwnProp( theObject, theProperty );
+aIV.utils.getElemById( theIdName );
+aIV.utils.getElemByClass( theClassName [, theIndex [, theRoot ]]);
+aIV.utils.getElemByTag( theTagName [, theIndex [, theRoot ]]);
+aIV.utils.getElemsByClass( theClassName [, theRoot ]);
+aIV.utils.getElemsByTag( theTagName [, theRoot ]);
 ```
 
 
@@ -31,6 +36,11 @@ aIV.utils.hasOwnProp( theObject, theProperty );
 - **[isValidTypeString](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to [aIV.utils.checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/checkType.js).
 - **[freezeObj](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
 - **[hasOwnProp](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
+- **[getElemById](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/getElemById.js)** - A shortcut for the native [Document.getElementById](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
+- **[getElemByClass](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/getElemsByClass.js)** - A shortcut for the native [( Document | Element ).getElementsByClassName[ index ]](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName).
+- **[getElemByTag](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName[ index ]](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
+- **[getElemsByClass](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/getElemsByClass.js)** - A shortcut for the native [( Document | Element ).getElementsByClassName](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName).
+- **[getElemsByTag](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
 
 
 ##Example
