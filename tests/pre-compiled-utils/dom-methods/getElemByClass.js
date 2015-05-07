@@ -40,7 +40,10 @@
       root = defaults.getElemByClassRoot;
     }
 
-    elems = root.getElementsByClassName(classname);
+    elems = ( (!!root.getElementsByClassName) ?
+      root.getElementsByClassName(classname)
+      : getElementsByClassNameAlt(classname, root)
+    );
 
     if (index < 0 || index >= elems.length) {
       index = elems.length - 1;

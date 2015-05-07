@@ -14,6 +14,8 @@
 
     /** @type {string} */
     var errorMsg;
+    /** @type {!Array<HTMLElement>} */
+    var elems;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
@@ -27,5 +29,10 @@
       root = defaults.getElemsByClassRoot;
     }
 
-    return root.getElementsByClassName(classname);
+    elems = ( (!!root.getElementsByClassName) ?
+      root.getElementsByClassName(classname)
+      : getElementsByClassNameAlt(classname, root)
+    );
+
+    return elems;
   };
