@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.1)
+ * Algorithm IV JavaScript Shortcuts (v1.0.2)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.1
+ * @version 1.0.2
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -997,6 +997,131 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     }
 
     return root.getElementsByTagName(tag);
+  };
+
+/* -----------------------------------------------------------------------------
+ * The makeElem Method (dom-methods/makeElem.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.makeElem)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method - document.createElement.
+   * @param {(string|!Object<string, string>)=} settings - A string of the
+   *   element's tag name or an object hash map of the element's details.
+   *   The default tag name is 'div'.
+   * @param {string=} settings.tag - The element's tag name.
+   * @param {string=} settings.tagName - The element's tag name.
+   * @param {string=} settings.text - The element's textContent or innerText.
+   * @param {string=} settings.html - The element's innerHTML.
+   * @param {string=} settings.id - The element's id.
+   * @param {string=} settings.className - The element's class name.
+   * @return {!HTMLElement} The DOM element with the given id.
+   */
+  utilsModuleAPI.makeElem = function(settings) {
+
+    /** @type {HTMLElement} */
+    var elem;
+    /** @type {string} */
+    var tag;
+
+    if (settings && typeof settings === 'string') {
+      tag = settings;
+      settings = null;
+    }
+    else if (settings && typeof settings === 'object') {
+      if (settings.hasOwnProperty('tag') && settings.tag &&
+          typeof settings.tag === 'string') {
+        tag = settings.tag;
+      }
+      else if (settings.hasOwnProperty('tagName') && settings.tagName &&
+          typeof settings.tagName === 'string') {
+        tag = settings.tagName;
+      }
+    }
+    else {
+      settings = null;
+    }
+
+    if (!tag) {
+      tag = 'div';
+    }
+
+    elem = document.createElement(tag);
+
+    if (settings) {
+
+      if (settings.hasOwnProperty('text') && settings.text &&
+          typeof settings.text === 'string') {
+        if (!!elem.textContent) {
+          elem.textContent = settings.text;
+        }
+        else {
+          elem.innerText = settings.text;
+        }
+      }
+
+      if (settings.hasOwnProperty('html') && settings.html &&
+          typeof settings.html === 'string') {
+        elem.innerHTML = settings.html;
+      }
+
+      if (settings.hasOwnProperty('id') && settings.id &&
+          typeof settings.id === 'string') {
+        elem.id = settings.id;
+      }
+
+      if (settings.hasOwnProperty('className') && settings.className &&
+          typeof settings.className === 'string') {
+        elem.className = settings.className;
+      }
+    }
+
+    return elem;
+  };
+
+/* -----------------------------------------------------------------------------
+ * The addElemText Method (dom-methods/addElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.addElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM methods - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The element.
+   * @param {string} text - The element's textContent or innerText.
+   * @return {!Element} The DOM element with the given text.
+   */
+  utilsModuleAPI.addElemText = function(elem, text) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
+      errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
+      errorMsg += 'parameter (should be a DOM Element).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!text || typeof text !== 'string') {
+      errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
+      errorMsg += 'parameter (should be a string).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!!elem.textContent) {
+      elem.textContent = text;
+    }
+    else {
+      elem.innerText = text;
+    }
+
+    return elem;
   };
 
 /* -----------------------------------------------------------------------------
