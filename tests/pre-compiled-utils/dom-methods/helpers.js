@@ -2,7 +2,7 @@
    * ---------------------------------------------------
    * Public Method (getElementsByClassNameAlt)
    * ---------------------------------------------------
-   * @desc An alternative if [DOM Node].getElementsByClassName fails.
+   * @desc An alternative if native [DOM Node].getElementsByClassName fails.
    * @param {string} classname - The class name of the element to select.
    * @param {!(Document|Element)} root - Limit the selections to this element's
    *   children.
