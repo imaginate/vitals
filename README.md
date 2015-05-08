@@ -1,7 +1,7 @@
-#Simplify Your JavaScript & Write Less Code!
+#Simplify Your JavaScript!
 
 
-####Algorithm IV's JavaScript & DOM shortcuts are a collection of methods that make programming in JavaScript easier. With an intuitive API and clear documentation we are sure you will appreciate the time you save using our shortcuts!
+####Algorithm IV's JavaScript & DOM shortcuts are a collection of cross-browser compatible methods that make programming in JavaScript easier. With an intuitive API and clear documentation we are sure you will appreciate the time you save using our shortcuts!
 
 
 ##Getting Started
