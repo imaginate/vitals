@@ -31,7 +31,7 @@
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     return elems;

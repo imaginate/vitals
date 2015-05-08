@@ -42,7 +42,7 @@
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     if (index < 0 || index >= elems.length) {
