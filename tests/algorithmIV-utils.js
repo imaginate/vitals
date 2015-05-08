@@ -289,7 +289,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   utilsModuleAPI.checkType = (function setupCheckType() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Public checkType Method
+    // The Public Method
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -329,8 +329,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
       if (val === null) {
         nullable = false;
-        nullableOverride = RegExps.exclamationPoint.test(type);
-        if ( RegExps.questionMark.test(type) ) {
+        nullableOverride = exclamationPoint.test(type);
+        if ( questionMark.test(type) ) {
           nullable = !nullableOverride;
           nullableOverride = !nullableOverride;
         }
@@ -343,15 +343,15 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
         nullable = false;
       }
 
-      if (val === undefined && RegExps.equalSign.test(type)) {
+      if (val === undefined && equalSign.test(type)) {
         earlyPass = true;
       }
 
       // Remove everything except lowercase letters and pipes
       type = type.toLowerCase();
-      type = type.replace(RegExps.lowerAlphaAndPipe, '');
+      type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
 
-      types = ( RegExps.pipe.test(type) ) ? type.split('|') : [ type ];
+      types = ( JsHelpers.pipe.test(type) ) ? type.split('|') : [ type ];
 
       if (!noTypeValCheck && !isValidTypeStrings(types)) {
         errorMsg = 'An aIV.utils.checkType call received an invalid type ';
@@ -372,35 +372,35 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
         type = types[i];
 
         if (!nullableOverride) {
-          nullable = !RegExps.nonNullableDataTypes.test(type);
+          nullable = !nonNullableDataTypes.test(type);
         }
 
         if (nullable && val === null) {
           return true;
         }
 
-        if ( RegExps.typeOfDataTypes.test(type) ) {
+        if ( typeOfDataTypes.test(type) ) {
           if ( checkTypeOf(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.instanceOfDataTypes.test(type) ) {
+        if ( instanceOfDataTypes.test(type) ) {
           if ( checkInstanceOf(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.arrayDataTypes.test(type) ) {
+        if ( arrayDataTypes.test(type) ) {
           if ( checkArrayType(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.mapDataTypes.test(type) ) {
+        if ( mapDataTypes.test(type) ) {
           if ( checkHashMapType(val, type) ) {
             return true;
           }
@@ -412,7 +412,119 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Private checkType Methods
+    // The Private Properties
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -----------------------------------------------
+     * Public Property (nonNullableDataTypes)
+     * -----------------------------------------------
+     * @desc The non-nullable data types available to this module.
+     * @type {!RegExp}
+     */
+    var nonNullableDataTypes = (function setupRegExpsNonNullableDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (typeOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript typeof operator.
+     * @type {!RegExp}
+     */
+    var typeOfDataTypes = (function setupRegExpsTypeOfDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (instanceOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript instanceof operator.
+     * @type {!RegExp}
+     */
+    var instanceOfDataTypes = /^elem$|^element$/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (arrayDataTypes)
+     * -----------------------------------------------
+     * @desc The array data types available to this module.
+     * @type {!RegExp}
+     */
+    var arrayDataTypes = (function setupRegExpsArrayDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
+              '^arrays$|^elems$|^elements$|^functions$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (mapDataTypes)
+     * -----------------------------------------------
+     * @desc The hash map types available to this module.
+     * @type {!RegExp}
+     */
+    var mapDataTypes = (function setupRegExpsMapDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
+              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (exclamationPoint)
+     * -----------------------------------------------
+     * @desc An exclamation point.
+     * @type {!RegExp}
+     */
+    var exclamationPoint = /\!/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (questionMark)
+     * -----------------------------------------------
+     * @desc A question mark.
+     * @type {!RegExp}
+     */
+    var questionMark = /\?/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (equalSign)
+     * -----------------------------------------------
+     * @desc An equal sign.
+     * @type {!RegExp}
+     */
+    var equalSign = /\=/;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -434,7 +546,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
       i = types.length;
       while (i--) {
-        pass = RegExps.allDataTypes.test(types[i]);
+        pass = JsHelpers.allDataTypes.test(types[i]);
         if (!pass) {
           break;
         }
@@ -478,8 +590,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       }
 
       constructors = {
-        'elem'   : HTMLElement,
-        'element': HTMLElement
+        'elem'   : Element,
+        'element': Element
       };
 
       return (val instanceof constructors[ type ]);
@@ -514,7 +626,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       type = type.slice(0, -1);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
+        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
           checkInstanceOf : checkTypeOf
       );
 
@@ -556,7 +668,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       type = type.slice(0, -3);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
+        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
           checkInstanceOf : checkTypeOf
       );
 
@@ -613,9 +725,9 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     }
 
     typeString = typeString.toLowerCase();
-    typeString = typeString.replace(RegExps.lowerAlphaAndPipe, '');
+    typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
 
-    typeArr = ( (RegExps.pipe.test(typeString)) ?
+    typeArr = ( (JsHelpers.pipe.test(typeString)) ?
       typeString.split('|') : [ typeString ]
     );
 
@@ -623,7 +735,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     i = typeArr.length;
     while (i--) {
-      pass = RegExps.allDataTypes.test(typeArr[i]);
+      pass = JsHelpers.allDataTypes.test(typeArr[i]);
       if (!pass) {
         break;
       }
@@ -760,6 +872,61 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
+ * The JS Helper Methods (js-methods/helpers.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (JsHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the DOM shortcut methods.
+   * @type {!Object<string, RegExp>}
+   * @struct
+   */
+  var JsHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.allDataTypes)
+   * -----------------------------------------------------
+   * @desc A regex of all of the data types available to checkType.
+   * @type {!RegExp}
+   */
+  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
+
+    /** @type {string} */
+    var types;
+
+    types = '' +
+    '^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'          +
+    '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
+    '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
+    '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+
+    return new RegExp(types);
+  })();
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.pipe)
+   * -----------------------------------------------------
+   * @desc A regex matching the pipe character.
+   * @type {!RegExp}
+   */
+  JsHelpers.pipe = /\|/;
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.exceptLowerAlphaAndPipe)
+   * -----------------------------------------------------
+   * @desc A regex matching all characters except lowercase letters and the pipe.
+   * @type {!RegExp}
+   */
+  JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
+
+  utilsModuleAPI.freezeObj(JsHelpers, true);
+
+/* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
 
@@ -845,7 +1012,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     if (index < 0 || index >= elems.length) {
@@ -902,7 +1069,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     return elems;
@@ -1139,16 +1306,26 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
  * -------------------------------------------------------------------------- */
 
   /**
-   * ---------------------------------------------------
-   * Public Method (getElementsByClassNameAlt)
-   * ---------------------------------------------------
+   * -----------------------------------------------------
+   * Public Variable (DomHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the DOM shortcut methods.
+   * @type {!Object<string, function>}
+   * @struct
+   */
+  var DomHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (DomHelpers.getElementsByClassNameAlt)
+   * -----------------------------------------------------
    * @desc An alternative if native [DOM Node].getElementsByClassName fails.
    * @param {string} classname - The class name of the element to select.
    * @param {!(Document|Element)} root - Limit the selections to this element's
    *   children.
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  function getElementsByClassNameAlt(classname, root) {
+  DomHelpers.getElementsByClassNameAlt = function(classname, root) {
 
     /** @type {number} */
     var i;
@@ -1203,186 +1380,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     return elems;
   };
 
-/* -----------------------------------------------------------------------------
- * The RegExps Class (reg-exps.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------
-   * Public Class (RegExps)
-   * -----------------------------------------------
-   * @desc Regular expressions that are used throughout the module.
-   * @type {!Object<string, RegExp>}
-   * @struct
-   */
-  var RegExps = {};
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.allDataTypes)
-   * -----------------------------------------------
-   * @desc All of the data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.allDataTypes = (function setupRegExpsAllDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '' +
-    '^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'          +
-    '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
-    '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
-    '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.nonNullableDataTypes)
-   * -----------------------------------------------
-   * @desc The non-nullable data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.nonNullableDataTypes = (function setupRegExpsNonNullableDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^string$|^number$|^boolean$|^function$|^undefined$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.typeOfDataTypes)
-   * -----------------------------------------------
-   * @desc The data types that can be accurately checked with the
-   *   native JavaScript typeof operator.
-   * @type {!RegExp}
-   */
-  RegExps.typeOfDataTypes = (function setupRegExpsTypeOfDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.instanceOfDataTypes)
-   * -----------------------------------------------
-   * @desc The data types that can be accurately checked with the
-   *   native JavaScript instanceof operator.
-   * @type {!RegExp}
-   */
-  RegExps.instanceOfDataTypes = /^elem$|^element$/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.arrayDataTypes)
-   * -----------------------------------------------
-   * @desc The array data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.arrayDataTypes = (function setupRegExpsArrayDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-            '^arrays$|^elems$|^elements$|^functions$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.mapDataTypes)
-   * -----------------------------------------------
-   * @desc The hash map types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.mapDataTypes = (function setupRegExpsMapDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
-            '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.dualDollarSigns)
-   * -----------------------------------------------
-   * @desc Two consecutive dollar signs.
-   * @type {!RegExp}
-   */
-  RegExps.dualDollarSigns = /([^\\]*?)\$\$/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.space)
-   * -----------------------------------------------
-   * @desc A whitespace.
-   * @type {!RegExp}
-   */
-  RegExps.space = /\s/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.exclamationPoint)
-   * -----------------------------------------------
-   * @desc An exclamation point.
-   * @type {!RegExp}
-   */
-  RegExps.exclamationPoint = /\!/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.questionMark)
-   * -----------------------------------------------
-   * @desc A question mark.
-   * @type {!RegExp}
-   */
-  RegExps.questionMark = /\?/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.equalSign)
-   * -----------------------------------------------
-   * @desc An equal sign.
-   * @type {!RegExp}
-   */
-  RegExps.equalSign = /\=/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.pipe)
-   * -----------------------------------------------
-   * @desc A pipe.
-   * @type {!RegExp}
-   */
-  RegExps.pipe = /\|/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.lowerAlphaAndPipe)
-   * -----------------------------------------------
-   * @desc All characters except lowercase letters and the pipe.
-   * @type {!RegExp}
-   */
-  RegExps.lowerAlphaAndPipe = /[^a-z\|]/g;
-
-  utilsModuleAPI.freezeObj(RegExps, true);
+  utilsModuleAPI.freezeObj(DomHelpers, true);
 
 /* -----------------------------------------------------------------------------
  * Deep Freeze The Utils Module API
