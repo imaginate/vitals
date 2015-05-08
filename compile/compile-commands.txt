@@ -21,6 +21,7 @@ sed \
   -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
+  -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" \
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" \
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" \
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" \
@@ -47,6 +48,7 @@ sed ^
   -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
+  -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" ^
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" ^
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" ^
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" ^
@@ -133,6 +135,7 @@ sed \
   -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
+  -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" \
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" \
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" \
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" \
@@ -165,6 +168,7 @@ sed ^
   -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
+  -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" ^
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" ^
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" ^
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" ^
