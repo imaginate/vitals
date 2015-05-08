@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.2)
+ * Algorithm IV JavaScript Shortcuts (v1.0.3)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.2
+ * @version 1.0.3
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -88,6 +88,11 @@
 // insert-js-methods-isValidTypeString
 
 /* -----------------------------------------------------------------------------
+ * The checkArgs Method (js-methods/checkArgs.js)
+ * -------------------------------------------------------------------------- */
+// insert-js-methods-checkArgs
+
+/* -----------------------------------------------------------------------------
  * The freezeObj Method (js-methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-freezeObj
@@ -96,6 +101,11 @@
  * The hasOwnProp Method (js-methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-hasOwnProp
+
+/* -----------------------------------------------------------------------------
+ * The JS Helper Methods (js-methods/helpers.js)
+ * -------------------------------------------------------------------------- */
+// insert-js-methods-helpers
 
 /* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
@@ -138,29 +148,10 @@
 // insert-dom-methods-helpers
 
 /* -----------------------------------------------------------------------------
- * The RegExps Class (reg-exps.js)
- * -------------------------------------------------------------------------- */
-// insert-reg-exps
-
-/* -----------------------------------------------------------------------------
  * Deep Freeze The Utils Module API
  * -------------------------------------------------------------------------- */
 
-  (function(utilsModuleAPI) {
-
-    /** @type {string} */
-    var prop;
-
-    Object.freeze(utilsModuleAPI);
-
-    for (prop in utilsModuleAPI) {
-      if (utilsModuleAPI.hasOwnProperty(prop) && utilsModuleAPI[ prop ] &&
-          (typeof utilsModuleAPI[ prop ] === 'object' ||
-           typeof utilsModuleAPI[ prop ] === 'function')) {
-        Object.freeze(utilsModuleAPI[ prop ]);
-      }
-    }
-  })(utilsModuleAPI);
+  utilsModuleAPI.freezeObj(utilsModuleAPI, true);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Utils Module End

@@ -16,14 +16,12 @@
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid obj ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!prop || typeof prop !== 'string') {
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     return obj.hasOwnProperty(prop);

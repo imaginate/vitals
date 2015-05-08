@@ -1,14 +1,24 @@
   /**
-   * ---------------------------------------------------
-   * Public Method (getElementsByClassNameAlt)
-   * ---------------------------------------------------
+   * -----------------------------------------------------
+   * Public Variable (DomHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the DOM shortcut methods.
+   * @type {!Object<string, function>}
+   * @struct
+   */
+  var DomHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (DomHelpers.getElementsByClassNameAlt)
+   * -----------------------------------------------------
    * @desc An alternative if native [DOM Node].getElementsByClassName fails.
    * @param {string} classname - The class name of the element to select.
    * @param {!(Document|Element)} root - Limit the selections to this element's
    *   children.
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  function getElementsByClassNameAlt(classname, root) {
+  DomHelpers.getElementsByClassNameAlt = function(classname, root) {
 
     /** @type {number} */
     var i;
@@ -62,3 +72,5 @@
 
     return elems;
   };
+
+  utilsModuleAPI.freezeObj(DomHelpers, true);

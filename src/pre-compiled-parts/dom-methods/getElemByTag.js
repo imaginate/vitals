@@ -32,7 +32,7 @@
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||

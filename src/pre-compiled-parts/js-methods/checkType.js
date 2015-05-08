@@ -11,7 +11,7 @@
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined'</span>
+   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
@@ -26,6 +26,11 @@
    *   Other important characters are below:
    *   <table>
    *     <tr><th>Character</th><th>Details</th><th>Example</th></tr>
+   *     <tr>
+   *       <td>'*'</td>
+   *       <td>Indicates that the value can be any type.</td>
+   *       <td>'*'</td>
+   *     </tr>
    *     <tr>
    *       <td>'|'</td>
    *       <td>Separates multiple type options.</td>
@@ -59,10 +64,10 @@
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setupCheckType() {
+  utilsModuleAPI.checkType = (function setup_checkType() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Public checkType Method
+    // The Public Method
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -78,8 +83,8 @@
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {number} */
-      var i;
+      /** @type {boolean} */
+      var pass;
       /** @type {!strings} */
       var types;
       /** @type {boolean} */
@@ -87,106 +92,222 @@
       /** @type {string} */
       var errorMsg;
       /** @type {boolean} */
-      var earlyPass;
-      /** @type {boolean} */
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'An aIV.utils.checkType call received an invalid ';
         errorMsg += '(a non-string) type parameter.';
         throw new TypeError(errorMsg);
-        return;
       }
 
-      earlyPass = false;
+      // Check for automatic pass (* = any value)
+      pass = asterisk.test(type);
 
-      if (val === null) {
-        nullable = false;
-        nullableOverride = RegExps.exclamationPoint.test(type);
-        if ( RegExps.questionMark.test(type) ) {
-          nullable = !nullableOverride;
-          nullableOverride = !nullableOverride;
-        }
-        if (nullable && nullableOverride) {
-          earlyPass = true;
-        }
-      }
-      else {
-        nullableOverride = true;
-        nullable = false;
-      }
-
-      if (val === undefined && RegExps.equalSign.test(type)) {
-        earlyPass = true;
-      }
-
-      // Remove everything except lowercase letters and pipes
-      type = type.toLowerCase();
-      type = type.replace(RegExps.lowerAlphaAndPipe, '');
-
-      types = ( RegExps.pipe.test(type) ) ? type.split('|') : [ type ];
-
-      if (!noTypeValCheck && !isValidTypeStrings(types)) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid type ';
-        errorMsg += 'string. Check aIV.utils.checkType\'s documentation ';
-        errorMsg += 'for a list of acceptable type strings.';
-        throw new RangeError(errorMsg);
-        return;
-      }
-
-      if (earlyPass) {
+      // Catch and throw asterisk error
+      if (pass) {
+        (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
 
-      // Test the value against each type
-      i = types.length;
-      while (i--) {
+      // Check for an optional undefined value
+      pass = (val === undefined && equalSign.test(type));
 
-        type = types[i];
+      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
+      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
+        false : questionMark.test(type)
+      );
 
-        if (!nullableOverride) {
-          nullable = !RegExps.nonNullableDataTypes.test(type);
-        }
+      // Check for null value with nullable true and override enabled
+      pass = pass || (nullable && nullableOverride);
 
-        if (nullable && val === null) {
-          return true;
-        }
+      if (!noTypeValCheck || !pass) {
+        type = type.toLowerCase();
+        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        types = type.split('|');
 
-        if ( RegExps.typeOfDataTypes.test(type) ) {
-          if ( checkTypeOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.instanceOfDataTypes.test(type) ) {
-          if ( checkInstanceOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.arrayDataTypes.test(type) ) {
-          if ( checkArrayType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.mapDataTypes.test(type) ) {
-          if ( checkHashMapType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
+        noTypeValCheck || isValidTypeStrings(types);
       }
 
-      return false;
+      if (!pass) {
+        pass = ( (val === null) ?
+          checkEachNullType(types, nullable, nullableOverride)
+          : checkEachType(val, types)
+        );
+      }
+
+      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Private checkType Methods
+    // The Private Properties
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -----------------------------------------------
+     * Private Property (nonNullableDataTypes)
+     * -----------------------------------------------
+     * @desc The non-nullable data types available to this module.
+     * @type {!RegExp}
+     */
+    var nonNullableDataTypes = (function setup_nonNullableDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (typeOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript typeof operator.
+     * @type {!RegExp}
+     */
+    var typeOfDataTypes = (function setup_typeOfDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (domNodeDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   DOM Node's interface.
+     * @type {!RegExp}
+     */
+    var domNodeDataTypes = /^elem$|^element$|^document$/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (arrayDataTypes)
+     * -----------------------------------------------
+     * @desc The array data types available to this module.
+     * @type {!RegExp}
+     */
+    var arrayDataTypes = (function setup_arrayDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
+              '^arrays$|^elems$|^elements$|^functions$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (mapDataTypes)
+     * -----------------------------------------------
+     * @desc The hash map types available to this module.
+     * @type {!RegExp}
+     */
+    var mapDataTypes = (function setup_mapDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
+              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (exclamationPoint)
+     * -----------------------------------------------
+     * @desc An exclamation point.
+     * @type {!RegExp}
+     */
+    var exclamationPoint = /\!/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (questionMark)
+     * -----------------------------------------------
+     * @desc A question mark.
+     * @type {!RegExp}
+     */
+    var questionMark = /\?/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (equalSign)
+     * -----------------------------------------------
+     * @desc An equal sign.
+     * @type {!RegExp}
+     */
+    var equalSign = /\=/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (asterisk)
+     * -----------------------------------------------
+     * @desc An asterisk.
+     * @type {!RegExp}
+     */
+    var asterisk = /\*/;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidAsteriskUse)
+     * ---------------------------------------------------
+     * @desc Throws an error for improper use of the asterisk.
+     * @type {function}
+     */
+    var throwInvalidAsteriskUse = function() {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. When using an asterisk, \'*\', no other values ';
+      errorMsg += 'should be given as the asterisk guarantees the check will ';
+      errorMsg += 'pass.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkForNullOverride)
+     * ---------------------------------------------------
+     * @desc Checks if a nullable override exists.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable override value.
+     */
+    var checkForNullOverride = function(val, type) {
+
+      /** @type {boolean} */
+      var nullCheck;
+      /** @type {boolean} */
+      var override;
+
+      nullCheck = (val === null);
+
+      override = (nullCheck) ? exclamationPoint.test(type) : true;
+
+      if (nullCheck && questionMark.test(type)) {
+        override = !override;
+      }
+
+      return override;
+    };
 
     /**
      * ---------------------------------------------------
@@ -202,15 +323,122 @@
       var i;
       /** @type {boolean} */
       var pass;
+      /** @type {string} */
+      var errorMsg;
 
       pass = true;
 
       i = types.length;
-      while (i--) {
-        pass = RegExps.allDataTypes.test(types[i]);
-        if (!pass) {
+      while (pass && i--) {
+        pass = JsHelpers.allDataTypes.test(types[i]);
+        pass || throwInvalidTypeString(types[i]);
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidTypeString)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid data type string value.
+     * @param {string} type - A known incorrect type value.
+     */
+    var throwInvalidTypeString = function(type) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
+      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'list of acceptable type strings.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given types.
+     * @param {*} val - The value to be evaluated.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachType = function(val, types) {
+
+      /** @type {number} */
+      var i;
+      /** @type {string} */
+      var type;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the value against each type
+      i = types.length;
+      while (!pass && i--) {
+
+        type = types[i];
+
+        if (type === 'any') {
+          pass = true;
           break;
         }
+
+        if ( typeOfDataTypes.test(type) ) {
+          pass = checkTypeOf(val, type);
+          continue;
+        }
+
+        if ( domNodeDataTypes.test(type) ) {
+          pass = checkNodeType(val, type);
+          continue;
+        }
+
+        if ( arrayDataTypes.test(type) ) {
+          pass = checkArrayType(val, type);
+          continue;
+        }
+
+        if ( mapDataTypes.test(type) ) {
+          pass = checkHashMapType(val, type);
+          continue;
+        }
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachNullType)
+     * ---------------------------------------------------
+     * @desc Checks the nullable values of the given types.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @param {boolean} nullable - The starting nullable value.
+     * @param {boolean} override - Whether a nullable override exists.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachNullType = function(types, nullable, override) {
+
+      /** @type {number} */
+      var i;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the nullable value of each type
+      i = types.length;
+      while (!pass && i--) {
+
+        if (!override) {
+          nullable = !nonNullableDataTypes.test(types[i]);
+        }
+
+        pass = nullable;
       }
 
       return pass;
@@ -234,28 +462,29 @@
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkInstanceOf)
+     * Private Method (checkNodeType)
      * ---------------------------------------------------
      * @desc Checks a value's instanceof against the given type.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkInstanceOf = function(val, type) {
+    var checkNodeType = function(val, type) {
 
-      /** @type {!Object<string, function>} */
-      var constructors;
+      /** @type {!Object<string, number>} */
+      var types;
 
-      if ( !checkTypeOf(val, 'object') ) {
+      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
         return false;
       }
 
-      constructors = {
-        'elem'   : HTMLElement,
-        'element': HTMLElement
+      types = {
+        'elem'    : 1,
+        'element' : 1,
+        'document': 9
       };
 
-      return (val instanceof constructors[ type ]);
+      return (val.nodeType === types[ type ]);
     };
 
     /**
@@ -287,18 +516,15 @@
       type = type.slice(0, -1);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;
 
       i = vals.length;
-      while (i--) {
+      while (pass && i--) {
         pass = testFunc(vals[i], type);
-        if (!pass) {
-          break;
-        }
       }
 
       return pass;
@@ -329,8 +555,8 @@
       type = type.slice(0, -3);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;

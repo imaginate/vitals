@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.2)
+ * Algorithm IV JavaScript Shortcuts (v1.0.3)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.2
+ * @version 1.0.3
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -92,7 +92,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @struct
    * @global
    */
-  aIV.utils = utilsModuleAPI;
+  aIV.utils = aIV.utils || utilsModuleAPI;
 
 })(window,
 
@@ -119,17 +119,64 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
   /**
    * -----------------------------------------------------
-   * Public Variable (defaults)
+   * Public Variable (DEFAULTS)
    * -----------------------------------------------------
-   * @desc Holds each method's defaults.
-   * @type {!Object<string, *>}
-   * @struct
+   * @desc Holds each method's orginal defaults.
+   * @type {!{
+   *   checkArgsErrorMsg  : function,
+   *   getElemByClassRoot : !Document,
+   *   getElemsByClassRoot: !Document,
+   *   getElemByTagRoot   : !Document,
+   *   getElemsByTagRoot  : !Document
+   * }}
+   * @const
    */
-  var defaults = {
+  var DEFAULTS = {
+    checkArgsErrorMsg  : 'A function call had an invalid parameter data type.',
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
     getElemsByTagRoot  : document
+  };
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (DEFAULTS.types)
+   * -----------------------------------------------------
+   * @desc Holds the data type options for each default.
+   * @type {!Object<string, string>}
+   * @const
+   */
+  DEFAULTS.types = {
+    checkArgsErrorMsg  : 'string|function',
+    getElemByClassRoot : '!(Document|Element)',
+    getElemsByClassRoot: '!(Document|Element)',
+    getElemByTagRoot   : '!(Document|Element)',
+    getElemsByTagRoot  : '!(Document|Element)'
+  };
+
+  Object.freeze(DEFAULTS);
+  Object.freeze(DEFAULTS.types);
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (defaults)
+   * -----------------------------------------------------
+   * @desc Holds each method's defaults.
+   * @type {!{
+   *   checkArgsErrorMsg  : (string|function),
+   *   getElemByClassRoot : !(Document|Element),
+   *   getElemsByClassRoot: !(Document|Element),
+   *   getElemByTagRoot   : !(Document|Element),
+   *   getElemsByTagRoot  : !(Document|Element)
+   * }}
+   */
+  var defaults = {
+    checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByClassRoot : DEFAULTS.getElemByClassRoot,
+    getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
+    getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
+    getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };
 
 /* -----------------------------------------------------------------------------
@@ -142,79 +189,96 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * -----------------------------------------------------
    * @desc Allows you to set the default settings for each aIV.utils method.
    * @param {!Object} settings - The default settings.
+   * @param {(string|function)=} settings.checkArgsErrorMsg
    * @param {!(Document|Element)=} settings.getElemByClassRoot
    * @param {!(Document|Element)=} settings.getElemsByClassRoot
    * @param {!(Document|Element)=} settings.getElemByTagRoot
    * @param {!(Document|Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.set = function(settings) {
+  utilsModuleAPI.set = (function setup_set() {
+
+    /** @type {function(string)} */
+    var throwPropError = function(prop) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.set call received an invalid ' + prop;
+      errorMsg += ' settings parameter (should be a ' + DEFAULTS.types[ prop ];
+      errorMsg += ').';
+      throw new TypeError(errorMsg);
+    };
+
+    return function set(settings) {
+
+      /** @type {function(*, string): boolean} */
+      var checkType = utilsModuleAPI.checkType;
+      /** @type {string} */
+      var errorMsg;
+      /** @type {string} */
+      var prop;
+
+      if (!settings || typeof settings !== 'object') {
+        errorMsg = 'An aIV.utils.set call received an invalid settings ';
+        errorMsg += 'parameter (should be an object).';
+        throw new TypeError(errorMsg);
+      }
+
+      for (prop in defaults) {
+        if (defaults.hasOwnProperty(prop) && settings.hasOwnProperty(prop)) {
+          if ( checkType(settings[ prop ], DEFAULTS.types[ prop ]) ) {
+            defaults[ prop ] = settings[ prop ];
+          }
+          else {
+            throwPropError(prop);
+          }
+        }
+      }
+
+      return true;
+    };
+  })();
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (utilsModuleAPI.reset)
+   * -----------------------------------------------------
+   * @desc Allows you to reset the default settings for each aIV.utils method.
+   * @param {...(string|strings)=} setting - A setting to reset to the original default.
+   * @return {boolean} The success of the new settings update.
+   */
+  utilsModuleAPI.reset = function() {
 
     /** @type {string} */
     var errorMsg;
-    /** @type {!(Document|Element)} */
-    var elem;
+    /** @type {!Array<string>} */
+    var args;
+    /** @type {string} */
+    var prop;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
-    if (!settings || typeof settings !== 'object') {
-      errorMsg = 'An aIV.utils.set call received an invalid settings ';
-      errorMsg += 'parameter (should be an object).';
+    len  = arguments.length;
+    args = ( (!len) ?
+      Object.keys(defaults) : (len > 1) ?
+        Array.prototype.slice.call(arguments, 0) : (Array.isArray(arguments[0])) ?
+          arguments[0] : [ arguments[0] ]
+    );
+
+    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
+      errorMsg = 'An aIV.utils.reset call received an invalid setting ';
+      errorMsg += 'parameter (should be a string or an array of strings).';
       throw new TypeError(errorMsg);
-      return;
     }
 
-    // Set getElemByClassRoot
-    if ( settings.hasOwnProperty('getElemByClassRoot') ) {
-      elem = settings.getElemByClassRoot;
-      if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByClassRoot = settings.getElemByClassRoot;
-      }
-      else {
-        errorMsg = 'An aIV.utils.set call received an invalid ';
-        errorMsg += 'getElemByClassRoot settings parameter ';
-        errorMsg += '(should be a Document or Element DOM Node).';
-        throw new TypeError(errorMsg);
-      }
-    }
-
-    // Set getElemsByClassRoot
-    if ( settings.hasOwnProperty('getElemsByClassRoot') ) {
-      elem = settings.getElemsByClassRoot;
-      if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByClassRoot = settings.getElemsByClassRoot;
-      }
-      else {
-        errorMsg = 'An aIV.utils.set call received an invalid ';
-        errorMsg += 'getElemsByClassRoot settings parameter ';
-        errorMsg += '(should be a Document or Element DOM Node).';
-        throw new TypeError(errorMsg);
-      }
-    }
-
-    // Set getElemByTagRoot
-    if ( settings.hasOwnProperty('getElemByTagRoot') ) {
-      elem = settings.getElemByTagRoot;
-      if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByTagRoot = settings.getElemByTagRoot;
-      }
-      else {
-        errorMsg = 'An aIV.utils.set call received an invalid ';
-        errorMsg += 'getElemByTagRoot settings parameter ';
-        errorMsg += '(should be a Document or Element DOM Node).';
-        throw new TypeError(errorMsg);
-      }
-    }
-
-    // Set getElemsByTagRoot
-    if ( settings.hasOwnProperty('getElemsByTagRoot') ) {
-      elem = settings.getElemsByTagRoot;
-      if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByTagRoot = settings.getElemsByTagRoot;
-      }
-      else {
-        errorMsg = 'An aIV.utils.set call received an invalid ';
-        errorMsg += 'getElemsByTagRoot settings parameter ';
-        errorMsg += '(should be a Document or Element DOM Node).';
-        throw new TypeError(errorMsg);
+    i = args.length;
+    while (i--) {
+      prop = args[i];
+      if ( defaults.hasOwnProperty(prop) ) {
+        defaults[ prop ] = DEFAULTS[ prop ];
       }
     }
 
@@ -238,7 +302,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined'</span>
+   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
@@ -253,6 +317,11 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *   Other important characters are below:
    *   <table>
    *     <tr><th>Character</th><th>Details</th><th>Example</th></tr>
+   *     <tr>
+   *       <td>'*'</td>
+   *       <td>Indicates that the value can be any type.</td>
+   *       <td>'*'</td>
+   *     </tr>
    *     <tr>
    *       <td>'|'</td>
    *       <td>Separates multiple type options.</td>
@@ -286,10 +355,10 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setupCheckType() {
+  utilsModuleAPI.checkType = (function setup_checkType() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Public checkType Method
+    // The Public Method
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -305,8 +374,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {number} */
-      var i;
+      /** @type {boolean} */
+      var pass;
       /** @type {!strings} */
       var types;
       /** @type {boolean} */
@@ -314,106 +383,222 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       /** @type {string} */
       var errorMsg;
       /** @type {boolean} */
-      var earlyPass;
-      /** @type {boolean} */
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'An aIV.utils.checkType call received an invalid ';
         errorMsg += '(a non-string) type parameter.';
         throw new TypeError(errorMsg);
-        return;
       }
 
-      earlyPass = false;
+      // Check for automatic pass (* = any value)
+      pass = asterisk.test(type);
 
-      if (val === null) {
-        nullable = false;
-        nullableOverride = RegExps.exclamationPoint.test(type);
-        if ( RegExps.questionMark.test(type) ) {
-          nullable = !nullableOverride;
-          nullableOverride = !nullableOverride;
-        }
-        if (nullable && nullableOverride) {
-          earlyPass = true;
-        }
-      }
-      else {
-        nullableOverride = true;
-        nullable = false;
-      }
-
-      if (val === undefined && RegExps.equalSign.test(type)) {
-        earlyPass = true;
-      }
-
-      // Remove everything except lowercase letters and pipes
-      type = type.toLowerCase();
-      type = type.replace(RegExps.lowerAlphaAndPipe, '');
-
-      types = ( RegExps.pipe.test(type) ) ? type.split('|') : [ type ];
-
-      if (!noTypeValCheck && !isValidTypeStrings(types)) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid type ';
-        errorMsg += 'string. Check aIV.utils.checkType\'s documentation ';
-        errorMsg += 'for a list of acceptable type strings.';
-        throw new RangeError(errorMsg);
-        return;
-      }
-
-      if (earlyPass) {
+      // Catch and throw asterisk error
+      if (pass) {
+        (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
 
-      // Test the value against each type
-      i = types.length;
-      while (i--) {
+      // Check for an optional undefined value
+      pass = (val === undefined && equalSign.test(type));
 
-        type = types[i];
+      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
+      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
+        false : questionMark.test(type)
+      );
 
-        if (!nullableOverride) {
-          nullable = !RegExps.nonNullableDataTypes.test(type);
-        }
+      // Check for null value with nullable true and override enabled
+      pass = pass || (nullable && nullableOverride);
 
-        if (nullable && val === null) {
-          return true;
-        }
+      if (!noTypeValCheck || !pass) {
+        type = type.toLowerCase();
+        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        types = type.split('|');
 
-        if ( RegExps.typeOfDataTypes.test(type) ) {
-          if ( checkTypeOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.instanceOfDataTypes.test(type) ) {
-          if ( checkInstanceOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.arrayDataTypes.test(type) ) {
-          if ( checkArrayType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( RegExps.mapDataTypes.test(type) ) {
-          if ( checkHashMapType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
+        noTypeValCheck || isValidTypeStrings(types);
       }
 
-      return false;
+      if (!pass) {
+        pass = ( (val === null) ?
+          checkEachNullType(types, nullable, nullableOverride)
+          : checkEachType(val, types)
+        );
+      }
+
+      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Private checkType Methods
+    // The Private Properties
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -----------------------------------------------
+     * Private Property (nonNullableDataTypes)
+     * -----------------------------------------------
+     * @desc The non-nullable data types available to this module.
+     * @type {!RegExp}
+     */
+    var nonNullableDataTypes = (function setup_nonNullableDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (typeOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript typeof operator.
+     * @type {!RegExp}
+     */
+    var typeOfDataTypes = (function setup_typeOfDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (domNodeDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   DOM Node's interface.
+     * @type {!RegExp}
+     */
+    var domNodeDataTypes = /^elem$|^element$|^document$/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (arrayDataTypes)
+     * -----------------------------------------------
+     * @desc The array data types available to this module.
+     * @type {!RegExp}
+     */
+    var arrayDataTypes = (function setup_arrayDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
+              '^arrays$|^elems$|^elements$|^functions$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (mapDataTypes)
+     * -----------------------------------------------
+     * @desc The hash map types available to this module.
+     * @type {!RegExp}
+     */
+    var mapDataTypes = (function setup_mapDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
+              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Private Property (exclamationPoint)
+     * -----------------------------------------------
+     * @desc An exclamation point.
+     * @type {!RegExp}
+     */
+    var exclamationPoint = /\!/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (questionMark)
+     * -----------------------------------------------
+     * @desc A question mark.
+     * @type {!RegExp}
+     */
+    var questionMark = /\?/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (equalSign)
+     * -----------------------------------------------
+     * @desc An equal sign.
+     * @type {!RegExp}
+     */
+    var equalSign = /\=/;
+
+    /**
+     * -----------------------------------------------
+     * Private Property (asterisk)
+     * -----------------------------------------------
+     * @desc An asterisk.
+     * @type {!RegExp}
+     */
+    var asterisk = /\*/;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidAsteriskUse)
+     * ---------------------------------------------------
+     * @desc Throws an error for improper use of the asterisk.
+     * @type {function}
+     */
+    var throwInvalidAsteriskUse = function() {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. When using an asterisk, \'*\', no other values ';
+      errorMsg += 'should be given as the asterisk guarantees the check will ';
+      errorMsg += 'pass.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkForNullOverride)
+     * ---------------------------------------------------
+     * @desc Checks if a nullable override exists.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable override value.
+     */
+    var checkForNullOverride = function(val, type) {
+
+      /** @type {boolean} */
+      var nullCheck;
+      /** @type {boolean} */
+      var override;
+
+      nullCheck = (val === null);
+
+      override = (nullCheck) ? exclamationPoint.test(type) : true;
+
+      if (nullCheck && questionMark.test(type)) {
+        override = !override;
+      }
+
+      return override;
+    };
 
     /**
      * ---------------------------------------------------
@@ -429,15 +614,122 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       var i;
       /** @type {boolean} */
       var pass;
+      /** @type {string} */
+      var errorMsg;
 
       pass = true;
 
       i = types.length;
-      while (i--) {
-        pass = RegExps.allDataTypes.test(types[i]);
-        if (!pass) {
+      while (pass && i--) {
+        pass = JsHelpers.allDataTypes.test(types[i]);
+        pass || throwInvalidTypeString(types[i]);
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidTypeString)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid data type string value.
+     * @param {string} type - A known incorrect type value.
+     */
+    var throwInvalidTypeString = function(type) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
+      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'list of acceptable type strings.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given types.
+     * @param {*} val - The value to be evaluated.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachType = function(val, types) {
+
+      /** @type {number} */
+      var i;
+      /** @type {string} */
+      var type;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the value against each type
+      i = types.length;
+      while (!pass && i--) {
+
+        type = types[i];
+
+        if (type === 'any') {
+          pass = true;
           break;
         }
+
+        if ( typeOfDataTypes.test(type) ) {
+          pass = checkTypeOf(val, type);
+          continue;
+        }
+
+        if ( domNodeDataTypes.test(type) ) {
+          pass = checkNodeType(val, type);
+          continue;
+        }
+
+        if ( arrayDataTypes.test(type) ) {
+          pass = checkArrayType(val, type);
+          continue;
+        }
+
+        if ( mapDataTypes.test(type) ) {
+          pass = checkHashMapType(val, type);
+          continue;
+        }
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachNullType)
+     * ---------------------------------------------------
+     * @desc Checks the nullable values of the given types.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @param {boolean} nullable - The starting nullable value.
+     * @param {boolean} override - Whether a nullable override exists.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachNullType = function(types, nullable, override) {
+
+      /** @type {number} */
+      var i;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the nullable value of each type
+      i = types.length;
+      while (!pass && i--) {
+
+        if (!override) {
+          nullable = !nonNullableDataTypes.test(types[i]);
+        }
+
+        pass = nullable;
       }
 
       return pass;
@@ -461,28 +753,29 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkInstanceOf)
+     * Private Method (checkNodeType)
      * ---------------------------------------------------
      * @desc Checks a value's instanceof against the given type.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkInstanceOf = function(val, type) {
+    var checkNodeType = function(val, type) {
 
-      /** @type {!Object<string, function>} */
-      var constructors;
+      /** @type {!Object<string, number>} */
+      var types;
 
-      if ( !checkTypeOf(val, 'object') ) {
+      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
         return false;
       }
 
-      constructors = {
-        'elem'   : HTMLElement,
-        'element': HTMLElement
+      types = {
+        'elem'    : 1,
+        'element' : 1,
+        'document': 9
       };
 
-      return (val instanceof constructors[ type ]);
+      return (val.nodeType === types[ type ]);
     };
 
     /**
@@ -514,18 +807,15 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       type = type.slice(0, -1);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;
 
       i = vals.length;
-      while (i--) {
+      while (pass && i--) {
         pass = testFunc(vals[i], type);
-        if (!pass) {
-          break;
-        }
       }
 
       return pass;
@@ -556,8 +846,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       type = type.slice(0, -3);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;
@@ -609,28 +899,182 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       errorMsg = 'An aIV.utils.isValidTypeString call received an invalid ';
       errorMsg += '(a non-string) typeString parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     typeString = typeString.toLowerCase();
-    typeString = typeString.replace(RegExps.lowerAlphaAndPipe, '');
-
-    typeArr = ( (RegExps.pipe.test(typeString)) ?
-      typeString.split('|') : [ typeString ]
-    );
-
+    typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+    typeArr = typeString.split('|');
     pass = true;
 
     i = typeArr.length;
-    while (i--) {
-      pass = RegExps.allDataTypes.test(typeArr[i]);
-      if (!pass) {
-        break;
-      }
+    while (pass && i--) {
+      pass = JsHelpers.allDataTypes.test(typeArr[i]);
     }
 
     return pass;
   };
+
+/* -----------------------------------------------------------------------------
+ * The checkArgs Method (js-methods/checkArgs.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.checkArgs)
+   * ---------------------------------------------------
+   * @desc Catches invalid argument data types and throws an error.
+   * @param {...*} val - Each argument passed to the method.
+   * @param {...string} type -  Each argument's optional data types.
+   *   [See aIV.utils.checkType]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
+   *   for the available data type strings.
+   * @return {boolean} The evaluation result.
+   * @example
+   *   exampleMethod = function(arg1, arg2) {
+   *     checkArgs(arg1, '!object', arg2, 'number=');
+   *   };
+   */
+  utilsModuleAPI.checkArgs = (function setup_checkArgs() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Public Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Public Method (checkArgs)
+     * ---------------------------------------------------
+     * @desc Catches invalid argument data types and throws an error.
+     * @param {...*} arg - Each argument passed to the method.
+     * @param {...string} type -  Each argument's optional data types.
+     * @return {boolean} The evaluation result.
+     */
+    var checkArgs = function() {
+
+      /** @type {number} */
+      var i;
+      /** @type {number} */
+      var len;
+      /** @type {*} */
+      var arg;
+      /** @type {string} */
+      var type;
+      /** @type {!Array<*>} */
+      var args;
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var clean;
+      /** @type {string} */
+      var errorMsg;
+
+      len = arguments.length;
+
+      if (len < 2 || len % 2) {
+        errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
+        throw new Error(errorMsg);
+      }
+
+      args = Array.prototype.slice.call(arguments, 0);
+      pass = true;
+
+      i = -1;
+      while (++i < len) {
+
+        if (i % 2) {
+          type = args[i];
+
+          clean = checkType(type, 'string', true);
+          clean = clean && isValidTypeString(type);
+          clean || throwInvalidTypeString(type);
+
+          pass = pass && checkType(arg, type, true);
+        }
+        else {
+          arg = args[i];
+        }
+      }
+
+      pass || throwInvalidArgError();
+
+      return pass;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given optional types.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @param {boolean=} noTypeValCheck - If true this method does not check
+     *   the data type string for correctness. By default this is set to false.
+     * @return {boolean} The evaluation result.
+     */
+    var checkType = utilsModuleAPI.checkType;
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (isValidTypeString)
+     * ---------------------------------------------------
+     * @desc Evaluates whether a string is a valid data type string.
+     * @param {string} typeString - The string to evaluate.
+     * @return {boolean} The evaluation result.
+     */
+    var isValidTypeString = utilsModuleAPI.isValidTypeString;
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidTypeString)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid data type string value.
+     * @param {*} type - A known incorrect type value.
+     */
+    var throwInvalidTypeString = function(type) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkArgs call received an invalid type ';
+      errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
+      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'list of acceptable type strings.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidArgError)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid argument.
+     * @type {function}
+     */
+    var throwInvalidArgError = function() {
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {(string|function)} */
+      var msg;
+
+      msg = defaults.checkArgsErrorMsg;
+
+      errorMsg = (checkType(msg, 'string')) ? msg : msg();
+
+      if (errorMsg && checkType(errorMsg, 'string')) {
+        throw new TypeError(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The checkArgs Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return checkArgs;
+
+  })();
 
 /* -----------------------------------------------------------------------------
  * The freezeObj Method (js-methods/freezeObj.js)
@@ -646,7 +1090,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setupFreezeObj() {
+  utilsModuleAPI.freezeObj = (function setup_freezeObj() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -671,7 +1115,6 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
         errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
         errorMsg += 'parameter.';
         throw new TypeError(errorMsg);
-        return;
       }
 
       if (typeof deep !== 'boolean') {
@@ -746,18 +1189,63 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid obj ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!prop || typeof prop !== 'string') {
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     return obj.hasOwnProperty(prop);
   };
+
+/* -----------------------------------------------------------------------------
+ * The JS Helper Methods (js-methods/helpers.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (JsHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the DOM shortcut methods.
+   * @type {!Object<string, RegExp>}
+   * @struct
+   */
+  var JsHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.allDataTypes)
+   * -----------------------------------------------------
+   * @desc A regex of all of the data types available to checkType.
+   * @type {!RegExp}
+   */
+  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
+
+    /** @type {string} */
+    var types;
+
+    types = '' +
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
+    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
+    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
+    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
+    '^elementmap$';
+
+    return new RegExp(types);
+  })();
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.exceptLowerAlphaAndPipe)
+   * -----------------------------------------------------
+   * @desc A regex matching all characters except lowercase letters and the pipe.
+   * @type {!RegExp}
+   */
+  JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
+
+  utilsModuleAPI.freezeObj(JsHelpers, true);
 
 /* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
@@ -835,7 +1323,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||
@@ -845,7 +1333,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     if (index < 0 || index >= elems.length) {
@@ -902,7 +1390,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     return elems;
@@ -946,7 +1434,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1139,16 +1627,26 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
  * -------------------------------------------------------------------------- */
 
   /**
-   * ---------------------------------------------------
-   * Public Method (getElementsByClassNameAlt)
-   * ---------------------------------------------------
+   * -----------------------------------------------------
+   * Public Variable (DomHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the DOM shortcut methods.
+   * @type {!Object<string, function>}
+   * @struct
+   */
+  var DomHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (DomHelpers.getElementsByClassNameAlt)
+   * -----------------------------------------------------
    * @desc An alternative if native [DOM Node].getElementsByClassName fails.
    * @param {string} classname - The class name of the element to select.
    * @param {!(Document|Element)} root - Limit the selections to this element's
    *   children.
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  function getElementsByClassNameAlt(classname, root) {
+  DomHelpers.getElementsByClassNameAlt = function(classname, root) {
 
     /** @type {number} */
     var i;
@@ -1203,206 +1701,13 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     return elems;
   };
 
-/* -----------------------------------------------------------------------------
- * The RegExps Class (reg-exps.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------
-   * Public Class (RegExps)
-   * -----------------------------------------------
-   * @desc Regular expressions that are used throughout the module.
-   * @type {!Object<string, RegExp>}
-   * @struct
-   */
-  var RegExps = {};
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.allDataTypes)
-   * -----------------------------------------------
-   * @desc All of the data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.allDataTypes = (function setupRegExpsAllDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '' +
-    '^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'          +
-    '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
-    '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
-    '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.nonNullableDataTypes)
-   * -----------------------------------------------
-   * @desc The non-nullable data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.nonNullableDataTypes = (function setupRegExpsNonNullableDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^string$|^number$|^boolean$|^function$|^undefined$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.typeOfDataTypes)
-   * -----------------------------------------------
-   * @desc The data types that can be accurately checked with the
-   *   native JavaScript typeof operator.
-   * @type {!RegExp}
-   */
-  RegExps.typeOfDataTypes = (function setupRegExpsTypeOfDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.instanceOfDataTypes)
-   * -----------------------------------------------
-   * @desc The data types that can be accurately checked with the
-   *   native JavaScript instanceof operator.
-   * @type {!RegExp}
-   */
-  RegExps.instanceOfDataTypes = /^elem$|^element$/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.arrayDataTypes)
-   * -----------------------------------------------
-   * @desc The array data types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.arrayDataTypes = (function setupRegExpsArrayDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-            '^arrays$|^elems$|^elements$|^functions$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.mapDataTypes)
-   * -----------------------------------------------
-   * @desc The hash map types available to this module.
-   * @type {!RegExp}
-   */
-  RegExps.mapDataTypes = (function setupRegExpsMapDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
-            '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.dualDollarSigns)
-   * -----------------------------------------------
-   * @desc Two consecutive dollar signs.
-   * @type {!RegExp}
-   */
-  RegExps.dualDollarSigns = /([^\\]*?)\$\$/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.space)
-   * -----------------------------------------------
-   * @desc A whitespace.
-   * @type {!RegExp}
-   */
-  RegExps.space = /\s/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.exclamationPoint)
-   * -----------------------------------------------
-   * @desc An exclamation point.
-   * @type {!RegExp}
-   */
-  RegExps.exclamationPoint = /\!/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.questionMark)
-   * -----------------------------------------------
-   * @desc A question mark.
-   * @type {!RegExp}
-   */
-  RegExps.questionMark = /\?/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.equalSign)
-   * -----------------------------------------------
-   * @desc An equal sign.
-   * @type {!RegExp}
-   */
-  RegExps.equalSign = /\=/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.pipe)
-   * -----------------------------------------------
-   * @desc A pipe.
-   * @type {!RegExp}
-   */
-  RegExps.pipe = /\|/;
-
-  /**
-   * -----------------------------------------------
-   * Public Property (RegExps.lowerAlphaAndPipe)
-   * -----------------------------------------------
-   * @desc All characters except lowercase letters and the pipe.
-   * @type {!RegExp}
-   */
-  RegExps.lowerAlphaAndPipe = /[^a-z\|]/g;
-
-  utilsModuleAPI.freezeObj(RegExps, true);
+  utilsModuleAPI.freezeObj(DomHelpers, true);
 
 /* -----------------------------------------------------------------------------
  * Deep Freeze The Utils Module API
  * -------------------------------------------------------------------------- */
 
-  (function(utilsModuleAPI) {
-
-    /** @type {string} */
-    var prop;
-
-    Object.freeze(utilsModuleAPI);
-
-    for (prop in utilsModuleAPI) {
-      if (utilsModuleAPI.hasOwnProperty(prop) && utilsModuleAPI[ prop ] &&
-          (typeof utilsModuleAPI[ prop ] === 'object' ||
-           typeof utilsModuleAPI[ prop ] === 'function')) {
-        Object.freeze(utilsModuleAPI[ prop ]);
-      }
-    }
-  })(utilsModuleAPI);
+  utilsModuleAPI.freezeObj(utilsModuleAPI, true);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Utils Module End

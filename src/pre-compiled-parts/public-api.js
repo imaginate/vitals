@@ -24,4 +24,4 @@
    * @struct
    * @global
    */
-  aIV.utils = utilsModuleAPI;
+  aIV.utils = aIV.utils || utilsModuleAPI;

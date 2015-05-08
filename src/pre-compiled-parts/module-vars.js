@@ -10,15 +10,62 @@
 
   /**
    * -----------------------------------------------------
-   * Public Variable (defaults)
+   * Public Variable (DEFAULTS)
    * -----------------------------------------------------
-   * @desc Holds each method's defaults.
-   * @type {!Object<string, *>}
-   * @struct
+   * @desc Holds each method's orginal defaults.
+   * @type {!{
+   *   checkArgsErrorMsg  : function,
+   *   getElemByClassRoot : !Document,
+   *   getElemsByClassRoot: !Document,
+   *   getElemByTagRoot   : !Document,
+   *   getElemsByTagRoot  : !Document
+   * }}
+   * @const
    */
-  var defaults = {
+  var DEFAULTS = {
+    checkArgsErrorMsg  : 'A function call had an invalid parameter data type.',
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
     getElemsByTagRoot  : document
+  };
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (DEFAULTS.types)
+   * -----------------------------------------------------
+   * @desc Holds the data type options for each default.
+   * @type {!Object<string, string>}
+   * @const
+   */
+  DEFAULTS.types = {
+    checkArgsErrorMsg  : 'string|function',
+    getElemByClassRoot : '!(Document|Element)',
+    getElemsByClassRoot: '!(Document|Element)',
+    getElemByTagRoot   : '!(Document|Element)',
+    getElemsByTagRoot  : '!(Document|Element)'
+  };
+
+  Object.freeze(DEFAULTS);
+  Object.freeze(DEFAULTS.types);
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (defaults)
+   * -----------------------------------------------------
+   * @desc Holds each method's defaults.
+   * @type {!{
+   *   checkArgsErrorMsg  : (string|function),
+   *   getElemByClassRoot : !(Document|Element),
+   *   getElemsByClassRoot: !(Document|Element),
+   *   getElemByTagRoot   : !(Document|Element),
+   *   getElemsByTagRoot  : !(Document|Element)
+   * }}
+   */
+  var defaults = {
+    checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByClassRoot : DEFAULTS.getElemByClassRoot,
+    getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
+    getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
+    getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };

@@ -32,7 +32,7 @@
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||
@@ -42,7 +42,7 @@
 
     elems = ( (!!root.getElementsByClassName) ?
       root.getElementsByClassName(classname)
-      : getElementsByClassNameAlt(classname, root)
+      : DomHelpers.getElementsByClassNameAlt(classname, root)
     );
 
     if (index < 0 || index >= elems.length) {
