@@ -10,21 +10,20 @@
 
   /**
    * -----------------------------------------------------
-   * Public Variable (defaults)
+   * Public Variable (DEFAULTS)
    * -----------------------------------------------------
-   * @desc Holds each method's defaults.
+   * @desc Holds each method's orginal defaults.
    * @type {!{
-   *   checkArgsErrorMsg  : (string|function),
-   *   getElemByClassRoot : !(Document|Element),
-   *   getElemsByClassRoot: !(Document|Element),
-   *   getElemByTagRoot   : !(Document|Element),
-   *   getElemsByTagRoot  : !(Document|Element)
+   *   checkArgsErrorMsg  : function,
+   *   getElemByClassRoot : !Document,
+   *   getElemsByClassRoot: !Document,
+   *   getElemByTagRoot   : !Document,
+   *   getElemsByTagRoot  : !Document
    * }}
-   * @struct
+   * @const
    */
-  var defaults = {
+  var DEFAULTS = {
     checkArgsErrorMsg  : function() {
-
       /** @type {string} */
       var msg;
 
@@ -38,4 +37,44 @@
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
     getElemsByTagRoot  : document
+  };
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (DEFAULTS.types)
+   * -----------------------------------------------------
+   * @desc Holds the data type options for each default.
+   * @type {!Object<string, string>}
+   * @const
+   */
+  DEFAULTS.types = {
+    checkArgsErrorMsg  : 'string|function',
+    getElemByClassRoot : '!(Document|Element)',
+    getElemsByClassRoot: '!(Document|Element)',
+    getElemByTagRoot   : '!(Document|Element)',
+    getElemsByTagRoot  : '!(Document|Element)'
+  };
+
+  Object.freeze(DEFAULTS);
+  Object.freeze(DEFAULTS.types);
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (defaults)
+   * -----------------------------------------------------
+   * @desc Holds each method's defaults.
+   * @type {!{
+   *   checkArgsErrorMsg  : (string|function),
+   *   getElemByClassRoot : !(Document|Element),
+   *   getElemsByClassRoot: !(Document|Element),
+   *   getElemByTagRoot   : !(Document|Element),
+   *   getElemsByTagRoot  : !(Document|Element)
+   * }}
+   */
+  var defaults = {
+    checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByClassRoot : DEFAULTS.getElemByClassRoot,
+    getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
+    getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
+    getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };
