@@ -144,7 +144,7 @@
       errorMsg = (checkType(msg, 'string')) ? msg : msg();
 
       if (errorMsg && checkType(errorMsg, 'string')) {
-        throw new Error(errorMsg);
+        throw new TypeError(errorMsg);
       }
     };
 
