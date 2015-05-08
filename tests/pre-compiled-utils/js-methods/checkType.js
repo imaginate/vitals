@@ -110,7 +110,7 @@
       pass = pass || (val === undefined && equalSign.test(type));
 
       nullableOverride = (pass) ? true : checkForNullOverride(val, type);
-      nullable = ( (nullableOverride || exclamationPoint.test(type)) ?
+      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
         false : questionMark.test(type)
       );
 
@@ -432,7 +432,7 @@
       while (!pass && i--) {
 
         if (!override) {
-          nullable = !nonNullableDataTypes.test(type);
+          nullable = !nonNullableDataTypes.test(types[i]);
         }
 
         pass = nullable;
