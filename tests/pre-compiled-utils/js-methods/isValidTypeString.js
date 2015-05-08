@@ -25,9 +25,9 @@
     }
 
     typeString = typeString.toLowerCase();
-    typeString = typeString.replace(RegExps.lowerAlphaAndPipe, '');
+    typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
 
-    typeArr = ( (RegExps.pipe.test(typeString)) ?
+    typeArr = ( (JsHelpers.pipe.test(typeString)) ?
       typeString.split('|') : [ typeString ]
     );
 
@@ -35,7 +35,7 @@
 
     i = typeArr.length;
     while (i--) {
-      pass = RegExps.allDataTypes.test(typeArr[i]);
+      pass = JsHelpers.allDataTypes.test(typeArr[i]);
       if (!pass) {
         break;
       }
