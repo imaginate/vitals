@@ -62,7 +62,7 @@
   utilsModuleAPI.checkType = (function setupCheckType() {
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Public checkType Method
+    // The Public Method
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -102,8 +102,8 @@
 
       if (val === null) {
         nullable = false;
-        nullableOverride = RegExps.exclamationPoint.test(type);
-        if ( RegExps.questionMark.test(type) ) {
+        nullableOverride = exclamationPoint.test(type);
+        if ( questionMark.test(type) ) {
           nullable = !nullableOverride;
           nullableOverride = !nullableOverride;
         }
@@ -116,15 +116,15 @@
         nullable = false;
       }
 
-      if (val === undefined && RegExps.equalSign.test(type)) {
+      if (val === undefined && equalSign.test(type)) {
         earlyPass = true;
       }
 
       // Remove everything except lowercase letters and pipes
       type = type.toLowerCase();
-      type = type.replace(RegExps.lowerAlphaAndPipe, '');
+      type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
 
-      types = ( RegExps.pipe.test(type) ) ? type.split('|') : [ type ];
+      types = ( JsHelpers.pipe.test(type) ) ? type.split('|') : [ type ];
 
       if (!noTypeValCheck && !isValidTypeStrings(types)) {
         errorMsg = 'An aIV.utils.checkType call received an invalid type ';
@@ -145,35 +145,35 @@
         type = types[i];
 
         if (!nullableOverride) {
-          nullable = !RegExps.nonNullableDataTypes.test(type);
+          nullable = !nonNullableDataTypes.test(type);
         }
 
         if (nullable && val === null) {
           return true;
         }
 
-        if ( RegExps.typeOfDataTypes.test(type) ) {
+        if ( typeOfDataTypes.test(type) ) {
           if ( checkTypeOf(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.instanceOfDataTypes.test(type) ) {
+        if ( instanceOfDataTypes.test(type) ) {
           if ( checkInstanceOf(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.arrayDataTypes.test(type) ) {
+        if ( arrayDataTypes.test(type) ) {
           if ( checkArrayType(val, type) ) {
             return true;
           }
           continue;
         }
 
-        if ( RegExps.mapDataTypes.test(type) ) {
+        if ( mapDataTypes.test(type) ) {
           if ( checkHashMapType(val, type) ) {
             return true;
           }
@@ -185,7 +185,119 @@
     };
 
     ////////////////////////////////////////////////////////////////////////////
-    // The Private checkType Methods
+    // The Private Properties
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * -----------------------------------------------
+     * Public Property (nonNullableDataTypes)
+     * -----------------------------------------------
+     * @desc The non-nullable data types available to this module.
+     * @type {!RegExp}
+     */
+    var nonNullableDataTypes = (function setupRegExpsNonNullableDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (typeOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript typeof operator.
+     * @type {!RegExp}
+     */
+    var typeOfDataTypes = (function setupRegExpsTypeOfDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (instanceOfDataTypes)
+     * -----------------------------------------------
+     * @desc The data types that can be accurately checked with the
+     *   native JavaScript instanceof operator.
+     * @type {!RegExp}
+     */
+    var instanceOfDataTypes = /^elem$|^element$/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (arrayDataTypes)
+     * -----------------------------------------------
+     * @desc The array data types available to this module.
+     * @type {!RegExp}
+     */
+    var arrayDataTypes = (function setupRegExpsArrayDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
+              '^arrays$|^elems$|^elements$|^functions$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (mapDataTypes)
+     * -----------------------------------------------
+     * @desc The hash map types available to this module.
+     * @type {!RegExp}
+     */
+    var mapDataTypes = (function setupRegExpsMapDataTypes() {
+
+      /** @type {string} */
+      var types;
+
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
+              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+
+      return new RegExp(types);
+    })();
+
+    /**
+     * -----------------------------------------------
+     * Public Property (exclamationPoint)
+     * -----------------------------------------------
+     * @desc An exclamation point.
+     * @type {!RegExp}
+     */
+    var exclamationPoint = /\!/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (questionMark)
+     * -----------------------------------------------
+     * @desc A question mark.
+     * @type {!RegExp}
+     */
+    var questionMark = /\?/;
+
+    /**
+     * -----------------------------------------------
+     * Public Property (equalSign)
+     * -----------------------------------------------
+     * @desc An equal sign.
+     * @type {!RegExp}
+     */
+    var equalSign = /\=/;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -207,7 +319,7 @@
 
       i = types.length;
       while (i--) {
-        pass = RegExps.allDataTypes.test(types[i]);
+        pass = JsHelpers.allDataTypes.test(types[i]);
         if (!pass) {
           break;
         }
@@ -251,8 +363,8 @@
       }
 
       constructors = {
-        'elem'   : HTMLElement,
-        'element': HTMLElement
+        'elem'   : Element,
+        'element': Element
       };
 
       return (val instanceof constructors[ type ]);
@@ -287,7 +399,7 @@
       type = type.slice(0, -1);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
+        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
           checkInstanceOf : checkTypeOf
       );
 
@@ -329,7 +441,7 @@
       type = type.slice(0, -3);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( RegExps.instanceOfDataTypes.test(type) ) ?
+        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
           checkInstanceOf : checkTypeOf
       );
 
