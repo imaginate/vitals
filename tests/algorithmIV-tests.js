@@ -714,7 +714,9 @@
           results.addError(errorMsg);
         }
         else {
-          console.log( error.toString() );
+          errorMsg = 'The Default checkArgs Error Message: "';
+          errorMsg += error.toString() + '"';
+          console.log(errorMsg);
         }
       }
     };
@@ -747,9 +749,6 @@
           errorMsg = 'checkArgs(3, \'number\', true, \'string\') failed. ';
           errorMsg += error.toString();
           results.addError(errorMsg);
-        }
-        else {
-          console.log( error.message );
         }
       }
     };
