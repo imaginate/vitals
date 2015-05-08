@@ -146,21 +146,7 @@
  * Deep Freeze The Utils Module API
  * -------------------------------------------------------------------------- */
 
-  (function(utilsModuleAPI) {
-
-    /** @type {string} */
-    var prop;
-
-    Object.freeze(utilsModuleAPI);
-
-    for (prop in utilsModuleAPI) {
-      if (utilsModuleAPI.hasOwnProperty(prop) && utilsModuleAPI[ prop ] &&
-          (typeof utilsModuleAPI[ prop ] === 'object' ||
-           typeof utilsModuleAPI[ prop ] === 'function')) {
-        Object.freeze(utilsModuleAPI[ prop ]);
-      }
-    }
-  })(utilsModuleAPI);
+  utilsModuleAPI.freezeObj(utilsModuleAPI, true);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Utils Module End
