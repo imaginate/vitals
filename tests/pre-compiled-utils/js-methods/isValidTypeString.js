@@ -21,24 +21,16 @@
       errorMsg = 'An aIV.utils.isValidTypeString call received an invalid ';
       errorMsg += '(a non-string) typeString parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     typeString = typeString.toLowerCase();
     typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
-
-    typeArr = ( (JsHelpers.pipe.test(typeString)) ?
-      typeString.split('|') : [ typeString ]
-    );
-
+    typeArr = typeString.split('|');
     pass = true;
 
     i = typeArr.length;
-    while (i--) {
+    while (pass && i--) {
       pass = JsHelpers.allDataTypes.test(typeArr[i]);
-      if (!pass) {
-        break;
-      }
     }
 
     return pass;
