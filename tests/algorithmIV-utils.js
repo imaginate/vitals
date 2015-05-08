@@ -132,32 +132,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @const
    */
   var DEFAULTS = {
-    checkArgsErrorMsg  : (function setup_checkArgsErrorMsg() {
-
-      /** @type {!RegExp} */
-      var matchFuncName;
-
-      matchFuncName = /^.*function\s?([a-zA-Z\$\_]*)\(.*$/;
-
-      return function checkArgsErrorMsg() {
-
-        /** @type {string} */
-        var funcName;
-        /** @type {string} */
-        var msg;
-
-        funcName = ( (!!utilsModuleAPI.checkArgs.caller) ?
-          utilsModuleAPI.checkArgs.caller + ''.replace(matchFuncName, '$1')
-          : 'function'
-        );
-        funcName = funcName || 'function';
-
-        msg = 'A ' + funcName + ' was called with ';
-        msg += 'an invalid parameter data type.';
-
-        return msg;
-      };
-    })(),
+    checkArgsErrorMsg  : 'A function call had an invalid parameter data type.',
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
