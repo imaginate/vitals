@@ -119,7 +119,7 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'An aIV.utils.checkArgs call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
       errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
