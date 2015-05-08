@@ -22,9 +22,10 @@
 
     types = '' +
     '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
-    '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
-    '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
-    '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
+    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
+    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
+    '^elementmap$';
 
     return new RegExp(types);
   })();
