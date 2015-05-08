@@ -21,6 +21,7 @@
 ```javascript
 aIV.utils.checkType( anyValue, theTypeString );
 aIV.utils.isValidTypeString( theTypeString );
+aIV.utils.checkArgs( theArg, theTypeString, theArg, theTypeString, ...);
 aIV.utils.freezeObj( theObject [, applyDeepFreeze ]);
 aIV.utils.hasOwnProp( theObject, theProperty );
 aIV.utils.getElemById( theIdName );
@@ -46,6 +47,10 @@ aIV.utils.addElemText( theElement, theText );
 - **[getElemsByTag](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/dom-methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
 - **[makeElem](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/dom-methods/makeElem.js)** - A shortcut for the native [Document.createElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement) and optionally a shortcut to set the new element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) / [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx), [innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), [id](https://developer.mozilla.org/en-US/docs/Web/API/Element/id), and [className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className).
 - **[addElemText](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/dom-methods/addElemText.js)** - A shortcut to set an element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) or [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx) property.
+
+## The Master Methods
+- **[set](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/e9d9de36665b4ec7b5df2dd68808305dbf3670f0/src/pre-compiled-parts/set-defaults.js#L1-13)** - Allows you to set the default values for all of our shortcuts.
+- **[reset](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/e9d9de36665b4ec7b5df2dd68808305dbf3670f0/src/pre-compiled-parts/set-defaults.js#L58-65)** - Allows you to reset the default values for all of our shortcuts.
 
 
 ##Example
