@@ -61,10 +61,6 @@
       while (++i < len) {
 
         if (i % 2) {
-          arg = args[i];
-        }
-
-        else {
           type = args[i];
 
           clean = checkType(type, 'string', true);
@@ -72,6 +68,9 @@
           clean || throwInvalidTypeString(type);
 
           pass = pass && checkType(arg, type, true);
+        }
+        else {
+          arg = args[i];
         }
       }
 
