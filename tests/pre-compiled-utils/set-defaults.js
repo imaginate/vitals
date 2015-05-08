@@ -4,6 +4,7 @@
    * -----------------------------------------------------
    * @desc Allows you to set the default settings for each aIV.utils method.
    * @param {!Object} settings - The default settings.
+   * @param {(string|function)=} settings.checkArgsErrorMsg
    * @param {!(Document|Element)=} settings.getElemByClassRoot
    * @param {!(Document|Element)=} settings.getElemsByClassRoot
    * @param {!(Document|Element)=} settings.getElemByTagRoot
@@ -16,6 +17,8 @@
     var errorMsg;
     /** @type {!(Document|Element)} */
     var elem;
+    /** @type {(string|function)} */
+    var msg;
 
     if (!settings || typeof settings !== 'object') {
       errorMsg = 'An aIV.utils.set call received an invalid settings ';
@@ -24,11 +27,25 @@
       return;
     }
 
+    // Set checkArgsErrorMsg
+    if ( settings.hasOwnProperty('checkArgsErrorMsg') ) {
+      msg = settings.checkArgsErrorMsg;
+      if (typeof msg === 'string' || typeof msg === 'function') {
+        defaults.checkArgsErrorMsg = msg;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'checkArgsErrorMsg settings parameter ';
+        errorMsg += '(should be a string).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
     // Set getElemByClassRoot
     if ( settings.hasOwnProperty('getElemByClassRoot') ) {
       elem = settings.getElemByClassRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByClassRoot = settings.getElemByClassRoot;
+        defaults.getElemByClassRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -42,7 +59,7 @@
     if ( settings.hasOwnProperty('getElemsByClassRoot') ) {
       elem = settings.getElemsByClassRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByClassRoot = settings.getElemsByClassRoot;
+        defaults.getElemsByClassRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -56,7 +73,7 @@
     if ( settings.hasOwnProperty('getElemByTagRoot') ) {
       elem = settings.getElemByTagRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByTagRoot = settings.getElemByTagRoot;
+        defaults.getElemByTagRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -70,7 +87,7 @@
     if ( settings.hasOwnProperty('getElemsByTagRoot') ) {
       elem = settings.getElemsByTagRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByTagRoot = settings.getElemsByTagRoot;
+        defaults.getElemsByTagRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
