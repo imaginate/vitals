@@ -26,7 +26,7 @@
     // Setup The Private checkType Variables
     ////////////////////////////////////////////////////////////////////////////
 
-    results = new TestResults('checkType', 27);
+    results = new TestResults('checkType', 29);
     elem = document.createElement('div');
     obj  = {};
     func = function() {};
@@ -46,6 +46,7 @@
     var checkType = function() {
 
       // Test the special characters
+      testAsterisk();
       testExclamationPoint();
       testQuestionMark();
       testPipe();
@@ -64,6 +65,7 @@
       testObject();
       testFunction();
       testElement();
+      testDocument();
 
       // Test the arrays
       testArray();
@@ -91,6 +93,33 @@
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Private checkType Methods
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testAsterisk)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testAsterisk = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {string} */
+      var errorMsg;
+
+      try {
+        pass = aIV.utils.checkType(null, '*');
+        pass = pass && aIV.utils.checkType(0, '*');
+      }
+      catch (error) {
+        pass = false;
+      }
+
+      if (!pass) {
+        errorMsg = 'Tests.checkType failed: * check failed';
+        results.addError(errorMsg);
+      }
+    };
 
     /**
      * ---------------------------------------------------
@@ -405,6 +434,38 @@
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: element check failed';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testDocument)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testDocument = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+      /** @type {Window} */
+      var tempWindow;
+
+      tempWindow = window.open();
+
+      pass = aIV.utils.checkType(tempWindow.document, 'document');
+      pass = pass && aIV.utils.checkType(document, 'document');
+
+      tempWindow.close();
+
+      fail = aIV.utils.checkType(elem, 'document');
+
+      if (!pass || fail) {
+        errorMsg = 'Tests.checkType failed: document check failed';
         results.addError(errorMsg);
       }
     };
