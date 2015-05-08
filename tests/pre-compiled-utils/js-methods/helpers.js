@@ -21,22 +21,13 @@
     var types;
 
     types = '' +
-    '^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'          +
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
     '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
     '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
     '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
 
     return new RegExp(types);
   })();
-
-  /**
-   * -----------------------------------------------------
-   * Public Property (JsHelpers.pipe)
-   * -----------------------------------------------------
-   * @desc A regex matching the pipe character.
-   * @type {!RegExp}
-   */
-  JsHelpers.pipe = /\|/;
 
   /**
    * -----------------------------------------------------
