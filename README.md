@@ -6,7 +6,7 @@
 
 ##Getting Started
 - Download [algorithmIV-utils.min.js](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/algorithmIV-utils.min.js)
-- Add algorithmIV-utils.min.js to your HTML head before any scripts that will use the shortcuts
+- Add algorithmIV-utils.min.js to your HTML ```<head>``` or ```<body>``` before any scripts that will use the shortcuts
 ```html
 <html>
     <head>
