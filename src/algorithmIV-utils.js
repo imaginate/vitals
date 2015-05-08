@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.3)
+ * Algorithm IV JavaScript Shortcuts (v1.0.4)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.3
+ * @version 1.0.4
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -1073,6 +1073,79 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     ////////////////////////////////////////////////////////////////////////////
 
     return checkArgs;
+
+  })();
+
+/* -----------------------------------------------------------------------------
+ * The getTypeOf Method (js-methods/getTypeOf.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.getTypeOf)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native typeof operator that additionally
+   *   distinguishes null, array, document, and element types from an
+   *   object type.
+   * @param {*} val - The value to get the typeof.
+   * @return {string} The value's type.
+   */
+  utilsModuleAPI.getTypeOf = (function setup_getTypeOf() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Public Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Public Method (getTypeOf)
+     * ---------------------------------------------------
+     * @desc A shortcut for the native typeof operator that additionally
+     *   distinguishes null, array, document, and element types from an
+     *   object type.
+     * @param {*} val - The value to get the typeof.
+     * @return {string} The value's type.
+     */
+    var getTypeOf = function(val) {
+
+      /** @type {string} */
+      var type;
+
+      type = typeof val;
+
+      if (type === 'object' && checkType(val, 'document|element|array')) {
+        type = ( (val === null) ?
+          'null' : (Array.isArray(val)) ?
+            'array' : (val.nodeType === 1) ?
+              'element' : 'document'
+        );
+      }
+
+      return type;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given optional types.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @param {boolean=} noTypeValCheck - If true this method does not check
+     *   the data type string for correctness. By default this is set to false.
+     * @return {boolean} The evaluation result.
+     */
+    var checkType = utilsModuleAPI.checkType;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The getTypeOf Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return getTypeOf;
 
   })();
 
