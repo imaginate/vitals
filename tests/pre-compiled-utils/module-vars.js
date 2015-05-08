@@ -23,16 +23,32 @@
    * @const
    */
   var DEFAULTS = {
-    checkArgsErrorMsg  : function() {
-      /** @type {string} */
-      var msg;
+    checkArgsErrorMsg  : (function setup_checkArgsErrorMsg() {
 
-      msg = 'A ';
-      msg += utilsModuleAPI.checkArgs.caller || 'function';
-      msg +=' was called with an invalid parameter data type.';
+      /** @type {!RegExp} */
+      var matchFuncName;
 
-      return msg;
-    },
+      matchFuncName = /^.*function\s?([a-zA-Z\$\_]*)\(.*$/;
+
+      return function checkArgsErrorMsg() {
+
+        /** @type {string} */
+        var funcName;
+        /** @type {string} */
+        var msg;
+
+        funcName = ( (!!utilsModuleAPI.checkArgs.caller) ?
+          utilsModuleAPI.checkArgs.caller + ''.replace(matchFuncName, '$1')
+          : 'function'
+        );
+        funcName = funcName || 'function';
+
+        msg = 'A ' + funcName + ' was called with ';
+        msg += 'an invalid parameter data type.';
+
+        return msg;
+      };
+    })(),
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,

@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.2)
+ * Algorithm IV JavaScript Shortcuts (v1.0.3)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.2
+ * @version 1.0.3
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -132,16 +132,32 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @const
    */
   var DEFAULTS = {
-    checkArgsErrorMsg  : function() {
-      /** @type {string} */
-      var msg;
+    checkArgsErrorMsg  : (function setup_checkArgsErrorMsg() {
 
-      msg = 'A ';
-      msg += utilsModuleAPI.checkArgs.caller || 'function';
-      msg +=' was called with an invalid parameter data type.';
+      /** @type {!RegExp} */
+      var matchFuncName;
 
-      return msg;
-    },
+      matchFuncName = /^.*function\s?([a-zA-Z\$\_]*)\(.*$/;
+
+      return function checkArgsErrorMsg() {
+
+        /** @type {string} */
+        var funcName;
+        /** @type {string} */
+        var msg;
+
+        funcName = ( (!!utilsModuleAPI.checkArgs.caller) ?
+          utilsModuleAPI.checkArgs.caller + ''.replace(matchFuncName, '$1')
+          : 'function'
+        );
+        funcName = funcName || 'function';
+
+        msg = 'A ' + funcName + ' was called with ';
+        msg += 'an invalid parameter data type.';
+
+        return msg;
+      };
+    })(),
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
