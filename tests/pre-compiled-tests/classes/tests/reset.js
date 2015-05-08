@@ -56,7 +56,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.reset() ';
-        errorMsg += 'failed. ' + error.toString;
+        errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
     };
@@ -77,7 +77,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\') ';
-        errorMsg += 'failed. ' + error.toString;
+        errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
     };
@@ -98,7 +98,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.reset([ \'checkArgsErrorMsg\', ';
-        errorMsg += '\'getElemByTagRoot\' ]) failed. ' + error.toString;
+        errorMsg += '\'getElemByTagRoot\' ]) failed. ' + error.toString();
         results.addError(errorMsg);
       }
     };
@@ -119,7 +119,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\', ';
-        errorMsg += '\'getElemByTagRoot\') failed. ' + error.toString;
+        errorMsg += '\'getElemByTagRoot\') failed. ' + error.toString();
         results.addError(errorMsg);
       }
     };

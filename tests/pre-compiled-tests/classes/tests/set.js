@@ -59,7 +59,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
-        errorMsg += 'failed. ' + error.toString;
+        errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
     };
@@ -82,7 +82,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.set({ getElemByClassRoot: document }) failed. ';
-        errorMsg += error.toString;
+        errorMsg += error.toString();
         results.addError(errorMsg);
       }
     };
@@ -105,7 +105,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.set({ getElemsByClassRoot: document }) failed. ';
-        errorMsg += error.toString;
+        errorMsg += error.toString();
         results.addError(errorMsg);
       }
     };
@@ -128,7 +128,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.set({ getElemByTagRoot: document }) failed. ';
-        errorMsg += error.toString;
+        errorMsg += error.toString();
         results.addError(errorMsg);
       }
     };
@@ -151,7 +151,7 @@
       }
       catch (error) {
         errorMsg = 'aIV.utils.set({ getElemsByTagRoot: document }) failed. ';
-        errorMsg += error.toString;
+        errorMsg += error.toString();
         results.addError(errorMsg);
       }
     };
