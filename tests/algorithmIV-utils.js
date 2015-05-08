@@ -122,10 +122,27 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * Public Variable (defaults)
    * -----------------------------------------------------
    * @desc Holds each method's defaults.
-   * @type {!Object<string, *>}
+   * @type {!{
+   *   checkArgsErrorMsg  : (string|function),
+   *   getElemByClassRoot : !(Document|Element),
+   *   getElemsByClassRoot: !(Document|Element),
+   *   getElemByTagRoot   : !(Document|Element),
+   *   getElemsByTagRoot  : !(Document|Element)
+   * }}
    * @struct
    */
   var defaults = {
+    checkArgsErrorMsg  : function() {
+
+      /** @type {string} */
+      var msg;
+
+      msg = 'A ';
+      msg += utilsModuleAPI.checkArgs.caller || 'function';
+      msg +=' was called with an invalid parameter data type.';
+
+      return msg;
+    },
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
@@ -142,6 +159,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * -----------------------------------------------------
    * @desc Allows you to set the default settings for each aIV.utils method.
    * @param {!Object} settings - The default settings.
+   * @param {(string|function)=} settings.checkArgsErrorMsg
    * @param {!(Document|Element)=} settings.getElemByClassRoot
    * @param {!(Document|Element)=} settings.getElemsByClassRoot
    * @param {!(Document|Element)=} settings.getElemByTagRoot
@@ -154,6 +172,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     var errorMsg;
     /** @type {!(Document|Element)} */
     var elem;
+    /** @type {(string|function)} */
+    var msg;
 
     if (!settings || typeof settings !== 'object') {
       errorMsg = 'An aIV.utils.set call received an invalid settings ';
@@ -162,11 +182,25 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       return;
     }
 
+    // Set checkArgsErrorMsg
+    if ( settings.hasOwnProperty('checkArgsErrorMsg') ) {
+      msg = settings.checkArgsErrorMsg;
+      if (typeof msg === 'string' || typeof msg === 'function') {
+        defaults.checkArgsErrorMsg = msg;
+      }
+      else {
+        errorMsg = 'An aIV.utils.set call received an invalid ';
+        errorMsg += 'checkArgsErrorMsg settings parameter ';
+        errorMsg += '(should be a string).';
+        throw new TypeError(errorMsg);
+      }
+    }
+
     // Set getElemByClassRoot
     if ( settings.hasOwnProperty('getElemByClassRoot') ) {
       elem = settings.getElemByClassRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByClassRoot = settings.getElemByClassRoot;
+        defaults.getElemByClassRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -180,7 +214,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     if ( settings.hasOwnProperty('getElemsByClassRoot') ) {
       elem = settings.getElemsByClassRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByClassRoot = settings.getElemsByClassRoot;
+        defaults.getElemsByClassRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -194,7 +228,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     if ( settings.hasOwnProperty('getElemByTagRoot') ) {
       elem = settings.getElemByTagRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemByTagRoot = settings.getElemByTagRoot;
+        defaults.getElemByTagRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -208,7 +242,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     if ( settings.hasOwnProperty('getElemsByTagRoot') ) {
       elem = settings.getElemsByTagRoot;
       if (elem instanceof Element || elem instanceof Document) {
-        defaults.getElemsByTagRoot = settings.getElemsByTagRoot;
+        defaults.getElemsByTagRoot = elem;
       }
       else {
         errorMsg = 'An aIV.utils.set call received an invalid ';
@@ -253,6 +287,11 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *   Other important characters are below:
    *   <table>
    *     <tr><th>Character</th><th>Details</th><th>Example</th></tr>
+   *     <tr>
+   *       <td>'*'</td>
+   *       <td>Indicates that the value can be any type.</td>
+   *       <td>'*'</td>
+   *     </tr>
    *     <tr>
    *       <td>'|'</td>
    *       <td>Separates multiple type options.</td>
@@ -305,8 +344,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {number} */
-      var i;
+      /** @type {boolean} */
+      var pass;
       /** @type {!strings} */
       var types;
       /** @type {boolean} */
@@ -314,101 +353,47 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       /** @type {string} */
       var errorMsg;
       /** @type {boolean} */
-      var earlyPass;
-      /** @type {boolean} */
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'An aIV.utils.checkType call received an invalid ';
         errorMsg += '(a non-string) type parameter.';
         throw new TypeError(errorMsg);
-        return;
       }
 
-      earlyPass = false;
+      // Check for automatic pass (* = any value)
+      pass = asterisk.test(type);
 
-      if (val === null) {
-        nullable = false;
-        nullableOverride = exclamationPoint.test(type);
-        if ( questionMark.test(type) ) {
-          nullable = !nullableOverride;
-          nullableOverride = !nullableOverride;
-        }
-        if (nullable && nullableOverride) {
-          earlyPass = true;
-        }
-      }
-      else {
-        nullableOverride = true;
-        nullable = false;
-      }
+      // Catch and throw asterisk error
+      pass && type.length > 1 && throwInvalidAsteriskUse();
 
-      if (val === undefined && equalSign.test(type)) {
-        earlyPass = true;
-      }
+      // Check for an optional undefined value
+      pass = pass || (val === undefined && equalSign.test(type));
 
-      // Remove everything except lowercase letters and pipes
-      type = type.toLowerCase();
-      type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
+      nullable = ( (nullableOverride || exclamationPoint.test(type)) ?
+        false : questionMark.test(type)
+      );
 
-      types = ( JsHelpers.pipe.test(type) ) ? type.split('|') : [ type ];
+      // Check for null value with nullable true and override enabled
+      pass = pass || (nullable && nullableOverride);
 
-      if (!noTypeValCheck && !isValidTypeStrings(types)) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid type ';
-        errorMsg += 'string. Check aIV.utils.checkType\'s documentation ';
-        errorMsg += 'for a list of acceptable type strings.';
-        throw new RangeError(errorMsg);
-        return;
+      if (!noTypeValCheck || !pass) {
+        type = type.toLowerCase();
+        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        types = type.split('|');
+
+        noTypeValCheck || isValidTypeStrings(types);
       }
 
-      if (earlyPass) {
-        return true;
+      if (!pass) {
+        pass = ( (val === null) ?
+          checkEachNullType(types, nullable, nullableOverride)
+          : checkEachType(val, types)
+        );
       }
 
-      // Test the value against each type
-      i = types.length;
-      while (i--) {
-
-        type = types[i];
-
-        if (!nullableOverride) {
-          nullable = !nonNullableDataTypes.test(type);
-        }
-
-        if (nullable && val === null) {
-          return true;
-        }
-
-        if ( typeOfDataTypes.test(type) ) {
-          if ( checkTypeOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( instanceOfDataTypes.test(type) ) {
-          if ( checkInstanceOf(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( arrayDataTypes.test(type) ) {
-          if ( checkArrayType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-
-        if ( mapDataTypes.test(type) ) {
-          if ( checkHashMapType(val, type) ) {
-            return true;
-          }
-          continue;
-        }
-      }
-
-      return false;
+      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -417,7 +402,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (nonNullableDataTypes)
+     * Private Property (nonNullableDataTypes)
      * -----------------------------------------------
      * @desc The non-nullable data types available to this module.
      * @type {!RegExp}
@@ -434,7 +419,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (typeOfDataTypes)
+     * Private Property (typeOfDataTypes)
      * -----------------------------------------------
      * @desc The data types that can be accurately checked with the
      *   native JavaScript typeof operator.
@@ -452,7 +437,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (instanceOfDataTypes)
+     * Private Property (instanceOfDataTypes)
      * -----------------------------------------------
      * @desc The data types that can be accurately checked with the
      *   native JavaScript instanceof operator.
@@ -462,7 +447,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (arrayDataTypes)
+     * Private Property (arrayDataTypes)
      * -----------------------------------------------
      * @desc The array data types available to this module.
      * @type {!RegExp}
@@ -480,7 +465,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (mapDataTypes)
+     * Private Property (mapDataTypes)
      * -----------------------------------------------
      * @desc The hash map types available to this module.
      * @type {!RegExp}
@@ -498,7 +483,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (exclamationPoint)
+     * Private Property (exclamationPoint)
      * -----------------------------------------------
      * @desc An exclamation point.
      * @type {!RegExp}
@@ -507,7 +492,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (questionMark)
+     * Private Property (questionMark)
      * -----------------------------------------------
      * @desc A question mark.
      * @type {!RegExp}
@@ -516,16 +501,71 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
     /**
      * -----------------------------------------------
-     * Public Property (equalSign)
+     * Private Property (equalSign)
      * -----------------------------------------------
      * @desc An equal sign.
      * @type {!RegExp}
      */
     var equalSign = /\=/;
 
+    /**
+     * -----------------------------------------------
+     * Private Property (asterisk)
+     * -----------------------------------------------
+     * @desc An asterisk.
+     * @type {!RegExp}
+     */
+    var asterisk = /\*/;
+
     ////////////////////////////////////////////////////////////////////////////
     // The Private Methods
     ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidAsteriskUse)
+     * ---------------------------------------------------
+     * @desc Throws an error for improper use of the asterisk.
+     * @type {function}
+     */
+    var throwInvalidAsteriskUse = function() {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. When using an asterisk, \'*\', no other values ';
+      errorMsg += 'should be given as the asterisk guarantees the check will ';
+      errorMsg += 'pass.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkForNullOverride)
+     * ---------------------------------------------------
+     * @desc Checks if a nullable override exists.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable override value.
+     */
+    var checkForNullOverride = function(val, type) {
+
+      /** @type {boolean} */
+      var nullCheck;
+      /** @type {boolean} */
+      var override;
+
+      nullCheck = (val === null);
+
+      override = (nullCheck) ? exclamationPoint.test(type) : true;
+
+      if (nullCheck && questionMark.test(type)) {
+        override = !override;
+      }
+
+      return override;
+    };
 
     /**
      * ---------------------------------------------------
@@ -541,15 +581,122 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       var i;
       /** @type {boolean} */
       var pass;
+      /** @type {string} */
+      var errorMsg;
 
       pass = true;
 
       i = types.length;
-      while (i--) {
+      while (pass && i--) {
         pass = JsHelpers.allDataTypes.test(types[i]);
-        if (!pass) {
+        pass || throwInvalidTypeString(types[i]);
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidTypeString)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid data type string value.
+     * @param {string} type - A known incorrect type value.
+     */
+    var throwInvalidTypeString = function(type) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
+      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'list of acceptable type strings.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given types.
+     * @param {*} val - The value to be evaluated.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachType = function(val, types) {
+
+      /** @type {number} */
+      var i;
+      /** @type {string} */
+      var type;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the value against each type
+      i = types.length;
+      while (!pass && i--) {
+
+        type = types[i];
+
+        if (type === 'any') {
+          pass = true;
           break;
         }
+
+        if ( typeOfDataTypes.test(type) ) {
+          pass = checkTypeOf(val, type);
+          continue;
+        }
+
+        if ( instanceOfDataTypes.test(type) ) {
+          pass = checkInstanceOf(val, type);
+          continue;
+        }
+
+        if ( arrayDataTypes.test(type) ) {
+          pass = checkArrayType(val, type);
+          continue;
+        }
+
+        if ( mapDataTypes.test(type) ) {
+          pass = checkHashMapType(val, type);
+          continue;
+        }
+      }
+
+      return pass;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkEachNullType)
+     * ---------------------------------------------------
+     * @desc Checks the nullable values of the given types.
+     * @param {!Array<string>} types - The data types to evaluate against.
+     * @param {boolean} nullable - The starting nullable value.
+     * @param {boolean} override - Whether a nullable override exists.
+     * @return {boolean} The evaluation result.
+     */
+    var checkEachNullType = function(types, nullable, override) {
+
+      /** @type {number} */
+      var i;
+      /** @type {boolean} */
+      var pass;
+
+      pass = false;
+
+      // Test the nullable value of each type
+      i = types.length;
+      while (!pass && i--) {
+
+        if (!override) {
+          nullable = !nonNullableDataTypes.test(type);
+        }
+
+        pass = nullable;
       }
 
       return pass;
@@ -633,11 +780,8 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       pass = true;
 
       i = vals.length;
-      while (i--) {
+      while (pass && i--) {
         pass = testFunc(vals[i], type);
-        if (!pass) {
-          break;
-        }
       }
 
       return pass;
@@ -721,28 +865,183 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       errorMsg = 'An aIV.utils.isValidTypeString call received an invalid ';
       errorMsg += '(a non-string) typeString parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     typeString = typeString.toLowerCase();
     typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
-
-    typeArr = ( (JsHelpers.pipe.test(typeString)) ?
-      typeString.split('|') : [ typeString ]
-    );
-
+    typeArr = typeString.split('|');
     pass = true;
 
     i = typeArr.length;
-    while (i--) {
+    while (pass && i--) {
       pass = JsHelpers.allDataTypes.test(typeArr[i]);
-      if (!pass) {
-        break;
-      }
     }
 
     return pass;
   };
+
+/* -----------------------------------------------------------------------------
+ * The checkArgs Method (js-methods/checkArgs.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.checkArgs)
+   * ---------------------------------------------------
+   * @desc Catches invalid argument data types and throws an error.
+   * @param {...*} val - Each argument passed to the method.
+   * @param {...string} type -  Each argument's optional data types.
+   *   [See aIV.utils.checkType]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
+   *   for the available data type strings.
+   * @return {boolean} The evaluation result.
+   * @example
+   *   exampleMethod = function(arg1, arg2) {
+   *     checkArgs(arg1, '!object', arg2, 'number=');
+   *   };
+   */
+  utilsModuleAPI.checkArgs = (function() {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Public Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Public Method (checkArgs)
+     * ---------------------------------------------------
+     * @desc Catches invalid argument data types and throws an error.
+     * @param {...*} arg - Each argument passed to the method.
+     * @param {...string} type -  Each argument's optional data types.
+     * @return {boolean} The evaluation result.
+     */
+    var checkArgs = function() {
+
+      /** @type {number} */
+      var i;
+      /** @type {number} */
+      var len;
+      /** @type {*} */
+      var arg;
+      /** @type {string} */
+      var type;
+      /** @type {!Array<*>} */
+      var args;
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var clean;
+      /** @type {string} */
+      var errorMsg;
+
+      len = arguments.length;
+
+      if (len < 2 || len % 2) {
+        errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
+        throw new Error(errorMsg);
+      }
+
+      args = Array.prototype.slice.call(arguments, 0);
+      pass = true;
+
+      i = -1;
+      while (++i < len) {
+
+        if (i % 2) {
+          arg = args[i];
+        }
+
+        else {
+          type = args[i];
+
+          clean = checkType(type, 'string', true);
+          clean = clean && isValidTypeString(type);
+          clean || throwInvalidTypeString(type);
+
+          pass = pass && checkType(arg, type, true);
+        }
+      }
+
+      pass || throwInvalidArgError();
+
+      return pass;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkType)
+     * ---------------------------------------------------
+     * @desc Checks a value's data type against the given optional types.
+     * @param {*} val - The value to be evaluated.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @param {boolean=} noTypeValCheck - If true this method does not check
+     *   the data type string for correctness. By default this is set to false.
+     * @return {boolean} The evaluation result.
+     */
+    var checkType = utilsModuleAPI.checkType;
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (isValidTypeString)
+     * ---------------------------------------------------
+     * @desc Evaluates whether a string is a valid data type string.
+     * @param {string} typeString - The string to evaluate.
+     * @return {boolean} The evaluation result.
+     */
+    var isValidTypeString = utilsModuleAPI.isValidTypeString;
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidTypeString)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid data type string value.
+     * @param {*} type - A known incorrect type value.
+     */
+    var throwInvalidTypeString = function(type) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
+      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'list of acceptable type strings.';
+      throw new Error(errorMsg);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (throwInvalidArgError)
+     * ---------------------------------------------------
+     * @desc Throws an error for an invalid argument.
+     * @type {function}
+     */
+    var throwInvalidArgError = function() {
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {(string|function)} */
+      var msg;
+
+      msg = defaults.checkArgsErrorMsg;
+
+      errorMsg = (checkType(msg, 'string')) ? msg : msg();
+
+      if (errorMsg && checkType(errorMsg, 'string')) {
+        throw new Error(errorMsg);
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The checkArgs Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return checkArgs;
+
+  })();
 
 /* -----------------------------------------------------------------------------
  * The freezeObj Method (js-methods/freezeObj.js)
@@ -783,7 +1082,6 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
         errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
         errorMsg += 'parameter.';
         throw new TypeError(errorMsg);
-        return;
       }
 
       if (typeof deep !== 'boolean') {
@@ -858,14 +1156,12 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid obj ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!prop || typeof prop !== 'string') {
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     return obj.hasOwnProperty(prop);
@@ -898,22 +1194,13 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     var types;
 
     types = '' +
-    '^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'          +
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
     '^element$|^undefined$|^null$|^strings$|^numbers$|^booleans$|^objects$|'   +
     '^arrays$|^elems$|^elements$|^functions$|^stringmap$|^numbermap$|'         +
     '^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|^elementmap$';
 
     return new RegExp(types);
   })();
-
-  /**
-   * -----------------------------------------------------
-   * Public Property (JsHelpers.pipe)
-   * -----------------------------------------------------
-   * @desc A regex matching the pipe character.
-   * @type {!RegExp}
-   */
-  JsHelpers.pipe = /\|/;
 
   /**
    * -----------------------------------------------------
