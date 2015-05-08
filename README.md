@@ -22,6 +22,7 @@
 aIV.utils.checkType( anyValue, theTypeString );
 aIV.utils.isValidTypeString( theTypeString );
 aIV.utils.checkArgs( theArg, theTypeString, theArg, theTypeString, ...);
+aIV.utils.getTypeOf( anyValue );
 aIV.utils.freezeObj( theObject [, applyDeepFreeze ]);
 aIV.utils.hasOwnProp( theObject, theProperty );
 aIV.utils.getElemById( theIdName );
@@ -38,6 +39,7 @@ aIV.utils.addElemText( theElement, theText );
 - **[checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for native operators and methods like [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray), and many more.
 - **[isValidTypeString](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to [aIV.utils.checkType](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js).
 - **[checkArgs](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkArgs.js)** - Allows you to easily catch invalid argument data types and throw custom error messages.
+- **[getTypeOf](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/getTypeOf.js)** - A shortcut for the native [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof) operator with the added ability to identify a null, array, document, or element type from an object.
 - **[freezeObj](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
 - **[hasOwnProp](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
 - **[getElemById](https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/dom-methods/getElemById.js)** - A shortcut for the native [Document.getElementById](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
