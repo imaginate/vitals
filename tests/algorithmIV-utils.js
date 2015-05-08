@@ -1064,7 +1064,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       errorMsg = (checkType(msg, 'string')) ? msg : msg();
 
       if (errorMsg && checkType(errorMsg, 'string')) {
-        throw new Error(errorMsg);
+        throw new TypeError(errorMsg);
       }
     };
 
@@ -1323,7 +1323,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1434,7 +1434,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
       index = 0;
     }
     else {
-      Math.floor(index);
+      index = Math.floor(index);
     }
 
     if (!root || typeof root !== 'object' ||
