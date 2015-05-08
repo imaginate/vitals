@@ -2368,7 +2368,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('aIV.utils.set', 4);
+    var results = new TestResults('aIV.utils.set', 5);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public set Method
@@ -2383,6 +2383,7 @@
      */
     var set = function() {
 
+      testCheckArgsErrorMsg();
       testGetElemByClassRoot();
       testGetElemsByClassRoot();
       testGetElemByTagRoot();
@@ -2398,23 +2399,46 @@
 
     /**
      * ---------------------------------------------------
+     * Private Method (testCheckArgsErrorMsg)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testCheckArgsErrorMsg = function() {
+
+      /** @type {string} */
+      var errorMsg;
+
+      try {
+        aIV.utils.set({
+          checkArgsErrorMsg: 'Errors oi'
+        });
+      }
+      catch (error) {
+        errorMsg = 'aIV.utils.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
+        errorMsg += 'failed. ' + error.toString;
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
      * Private Method (testGetElemByClassRoot)
      * ---------------------------------------------------
      * @type {function}
      */
     var testGetElemByClassRoot = function() {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.set({
-        getElemByClassRoot: document
-      });
-
-      if (!pass) {
-        errorMsg = 'aIV.utils.set({ getElemByClassRoot: document }) failed';
+      try {
+        aIV.utils.set({
+          getElemByClassRoot: document
+        });
+      }
+      catch (error) {
+        errorMsg = 'aIV.utils.set({ getElemByClassRoot: document }) failed. ';
+        errorMsg += error.toString;
         results.addError(errorMsg);
       }
     };
@@ -2427,17 +2451,17 @@
      */
     var testGetElemsByClassRoot = function() {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.set({
-        getElemsByClassRoot: document
-      });
-
-      if (!pass) {
-        errorMsg = 'aIV.utils.set({ getElemsByClassRoot: document }) failed';
+      try {
+        aIV.utils.set({
+          getElemsByClassRoot: document
+        });
+      }
+      catch (error) {
+        errorMsg = 'aIV.utils.set({ getElemsByClassRoot: document }) failed. ';
+        errorMsg += error.toString;
         results.addError(errorMsg);
       }
     };
@@ -2450,17 +2474,17 @@
      */
     var testGetElemByTagRoot = function() {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.set({
-        getElemByTagRoot: document
-      });
-
-      if (!pass) {
-        errorMsg = 'aIV.utils.set({ getElemByTagRoot: document }) failed';
+      try {
+        aIV.utils.set({
+          getElemByTagRoot: document
+        });
+      }
+      catch (error) {
+        errorMsg = 'aIV.utils.set({ getElemByTagRoot: document }) failed. ';
+        errorMsg += error.toString;
         results.addError(errorMsg);
       }
     };
@@ -2473,17 +2497,17 @@
      */
     var testGetElemsByTagRoot = function() {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.set({
-        getElemsByTagRoot: document
-      });
-
-      if (!pass) {
-        errorMsg = 'aIV.utils.set({ getElemsByTagRoot: document }) failed';
+      try {
+        aIV.utils.set({
+          getElemsByTagRoot: document
+        });
+      }
+      catch (error) {
+        errorMsg = 'aIV.utils.set({ getElemsByTagRoot: document }) failed. ';
+        errorMsg += error.toString;
         results.addError(errorMsg);
       }
     };
