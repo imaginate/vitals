@@ -11,7 +11,7 @@
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined'</span>
+   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
@@ -146,7 +146,7 @@
      * @desc The non-nullable data types available to this module.
      * @type {!RegExp}
      */
-    var nonNullableDataTypes = (function setupRegExpsNonNullableDataTypes() {
+    var nonNullableDataTypes = (function setup_nonNullableDataTypes() {
 
       /** @type {string} */
       var types;
@@ -164,7 +164,7 @@
      *   native JavaScript typeof operator.
      * @type {!RegExp}
      */
-    var typeOfDataTypes = (function setupRegExpsTypeOfDataTypes() {
+    var typeOfDataTypes = (function setup_typeOfDataTypes() {
 
       /** @type {string} */
       var types;
@@ -176,13 +176,13 @@
 
     /**
      * -----------------------------------------------
-     * Private Property (instanceOfDataTypes)
+     * Private Property (domNodeDataTypes)
      * -----------------------------------------------
      * @desc The data types that can be accurately checked with the
-     *   native JavaScript instanceof operator.
+     *   DOM Node's interface.
      * @type {!RegExp}
      */
-    var instanceOfDataTypes = /^elem$|^element$/;
+    var domNodeDataTypes = /^elem$|^element$|^document$/;
 
     /**
      * -----------------------------------------------
@@ -191,7 +191,7 @@
      * @desc The array data types available to this module.
      * @type {!RegExp}
      */
-    var arrayDataTypes = (function setupRegExpsArrayDataTypes() {
+    var arrayDataTypes = (function setup_arrayDataTypes() {
 
       /** @type {string} */
       var types;
@@ -209,7 +209,7 @@
      * @desc The hash map types available to this module.
      * @type {!RegExp}
      */
-    var mapDataTypes = (function setupRegExpsMapDataTypes() {
+    var mapDataTypes = (function setup_mapDataTypes() {
 
       /** @type {string} */
       var types;
@@ -389,8 +389,8 @@
           continue;
         }
 
-        if ( instanceOfDataTypes.test(type) ) {
-          pass = checkInstanceOf(val, type);
+        if ( domNodeDataTypes.test(type) ) {
+          pass = checkNodeType(val, type);
           continue;
         }
 
@@ -459,28 +459,29 @@
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkInstanceOf)
+     * Private Method (checkNodeType)
      * ---------------------------------------------------
      * @desc Checks a value's instanceof against the given type.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkInstanceOf = function(val, type) {
+    var checkNodeType = function(val, type) {
 
-      /** @type {!Object<string, function>} */
-      var constructors;
+      /** @type {!Object<string, number>} */
+      var types;
 
-      if ( !checkTypeOf(val, 'object') ) {
+      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
         return false;
       }
 
-      constructors = {
-        'elem'   : Element,
-        'element': Element
+      types = {
+        'elem'    : 1,
+        'element' : 1,
+        'document': 9
       };
 
-      return (val instanceof constructors[ type ]);
+      return (val.nodeType === types[ type ]);
     };
 
     /**
@@ -512,8 +513,8 @@
       type = type.slice(0, -1);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;
@@ -551,8 +552,8 @@
       type = type.slice(0, -3);
 
       testFunc = ( (type === 'array') ?
-        Array.isArray : ( instanceOfDataTypes.test(type) ) ?
-          checkInstanceOf : checkTypeOf
+        Array.isArray : ( domNodeDataTypes.test(type) ) ?
+          checkNodeType : checkTypeOf
       );
 
       pass = true;
