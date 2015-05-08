@@ -88,6 +88,11 @@
 // insert-js-methods-isValidTypeString
 
 /* -----------------------------------------------------------------------------
+ * The checkArgs Method (js-methods/checkArgs.js)
+ * -------------------------------------------------------------------------- */
+// insert-js-methods-checkArgs
+
+/* -----------------------------------------------------------------------------
  * The freezeObj Method (js-methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-freezeObj
