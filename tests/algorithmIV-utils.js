@@ -325,7 +325,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setupCheckType() {
+  utilsModuleAPI.checkType = (function setup_checkType() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -899,7 +899,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  utilsModuleAPI.checkArgs = (function() {
+  utilsModuleAPI.checkArgs = (function setup_checkArgs() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -1057,7 +1057,7 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setupFreezeObj() {
+  utilsModuleAPI.freezeObj = (function setup_freezeObj() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
