@@ -104,10 +104,13 @@
       pass = asterisk.test(type);
 
       // Catch and throw asterisk error
-      pass && type.length > 1 && throwInvalidAsteriskUse();
+      if (pass) {
+        (type.length > 1) && throwInvalidAsteriskUse();
+        return true;
+      }
 
       // Check for an optional undefined value
-      pass = pass || (val === undefined && equalSign.test(type));
+      pass = (val === undefined && equalSign.test(type));
 
       nullableOverride = (pass) ? true : checkForNullOverride(val, type);
       nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
