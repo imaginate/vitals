@@ -2,11 +2,12 @@
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.addElemText)
    * ---------------------------------------------------
-   * @desc A shortcut for the native DOM methods - Element.textContent
+   * @desc A shortcut that adds to the native DOM property - Element.textContent
    *   or Element.innerText.
-   * @param {!Element} elem - The element.
-   * @param {string} text - The element's textContent or innerText.
-   * @return {!Element} The DOM element with the given text.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to add to the DOM element's textContent or
+   *   innerText.
+   * @return {!Element} The updated DOM element.
    */
   utilsModuleAPI.addElemText = function(elem, text) {
 
@@ -28,10 +29,10 @@
     }
 
     if (!!elem.textContent) {
-      elem.textContent = text;
+      elem.textContent += text;
     }
     else {
-      elem.innerText = text;
+      elem.innerText += text;
     }
 
     return elem;
