@@ -55,12 +55,17 @@
       var errorMsg;
 
       elem = document.createElement('test');
+      if (!!elem.textContent) {
+        elem.textContent = 'Start & ';
+      }
+      else {
+        elem.innerText = 'Start & ';
+      }
 
       aIV.utils.addElemText(elem, 'Pass');
 
       text = (!!elem.textContent) ? elem.textContent : elem.innerText;
-
-      pass = (text === 'Pass');
+      pass = (text === 'Start & Pass');
 
       if (!pass) {
         errorMsg = 'addElemText failed to update an element\'s innerText';
