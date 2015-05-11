@@ -13,6 +13,8 @@
    */
   utilsModuleAPI.set = (function setup_set() {
 
+    /** @type {function(*, string): boolean} */
+    var checkType = utilsModuleAPI.checkType;
     /** @type {function(string)} */
     var throwPropError = function(prop) {
 
@@ -27,8 +29,6 @@
 
     return function set(settings) {
 
-      /** @type {function(*, string): boolean} */
-      var checkType = utilsModuleAPI.checkType;
       /** @type {string} */
       var errorMsg;
       /** @type {string} */
