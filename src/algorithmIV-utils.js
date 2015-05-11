@@ -179,111 +179,9 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };
 
-/* -----------------------------------------------------------------------------
- * The Set Method Defaults Method (set-defaults.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.set)
-   * -----------------------------------------------------
-   * @desc Allows you to set the default settings for each aIV.utils method.
-   * @param {!Object} settings - The default settings.
-   * @param {(string|function)=} settings.checkArgsErrorMsg
-   * @param {!(Document|Element)=} settings.getElemByClassRoot
-   * @param {!(Document|Element)=} settings.getElemsByClassRoot
-   * @param {!(Document|Element)=} settings.getElemByTagRoot
-   * @param {!(Document|Element)=} settings.getElemsByTagRoot
-   * @return {boolean} The success of the new settings update.
-   */
-  utilsModuleAPI.set = (function setup_set() {
-
-    /** @type {function(string)} */
-    var throwPropError = function(prop) {
-
-      /** @type {string} */
-      var errorMsg;
-
-      errorMsg = 'An aIV.utils.set call received an invalid ' + prop;
-      errorMsg += ' settings parameter (should be a ' + DEFAULTS.types[ prop ];
-      errorMsg += ').';
-      throw new TypeError(errorMsg);
-    };
-
-    return function set(settings) {
-
-      /** @type {function(*, string): boolean} */
-      var checkType = utilsModuleAPI.checkType;
-      /** @type {string} */
-      var errorMsg;
-      /** @type {string} */
-      var prop;
-
-      if (!settings || typeof settings !== 'object') {
-        errorMsg = 'An aIV.utils.set call received an invalid settings ';
-        errorMsg += 'parameter (should be an object).';
-        throw new TypeError(errorMsg);
-      }
-
-      for (prop in defaults) {
-        if (defaults.hasOwnProperty(prop) && settings.hasOwnProperty(prop)) {
-          if ( checkType(settings[ prop ], DEFAULTS.types[ prop ]) ) {
-            defaults[ prop ] = settings[ prop ];
-          }
-          else {
-            throwPropError(prop);
-          }
-        }
-      }
-
-      return true;
-    };
-  })();
-
-  /**
-   * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.reset)
-   * -----------------------------------------------------
-   * @desc Allows you to reset the default settings for each aIV.utils method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original default.
-   * @return {boolean} The success of the new settings update.
-   */
-  utilsModuleAPI.reset = function() {
-
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<string>} */
-    var args;
-    /** @type {string} */
-    var prop;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len  = arguments.length;
-    args = ( (!len) ?
-      Object.keys(defaults) : (len > 1) ?
-        Array.prototype.slice.call(arguments, 0) : (Array.isArray(arguments[0])) ?
-          arguments[0] : [ arguments[0] ]
-    );
-
-    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
-      errorMsg = 'An aIV.utils.reset call received an invalid setting ';
-      errorMsg += 'parameter (should be a string or an array of strings).';
-      throw new TypeError(errorMsg);
-    }
-
-    i = args.length;
-    while (i--) {
-      prop = args[i];
-      if ( defaults.hasOwnProperty(prop) ) {
-        defaults[ prop ] = DEFAULTS[ prop ];
-      }
-    }
-
-    return true;
-  };
+////////////////////////////////////////////////////////////////////////////////
+// The JS Shortcuts
+////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
  * The checkType Method (js-methods/checkType.js)
@@ -1320,6 +1218,10 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
   utilsModuleAPI.freezeObj(JsHelpers, true);
 
+////////////////////////////////////////////////////////////////////////////////
+// The DOM Shortcuts
+////////////////////////////////////////////////////////////////////////////////
+
 /* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
@@ -1653,6 +1555,50 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
   };
 
 /* -----------------------------------------------------------------------------
+ * The setElemText Method (dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.setElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut that sets the native DOM property - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to set the DOM element's textContent or
+   *   innerText to.
+   * @return {!Element} The updated DOM element.
+   */
+  utilsModuleAPI.setElemText = function(elem, text) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
+      errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
+      errorMsg += 'parameter (should be a DOM Element).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!text || typeof text !== 'string') {
+      errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
+      errorMsg += 'parameter (should be a string).';
+      throw new TypeError(errorMsg);
+      return;
+    }
+
+    if (!!elem.textContent) {
+      elem.textContent = text;
+    }
+    else {
+      elem.innerText = text;
+    }
+
+    return elem;
+  };
+
+/* -----------------------------------------------------------------------------
  * The addElemText Method (dom-methods/addElemText.js)
  * -------------------------------------------------------------------------- */
 
@@ -1660,11 +1606,12 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
    * ---------------------------------------------------
    * Public Method (utilsModuleAPI.addElemText)
    * ---------------------------------------------------
-   * @desc A shortcut for the native DOM methods - Element.textContent
+   * @desc A shortcut that adds to the native DOM property - Element.textContent
    *   or Element.innerText.
-   * @param {!Element} elem - The element.
-   * @param {string} text - The element's textContent or innerText.
-   * @return {!Element} The DOM element with the given text.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to add to the DOM element's textContent or
+   *   innerText.
+   * @return {!Element} The updated DOM element.
    */
   utilsModuleAPI.addElemText = function(elem, text) {
 
@@ -1686,10 +1633,10 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
     }
 
     if (!!elem.textContent) {
-      elem.textContent = text;
+      elem.textContent += text;
     }
     else {
-      elem.innerText = text;
+      elem.innerText += text;
     }
 
     return elem;
@@ -1776,15 +1723,129 @@ try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return functi
 
   utilsModuleAPI.freezeObj(DomHelpers, true);
 
+////////////////////////////////////////////////////////////////////////////////
+// The Master Methods
+////////////////////////////////////////////////////////////////////////////////
+
+/* -----------------------------------------------------------------------------
+ * The set Method (master-methods/set.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (utilsModuleAPI.set)
+   * -----------------------------------------------------
+   * @desc Allows you to set the default settings for each aIV.utils method.
+   * @param {!Object} settings - The default settings.
+   * @param {(string|function)=} settings.checkArgsErrorMsg
+   * @param {!(Document|Element)=} settings.getElemByClassRoot
+   * @param {!(Document|Element)=} settings.getElemsByClassRoot
+   * @param {!(Document|Element)=} settings.getElemByTagRoot
+   * @param {!(Document|Element)=} settings.getElemsByTagRoot
+   * @return {boolean} The success of the new settings update.
+   */
+  utilsModuleAPI.set = (function setup_set() {
+
+    /** @type {function(*, string): boolean} */
+    var checkType = utilsModuleAPI.checkType;
+    /** @type {function(string)} */
+    var throwPropError = function(prop) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'An aIV.utils.set call received an invalid ' + prop;
+      errorMsg += ' settings parameter (should be a ' + DEFAULTS.types[ prop ];
+      errorMsg += ').';
+      throw new TypeError(errorMsg);
+    };
+
+    return function set(settings) {
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {string} */
+      var prop;
+
+      if (!settings || typeof settings !== 'object') {
+        errorMsg = 'An aIV.utils.set call received an invalid settings ';
+        errorMsg += 'parameter (should be an object).';
+        throw new TypeError(errorMsg);
+      }
+
+      for (prop in defaults) {
+        if (defaults.hasOwnProperty(prop) && settings.hasOwnProperty(prop)) {
+          if ( checkType(settings[ prop ], DEFAULTS.types[ prop ]) ) {
+            defaults[ prop ] = settings[ prop ];
+          }
+          else {
+            throwPropError(prop);
+          }
+        }
+      }
+
+      return true;
+    };
+  })();
+
+/* -----------------------------------------------------------------------------
+ * The reset Method (master-methods/reset.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Method (utilsModuleAPI.reset)
+   * -----------------------------------------------------
+   * @desc Allows you to reset the default settings for each aIV.utils method.
+   * @param {...(string|strings)=} setting - A setting to reset to the original default.
+   * @return {boolean} The success of the new settings update.
+   */
+  utilsModuleAPI.reset = function() {
+
+    /** @type {string} */
+    var errorMsg;
+    /** @type {!Array<string>} */
+    var args;
+    /** @type {string} */
+    var prop;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len  = arguments.length;
+    args = ( (!len) ?
+      Object.keys(defaults) : (len > 1) ?
+        Array.prototype.slice.call(arguments, 0) : (Array.isArray(arguments[0])) ?
+          arguments[0] : [ arguments[0] ]
+    );
+
+    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
+      errorMsg = 'An aIV.utils.reset call received an invalid setting ';
+      errorMsg += 'parameter (should be a string or an array of strings).';
+      throw new TypeError(errorMsg);
+    }
+
+    i = args.length;
+    while (i--) {
+      prop = args[i];
+      if ( defaults.hasOwnProperty(prop) ) {
+        defaults[ prop ] = DEFAULTS[ prop ];
+      }
+    }
+
+    return true;
+  };
+
+////////////////////////////////////////////////////////////////////////////////
+// The Utils Module End
+////////////////////////////////////////////////////////////////////////////////
+
 /* -----------------------------------------------------------------------------
  * Deep Freeze The Utils Module API
  * -------------------------------------------------------------------------- */
 
   utilsModuleAPI.freezeObj(utilsModuleAPI, true);
-
-////////////////////////////////////////////////////////////////////////////////
-// The Utils Module End
-////////////////////////////////////////////////////////////////////////////////
 
   return utilsModuleAPI;
 
