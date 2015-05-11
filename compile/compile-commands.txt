@@ -18,7 +18,6 @@ sed \
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
-  -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" \
@@ -34,7 +33,9 @@ sed \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
   -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
-  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" \
+  -e "/insert-master-method-set/ r master-methods/set.js" \
+  -e "/insert-master-method-reset/ r master-methods/reset.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-utils/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-utils/algorithmIV-utils-temp.js
@@ -47,7 +48,6 @@ sed ^
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
-  -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" ^
@@ -63,7 +63,9 @@ sed ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
   -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
-  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" ^
+  -e "/insert-master-method-set/ r master-methods/set.js" ^
+  -e "/insert-master-method-reset/ r master-methods/reset.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-utils\algorithmIV-utils-temp.js algorithmIV-utils.js
 del /f pre-compiled-utils\algorithmIV-utils-temp.js
@@ -128,6 +130,7 @@ src/algorithmIV-utils.js |    |
 cp -u tests/pre-compiled-utils/*.js src/pre-compiled-parts
 cp -u tests/pre-compiled-utils/js-methods/*.js src/pre-compiled-parts/js-methods
 cp -u tests/pre-compiled-utils/dom-methods/*.js src/pre-compiled-parts/dom-methods
+cp -u tests/pre-compiled-utils/master-methods/*.js src/pre-compiled-parts/master-methods
 cp -u tests/pre-compiled-utils/dependencies/*.js src/pre-compiled-parts/dependencies
 cd src/pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
@@ -136,7 +139,6 @@ sed \
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
-  -e "/insert-set-defaults/ r set-defaults.js" \
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" \
@@ -152,7 +154,9 @@ sed \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
   -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
-  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" \
+  -e "/insert-master-method-set/ r master-methods/set.js" \
+  -e "/insert-master-method-reset/ r master-methods/reset.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-parts/algorithmIV-utils-temp.js
@@ -163,6 +167,7 @@ rm -f sed*
 copy /y tests\pre-compiled-utils\*.js src\pre-compiled-parts
 copy /y tests\pre-compiled-utils\js-methods\*.js src\pre-compiled-parts\js-methods
 copy /y tests\pre-compiled-utils\dom-methods\*.js src\pre-compiled-parts\dom-methods
+copy /y tests\pre-compiled-utils\master-methods\*.js src\pre-compiled-parts\master-methods
 copy /y tests\pre-compiled-utils\dependencies\*.js src\pre-compiled-parts\dependencies
 cd src\pre-compiled-parts
 sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
@@ -171,7 +176,6 @@ sed ^
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
-  -e "/insert-set-defaults/ r set-defaults.js" ^
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" ^
@@ -187,7 +191,9 @@ sed ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
   -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
-  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
+  -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" ^
+  -e "/insert-master-method-set/ r master-methods/set.js" ^
+  -e "/insert-master-method-reset/ r master-methods/reset.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
 copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js
 del /f pre-compiled-parts\algorithmIV-utils-temp.js
