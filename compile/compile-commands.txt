@@ -32,6 +32,7 @@ sed \
   -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" \
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
+  -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
   -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
@@ -60,6 +61,7 @@ sed ^
   -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" ^
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
+  -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
   -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
@@ -148,6 +150,7 @@ sed \
   -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" \
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" \
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" \
+  -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" \
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" \
   -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..
@@ -182,6 +185,7 @@ sed ^
   -e "/insert-dom-methods-getElemByTag/ r dom-methods/getElemByTag.js" ^
   -e "/insert-dom-methods-getElemsByTag/ r dom-methods/getElemsByTag.js" ^
   -e "/insert-dom-methods-makeElem/ r dom-methods/makeElem.js" ^
+  -e "/insert-dom-methods-setElemText/ r dom-methods/setElemText.js" ^
   -e "/insert-dom-methods-addElemText/ r dom-methods/addElemText.js" ^
   -e "/insert-dom-methods-helpers/ r dom-methods/helpers.js" <skeleton.js>algorithmIV-utils-temp.js
 cd ..

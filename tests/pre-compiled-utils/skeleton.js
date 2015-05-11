@@ -143,6 +143,11 @@
 // insert-dom-methods-makeElem
 
 /* -----------------------------------------------------------------------------
+ * The setElemText Method (dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-setElemText
+
+/* -----------------------------------------------------------------------------
  * The addElemText Method (dom-methods/addElemText.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-addElemText
