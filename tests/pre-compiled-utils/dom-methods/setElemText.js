@@ -18,14 +18,12 @@
       errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
       errorMsg += 'parameter (should be a DOM Element).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!text || typeof text !== 'string') {
       errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!!elem.textContent) {

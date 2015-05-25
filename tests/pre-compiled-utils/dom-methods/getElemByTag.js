@@ -25,7 +25,6 @@
       errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -53,7 +52,6 @@
       errorMsg += 'received an invalid tag name parameter ';
       errorMsg += '(i.e. no element with the tag name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;

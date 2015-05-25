@@ -14,14 +14,13 @@
 
     /** @type {string} */
     var errorMsg;
-    /** @type {!Array<HTMLElement>} */
+    /** @type {!Array<!Element>} */
     var elems;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||

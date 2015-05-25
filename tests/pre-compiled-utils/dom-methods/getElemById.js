@@ -17,7 +17,6 @@
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     elem = document.getElementById(id);
@@ -26,7 +25,6 @@
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (i.e. no element with the id was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
