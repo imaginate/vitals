@@ -18,7 +18,7 @@
       throw new TypeError(errorMsg);
     }
 
-    if (!prop || typeof prop !== 'string') {
+    if (!prop || (typeof prop !== 'string' && typeof prop !== 'number')) {
       errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
