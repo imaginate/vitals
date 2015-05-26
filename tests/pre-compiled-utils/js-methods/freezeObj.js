@@ -8,7 +8,7 @@
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setup_freezeObj() {
+  utilsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -33,6 +33,10 @@
         errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
         errorMsg += 'parameter.';
         throw new TypeError(errorMsg);
+      }
+
+      if (hasFreezeRegExpBug && (obj instanceof RegExp)) {
+        return obj;
       }
 
       if (typeof deep !== 'boolean') {
@@ -71,7 +75,9 @@
       for (prop in obj) {
         if (obj.hasOwnProperty(prop) && obj[ prop ] &&
             (typeof obj[ prop ] === 'object' ||
-             typeof obj[ prop ] === 'function')) {
+             typeof obj[ prop ] === 'function') &&
+            (!hasFreezeRegExpBug ||
+             !(obj[ prop ] instanceof RegExp))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -83,4 +89,4 @@
 
     return freezeObj;
 
-  })();
+  })(HasFeature.freezeRegExpBug);
