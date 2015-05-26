@@ -55,7 +55,7 @@
       var errorMsg;
 
       elem = document.createElement('test');
-      if (!!elem.textContent) {
+      if ('textContent' in elem) {
         elem.textContent = 'Start & ';
       }
       else {
@@ -64,7 +64,7 @@
 
       aIV.utils.addElemText(elem, 'Pass');
 
-      text = (!!elem.textContent) ? elem.textContent : elem.innerText;
+      text = elem.textContent || elem.innerText;
       pass = (text === 'Start & Pass');
 
       if (!pass) {
