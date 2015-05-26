@@ -9,29 +9,33 @@
    *   innerText to.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.setElemText = function(elem, text) {
+  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
+                                                           hasTextContent) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function setElemText(elem, text) {
 
-    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-      errorMsg += 'parameter (should be a DOM Element).';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    if (!text || typeof text !== 'string') {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-    }
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
+        errorMsg += 'parameter (should be a DOM Element).';
+        throw new TypeError(errorMsg);
+      }
 
-    if (DomFeatures.textContent) {
-      elem.textContent = text;
-    }
-    else {
-      elem.innerText = text;
-    }
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
+        errorMsg += 'parameter (should be a string).';
+        throw new TypeError(errorMsg);
+      }
 
-    return elem;
-  };
+      if (hasTextContent) {
+        elem.textContent = text;
+      }
+      else {
+        elem.innerText = text;
+      }
+
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, DomFeatures.textContent);
