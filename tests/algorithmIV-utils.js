@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.5)
+ * Algorithm IV JavaScript Shortcuts (v1.0.6)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.5
+ * @version 1.0.6
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -198,6 +198,84 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
     getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };
+
+/* -----------------------------------------------------------------------------
+ * The HasFeature Class (has-feature.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (HasFeature)
+   * -----------------------------------------------------
+   * @desc Holds the results for all browser feature detection.
+   * @type {!Object<string, boolean>}
+   * @struct
+   */
+  var HasFeature = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (HasFeature.freezeRegExpBug)
+   * -----------------------------------------------------
+   * @desc Indicates whether the browser has a bug when using frozen RegExp.
+   * @type {boolean}
+   */
+  HasFeature.freezeRegExpBug = (function testForFreezeRegExpBug() {
+
+    /** @type {!RegExp} */
+    var regex;
+    /** @type {string} */
+    var orgStr;
+    /** @type {string} */
+    var newStr;
+    /** @type {boolean} */
+    var pass;
+
+    regex = /0/g;
+    Object.freeze(regex);
+
+    orgStr = 'T00 many zer0s... replace them.';
+    pass = true;
+
+    try {
+      newStr = orgStr.replace(regex, 'o');
+    }
+    catch(e){
+      pass = false;
+    }
+
+    return !pass;
+  })();
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (HasFeature.textContent)
+   * -----------------------------------------------------
+   * @desc Indicates whether the browser supports the DOM property,
+   *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
+   * @type {boolean}
+   */
+  HasFeature.textContent = (function testForTextContent() {
+
+    /** @type {!Element} */
+    var elem;
+    /** @type {boolean} */
+    var pass;
+
+    elem = document.createElement('div');
+    elem.id = 'aIV-utils-test-elem';
+    elem.innerHTML = 'Test Elem';
+    elem.style.opacity = '0';
+    document.body.appendChild(elem);
+
+    pass = !!elem.textContent;
+
+    document.body.removeChild(elem);
+
+    return pass;
+  })();
+
+  Object.freeze(HasFeature);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The JS Shortcuts
@@ -1081,7 +1159,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setup_freezeObj() {
+  utilsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -1106,6 +1184,10 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
         errorMsg += 'parameter.';
         throw new TypeError(errorMsg);
+      }
+
+      if (hasFreezeRegExpBug && (obj instanceof RegExp)) {
+        return obj;
       }
 
       if (typeof deep !== 'boolean') {
@@ -1144,7 +1226,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       for (prop in obj) {
         if (obj.hasOwnProperty(prop) && obj[ prop ] &&
             (typeof obj[ prop ] === 'object' ||
-             typeof obj[ prop ] === 'function')) {
+             typeof obj[ prop ] === 'function') &&
+            (!hasFreezeRegExpBug ||
+             !(obj[ prop ] instanceof RegExp))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -1156,7 +1240,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return freezeObj;
 
-  })();
+  })(HasFeature.freezeRegExpBug);
 
 /* -----------------------------------------------------------------------------
  * The hasOwnProp Method (js-methods/hasOwnProp.js)
@@ -1236,6 +1320,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
 
+  utilsModuleAPI.freezeObj(JsHelpers, true);
+
 ////////////////////////////////////////////////////////////////////////////////
 // The DOM Shortcuts
 ////////////////////////////////////////////////////////////////////////////////
@@ -1263,7 +1349,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     elem = document.getElementById(id);
@@ -1272,7 +1357,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (i.e. no element with the id was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1309,7 +1393,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -1340,7 +1423,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg += 'received an invalid class name parameter ';
       errorMsg += '(i.e. no element with the class name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1366,14 +1448,13 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     /** @type {string} */
     var errorMsg;
-    /** @type {!Array<HTMLElement>} */
+    /** @type {!Array<!Element>} */
     var elems;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1420,7 +1501,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -1448,7 +1528,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg += 'received an invalid tag name parameter ';
       errorMsg += '(i.e. no element with the tag name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1479,7 +1558,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1596,17 +1674,15 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
       errorMsg += 'parameter (should be a DOM Element).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!text || typeof text !== 'string') {
       errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
-    if (!!elem.textContent) {
+    if (HasFeature.textContent) {
       elem.textContent = text;
     }
     else {
@@ -1640,17 +1716,15 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
       errorMsg += 'parameter (should be a DOM Element).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!text || typeof text !== 'string') {
       errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
-    if (!!elem.textContent) {
+    if (HasFeature.textContent) {
       elem.textContent += text;
     }
     else {
