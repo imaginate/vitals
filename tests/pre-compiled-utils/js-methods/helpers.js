@@ -38,3 +38,5 @@
    * @type {!RegExp}
    */
   JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
+
+  utilsModuleAPI.freezeObj(JsHelpers, true);
