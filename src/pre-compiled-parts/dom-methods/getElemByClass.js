@@ -25,7 +25,6 @@
       errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -56,7 +55,6 @@
       errorMsg += 'received an invalid class name parameter ';
       errorMsg += '(i.e. no element with the class name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;

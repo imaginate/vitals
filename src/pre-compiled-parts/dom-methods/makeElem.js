@@ -12,66 +12,49 @@
    * @param {string=} settings.html - The element's innerHTML.
    * @param {string=} settings.id - The element's id.
    * @param {string=} settings.className - The element's class name.
-   * @return {!HTMLElement} The DOM element with the given id.
+   * @return {!Element} The DOM element with the given id.
    */
-  utilsModuleAPI.makeElem = function(settings) {
+  utilsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
 
-    /** @type {HTMLElement} */
-    var elem;
-    /** @type {string} */
-    var tag;
+    return function makeElem(settings) {
 
-    if (settings && typeof settings === 'string') {
-      tag = settings;
-      settings = null;
-    }
-    else if (settings && typeof settings === 'object') {
-      if (settings.hasOwnProperty('tag') && settings.tag &&
-          typeof settings.tag === 'string') {
-        tag = settings.tag;
+      /** @type {!Element} */
+      var elem;
+      /** @type {string} */
+      var tag;
+
+      if ( checkType(settings, 'string') ) {
+        tag = settings;
       }
-      else if (settings.hasOwnProperty('tagName') && settings.tagName &&
-          typeof settings.tagName === 'string') {
-        tag = settings.tagName;
+      else if ( checkType(settings, '!object') ) {
+        tag = settings.tag || settings.tagName;
       }
-    }
-    else {
-      settings = null;
-    }
+      else {
+        settings = null;
+      }
 
-    if (!tag) {
-      tag = 'div';
-    }
+      tag = tag || 'div';
+      elem = document.createElement(tag);
 
-    elem = document.createElement(tag);
+      if (settings) {
 
-    if (settings) {
-
-      if (settings.hasOwnProperty('text') && settings.text &&
-          typeof settings.text === 'string') {
-        if (!!elem.textContent) {
-          elem.textContent = settings.text;
+        if (settings.text && checkType(settings.text, 'string')) {
+          setElemText(elem, settings.text);
         }
-        else {
-          elem.innerText = settings.text;
+
+        if (settings.html && checkType(settings.html, 'string')) {
+          elem.innerHTML = settings.html;
+        }
+
+        if (settings.id && checkType(settings.id, 'string')) {
+          elem.id = settings.id;
+        }
+
+        if (settings.className && checkType(settings.className, 'string')) {
+          elem.className = settings.className;
         }
       }
 
-      if (settings.hasOwnProperty('html') && settings.html &&
-          typeof settings.html === 'string') {
-        elem.innerHTML = settings.html;
-      }
-
-      if (settings.hasOwnProperty('id') && settings.id &&
-          typeof settings.id === 'string') {
-        elem.id = settings.id;
-      }
-
-      if (settings.hasOwnProperty('className') && settings.className &&
-          typeof settings.className === 'string') {
-        elem.className = settings.className;
-      }
-    }
-
-    return elem;
-  };
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, utilsModuleAPI.setElemText);

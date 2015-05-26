@@ -2,14 +2,14 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.5)
+ * Algorithm IV JavaScript Shortcuts (v1.0.6)
  * -----------------------------------------------------------------------------
  * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
  *   make programming in JavaScript easier. With an intuitive API and clear
  *   documentation we are sure you will appreciate the time you save using our
  *   shortcuts!
  * @module aIVUtils
- * @version 1.0.5
+ * @version 1.0.6
  * @author Adam Smith ({@link adamsmith@youlum.com})
  * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
  * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
@@ -204,6 +204,56 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
+ * The JS Feature Detection (js/feature-detect.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (JsFeatures)
+   * -----------------------------------------------------
+   * @desc Holds the results for JS feature detection.
+   * @type {!Object<string, boolean>}
+   * @struct
+   */
+  var JsFeatures = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsFeatures.freezeRegExpBug)
+   * -----------------------------------------------------
+   * @desc Indicates whether the browser has a bug when using frozen RegExp.
+   * @type {boolean}
+   */
+  JsFeatures.freezeRegExpBug = (function testForFreezeRegExpBug() {
+
+    /** @type {!RegExp} */
+    var regex;
+    /** @type {string} */
+    var orgStr;
+    /** @type {string} */
+    var newStr;
+    /** @type {boolean} */
+    var pass;
+
+    regex = /0/g;
+    Object.freeze(regex);
+
+    orgStr = 'T00 many zer0s... replace them.';
+    pass = true;
+
+    try {
+      newStr = orgStr.replace(regex, 'o');
+    }
+    catch(e) {
+      pass = false;
+    }
+
+    return !pass;
+  })();
+
+  Object.freeze(JsFeatures);
+
+/* -----------------------------------------------------------------------------
  * The checkType Method (js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
 
@@ -309,11 +359,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value)
-      pass = asterisk.test(type);
-
-      // Catch and throw asterisk error
-      if (pass) {
+      // Check for automatic pass (* = any value) & catch asterisk error
+      if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
@@ -1081,7 +1128,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setup_freezeObj() {
+  utilsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -1106,6 +1153,10 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
         errorMsg += 'parameter.';
         throw new TypeError(errorMsg);
+      }
+
+      if (hasFreezeRegExpBug && (obj instanceof RegExp)) {
+        return obj;
       }
 
       if (typeof deep !== 'boolean') {
@@ -1144,7 +1195,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       for (prop in obj) {
         if (obj.hasOwnProperty(prop) && obj[ prop ] &&
             (typeof obj[ prop ] === 'object' ||
-             typeof obj[ prop ] === 'function')) {
+             typeof obj[ prop ] === 'function') &&
+            (!hasFreezeRegExpBug ||
+             !(obj[ prop ] instanceof RegExp))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -1156,7 +1209,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return freezeObj;
 
-  })();
+  })(JsFeatures.freezeRegExpBug);
 
 /* -----------------------------------------------------------------------------
  * The hasOwnProp Method (js-methods/hasOwnProp.js)
@@ -1236,9 +1289,37 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
 
+  utilsModuleAPI.freezeObj(JsHelpers, true);
+
 ////////////////////////////////////////////////////////////////////////////////
 // The DOM Shortcuts
 ////////////////////////////////////////////////////////////////////////////////
+
+/* -----------------------------------------------------------------------------
+ * The DOM Feature Detection (dom/feature-detect.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (DomFeatures)
+   * -----------------------------------------------------
+   * @desc Holds the results for DOM feature detection.
+   * @type {!Object<string, boolean>}
+   * @struct
+   */
+  var DomFeatures = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (HasFeature.textContent)
+   * -----------------------------------------------------
+   * @desc Indicates whether the browser supports the DOM property,
+   *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
+   * @type {boolean}
+   */
+  DomFeatures.textContent = ('textContent' in document);
+
+  Object.freeze(DomFeatures);
 
 /* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
@@ -1263,7 +1344,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (should be a string).';
       throw new TypeError(errorMsg);
-      return;
     }
 
     elem = document.getElementById(id);
@@ -1272,7 +1352,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
       errorMsg += 'parameter (i.e. no element with the id was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1309,7 +1388,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -1340,7 +1418,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg += 'received an invalid class name parameter ';
       errorMsg += '(i.e. no element with the class name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1366,14 +1443,13 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     /** @type {string} */
     var errorMsg;
-    /** @type {!Array<HTMLElement>} */
+    /** @type {!Array<!Element>} */
     var elems;
 
     if (!classname || typeof classname !== 'string') {
       errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1420,7 +1496,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
       errorMsg += 'parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (typeof index !== 'number' || index < -1) {
@@ -1448,7 +1523,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg += 'received an invalid tag name parameter ';
       errorMsg += '(i.e. no element with the tag name was found).';
       throw new RangeError(errorMsg);
-      return;
     }
 
     return elem;
@@ -1479,7 +1553,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||
@@ -1489,6 +1562,52 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return root.getElementsByTagName(tag);
   };
+
+/* -----------------------------------------------------------------------------
+ * The setElemText Method (dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.setElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut that sets the native DOM property - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to set the DOM element's textContent or
+   *   innerText to.
+   * @return {!Element} The updated DOM element.
+   */
+  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
+                                                           hasTextContent) {
+
+    return function setElemText(elem, text) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
+        errorMsg += 'parameter (should be a DOM Element).';
+        throw new TypeError(errorMsg);
+      }
+
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
+        errorMsg += 'parameter (should be a string).';
+        throw new TypeError(errorMsg);
+      }
+
+      if (hasTextContent) {
+        elem.textContent = text;
+      }
+      else {
+        elem.innerText = text;
+      }
+
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, DomFeatures.textContent);
 
 /* -----------------------------------------------------------------------------
  * The makeElem Method (dom-methods/makeElem.js)
@@ -1508,113 +1627,52 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string=} settings.html - The element's innerHTML.
    * @param {string=} settings.id - The element's id.
    * @param {string=} settings.className - The element's class name.
-   * @return {!HTMLElement} The DOM element with the given id.
+   * @return {!Element} The DOM element with the given id.
    */
-  utilsModuleAPI.makeElem = function(settings) {
+  utilsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
 
-    /** @type {HTMLElement} */
-    var elem;
-    /** @type {string} */
-    var tag;
+    return function makeElem(settings) {
 
-    if (settings && typeof settings === 'string') {
-      tag = settings;
-      settings = null;
-    }
-    else if (settings && typeof settings === 'object') {
-      if (settings.hasOwnProperty('tag') && settings.tag &&
-          typeof settings.tag === 'string') {
-        tag = settings.tag;
+      /** @type {!Element} */
+      var elem;
+      /** @type {string} */
+      var tag;
+
+      if ( checkType(settings, 'string') ) {
+        tag = settings;
       }
-      else if (settings.hasOwnProperty('tagName') && settings.tagName &&
-          typeof settings.tagName === 'string') {
-        tag = settings.tagName;
+      else if ( checkType(settings, '!object') ) {
+        tag = settings.tag || settings.tagName;
       }
-    }
-    else {
-      settings = null;
-    }
+      else {
+        settings = null;
+      }
 
-    if (!tag) {
-      tag = 'div';
-    }
+      tag = tag || 'div';
+      elem = document.createElement(tag);
 
-    elem = document.createElement(tag);
+      if (settings) {
 
-    if (settings) {
-
-      if (settings.hasOwnProperty('text') && settings.text &&
-          typeof settings.text === 'string') {
-        if (!!elem.textContent) {
-          elem.textContent = settings.text;
+        if (settings.text && checkType(settings.text, 'string')) {
+          setElemText(elem, settings.text);
         }
-        else {
-          elem.innerText = settings.text;
+
+        if (settings.html && checkType(settings.html, 'string')) {
+          elem.innerHTML = settings.html;
+        }
+
+        if (settings.id && checkType(settings.id, 'string')) {
+          elem.id = settings.id;
+        }
+
+        if (settings.className && checkType(settings.className, 'string')) {
+          elem.className = settings.className;
         }
       }
 
-      if (settings.hasOwnProperty('html') && settings.html &&
-          typeof settings.html === 'string') {
-        elem.innerHTML = settings.html;
-      }
-
-      if (settings.hasOwnProperty('id') && settings.id &&
-          typeof settings.id === 'string') {
-        elem.id = settings.id;
-      }
-
-      if (settings.hasOwnProperty('className') && settings.className &&
-          typeof settings.className === 'string') {
-        elem.className = settings.className;
-      }
-    }
-
-    return elem;
-  };
-
-/* -----------------------------------------------------------------------------
- * The setElemText Method (dom-methods/setElemText.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.setElemText)
-   * ---------------------------------------------------
-   * @desc A shortcut that sets the native DOM property - Element.textContent
-   *   or Element.innerText.
-   * @param {!Element} elem - The DOM element.
-   * @param {string} text - The text to set the DOM element's textContent or
-   *   innerText to.
-   * @return {!Element} The updated DOM element.
-   */
-  utilsModuleAPI.setElemText = function(elem, text) {
-
-    /** @type {string} */
-    var errorMsg;
-
-    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-      errorMsg += 'parameter (should be a DOM Element).';
-      throw new TypeError(errorMsg);
-      return;
-    }
-
-    if (!text || typeof text !== 'string') {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-      return;
-    }
-
-    if (!!elem.textContent) {
-      elem.textContent = text;
-    }
-    else {
-      elem.innerText = text;
-    }
-
-    return elem;
-  };
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, utilsModuleAPI.setElemText);
 
 /* -----------------------------------------------------------------------------
  * The addElemText Method (dom-methods/addElemText.js)
@@ -1631,34 +1689,38 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   innerText.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.addElemText = function(elem, text) {
+  utilsModuleAPI.addElemText = (function setup_addElemText(checkType,
+                                                           hasTextContent) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function addElemText(elem, text) {
 
-    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
-      errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
-      errorMsg += 'parameter (should be a DOM Element).';
-      throw new TypeError(errorMsg);
-      return;
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    if (!text || typeof text !== 'string') {
-      errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-      return;
-    }
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
+        errorMsg += 'parameter (should be a DOM Element).';
+        throw new TypeError(errorMsg);
+      }
 
-    if (!!elem.textContent) {
-      elem.textContent += text;
-    }
-    else {
-      elem.innerText += text;
-    }
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
+        errorMsg += 'parameter (should be a string).';
+        throw new TypeError(errorMsg);
+      }
 
-    return elem;
-  };
+      if (text) {
+        if (hasTextContent) {
+          elem.textContent += text;
+        }
+        else {
+          elem.innerText += text;
+        }
+      }
+
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, DomFeatures.textContent);
 
 /* -----------------------------------------------------------------------------
  * The DOM Helper Methods (dom-methods/helpers.js)

@@ -19,7 +19,6 @@
       errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
       errorMsg += 'name parameter.';
       throw new TypeError(errorMsg);
-      return;
     }
 
     if (!root || typeof root !== 'object' ||

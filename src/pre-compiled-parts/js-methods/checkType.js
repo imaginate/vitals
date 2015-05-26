@@ -100,11 +100,8 @@
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value)
-      pass = asterisk.test(type);
-
-      // Catch and throw asterisk error
-      if (pass) {
+      // Check for automatic pass (* = any value) & catch asterisk error
+      if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
