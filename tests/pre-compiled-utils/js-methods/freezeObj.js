@@ -89,4 +89,4 @@
 
     return freezeObj;
 
-  })(HasFeature.freezeRegExpBug);
+  })(JsFeatures.freezeRegExpBug);

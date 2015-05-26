@@ -26,7 +26,7 @@
       throw new TypeError(errorMsg);
     }
 
-    if (HasFeature.textContent) {
+    if (DomFeatures.textContent) {
       elem.textContent = text;
     }
     else {

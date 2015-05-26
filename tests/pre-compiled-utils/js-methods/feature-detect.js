@@ -1,21 +1,21 @@
   /**
    * -----------------------------------------------------
-   * Public Variable (HasFeature)
+   * Public Variable (JsFeatures)
    * -----------------------------------------------------
-   * @desc Holds the results for all browser feature detection.
+   * @desc Holds the results for JS feature detection.
    * @type {!Object<string, boolean>}
    * @struct
    */
-  var HasFeature = {};
+  var JsFeatures = {};
 
   /**
    * -----------------------------------------------------
-   * Public Property (HasFeature.freezeRegExpBug)
+   * Public Property (JsFeatures.freezeRegExpBug)
    * -----------------------------------------------------
    * @desc Indicates whether the browser has a bug when using frozen RegExp.
    * @type {boolean}
    */
-  HasFeature.freezeRegExpBug = (function testForFreezeRegExpBug() {
+  JsFeatures.freezeRegExpBug = (function testForFreezeRegExpBug() {
 
     /** @type {!RegExp} */
     var regex;
@@ -35,21 +35,11 @@
     try {
       newStr = orgStr.replace(regex, 'o');
     }
-    catch(e){
+    catch(e) {
       pass = false;
     }
 
     return !pass;
   })();
 
-  /**
-   * -----------------------------------------------------
-   * Public Property (HasFeature.textContent)
-   * -----------------------------------------------------
-   * @desc Indicates whether the browser supports the DOM property,
-   *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
-   * @type {boolean}
-   */
-  HasFeature.textContent = ('textContent' in document);
-
-  Object.freeze(HasFeature);
+  Object.freeze(JsFeatures);
