@@ -64,7 +64,7 @@
 
       aIV.utils.setElemText(elem, 'Pass');
 
-      text = (!!elem.textContent) ? elem.textContent : elem.innerText;
+      text = elem.textContent || elem.innerText;
 
       pass = (text === 'Pass');
 
