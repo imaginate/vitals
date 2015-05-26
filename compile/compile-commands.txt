@@ -137,12 +137,13 @@ cp -u tests/pre-compiled-utils/dom-methods/*.js src/pre-compiled-parts/dom-metho
 cp -u tests/pre-compiled-utils/master-methods/*.js src/pre-compiled-parts/master-methods
 cp -u tests/pre-compiled-utils/dependencies/*.js src/pre-compiled-parts/dependencies
 cd src/pre-compiled-parts
-sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
+sed -i "s/(function setup[a-zA-Z0-9\_\$]*(/(function(/" skeleton.js
 rm -f sed*
 sed \
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" \
   -e "/insert-public-api/ r public-api.js" \
   -e "/insert-module-vars/ r module-vars.js" \
+  -e "/insert-js-feature-detect/ r js-methods/feature-detect.js" \
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" \
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" \
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" \
@@ -150,6 +151,7 @@ sed \
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" \
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" \
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" \
+  -e "/insert-dom-feature-detect/ r dom-methods/feature-detect.js" \
   -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" \
   -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" \
   -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" \
@@ -164,7 +166,7 @@ sed \
 cd ..
 cp -u pre-compiled-parts/algorithmIV-utils-temp.js algorithmIV-utils.js
 rm -f pre-compiled-parts/algorithmIV-utils-temp.js
-sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
+sed -i "s/^\/\/ insert-[a-zA-Z0-9\-]*//" algorithmIV-utils.js
 rm -f sed*
 
 ## MS-DOS Commands
@@ -174,12 +176,13 @@ copy /y tests\pre-compiled-utils\dom-methods\*.js src\pre-compiled-parts\dom-met
 copy /y tests\pre-compiled-utils\master-methods\*.js src\pre-compiled-parts\master-methods
 copy /y tests\pre-compiled-utils\dependencies\*.js src\pre-compiled-parts\dependencies
 cd src\pre-compiled-parts
-sed -i "s/function setup[a-zA-Z]*(/function(/" skeleton.js
+sed -i "s/(function setup[a-zA-Z0-9\_\$]*(/(function(/" skeleton.js
 del /f sed*
 sed ^
   -e "/insert-aIV-polyfills/ r dependencies/algorithmIV-polyfills.min.js" ^
   -e "/insert-public-api/ r public-api.js" ^
   -e "/insert-module-vars/ r module-vars.js" ^
+  -e "/insert-js-feature-detect/ r js-methods/feature-detect.js" ^
   -e "/insert-js-methods-checkType/ r js-methods/checkType.js" ^
   -e "/insert-js-methods-isValidTypeString/ r js-methods/isValidTypeString.js" ^
   -e "/insert-js-methods-checkArgs/ r js-methods/checkArgs.js" ^
@@ -187,6 +190,7 @@ sed ^
   -e "/insert-js-methods-freezeObj/ r js-methods/freezeObj.js" ^
   -e "/insert-js-methods-hasOwnProp/ r js-methods/hasOwnProp.js" ^
   -e "/insert-js-methods-helpers/ r js-methods/helpers.js" ^
+  -e "/insert-dom-feature-detect/ r dom-methods/feature-detect.js" ^
   -e "/insert-dom-methods-getElemById/ r dom-methods/getElemById.js" ^
   -e "/insert-dom-methods-getElemByClass/ r dom-methods/getElemByClass.js" ^
   -e "/insert-dom-methods-getElemsByClass/ r dom-methods/getElemsByClass.js" ^
@@ -201,7 +205,7 @@ sed ^
 cd ..
 copy /y pre-compiled-parts\algorithmIV-utils-temp.js algorithmIV-utils.js
 del /f pre-compiled-parts\algorithmIV-utils-temp.js
-sed -i "s/^\/\/ insert-[a-zA-Z\-]*//" algorithmIV-utils.js
+sed -i "s/^\/\/ insert-[a-zA-Z0-9\-]*//" algorithmIV-utils.js
 del /f sed*
 
 ----------------------------------------------------------------
