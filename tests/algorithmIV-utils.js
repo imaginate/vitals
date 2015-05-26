@@ -359,11 +359,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value)
-      pass = asterisk.test(type);
-
-      // Catch and throw asterisk error
-      if (pass) {
+      // Check for automatic pass (* = any value) & catch asterisk error
+      if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
@@ -1567,6 +1564,52 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   };
 
 /* -----------------------------------------------------------------------------
+ * The setElemText Method (dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (utilsModuleAPI.setElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut that sets the native DOM property - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to set the DOM element's textContent or
+   *   innerText to.
+   * @return {!Element} The updated DOM element.
+   */
+  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
+                                                           hasTextContent) {
+
+    return function setElemText(elem, text) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
+        errorMsg += 'parameter (should be a DOM Element).';
+        throw new TypeError(errorMsg);
+      }
+
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
+        errorMsg += 'parameter (should be a string).';
+        throw new TypeError(errorMsg);
+      }
+
+      if (hasTextContent) {
+        elem.textContent = text;
+      }
+      else {
+        elem.innerText = text;
+      }
+
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, DomFeatures.textContent);
+
+/* -----------------------------------------------------------------------------
  * The makeElem Method (dom-methods/makeElem.js)
  * -------------------------------------------------------------------------- */
 
@@ -1584,111 +1627,52 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string=} settings.html - The element's innerHTML.
    * @param {string=} settings.id - The element's id.
    * @param {string=} settings.className - The element's class name.
-   * @return {!HTMLElement} The DOM element with the given id.
+   * @return {!Element} The DOM element with the given id.
    */
-  utilsModuleAPI.makeElem = function(settings) {
+  utilsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
 
-    /** @type {HTMLElement} */
-    var elem;
-    /** @type {string} */
-    var tag;
+    return function makeElem(settings) {
 
-    if (settings && typeof settings === 'string') {
-      tag = settings;
-      settings = null;
-    }
-    else if (settings && typeof settings === 'object') {
-      if (settings.hasOwnProperty('tag') && settings.tag &&
-          typeof settings.tag === 'string') {
-        tag = settings.tag;
+      /** @type {!Element} */
+      var elem;
+      /** @type {string} */
+      var tag;
+
+      if ( checkType(settings, 'string') ) {
+        tag = settings;
       }
-      else if (settings.hasOwnProperty('tagName') && settings.tagName &&
-          typeof settings.tagName === 'string') {
-        tag = settings.tagName;
+      else if ( checkType(settings, '!object') ) {
+        tag = settings.tag || settings.tagName;
       }
-    }
-    else {
-      settings = null;
-    }
+      else {
+        settings = null;
+      }
 
-    if (!tag) {
-      tag = 'div';
-    }
+      tag = tag || 'div';
+      elem = document.createElement(tag);
 
-    elem = document.createElement(tag);
+      if (settings) {
 
-    if (settings) {
-
-      if (settings.hasOwnProperty('text') && settings.text &&
-          typeof settings.text === 'string') {
-        if (!!elem.textContent) {
-          elem.textContent = settings.text;
+        if (settings.text && checkType(settings.text, 'string')) {
+          setElemText(elem, settings.text);
         }
-        else {
-          elem.innerText = settings.text;
+
+        if (settings.html && checkType(settings.html, 'string')) {
+          elem.innerHTML = settings.html;
+        }
+
+        if (settings.id && checkType(settings.id, 'string')) {
+          elem.id = settings.id;
+        }
+
+        if (settings.className && checkType(settings.className, 'string')) {
+          elem.className = settings.className;
         }
       }
 
-      if (settings.hasOwnProperty('html') && settings.html &&
-          typeof settings.html === 'string') {
-        elem.innerHTML = settings.html;
-      }
-
-      if (settings.hasOwnProperty('id') && settings.id &&
-          typeof settings.id === 'string') {
-        elem.id = settings.id;
-      }
-
-      if (settings.hasOwnProperty('className') && settings.className &&
-          typeof settings.className === 'string') {
-        elem.className = settings.className;
-      }
-    }
-
-    return elem;
-  };
-
-/* -----------------------------------------------------------------------------
- * The setElemText Method (dom-methods/setElemText.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.setElemText)
-   * ---------------------------------------------------
-   * @desc A shortcut that sets the native DOM property - Element.textContent
-   *   or Element.innerText.
-   * @param {!Element} elem - The DOM element.
-   * @param {string} text - The text to set the DOM element's textContent or
-   *   innerText to.
-   * @return {!Element} The updated DOM element.
-   */
-  utilsModuleAPI.setElemText = function(elem, text) {
-
-    /** @type {string} */
-    var errorMsg;
-
-    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-      errorMsg += 'parameter (should be a DOM Element).';
-      throw new TypeError(errorMsg);
-    }
-
-    if (!text || typeof text !== 'string') {
-      errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-    }
-
-    if (DomFeatures.textContent) {
-      elem.textContent = text;
-    }
-    else {
-      elem.innerText = text;
-    }
-
-    return elem;
-  };
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, utilsModuleAPI.setElemText);
 
 /* -----------------------------------------------------------------------------
  * The addElemText Method (dom-methods/addElemText.js)
@@ -1705,32 +1689,38 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   innerText.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.addElemText = function(elem, text) {
+  utilsModuleAPI.addElemText = (function setup_addElemText(checkType,
+                                                           hasTextContent) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function addElemText(elem, text) {
 
-    if (!elem || typeof elem !== 'object' || !(elem instanceof Element)) {
-      errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
-      errorMsg += 'parameter (should be a DOM Element).';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    if (!text || typeof text !== 'string') {
-      errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-    }
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
+        errorMsg += 'parameter (should be a DOM Element).';
+        throw new TypeError(errorMsg);
+      }
 
-    if (DomFeatures.textContent) {
-      elem.textContent += text;
-    }
-    else {
-      elem.innerText += text;
-    }
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
+        errorMsg += 'parameter (should be a string).';
+        throw new TypeError(errorMsg);
+      }
 
-    return elem;
-  };
+      if (text) {
+        if (hasTextContent) {
+          elem.textContent += text;
+        }
+        else {
+          elem.innerText += text;
+        }
+      }
+
+      return elem;
+    };
+  })(utilsModuleAPI.checkType, DomFeatures.textContent);
 
 /* -----------------------------------------------------------------------------
  * The DOM Helper Methods (dom-methods/helpers.js)
