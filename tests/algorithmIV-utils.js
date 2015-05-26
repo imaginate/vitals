@@ -199,28 +199,32 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     getElemsByTagRoot  : DEFAULTS.getElemsByTagRoot
   };
 
+////////////////////////////////////////////////////////////////////////////////
+// The JS Shortcuts
+////////////////////////////////////////////////////////////////////////////////
+
 /* -----------------------------------------------------------------------------
- * The HasFeature Class (has-feature.js)
+ * The JS Feature Detection (js/feature-detect.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * -----------------------------------------------------
-   * Public Variable (HasFeature)
+   * Public Variable (JsFeatures)
    * -----------------------------------------------------
-   * @desc Holds the results for all browser feature detection.
+   * @desc Holds the results for JS feature detection.
    * @type {!Object<string, boolean>}
    * @struct
    */
-  var HasFeature = {};
+  var JsFeatures = {};
 
   /**
    * -----------------------------------------------------
-   * Public Property (HasFeature.freezeRegExpBug)
+   * Public Property (JsFeatures.freezeRegExpBug)
    * -----------------------------------------------------
    * @desc Indicates whether the browser has a bug when using frozen RegExp.
    * @type {boolean}
    */
-  HasFeature.freezeRegExpBug = (function testForFreezeRegExpBug() {
+  JsFeatures.freezeRegExpBug = (function testForFreezeRegExpBug() {
 
     /** @type {!RegExp} */
     var regex;
@@ -240,46 +244,14 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     try {
       newStr = orgStr.replace(regex, 'o');
     }
-    catch(e){
+    catch(e) {
       pass = false;
     }
 
     return !pass;
   })();
 
-  /**
-   * -----------------------------------------------------
-   * Public Property (HasFeature.textContent)
-   * -----------------------------------------------------
-   * @desc Indicates whether the browser supports the DOM property,
-   *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
-   * @type {boolean}
-   */
-  HasFeature.textContent = (function testForTextContent() {
-
-    /** @type {!Element} */
-    var elem;
-    /** @type {boolean} */
-    var pass;
-
-    elem = document.createElement('div');
-    elem.id = 'aIV-utils-test-elem';
-    elem.innerHTML = 'Test Elem';
-    elem.style.opacity = '0';
-    document.body.appendChild(elem);
-
-    pass = !!elem.textContent;
-
-    document.body.removeChild(elem);
-
-    return pass;
-  })();
-
-  Object.freeze(HasFeature);
-
-////////////////////////////////////////////////////////////////////////////////
-// The JS Shortcuts
-////////////////////////////////////////////////////////////////////////////////
+  Object.freeze(JsFeatures);
 
 /* -----------------------------------------------------------------------------
  * The checkType Method (js-methods/checkType.js)
@@ -1240,7 +1212,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return freezeObj;
 
-  })(HasFeature.freezeRegExpBug);
+  })(JsFeatures.freezeRegExpBug);
 
 /* -----------------------------------------------------------------------------
  * The hasOwnProp Method (js-methods/hasOwnProp.js)
@@ -1325,6 +1297,32 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 ////////////////////////////////////////////////////////////////////////////////
 // The DOM Shortcuts
 ////////////////////////////////////////////////////////////////////////////////
+
+/* -----------------------------------------------------------------------------
+ * The DOM Feature Detection (dom/feature-detect.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (DomFeatures)
+   * -----------------------------------------------------
+   * @desc Holds the results for DOM feature detection.
+   * @type {!Object<string, boolean>}
+   * @struct
+   */
+  var DomFeatures = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (HasFeature.textContent)
+   * -----------------------------------------------------
+   * @desc Indicates whether the browser supports the DOM property,
+   *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
+   * @type {boolean}
+   */
+  DomFeatures.textContent = ('textContent' in document);
+
+  Object.freeze(DomFeatures);
 
 /* -----------------------------------------------------------------------------
  * The getElemById Method (dom-methods/getElemById.js)
@@ -1682,7 +1680,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       throw new TypeError(errorMsg);
     }
 
-    if (HasFeature.textContent) {
+    if (DomFeatures.textContent) {
       elem.textContent = text;
     }
     else {
@@ -1724,7 +1722,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       throw new TypeError(errorMsg);
     }
 
-    if (HasFeature.textContent) {
+    if (DomFeatures.textContent) {
       elem.textContent += text;
     }
     else {

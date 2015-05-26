@@ -18,4 +18,4 @@
    */
   DomFeatures.textContent = ('textContent' in document);
 
-  Object.freeze(HasFeature);
+  Object.freeze(DomFeatures);
