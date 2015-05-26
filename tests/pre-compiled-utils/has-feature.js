@@ -50,24 +50,6 @@
    *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
    * @type {boolean}
    */
-  HasFeature.textContent = (function testForTextContent() {
-
-    /** @type {!Element} */
-    var elem;
-    /** @type {boolean} */
-    var pass;
-
-    elem = document.createElement('div');
-    elem.id = 'aIV-utils-test-elem';
-    elem.innerHTML = 'Test Elem';
-    elem.style.opacity = '0';
-    document.body.appendChild(elem);
-
-    pass = !!elem.textContent;
-
-    document.body.removeChild(elem);
-
-    return pass;
-  })();
+  HasFeature.textContent = ('textContent' in document);
 
   Object.freeze(HasFeature);
