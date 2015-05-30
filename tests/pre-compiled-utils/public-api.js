@@ -18,8 +18,18 @@
    * @type {!{
    *   checkType        : function(*, string, boolean=): boolean,
    *   isValidTypeString: function(string): boolean,
+   *   checkArgs        : function(*..., string...),
+   *   getTypeOf        : function(*): string,
    *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
-   *   hasOwnProp       : function((!Object|function), string): boolean
+   *   hasOwnProp       : function((!Object|function), string): boolean,
+   *   getElemById      : function(string): !Element,
+   *   getElemByClass   : function(string): !Element,
+   *   getElemsByClass  : function(string): !Array<!Element>,
+   *   getElemByTag     : function(string): !Element,
+   *   getElemsByTag    : function(string): !Array<!Element>,
+   *   makeElem         : function((string|!Object<string, string>)=): !Element,
+   *   setElemText      : function(!Element, string): !Element,
+   *   addElemText      : function(!Element, string): !Element
    * }}
    * @struct
    * @global
