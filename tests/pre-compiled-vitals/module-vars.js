@@ -23,7 +23,7 @@
    * @const
    */
   var DEFAULTS = {
-    checkArgsErrorMsg  : 'A function call had an invalid parameter data type.',
+    checkArgsErrorMsg  : 'A method call received an invalid parameter type.',
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
