@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemByClass)
+   * Public Method (vitalsModuleAPI.getElemByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName[ [index] ].
@@ -9,53 +9,44 @@
    *   select. The default is 0.
    * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
-   * @return {!HTMLElement} The selected DOM element.
+   *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
+   * @return {?Element} The selected DOM element.
    */
-  utilsModuleAPI.getElemByClass = function(classname, index, root) {
+  vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
+                                    getElementsByClassNameAlt, floor) {
 
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<HTMLElement>} */
-    var elems;
-    /** @type {HTMLElement} */
-    var elem;
+    return function getElemByClass(classname, index, root) {
 
-    if (!classname || typeof classname !== 'string') {
-      errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
+      // Public vitals module vars used in this method:
+      // var defaults;
 
-    if (typeof index !== 'number' || index < -1) {
-      index = 0;
-    }
-    else {
-      index = Math.floor(index);
-    }
+      /** @type {string} */
+      var errorMsg;
+      /** @type {!Array<!Element>} */
+      var elems;
 
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemByClassRoot;
-    }
+      if (!checkType(classname, 'string') || classname === '') {
+        errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
+        errorMsg += 'empty string classname param.';
+        throw new TypeError(errorMsg);
+      }
 
-    elems = ( (!!root.getElementsByClassName) ?
-      root.getElementsByClassName(classname)
-      : DomHelpers.getElementsByClassNameAlt(classname, root)
-    );
+      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
 
-    if (index < 0 || index >= elems.length) {
-      index = elems.length - 1;
-    }
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemByClassRoot;
+      }
 
-    elem = elems[ index ];
+      elems = ( (!!root.getElementsByClassName) ?
+        root.getElementsByClassName(classname)
+        : getElementsByClassNameAlt(classname, root)
+      );
 
-    if (!elem) {
-      errorMsg = 'An aIV.utils.getElemByClass call ';
-      errorMsg += 'received an invalid class name parameter ';
-      errorMsg += '(i.e. no element with the class name was found).';
-      throw new RangeError(errorMsg);
-    }
+      if (index < 0 || (index && index >= elems.length)) {
+        index = elems.length - 1;
+      }
 
-    return elem;
-  };
+      return (elems.length) ? elems[ index ] : null;
+    };
+  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt,
+     Math.floor);

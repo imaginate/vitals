@@ -1,8 +1,8 @@
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.set)
+   * Public Method (vitalsModuleAPI.set)
    * -----------------------------------------------------
-   * @desc Allows you to set the default settings for each aIV.utils method.
+   * @desc Allows you to set the default settings for each Vitals method.
    * @param {!Object} settings - The default settings.
    * @param {(string|function)=} settings.checkArgsErrorMsg
    * @param {!(Document|Element)=} settings.getElemByClassRoot
@@ -11,46 +11,41 @@
    * @param {!(Document|Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.set = (function setup_set() {
-
-    /** @type {function(*, string): boolean} */
-    var checkType = utilsModuleAPI.checkType;
-    /** @type {function(string)} */
-    var throwPropError = function(prop) {
-
-      /** @type {string} */
-      var errorMsg;
-
-      errorMsg = 'An aIV.utils.set call received an invalid ' + prop;
-      errorMsg += ' settings parameter (should be a ' + DEFAULTS.types[ prop ];
-      errorMsg += ').';
-      throw new TypeError(errorMsg);
-    };
+  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp,
+                                            throwPropError, types) {
 
     return function set(settings) {
 
+      // Public vitals module vars used in this method:
+      // var defaults;
+
       /** @type {string} */
       var errorMsg;
       /** @type {string} */
-      var prop;
+      var propName;
 
-      if (!settings || typeof settings !== 'object') {
-        errorMsg = 'An aIV.utils.set call received an invalid settings ';
-        errorMsg += 'parameter (should be an object).';
+      if ( !checkType(settings, '!object') ) {
+        errorMsg = 'A Vitals.set call received an invalid settings ';
+        errorMsg += 'param (should be an object).';
         throw new TypeError(errorMsg);
       }
 
-      for (prop in defaults) {
-        if (defaults.hasOwnProperty(prop) && settings.hasOwnProperty(prop)) {
-          if ( checkType(settings[ prop ], DEFAULTS.types[ prop ]) ) {
-            defaults[ prop ] = settings[ prop ];
+      for (propName in defaults) {
+        if (hasOwnProp(defaults, propName) && hasOwnProp(settings, propName)) {
+          if ( checkType(settings[ propName ], types[ propName ]) ) {
+            defaults[ propName ] = settings[ propName ];
           }
           else {
-            throwPropError(prop);
+            throwPropError(propName);
           }
         }
       }
 
       return true;
     };
-  })();
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, function(propName) {
+    var errorMsg = 'A Vitals.set call received an invalid ' + propName + ' ';
+    errorMsg += 'property for the settings param (the prop should be a ';
+    errorMsg += DEFAULTS.types[ propName ] + ').';
+    throw new TypeError(errorMsg);
+  }, DEFAULTS.types);

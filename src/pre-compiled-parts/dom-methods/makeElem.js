@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.makeElem)
+   * Public Method (vitalsModuleAPI.makeElem)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.createElement.
    * @param {(string|!Object<string, string>)=} settings - A string of the
@@ -14,7 +14,7 @@
    * @param {string=} settings.className - The element's class name.
    * @return {!Element} The DOM element with the given id.
    */
-  utilsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
+  vitalsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
 
     return function makeElem(settings) {
 
@@ -57,4 +57,4 @@
 
       return elem;
     };
-  })(utilsModuleAPI.checkType, utilsModuleAPI.setElemText);
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.setElemText);

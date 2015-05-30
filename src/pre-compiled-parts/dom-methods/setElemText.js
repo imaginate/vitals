@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.setElemText)
+   * Public Method (vitalsModuleAPI.setElemText)
    * ---------------------------------------------------
    * @desc A shortcut that sets the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -9,8 +9,8 @@
    *   innerText to.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
-                                                           hasTextContent) {
+  vitalsModuleAPI.setElemText = (function setup_setElemText(checkType,
+                                 hasTextContent) {
 
     return function setElemText(elem, text) {
 
@@ -18,14 +18,14 @@
       var errorMsg;
 
       if ( !checkType(elem, '!element') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-        errorMsg += 'parameter (should be a DOM Element).';
+        errorMsg = 'A Vitals.setElemText call received a non-element ';
+        errorMsg += 'elem param.';
         throw new TypeError(errorMsg);
       }
 
       if ( !checkType(text, 'string') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-        errorMsg += 'parameter (should be a string).';
+        errorMsg = 'A Vitals.setElemText call received a non-string ';
+        errorMsg += 'text param.';
         throw new TypeError(errorMsg);
       }
 
@@ -38,4 +38,4 @@
 
       return elem;
     };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);

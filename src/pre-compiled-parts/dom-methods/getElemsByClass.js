@@ -1,37 +1,39 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemsByClass)
+   * Public Method (vitalsModuleAPI.getElemsByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
    * @param {string} classname - The class name of the elements to select.
    * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {!Array<HTMLElement>} The selected DOM elements.
+   *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
+   * @return {!Array<!Element>} The selected DOM elements.
    */
-  utilsModuleAPI.getElemsByClass = function(classname, root) {
+  vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
+                                     getElementsByClassNameAlt) {
 
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<!Element>} */
-    var elems;
+    return function getElemsByClass(classname, root) {
 
-    if (!classname || typeof classname !== 'string') {
-      errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
+      // Public vitals module vars used in this method:
+      // var defaults;
 
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemsByClassRoot;
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    elems = ( (!!root.getElementsByClassName) ?
-      root.getElementsByClassName(classname)
-      : DomHelpers.getElementsByClassNameAlt(classname, root)
-    );
+      if (!checkType(classname, 'string') || classname === '') {
+        errorMsg = 'A Vitals.getElemsByClass call received a non-string or ';
+        errorMsg += 'empty string classname param.';
+        throw new TypeError(errorMsg);
+      }
 
-    return elems;
-  };
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemsByClassRoot;
+      }
+
+      return ( (!!root.getElementsByClassName) ?
+        root.getElementsByClassName(classname)
+        : getElementsByClassNameAlt(classname, root)
+      );
+    };
+  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt);

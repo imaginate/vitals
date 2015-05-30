@@ -1,28 +1,30 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.hasOwnProp)
+   * Public Method (vitalsModuleAPI.hasOwnProp)
    * ---------------------------------------------------
-   * @desc A shortcut for the Object.prototype.hasOwnProperty method.
-   * @param {(!Object|function)} obj - The object to check.
+   * @desc A shortcut for the Object.prototype.hasOwnProperty method that does
+   *   not throw errors for null values.
+   * @param {(Object|?function)} obj - The object to check.
    * @param {string} prop - The property to check.
    * @return {boolean} The result of the check.
    */
-  utilsModuleAPI.hasOwnProp = function(obj, prop) {
+  vitalsModuleAPI.hasOwnProp = (function setup_hasOwnProp(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function hasOwnProp(obj, prop) {
 
-    if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-      errorMsg = 'An aIV.utils.hasOwnProp call received an invalid obj ';
-      errorMsg += 'parameter.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    if (!prop || (typeof prop !== 'string' && typeof prop !== 'number')) {
-      errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
-      errorMsg += 'parameter.';
-      throw new TypeError(errorMsg);
-    }
+      if ( !checkType(obj, 'object|function') ) {
+        errorMsg = 'A Vitals.hasOwnProp call received an invalid obj param.';
+        throw new TypeError(errorMsg);
+      }
 
-    return obj.hasOwnProperty(prop);
-  };
+      if (!checkType(prop, 'string|number') || prop === '') {
+        errorMsg = 'A Vitals.hasOwnProp call received an invalid prop param.';
+        throw new TypeError(errorMsg);
+      }
+
+      return !!obj && obj.hasOwnProperty(prop);
+    };
+  })(vitalsModuleAPI.checkType);

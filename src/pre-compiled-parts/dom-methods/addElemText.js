@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.addElemText)
+   * Public Method (vitalsModuleAPI.addElemText)
    * ---------------------------------------------------
    * @desc A shortcut that adds to the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -9,8 +9,8 @@
    *   innerText.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.addElemText = (function setup_addElemText(checkType,
-                                                           hasTextContent) {
+  vitalsModuleAPI.addElemText = (function setup_addElemText(checkType,
+                                 hasTextContent) {
 
     return function addElemText(elem, text) {
 
@@ -18,14 +18,14 @@
       var errorMsg;
 
       if ( !checkType(elem, '!element') ) {
-        errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
-        errorMsg += 'parameter (should be a DOM Element).';
+        errorMsg = 'A Vitals.addElemText call received a non-element ';
+        errorMsg += 'elem param.';
         throw new TypeError(errorMsg);
       }
 
       if ( !checkType(text, 'string') ) {
-        errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
-        errorMsg += 'parameter (should be a string).';
+        errorMsg = 'A Vitals.addElemText call received a non-string ';
+        errorMsg += 'text param.';
         throw new TypeError(errorMsg);
       }
 
@@ -40,4 +40,4 @@
 
       return elem;
     };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);

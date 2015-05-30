@@ -1,44 +1,54 @@
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.reset)
+   * Public Method (vitalsModuleAPI.reset)
    * -----------------------------------------------------
-   * @desc Allows you to reset the default settings for each aIV.utils method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original default.
+   * @desc Allows you to reset the default settings for each Vitals method.
+   * @param {...(string|strings)=} setting - A setting to reset to the original
+   *   default.
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.reset = function() {
+  vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
+                                                getObjKeys, sliceArr) {
 
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<string>} */
-    var args;
-    /** @type {string} */
-    var prop;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
+    return function reset() {
 
-    len  = arguments.length;
-    args = ( (!len) ?
-      Object.keys(defaults) : (len > 1) ?
-        Array.prototype.slice.call(arguments, 0) : (Array.isArray(arguments[0])) ?
-          arguments[0] : [ arguments[0] ]
-    );
+      // Public vitals module vars used in this method:
+      // var defaults;
+      // var DEFAULTS;
 
-    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
-      errorMsg = 'An aIV.utils.reset call received an invalid setting ';
-      errorMsg += 'parameter (should be a string or an array of strings).';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
+      /** @type {!Array<string>} */
+      var args;
+      /** @type {string} */
+      var prop;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
 
-    i = args.length;
-    while (i--) {
-      prop = args[i];
-      if ( defaults.hasOwnProperty(prop) ) {
-        defaults[ prop ] = DEFAULTS[ prop ];
+      len = arguments.length;
+      args = ( (!len) ?
+        getObjKeys(defaults) : (len > 1) ?
+          sliceArr.call(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
+            arguments[0] : [ arguments[0] ]
+      );
+
+      if ( !checkType(args, '!strings') ) {
+        errorMsg = 'A Vitals.reset call received an invalid setting param ';
+        errorMsg += '(should be a string or array of strings).';
+        throw new TypeError(errorMsg);
       }
-    }
 
-    return true;
-  };
+      i = args.length;
+      while (i--) {
+        prop = args[i];
+        if ( hasOwnProp(defaults, prop) ) {
+          defaults[ prop ] = DEFAULTS[ prop ];
+        }
+      }
+
+      return true;
+    };
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
+     Object.keys, Array.prototype.slice);

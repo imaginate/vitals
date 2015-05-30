@@ -1,11 +1,11 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkArgs)
+   * Public Method (vitalsModuleAPI.checkArgs)
    * ---------------------------------------------------
    * @desc Catches invalid argument data types and throws an error.
    * @param {...*} val - Each argument passed to the method.
    * @param {...string} type -  Each argument's optional data types.
-   *   [See aIV.utils.checkType]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
+   * @see [Vitals.checkType]{@link https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
    *   for the available data type strings.
    * @return {boolean} The evaluation result.
    * @example
@@ -13,7 +13,9 @@
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  utilsModuleAPI.checkArgs = (function setup_checkArgs() {
+  vitalsModuleAPI.checkArgs = (function setup_checkArgs(checkType,
+                                                        isValidTypeString,
+	      sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -50,11 +52,10 @@
       len = arguments.length;
 
       if (len < 2 || len % 2) {
-        errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
-        throw new Error(errorMsg);
+        throw new Error('A Vitals.checkArgs call was missing params.');
       }
 
-      args = Array.prototype.slice.call(arguments, 0);
+      args = sliceArr.call(arguments, 0);
       pass = true;
 
       i = -1;
@@ -85,29 +86,6 @@
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkType)
-     * ---------------------------------------------------
-     * @desc Checks a value's data type against the given optional types.
-     * @param {*} val - The value to be evaluated.
-     * @param {string} type - A string of the data types to evaluate against.
-     * @param {boolean=} noTypeValCheck - If true this method does not check
-     *   the data type string for correctness. By default this is set to false.
-     * @return {boolean} The evaluation result.
-     */
-    var checkType = utilsModuleAPI.checkType;
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (isValidTypeString)
-     * ---------------------------------------------------
-     * @desc Evaluates whether a string is a valid data type string.
-     * @param {string} typeString - The string to evaluate.
-     * @return {boolean} The evaluation result.
-     */
-    var isValidTypeString = utilsModuleAPI.isValidTypeString;
-
-    /**
-     * ---------------------------------------------------
      * Private Method (throwInvalidTypeString)
      * ---------------------------------------------------
      * @desc Throws an error for an invalid data type string value.
@@ -118,9 +96,9 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkArgs call received an invalid type ';
+      errorMsg = 'A Vitals.checkArgs call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
-      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'Check Vitals.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
       throw new Error(errorMsg);
     };
@@ -154,4 +132,5 @@
 
     return checkArgs;
 
-  })();
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.isValidTypeString,
+     Array.prototype.slice);

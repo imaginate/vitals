@@ -73,4 +73,4 @@
     return elems;
   };
 
-  utilsModuleAPI.freezeObj(DomHelpers, true);
+  vitalsModuleAPI.freezeObj(DomHelpers, true);

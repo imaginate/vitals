@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkType)
+   * Public Method (vitalsModuleAPI.checkType)
    * ---------------------------------------------------
    * @desc Checks a value's data type against the given optional types.
    * @param {*} val - The value to be evaluated.
@@ -64,7 +64,8 @@
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setup_checkType() {
+  vitalsModuleAPI.checkType = (function setup_checkType(allDataTypes,
+                               exceptLowerAlphaAndPipe) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -95,8 +96,7 @@
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid ';
-        errorMsg += '(a non-string) type parameter.';
+        errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
@@ -119,7 +119,7 @@
 
       if (!noTypeValCheck || !pass) {
         type = type.toLowerCase();
-        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        type = type.replace(exceptLowerAlphaAndPipe, '');
         types = type.split('|');
 
         noTypeValCheck || isValidTypeStrings(types);
@@ -272,7 +272,7 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. When using an asterisk, \'*\', no other values ';
       errorMsg += 'should be given as the asterisk guarantees the check will ';
       errorMsg += 'pass.';
@@ -327,7 +327,7 @@
 
       i = types.length;
       while (pass && i--) {
-        pass = JsHelpers.allDataTypes.test(types[i]);
+        pass = allDataTypes.test(types[i]);
         pass || throwInvalidTypeString(types[i]);
       }
 
@@ -346,9 +346,9 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
-      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'Check Vitals.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
       throw new Error(errorMsg);
     };
@@ -576,4 +576,4 @@
 
     return checkType;
 
-  })();
+  })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);

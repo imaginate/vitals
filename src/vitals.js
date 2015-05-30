@@ -2,27 +2,22 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.6)
+ * Vitals.js (v1.0.7)
  * -----------------------------------------------------------------------------
- * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
- *   make programming in JavaScript easier. With an intuitive API and clear
- *   documentation we are sure you will appreciate the time you save using our
- *   shortcuts!
- * @module aIVUtils
- * @version 1.0.6
- * @author Adam Smith ({@link adamsmith@youlum.com})
- * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
- * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
- * @desc More details about the code base for aIV.utils:
- * <ol>
- *   <li>annotations: 
- *       [See Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
- *       and [See JSDoc3]{@link http://usejsdoc.org/}
- *   </li>
- *   <li>contributing: 
- *       [See our guideline]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/CONTRIBUTING.md}
- *   </li>
- * </ol>
+ * @file Vitals.js is a collection of cross-browser compatible JavaScript & DOM
+ *   shortcut methods that make programming in JavaScript simple! You will be
+ *   able to accurately type check values, deep freeze objects, create elements,
+ *   and so much more with ease. With an intuitive API and clear documentation
+ *   you will rejoice from the time saved and the stress lost!
+ * @module vitals
+ * @version 1.0.7
+ * @author Adam Smith adamsmith@algorithmiv.com
+ * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
+ * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
+ * @see [Contributing Guide]{@link https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md}
+ * Annotations:
+ * @see [JSDoc3]{@link http://usejsdoc.org/}
+ * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
 /**
@@ -42,7 +37,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Polyfills (dependencies/algorithmIV-polyfills.min.js)
+ * Cure.js v0.0.2 (dependencies/cure.min.js)
+ * -----------------------------------------------------------------------------
+ * @desc JavaScript & DOM Polyfills for Browser Compatibility
+ * @see [algorithmiv.com/cure]{@link http://www.algorithmiv.com/cure}
+ * -------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+ * JSON3 v3.3.2 (dependencies/cure.min.js)
+ * -----------------------------------------------------------------------------
+ * @desc JSON Polyfills for Browser Compatibility
+ * @see [bestiejs.github.io/json3]{@link https://bestiejs.github.io/json3}
  * -------------------------------------------------------------------------- */
 
 /* JSON3 v3.3.2 | https://bestiejs.github.io/json3 | Copyright 2012-2015, Kit Cambridge, Benjamin Tan | http://kit.mit-license.org */
@@ -63,10 +68,10 @@ l&&(d=a.charCodeAt(b),48<=d&&57>=d);b++);if(46==a.charCodeAt(b)){for(e=++b;e<l&&
 e,c));else C(g,function(a){U(g,a,c)});return c.call(a,b,g)};q.parse=function(a,f){var c,g;b=0;H=""+a;c=R(y());"$"!=y()&&m();b=H=null;return f&&"[object Function]"==t.call(f)?T((g={},g[""]=c,g),"",f):c}}}q.runInContext=M;return q}var I=typeof define==="function"&&define.amd,D={"function":!0,object:!0},A=D[typeof exports]&&exports&&!exports.nodeType&&exports,f=D[typeof window]&&window||this,p=A&&D[typeof module]&&module&&!module.nodeType&&"object"==typeof global&&global;!p||p.global!==p&&p.window!==
 p&&p.self!==p||(f=p);if(A&&!I)M(f,A);else{var J=f.JSON,K=f.JSON3,L=!1,B=M(f,f.JSON3={noConflict:function(){L||(L=!0,f.JSON=J,f.JSON3=K,J=K=null);return B}});f.JSON={parse:B.parse,stringify:B.stringify}}I&&define(function(){return B})}).call(this);
 
-/* Algorithm IV JavaScript Polyfills (v0.0.2) (learn@algorithmiv.com)
- * Author: Adam Smith (adamsmith@youlum.com)
+/* Cure.js (v0.0.2) (learn@algorithmiv.com)
+ * Author: Adam Smith (adamsmith@algorithmiv.com)
  * Copyright (c) 2015 Adam A Smith (github.com/imaginate)
- * The Apache License (algorithmiv.com/docs/license) */
+ * The Apache License (algorithmiv.com/cure/license) */
 (function(h,m,n){h.console=h.console||{};(function(a,b){a.log||(a.log=b);a.error||(a.error=a.log);a.assert||(a.assert=function(b){var c;if(!b)return c=1<arguments.length?Array.prototype.slice.call(arguments,1):["A console.assert call failed."],a.error.apply(this,c)});a.clear||(a.clear=b);a.count||(a.count=b);a.debug||(a.debug=a.log);a.dir||(a.dir=a.log);a.dirxml||(a.dirxml=a.log);a.exception||(a.exception=a.error);a.group||(a.group=b);a.groupCollapsed||(a.groupCollapsed=a.group);a.groupEnd||(a.groupEnd=
 b);a.info||(a.info=a.log);a.markTimeline||(a.markTimeline=a.timeStamp?a.timeStamp:b);a.profile||(a.profile=b);a.profileEnd||(a.profileEnd=b);a.table||(a.table=b);a.time||(a.time=b);a.timeEnd||(a.timeEnd=b);a.timeline||(a.timeline=b);a.timelineEnd||(a.timelineEnd=b);a.timeStamp||(a.timeStamp=a.markTimeline);a.trace||(a.trace=a.log);a.warn||(a.warn=a.error);(function(b,c,e,h){var f,k,l,g;if(b)if(l=["assert","error","info","log","warn"],g=["clear","dir","profile","profileEnd"],g=l.concat(g),c)for(f=
 g.length;f--;)k=a[g[f]],a[g[f]]=c.call(k,a);else for(f=l.length;f--;)k=a[l[f]],e.call(k,a,h.call(arguments))})("object"===typeof a.log,Function.prototype.bind,Function.prototype.call,Array.prototype.slice)})(h.console,function(){});Object.keys||(Object.keys=function(){var a,b;a=!{toString:null}.propertyIsEnumerable("toString");b="toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable constructor".split(" ");return function(d){var c,e;if(!d||"object"!==typeof d&&"function"!==
@@ -79,7 +84,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 // The Public API
 ////////////////////////////////////////////////////////////////////////////////
 
-;(function(window, utilsModuleAPI) {
+(function(window, vitalsModuleAPI) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
@@ -88,54 +93,69 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Global Object (aIV)
+   * Global Object (Vitals)
    * ---------------------------------------------------
-   * @desc Holds the public API for aIV's apps, tools, and libraries.
-   * @struct
-   * @global
-   */
-  window.aIV = window.aIV || {};
-
-  /**
-   * ---------------------------------------------------
-   * Global Object (aIV.utils)
-   * ---------------------------------------------------
-   * @desc Holds the public API for aIV's JavaScript shortcuts. For more
-   *   details on each of the methods see their complete [definitions in
-   *   the src]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods}.
+   * @desc Holds the public API for Vitals.js. For more details on each of the
+   *   shortcuts see their complete definitions located in JSDoc before each
+   *   method's declaration in the src folder.
+   * @see [JavaScript Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/js-methods}
+   * @see [DOM Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/dom-methods}
+   * @see [Master Methods]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/master-methods}
    * @type {!{
    *   checkType        : function(*, string, boolean=): boolean,
    *   isValidTypeString: function(string): boolean,
+   *   checkArgs        : function(...*, ...string): boolean,
+   *   getTypeOf        : function(*): string,
    *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
-   *   hasOwnProp       : function((!Object|function), string): boolean
+   *   hasOwnProp       : function((!Object|function), string): boolean,
+   *   getElemById      : function(string): !Element,
+   *   getElemByClass   : function(string): !Element,
+   *   getElemsByClass  : function(string): !Array<!Element>,
+   *   getElemByTag     : function(string): !Element,
+   *   getElemsByTag    : function(string): !Array<!Element>,
+   *   makeElem         : function((string|!Object<string, string>)=): !Element,
+   *   setElemText      : function(!Element, string): !Element,
+   *   addElemText      : function(!Element, string): !Element
    * }}
    * @struct
    * @global
    */
-  aIV.utils = aIV.utils || utilsModuleAPI;
+  window.Vitals = window.Vitals || vitalsModuleAPI;
+
+  /**
+   * ---------------------------------------------------
+   * Global Object (Vx)
+   * ---------------------------------------------------
+   * @desc Also holds the public API for Vitals.js. This global object is the
+   *   same as the Vitals object. It is simply a shorter reference name option
+   *   for developers who like shorter names.
+   * @struct
+   * @global
+   */
+  window.Vx = Vitals;
 
 })(window,
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Utils Module
+// Vitals Module
 ////////////////////////////////////////////////////////////////////////////////
 
 (function(window, document, undefined) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
- * The Public Module Variables (module-vars.js)
+ * The Module's Public Variables (module-vars.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * -----------------------------------------------------
-   * Public Variable (utilsModuleAPI)
+   * Public Variable (vitalsModuleAPI)
    * -----------------------------------------------------
    * @desc Holds the module's public properties and methods.
    * @type {!Object<string, function>}
    * @struct
    */
-  var utilsModuleAPI = {};
+  var vitalsModuleAPI = {};
 
   /**
    * -----------------------------------------------------
@@ -204,7 +224,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The JS Feature Detection (js/feature-detect.js)
+ * The JS Feature Detection (js-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -254,12 +274,59 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   Object.freeze(JsFeatures);
 
 /* -----------------------------------------------------------------------------
+ * The JS Helper Methods (js-methods/helpers.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * -----------------------------------------------------
+   * Public Variable (JsHelpers)
+   * -----------------------------------------------------
+   * @desc Holds helpers for the JS shortcut methods.
+   * @type {!Object<string, !RegExp>}
+   * @struct
+   */
+  var JsHelpers = {};
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.allDataTypes)
+   * -----------------------------------------------------
+   * @desc A regex of all of the data types available to checkType.
+   * @type {!RegExp}
+   */
+  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
+
+    /** @type {string} */
+    var types;
+
+    types = '' +
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
+    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
+    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
+    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
+    '^elementmap$';
+
+    return new RegExp(types);
+  })();
+
+  /**
+   * -----------------------------------------------------
+   * Public Property (JsHelpers.exceptLowerAlphaAndPipe)
+   * -----------------------------------------------------
+   * @desc A regex matching all characters except lowercase letters and the pipe.
+   * @type {!RegExp}
+   */
+  JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
+
+  Object.freeze(JsHelpers);
+
+/* -----------------------------------------------------------------------------
  * The checkType Method (js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkType)
+   * Public Method (vitalsModuleAPI.checkType)
    * ---------------------------------------------------
    * @desc Checks a value's data type against the given optional types.
    * @param {*} val - The value to be evaluated.
@@ -323,7 +390,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setup_checkType() {
+  vitalsModuleAPI.checkType = (function setup_checkType(allDataTypes,
+                               exceptLowerAlphaAndPipe) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -354,8 +422,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid ';
-        errorMsg += '(a non-string) type parameter.';
+        errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
@@ -378,7 +445,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       if (!noTypeValCheck || !pass) {
         type = type.toLowerCase();
-        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        type = type.replace(exceptLowerAlphaAndPipe, '');
         types = type.split('|');
 
         noTypeValCheck || isValidTypeStrings(types);
@@ -531,7 +598,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. When using an asterisk, \'*\', no other values ';
       errorMsg += 'should be given as the asterisk guarantees the check will ';
       errorMsg += 'pass.';
@@ -586,7 +653,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       i = types.length;
       while (pass && i--) {
-        pass = JsHelpers.allDataTypes.test(types[i]);
+        pass = allDataTypes.test(types[i]);
         pass || throwInvalidTypeString(types[i]);
       }
 
@@ -605,9 +672,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
-      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'Check Vitals.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
       throw new Error(errorMsg);
     };
@@ -835,7 +902,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return checkType;
 
-  })();
+  })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
 
 /* -----------------------------------------------------------------------------
  * The isValidTypeString Method (js-methods/isValidTypeString.js)
@@ -843,41 +910,45 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.isValidTypeString)
+   * Public Method (vitalsModuleAPI.isValidTypeString)
    * ---------------------------------------------------
    * @desc Evaluates whether a string is a valid data type string.
    * @param {string} typeString - The string to evaluate.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.isValidTypeString = function(typeString) {
+  vitalsModuleAPI.isValidTypeString = (function setup_isValidTypeString(
+                                       allDataTypes, exceptLowerAlphaAndPipe) {
 
-    /** @type {number} */
-    var i;
-    /** @type {boolean} */
-    var pass;
-    /** @type {!strings} */
-    var typeArr;
-    /** @type {string} */
-    var errorMsg;
+    return function isValidTypeString(typeString) {
 
-    if (typeof typeString !== 'string') {
-      errorMsg = 'An aIV.utils.isValidTypeString call received an invalid ';
-      errorMsg += '(a non-string) typeString parameter.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {number} */
+      var i;
+      /** @type {boolean} */
+      var pass;
+      /** @type {!strings} */
+      var typeArr;
+      /** @type {string} */
+      var errorMsg;
 
-    typeString = typeString.toLowerCase();
-    typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
-    typeArr = typeString.split('|');
-    pass = true;
+      if (typeof typeString !== 'string') {
+        errorMsg = 'A Vitals.isValidTypeString call received a non-string ';
+        errorMsg += 'typeString param.';
+        throw new TypeError(errorMsg);
+      }
 
-    i = typeArr.length;
-    while (pass && i--) {
-      pass = JsHelpers.allDataTypes.test(typeArr[i]);
-    }
+      typeString = typeString.toLowerCase();
+      typeString = typeString.replace(exceptLowerAlphaAndPipe, '');
+      typeArr = typeString.split('|');
+      pass = true;
 
-    return pass;
-  };
+      i = typeArr.length;
+      while (pass && i--) {
+        pass = allDataTypes.test(typeArr[i]);
+      }
+
+      return pass;
+    };
+  })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
 
 /* -----------------------------------------------------------------------------
  * The checkArgs Method (js-methods/checkArgs.js)
@@ -885,12 +956,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkArgs)
+   * Public Method (vitalsModuleAPI.checkArgs)
    * ---------------------------------------------------
    * @desc Catches invalid argument data types and throws an error.
    * @param {...*} val - Each argument passed to the method.
    * @param {...string} type -  Each argument's optional data types.
-   *   [See aIV.utils.checkType]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
+   * @see [Vitals.checkType]{@link https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
    *   for the available data type strings.
    * @return {boolean} The evaluation result.
    * @example
@@ -898,7 +969,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  utilsModuleAPI.checkArgs = (function setup_checkArgs() {
+  vitalsModuleAPI.checkArgs = (function setup_checkArgs(checkType,
+                                                        isValidTypeString,
+	      sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -935,11 +1008,10 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       len = arguments.length;
 
       if (len < 2 || len % 2) {
-        errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
-        throw new Error(errorMsg);
+        throw new Error('A Vitals.checkArgs call was missing params.');
       }
 
-      args = Array.prototype.slice.call(arguments, 0);
+      args = sliceArr.call(arguments, 0);
       pass = true;
 
       i = -1;
@@ -970,29 +1042,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkType)
-     * ---------------------------------------------------
-     * @desc Checks a value's data type against the given optional types.
-     * @param {*} val - The value to be evaluated.
-     * @param {string} type - A string of the data types to evaluate against.
-     * @param {boolean=} noTypeValCheck - If true this method does not check
-     *   the data type string for correctness. By default this is set to false.
-     * @return {boolean} The evaluation result.
-     */
-    var checkType = utilsModuleAPI.checkType;
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (isValidTypeString)
-     * ---------------------------------------------------
-     * @desc Evaluates whether a string is a valid data type string.
-     * @param {string} typeString - The string to evaluate.
-     * @return {boolean} The evaluation result.
-     */
-    var isValidTypeString = utilsModuleAPI.isValidTypeString;
-
-    /**
-     * ---------------------------------------------------
      * Private Method (throwInvalidTypeString)
      * ---------------------------------------------------
      * @desc Throws an error for an invalid data type string value.
@@ -1003,9 +1052,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkArgs call received an invalid type ';
+      errorMsg = 'A Vitals.checkArgs call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
-      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'Check Vitals.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
       throw new Error(errorMsg);
     };
@@ -1039,7 +1088,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return checkArgs;
 
-  })();
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.isValidTypeString,
+     Array.prototype.slice);
 
 /* -----------------------------------------------------------------------------
  * The getTypeOf Method (js-methods/getTypeOf.js)
@@ -1047,7 +1097,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getTypeOf)
+   * Public Method (vitalsModuleAPI.getTypeOf)
    * ---------------------------------------------------
    * @desc A shortcut for the native typeof operator that additionally
    *   distinguishes null, array, document, and element types from an
@@ -1055,23 +1105,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {*} val - The value to get the typeof.
    * @return {string} The value's type.
    */
-  utilsModuleAPI.getTypeOf = (function setup_getTypeOf() {
+  vitalsModuleAPI.getTypeOf = (function setup_getTypeOf(checkType, isArray) {
 
-    ////////////////////////////////////////////////////////////////////////////
-    // The Public Method
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * ---------------------------------------------------
-     * Public Method (getTypeOf)
-     * ---------------------------------------------------
-     * @desc A shortcut for the native typeof operator that additionally
-     *   distinguishes null, array, document, and element types from an
-     *   object type.
-     * @param {*} val - The value to get the typeof.
-     * @return {string} The value's type.
-     */
-    var getTypeOf = function(val) {
+    return function getTypeOf(val) {
 
       /** @type {string} */
       var type;
@@ -1080,7 +1116,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       if (type === 'object' && checkType(val, 'document|element|array')) {
         type = ( (val === null) ?
-          'null' : (Array.isArray(val)) ?
+          'null' : (isArray(val)) ?
             'array' : (val.nodeType === 1) ?
               'element' : 'document'
         );
@@ -1088,31 +1124,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return type;
     };
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The Private Methods
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * ---------------------------------------------------
-     * Private Method (checkType)
-     * ---------------------------------------------------
-     * @desc Checks a value's data type against the given optional types.
-     * @param {*} val - The value to be evaluated.
-     * @param {string} type - A string of the data types to evaluate against.
-     * @param {boolean=} noTypeValCheck - If true this method does not check
-     *   the data type string for correctness. By default this is set to false.
-     * @return {boolean} The evaluation result.
-     */
-    var checkType = utilsModuleAPI.checkType;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The End Of The getTypeOf Module
-    ////////////////////////////////////////////////////////////////////////////
-
-    return getTypeOf;
-
-  })();
+  })(vitalsModuleAPI.checkType, Array.isArray);
 
 /* -----------------------------------------------------------------------------
  * The freezeObj Method (js-methods/freezeObj.js)
@@ -1120,7 +1132,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.freezeObj)
+   * Public Method (vitalsModuleAPI.freezeObj)
    * ---------------------------------------------------
    * @desc A shortcut for the Object.freeze method with an optional
    *   deep freeze (i.e. freezes all of an object's object properties).
@@ -1128,7 +1140,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  utilsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug) {
+  vitalsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
+                               checkType, objFreeze) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -1149,9 +1162,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var errorMsg;
 
-      if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-        errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
-        errorMsg += 'parameter.';
+      if ( !checkType(obj, '!object|function') ) {
+        errorMsg = 'A Vitals.freezeObj call received an invalid obj param.';
         throw new TypeError(errorMsg);
       }
 
@@ -1159,15 +1171,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         return obj;
       }
 
-      if (typeof deep !== 'boolean') {
-        deep = false;
-      }
-
-      if (deep) {
+      if (deep === true) {
         deepFreeze(obj);
       }
       else {
-        Object.freeze(obj);
+        objFreeze(obj);
       }
 
       return obj;
@@ -1190,14 +1198,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var prop;
 
-      Object.freeze(obj);
+      objFreeze(obj);
 
       for (prop in obj) {
-        if (obj.hasOwnProperty(prop) && obj[ prop ] &&
-            (typeof obj[ prop ] === 'object' ||
-             typeof obj[ prop ] === 'function') &&
-            (!hasFreezeRegExpBug ||
-             !(obj[ prop ] instanceof RegExp))) {
+        if (obj.hasOwnProperty(prop) &&
+            checkType(obj[ prop ], '!object|function') &&
+            (!hasFreezeRegExpBug || !(obj[ prop ] instanceof RegExp))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -1209,7 +1215,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return freezeObj;
 
-  })(JsFeatures.freezeRegExpBug);
+  })(JsFeatures.freezeRegExpBug, vitalsModuleAPI.checkType, Object.freeze);
 
 /* -----------------------------------------------------------------------------
  * The hasOwnProp Method (js-methods/hasOwnProp.js)
@@ -1217,86 +1223,41 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.hasOwnProp)
+   * Public Method (vitalsModuleAPI.hasOwnProp)
    * ---------------------------------------------------
-   * @desc A shortcut for the Object.prototype.hasOwnProperty method.
-   * @param {(!Object|function)} obj - The object to check.
+   * @desc A shortcut for the Object.prototype.hasOwnProperty method that does
+   *   not throw errors for null values.
+   * @param {(Object|?function)} obj - The object to check.
    * @param {string} prop - The property to check.
    * @return {boolean} The result of the check.
    */
-  utilsModuleAPI.hasOwnProp = function(obj, prop) {
+  vitalsModuleAPI.hasOwnProp = (function setup_hasOwnProp(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function hasOwnProp(obj, prop) {
 
-    if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-      errorMsg = 'An aIV.utils.hasOwnProp call received an invalid obj ';
-      errorMsg += 'parameter.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    if (!prop || (typeof prop !== 'string' && typeof prop !== 'number')) {
-      errorMsg = 'An aIV.utils.hasOwnProp call received an invalid prop ';
-      errorMsg += 'parameter.';
-      throw new TypeError(errorMsg);
-    }
+      if ( !checkType(obj, 'object|function') ) {
+        errorMsg = 'A Vitals.hasOwnProp call received an invalid obj param.';
+        throw new TypeError(errorMsg);
+      }
 
-    return obj.hasOwnProperty(prop);
-  };
+      if (!checkType(prop, 'string|number') || prop === '') {
+        errorMsg = 'A Vitals.hasOwnProp call received an invalid prop param.';
+        throw new TypeError(errorMsg);
+      }
 
-/* -----------------------------------------------------------------------------
- * The JS Helper Methods (js-methods/helpers.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------------
-   * Public Variable (JsHelpers)
-   * -----------------------------------------------------
-   * @desc Holds helpers for the DOM shortcut methods.
-   * @type {!Object<string, RegExp>}
-   * @struct
-   */
-  var JsHelpers = {};
-
-  /**
-   * -----------------------------------------------------
-   * Public Property (JsHelpers.allDataTypes)
-   * -----------------------------------------------------
-   * @desc A regex of all of the data types available to checkType.
-   * @type {!RegExp}
-   */
-  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '' +
-    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
-    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
-    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
-    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
-    '^elementmap$';
-
-    return new RegExp(types);
-  })();
-
-  /**
-   * -----------------------------------------------------
-   * Public Property (JsHelpers.exceptLowerAlphaAndPipe)
-   * -----------------------------------------------------
-   * @desc A regex matching all characters except lowercase letters and the pipe.
-   * @type {!RegExp}
-   */
-  JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
-
-  utilsModuleAPI.freezeObj(JsHelpers, true);
+      return !!obj && obj.hasOwnProperty(prop);
+    };
+  })(vitalsModuleAPI.checkType);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The DOM Shortcuts
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The DOM Feature Detection (dom/feature-detect.js)
+ * The DOM Feature Detection (dom-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -1320,407 +1281,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   DomFeatures.textContent = ('textContent' in document);
 
   Object.freeze(DomFeatures);
-
-/* -----------------------------------------------------------------------------
- * The getElemById Method (dom-methods/getElemById.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemById)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method - document.getElementById.
-   * @param {string} id - The id of the element to select.
-   * @return {!HTMLElement} The DOM element with the given id.
-   */
-  utilsModuleAPI.getElemById = function(id) {
-
-    /** @type {string} */
-    var errorMsg;
-    /** @type {HTMLElement} */
-    var elem;
-
-    if (!id || typeof id !== 'string') {
-      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
-      errorMsg += 'parameter (should be a string).';
-      throw new TypeError(errorMsg);
-    }
-
-    elem = document.getElementById(id);
-
-    if (!elem) {
-      errorMsg = 'An aIV.utils.getElemById call received an invalid id ';
-      errorMsg += 'parameter (i.e. no element with the id was found).';
-      throw new RangeError(errorMsg);
-    }
-
-    return elem;
-  };
-
-/* -----------------------------------------------------------------------------
- * The getElemByClass Method (dom-methods/getElemByClass.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemByClass)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByClassName[ [index] ].
-   * @param {string} classname - The class name of the element to select.
-   * @param {number=} index - The index of the array of found elements to
-   *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
-   *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
-   * @return {!HTMLElement} The selected DOM element.
-   */
-  utilsModuleAPI.getElemByClass = function(classname, index, root) {
-
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<HTMLElement>} */
-    var elems;
-    /** @type {HTMLElement} */
-    var elem;
-
-    if (!classname || typeof classname !== 'string') {
-      errorMsg = 'An aIV.utils.getElemByClass call received an invalid class ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
-
-    if (typeof index !== 'number' || index < -1) {
-      index = 0;
-    }
-    else {
-      index = Math.floor(index);
-    }
-
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemByClassRoot;
-    }
-
-    elems = ( (!!root.getElementsByClassName) ?
-      root.getElementsByClassName(classname)
-      : DomHelpers.getElementsByClassNameAlt(classname, root)
-    );
-
-    if (index < 0 || index >= elems.length) {
-      index = elems.length - 1;
-    }
-
-    elem = elems[ index ];
-
-    if (!elem) {
-      errorMsg = 'An aIV.utils.getElemByClass call ';
-      errorMsg += 'received an invalid class name parameter ';
-      errorMsg += '(i.e. no element with the class name was found).';
-      throw new RangeError(errorMsg);
-    }
-
-    return elem;
-  };
-
-/* -----------------------------------------------------------------------------
- * The getElemsByClass Method (dom-methods/getElemsByClass.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemsByClass)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByClassName.
-   * @param {string} classname - The class name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
-   *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {!Array<HTMLElement>} The selected DOM elements.
-   */
-  utilsModuleAPI.getElemsByClass = function(classname, root) {
-
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<!Element>} */
-    var elems;
-
-    if (!classname || typeof classname !== 'string') {
-      errorMsg = 'An aIV.utils.getElemsByClass call received an invalid class ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
-
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemsByClassRoot;
-    }
-
-    elems = ( (!!root.getElementsByClassName) ?
-      root.getElementsByClassName(classname)
-      : DomHelpers.getElementsByClassNameAlt(classname, root)
-    );
-
-    return elems;
-  };
-
-/* -----------------------------------------------------------------------------
- * The getElemByTag Method (dom-methods/getElemByTag.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemByTag)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByTagName[ [index] ].
-   * @param {string} tag - The tag name of the element to select.
-   * @param {number=} index - The index of the array of found elements to
-   *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
-   *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
-   * @return {!HTMLElement} The selected DOM element.
-   */
-  utilsModuleAPI.getElemByTag = function(tag, index, root) {
-
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<HTMLElement>} */
-    var elems;
-    /** @type {HTMLElement} */
-    var elem;
-
-    if (!tag || typeof tag !== 'string') {
-      errorMsg = 'An aIV.utils.getElemByTag call received an invalid tag name ';
-      errorMsg += 'parameter.';
-      throw new TypeError(errorMsg);
-    }
-
-    if (typeof index !== 'number' || index < -1) {
-      index = 0;
-    }
-    else {
-      index = Math.floor(index);
-    }
-
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemByTagRoot;
-    }
-
-    elems = root.getElementsByTagName(tag);
-
-    if (index < 0 || index >= elems.length) {
-      index = elems.length - 1;
-    }
-
-    elem = elems[ index ];
-
-    if (!elem) {
-      errorMsg = 'An aIV.utils.getElemByTag call ';
-      errorMsg += 'received an invalid tag name parameter ';
-      errorMsg += '(i.e. no element with the tag name was found).';
-      throw new RangeError(errorMsg);
-    }
-
-    return elem;
-  };
-
-/* -----------------------------------------------------------------------------
- * The getElemsByTag Method (dom-methods/getElemsByTag.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemsByTag)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByTagName.
-   * @param {string} tag - The tag name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
-   *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
-   * @return {!Array<HTMLElement>} The selected DOM elements.
-   */
-  utilsModuleAPI.getElemsByTag = function(tag, root) {
-
-    /** @type {string} */
-    var errorMsg;
-
-    if (!tag || typeof tag !== 'string') {
-      errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
-
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemsByTagRoot;
-    }
-
-    return root.getElementsByTagName(tag);
-  };
-
-/* -----------------------------------------------------------------------------
- * The setElemText Method (dom-methods/setElemText.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.setElemText)
-   * ---------------------------------------------------
-   * @desc A shortcut that sets the native DOM property - Element.textContent
-   *   or Element.innerText.
-   * @param {!Element} elem - The DOM element.
-   * @param {string} text - The text to set the DOM element's textContent or
-   *   innerText to.
-   * @return {!Element} The updated DOM element.
-   */
-  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
-                                                           hasTextContent) {
-
-    return function setElemText(elem, text) {
-
-      /** @type {string} */
-      var errorMsg;
-
-      if ( !checkType(elem, '!element') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-        errorMsg += 'parameter (should be a DOM Element).';
-        throw new TypeError(errorMsg);
-      }
-
-      if ( !checkType(text, 'string') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-        errorMsg += 'parameter (should be a string).';
-        throw new TypeError(errorMsg);
-      }
-
-      if (hasTextContent) {
-        elem.textContent = text;
-      }
-      else {
-        elem.innerText = text;
-      }
-
-      return elem;
-    };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
-
-/* -----------------------------------------------------------------------------
- * The makeElem Method (dom-methods/makeElem.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.makeElem)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method - document.createElement.
-   * @param {(string|!Object<string, string>)=} settings - A string of the
-   *   element's tag name or an object hash map of the element's details.
-   *   The default tag name is 'div'.
-   * @param {string=} settings.tag - The element's tag name.
-   * @param {string=} settings.tagName - The element's tag name.
-   * @param {string=} settings.text - The element's textContent or innerText.
-   * @param {string=} settings.html - The element's innerHTML.
-   * @param {string=} settings.id - The element's id.
-   * @param {string=} settings.className - The element's class name.
-   * @return {!Element} The DOM element with the given id.
-   */
-  utilsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
-
-    return function makeElem(settings) {
-
-      /** @type {!Element} */
-      var elem;
-      /** @type {string} */
-      var tag;
-
-      if ( checkType(settings, 'string') ) {
-        tag = settings;
-      }
-      else if ( checkType(settings, '!object') ) {
-        tag = settings.tag || settings.tagName;
-      }
-      else {
-        settings = null;
-      }
-
-      tag = tag || 'div';
-      elem = document.createElement(tag);
-
-      if (settings) {
-
-        if (settings.text && checkType(settings.text, 'string')) {
-          setElemText(elem, settings.text);
-        }
-
-        if (settings.html && checkType(settings.html, 'string')) {
-          elem.innerHTML = settings.html;
-        }
-
-        if (settings.id && checkType(settings.id, 'string')) {
-          elem.id = settings.id;
-        }
-
-        if (settings.className && checkType(settings.className, 'string')) {
-          elem.className = settings.className;
-        }
-      }
-
-      return elem;
-    };
-  })(utilsModuleAPI.checkType, utilsModuleAPI.setElemText);
-
-/* -----------------------------------------------------------------------------
- * The addElemText Method (dom-methods/addElemText.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.addElemText)
-   * ---------------------------------------------------
-   * @desc A shortcut that adds to the native DOM property - Element.textContent
-   *   or Element.innerText.
-   * @param {!Element} elem - The DOM element.
-   * @param {string} text - The text to add to the DOM element's textContent or
-   *   innerText.
-   * @return {!Element} The updated DOM element.
-   */
-  utilsModuleAPI.addElemText = (function setup_addElemText(checkType,
-                                                           hasTextContent) {
-
-    return function addElemText(elem, text) {
-
-      /** @type {string} */
-      var errorMsg;
-
-      if ( !checkType(elem, '!element') ) {
-        errorMsg = 'An aIV.utils.addElemText call received an invalid elem ';
-        errorMsg += 'parameter (should be a DOM Element).';
-        throw new TypeError(errorMsg);
-      }
-
-      if ( !checkType(text, 'string') ) {
-        errorMsg = 'An aIV.utils.addElemText call received an invalid text ';
-        errorMsg += 'parameter (should be a string).';
-        throw new TypeError(errorMsg);
-      }
-
-      if (text) {
-        if (hasTextContent) {
-          elem.textContent += text;
-        }
-        else {
-          elem.innerText += text;
-        }
-      }
-
-      return elem;
-    };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
 
 /* -----------------------------------------------------------------------------
  * The DOM Helper Methods (dom-methods/helpers.js)
@@ -1801,7 +1361,386 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     return elems;
   };
 
-  utilsModuleAPI.freezeObj(DomHelpers, true);
+  vitalsModuleAPI.freezeObj(DomHelpers, true);
+
+/* -----------------------------------------------------------------------------
+ * The getElemById Method (dom-methods/getElemById.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.getElemById)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method - document.getElementById.
+   * @param {string} id - The id of the element to select.
+   * @return {?Element} The DOM element with the given id.
+   */
+  vitalsModuleAPI.getElemById = function(id) {
+
+    /** @type {string} */
+    var errorMsg;
+
+    if (!id || typeof id !== 'string') {
+      errorMsg = 'A Vitals.getElemById call received a non-string or ';
+      errorMsg += 'empty string id param.';
+      throw new TypeError(errorMsg);
+    }
+
+    return document.getElementById(id);
+  };
+
+/* -----------------------------------------------------------------------------
+ * The getElemByClass Method (dom-methods/getElemByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.getElemByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName[ [index] ].
+   * @param {string} classname - The class name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
+   * @return {?Element} The selected DOM element.
+   */
+  vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
+                                    getElementsByClassNameAlt, floor) {
+
+    return function getElemByClass(classname, index, root) {
+
+      // Public vitals module vars used in this method:
+      // var defaults;
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {!Array<!Element>} */
+      var elems;
+
+      if (!checkType(classname, 'string') || classname === '') {
+        errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
+        errorMsg += 'empty string classname param.';
+        throw new TypeError(errorMsg);
+      }
+
+      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemByClassRoot;
+      }
+
+      elems = ( (!!root.getElementsByClassName) ?
+        root.getElementsByClassName(classname)
+        : getElementsByClassNameAlt(classname, root)
+      );
+
+      if (index < 0 || (index && index >= elems.length)) {
+        index = elems.length - 1;
+      }
+
+      return (elems.length) ? elems[ index ] : null;
+    };
+  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt,
+     Math.floor);
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByClass Method (dom-methods/getElemsByClass.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.getElemsByClass)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByClassName.
+   * @param {string} classname - The class name of the elements to select.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
+   * @return {!Array<!Element>} The selected DOM elements.
+   */
+  vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
+                                     getElementsByClassNameAlt) {
+
+    return function getElemsByClass(classname, root) {
+
+      // Public vitals module vars used in this method:
+      // var defaults;
+
+      /** @type {string} */
+      var errorMsg;
+
+      if (!checkType(classname, 'string') || classname === '') {
+        errorMsg = 'A Vitals.getElemsByClass call received a non-string or ';
+        errorMsg += 'empty string classname param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemsByClassRoot;
+      }
+
+      return ( (!!root.getElementsByClassName) ?
+        root.getElementsByClassName(classname)
+        : getElementsByClassNameAlt(classname, root)
+      );
+    };
+  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt);
+
+/* -----------------------------------------------------------------------------
+ * The getElemByTag Method (dom-methods/getElemByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.getElemByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName[ [index] ].
+   * @param {string} tag - The tag name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   Vitals.set({ getElemByTagRoot: [DOM Node] }).
+   * @return {?Element} The selected DOM element.
+   */
+  vitalsModuleAPI.getElemByTag = (function setup_getElemByTag(checkType,
+                                                              floor) {
+
+    return function getElemByTag(tag, index, root) {
+
+      // Public vitals module vars used in this method:
+      // var defaults;
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {!Array<!Element>} */
+      var elems;
+
+      if (!checkType(tag, 'string') || tag === '') {
+        errorMsg = 'A Vitals.getElemByTag call received a non-string or ';
+        errorMsg += 'empty string tag param.';
+        throw new TypeError(errorMsg);
+      }
+
+      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemByTagRoot;
+      }
+
+      elems = root.getElementsByTagName(tag);
+
+      if (index < 0 || (index && index >= elems.length)) {
+        index = elems.length - 1;
+      }
+
+      return (elems.length) ? elems[ index ] : null;
+    };
+  })(vitalsModuleAPI.checkType, Math.floor);
+
+/* -----------------------------------------------------------------------------
+ * The getElemsByTag Method (dom-methods/getElemsByTag.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.getElemsByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName.
+   * @param {string} tag - The tag name of the elements to select.
+   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   Vitals.set({ getElemsByTagRoot: [DOM Node] }).
+   * @return {!Array<!Element>} The selected DOM elements.
+   */
+  vitalsModuleAPI.getElemsByTag = (function setup_getElemsByTag(checkType) {
+
+    return function getElemsByTag(tag, root) {
+
+      // Public vitals module vars used in this method:
+      // var defaults;
+
+      /** @type {string} */
+      var errorMsg;
+
+      if (!checkType(tag, 'string') || tag === '') {
+        errorMsg = 'A Vitals.getElemsByTag call received a non-string or ';
+        errorMsg += 'empty string tag param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemsByTagRoot;
+      }
+
+      return root.getElementsByTagName(tag);
+    };
+  })(vitalsModuleAPI.checkType);
+
+/* -----------------------------------------------------------------------------
+ * The setElemText Method (dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.setElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut that sets the native DOM property - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to set the DOM element's textContent or
+   *   innerText to.
+   * @return {!Element} The updated DOM element.
+   */
+  vitalsModuleAPI.setElemText = (function setup_setElemText(checkType,
+                                 hasTextContent) {
+
+    return function setElemText(elem, text) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'A Vitals.setElemText call received a non-element ';
+        errorMsg += 'elem param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'A Vitals.setElemText call received a non-string ';
+        errorMsg += 'text param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (hasTextContent) {
+        elem.textContent = text;
+      }
+      else {
+        elem.innerText = text;
+      }
+
+      return elem;
+    };
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);
+
+/* -----------------------------------------------------------------------------
+ * The makeElem Method (dom-methods/makeElem.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.makeElem)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method - document.createElement.
+   * @param {(string|!Object<string, string>)=} settings - A string of the
+   *   element's tag name or an object hash map of the element's details.
+   *   The default tag name is 'div'.
+   * @param {string=} settings.tag - The element's tag name.
+   * @param {string=} settings.tagName - The element's tag name.
+   * @param {string=} settings.text - The element's textContent or innerText.
+   * @param {string=} settings.html - The element's innerHTML.
+   * @param {string=} settings.id - The element's id.
+   * @param {string=} settings.className - The element's class name.
+   * @return {!Element} The DOM element with the given id.
+   */
+  vitalsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
+
+    return function makeElem(settings) {
+
+      /** @type {!Element} */
+      var elem;
+      /** @type {string} */
+      var tag;
+
+      if ( checkType(settings, 'string') ) {
+        tag = settings;
+      }
+      else if ( checkType(settings, '!object') ) {
+        tag = settings.tag || settings.tagName;
+      }
+      else {
+        settings = null;
+      }
+
+      tag = tag || 'div';
+      elem = document.createElement(tag);
+
+      if (settings) {
+
+        if (settings.text && checkType(settings.text, 'string')) {
+          setElemText(elem, settings.text);
+        }
+
+        if (settings.html && checkType(settings.html, 'string')) {
+          elem.innerHTML = settings.html;
+        }
+
+        if (settings.id && checkType(settings.id, 'string')) {
+          elem.id = settings.id;
+        }
+
+        if (settings.className && checkType(settings.className, 'string')) {
+          elem.className = settings.className;
+        }
+      }
+
+      return elem;
+    };
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.setElemText);
+
+/* -----------------------------------------------------------------------------
+ * The addElemText Method (dom-methods/addElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (vitalsModuleAPI.addElemText)
+   * ---------------------------------------------------
+   * @desc A shortcut that adds to the native DOM property - Element.textContent
+   *   or Element.innerText.
+   * @param {!Element} elem - The DOM element.
+   * @param {string} text - The text to add to the DOM element's textContent or
+   *   innerText.
+   * @return {!Element} The updated DOM element.
+   */
+  vitalsModuleAPI.addElemText = (function setup_addElemText(checkType,
+                                 hasTextContent) {
+
+    return function addElemText(elem, text) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      if ( !checkType(elem, '!element') ) {
+        errorMsg = 'A Vitals.addElemText call received a non-element ';
+        errorMsg += 'elem param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if ( !checkType(text, 'string') ) {
+        errorMsg = 'A Vitals.addElemText call received a non-string ';
+        errorMsg += 'text param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (text) {
+        if (hasTextContent) {
+          elem.textContent += text;
+        }
+        else {
+          elem.innerText += text;
+        }
+      }
+
+      return elem;
+    };
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Master Methods
@@ -1813,9 +1752,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.set)
+   * Public Method (vitalsModuleAPI.set)
    * -----------------------------------------------------
-   * @desc Allows you to set the default settings for each aIV.utils method.
+   * @desc Allows you to set the default settings for each Vitals method.
    * @param {!Object} settings - The default settings.
    * @param {(string|function)=} settings.checkArgsErrorMsg
    * @param {!(Document|Element)=} settings.getElemByClassRoot
@@ -1824,49 +1763,44 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {!(Document|Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.set = (function setup_set() {
-
-    /** @type {function(*, string): boolean} */
-    var checkType = utilsModuleAPI.checkType;
-    /** @type {function(string)} */
-    var throwPropError = function(prop) {
-
-      /** @type {string} */
-      var errorMsg;
-
-      errorMsg = 'An aIV.utils.set call received an invalid ' + prop;
-      errorMsg += ' settings parameter (should be a ' + DEFAULTS.types[ prop ];
-      errorMsg += ').';
-      throw new TypeError(errorMsg);
-    };
+  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp,
+                                            throwPropError, types) {
 
     return function set(settings) {
 
+      // Public vitals module vars used in this method:
+      // var defaults;
+
       /** @type {string} */
       var errorMsg;
       /** @type {string} */
-      var prop;
+      var propName;
 
-      if (!settings || typeof settings !== 'object') {
-        errorMsg = 'An aIV.utils.set call received an invalid settings ';
-        errorMsg += 'parameter (should be an object).';
+      if ( !checkType(settings, '!object') ) {
+        errorMsg = 'A Vitals.set call received an invalid settings ';
+        errorMsg += 'param (should be an object).';
         throw new TypeError(errorMsg);
       }
 
-      for (prop in defaults) {
-        if (defaults.hasOwnProperty(prop) && settings.hasOwnProperty(prop)) {
-          if ( checkType(settings[ prop ], DEFAULTS.types[ prop ]) ) {
-            defaults[ prop ] = settings[ prop ];
+      for (propName in defaults) {
+        if (hasOwnProp(defaults, propName) && hasOwnProp(settings, propName)) {
+          if ( checkType(settings[ propName ], types[ propName ]) ) {
+            defaults[ propName ] = settings[ propName ];
           }
           else {
-            throwPropError(prop);
+            throwPropError(propName);
           }
         }
       }
 
       return true;
     };
-  })();
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, function(propName) {
+    var errorMsg = 'A Vitals.set call received an invalid ' + propName + ' ';
+    errorMsg += 'property for the settings param (the prop should be a ';
+    errorMsg += DEFAULTS.types[ propName ] + ').';
+    throw new TypeError(errorMsg);
+  }, DEFAULTS.types);
 
 /* -----------------------------------------------------------------------------
  * The reset Method (master-methods/reset.js)
@@ -1874,59 +1808,63 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.reset)
+   * Public Method (vitalsModuleAPI.reset)
    * -----------------------------------------------------
-   * @desc Allows you to reset the default settings for each aIV.utils method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original default.
+   * @desc Allows you to reset the default settings for each Vitals method.
+   * @param {...(string|strings)=} setting - A setting to reset to the original
+   *   default.
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.reset = function() {
+  vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
+                                                getObjKeys, sliceArr) {
 
-    /** @type {string} */
-    var errorMsg;
-    /** @type {!Array<string>} */
-    var args;
-    /** @type {string} */
-    var prop;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
+    return function reset() {
 
-    len  = arguments.length;
-    args = ( (!len) ?
-      Object.keys(defaults) : (len > 1) ?
-        Array.prototype.slice.call(arguments, 0) : (Array.isArray(arguments[0])) ?
-          arguments[0] : [ arguments[0] ]
-    );
+      // Public vitals module vars used in this method:
+      // var defaults;
+      // var DEFAULTS;
 
-    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
-      errorMsg = 'An aIV.utils.reset call received an invalid setting ';
-      errorMsg += 'parameter (should be a string or an array of strings).';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
+      /** @type {!Array<string>} */
+      var args;
+      /** @type {string} */
+      var prop;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
 
-    i = args.length;
-    while (i--) {
-      prop = args[i];
-      if ( defaults.hasOwnProperty(prop) ) {
-        defaults[ prop ] = DEFAULTS[ prop ];
+      len = arguments.length;
+      args = ( (!len) ?
+        getObjKeys(defaults) : (len > 1) ?
+          sliceArr.call(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
+            arguments[0] : [ arguments[0] ]
+      );
+
+      if ( !checkType(args, '!strings') ) {
+        errorMsg = 'A Vitals.reset call received an invalid setting param ';
+        errorMsg += '(should be a string or array of strings).';
+        throw new TypeError(errorMsg);
       }
-    }
 
-    return true;
-  };
+      i = args.length;
+      while (i--) {
+        prop = args[i];
+        if ( hasOwnProp(defaults, prop) ) {
+          defaults[ prop ] = DEFAULTS[ prop ];
+        }
+      }
+
+      return true;
+    };
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
+     Object.keys, Array.prototype.slice);
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Utils Module End
+// Vitals Module End
 ////////////////////////////////////////////////////////////////////////////////
 
-/* -----------------------------------------------------------------------------
- * Deep Freeze The Utils Module API
- * -------------------------------------------------------------------------- */
-
-  utilsModuleAPI.freezeObj(utilsModuleAPI, true);
-
-  return utilsModuleAPI;
+  return vitalsModuleAPI;
 
 })(window, document));

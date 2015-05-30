@@ -1,37 +1,41 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.isValidTypeString)
+   * Public Method (vitalsModuleAPI.isValidTypeString)
    * ---------------------------------------------------
    * @desc Evaluates whether a string is a valid data type string.
    * @param {string} typeString - The string to evaluate.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.isValidTypeString = function(typeString) {
+  vitalsModuleAPI.isValidTypeString = (function setup_isValidTypeString(
+                                       allDataTypes, exceptLowerAlphaAndPipe) {
 
-    /** @type {number} */
-    var i;
-    /** @type {boolean} */
-    var pass;
-    /** @type {!strings} */
-    var typeArr;
-    /** @type {string} */
-    var errorMsg;
+    return function isValidTypeString(typeString) {
 
-    if (typeof typeString !== 'string') {
-      errorMsg = 'An aIV.utils.isValidTypeString call received an invalid ';
-      errorMsg += '(a non-string) typeString parameter.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {number} */
+      var i;
+      /** @type {boolean} */
+      var pass;
+      /** @type {!strings} */
+      var typeArr;
+      /** @type {string} */
+      var errorMsg;
 
-    typeString = typeString.toLowerCase();
-    typeString = typeString.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
-    typeArr = typeString.split('|');
-    pass = true;
+      if (typeof typeString !== 'string') {
+        errorMsg = 'A Vitals.isValidTypeString call received a non-string ';
+        errorMsg += 'typeString param.';
+        throw new TypeError(errorMsg);
+      }
 
-    i = typeArr.length;
-    while (pass && i--) {
-      pass = JsHelpers.allDataTypes.test(typeArr[i]);
-    }
+      typeString = typeString.toLowerCase();
+      typeString = typeString.replace(exceptLowerAlphaAndPipe, '');
+      typeArr = typeString.split('|');
+      pass = true;
 
-    return pass;
-  };
+      i = typeArr.length;
+      while (pass && i--) {
+        pass = allDataTypes.test(typeArr[i]);
+      }
+
+      return pass;
+    };
+  })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
