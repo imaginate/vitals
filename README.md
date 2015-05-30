@@ -1,4 +1,4 @@
-# Vitals.js ~ Powerful & Easy JavaScript & DOM Shortcuts
+# Vitals.js ~ Powerful & Easy JavaScript Shortcuts
 
 #### Vitals.js is a collection of cross-browser compatible JavaScript & DOM shortcut methods that make programming in JavaScript simpler! You will be able to accurately type check values, deep freeze objects, create elements, and much more with ease. With an intuitive API and clear documentation you will rejoice from the time saved and the stress lost!
 
