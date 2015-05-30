@@ -11,7 +11,7 @@
    * @type {!{
    *   checkType        : function(*, string, boolean=): boolean,
    *   isValidTypeString: function(string): boolean,
-   *   checkArgs        : function(*..., string...),
+   *   checkArgs        : function(...*, ...string),
    *   getTypeOf        : function(*): string,
    *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
    *   hasOwnProp       : function((!Object|function), string): boolean,
