@@ -64,7 +64,8 @@
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  vitalsModuleAPI.checkType = (function setup_checkType() {
+  vitalsModuleAPI.checkType = (function setup_checkType(allDataTypes,
+                               exceptLowerAlphaAndPipe) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -118,7 +119,7 @@
 
       if (!noTypeValCheck || !pass) {
         type = type.toLowerCase();
-        type = type.replace(JsHelpers.exceptLowerAlphaAndPipe, '');
+        type = type.replace(exceptLowerAlphaAndPipe, '');
         types = type.split('|');
 
         noTypeValCheck || isValidTypeStrings(types);
@@ -326,7 +327,7 @@
 
       i = types.length;
       while (pass && i--) {
-        pass = JsHelpers.allDataTypes.test(types[i]);
+        pass = allDataTypes.test(types[i]);
         pass || throwInvalidTypeString(types[i]);
       }
 
@@ -575,4 +576,4 @@
 
     return checkType;
 
-  })();
+  })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
