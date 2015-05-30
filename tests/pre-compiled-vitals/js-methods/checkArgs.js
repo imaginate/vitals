@@ -5,7 +5,7 @@
    * @desc Catches invalid argument data types and throws an error.
    * @param {...*} val - Each argument passed to the method.
    * @param {...string} type -  Each argument's optional data types.
-   *   [See aIV.utils.checkType]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
+   * @see [Vitals.checkType]{@link https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js}
    *   for the available data type strings.
    * @return {boolean} The evaluation result.
    * @example

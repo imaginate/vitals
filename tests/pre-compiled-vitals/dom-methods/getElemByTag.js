@@ -9,7 +9,7 @@
    *   select. The default is 0.
    * @param {!(Document|Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
-   *   aIV.utils.set({ getElemByTagRoot: [DOM Node] }).
+   *   Vitals.set({ getElemByTagRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
    */
   vitalsModuleAPI.getElemByTag = (function setup_getElemByTag(checkType,
