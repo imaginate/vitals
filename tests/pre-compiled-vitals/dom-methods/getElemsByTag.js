@@ -10,21 +10,26 @@
    *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElemsByTag = function(tag, root) {
+  vitalsModuleAPI.getElemsByTag = (function setup_getElemsByTag(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function getElemsByTag(tag, root) {
 
-    if (!tag || typeof tag !== 'string') {
-      errorMsg = 'An aIV.utils.getElemsByTag call received an invalid tag ';
-      errorMsg += 'name parameter.';
-      throw new TypeError(errorMsg);
-    }
+      // Public vitals module vars used in this method:
+      // var defaults;
 
-    if (!root || typeof root !== 'object' ||
-        (!(root instanceof Element) && !(root instanceof Document))) {
-      root = defaults.getElemsByTagRoot;
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    return root.getElementsByTagName(tag);
-  };
+      if (!checkType(tag, 'string') || tag === '') {
+        errorMsg = 'A Vitals.getElemsByTag call received a non-string or ';
+        errorMsg += 'empty string tag param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemsByTagRoot;
+      }
+
+      return root.getElementsByTagName(tag);
+    };
+  })(vitalsModuleAPI.checkType);
