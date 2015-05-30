@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.addElemText)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.addElemText method.
+   * @desc Tests the Vitals.addElemText method.
    * @type {function}
    */
   Tests.addElemText = (function setupTests_addElemText() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (addElemText)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.addElemText method.
+     * @desc Tests the Vitals.addElemText method.
      * @type {function}
      */
     var addElemText = function() {
@@ -62,7 +62,7 @@
         elem.innerText = 'Start & ';
       }
 
-      aIV.utils.addElemText(elem, 'Pass');
+      Vitals.addElemText(elem, 'Pass');
 
       text = elem.textContent || elem.innerText;
       pass = (text === 'Start & Pass');
@@ -84,7 +84,7 @@
    * -------------------------------------------------
    * Public Method (Tests.checkArgs)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.checkArgs method.
+   * @desc Tests the Vitals.checkArgs method.
    * @type {function}
    */
   Tests.checkArgs = (function setupTests_checkArgs() {
@@ -97,7 +97,7 @@
     var results = new TestResults('checkArgs', 3);
 
     /** @type {!RegExp} */
-    var checkErrorMsg = /aIV\.utils\.checkArgs/;
+    var checkErrorMsg = /Vitals\.checkArgs/;
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public checkArgs Method
@@ -107,7 +107,7 @@
      * -------------------------------------------------
      * Public Method (checkArgs)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.checkArgs method.
+     * @desc Tests the Vitals.checkArgs method.
      * @type {function}
      */
     var checkArgs = function() {
@@ -136,7 +136,7 @@
       var errorMsg;
 
       try {
-        aIV.utils.checkArgs(3, 'number');
+        Vitals.checkArgs(3, 'number');
       }
       catch (error) {
         errorMsg = 'checkArgs(3, \'number\') failed. ';
@@ -145,7 +145,7 @@
       }
 
       try {
-        aIV.utils.checkArgs(3, 'string');
+        Vitals.checkArgs(3, 'string');
       }
       catch (error) {
         if ( checkErrorMsg.test(error.message) ) {
@@ -173,7 +173,7 @@
       var errorMsg;
 
       try {
-        aIV.utils.checkArgs(3, 'number', true, 'boolean');
+        Vitals.checkArgs(3, 'number', true, 'boolean');
       }
       catch (error) {
         errorMsg = 'checkArgs(3, \'number\', true, \'boolean\') failed. ';
@@ -182,7 +182,7 @@
       }
 
       try {
-        aIV.utils.checkArgs(3, 'number', true, 'string');
+        Vitals.checkArgs(3, 'number', true, 'string');
       }
       catch (error) {
         if ( checkErrorMsg.test(error.message) ) {
@@ -206,10 +206,10 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
+      errorMsg = 'An Vitals.checkArgs call was missing parameters.';
 
       try {
-        aIV.utils.checkArgs(3);
+        Vitals.checkArgs(3);
       }
       catch (error) {
         if (error.message === errorMsg) {
@@ -234,7 +234,7 @@
    * -------------------------------------------------
    * Public Method (Tests.checkType)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.checkType method.
+   * @desc Tests the Vitals.checkType method.
    * @type {function}
    */
   Tests.checkType = (function setupTests_checkType() {
@@ -272,7 +272,7 @@
      * -------------------------------------------------
      * Public Method (checkType)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.checkType method.
+     * @desc Tests the Vitals.checkType method.
      * @type {function}
      */
     var checkType = function() {
@@ -340,8 +340,8 @@
       var errorMsg;
 
       try {
-        pass = aIV.utils.checkType(null, '*');
-        pass = pass && aIV.utils.checkType(0, '*');
+        pass = Vitals.checkType(null, '*');
+        pass = pass && Vitals.checkType(0, '*');
       }
       catch (error) {
         pass = false;
@@ -366,8 +366,8 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.checkType(null, '!array');
-      fail = fail || aIV.utils.checkType(null, '!object');
+      fail = Vitals.checkType(null, '!array');
+      fail = fail || Vitals.checkType(null, '!object');
 
       if (fail) {
         errorMsg = 'Tests.checkType failed: ! check failed';
@@ -388,8 +388,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(null, '?(string|number)');
-      pass = pass && aIV.utils.checkType(null, '?string');
+      pass = Vitals.checkType(null, '?(string|number)');
+      pass = pass && Vitals.checkType(null, '?string');
 
       if (!pass) {
         errorMsg = 'Tests.checkType failed: ? check failed';
@@ -412,11 +412,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType('s', 'string|number');
-      pass = pass && aIV.utils.checkType(1, 'string|number');
+      pass = Vitals.checkType('s', 'string|number');
+      pass = pass && Vitals.checkType(1, 'string|number');
 
-      fail = aIV.utils.checkType(true, 'string|number');
-      fail = fail || aIV.utils.checkType(obj, 'string|number');
+      fail = Vitals.checkType(true, 'string|number');
+      fail = fail || Vitals.checkType(obj, 'string|number');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: | check failed';
@@ -439,11 +439,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(undefined, '(object|string)=');
-      pass = pass && aIV.utils.checkType(undefined, 'number=');
+      pass = Vitals.checkType(undefined, '(object|string)=');
+      pass = pass && Vitals.checkType(undefined, 'number=');
 
-      fail = aIV.utils.checkType(obj, 'number=');
-      fail = fail || aIV.utils.checkType('s', 'boolean=');
+      fail = Vitals.checkType(obj, 'number=');
+      fail = fail || Vitals.checkType('s', 'boolean=');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: = check failed';
@@ -466,11 +466,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(undefined, 'string|undefined');
-      pass = pass && aIV.utils.checkType(undefined, 'undefined');
+      pass = Vitals.checkType(undefined, 'string|undefined');
+      pass = pass && Vitals.checkType(undefined, 'undefined');
 
-      fail = aIV.utils.checkType(obj, 'undefined');
-      fail = fail || aIV.utils.checkType('s', 'undefined');
+      fail = Vitals.checkType(obj, 'undefined');
+      fail = fail || Vitals.checkType('s', 'undefined');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: undefined check failed';
@@ -493,13 +493,13 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(null, 'string|object');
-      pass = pass && aIV.utils.checkType(null, 'array');
-      pass = pass && aIV.utils.checkType(null, 'elem');
-      pass = pass && aIV.utils.checkType(null, 'strings');
+      pass = Vitals.checkType(null, 'string|object');
+      pass = pass && Vitals.checkType(null, 'array');
+      pass = pass && Vitals.checkType(null, 'elem');
+      pass = pass && Vitals.checkType(null, 'strings');
 
-      fail = aIV.utils.checkType(null, 'function');
-      fail = fail || aIV.utils.checkType(null, 'string');
+      fail = Vitals.checkType(null, 'function');
+      fail = fail || Vitals.checkType(null, 'string');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: null check failed';
@@ -522,11 +522,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType('s', 'string|object');
-      pass = pass && aIV.utils.checkType('s', 'string');
+      pass = Vitals.checkType('s', 'string|object');
+      pass = pass && Vitals.checkType('s', 'string');
 
-      fail = aIV.utils.checkType(elem, 'string');
-      fail = fail || aIV.utils.checkType(1, 'string');
+      fail = Vitals.checkType(elem, 'string');
+      fail = fail || Vitals.checkType(1, 'string');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: string check failed';
@@ -549,11 +549,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(1, 'string|number');
-      pass = pass && aIV.utils.checkType(20, 'number');
+      pass = Vitals.checkType(1, 'string|number');
+      pass = pass && Vitals.checkType(20, 'number');
 
-      fail = aIV.utils.checkType(obj, 'number');
-      fail = fail || aIV.utils.checkType('1', 'number');
+      fail = Vitals.checkType(obj, 'number');
+      fail = fail || Vitals.checkType('1', 'number');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: number check failed';
@@ -576,11 +576,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(true, 'object|boolean');
-      pass = pass && aIV.utils.checkType(false, 'boolean');
+      pass = Vitals.checkType(true, 'object|boolean');
+      pass = pass && Vitals.checkType(false, 'boolean');
 
-      fail = aIV.utils.checkType('s', 'boolean');
-      fail = fail || aIV.utils.checkType(5, 'boolean');
+      fail = Vitals.checkType('s', 'boolean');
+      fail = fail || Vitals.checkType(5, 'boolean');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: boolean check failed';
@@ -603,12 +603,12 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(obj, 'object');
-      pass = pass && aIV.utils.checkType(arr, 'object');
-      pass = pass && aIV.utils.checkType(elem, 'object');
+      pass = Vitals.checkType(obj, 'object');
+      pass = pass && Vitals.checkType(arr, 'object');
+      pass = pass && Vitals.checkType(elem, 'object');
 
-      fail = aIV.utils.checkType('s', 'object');
-      fail = fail || aIV.utils.checkType(func, 'object');
+      fail = Vitals.checkType('s', 'object');
+      fail = fail || Vitals.checkType(func, 'object');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: object check failed';
@@ -631,11 +631,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(func, 'string|function');
-      pass = pass && aIV.utils.checkType(func, 'function');
+      pass = Vitals.checkType(func, 'string|function');
+      pass = pass && Vitals.checkType(func, 'function');
 
-      fail = aIV.utils.checkType('s', 'function');
-      fail = fail || aIV.utils.checkType(obj, 'function');
+      fail = Vitals.checkType('s', 'function');
+      fail = fail || Vitals.checkType(obj, 'function');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: function check failed';
@@ -658,11 +658,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(elem, 'element');
-      pass = pass && aIV.utils.checkType(elem, 'elem');
+      pass = Vitals.checkType(elem, 'element');
+      pass = pass && Vitals.checkType(elem, 'elem');
 
-      fail = aIV.utils.checkType(5, 'element');
-      fail = fail || aIV.utils.checkType(obj, 'elem');
+      fail = Vitals.checkType(5, 'element');
+      fail = fail || Vitals.checkType(obj, 'elem');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: element check failed';
@@ -689,12 +689,12 @@
 
       tempWindow = window.open();
 
-      pass = aIV.utils.checkType(tempWindow.document, 'document');
-      pass = pass && aIV.utils.checkType(document, 'document');
+      pass = Vitals.checkType(tempWindow.document, 'document');
+      pass = pass && Vitals.checkType(document, 'document');
 
       tempWindow.close();
 
-      fail = aIV.utils.checkType(elem, 'document');
+      fail = Vitals.checkType(elem, 'document');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: document check failed';
@@ -717,11 +717,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 3, 4 ], 'array');
-      pass = pass && aIV.utils.checkType(arr, 'array');
+      pass = Vitals.checkType([ 3, 4 ], 'array');
+      pass = pass && Vitals.checkType(arr, 'array');
 
-      fail = aIV.utils.checkType(obj, 'array');
-      fail = fail || aIV.utils.checkType(1, 'array');
+      fail = Vitals.checkType(obj, 'array');
+      fail = fail || Vitals.checkType(1, 'array');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: array check failed';
@@ -744,11 +744,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 's' ], 'strings');
-      pass = pass && aIV.utils.checkType(arr, 'strings');
+      pass = Vitals.checkType([ 's' ], 'strings');
+      pass = pass && Vitals.checkType(arr, 'strings');
 
-      fail = aIV.utils.checkType([ 1 ], 'strings');
-      fail = fail || aIV.utils.checkType(obj, 'strings');
+      fail = Vitals.checkType([ 1 ], 'strings');
+      fail = fail || Vitals.checkType(obj, 'strings');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: strings check failed';
@@ -771,11 +771,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 1, 5 ], 'numbers');
-      pass = pass && aIV.utils.checkType(arr, 'numbers');
+      pass = Vitals.checkType([ 1, 5 ], 'numbers');
+      pass = pass && Vitals.checkType(arr, 'numbers');
 
-      fail = aIV.utils.checkType([ 1, 's' ], 'numbers');
-      fail = fail || aIV.utils.checkType(obj, 'numbers');
+      fail = Vitals.checkType([ 1, 's' ], 'numbers');
+      fail = fail || Vitals.checkType(obj, 'numbers');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: numbers check failed';
@@ -798,11 +798,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ false ], 'booleans');
-      pass = pass && aIV.utils.checkType(arr, 'booleans');
+      pass = Vitals.checkType([ false ], 'booleans');
+      pass = pass && Vitals.checkType(arr, 'booleans');
 
-      fail = aIV.utils.checkType([ 's' ], 'booleans');
-      fail = fail || aIV.utils.checkType(obj, 'booleans');
+      fail = Vitals.checkType([ 's' ], 'booleans');
+      fail = fail || Vitals.checkType(obj, 'booleans');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: booleans check failed';
@@ -825,11 +825,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ obj ], 'objects');
-      pass = pass && aIV.utils.checkType(arr, 'objects');
+      pass = Vitals.checkType([ obj ], 'objects');
+      pass = pass && Vitals.checkType(arr, 'objects');
 
-      fail = aIV.utils.checkType([ obj, 1 ], 'objects');
-      fail = fail || aIV.utils.checkType(obj, 'objects');
+      fail = Vitals.checkType([ obj, 1 ], 'objects');
+      fail = fail || Vitals.checkType(obj, 'objects');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: objects check failed';
@@ -852,11 +852,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ func ], 'functions');
-      pass = pass && aIV.utils.checkType(arr, 'functions');
+      pass = Vitals.checkType([ func ], 'functions');
+      pass = pass && Vitals.checkType(arr, 'functions');
 
-      fail = aIV.utils.checkType([ func, 1 ], 'functions');
-      fail = fail || aIV.utils.checkType([ obj ], 'functions');
+      fail = Vitals.checkType([ func, 1 ], 'functions');
+      fail = fail || Vitals.checkType([ obj ], 'functions');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: functions check failed';
@@ -879,14 +879,14 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ elem ], 'elems');
-      pass = pass && aIV.utils.checkType(arr, 'elems');
-      pass = pass && aIV.utils.checkType([ elem ], 'elements');
-      pass = pass && aIV.utils.checkType(arr, 'elements');
+      pass = Vitals.checkType([ elem ], 'elems');
+      pass = pass && Vitals.checkType(arr, 'elems');
+      pass = pass && Vitals.checkType([ elem ], 'elements');
+      pass = pass && Vitals.checkType(arr, 'elements');
 
-      fail = aIV.utils.checkType([ obj ], 'elems');
-      fail = fail || aIV.utils.checkType(5, 'elems');
-      fail = fail || aIV.utils.checkType(true, 'elements');
+      fail = Vitals.checkType([ obj ], 'elems');
+      fail = fail || Vitals.checkType(5, 'elems');
+      fail = fail || Vitals.checkType(true, 'elements');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: elements check failed';
@@ -909,12 +909,12 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ [ 1 ] ], 'arrays');
-      pass = pass && aIV.utils.checkType([ arr ], 'arrays');
-      pass = pass && aIV.utils.checkType(arr, 'arrays');
+      pass = Vitals.checkType([ [ 1 ] ], 'arrays');
+      pass = pass && Vitals.checkType([ arr ], 'arrays');
+      pass = pass && Vitals.checkType(arr, 'arrays');
 
-      fail = aIV.utils.checkType([ arr, 1 ], 'arrays');
-      fail = fail || aIV.utils.checkType([ obj ], 'arrays');
+      fail = Vitals.checkType([ arr, 1 ], 'arrays');
+      fail = fail || Vitals.checkType([ obj ], 'arrays');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: arrays check failed';
@@ -941,13 +941,13 @@
 
       testMap = { slot1: 'str', slot2: 'str' };
 
-      pass = aIV.utils.checkType(testMap, 'stringMap');
-      pass = pass && aIV.utils.checkType(obj, 'stringMap');
+      pass = Vitals.checkType(testMap, 'stringMap');
+      pass = pass && Vitals.checkType(obj, 'stringMap');
 
       testMap = { slot1: 'str', slot2: 1 };
 
-      fail = aIV.utils.checkType(testMap, 'stringMap');
-      fail = fail || aIV.utils.checkType(5, 'stringMap');
+      fail = Vitals.checkType(testMap, 'stringMap');
+      fail = fail || Vitals.checkType(5, 'stringMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: stringMap check failed';
@@ -974,13 +974,13 @@
 
       testMap = { slot1: 1, slot2: 5 };
 
-      pass = aIV.utils.checkType(testMap, 'numberMap');
-      pass = pass && aIV.utils.checkType(obj, 'numberMap');
+      pass = Vitals.checkType(testMap, 'numberMap');
+      pass = pass && Vitals.checkType(obj, 'numberMap');
 
       testMap = { slot1: 5, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'numberMap');
-      fail = fail || aIV.utils.checkType(5, 'numberMap');
+      fail = Vitals.checkType(testMap, 'numberMap');
+      fail = fail || Vitals.checkType(5, 'numberMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: numberMap check failed';
@@ -1007,13 +1007,13 @@
 
       testMap = { slot1: false, slot2: true };
 
-      pass = aIV.utils.checkType(testMap, 'booleanMap');
-      pass = pass && aIV.utils.checkType(obj, 'booleanMap');
+      pass = Vitals.checkType(testMap, 'booleanMap');
+      pass = pass && Vitals.checkType(obj, 'booleanMap');
 
       testMap = { slot1: true, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'booleanMap');
-      fail = fail || aIV.utils.checkType(5, 'booleanMap');
+      fail = Vitals.checkType(testMap, 'booleanMap');
+      fail = fail || Vitals.checkType(5, 'booleanMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: booleanMap check failed';
@@ -1040,13 +1040,13 @@
 
       testMap = { slot1: obj, slot2: arr };
 
-      pass = aIV.utils.checkType(testMap, 'objectMap');
-      pass = pass && aIV.utils.checkType(obj, 'objectMap');
+      pass = Vitals.checkType(testMap, 'objectMap');
+      pass = pass && Vitals.checkType(obj, 'objectMap');
 
       testMap = { slot1: obj, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'objectMap');
-      fail = fail || aIV.utils.checkType(5, 'objectMap');
+      fail = Vitals.checkType(testMap, 'objectMap');
+      fail = fail || Vitals.checkType(5, 'objectMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: objectMap check failed';
@@ -1073,13 +1073,13 @@
 
       testMap = { slot1: func, slot2: func };
 
-      pass = aIV.utils.checkType(testMap, 'functionMap');
-      pass = pass && aIV.utils.checkType(obj, 'functionMap');
+      pass = Vitals.checkType(testMap, 'functionMap');
+      pass = pass && Vitals.checkType(obj, 'functionMap');
 
       testMap = { slot1: obj, slot2: func };
 
-      fail = aIV.utils.checkType(testMap, 'functionMap');
-      fail = fail || aIV.utils.checkType(5, 'functionMap');
+      fail = Vitals.checkType(testMap, 'functionMap');
+      fail = fail || Vitals.checkType(5, 'functionMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: functionMap check failed';
@@ -1106,13 +1106,13 @@
 
       testMap = { slot1: [ 1 ], slot2: arr };
 
-      pass = aIV.utils.checkType(testMap, 'arrayMap');
-      pass = pass && aIV.utils.checkType(obj, 'arrayMap');
+      pass = Vitals.checkType(testMap, 'arrayMap');
+      pass = pass && Vitals.checkType(obj, 'arrayMap');
 
       testMap = { slot1: obj, slot2: arr };
 
-      fail = aIV.utils.checkType(testMap, 'arrayMap');
-      fail = fail || aIV.utils.checkType(5, 'arrayMap');
+      fail = Vitals.checkType(testMap, 'arrayMap');
+      fail = fail || Vitals.checkType(5, 'arrayMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: arrayMap check failed';
@@ -1139,14 +1139,14 @@
 
       testMap = { slot1: elem, slot2: elem };
 
-      pass = aIV.utils.checkType(testMap, 'elemMap');
-      pass = pass && aIV.utils.checkType(obj, 'elemMap');
-      pass = pass && aIV.utils.checkType(testMap, 'elementMap');
+      pass = Vitals.checkType(testMap, 'elemMap');
+      pass = pass && Vitals.checkType(obj, 'elemMap');
+      pass = pass && Vitals.checkType(testMap, 'elementMap');
 
       testMap = { slot1: obj, slot2: elem };
 
-      fail = aIV.utils.checkType(testMap, 'elemMap');
-      fail = fail || aIV.utils.checkType(5, 'elementMap');
+      fail = Vitals.checkType(testMap, 'elemMap');
+      fail = fail || Vitals.checkType(5, 'elementMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: elementMap check failed';
@@ -1165,7 +1165,7 @@
    * -------------------------------------------------
    * Public Method (Tests.freezeObj)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.freezeObj method.
+   * @desc Tests the Vitals.freezeObj method.
    * @type {function}
    */
   Tests.freezeObj = (function setupTests_freezeObj() {
@@ -1185,7 +1185,7 @@
      * -------------------------------------------------
      * Public Method (freezeObj)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.freezeObj method.
+     * @desc Tests the Vitals.freezeObj method.
      * @type {function}
      */
     var freezeObj = function() {
@@ -1216,7 +1216,7 @@
 
       testObj = {};
 
-      aIV.utils.freezeObj(testObj);
+      Vitals.freezeObj(testObj);
 
       if ( !Object.isFrozen(testObj) ) {
         errorMsg = 'freezeObj failed to complete a basic freeze';
@@ -1244,7 +1244,7 @@
         }
       };
 
-      aIV.utils.freezeObj(testObj, true);
+      Vitals.freezeObj(testObj, true);
 
       if (!Object.isFrozen(testObj) ||
           !Object.isFrozen(testObj.testProp2) ||
@@ -1265,7 +1265,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemByClass)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemByClass method.
+   * @desc Tests the Vitals.getElemByClass method.
    * @type {function}
    */
   Tests.getElemByClass = (function setupTests_getElemByClass() {
@@ -1285,7 +1285,7 @@
      * -------------------------------------------------
      * Public Method (getElemByClass)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemByClass method.
+     * @desc Tests the Vitals.getElemByClass method.
      * @type {function}
      */
     var getElemByClass = function() {
@@ -1385,7 +1385,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByClass('getElemByClass');
+        elem = Vitals.getElemByClass('getElemByClass');
       }
       catch (e) {
         pass = false;
@@ -1418,7 +1418,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByClass('getElemByClass', -1);
+        elem = Vitals.getElemByClass('getElemByClass', -1);
       }
       catch (e) {
         pass = false;
@@ -1454,7 +1454,7 @@
 
       try {
         root = document.getElementById('getElemByClass');
-        elem = aIV.utils.getElemByClass('getElemByClass', -1, root);
+        elem = Vitals.getElemByClass('getElemByClass', -1, root);
       }
       catch (e) {
         pass = false;
@@ -1480,7 +1480,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemById)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemById method.
+   * @desc Tests the Vitals.getElemById method.
    * @type {function}
    */
   Tests.getElemById = (function setupTests_getElemById() {
@@ -1500,7 +1500,7 @@
      * -------------------------------------------------
      * Public Method (getElemById)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemById method.
+     * @desc Tests the Vitals.getElemById method.
      * @type {function}
      */
     var getElemById = function() {
@@ -1571,7 +1571,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemById('getElemById');
+        elem = Vitals.getElemById('getElemById');
       }
       catch (e) {
         pass = false;
@@ -1596,7 +1596,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemByTag)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemByTag method.
+   * @desc Tests the Vitals.getElemByTag method.
    * @type {function}
    */
   Tests.getElemByTag = (function setupTests_getElemByTag() {
@@ -1616,7 +1616,7 @@
      * -------------------------------------------------
      * Public Method (getElemByTag)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemByTag method.
+     * @desc Tests the Vitals.getElemByTag method.
      * @type {function}
      */
     var getElemByTag = function() {
@@ -1713,7 +1713,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByTag('getElemByTag');
+        elem = Vitals.getElemByTag('getElemByTag');
       }
       catch (e) {
         pass = false;
@@ -1746,7 +1746,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByTag('getElemByTag', -1);
+        elem = Vitals.getElemByTag('getElemByTag', -1);
       }
       catch (e) {
         pass = false;
@@ -1782,7 +1782,7 @@
 
       try {
         root = document.getElementById('getElemByTag');
-        elem = aIV.utils.getElemByTag('getElemByTag', -1, root);
+        elem = Vitals.getElemByTag('getElemByTag', -1, root);
       }
       catch (e) {
         pass = false;
@@ -1808,7 +1808,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemsByClass)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemsByClass method.
+   * @desc Tests the Vitals.getElemsByClass method.
    * @type {function}
    */
   Tests.getElemsByClass = (function setupTests_getElemsByClass() {
@@ -1828,7 +1828,7 @@
      * -------------------------------------------------
      * Public Method (getElemsByClass)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemsByClass method.
+     * @desc Tests the Vitals.getElemsByClass method.
      * @type {function}
      */
     var getElemsByClass = function() {
@@ -1927,7 +1927,7 @@
       pass = true;
 
       try {
-        elems = aIV.utils.getElemsByClass('getElemsByClass');
+        elems = Vitals.getElemsByClass('getElemsByClass');
       }
       catch (e) {
         pass = false;
@@ -1963,7 +1963,7 @@
 
       try {
         root = document.getElementById('getElemsByClass');
-        elems = aIV.utils.getElemsByClass('getElemsByClass', root);
+        elems = Vitals.getElemsByClass('getElemsByClass', root);
       }
       catch (e) {
         pass = false;
@@ -1989,7 +1989,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemsByTag)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemsByTag method.
+   * @desc Tests the Vitals.getElemsByTag method.
    * @type {function}
    */
   Tests.getElemsByTag = (function setupTests_getElemsByTag() {
@@ -2009,7 +2009,7 @@
      * -------------------------------------------------
      * Public Method (getElemsByTag)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemsByTag method.
+     * @desc Tests the Vitals.getElemsByTag method.
      * @type {function}
      */
     var getElemsByTag = function() {
@@ -2105,7 +2105,7 @@
       pass = true;
 
       try {
-        elems = aIV.utils.getElemsByTag('getElemsByTag');
+        elems = Vitals.getElemsByTag('getElemsByTag');
       }
       catch (e) {
         pass = false;
@@ -2141,7 +2141,7 @@
 
       try {
         root = document.getElementById('getElemsByTag');
-        elems = aIV.utils.getElemsByTag('getElemsByTag', root);
+        elems = Vitals.getElemsByTag('getElemsByTag', root);
       }
       catch (e) {
         pass = false;
@@ -2167,7 +2167,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getTypeOf)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getTypeOf method.
+   * @desc Tests the Vitals.getTypeOf method.
    * @type {function}
    */
   Tests.getTypeOf = (function setupTests_getTypeOf() {
@@ -2187,7 +2187,7 @@
      * -------------------------------------------------
      * Public Method (getTypeOf)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getTypeOf method.
+     * @desc Tests the Vitals.getTypeOf method.
      * @type {function}
      */
     var getTypeOf = function() {
@@ -2228,11 +2228,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(undefined);
+      type = Vitals.getTypeOf(undefined);
       pass = (type === 'undefined');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: undefined check failed';
+        errorMsg = 'Vitals.getTypeOf failed: undefined check failed';
         results.addError(errorMsg);
       }
     };
@@ -2252,11 +2252,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(null);
+      type = Vitals.getTypeOf(null);
       pass = (type === 'null');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: null check failed';
+        errorMsg = 'Vitals.getTypeOf failed: null check failed';
         results.addError(errorMsg);
       }
     };
@@ -2276,11 +2276,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(true);
+      type = Vitals.getTypeOf(true);
       pass = (type === 'boolean');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: boolean check failed';
+        errorMsg = 'Vitals.getTypeOf failed: boolean check failed';
         results.addError(errorMsg);
       }
     };
@@ -2300,11 +2300,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(5);
+      type = Vitals.getTypeOf(5);
       pass = (type === 'number');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: number check failed';
+        errorMsg = 'Vitals.getTypeOf failed: number check failed';
         results.addError(errorMsg);
       }
     };
@@ -2324,11 +2324,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf('str');
+      type = Vitals.getTypeOf('str');
       pass = (type === 'string');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: string check failed';
+        errorMsg = 'Vitals.getTypeOf failed: string check failed';
         results.addError(errorMsg);
       }
     };
@@ -2348,11 +2348,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(function() {});
+      type = Vitals.getTypeOf(function() {});
       pass = (type === 'function');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: function check failed';
+        errorMsg = 'Vitals.getTypeOf failed: function check failed';
         results.addError(errorMsg);
       }
     };
@@ -2372,11 +2372,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf({});
+      type = Vitals.getTypeOf({});
       pass = (type === 'object');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: object check failed';
+        errorMsg = 'Vitals.getTypeOf failed: object check failed';
         results.addError(errorMsg);
       }
     };
@@ -2396,11 +2396,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf([]);
+      type = Vitals.getTypeOf([]);
       pass = (type === 'array');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: array check failed';
+        errorMsg = 'Vitals.getTypeOf failed: array check failed';
         results.addError(errorMsg);
       }
     };
@@ -2420,11 +2420,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(document);
+      type = Vitals.getTypeOf(document);
       pass = (type === 'document');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: document check failed';
+        errorMsg = 'Vitals.getTypeOf failed: document check failed';
         results.addError(errorMsg);
       }
     };
@@ -2444,11 +2444,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf( document.createElement('div') );
+      type = Vitals.getTypeOf( document.createElement('div') );
       pass = (type === 'element');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: element check failed';
+        errorMsg = 'Vitals.getTypeOf failed: element check failed';
         results.addError(errorMsg);
       }
     };
@@ -2464,7 +2464,7 @@
    * -------------------------------------------------
    * Public Method (Tests.hasOwnProp)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.hasOwnProp method.
+   * @desc Tests the Vitals.hasOwnProp method.
    * @type {function}
    */
   Tests.hasOwnProp = (function setupTests_hasOwnProp() {
@@ -2489,7 +2489,7 @@
      * -------------------------------------------------
      * Public Method (hasOwnProp)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.hasOwnProp method.
+     * @desc Tests the Vitals.hasOwnProp method.
      * @type {function}
      */
     var hasOwnProp = function() {
@@ -2518,8 +2518,8 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.hasOwnProp(testObj, 'testProp2');
-      fail = fail || aIV.utils.hasOwnProp(testObj, 'prototype');
+      fail = Vitals.hasOwnProp(testObj, 'testProp2');
+      fail = fail || Vitals.hasOwnProp(testObj, 'prototype');
 
       if (fail) {
         errorMsg = 'hasOwnProp failed to return false for invalid properties';
@@ -2540,7 +2540,7 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.hasOwnProp(testObj, 'testProp1');
+      pass = Vitals.hasOwnProp(testObj, 'testProp1');
 
       if (!pass) {
         errorMsg = 'hasOwnProp failed to return true for valid properties';
@@ -2559,7 +2559,7 @@
    * -------------------------------------------------
    * Public Method (Tests.isValidTypeString)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.isValidTypeString method.
+   * @desc Tests the Vitals.isValidTypeString method.
    * @type {function}
    */
   Tests.isValidTypeString = (function setupTests_isValidTypeString() {
@@ -2579,7 +2579,7 @@
      * -------------------------------------------------
      * Public Method (isValidTypeString)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.isValidTypeString method.
+     * @desc Tests the Vitals.isValidTypeString method.
      * @type {function}
      */
     var isValidTypeString = function() {
@@ -2611,8 +2611,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('string');
-      pass = pass && aIV.utils.isValidTypeString('number');
+      pass = Vitals.isValidTypeString('string');
+      pass = pass && Vitals.isValidTypeString('number');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid primitive strings';
@@ -2633,9 +2633,9 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('array');
-      pass = pass && aIV.utils.isValidTypeString('objects');
-      pass = pass && aIV.utils.isValidTypeString('elements');
+      pass = Vitals.isValidTypeString('array');
+      pass = pass && Vitals.isValidTypeString('objects');
+      pass = pass && Vitals.isValidTypeString('elements');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid array strings';
@@ -2656,8 +2656,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('stringMap');
-      pass = pass && aIV.utils.isValidTypeString('objectMap');
+      pass = Vitals.isValidTypeString('stringMap');
+      pass = pass && Vitals.isValidTypeString('objectMap');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid hash map strings';
@@ -2678,10 +2678,10 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('array|string');
-      pass = pass && aIV.utils.isValidTypeString('!objectMap');
-      pass = pass && aIV.utils.isValidTypeString('?objects');
-      pass = pass && aIV.utils.isValidTypeString('string=');
+      pass = Vitals.isValidTypeString('array|string');
+      pass = pass && Vitals.isValidTypeString('!objectMap');
+      pass = pass && Vitals.isValidTypeString('?objects');
+      pass = pass && Vitals.isValidTypeString('string=');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid strings with ';
@@ -2703,9 +2703,9 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.isValidTypeString('string array');
-      fail = fail || aIV.utils.isValidTypeString('num');
-      fail = fail || aIV.utils.isValidTypeString('string|object|num');
+      fail = Vitals.isValidTypeString('string array');
+      fail = fail || Vitals.isValidTypeString('num');
+      fail = fail || Vitals.isValidTypeString('string|object|num');
 
       if (fail) {
         errorMsg = 'isValidTypeString failed to catch invalid strings';
@@ -2724,7 +2724,7 @@
    * -------------------------------------------------
    * Public Method (Tests.makeElem)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.makeElem method.
+   * @desc Tests the Vitals.makeElem method.
    * @type {function}
    */
   Tests.makeElem = (function setupTests_makeElem() {
@@ -2744,7 +2744,7 @@
      * -------------------------------------------------
      * Public Method (makeElem)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.makeElem method.
+     * @desc Tests the Vitals.makeElem method.
      * @type {function}
      */
     var makeElem = function() {
@@ -2776,7 +2776,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem();
+      elem = Vitals.makeElem();
 
       pass = (elem instanceof HTMLDivElement);
 
@@ -2801,7 +2801,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem('span');
+      elem = Vitals.makeElem('span');
 
       pass = (elem instanceof HTMLSpanElement);
 
@@ -2828,7 +2828,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         tag : 'span',
         text: 'makeElemTests',
         id  : 'makeElemTests'
@@ -2839,7 +2839,7 @@
       pass = pass && (text === 'makeElemTests');
       pass = pass && (elem.id === 'makeElemTests');
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         tagName: 'p',
         html   : 'makeElemTests'
       });
@@ -2847,7 +2847,7 @@
       pass = (elem instanceof HTMLParagraphElement);
       pass = pass && (elem.innerHTML === 'makeElemTests');
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         className: 'makeElemTests'
       });
 
@@ -2871,7 +2871,7 @@
    * -------------------------------------------------
    * Public Method (Tests.reset)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.reset method.
+   * @desc Tests the Vitals.reset method.
    * @type {function}
    */
   Tests.reset = (function setupTests_reset() {
@@ -2881,7 +2881,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('aIV.utils.reset', 4);
+    var results = new TestResults('Vitals.reset', 4);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public reset Method
@@ -2891,7 +2891,7 @@
      * -------------------------------------------------
      * Public Method (reset)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.reset method.
+     * @desc Tests the Vitals.reset method.
      * @type {function}
      */
     var reset = function() {
@@ -2921,10 +2921,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset();
+        Vitals.reset();
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset() ';
+        errorMsg = 'Vitals.reset() ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -2942,10 +2942,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset('checkArgsErrorMsg');
+        Vitals.reset('checkArgsErrorMsg');
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\') ';
+        errorMsg = 'Vitals.reset(\'checkArgsErrorMsg\') ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -2963,10 +2963,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset([ 'checkArgsErrorMsg', 'getElemByTagRoot' ]);
+        Vitals.reset([ 'checkArgsErrorMsg', 'getElemByTagRoot' ]);
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset([ \'checkArgsErrorMsg\', ';
+        errorMsg = 'Vitals.reset([ \'checkArgsErrorMsg\', ';
         errorMsg += '\'getElemByTagRoot\' ]) failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -2984,10 +2984,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset('checkArgsErrorMsg', 'getElemByTagRoot');
+        Vitals.reset('checkArgsErrorMsg', 'getElemByTagRoot');
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\', ';
+        errorMsg = 'Vitals.reset(\'checkArgsErrorMsg\', ';
         errorMsg += '\'getElemByTagRoot\') failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -3004,7 +3004,7 @@
    * -------------------------------------------------
    * Public Method (Tests.set)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.set method.
+   * @desc Tests the Vitals.set method.
    * @type {function}
    */
   Tests.set = (function setupTests_set() {
@@ -3014,7 +3014,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('aIV.utils.set', 5);
+    var results = new TestResults('Vitals.set', 5);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public set Method
@@ -3024,7 +3024,7 @@
      * -------------------------------------------------
      * Public Method (set)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.set method.
+     * @desc Tests the Vitals.set method.
      * @type {function}
      */
     var set = function() {
@@ -3055,12 +3055,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           checkArgsErrorMsg: 'Errors oi'
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
+        errorMsg = 'Vitals.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -3078,12 +3078,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemByClassRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemByClassRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemByClassRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -3101,12 +3101,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemsByClassRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemsByClassRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemsByClassRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -3124,12 +3124,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemByTagRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemByTagRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemByTagRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -3147,12 +3147,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemsByTagRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemsByTagRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemsByTagRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -3169,7 +3169,7 @@
    * -------------------------------------------------
    * Public Method (Tests.setElemText)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.setElemText method.
+   * @desc Tests the Vitals.setElemText method.
    * @type {function}
    */
   Tests.setElemText = (function setupTests_setElemText() {
@@ -3189,7 +3189,7 @@
      * -------------------------------------------------
      * Public Method (setElemText)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.setElemText method.
+     * @desc Tests the Vitals.setElemText method.
      * @type {function}
      */
     var setElemText = function() {
@@ -3229,7 +3229,7 @@
         elem.innerText = 'Fail';
       }
 
-      aIV.utils.setElemText(elem, 'Pass');
+      Vitals.setElemText(elem, 'Pass');
 
       text = elem.textContent || elem.innerText;
 
