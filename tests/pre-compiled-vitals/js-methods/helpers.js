@@ -2,8 +2,8 @@
    * -----------------------------------------------------
    * Public Variable (JsHelpers)
    * -----------------------------------------------------
-   * @desc Holds helpers for the DOM shortcut methods.
-   * @type {!Object<string, RegExp>}
+   * @desc Holds helpers for the JS shortcut methods.
+   * @type {!Object<string, !RegExp>}
    * @struct
    */
   var JsHelpers = {};
