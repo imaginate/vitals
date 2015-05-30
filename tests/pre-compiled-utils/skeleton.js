@@ -2,27 +2,22 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts (v1.0.6)
+ * Vitals.js (v1.0.6)
  * -----------------------------------------------------------------------------
- * @file Algorithm IV's JavaScript shortcuts are a collection of methods that
- *   make programming in JavaScript easier. With an intuitive API and clear
- *   documentation we are sure you will appreciate the time you save using our
- *   shortcuts!
- * @module aIVUtils
+ * @file Vitals.js is a collection of cross-browser compatible JavaScript & DOM
+ *   shortcut methods that make programming in JavaScript simple! You will be
+ *   able to accurately type check values, deep freeze objects, create elements,
+ *   and so much more with ease. With an intuitive API and clear documentation
+ *   you will rejoice from the time saved and the stress lost!
+ * @module vitals
  * @version 1.0.6
- * @author Adam Smith ({@link adamsmith@youlum.com})
- * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
- * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
- * @desc More details about the code base for aIV.utils:
- * <ol>
- *   <li>annotations: 
- *       [See Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
- *       and [See JSDoc3]{@link http://usejsdoc.org/}
- *   </li>
- *   <li>contributing: 
- *       [See our guideline]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/CONTRIBUTING.md}
- *   </li>
- * </ol>
+ * @author Adam Smith adamsmith@algorithmiv.com
+ * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
+ * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
+ * @see [Contributing Guide]{@link https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md}
+ * Annotations:
+ * @see [JSDoc3]{@link http://usejsdoc.org/}
+ * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
 /**
@@ -42,15 +37,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Polyfills (dependencies/algorithmIV-polyfills.min.js)
+ * Cure.js v0.0.2 (dependencies/cure.min.js)
+ * -----------------------------------------------------------------------------
+ * @desc JavaScript & DOM Polyfills for Browser Compatibility
+ * @see [algorithmiv.com/cure]{@link http://www.algorithmiv.com/cure}
  * -------------------------------------------------------------------------- */
-// insert-aIV-polyfills
+
+/* -----------------------------------------------------------------------------
+ * JSON3 v3.3.2 (dependencies/cure.min.js)
+ * -----------------------------------------------------------------------------
+ * @desc JSON Polyfills for Browser Compatibility
+ * @see [bestiejs.github.io/json3]{@link https://bestiejs.github.io/json3}
+ * -------------------------------------------------------------------------- */
+// insert-cure
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Public API
 ////////////////////////////////////////////////////////////////////////////////
 
-;(function setupTheUtilsPublicAPI(window, utilsModuleAPI) {
+(function setupVitalsPublicAPI(window, vitalsModuleAPI) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
@@ -61,16 +66,16 @@
 })(window,
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Utils Module
+// Vitals Module
 ////////////////////////////////////////////////////////////////////////////////
 
-(function setupTheUtilsModule(window, document, undefined) {
+(function setupVitalsModule(window, document, undefined) {
   "use strict";
 
 /* -----------------------------------------------------------------------------
- * The Public Module Variables (module-vars.js)
+ * The Public Variables (public-vars.js)
  * -------------------------------------------------------------------------- */
-// insert-module-vars
+// insert-public-vars
 
 ////////////////////////////////////////////////////////////////////////////////
 // The JS Shortcuts
@@ -185,15 +190,9 @@
 // insert-master-method-reset
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Utils Module End
+// Vitals Module End
 ////////////////////////////////////////////////////////////////////////////////
 
-/* -----------------------------------------------------------------------------
- * Deep Freeze The Utils Module API
- * -------------------------------------------------------------------------- */
-
-  utilsModuleAPI.freezeObj(utilsModuleAPI, true);
-
-  return utilsModuleAPI;
+  return vitalsModuleAPI;
 
 })(window, document));
