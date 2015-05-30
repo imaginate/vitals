@@ -15,7 +15,7 @@
    */
   vitalsModuleAPI.checkArgs = (function setup_checkArgs(checkType,
                                                         isValidTypeString,
-	      makeArr) {
+	      sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -55,7 +55,7 @@
         throw new Error('A Vitals.checkArgs call was missing params.');
       }
 
-      args = makeArr(arguments, 0);
+      args = sliceArr.call(arguments, 0);
       pass = true;
 
       i = -1;
@@ -133,4 +133,4 @@
     return checkArgs;
 
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.isValidTypeString,
-     Array.prototype.slice.call);
+     Array.prototype.slice);

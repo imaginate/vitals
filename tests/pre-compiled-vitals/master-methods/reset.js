@@ -8,7 +8,7 @@
    * @return {boolean} The success of the new settings update.
    */
   vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
-                                                getObjKeys, makeArr) {
+                                                getObjKeys, sliceArr) {
 
     return function reset() {
 
@@ -30,7 +30,7 @@
       len = arguments.length;
       args = ( (!len) ?
         getObjKeys(defaults) : (len > 1) ?
-          makeArr(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
+          sliceArr.call(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
             arguments[0] : [ arguments[0] ]
       );
 
@@ -51,4 +51,4 @@
       return true;
     };
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
-     Object.keys, Array.prototype.slice.call);
+     Object.keys, Array.prototype.slice);

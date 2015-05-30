@@ -971,7 +971,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   vitalsModuleAPI.checkArgs = (function setup_checkArgs(checkType,
                                                         isValidTypeString,
-	      makeArr) {
+	      sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -1011,7 +1011,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         throw new Error('A Vitals.checkArgs call was missing params.');
       }
 
-      args = makeArr(arguments, 0);
+      args = sliceArr.call(arguments, 0);
       pass = true;
 
       i = -1;
@@ -1089,7 +1089,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     return checkArgs;
 
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.isValidTypeString,
-     Array.prototype.slice.call);
+     Array.prototype.slice);
 
 /* -----------------------------------------------------------------------------
  * The getTypeOf Method (js-methods/getTypeOf.js)
@@ -1816,7 +1816,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @return {boolean} The success of the new settings update.
    */
   vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
-                                                getObjKeys, makeArr) {
+                                                getObjKeys, sliceArr) {
 
     return function reset() {
 
@@ -1838,7 +1838,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       len = arguments.length;
       args = ( (!len) ?
         getObjKeys(defaults) : (len > 1) ?
-          makeArr(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
+          sliceArr.call(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
             arguments[0] : [ arguments[0] ]
       );
 
@@ -1859,7 +1859,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       return true;
     };
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
-     Object.keys, Array.prototype.slice.call);
+     Object.keys, Array.prototype.slice);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vitals Module End
