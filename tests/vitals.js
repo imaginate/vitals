@@ -318,7 +318,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
 
-  vitalsModuleAPI.freezeObj(JsHelpers, true);
+  Object.freeze(JsHelpers);
 
 /* -----------------------------------------------------------------------------
  * The checkType Method (js-methods/checkType.js)
