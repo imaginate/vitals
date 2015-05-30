@@ -1,19 +1,19 @@
   /**
    * ---------------------------------------------------
-   * Global Variable (aIV)
+   * Global Variable (VitalsTests)
    * ---------------------------------------------------
-   * @desc Holds the public API for aIV's apps, tools, and libraries.
+   * @desc Holds Vitals.js Testing API.
    * @struct
    * @global
    */
-  window.aIV = window.aIV || {};
+  window.VitalsTests = window.VitalsTests || {};
 
   /**
    * ---------------------------------------------------
-   * Global Method (aIV.runTests)
+   * Global Method (VitalsTests.run)
    * ---------------------------------------------------
-   * @desc Runs the tests for aIV.console.
+   * @desc Runs the unit tests.
    * @type {function}
    * @global
    */
-  aIV.runTests = testsModuleAPI.runTests;
+  VitalsTests.run = testsModuleAPI.runTests;
