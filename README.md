@@ -141,8 +141,8 @@ parentElem.appendChild(childElem);
 - **API Questions:** First read the [Public API](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/public-api.js) then open an issue or email us.
 - **Bugs & Improvements:** [Open an issue](https://github.com/imaginate/vitals/issues) on this GitHub repository.
 - **All Other Questions:** Send an email to [learn@algorithmiv.com](mailto:learn@algorithmiv.com).
-<br />
 
+<br />
 --
 **Happy Developing,**
 
