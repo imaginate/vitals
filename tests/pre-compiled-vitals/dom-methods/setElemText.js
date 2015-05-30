@@ -10,7 +10,7 @@
    * @return {!Element} The updated DOM element.
    */
   vitalsModuleAPI.setElemText = (function setup_setElemText(checkType,
-                                                           hasTextContent) {
+                                 hasTextContent) {
 
     return function setElemText(elem, text) {
 
@@ -18,14 +18,14 @@
       var errorMsg;
 
       if ( !checkType(elem, '!element') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid elem ';
-        errorMsg += 'parameter (should be a DOM Element).';
+        errorMsg = 'A Vitals.setElemText call received a non-element ';
+        errorMsg += 'elem param.';
         throw new TypeError(errorMsg);
       }
 
       if ( !checkType(text, 'string') ) {
-        errorMsg = 'An aIV.utils.setElemText call received an invalid text ';
-        errorMsg += 'parameter (should be a string).';
+        errorMsg = 'A Vitals.setElemText call received a non-string ';
+        errorMsg += 'text param.';
         throw new TypeError(errorMsg);
       }
 
