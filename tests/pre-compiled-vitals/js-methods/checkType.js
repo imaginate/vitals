@@ -95,8 +95,7 @@
       var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
-        errorMsg = 'An aIV.utils.checkType call received an invalid ';
-        errorMsg += '(a non-string) type parameter.';
+        errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
@@ -272,7 +271,7 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. When using an asterisk, \'*\', no other values ';
       errorMsg += 'should be given as the asterisk guarantees the check will ';
       errorMsg += 'pass.';
@@ -346,9 +345,9 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkType call received an invalid type ';
+      errorMsg = 'A Vitals.checkType call received an invalid type ';
       errorMsg += 'string. The value \'' + type + '\' was incorrect. ';
-      errorMsg += 'Check aIV.utils.checkType\'s documentation for a ';
+      errorMsg += 'Check Vitals.checkType\'s documentation for a ';
       errorMsg += 'list of acceptable type strings.';
       throw new Error(errorMsg);
     };
