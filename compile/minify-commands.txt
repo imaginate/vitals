@@ -1,0 +1,41 @@
+MINIFY COMMANDS                                                |
+-------------------------------------------------------------- |
+Requirements:                                                  |
+GNU Sed (http://www.gnu.org/software/sed/)                     |
+Java (http://www.oracle.com/technetwork/java/javase/overview/) |
+-------------------------------------------------------------- |
+Input File: src/vitals.js                                      |
+Output File: src/vitals.min.js                                 |
+----------------------------------------------------------------
+
+## UNIX Commands
+sed "3,21 d;35,82 d" <src/vitals.js>compile/vitals.js
+cd compile
+java \
+  -jar minifier.jar \
+  --js vitals.js \
+  --js_output_file vitals.min.js
+rm -f vitals.js
+cd ..
+sed \
+  -e "1 r src/pre-compiled-parts/dependencies/cure.min.js" \
+  -e "s/ blank line \*\///" \
+  -e "2 r compile/minified-copyright.txt" \
+  -e "1 d" <compile/vitals.min.js>src/vitals.min.js
+rm -f compile/vitals.min.js
+
+## MS-DOS Commands
+sed "3,21 d;35,82 d" <src\vitals.js>compile\vitals.js
+cd compile
+java ^
+  -jar minifier.jar ^
+  --js vitals.js ^
+  --js_output_file vitals.min.js
+del /f vitals.js
+cd ..
+sed ^
+  -e "1 r src\pre-compiled-parts\dependencies\cure.min.js" ^
+  -e "s/ blank line \*\///" ^
+  -e "2 r compile\minified-copyright.txt" ^
+  -e "1 d" <compile\vitals.min.js>src\vitals.min.js
+del /f compile\vitals.min.js
