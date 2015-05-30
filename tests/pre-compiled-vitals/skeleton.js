@@ -73,9 +73,9 @@
   "use strict";
 
 /* -----------------------------------------------------------------------------
- * The Public Variables (public-vars.js)
+ * The Module's Public Variables (module-vars.js)
  * -------------------------------------------------------------------------- */
-// insert-public-vars
+// insert-module-vars
 
 ////////////////////////////////////////////////////////////////////////////////
 // The JS Shortcuts
