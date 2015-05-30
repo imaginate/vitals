@@ -5,7 +5,7 @@
 <br />
 ## Three Examples
 Here are three examples of how Vitals.js will save you time, improve your code's readability, and make you feel just plain awesome!
-1. **Precise & Painless Type Checking**
+- **Precise & Painless Type Checking**
 ```javascript
 // Check if the variable arr is an array of strings
 var arr, strArrCheck;
@@ -29,7 +29,7 @@ while (i-- && strArrCheck) {
 // With Vitals
 strArrCheck = Vx.checkType(arr, '!strings');
 ```
-2. **Easy & Seamless Error Throwing**
+- **Easy & Seamless Error Throwing**
 ```javascript
 /**
  * An example method.
@@ -52,7 +52,7 @@ if (!checkArgsVals) {
 // With Vitals
 Vx.checkArgs(obj, '!object|function', str, 'string=');
 ```
-3. **Short & Simple Element Creating**
+- **Short & Simple Element Creating**
 ```javascript
 // Create a new span element with 'some text' and the id of 'childElem'.
 // Then append it to the first element with the class of 'parentClass'.
