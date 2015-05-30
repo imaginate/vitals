@@ -20,7 +20,7 @@
 ```javascript
 Vitals.checkType( anyValue, theTypeString ) // returns: boolean
 Vitals.isValidTypeString( theTypeString ) // returns: boolean
-Vitals.checkArgs( theArg, theTypeString, theArg, theTypeString, ...) // returns: undefined (throws TypeError)
+Vitals.checkArgs( theArg, theTypeString, theArg, theTypeString, ...) // returns: boolean
 Vitals.getTypeOf( anyValue ) // returns: string
 Vitals.freezeObj( theObject [, applyDeepFreeze ]) // returns: !Object
 Vitals.hasOwnProp( theObject, theProperty ) // returns: boolean
@@ -71,6 +71,7 @@ if (strArrCheck) {
 else {
   // Do something else
 }
+///////////////////////////////////////////////////////////////////////////
 
 // Without Vitals
 strArrCheck = (Object.prototype.toString.call(arr) === '[object Array]');
@@ -91,19 +92,25 @@ strArrCheck = Vx.checkType(arr, '!strings');
  */
 function exampleMethod(obj, str) {
   // CHECK GOES HERE: Check the method's arguments for invalid types
-  // Does something ...
-  // Does something ...
+  // Method does something else ...
+}
+///////////////////////////////////////////////////////////////////////////////////////
+
+// Without Vitals
+var checkArgsVals = !obj || (typeof obj !== 'object' && typeof obj !== 'function') ||
+                    (typeof str !== 'string' && typeof str !== 'undefined');
+if (!checkArgsVals) {
+  throw new TypeError('the error message');
 }
 
-  // Without Vitals
-  if (!obj ||
-      (typeof obj !== 'object' && typeof obj !== 'function') ||
-      (typeof str !== 'string' && typeof str !== 'undefined')) {
-    throw new TypeError('the error message');
-  }
+// With Vitals: Option 1
+Vx.checkArgs(obj, '!object|function', str, 'string=');
 
-  // With Vitals
-  Vx.checkArgs(obj, '!object|function', str, 'string=');
+// With Vitals: Option 2
+var checkArgsVals = Vx.checkArgs(obj, '!object|function', str, 'string=');
+if (!checkArgsVals) {
+  return;
+}
 ```
 - [Vitals.makeElem](#makeElem): Creating and appending a new DOM Element can be short and simple.
 ```javascript
@@ -112,6 +119,7 @@ function exampleMethod(obj, str) {
 
 var parentElem, childElem;
 // CREATION GOES HERE: Set childElem to a new span element and append it
+///////////////////////////////////////////////////////////////////////////////////////
 
 // Without Vitals
 childElem = document.createElement('span');
