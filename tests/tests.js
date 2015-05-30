@@ -765,7 +765,7 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An Vitals.checkArgs call was missing parameters.';
+      errorMsg = 'A Vitals.checkArgs call was missing params.';
 
       try {
         Vitals.checkArgs(3);
