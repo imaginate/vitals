@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.checkArgs)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.checkArgs method.
+   * @desc Tests the Vitals.checkArgs method.
    * @type {function}
    */
   Tests.checkArgs = (function setupTests_checkArgs() {
@@ -15,7 +15,7 @@
     var results = new TestResults('checkArgs', 3);
 
     /** @type {!RegExp} */
-    var checkErrorMsg = /aIV\.utils\.checkArgs/;
+    var checkErrorMsg = /Vitals\.checkArgs/;
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public checkArgs Method
@@ -25,7 +25,7 @@
      * -------------------------------------------------
      * Public Method (checkArgs)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.checkArgs method.
+     * @desc Tests the Vitals.checkArgs method.
      * @type {function}
      */
     var checkArgs = function() {
@@ -54,7 +54,7 @@
       var errorMsg;
 
       try {
-        aIV.utils.checkArgs(3, 'number');
+        Vitals.checkArgs(3, 'number');
       }
       catch (error) {
         errorMsg = 'checkArgs(3, \'number\') failed. ';
@@ -63,7 +63,7 @@
       }
 
       try {
-        aIV.utils.checkArgs(3, 'string');
+        Vitals.checkArgs(3, 'string');
       }
       catch (error) {
         if ( checkErrorMsg.test(error.message) ) {
@@ -91,7 +91,7 @@
       var errorMsg;
 
       try {
-        aIV.utils.checkArgs(3, 'number', true, 'boolean');
+        Vitals.checkArgs(3, 'number', true, 'boolean');
       }
       catch (error) {
         errorMsg = 'checkArgs(3, \'number\', true, \'boolean\') failed. ';
@@ -100,7 +100,7 @@
       }
 
       try {
-        aIV.utils.checkArgs(3, 'number', true, 'string');
+        Vitals.checkArgs(3, 'number', true, 'string');
       }
       catch (error) {
         if ( checkErrorMsg.test(error.message) ) {
@@ -124,10 +124,10 @@
       /** @type {string} */
       var errorMsg;
 
-      errorMsg = 'An aIV.utils.checkArgs call was missing parameters.';
+      errorMsg = 'An Vitals.checkArgs call was missing parameters.';
 
       try {
-        aIV.utils.checkArgs(3);
+        Vitals.checkArgs(3);
       }
       catch (error) {
         if (error.message === errorMsg) {

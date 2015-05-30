@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemById)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemById method.
+   * @desc Tests the Vitals.getElemById method.
    * @type {function}
    */
   Tests.getElemById = (function setupTests_getElemById() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (getElemById)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemById method.
+     * @desc Tests the Vitals.getElemById method.
      * @type {function}
      */
     var getElemById = function() {
@@ -93,7 +93,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemById('getElemById');
+        elem = Vitals.getElemById('getElemById');
       }
       catch (e) {
         pass = false;

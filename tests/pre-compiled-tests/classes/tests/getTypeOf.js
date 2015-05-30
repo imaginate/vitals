@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getTypeOf)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getTypeOf method.
+   * @desc Tests the Vitals.getTypeOf method.
    * @type {function}
    */
   Tests.getTypeOf = (function setupTests_getTypeOf() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (getTypeOf)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getTypeOf method.
+     * @desc Tests the Vitals.getTypeOf method.
      * @type {function}
      */
     var getTypeOf = function() {
@@ -63,11 +63,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(undefined);
+      type = Vitals.getTypeOf(undefined);
       pass = (type === 'undefined');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: undefined check failed';
+        errorMsg = 'Vitals.getTypeOf failed: undefined check failed';
         results.addError(errorMsg);
       }
     };
@@ -87,11 +87,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(null);
+      type = Vitals.getTypeOf(null);
       pass = (type === 'null');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: null check failed';
+        errorMsg = 'Vitals.getTypeOf failed: null check failed';
         results.addError(errorMsg);
       }
     };
@@ -111,11 +111,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(true);
+      type = Vitals.getTypeOf(true);
       pass = (type === 'boolean');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: boolean check failed';
+        errorMsg = 'Vitals.getTypeOf failed: boolean check failed';
         results.addError(errorMsg);
       }
     };
@@ -135,11 +135,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(5);
+      type = Vitals.getTypeOf(5);
       pass = (type === 'number');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: number check failed';
+        errorMsg = 'Vitals.getTypeOf failed: number check failed';
         results.addError(errorMsg);
       }
     };
@@ -159,11 +159,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf('str');
+      type = Vitals.getTypeOf('str');
       pass = (type === 'string');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: string check failed';
+        errorMsg = 'Vitals.getTypeOf failed: string check failed';
         results.addError(errorMsg);
       }
     };
@@ -183,11 +183,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(function() {});
+      type = Vitals.getTypeOf(function() {});
       pass = (type === 'function');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: function check failed';
+        errorMsg = 'Vitals.getTypeOf failed: function check failed';
         results.addError(errorMsg);
       }
     };
@@ -207,11 +207,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf({});
+      type = Vitals.getTypeOf({});
       pass = (type === 'object');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: object check failed';
+        errorMsg = 'Vitals.getTypeOf failed: object check failed';
         results.addError(errorMsg);
       }
     };
@@ -231,11 +231,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf([]);
+      type = Vitals.getTypeOf([]);
       pass = (type === 'array');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: array check failed';
+        errorMsg = 'Vitals.getTypeOf failed: array check failed';
         results.addError(errorMsg);
       }
     };
@@ -255,11 +255,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf(document);
+      type = Vitals.getTypeOf(document);
       pass = (type === 'document');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: document check failed';
+        errorMsg = 'Vitals.getTypeOf failed: document check failed';
         results.addError(errorMsg);
       }
     };
@@ -279,11 +279,11 @@
       /** @type {string} */
       var errorMsg;
 
-      type = aIV.utils.getTypeOf( document.createElement('div') );
+      type = Vitals.getTypeOf( document.createElement('div') );
       pass = (type === 'element');
 
       if (!pass) {
-        errorMsg = 'aIV.utils.getTypeOf failed: element check failed';
+        errorMsg = 'Vitals.getTypeOf failed: element check failed';
         results.addError(errorMsg);
       }
     };

@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.isValidTypeString)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.isValidTypeString method.
+   * @desc Tests the Vitals.isValidTypeString method.
    * @type {function}
    */
   Tests.isValidTypeString = (function setupTests_isValidTypeString() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (isValidTypeString)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.isValidTypeString method.
+     * @desc Tests the Vitals.isValidTypeString method.
      * @type {function}
      */
     var isValidTypeString = function() {
@@ -54,8 +54,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('string');
-      pass = pass && aIV.utils.isValidTypeString('number');
+      pass = Vitals.isValidTypeString('string');
+      pass = pass && Vitals.isValidTypeString('number');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid primitive strings';
@@ -76,9 +76,9 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('array');
-      pass = pass && aIV.utils.isValidTypeString('objects');
-      pass = pass && aIV.utils.isValidTypeString('elements');
+      pass = Vitals.isValidTypeString('array');
+      pass = pass && Vitals.isValidTypeString('objects');
+      pass = pass && Vitals.isValidTypeString('elements');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid array strings';
@@ -99,8 +99,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('stringMap');
-      pass = pass && aIV.utils.isValidTypeString('objectMap');
+      pass = Vitals.isValidTypeString('stringMap');
+      pass = pass && Vitals.isValidTypeString('objectMap');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid hash map strings';
@@ -121,10 +121,10 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.isValidTypeString('array|string');
-      pass = pass && aIV.utils.isValidTypeString('!objectMap');
-      pass = pass && aIV.utils.isValidTypeString('?objects');
-      pass = pass && aIV.utils.isValidTypeString('string=');
+      pass = Vitals.isValidTypeString('array|string');
+      pass = pass && Vitals.isValidTypeString('!objectMap');
+      pass = pass && Vitals.isValidTypeString('?objects');
+      pass = pass && Vitals.isValidTypeString('string=');
 
       if (!pass) {
         errorMsg = 'isValidTypeString failed to pass valid strings with ';
@@ -146,9 +146,9 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.isValidTypeString('string array');
-      fail = fail || aIV.utils.isValidTypeString('num');
-      fail = fail || aIV.utils.isValidTypeString('string|object|num');
+      fail = Vitals.isValidTypeString('string array');
+      fail = fail || Vitals.isValidTypeString('num');
+      fail = fail || Vitals.isValidTypeString('string|object|num');
 
       if (fail) {
         errorMsg = 'isValidTypeString failed to catch invalid strings';

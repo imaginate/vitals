@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.reset)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.reset method.
+   * @desc Tests the Vitals.reset method.
    * @type {function}
    */
   Tests.reset = (function setupTests_reset() {
@@ -12,7 +12,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('aIV.utils.reset', 4);
+    var results = new TestResults('Vitals.reset', 4);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public reset Method
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (reset)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.reset method.
+     * @desc Tests the Vitals.reset method.
      * @type {function}
      */
     var reset = function() {
@@ -52,10 +52,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset();
+        Vitals.reset();
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset() ';
+        errorMsg = 'Vitals.reset() ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -73,10 +73,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset('checkArgsErrorMsg');
+        Vitals.reset('checkArgsErrorMsg');
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\') ';
+        errorMsg = 'Vitals.reset(\'checkArgsErrorMsg\') ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -94,10 +94,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset([ 'checkArgsErrorMsg', 'getElemByTagRoot' ]);
+        Vitals.reset([ 'checkArgsErrorMsg', 'getElemByTagRoot' ]);
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset([ \'checkArgsErrorMsg\', ';
+        errorMsg = 'Vitals.reset([ \'checkArgsErrorMsg\', ';
         errorMsg += '\'getElemByTagRoot\' ]) failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -115,10 +115,10 @@
       var errorMsg;
 
       try {
-        aIV.utils.reset('checkArgsErrorMsg', 'getElemByTagRoot');
+        Vitals.reset('checkArgsErrorMsg', 'getElemByTagRoot');
       }
       catch (error) {
-        errorMsg = 'aIV.utils.reset(\'checkArgsErrorMsg\', ';
+        errorMsg = 'Vitals.reset(\'checkArgsErrorMsg\', ';
         errorMsg += '\'getElemByTagRoot\') failed. ' + error.toString();
         results.addError(errorMsg);
       }

@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.checkType)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.checkType method.
+   * @desc Tests the Vitals.checkType method.
    * @type {function}
    */
   Tests.checkType = (function setupTests_checkType() {
@@ -40,7 +40,7 @@
      * -------------------------------------------------
      * Public Method (checkType)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.checkType method.
+     * @desc Tests the Vitals.checkType method.
      * @type {function}
      */
     var checkType = function() {
@@ -108,8 +108,8 @@
       var errorMsg;
 
       try {
-        pass = aIV.utils.checkType(null, '*');
-        pass = pass && aIV.utils.checkType(0, '*');
+        pass = Vitals.checkType(null, '*');
+        pass = pass && Vitals.checkType(0, '*');
       }
       catch (error) {
         pass = false;
@@ -134,8 +134,8 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.checkType(null, '!array');
-      fail = fail || aIV.utils.checkType(null, '!object');
+      fail = Vitals.checkType(null, '!array');
+      fail = fail || Vitals.checkType(null, '!object');
 
       if (fail) {
         errorMsg = 'Tests.checkType failed: ! check failed';
@@ -156,8 +156,8 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(null, '?(string|number)');
-      pass = pass && aIV.utils.checkType(null, '?string');
+      pass = Vitals.checkType(null, '?(string|number)');
+      pass = pass && Vitals.checkType(null, '?string');
 
       if (!pass) {
         errorMsg = 'Tests.checkType failed: ? check failed';
@@ -180,11 +180,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType('s', 'string|number');
-      pass = pass && aIV.utils.checkType(1, 'string|number');
+      pass = Vitals.checkType('s', 'string|number');
+      pass = pass && Vitals.checkType(1, 'string|number');
 
-      fail = aIV.utils.checkType(true, 'string|number');
-      fail = fail || aIV.utils.checkType(obj, 'string|number');
+      fail = Vitals.checkType(true, 'string|number');
+      fail = fail || Vitals.checkType(obj, 'string|number');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: | check failed';
@@ -207,11 +207,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(undefined, '(object|string)=');
-      pass = pass && aIV.utils.checkType(undefined, 'number=');
+      pass = Vitals.checkType(undefined, '(object|string)=');
+      pass = pass && Vitals.checkType(undefined, 'number=');
 
-      fail = aIV.utils.checkType(obj, 'number=');
-      fail = fail || aIV.utils.checkType('s', 'boolean=');
+      fail = Vitals.checkType(obj, 'number=');
+      fail = fail || Vitals.checkType('s', 'boolean=');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: = check failed';
@@ -234,11 +234,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(undefined, 'string|undefined');
-      pass = pass && aIV.utils.checkType(undefined, 'undefined');
+      pass = Vitals.checkType(undefined, 'string|undefined');
+      pass = pass && Vitals.checkType(undefined, 'undefined');
 
-      fail = aIV.utils.checkType(obj, 'undefined');
-      fail = fail || aIV.utils.checkType('s', 'undefined');
+      fail = Vitals.checkType(obj, 'undefined');
+      fail = fail || Vitals.checkType('s', 'undefined');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: undefined check failed';
@@ -261,13 +261,13 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(null, 'string|object');
-      pass = pass && aIV.utils.checkType(null, 'array');
-      pass = pass && aIV.utils.checkType(null, 'elem');
-      pass = pass && aIV.utils.checkType(null, 'strings');
+      pass = Vitals.checkType(null, 'string|object');
+      pass = pass && Vitals.checkType(null, 'array');
+      pass = pass && Vitals.checkType(null, 'elem');
+      pass = pass && Vitals.checkType(null, 'strings');
 
-      fail = aIV.utils.checkType(null, 'function');
-      fail = fail || aIV.utils.checkType(null, 'string');
+      fail = Vitals.checkType(null, 'function');
+      fail = fail || Vitals.checkType(null, 'string');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: null check failed';
@@ -290,11 +290,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType('s', 'string|object');
-      pass = pass && aIV.utils.checkType('s', 'string');
+      pass = Vitals.checkType('s', 'string|object');
+      pass = pass && Vitals.checkType('s', 'string');
 
-      fail = aIV.utils.checkType(elem, 'string');
-      fail = fail || aIV.utils.checkType(1, 'string');
+      fail = Vitals.checkType(elem, 'string');
+      fail = fail || Vitals.checkType(1, 'string');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: string check failed';
@@ -317,11 +317,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(1, 'string|number');
-      pass = pass && aIV.utils.checkType(20, 'number');
+      pass = Vitals.checkType(1, 'string|number');
+      pass = pass && Vitals.checkType(20, 'number');
 
-      fail = aIV.utils.checkType(obj, 'number');
-      fail = fail || aIV.utils.checkType('1', 'number');
+      fail = Vitals.checkType(obj, 'number');
+      fail = fail || Vitals.checkType('1', 'number');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: number check failed';
@@ -344,11 +344,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(true, 'object|boolean');
-      pass = pass && aIV.utils.checkType(false, 'boolean');
+      pass = Vitals.checkType(true, 'object|boolean');
+      pass = pass && Vitals.checkType(false, 'boolean');
 
-      fail = aIV.utils.checkType('s', 'boolean');
-      fail = fail || aIV.utils.checkType(5, 'boolean');
+      fail = Vitals.checkType('s', 'boolean');
+      fail = fail || Vitals.checkType(5, 'boolean');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: boolean check failed';
@@ -371,12 +371,12 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(obj, 'object');
-      pass = pass && aIV.utils.checkType(arr, 'object');
-      pass = pass && aIV.utils.checkType(elem, 'object');
+      pass = Vitals.checkType(obj, 'object');
+      pass = pass && Vitals.checkType(arr, 'object');
+      pass = pass && Vitals.checkType(elem, 'object');
 
-      fail = aIV.utils.checkType('s', 'object');
-      fail = fail || aIV.utils.checkType(func, 'object');
+      fail = Vitals.checkType('s', 'object');
+      fail = fail || Vitals.checkType(func, 'object');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: object check failed';
@@ -399,11 +399,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(func, 'string|function');
-      pass = pass && aIV.utils.checkType(func, 'function');
+      pass = Vitals.checkType(func, 'string|function');
+      pass = pass && Vitals.checkType(func, 'function');
 
-      fail = aIV.utils.checkType('s', 'function');
-      fail = fail || aIV.utils.checkType(obj, 'function');
+      fail = Vitals.checkType('s', 'function');
+      fail = fail || Vitals.checkType(obj, 'function');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: function check failed';
@@ -426,11 +426,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType(elem, 'element');
-      pass = pass && aIV.utils.checkType(elem, 'elem');
+      pass = Vitals.checkType(elem, 'element');
+      pass = pass && Vitals.checkType(elem, 'elem');
 
-      fail = aIV.utils.checkType(5, 'element');
-      fail = fail || aIV.utils.checkType(obj, 'elem');
+      fail = Vitals.checkType(5, 'element');
+      fail = fail || Vitals.checkType(obj, 'elem');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: element check failed';
@@ -457,12 +457,12 @@
 
       tempWindow = window.open();
 
-      pass = aIV.utils.checkType(tempWindow.document, 'document');
-      pass = pass && aIV.utils.checkType(document, 'document');
+      pass = Vitals.checkType(tempWindow.document, 'document');
+      pass = pass && Vitals.checkType(document, 'document');
 
       tempWindow.close();
 
-      fail = aIV.utils.checkType(elem, 'document');
+      fail = Vitals.checkType(elem, 'document');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: document check failed';
@@ -485,11 +485,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 3, 4 ], 'array');
-      pass = pass && aIV.utils.checkType(arr, 'array');
+      pass = Vitals.checkType([ 3, 4 ], 'array');
+      pass = pass && Vitals.checkType(arr, 'array');
 
-      fail = aIV.utils.checkType(obj, 'array');
-      fail = fail || aIV.utils.checkType(1, 'array');
+      fail = Vitals.checkType(obj, 'array');
+      fail = fail || Vitals.checkType(1, 'array');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: array check failed';
@@ -512,11 +512,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 's' ], 'strings');
-      pass = pass && aIV.utils.checkType(arr, 'strings');
+      pass = Vitals.checkType([ 's' ], 'strings');
+      pass = pass && Vitals.checkType(arr, 'strings');
 
-      fail = aIV.utils.checkType([ 1 ], 'strings');
-      fail = fail || aIV.utils.checkType(obj, 'strings');
+      fail = Vitals.checkType([ 1 ], 'strings');
+      fail = fail || Vitals.checkType(obj, 'strings');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: strings check failed';
@@ -539,11 +539,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ 1, 5 ], 'numbers');
-      pass = pass && aIV.utils.checkType(arr, 'numbers');
+      pass = Vitals.checkType([ 1, 5 ], 'numbers');
+      pass = pass && Vitals.checkType(arr, 'numbers');
 
-      fail = aIV.utils.checkType([ 1, 's' ], 'numbers');
-      fail = fail || aIV.utils.checkType(obj, 'numbers');
+      fail = Vitals.checkType([ 1, 's' ], 'numbers');
+      fail = fail || Vitals.checkType(obj, 'numbers');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: numbers check failed';
@@ -566,11 +566,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ false ], 'booleans');
-      pass = pass && aIV.utils.checkType(arr, 'booleans');
+      pass = Vitals.checkType([ false ], 'booleans');
+      pass = pass && Vitals.checkType(arr, 'booleans');
 
-      fail = aIV.utils.checkType([ 's' ], 'booleans');
-      fail = fail || aIV.utils.checkType(obj, 'booleans');
+      fail = Vitals.checkType([ 's' ], 'booleans');
+      fail = fail || Vitals.checkType(obj, 'booleans');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: booleans check failed';
@@ -593,11 +593,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ obj ], 'objects');
-      pass = pass && aIV.utils.checkType(arr, 'objects');
+      pass = Vitals.checkType([ obj ], 'objects');
+      pass = pass && Vitals.checkType(arr, 'objects');
 
-      fail = aIV.utils.checkType([ obj, 1 ], 'objects');
-      fail = fail || aIV.utils.checkType(obj, 'objects');
+      fail = Vitals.checkType([ obj, 1 ], 'objects');
+      fail = fail || Vitals.checkType(obj, 'objects');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: objects check failed';
@@ -620,11 +620,11 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ func ], 'functions');
-      pass = pass && aIV.utils.checkType(arr, 'functions');
+      pass = Vitals.checkType([ func ], 'functions');
+      pass = pass && Vitals.checkType(arr, 'functions');
 
-      fail = aIV.utils.checkType([ func, 1 ], 'functions');
-      fail = fail || aIV.utils.checkType([ obj ], 'functions');
+      fail = Vitals.checkType([ func, 1 ], 'functions');
+      fail = fail || Vitals.checkType([ obj ], 'functions');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: functions check failed';
@@ -647,14 +647,14 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ elem ], 'elems');
-      pass = pass && aIV.utils.checkType(arr, 'elems');
-      pass = pass && aIV.utils.checkType([ elem ], 'elements');
-      pass = pass && aIV.utils.checkType(arr, 'elements');
+      pass = Vitals.checkType([ elem ], 'elems');
+      pass = pass && Vitals.checkType(arr, 'elems');
+      pass = pass && Vitals.checkType([ elem ], 'elements');
+      pass = pass && Vitals.checkType(arr, 'elements');
 
-      fail = aIV.utils.checkType([ obj ], 'elems');
-      fail = fail || aIV.utils.checkType(5, 'elems');
-      fail = fail || aIV.utils.checkType(true, 'elements');
+      fail = Vitals.checkType([ obj ], 'elems');
+      fail = fail || Vitals.checkType(5, 'elems');
+      fail = fail || Vitals.checkType(true, 'elements');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: elements check failed';
@@ -677,12 +677,12 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.checkType([ [ 1 ] ], 'arrays');
-      pass = pass && aIV.utils.checkType([ arr ], 'arrays');
-      pass = pass && aIV.utils.checkType(arr, 'arrays');
+      pass = Vitals.checkType([ [ 1 ] ], 'arrays');
+      pass = pass && Vitals.checkType([ arr ], 'arrays');
+      pass = pass && Vitals.checkType(arr, 'arrays');
 
-      fail = aIV.utils.checkType([ arr, 1 ], 'arrays');
-      fail = fail || aIV.utils.checkType([ obj ], 'arrays');
+      fail = Vitals.checkType([ arr, 1 ], 'arrays');
+      fail = fail || Vitals.checkType([ obj ], 'arrays');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: arrays check failed';
@@ -709,13 +709,13 @@
 
       testMap = { slot1: 'str', slot2: 'str' };
 
-      pass = aIV.utils.checkType(testMap, 'stringMap');
-      pass = pass && aIV.utils.checkType(obj, 'stringMap');
+      pass = Vitals.checkType(testMap, 'stringMap');
+      pass = pass && Vitals.checkType(obj, 'stringMap');
 
       testMap = { slot1: 'str', slot2: 1 };
 
-      fail = aIV.utils.checkType(testMap, 'stringMap');
-      fail = fail || aIV.utils.checkType(5, 'stringMap');
+      fail = Vitals.checkType(testMap, 'stringMap');
+      fail = fail || Vitals.checkType(5, 'stringMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: stringMap check failed';
@@ -742,13 +742,13 @@
 
       testMap = { slot1: 1, slot2: 5 };
 
-      pass = aIV.utils.checkType(testMap, 'numberMap');
-      pass = pass && aIV.utils.checkType(obj, 'numberMap');
+      pass = Vitals.checkType(testMap, 'numberMap');
+      pass = pass && Vitals.checkType(obj, 'numberMap');
 
       testMap = { slot1: 5, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'numberMap');
-      fail = fail || aIV.utils.checkType(5, 'numberMap');
+      fail = Vitals.checkType(testMap, 'numberMap');
+      fail = fail || Vitals.checkType(5, 'numberMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: numberMap check failed';
@@ -775,13 +775,13 @@
 
       testMap = { slot1: false, slot2: true };
 
-      pass = aIV.utils.checkType(testMap, 'booleanMap');
-      pass = pass && aIV.utils.checkType(obj, 'booleanMap');
+      pass = Vitals.checkType(testMap, 'booleanMap');
+      pass = pass && Vitals.checkType(obj, 'booleanMap');
 
       testMap = { slot1: true, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'booleanMap');
-      fail = fail || aIV.utils.checkType(5, 'booleanMap');
+      fail = Vitals.checkType(testMap, 'booleanMap');
+      fail = fail || Vitals.checkType(5, 'booleanMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: booleanMap check failed';
@@ -808,13 +808,13 @@
 
       testMap = { slot1: obj, slot2: arr };
 
-      pass = aIV.utils.checkType(testMap, 'objectMap');
-      pass = pass && aIV.utils.checkType(obj, 'objectMap');
+      pass = Vitals.checkType(testMap, 'objectMap');
+      pass = pass && Vitals.checkType(obj, 'objectMap');
 
       testMap = { slot1: obj, slot2: 'str' };
 
-      fail = aIV.utils.checkType(testMap, 'objectMap');
-      fail = fail || aIV.utils.checkType(5, 'objectMap');
+      fail = Vitals.checkType(testMap, 'objectMap');
+      fail = fail || Vitals.checkType(5, 'objectMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: objectMap check failed';
@@ -841,13 +841,13 @@
 
       testMap = { slot1: func, slot2: func };
 
-      pass = aIV.utils.checkType(testMap, 'functionMap');
-      pass = pass && aIV.utils.checkType(obj, 'functionMap');
+      pass = Vitals.checkType(testMap, 'functionMap');
+      pass = pass && Vitals.checkType(obj, 'functionMap');
 
       testMap = { slot1: obj, slot2: func };
 
-      fail = aIV.utils.checkType(testMap, 'functionMap');
-      fail = fail || aIV.utils.checkType(5, 'functionMap');
+      fail = Vitals.checkType(testMap, 'functionMap');
+      fail = fail || Vitals.checkType(5, 'functionMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: functionMap check failed';
@@ -874,13 +874,13 @@
 
       testMap = { slot1: [ 1 ], slot2: arr };
 
-      pass = aIV.utils.checkType(testMap, 'arrayMap');
-      pass = pass && aIV.utils.checkType(obj, 'arrayMap');
+      pass = Vitals.checkType(testMap, 'arrayMap');
+      pass = pass && Vitals.checkType(obj, 'arrayMap');
 
       testMap = { slot1: obj, slot2: arr };
 
-      fail = aIV.utils.checkType(testMap, 'arrayMap');
-      fail = fail || aIV.utils.checkType(5, 'arrayMap');
+      fail = Vitals.checkType(testMap, 'arrayMap');
+      fail = fail || Vitals.checkType(5, 'arrayMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: arrayMap check failed';
@@ -907,14 +907,14 @@
 
       testMap = { slot1: elem, slot2: elem };
 
-      pass = aIV.utils.checkType(testMap, 'elemMap');
-      pass = pass && aIV.utils.checkType(obj, 'elemMap');
-      pass = pass && aIV.utils.checkType(testMap, 'elementMap');
+      pass = Vitals.checkType(testMap, 'elemMap');
+      pass = pass && Vitals.checkType(obj, 'elemMap');
+      pass = pass && Vitals.checkType(testMap, 'elementMap');
 
       testMap = { slot1: obj, slot2: elem };
 
-      fail = aIV.utils.checkType(testMap, 'elemMap');
-      fail = fail || aIV.utils.checkType(5, 'elementMap');
+      fail = Vitals.checkType(testMap, 'elemMap');
+      fail = fail || Vitals.checkType(5, 'elementMap');
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: elementMap check failed';

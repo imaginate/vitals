@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.addElemText)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.addElemText method.
+   * @desc Tests the Vitals.addElemText method.
    * @type {function}
    */
   Tests.addElemText = (function setupTests_addElemText() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (addElemText)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.addElemText method.
+     * @desc Tests the Vitals.addElemText method.
      * @type {function}
      */
     var addElemText = function() {
@@ -62,7 +62,7 @@
         elem.innerText = 'Start & ';
       }
 
-      aIV.utils.addElemText(elem, 'Pass');
+      Vitals.addElemText(elem, 'Pass');
 
       text = elem.textContent || elem.innerText;
       pass = (text === 'Start & Pass');

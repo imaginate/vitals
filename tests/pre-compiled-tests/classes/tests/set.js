@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.set)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.set method.
+   * @desc Tests the Vitals.set method.
    * @type {function}
    */
   Tests.set = (function setupTests_set() {
@@ -12,7 +12,7 @@
     ////////////////////////////////////////////////////////////////////////////
 
     /** @type {!TestResults} */
-    var results = new TestResults('aIV.utils.set', 5);
+    var results = new TestResults('Vitals.set', 5);
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public set Method
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (set)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.set method.
+     * @desc Tests the Vitals.set method.
      * @type {function}
      */
     var set = function() {
@@ -53,12 +53,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           checkArgsErrorMsg: 'Errors oi'
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
+        errorMsg = 'Vitals.set({ checkArgsErrorMsg: \'Errors oi\' }) ';
         errorMsg += 'failed. ' + error.toString();
         results.addError(errorMsg);
       }
@@ -76,12 +76,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemByClassRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemByClassRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemByClassRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -99,12 +99,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemsByClassRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemsByClassRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemsByClassRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -122,12 +122,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemByTagRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemByTagRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemByTagRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }
@@ -145,12 +145,12 @@
       var errorMsg;
 
       try {
-        aIV.utils.set({
+        Vitals.set({
           getElemsByTagRoot: document
         });
       }
       catch (error) {
-        errorMsg = 'aIV.utils.set({ getElemsByTagRoot: document }) failed. ';
+        errorMsg = 'Vitals.set({ getElemsByTagRoot: document }) failed. ';
         errorMsg += error.toString();
         results.addError(errorMsg);
       }

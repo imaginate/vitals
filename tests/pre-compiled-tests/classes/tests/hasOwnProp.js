@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.hasOwnProp)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.hasOwnProp method.
+   * @desc Tests the Vitals.hasOwnProp method.
    * @type {function}
    */
   Tests.hasOwnProp = (function setupTests_hasOwnProp() {
@@ -27,7 +27,7 @@
      * -------------------------------------------------
      * Public Method (hasOwnProp)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.hasOwnProp method.
+     * @desc Tests the Vitals.hasOwnProp method.
      * @type {function}
      */
     var hasOwnProp = function() {
@@ -56,8 +56,8 @@
       /** @type {string} */
       var errorMsg;
 
-      fail = aIV.utils.hasOwnProp(testObj, 'testProp2');
-      fail = fail || aIV.utils.hasOwnProp(testObj, 'prototype');
+      fail = Vitals.hasOwnProp(testObj, 'testProp2');
+      fail = fail || Vitals.hasOwnProp(testObj, 'prototype');
 
       if (fail) {
         errorMsg = 'hasOwnProp failed to return false for invalid properties';
@@ -78,7 +78,7 @@
       /** @type {string} */
       var errorMsg;
 
-      pass = aIV.utils.hasOwnProp(testObj, 'testProp1');
+      pass = Vitals.hasOwnProp(testObj, 'testProp1');
 
       if (!pass) {
         errorMsg = 'hasOwnProp failed to return true for valid properties';

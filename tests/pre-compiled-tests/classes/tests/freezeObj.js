@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.freezeObj)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.freezeObj method.
+   * @desc Tests the Vitals.freezeObj method.
    * @type {function}
    */
   Tests.freezeObj = (function setupTests_freezeObj() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (freezeObj)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.freezeObj method.
+     * @desc Tests the Vitals.freezeObj method.
      * @type {function}
      */
     var freezeObj = function() {
@@ -53,7 +53,7 @@
 
       testObj = {};
 
-      aIV.utils.freezeObj(testObj);
+      Vitals.freezeObj(testObj);
 
       if ( !Object.isFrozen(testObj) ) {
         errorMsg = 'freezeObj failed to complete a basic freeze';
@@ -81,7 +81,7 @@
         }
       };
 
-      aIV.utils.freezeObj(testObj, true);
+      Vitals.freezeObj(testObj, true);
 
       if (!Object.isFrozen(testObj) ||
           !Object.isFrozen(testObj.testProp2) ||

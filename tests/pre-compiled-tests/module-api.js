@@ -12,7 +12,7 @@
    * -----------------------------------------------------
    * Public Method (testsModuleAPI.runTests)
    * -----------------------------------------------------
-   * @desc Initializes the aIV.utils tests.
+   * @desc Initializes the unit tests for each Vitals method.
    * @type {function}
    */
   testsModuleAPI.runTests = function() {

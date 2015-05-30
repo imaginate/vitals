@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemByTag)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemByTag method.
+   * @desc Tests the Vitals.getElemByTag method.
    * @type {function}
    */
   Tests.getElemByTag = (function setupTests_getElemByTag() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (getElemByTag)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemByTag method.
+     * @desc Tests the Vitals.getElemByTag method.
      * @type {function}
      */
     var getElemByTag = function() {
@@ -119,7 +119,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByTag('getElemByTag');
+        elem = Vitals.getElemByTag('getElemByTag');
       }
       catch (e) {
         pass = false;
@@ -152,7 +152,7 @@
       pass = true;
 
       try {
-        elem = aIV.utils.getElemByTag('getElemByTag', -1);
+        elem = Vitals.getElemByTag('getElemByTag', -1);
       }
       catch (e) {
         pass = false;
@@ -188,7 +188,7 @@
 
       try {
         root = document.getElementById('getElemByTag');
-        elem = aIV.utils.getElemByTag('getElemByTag', -1, root);
+        elem = Vitals.getElemByTag('getElemByTag', -1, root);
       }
       catch (e) {
         pass = false;

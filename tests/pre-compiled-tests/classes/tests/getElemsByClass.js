@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.getElemsByClass)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.getElemsByClass method.
+   * @desc Tests the Vitals.getElemsByClass method.
    * @type {function}
    */
   Tests.getElemsByClass = (function setupTests_getElemsByClass() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (getElemsByClass)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.getElemsByClass method.
+     * @desc Tests the Vitals.getElemsByClass method.
      * @type {function}
      */
     var getElemsByClass = function() {
@@ -121,7 +121,7 @@
       pass = true;
 
       try {
-        elems = aIV.utils.getElemsByClass('getElemsByClass');
+        elems = Vitals.getElemsByClass('getElemsByClass');
       }
       catch (e) {
         pass = false;
@@ -157,7 +157,7 @@
 
       try {
         root = document.getElementById('getElemsByClass');
-        elems = aIV.utils.getElemsByClass('getElemsByClass', root);
+        elems = Vitals.getElemsByClass('getElemsByClass', root);
       }
       catch (e) {
         pass = false;

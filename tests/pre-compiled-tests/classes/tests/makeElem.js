@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.makeElem)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.makeElem method.
+   * @desc Tests the Vitals.makeElem method.
    * @type {function}
    */
   Tests.makeElem = (function setupTests_makeElem() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (makeElem)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.makeElem method.
+     * @desc Tests the Vitals.makeElem method.
      * @type {function}
      */
     var makeElem = function() {
@@ -54,7 +54,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem();
+      elem = Vitals.makeElem();
 
       pass = (elem instanceof HTMLDivElement);
 
@@ -79,7 +79,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem('span');
+      elem = Vitals.makeElem('span');
 
       pass = (elem instanceof HTMLSpanElement);
 
@@ -106,7 +106,7 @@
       /** @type {string} */
       var errorMsg;
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         tag : 'span',
         text: 'makeElemTests',
         id  : 'makeElemTests'
@@ -117,7 +117,7 @@
       pass = pass && (text === 'makeElemTests');
       pass = pass && (elem.id === 'makeElemTests');
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         tagName: 'p',
         html   : 'makeElemTests'
       });
@@ -125,7 +125,7 @@
       pass = (elem instanceof HTMLParagraphElement);
       pass = pass && (elem.innerHTML === 'makeElemTests');
 
-      elem = aIV.utils.makeElem({
+      elem = Vitals.makeElem({
         className: 'makeElemTests'
       });
 

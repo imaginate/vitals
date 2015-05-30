@@ -1,23 +1,17 @@
 /**
  * -----------------------------------------------------------------------------
- * Algorithm IV JavaScript Shortcuts Tests (v1.0.6)
+ * Vitals.js Unit Tests (v1.0.6)
  * -----------------------------------------------------------------------------
- * @file The module used to run all testing for aIV.utils.
- * @module aIVUtilsTests
+ * @file The module used to run all testing for Vitals.
+ * @module vitalsTests
  * @version 1.0.6
- * @author Adam Smith ({@link adamsmith@youlum.com})
- * @copyright 2015 Adam A Smith ([github.com/imaginate]{@link https://github.com/imaginate})
- * @license The Apache License ([algorithmiv.com/docs/license]{@link http://algorithmiv.com/docs/license})
- * @desc More details about the module for aIV.tests:
- * <ol>
- *   <li>annotations: 
- *       [See Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
- *       and [See JSDoc3]{@link http://usejsdoc.org/}
- *   </li>
- *   <li>contributing: 
- *       [See the guideline]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/blob/master/CONTRIBUTING.md}
- *   </li>
- * </ol>
+ * @author Adam Smith adamsmith@algorithmiv.com
+ * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
+ * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
+ * @see [Contributing Guide]{@link https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md}
+ * Annotations:
+ * @see [JSDoc3]{@link http://usejsdoc.org/}
+ * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
 /**

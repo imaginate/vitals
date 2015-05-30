@@ -2,7 +2,7 @@
    * -------------------------------------------------
    * Public Method (Tests.setElemText)
    * -------------------------------------------------
-   * @desc Tests the aIV.utils.setElemText method.
+   * @desc Tests the Vitals.setElemText method.
    * @type {function}
    */
   Tests.setElemText = (function setupTests_setElemText() {
@@ -22,7 +22,7 @@
      * -------------------------------------------------
      * Public Method (setElemText)
      * -------------------------------------------------
-     * @desc Tests the aIV.utils.setElemText method.
+     * @desc Tests the Vitals.setElemText method.
      * @type {function}
      */
     var setElemText = function() {
@@ -62,7 +62,7 @@
         elem.innerText = 'Fail';
       }
 
-      aIV.utils.setElemText(elem, 'Pass');
+      Vitals.setElemText(elem, 'Pass');
 
       text = elem.textContent || elem.innerText;
 

@@ -39,7 +39,7 @@ DIRECTIONS FOR NEW TESTS                       |
      * -------------------------------------------------
      * Public Method (methodName)
      * -------------------------------------------------
-     * @desc Checks aIV.utils.methodName method.
+     * @desc Checks Vitals.methodName method.
      * @type {function}
      */
     var methodName = function() {
@@ -70,7 +70,7 @@ DIRECTIONS FOR NEW TESTS                       |
       /** @type {string} */
       var something;
 
-      pass = aIV.utils.methodName(something);
+      pass = Vitals.methodName(something);
 
       if (!pass) {
         errorMsg = 'methodName failed to do something';
