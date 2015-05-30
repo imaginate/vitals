@@ -1,12 +1,12 @@
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.reset)
+   * Public Method (vitalsModuleAPI.reset)
    * -----------------------------------------------------
    * @desc Allows you to reset the default settings for each aIV.utils method.
    * @param {...(string|strings)=} setting - A setting to reset to the original default.
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.reset = function() {
+  vitalsModuleAPI.reset = function() {
 
     /** @type {string} */
     var errorMsg;
@@ -26,7 +26,7 @@
           arguments[0] : [ arguments[0] ]
     );
 
-    if ( !utilsModuleAPI.checkType(args, '!strings') ) {
+    if ( !vitalsModuleAPI.checkType(args, '!strings') ) {
       errorMsg = 'An aIV.utils.reset call received an invalid setting ';
       errorMsg += 'parameter (should be a string or an array of strings).';
       throw new TypeError(errorMsg);

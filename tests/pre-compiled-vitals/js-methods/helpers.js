@@ -39,4 +39,4 @@
    */
   JsHelpers.exceptLowerAlphaAndPipe = /[^a-z\|]/g;
 
-  utilsModuleAPI.freezeObj(JsHelpers, true);
+  vitalsModuleAPI.freezeObj(JsHelpers, true);

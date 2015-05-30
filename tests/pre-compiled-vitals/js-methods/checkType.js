@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkType)
+   * Public Method (vitalsModuleAPI.checkType)
    * ---------------------------------------------------
    * @desc Checks a value's data type against the given optional types.
    * @param {*} val - The value to be evaluated.
@@ -64,7 +64,7 @@
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  utilsModuleAPI.checkType = (function setup_checkType() {
+  vitalsModuleAPI.checkType = (function setup_checkType() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method

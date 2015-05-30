@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemByClass)
+   * Public Method (vitalsModuleAPI.getElemByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName[ [index] ].
@@ -12,7 +12,7 @@
    *   aIV.utils.set({ getElemByClassRoot: [DOM Node] }).
    * @return {!HTMLElement} The selected DOM element.
    */
-  utilsModuleAPI.getElemByClass = function(classname, index, root) {
+  vitalsModuleAPI.getElemByClass = function(classname, index, root) {
 
     /** @type {string} */
     var errorMsg;

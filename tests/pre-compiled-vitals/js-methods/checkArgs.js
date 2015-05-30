@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.checkArgs)
+   * Public Method (vitalsModuleAPI.checkArgs)
    * ---------------------------------------------------
    * @desc Catches invalid argument data types and throws an error.
    * @param {...*} val - Each argument passed to the method.
@@ -13,7 +13,7 @@
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  utilsModuleAPI.checkArgs = (function setup_checkArgs() {
+  vitalsModuleAPI.checkArgs = (function setup_checkArgs() {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -94,7 +94,7 @@
      *   the data type string for correctness. By default this is set to false.
      * @return {boolean} The evaluation result.
      */
-    var checkType = utilsModuleAPI.checkType;
+    var checkType = vitalsModuleAPI.checkType;
 
     /**
      * ---------------------------------------------------
@@ -104,7 +104,7 @@
      * @param {string} typeString - The string to evaluate.
      * @return {boolean} The evaluation result.
      */
-    var isValidTypeString = utilsModuleAPI.isValidTypeString;
+    var isValidTypeString = vitalsModuleAPI.isValidTypeString;
 
     /**
      * ---------------------------------------------------

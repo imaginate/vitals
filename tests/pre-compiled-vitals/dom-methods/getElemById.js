@@ -1,12 +1,12 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemById)
+   * Public Method (vitalsModuleAPI.getElemById)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
    * @return {!HTMLElement} The DOM element with the given id.
    */
-  utilsModuleAPI.getElemById = function(id) {
+  vitalsModuleAPI.getElemById = function(id) {
 
     /** @type {string} */
     var errorMsg;

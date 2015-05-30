@@ -1,6 +1,6 @@
   /**
    * -----------------------------------------------------
-   * Public Method (utilsModuleAPI.set)
+   * Public Method (vitalsModuleAPI.set)
    * -----------------------------------------------------
    * @desc Allows you to set the default settings for each aIV.utils method.
    * @param {!Object} settings - The default settings.
@@ -11,10 +11,10 @@
    * @param {!(Document|Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  utilsModuleAPI.set = (function setup_set() {
+  vitalsModuleAPI.set = (function setup_set() {
 
     /** @type {function(*, string): boolean} */
-    var checkType = utilsModuleAPI.checkType;
+    var checkType = vitalsModuleAPI.checkType;
     /** @type {function(string)} */
     var throwPropError = function(prop) {
 

@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.addElemText)
+   * Public Method (vitalsModuleAPI.addElemText)
    * ---------------------------------------------------
    * @desc A shortcut that adds to the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -9,7 +9,7 @@
    *   innerText.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.addElemText = (function setup_addElemText(checkType,
+  vitalsModuleAPI.addElemText = (function setup_addElemText(checkType,
                                                            hasTextContent) {
 
     return function addElemText(elem, text) {
@@ -40,4 +40,4 @@
 
       return elem;
     };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);

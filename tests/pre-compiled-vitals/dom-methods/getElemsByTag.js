@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.getElemsByTag)
+   * Public Method (vitalsModuleAPI.getElemsByTag)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByTagName.
@@ -10,7 +10,7 @@
    *   aIV.utils.set({ getElemsByTagRoot: [DOM Node] }).
    * @return {!Array<HTMLElement>} The selected DOM elements.
    */
-  utilsModuleAPI.getElemsByTag = function(tag, root) {
+  vitalsModuleAPI.getElemsByTag = function(tag, root) {
 
     /** @type {string} */
     var errorMsg;

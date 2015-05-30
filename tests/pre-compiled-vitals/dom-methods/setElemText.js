@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (utilsModuleAPI.setElemText)
+   * Public Method (vitalsModuleAPI.setElemText)
    * ---------------------------------------------------
    * @desc A shortcut that sets the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -9,7 +9,7 @@
    *   innerText to.
    * @return {!Element} The updated DOM element.
    */
-  utilsModuleAPI.setElemText = (function setup_setElemText(checkType,
+  vitalsModuleAPI.setElemText = (function setup_setElemText(checkType,
                                                            hasTextContent) {
 
     return function setElemText(elem, text) {
@@ -38,4 +38,4 @@
 
       return elem;
     };
-  })(utilsModuleAPI.checkType, DomFeatures.textContent);
+  })(vitalsModuleAPI.checkType, DomFeatures.textContent);
