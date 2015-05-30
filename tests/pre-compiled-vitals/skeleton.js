@@ -2,7 +2,7 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Vitals.js (v1.0.6)
+ * Vitals.js (v1.0.7)
  * -----------------------------------------------------------------------------
  * @file Vitals.js is a collection of cross-browser compatible JavaScript & DOM
  *   shortcut methods that make programming in JavaScript simple! You will be
@@ -10,7 +10,7 @@
  *   and so much more with ease. With an intuitive API and clear documentation
  *   you will rejoice from the time saved and the stress lost!
  * @module vitals
- * @version 1.0.6
+ * @version 1.0.7
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
  * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}

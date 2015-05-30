@@ -1,10 +1,10 @@
 /**
  * -----------------------------------------------------------------------------
- * Vitals.js Unit Tests (v1.0.6)
+ * Vitals.js Unit Tests (v1.0.7)
  * -----------------------------------------------------------------------------
  * @file The module used to run all testing for Vitals.
  * @module vitalsTests
- * @version 1.0.6
+ * @version 1.0.7
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
  * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
