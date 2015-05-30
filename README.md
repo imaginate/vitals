@@ -52,7 +52,7 @@ if (!checkArgsVals) {
 // With Vitals
 Vx.checkArgs(obj, '!object|function', str, 'string=');
 ```
-- **Short & Simple Element Creating**
+- **Short & Simple DOM Manipulation**
 ```javascript
 // Create a new span element with 'some text' and the id of 'childElem'.
 // Then append it to the first element with the class of 'parentClass'.
