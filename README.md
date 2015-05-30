@@ -3,9 +3,9 @@
 #### Vitals.js is a collection of cross-browser compatible JavaScript & DOM shortcut methods that make programming in JavaScript simpler! You will be able to accurately type check values, deep freeze objects, create elements, and much more with ease. With an intuitive API and clear documentation you will rejoice from the time saved and the stress lost!
 
 <br />
-## Examples
+## Three Examples
 Here are three examples of how Vitals.js will save you time, improve your code's readability, and make you feel just plain awesome!
-- [Vitals.checkType](#checkType): Type checking an array and its properties can be precise and painless.
+1. **Precise & Painless Type Checking**
 ```javascript
 // Check if the variable arr is an array of strings
 var arr, strArrCheck;
@@ -29,7 +29,7 @@ while (i-- && strArrCheck) {
 // With Vitals
 strArrCheck = Vx.checkType(arr, '!strings');
 ```
-- [Vitals.checkArgs](#checkArgs): Throwing a TypeError for invalid argument types can be easy and seamless.
+2. **Easy & Seamless Error Throwing**
 ```javascript
 /**
  * An example method.
@@ -49,16 +49,10 @@ if (!checkArgsVals) {
   throw new TypeError('the error message');
 }
 
-// With Vitals: Option 1
+// With Vitals
 Vx.checkArgs(obj, '!object|function', str, 'string=');
-
-// With Vitals: Option 2
-var checkArgsVals = Vx.checkArgs(obj, '!object|function', str, 'string=');
-if (!checkArgsVals) {
-  return;
-}
 ```
-- [Vitals.makeElem](#makeElem): Creating and appending a new DOM Element can be short and simple.
+3. **Short & Simple Element Creating**
 ```javascript
 // Create a new span element with 'some text' and the id of 'childElem'.
 // Then append it to the first element with the class of 'parentClass'.
@@ -123,9 +117,9 @@ Vitals.addElemText( theElement, theText ) // returns: !Element
 
 <br />
 ## The Shortcuts
-- <a name="checkType"></a>**[checkType](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for native operators and methods like [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray), and many more.
+- **[checkType](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for native operators and methods like [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray), and many more.
 - **[isValidTypeString](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to [Vx.checkType](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js).
-- <a name="checkArgs"></a>**[checkArgs](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkArgs.js)** - Allows you to easily catch invalid argument data types and throw custom error messages.
+- **[checkArgs](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkArgs.js)** - Allows you to easily catch invalid argument data types and throw custom error messages.
 - **[getTypeOf](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/getTypeOf.js)** - A shortcut for the native [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof) operator with the added ability to identify a null, array, document, or element type from an object.
 - **[freezeObj](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
 - **[hasOwnProp](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
@@ -134,7 +128,7 @@ Vitals.addElemText( theElement, theText ) // returns: !Element
 - **[getElemByTag](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName[ index ]](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
 - **[getElemsByClass](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByClass.js)** - A shortcut for the native [( Document | Element ).getElementsByClassName](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName).
 - **[getElemsByTag](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
-- <a name="makeElem"></a>**[makeElem](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/makeElem.js)** - A shortcut for the native [Document.createElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement) and optionally a shortcut to set the new element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) / [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx), [innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), [id](https://developer.mozilla.org/en-US/docs/Web/API/Element/id), and [className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className).
+- **[makeElem](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/makeElem.js)** - A shortcut for the native [Document.createElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement) and optionally a shortcut to set the new element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) / [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx), [innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), [id](https://developer.mozilla.org/en-US/docs/Web/API/Element/id), and [className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className).
 - **[setElemText](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/setElemText.js)** - A shortcut to set an element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) or [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx) property.
 - **[addElemText](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/addElemText.js)** - A shortcut to add to an element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) or [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx) property.
 
