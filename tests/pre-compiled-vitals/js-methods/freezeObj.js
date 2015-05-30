@@ -8,7 +8,8 @@
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  vitalsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug) {
+  vitalsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
+                               checkType, objFreeze) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public freezeObj Method
@@ -29,9 +30,8 @@
       /** @type {string} */
       var errorMsg;
 
-      if (!obj || (typeof obj !== 'object' && typeof obj !== 'function')) {
-        errorMsg = 'An aIV.utils.freezeObj call received an invalid obj ';
-        errorMsg += 'parameter.';
+      if ( !checkType(obj, '!object|function') ) {
+        errorMsg = 'A Vitals.freezeObj call received an invalid obj param.';
         throw new TypeError(errorMsg);
       }
 
@@ -39,15 +39,11 @@
         return obj;
       }
 
-      if (typeof deep !== 'boolean') {
-        deep = false;
-      }
-
-      if (deep) {
+      if (deep === true) {
         deepFreeze(obj);
       }
       else {
-        Object.freeze(obj);
+        objFreeze(obj);
       }
 
       return obj;
@@ -70,14 +66,12 @@
       /** @type {string} */
       var prop;
 
-      Object.freeze(obj);
+      objFreeze(obj);
 
       for (prop in obj) {
-        if (obj.hasOwnProperty(prop) && obj[ prop ] &&
-            (typeof obj[ prop ] === 'object' ||
-             typeof obj[ prop ] === 'function') &&
-            (!hasFreezeRegExpBug ||
-             !(obj[ prop ] instanceof RegExp))) {
+        if (obj.hasOwnProperty(prop) &&
+            checkType(obj[ prop ], '!object|function') &&
+            (!hasFreezeRegExpBug || !(obj[ prop ] instanceof RegExp))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -89,4 +83,4 @@
 
     return freezeObj;
 
-  })(JsFeatures.freezeRegExpBug);
+  })(JsFeatures.freezeRegExpBug, vitalsModuleAPI.checkType, Object.freeze);
