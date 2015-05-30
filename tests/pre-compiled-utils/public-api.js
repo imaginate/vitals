@@ -1,20 +1,13 @@
   /**
    * ---------------------------------------------------
-   * Global Object (aIV)
+   * Global Object (Vitals)
    * ---------------------------------------------------
-   * @desc Holds the public API for aIV's apps, tools, and libraries.
-   * @struct
-   * @global
-   */
-  window.aIV = window.aIV || {};
-
-  /**
-   * ---------------------------------------------------
-   * Global Object (aIV.utils)
-   * ---------------------------------------------------
-   * @desc Holds the public API for aIV's JavaScript shortcuts. For more
-   *   details on each of the methods see their complete [definitions in
-   *   the src]{@link https://github.com/imaginate/algorithmIV-javascript-shortcuts/tree/master/src/pre-compiled-parts/methods}.
+   * @desc Holds the public API for Vitals.js. For more details on each of the
+   *   shortcuts see their complete definitions located in JSDoc before each
+   *   method's declaration in the src folder.
+   * @see [JavaScript Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/js-methods}
+   * @see [DOM Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/dom-methods}
+   * @see [Master Methods]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/master-methods}
    * @type {!{
    *   checkType        : function(*, string, boolean=): boolean,
    *   isValidTypeString: function(string): boolean,
@@ -34,4 +27,16 @@
    * @struct
    * @global
    */
-  aIV.utils = aIV.utils || utilsModuleAPI;
+  window.Vitals = window.Vitals || vitalsModuleAPI;
+
+  /**
+   * ---------------------------------------------------
+   * Global Object (Vx)
+   * ---------------------------------------------------
+   * @desc Also holds the public API for Vitals.js. This global object is the
+   *   same as the Vitals object. It is simply a shorter reference name option
+   *   for developers who like shorter names.
+   * @struct
+   * @global
+   */
+  window.Vx = Vitals;
