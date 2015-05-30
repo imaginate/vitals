@@ -24,9 +24,9 @@ Vitals.checkArgs( theArg, theTypeString, theArg, theTypeString, ...) // returns:
 Vitals.getTypeOf( anyValue ) // returns: string
 Vitals.freezeObj( theObject [, applyDeepFreeze ]) // returns: !Object
 Vitals.hasOwnProp( theObject, theProperty ) // returns: boolean
-Vitals.getElemById( theIdName ) // returns: !Element
-Vitals.getElemByClass( theClassName [, theIndex [, theRoot ]]) // returns: !Element
-Vitals.getElemByTag( theTagName [, theIndex [, theRoot ]]) // returns: !Element
+Vitals.getElemById( theIdName ) // returns: ?Element
+Vitals.getElemByClass( theClassName [, theIndex [, theRoot ]]) // returns: ?Element
+Vitals.getElemByTag( theTagName [, theIndex [, theRoot ]]) // returns: ?Element
 Vitals.getElemsByClass( theClassName [, theRoot ]) // returns: !Array<!Element>
 Vitals.getElemsByTag( theTagName [, theRoot ]) // returns: !Array<!Element>
 Vitals.makeElem( theTagName|allTheSettings ) // returns: !Element
