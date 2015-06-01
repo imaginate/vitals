@@ -179,13 +179,12 @@
 
     /**
      * -----------------------------------------------
-     * Private Property (domNodeDataTypes)
+     * Private Property (objClassDataTypes)
      * -----------------------------------------------
-     * @desc The data types that can be accurately checked with the
-     *   DOM Node's interface.
+     * @desc The object types that must have their constructors checked.
      * @type {!RegExp}
      */
-    var domNodeDataTypes = /^elem$|^element$|^document$/;
+    var objClassDataTypes = /^elem$|^element$|^document$|^regexp$/;
 
     /**
      * -----------------------------------------------
@@ -200,7 +199,7 @@
       var types;
 
       types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-              '^arrays$|^elems$|^elements$|^functions$|^regexes$';
+              '^arrays$|^elems$|^elements$|^functions$|^regexps$';
 
       return new RegExp(types);
     })();
@@ -217,8 +216,8 @@
       /** @type {string} */
       var types;
 
-      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
-              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|' +
+              '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
 
       return new RegExp(types);
     })();

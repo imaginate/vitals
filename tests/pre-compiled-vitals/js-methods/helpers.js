@@ -21,11 +21,11 @@
     var types;
 
     types = '' +
-    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
-    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
-    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
-    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
-    '^elementmap$';
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^null$|'    +
+    '^undefined$|^elem$|^element$|^document$|^regexp$|^strings$|^numbers$|'    +
+    '^booleans$|^objects$|^arrays$|^functions$|^elems$|^elements$|^regexps$|'  +
+    '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|'             +
+    '^functionmap$|^elemmap$|^elementmap$|^regexpMap$';
 
     return new RegExp(types);
   })();
