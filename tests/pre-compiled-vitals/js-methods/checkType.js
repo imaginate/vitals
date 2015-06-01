@@ -12,17 +12,17 @@
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
    *         <span>'function', 'undefined', 'elem', 'element', </span>
-   *         <span>'document', 'regex', 'regexp'</span>
+   *         <span>'document', 'regexp'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
    *         <span>'arrays', 'functions', 'elems', 'elements', </span>
-   *         <span>'regexs', 'regexps'</span>
+   *         <span>'regexps'</span>
    *       </td>
    *       <td>
    *         <span>'stringMap', 'numberMap', 'booleanMap', 'objectMap', </span>
    *         <span>'arrayMap', 'functionMap', 'elemMap', 'elementMap'</span>
-   *         <span>'regexMap', 'regexpMap'</span>
+   *         <span>'regexpMap'</span>
    *       </td>
    *     </tr>
    *   </table>
@@ -200,7 +200,7 @@
       var types;
 
       types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-              '^arrays$|^elems$|^elements$|^functions$';
+              '^arrays$|^elems$|^elements$|^functions$|^regexes$';
 
       return new RegExp(types);
     })();
