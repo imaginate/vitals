@@ -453,38 +453,36 @@
      * @return {boolean} The evaluation result.
      */
     var checkTypeOf = function(val, type) {
-      if (val === null) {
-        return false;
-      }
-      return (typeof val === type);
+      return (val !== null) && (typeof val === type);
     };
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkNodeType)
+     * Private Method (checkObjType)
      * ---------------------------------------------------
-     * @desc Checks a value's instanceof against the given type.
+     * @desc Checks if an object passes the given type's checks.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkNodeType = function(val, type) {
+    var checkObjType = (function setup_checkObjType(objToString) {
 
-      /** @type {!Object<string, number>} */
-      var types;
+      /** @type {!Object<string, function(!Object): boolean>} */
+      var objChecks;
 
-      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
-        return false;
-      }
-
-      types = {
-        'elem'    : 1,
-        'element' : 1,
-        'document': 9
+      objChecks = {
+        'elem'    : function(obj) { return (obj.nodeType === 1); },
+        'element' : function(obj) { return (obj.nodeType === 1); },
+        'document': function(obj) { return (obj.nodeType === 9); },
+        'regexp'  : function(obj) {
+          return (objToString.call(obj) === '[object RegExp]');
+        }
       };
 
-      return (val.nodeType === types[ type ]);
-    };
+      return function checkObjType(val, type) {
+        return !!val && checkTypeOf(val, 'object') && objChecks[ type ](val);
+      };
+    })(Object.prototype.toString);
 
     /**
      * ---------------------------------------------------
