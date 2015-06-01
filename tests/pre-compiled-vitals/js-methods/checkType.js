@@ -11,15 +11,18 @@
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
+   *         <span>'function', 'undefined', 'elem', 'element', </span>
+   *         <span>'document', 'regex', 'regexp'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
-   *         <span>'arrays', 'functions', 'elems', 'elements'</span>
+   *         <span>'arrays', 'functions', 'elems', 'elements', </span>
+   *         <span>'regexs', 'regexps'</span>
    *       </td>
    *       <td>
    *         <span>'stringMap', 'numberMap', 'booleanMap', 'objectMap', </span>
    *         <span>'arrayMap', 'functionMap', 'elemMap', 'elementMap'</span>
+   *         <span>'regexMap', 'regexpMap'</span>
    *       </td>
    *     </tr>
    *   </table>
