@@ -60,7 +60,12 @@
     // Run all the tests
     for (prop in Tests) {
       if ( Tests.hasOwnProperty(prop) ) {
-        Tests[ prop ]();
+        try {
+          Tests[ prop ]();
+        }
+        catch (error) {
+          console.error( error.toString() );
+        }
       }
     }
 
