@@ -2,7 +2,7 @@
 
 /**
  * -----------------------------------------------------------------------------
- * Vitals.js (v1.0.7)
+ * Vitals.js (v1.0.8)
  * -----------------------------------------------------------------------------
  * @file Vitals.js is a collection of cross-browser compatible JavaScript & DOM
  *   shortcut methods that make programming in JavaScript simple! You will be
@@ -10,7 +10,7 @@
  *   and so much more with ease. With an intuitive API and clear documentation
  *   you will rejoice from the time saved and the stress lost!
  * @module vitals
- * @version 1.0.7
+ * @version 1.0.8
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
  * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
@@ -300,11 +300,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     var types;
 
     types = '' +
-    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
-    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
-    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
-    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
-    '^elementmap$';
+    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^null$|'    +
+    '^undefined$|^elem$|^element$|^document$|^regexp$|^strings$|^numbers$|'    +
+    '^booleans$|^objects$|^arrays$|^functions$|^elems$|^elements$|^regexps$|'  +
+    '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|'             +
+    '^functionmap$|^elemmap$|^elementmap$|^regexpMap$';
 
     return new RegExp(types);
   })();
@@ -337,15 +337,18 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
+   *         <span>'function', 'undefined', 'elem', 'element', </span>
+   *         <span>'document', 'regexp'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
-   *         <span>'arrays', 'functions', 'elems', 'elements'</span>
+   *         <span>'arrays', 'functions', 'elems', 'elements', </span>
+   *         <span>'regexps'</span>
    *       </td>
    *       <td>
    *         <span>'stringMap', 'numberMap', 'booleanMap', 'objectMap', </span>
    *         <span>'arrayMap', 'functionMap', 'elemMap', 'elementMap'</span>
+   *         <span>'regexpMap'</span>
    *       </td>
    *     </tr>
    *   </table>
@@ -410,55 +413,43 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {!strings} */
       var types;
-      /** @type {boolean} */
-      var nullable;
       /** @type {string} */
       var errorMsg;
-      /** @type {boolean} */
-      var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value) & catch asterisk error
+      // Check for automatic pass ('*' = any value)
       if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
 
-      // Check for an optional undefined value
-      pass = (val === undefined && equalSign.test(type));
+      // Check for an optional value ('=' = undefined)
+      if (val === undefined && equalSign.test(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return true;
+      }
 
-      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
-      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
-        false : questionMark.test(type)
+      // Check for a nullable override ('!' = non-nullable) ('?' = nullable)
+      if (val === null && checkForNullOverride(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return checkIfNullable(type);
+      }
+
+      type = type.toLowerCase();
+      type = type.replace(exceptLowerAlphaAndPipe, '');
+      types = type.split('|');
+
+      noTypeValCheck || isValidTypeStrings(types);
+
+      return ( (val === null) ?
+        checkEachNullType(types) : checkEachType(val, types)
       );
-
-      // Check for null value with nullable true and override enabled
-      pass = pass || (nullable && nullableOverride);
-
-      if (!noTypeValCheck || !pass) {
-        type = type.toLowerCase();
-        type = type.replace(exceptLowerAlphaAndPipe, '');
-        types = type.split('|');
-
-        noTypeValCheck || isValidTypeStrings(types);
-      }
-
-      if (!pass) {
-        pass = ( (val === null) ?
-          checkEachNullType(types, nullable, nullableOverride)
-          : checkEachType(val, types)
-        );
-      }
-
-      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -502,13 +493,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     /**
      * -----------------------------------------------
-     * Private Property (domNodeDataTypes)
+     * Private Property (objClassDataTypes)
      * -----------------------------------------------
-     * @desc The data types that can be accurately checked with the
-     *   DOM Node's interface.
+     * @desc The object types that must have their constructors checked.
      * @type {!RegExp}
      */
-    var domNodeDataTypes = /^elem$|^element$|^document$/;
+    var objClassDataTypes = /^array$|^elem$|^element$|^document$|^regexp$/;
 
     /**
      * -----------------------------------------------
@@ -522,8 +512,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var types;
 
-      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-              '^arrays$|^elems$|^elements$|^functions$';
+      types = '^strings$|^numbers$|^booleans$|^objects$|^arrays$|' +
+              '^functions$|^elems$|^elements$|^regexps$';
 
       return new RegExp(types);
     })();
@@ -540,8 +530,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var types;
 
-      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
-              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
+      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|' +
+              '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
 
       return new RegExp(types);
     })();
@@ -610,26 +600,25 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * Private Method (checkForNullOverride)
      * ---------------------------------------------------
      * @desc Checks if a nullable override exists.
-     * @param {*} val - The value to be evaluated.
      * @param {string} type - A string of the data types to evaluate against.
      * @return {boolean} The nullable override value.
      */
-    var checkForNullOverride = function(val, type) {
+    var checkForNullOverride = function(type) {
+      return ( (questionMark.test(type)) ?
+        !exclamationPoint.test(type) : exclamationPoint.test(type)
+      );
+    };
 
-      /** @type {boolean} */
-      var nullCheck;
-      /** @type {boolean} */
-      var override;
-
-      nullCheck = (val === null);
-
-      override = (nullCheck) ? exclamationPoint.test(type) : true;
-
-      if (nullCheck && questionMark.test(type)) {
-        override = !override;
-      }
-
-      return override;
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkIfNullable)
+     * ---------------------------------------------------
+     * @desc Retrieves the starting nullable value.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable start value.
+     */
+    var checkIfNullable = function(type) {
+      return !exclamationPoint.test(type) && questionMark.test(type);
     };
 
     /**
@@ -637,7 +626,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * Private Method (isValidTypeStrings)
      * ---------------------------------------------------
      * @desc Evaluates whether each value is a valid data type string.
-     * @param {!strings} types - The strings to evaluate.
+     * @param {(string|!strings)} types - The strings to evaluate.
      * @return {boolean} The evaluation result.
      */
     var isValidTypeStrings = function(types) {
@@ -648,6 +637,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var pass;
       /** @type {string} */
       var errorMsg;
+
+      if ( checkTypeOf(types, 'string') ) {
+        types = types.toLowerCase();
+        types = types.replace(exceptLowerAlphaAndPipe, '');
+        types = types.split('|');
+      }
 
       pass = true;
 
@@ -698,10 +693,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var pass;
 
       pass = false;
-
-      // Test the value against each type
       i = types.length;
-      while (!pass && i--) {
+      while (i-- && !pass) {
 
         type = types[i];
 
@@ -715,8 +708,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
           continue;
         }
 
-        if ( domNodeDataTypes.test(type) ) {
-          pass = checkNodeType(val, type);
+        if ( objClassDataTypes.test(type) ) {
+          pass = checkObjType(val, type);
           continue;
         }
 
@@ -740,11 +733,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * ---------------------------------------------------
      * @desc Checks the nullable values of the given types.
      * @param {!Array<string>} types - The data types to evaluate against.
-     * @param {boolean} nullable - The starting nullable value.
-     * @param {boolean} override - Whether a nullable override exists.
      * @return {boolean} The evaluation result.
      */
-    var checkEachNullType = function(types, nullable, override) {
+    var checkEachNullType = function(types) {
 
       /** @type {number} */
       var i;
@@ -752,16 +743,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var pass;
 
       pass = false;
-
-      // Test the nullable value of each type
       i = types.length;
-      while (!pass && i--) {
-
-        if (!override) {
-          nullable = !nonNullableDataTypes.test(types[i]);
-        }
-
-        pass = nullable;
+      while (i-- && !pass) {
+        pass = !nonNullableDataTypes.test(types[i]);
       }
 
       return pass;
@@ -777,38 +761,38 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * @return {boolean} The evaluation result.
      */
     var checkTypeOf = function(val, type) {
-      if (val === null) {
-        return false;
-      }
-      return (typeof val === type);
+      return (val !== null) && (typeof val === type);
     };
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkNodeType)
+     * Private Method (checkObjType)
      * ---------------------------------------------------
-     * @desc Checks a value's instanceof against the given type.
+     * @desc Checks if an object passes the given type's checks.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkNodeType = function(val, type) {
+    var checkObjType = (function setup_checkObjType(objToString) {
 
-      /** @type {!Object<string, number>} */
-      var types;
+      /** @type {!Object<string, function(!Object): boolean>} */
+      var objChecks;
 
-      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
-        return false;
-      }
-
-      types = {
-        'elem'    : 1,
-        'element' : 1,
-        'document': 9
+      objChecks = {
+        'array'   : function(obj) { return Array.isArray(obj);   },
+        'elem'    : function(obj) { return (obj.nodeType === 1); },
+        'element' : function(obj) { return (obj.nodeType === 1); },
+        'document': function(obj) { return (obj.nodeType === 9); },
+        'regexp'  : function(obj) {
+          return (objToString.call(obj) === '[object RegExp]');
+        }
       };
 
-      return (val.nodeType === types[ type ]);
-    };
+      return function checkObjType(val, type) {
+        return !!val && checkTypeOf(val, 'object') && objChecks[ type ](val);
+      };
+
+    })(Object.prototype.toString);
 
     /**
      * ---------------------------------------------------
@@ -832,19 +816,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         return false;
       }
 
-      if (type === 'array') {
-        return true;
-      }
-
       type = type.slice(0, -1);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       i = vals.length;
       while (pass && i--) {
         pass = testFunc(vals[i], type);
@@ -876,14 +853,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       }
 
       type = type.slice(0, -3);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       for (prop in val) {
         if ( val.hasOwnProperty(prop) ) {
           pass = testFunc(val[ prop ], type);
