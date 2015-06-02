@@ -961,10 +961,24 @@
       var errorMsg;
 
       testMap = { slot1: regex, slot2: regex };
-      pass = Vitals.checkType(testMap, 'regexpMap');
-      pass = pass && Vitals.checkType(obj, 'regexpMap');
+      try {
+        pass = Vitals.checkType(testMap, 'regexpMap');
+        pass = pass && Vitals.checkType(obj, 'regexpMap');
+      }
+      catch (error) {
+        console.error( error.toString() );
+        pass = false;
+      }
 
-      fail = Vitals.checkType(arr, 'regexpMap');
+      testMap = { slot1: regex, slot2: arr };
+      try {
+        fail = Vitals.checkType(testMap, 'regexpMap');
+        fail = fail || Vitals.checkType([ 1 ], 'regexpMap');
+      }
+      catch (error) {
+        console.error( error.toString() );
+        fail = true;
+      }
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: regexpMap check failed';
