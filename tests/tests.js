@@ -812,16 +812,19 @@
     var func;
     /** @type {!Array} */
     var arr;
+    /** @type {!RegExp} */
+    var regex;
 
     ////////////////////////////////////////////////////////////////////////////
     // Setup The Private checkType Variables
     ////////////////////////////////////////////////////////////////////////////
 
-    results = new TestResults('checkType', 29);
+    results = new TestResults('checkType', 32);
     elem = document.createElement('div');
     obj  = {};
     func = function() {};
     arr  = [];
+    regex = /test/g;
 
     ////////////////////////////////////////////////////////////////////////////
     // Define & Setup The Public checkType Method
@@ -854,12 +857,13 @@
 
       // Test the basic objects
       testObject();
+      testArray();
       testFunction();
+      testRegexp();
       testElement();
       testDocument();
 
       // Test the arrays
-      testArray();
       testStrings();
       testNumbers();
       testBooleans();
@@ -867,6 +871,7 @@
       testFunctions();
       testElements();
       testArrays();
+      testRegexps();
 
       // Test the hash maps
       testStringMap();
@@ -875,6 +880,7 @@
       testObjectMap();
       testFunctionMap();
       testArrayMap();
+      testRegexpMap();
       testElementMap();
 
       // Save the results
@@ -1204,6 +1210,30 @@
 
     /**
      * ---------------------------------------------------
+     * Private Method (testRegexp)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testRegexp = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = Vitals.checkType(regex, 'regexp');
+      fail = Vitals.checkType(obj, 'regexp');
+
+      if (!pass || fail) {
+        errorMsg = 'Tests.checkType failed: regexp check failed';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
      * Private Method (testElement)
      * ---------------------------------------------------
      * @type {function}
@@ -1483,6 +1513,31 @@
 
     /**
      * ---------------------------------------------------
+     * Private Method (testRegexps)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testRegexps = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var fail;
+      /** @type {string} */
+      var errorMsg;
+
+      pass = Vitals.checkType([ regex ], 'regexps');
+      pass = pass && Vitals.checkType(arr, 'regexps');
+      fail = Vitals.checkType([ obj ], 'regexps');
+
+      if (!pass || fail) {
+        errorMsg = 'Tests.checkType failed: regexps check failed';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
      * Private Method (testStringMap)
      * ---------------------------------------------------
      * @type {function}
@@ -1675,6 +1730,35 @@
 
       if (!pass || fail) {
         errorMsg = 'Tests.checkType failed: arrayMap check failed';
+        results.addError(errorMsg);
+      }
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (testRegexpMap)
+     * ---------------------------------------------------
+     * @type {function}
+     */
+    var testRegexpMap = function() {
+
+      /** @type {boolean} */
+      var pass;
+      /** @type {boolean} */
+      var fail;
+      /** @type {!Object} */
+      var testMap;
+      /** @type {string} */
+      var errorMsg;
+
+      testMap = { slot1: regex, slot2: regex };
+      pass = Vitals.checkType(testMap, 'regexpMap');
+      pass = pass && Vitals.checkType(obj, 'regexpMap');
+
+      fail = Vitals.checkType(arr, 'regexpMap');
+
+      if (!pass || fail) {
+        errorMsg = 'Tests.checkType failed: regexpMap check failed';
         results.addError(errorMsg);
       }
     };
