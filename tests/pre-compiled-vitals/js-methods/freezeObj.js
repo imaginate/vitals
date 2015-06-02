@@ -35,7 +35,7 @@
         throw new TypeError(errorMsg);
       }
 
-      if (hasFreezeRegExpBug && (obj instanceof RegExp)) {
+      if (hasFreezeRegExpBug && checkType(obj, 'regexp')) {
         return obj;
       }
 
@@ -71,7 +71,7 @@
       for (prop in obj) {
         if (obj.hasOwnProperty(prop) &&
             checkType(obj[ prop ], '!object|function') &&
-            (!hasFreezeRegExpBug || !(obj[ prop ] instanceof RegExp))) {
+            (!hasFreezeRegExpBug || !checkType(obj, 'regexp'))) {
           deepFreeze(obj[ prop ]);
         }
       }
