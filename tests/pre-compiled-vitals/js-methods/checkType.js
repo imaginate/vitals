@@ -87,55 +87,43 @@
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {!strings} */
       var types;
-      /** @type {boolean} */
-      var nullable;
       /** @type {string} */
       var errorMsg;
-      /** @type {boolean} */
-      var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value) & catch asterisk error
+      // Check for automatic pass ('*' = any value)
       if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
 
-      // Check for an optional undefined value
-      pass = (val === undefined && equalSign.test(type));
+      // Check for an optional value ('=' = undefined)
+      if (val === undefined && equalSign.test(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return true;
+      }
 
-      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
-      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
-        false : questionMark.test(type)
+      // Check for a nullable override ('!' = non-nullable) ('?' = nullable)
+      if (val === null && checkForNullOverride(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return checkIfNullable(type);
+      }
+
+      type = type.toLowerCase();
+      type = type.replace(exceptLowerAlphaAndPipe, '');
+      types = type.split('|');
+
+      noTypeValCheck || isValidTypeStrings(types);
+
+      return ( (val === null) ?
+        checkEachNullType(types) : checkEachType(val, types)
       );
-
-      // Check for null value with nullable true and override enabled
-      pass = pass || (nullable && nullableOverride);
-
-      if (!noTypeValCheck || !pass) {
-        type = type.toLowerCase();
-        type = type.replace(exceptLowerAlphaAndPipe, '');
-        types = type.split('|');
-
-        noTypeValCheck || isValidTypeStrings(types);
-      }
-
-      if (!pass) {
-        pass = ( (val === null) ?
-          checkEachNullType(types, nullable, nullableOverride)
-          : checkEachType(val, types)
-        );
-      }
-
-      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -184,7 +172,7 @@
      * @desc The object types that must have their constructors checked.
      * @type {!RegExp}
      */
-    var objClassDataTypes = /^elem$|^element$|^document$|^regexp$/;
+    var objClassDataTypes = /^array$|^elem$|^element$|^document$|^regexp$/;
 
     /**
      * -----------------------------------------------
@@ -198,8 +186,8 @@
       /** @type {string} */
       var types;
 
-      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-              '^arrays$|^elems$|^elements$|^functions$|^regexps$';
+      types = '^strings$|^numbers$|^booleans$|^objects$|^arrays$|' +
+              '^functions$|^elems$|^elements$|^regexps$';
 
       return new RegExp(types);
     })();
@@ -286,26 +274,25 @@
      * Private Method (checkForNullOverride)
      * ---------------------------------------------------
      * @desc Checks if a nullable override exists.
-     * @param {*} val - The value to be evaluated.
      * @param {string} type - A string of the data types to evaluate against.
      * @return {boolean} The nullable override value.
      */
-    var checkForNullOverride = function(val, type) {
+    var checkForNullOverride = function(type) {
+      return ( (questionMark.test(type)) ?
+        !exclamationPoint.test(type) : exclamationPoint.test(type)
+      );
+    };
 
-      /** @type {boolean} */
-      var nullCheck;
-      /** @type {boolean} */
-      var override;
-
-      nullCheck = (val === null);
-
-      override = (nullCheck) ? exclamationPoint.test(type) : true;
-
-      if (nullCheck && questionMark.test(type)) {
-        override = !override;
-      }
-
-      return override;
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkIfNullable)
+     * ---------------------------------------------------
+     * @desc Retrieves the starting nullable value.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable start value.
+     */
+    var checkIfNullable = function(type) {
+      return !exclamationPoint.test(type) && questionMark.test(type);
     };
 
     /**
@@ -313,7 +300,7 @@
      * Private Method (isValidTypeStrings)
      * ---------------------------------------------------
      * @desc Evaluates whether each value is a valid data type string.
-     * @param {!strings} types - The strings to evaluate.
+     * @param {(string|!strings)} types - The strings to evaluate.
      * @return {boolean} The evaluation result.
      */
     var isValidTypeStrings = function(types) {
@@ -324,6 +311,12 @@
       var pass;
       /** @type {string} */
       var errorMsg;
+
+      if ( checkTypeOf(types, 'string') ) {
+        types = types.toLowerCase();
+        types = types.replace(exceptLowerAlphaAndPipe, '');
+        types = types.split('|');
+      }
 
       pass = true;
 
@@ -374,10 +367,8 @@
       var pass;
 
       pass = false;
-
-      // Test the value against each type
       i = types.length;
-      while (!pass && i--) {
+      while (i-- && !pass) {
 
         type = types[i];
 
@@ -391,8 +382,8 @@
           continue;
         }
 
-        if ( domNodeDataTypes.test(type) ) {
-          pass = checkNodeType(val, type);
+        if ( objClassDataTypes.test(type) ) {
+          pass = checkObjType(val, type);
           continue;
         }
 
@@ -416,11 +407,9 @@
      * ---------------------------------------------------
      * @desc Checks the nullable values of the given types.
      * @param {!Array<string>} types - The data types to evaluate against.
-     * @param {boolean} nullable - The starting nullable value.
-     * @param {boolean} override - Whether a nullable override exists.
      * @return {boolean} The evaluation result.
      */
-    var checkEachNullType = function(types, nullable, override) {
+    var checkEachNullType = function(types) {
 
       /** @type {number} */
       var i;
@@ -428,16 +417,9 @@
       var pass;
 
       pass = false;
-
-      // Test the nullable value of each type
       i = types.length;
-      while (!pass && i--) {
-
-        if (!override) {
-          nullable = !nonNullableDataTypes.test(types[i]);
-        }
-
-        pass = nullable;
+      while (i-- && !pass) {
+        pass = !nonNullableDataTypes.test(types[i]);
       }
 
       return pass;
@@ -471,6 +453,7 @@
       var objChecks;
 
       objChecks = {
+        'array'   : function(obj) { return Array.isArray(obj);   },
         'elem'    : function(obj) { return (obj.nodeType === 1); },
         'element' : function(obj) { return (obj.nodeType === 1); },
         'document': function(obj) { return (obj.nodeType === 9); },
@@ -482,6 +465,7 @@
       return function checkObjType(val, type) {
         return !!val && checkTypeOf(val, 'object') && objChecks[ type ](val);
       };
+
     })(Object.prototype.toString);
 
     /**
@@ -506,19 +490,12 @@
         return false;
       }
 
-      if (type === 'array') {
-        return true;
-      }
-
       type = type.slice(0, -1);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       i = vals.length;
       while (pass && i--) {
         pass = testFunc(vals[i], type);
@@ -550,14 +527,11 @@
       }
 
       type = type.slice(0, -3);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       for (prop in val) {
         if ( val.hasOwnProperty(prop) ) {
           pass = testFunc(val[ prop ], type);
