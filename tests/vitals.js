@@ -1196,12 +1196,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var patterns;
 
       patterns = {
-        lineCom: /\/\/.*[\r\n\u2028\u2029]+/g,
-        comment: /\/\*[\s.]*\*\//g,
-        params : /^function[\s.]*\(([\s.]*)\)[\s.]*$/,
-        space  : /\s/g,
-        start  : /^function[\s.]*\([\s.]*\)[\s.]*\{/,
-        end    : /\}\;?\s*$/
+        comments: /\/\/.*?(?:[\r\n\u2028\u2029]|$)+|\/\*[\s\S]*?\*\//g,
+        params  : /^function[\s\S]*?\(([\s\S]*?)\)[\s\S]*?$/,
+        space   : /\s/g,
+        start   : /^function[\s\S]*?\([\s\S]*?\)[\s\S]*?\{/,
+        end     : /\}\;?\s*?$/
       };
 
       return function copyFunc(oldFunc) {
@@ -1216,10 +1215,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         var newFunc;
 
         funcString = oldFunc.toString();
-
-        // Remove comments from the function string
-        funcString = funcString.replace(patterns.lineCom, '');
-        funcString = funcString.replace(patterns.comment, '');
+        funcString = funcString.replace(patterns.comments, '');
 
         funcParams = funcString.replace(patterns.params, '$1');
         funcParams = funcParams.replace(patterns.space, '');
