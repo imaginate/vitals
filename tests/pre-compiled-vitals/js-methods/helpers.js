@@ -25,7 +25,7 @@
     '^undefined$|^elem$|^element$|^document$|^regexp$|^strings$|^numbers$|'    +
     '^booleans$|^objects$|^arrays$|^functions$|^elems$|^elements$|^regexps$|'  +
     '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|'             +
-    '^functionmap$|^elemmap$|^elementmap$|^regexpMap$';
+    '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
 
     return new RegExp(types);
   })();

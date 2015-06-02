@@ -319,7 +319,6 @@
       }
 
       pass = true;
-
       i = types.length;
       while (pass && i--) {
         pass = allDataTypes.test(types[i]);

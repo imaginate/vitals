@@ -304,7 +304,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     '^undefined$|^elem$|^element$|^document$|^regexp$|^strings$|^numbers$|'    +
     '^booleans$|^objects$|^arrays$|^functions$|^elems$|^elements$|^regexps$|'  +
     '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|'             +
-    '^functionmap$|^elemmap$|^elementmap$|^regexpMap$';
+    '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
 
     return new RegExp(types);
   })();
@@ -645,7 +645,6 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       }
 
       pass = true;
-
       i = types.length;
       while (pass && i--) {
         pass = allDataTypes.test(types[i]);
