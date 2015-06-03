@@ -2,13 +2,12 @@
    * ---------------------------------------------------
    * Public Method (vitalsModuleAPI.copyObj)
    * ---------------------------------------------------
-   * @desc Creates a new object with the same properties as the given object and
-   *   if object is a Function, RegExp, or Array uses the native constructor to
-   *   copy. Includes an optional deep copy (i.e. copies all of the object's
-   *   object properties).
-   * @param {(!Object|function)} oldObj - The object to copy.
+   * @desc Creates a new Object, Function, Array, or RegExp with the same
+   *   properties and values as the provided object. Includes an optional deep
+   *   copy (i.e. every property's value that is an object is also copied).
+   * @param {(!Object|function|!Array|!RegExp)} oldObj - The object to copy.
    * @param {boolean=} deep - Deep copy the object. The default is false.
-   * @return {(!Object|function)} The new object copy.
+   * @return {(!Object|function|!Array|!RegExp)} The new object copy.
    */
   vitalsModuleAPI.copyObj = (function setup_copyObj(checkType) {
 
@@ -27,7 +26,7 @@
      */
     var copyObj = function(oldObj, deep) {
 
-      /** @type {(!Object|function)} */
+      /** @type {(!Object|function|!Array|!RegExp)} */
       var newObj;
       /** @type {string} */
       var errorMsg;
@@ -188,11 +187,11 @@
      * -------------------------------------------------
      * @desc A helper to copyObj that recursively makes copies of its
      *   properties that are objects.
-     * @param {(!Object|function)} obj
+     * @param {(!Object|function|!Array|!RegExp)} obj
      */
     var deepCopy = function(obj) {
 
-      /** @type {(!Object|function)} */
+      /** @type {(!Object|function|!Array|!RegExp)} */
       var oldObj;
       /** @type {string} */
       var prop;
