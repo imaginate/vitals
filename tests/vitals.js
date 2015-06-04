@@ -108,14 +108,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   getTypeOf        : function(*): string,
    *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
    *   hasOwnProp       : function((!Object|function), string): boolean,
-   *   getElemById      : function(string): ?Element,
-   *   getElemByClass   : function(string): ?Element,
-   *   getElemsByClass  : function(string): ?Array<!Element>,
-   *   getElemByTag     : function(string): ?Element,
-   *   getElemsByTag    : function(string): ?Array<!Element>,
+   *   getElemById      : function(string, !Document=): ?Element,
+   *   getElemByClass   : function(string, number=, (!Element|!Document)=): ?Element,
+   *   getElemsByClass  : function(string, (!Element|!Document)=): ?Array<!Element>,
+   *   getElemByTag     : function(string, number=, (!Element|!Document)=): ?Element,
+   *   getElemsByTag    : function(string, (!Element|!Document)=): ?Array<!Element>,
    *   makeElem         : function((string|!Object<string, string>)=): !Element,
    *   setElemText      : function(!Element, string): !Element,
-   *   addElemText      : function(!Element, string): !Element
+   *   addElemText      : function(!Element, string): !Element,
+   *   set              : function(!Object): boolean,
+   *   reset            : function(...(string|!Array<string>)=): boolean
    * }}
    * @struct
    * @global
@@ -164,6 +166,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc Holds each method's orginal defaults.
    * @type {!{
    *   checkArgsErrorMsg  : function,
+   *   getElemByIdRoot    : !Document,
    *   getElemByClassRoot : !Document,
    *   getElemsByClassRoot: !Document,
    *   getElemByTagRoot   : !Document,
@@ -173,6 +176,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   var DEFAULTS = {
     checkArgsErrorMsg  : 'A method call received an invalid parameter type.',
+    getElemByIdRoot    : document,
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
@@ -189,10 +193,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   DEFAULTS.types = {
     checkArgsErrorMsg  : 'string|function',
-    getElemByClassRoot : '!(Document|Element)',
-    getElemsByClassRoot: '!(Document|Element)',
-    getElemByTagRoot   : '!(Document|Element)',
-    getElemsByTagRoot  : '!(Document|Element)'
+    getElemByIdRoot    : '!Document',
+    getElemByClassRoot : '!Document|Element',
+    getElemsByClassRoot: '!Document|Element',
+    getElemByTagRoot   : '!Document|Element',
+    getElemsByTagRoot  : '!Document|Element'
   };
 
   Object.freeze(DEFAULTS);
@@ -205,14 +210,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc Holds each method's defaults.
    * @type {!{
    *   checkArgsErrorMsg  : (string|function),
-   *   getElemByClassRoot : !(Document|Element),
-   *   getElemsByClassRoot: !(Document|Element),
-   *   getElemByTagRoot   : !(Document|Element),
-   *   getElemsByTagRoot  : !(Document|Element)
+   *   getElemByIdRoot    : !Document,
+   *   getElemByClassRoot : (!Document|!Element),
+   *   getElemsByClassRoot: (!Document|!Element),
+   *   getElemByTagRoot   : (!Document|!Element),
+   *   getElemsByTagRoot  : (!Document|!Element)
    * }}
    */
   var defaults = {
     checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByIdRoot    : DEFAULTS.getElemByIdRoot,
     getElemByClassRoot : DEFAULTS.getElemByClassRoot,
     getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
     getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
@@ -1592,21 +1599,32 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
+   * @param {!Document=} root - Choose the document to find the element within.
+   *   The default is the initial document instance or the document set with
+   *   Vitals.set({ getElemByIdRoot: [document] }).
    * @return {?Element} The DOM element with the given id.
    */
-  vitalsModuleAPI.getElemById = function(id) {
+  vitalsModuleAPI.getElemById = (function setup_getElemById(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function getElemById(id, root) {
 
-    if (!id || typeof id !== 'string') {
-      errorMsg = 'A Vitals.getElemById call received a non-string or ';
-      errorMsg += 'empty string id param.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    return document.getElementById(id);
-  };
+      if (!id || !checkType(id, 'string')) {
+        errorMsg = 'A Vitals.getElemById call received a non-string or ';
+        errorMsg += 'empty string id param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemByIdRoot;
+      }
+
+      return root.getElementById(id);
+    };
+
+  })(vitalsModuleAPI.checkType);
 
 /* -----------------------------------------------------------------------------
  * The getElemsByClass Method (dom-methods/getElemsByClass.js)
@@ -1986,15 +2004,28 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc Allows you to set the default settings for each Vitals method.
    * @param {!Object} settings - The default settings.
    * @param {(string|function)=} settings.checkArgsErrorMsg
-   * @param {!(Document|Element)=} settings.getElemByClassRoot
-   * @param {!(Document|Element)=} settings.getElemsByClassRoot
-   * @param {!(Document|Element)=} settings.getElemByTagRoot
-   * @param {!(Document|Element)=} settings.getElemsByTagRoot
+   * @param {(!Document|!Element)=} settings.getElemByIdRoot
+   * @param {(!Document|!Element)=} settings.getElemByClassRoot
+   * @param {(!Document|!Element)=} settings.getElemsByClassRoot
+   * @param {(!Document|!Element)=} settings.getElemByTagRoot
+   * @param {(!Document|!Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp,
-                                            throwPropError, types) {
+  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp, types) {
 
+    /** @type {function(string)} */
+    var throwPropError = function(propName) {
+
+      /** @type {string} */
+      var errorMsg;
+
+      errorMsg = 'A Vitals.set call received an invalid ' + propName + ' ';
+      errorMsg += 'property for the settings param (the prop should be \'';
+      errorMsg += types[ propName ] + '\').';
+      throw new TypeError(errorMsg);
+    };
+
+    /** @type {function(!Object): boolean} */
     return function set(settings) {
 
       // Public vitals module vars used in this method:
@@ -2024,12 +2055,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return true;
     };
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, function(propName) {
-    var errorMsg = 'A Vitals.set call received an invalid ' + propName + ' ';
-    errorMsg += 'property for the settings param (the prop should be a ';
-    errorMsg += DEFAULTS.types[ propName ] + ').';
-    throw new TypeError(errorMsg);
-  }, DEFAULTS.types);
+
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, DEFAULTS.types);
 
 /* -----------------------------------------------------------------------------
  * The reset Method (master-methods/reset.js)
@@ -2040,13 +2067,14 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * Public Method (vitalsModuleAPI.reset)
    * -----------------------------------------------------
    * @desc Allows you to reset the default settings for each Vitals method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original
-   *   default.
+   * @param {...(string|!Array<string>)=} setting - The setting(s) to reset
+   *   to the on-load default. If undefined then all settings are reset.
    * @return {boolean} The success of the new settings update.
    */
   vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
                                                 getObjKeys, sliceArr) {
 
+    /** @type {function(...(string|!Array<string>)=): boolean} */
     return function reset() {
 
       // Public vitals module vars used in this method:
@@ -2087,6 +2115,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return true;
     };
+
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
      Object.keys, Array.prototype.slice);
 

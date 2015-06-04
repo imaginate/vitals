@@ -15,6 +15,7 @@
    * @desc Holds each method's orginal defaults.
    * @type {!{
    *   checkArgsErrorMsg  : function,
+   *   getElemByIdRoot    : !Document,
    *   getElemByClassRoot : !Document,
    *   getElemsByClassRoot: !Document,
    *   getElemByTagRoot   : !Document,
@@ -24,6 +25,7 @@
    */
   var DEFAULTS = {
     checkArgsErrorMsg  : 'A method call received an invalid parameter type.',
+    getElemByIdRoot    : document,
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
@@ -40,10 +42,11 @@
    */
   DEFAULTS.types = {
     checkArgsErrorMsg  : 'string|function',
-    getElemByClassRoot : '!(Document|Element)',
-    getElemsByClassRoot: '!(Document|Element)',
-    getElemByTagRoot   : '!(Document|Element)',
-    getElemsByTagRoot  : '!(Document|Element)'
+    getElemByIdRoot    : '!Document',
+    getElemByClassRoot : '!Document|Element',
+    getElemsByClassRoot: '!Document|Element',
+    getElemByTagRoot   : '!Document|Element',
+    getElemsByTagRoot  : '!Document|Element'
   };
 
   Object.freeze(DEFAULTS);
@@ -56,14 +59,16 @@
    * @desc Holds each method's defaults.
    * @type {!{
    *   checkArgsErrorMsg  : (string|function),
-   *   getElemByClassRoot : !(Document|Element),
-   *   getElemsByClassRoot: !(Document|Element),
-   *   getElemByTagRoot   : !(Document|Element),
-   *   getElemsByTagRoot  : !(Document|Element)
+   *   getElemByIdRoot    : !Document,
+   *   getElemByClassRoot : (!Document|!Element),
+   *   getElemsByClassRoot: (!Document|!Element),
+   *   getElemByTagRoot   : (!Document|!Element),
+   *   getElemsByTagRoot  : (!Document|!Element)
    * }}
    */
   var defaults = {
     checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByIdRoot    : DEFAULTS.getElemByIdRoot,
     getElemByClassRoot : DEFAULTS.getElemByClassRoot,
     getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
     getElemByTagRoot   : DEFAULTS.getElemByTagRoot,

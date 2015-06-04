@@ -15,14 +15,16 @@
    *   getTypeOf        : function(*): string,
    *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
    *   hasOwnProp       : function((!Object|function), string): boolean,
-   *   getElemById      : function(string): ?Element,
-   *   getElemByClass   : function(string): ?Element,
-   *   getElemsByClass  : function(string): ?Array<!Element>,
-   *   getElemByTag     : function(string): ?Element,
-   *   getElemsByTag    : function(string): ?Array<!Element>,
+   *   getElemById      : function(string, !Document=): ?Element,
+   *   getElemByClass   : function(string, number=, (!Element|!Document)=): ?Element,
+   *   getElemsByClass  : function(string, (!Element|!Document)=): ?Array<!Element>,
+   *   getElemByTag     : function(string, number=, (!Element|!Document)=): ?Element,
+   *   getElemsByTag    : function(string, (!Element|!Document)=): ?Array<!Element>,
    *   makeElem         : function((string|!Object<string, string>)=): !Element,
    *   setElemText      : function(!Element, string): !Element,
-   *   addElemText      : function(!Element, string): !Element
+   *   addElemText      : function(!Element, string): !Element,
+   *   set              : function(!Object): boolean,
+   *   reset            : function(...(string|!Array<string>)=): boolean
    * }}
    * @struct
    * @global

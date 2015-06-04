@@ -4,18 +4,29 @@
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
+   * @param {!Document=} root - Choose the document to find the element within.
+   *   The default is the initial document instance or the document set with
+   *   Vitals.set({ getElemByIdRoot: [document] }).
    * @return {?Element} The DOM element with the given id.
    */
-  vitalsModuleAPI.getElemById = function(id) {
+  vitalsModuleAPI.getElemById = (function setup_getElemById(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
+    return function getElemById(id, root) {
 
-    if (!id || typeof id !== 'string') {
-      errorMsg = 'A Vitals.getElemById call received a non-string or ';
-      errorMsg += 'empty string id param.';
-      throw new TypeError(errorMsg);
-    }
+      /** @type {string} */
+      var errorMsg;
 
-    return document.getElementById(id);
-  };
+      if (!id || !checkType(id, 'string')) {
+        errorMsg = 'A Vitals.getElemById call received a non-string or ';
+        errorMsg += 'empty string id param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = defaults.getElemByIdRoot;
+      }
+
+      return root.getElementById(id);
+    };
+
+  })(vitalsModuleAPI.checkType);
