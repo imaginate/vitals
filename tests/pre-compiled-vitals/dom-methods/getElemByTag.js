@@ -13,7 +13,7 @@
    * @return {?Element} The selected DOM element.
    */
   vitalsModuleAPI.getElemByTag = (function setup_getElemByTag(checkType,
-                                                              floor) {
+                                                    getElemsByTag, floor) {
 
     return function getElemByTag(tag, index, root) {
 
@@ -22,7 +22,7 @@
 
       /** @type {string} */
       var errorMsg;
-      /** @type {!Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
       if (!checkType(tag, 'string') || tag === '') {
@@ -31,18 +31,20 @@
         throw new TypeError(errorMsg);
       }
 
-      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
-
       if (!root || !checkType(root, '!element|document')) {
         root = defaults.getElemByTagRoot;
       }
 
-      elems = root.getElementsByTagName(tag);
+      elems = getElemsByTag(tag, root);
 
-      if (index < 0 || (index && index >= elems.length)) {
-        index = elems.length - 1;
+      if (elems) {
+        index = ( (!checkType(index, 'number') || index < -1) ?
+          0 : (index < 0 || index >= elems.length) ?
+            elems.length - 1 : floor(index)
+        );
       }
 
-      return (elems.length) ? elems[ index ] : null;
+      return elems && elems[ index ];
     };
-  })(vitalsModuleAPI.checkType, Math.floor);
+
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.getElemsByTag, Math.floor);
