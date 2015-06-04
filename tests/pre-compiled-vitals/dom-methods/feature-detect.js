@@ -10,7 +10,7 @@
 
   /**
    * -----------------------------------------------------
-   * Public Property (HasFeature.textContent)
+   * Public Property (DomFeatures.textContent)
    * -----------------------------------------------------
    * @desc Indicates whether the browser supports the DOM property,
    *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
