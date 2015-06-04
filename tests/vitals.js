@@ -1688,7 +1688,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string} classname - The class name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Element|!Document)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
@@ -1696,6 +1696,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
                                                      getElemsByClass, floor) {
 
+    /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
     return function getElemByClass(classname, index, root) {
 
       // Public vitals module vars used in this method:
@@ -1706,14 +1707,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {?Array<!Element>} */
       var elems;
 
-      if (!checkType(classname, 'string') || classname === '') {
+      if (!classname || !checkType(classname, 'string')) {
         errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
         errorMsg += 'empty string classname param.';
         throw new TypeError(errorMsg);
       }
 
       if (!root || !checkType(root, '!element|document')) {
-        root = defaults.getElemByClassRoot;
+        root = ( (checkType(index, '!element|document')) ?
+          index : defaults.getElemByClassRoot
+        );
       }
 
       elems = getElemsByClass(classname, root);
@@ -1788,7 +1791,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string} tag - The tag name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Element|!Document)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemByTagRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
@@ -1796,6 +1799,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   vitalsModuleAPI.getElemByTag = (function setup_getElemByTag(checkType,
                                                     getElemsByTag, floor) {
 
+    /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
     return function getElemByTag(tag, index, root) {
 
       // Public vitals module vars used in this method:
@@ -1806,14 +1810,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {?Array<!Element>} */
       var elems;
 
-      if (!checkType(tag, 'string') || tag === '') {
+      if (!tag || !checkType(tag, 'string')) {
         errorMsg = 'A Vitals.getElemByTag call received a non-string or ';
         errorMsg += 'empty string tag param.';
         throw new TypeError(errorMsg);
       }
 
       if (!root || !checkType(root, '!element|document')) {
-        root = defaults.getElemByTagRoot;
+        root = ( (checkType(index, '!element|document')) ?
+          index : defaults.getElemByTagRoot
+        );
       }
 
       elems = getElemsByTag(tag, root);

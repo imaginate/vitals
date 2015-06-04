@@ -7,7 +7,7 @@
    * @param {string} classname - The class name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Element|!Document)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
@@ -15,6 +15,7 @@
   vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
                                                      getElemsByClass, floor) {
 
+    /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
     return function getElemByClass(classname, index, root) {
 
       // Public vitals module vars used in this method:
@@ -25,14 +26,16 @@
       /** @type {?Array<!Element>} */
       var elems;
 
-      if (!checkType(classname, 'string') || classname === '') {
+      if (!classname || !checkType(classname, 'string')) {
         errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
         errorMsg += 'empty string classname param.';
         throw new TypeError(errorMsg);
       }
 
       if (!root || !checkType(root, '!element|document')) {
-        root = defaults.getElemByClassRoot;
+        root = ( (checkType(index, '!element|document')) ?
+          index : defaults.getElemByClassRoot
+        );
       }
 
       elems = getElemsByClass(classname, root);
