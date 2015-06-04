@@ -1776,10 +1776,10 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByTagName.
    * @param {string} tag - The tag name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByTagRoot: [DOM Node] }).
-   * @return {!Array<!Element>} The selected DOM elements.
+   * @return {?Array<!Element>} The selected DOM elements.
    */
   vitalsModuleAPI.getElemsByTag = (function setup_getElemsByTag(checkType) {
 
@@ -1790,6 +1790,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
+      /** @type {?Array<!Element>} */
+      var elems;
 
       if (!checkType(tag, 'string') || tag === '') {
         errorMsg = 'A Vitals.getElemsByTag call received a non-string or ';
@@ -1801,8 +1803,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         root = defaults.getElemsByTagRoot;
       }
 
-      return root.getElementsByTagName(tag);
+      elems = root.getElementsByTagName(tag);
+
+      return (elems && elems.length) ? elems : null;
     };
+
   })(vitalsModuleAPI.checkType);
 
 /* -----------------------------------------------------------------------------
