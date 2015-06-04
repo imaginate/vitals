@@ -156,14 +156,14 @@
 // insert-dom-methods-getElemByClass
 
 /* -----------------------------------------------------------------------------
- * The getElemByTag Method (dom-methods/getElemByTag.js)
- * -------------------------------------------------------------------------- */
-// insert-dom-methods-getElemByTag
-
-/* -----------------------------------------------------------------------------
  * The getElemsByTag Method (dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemsByTag
+
+/* -----------------------------------------------------------------------------
+ * The getElemByTag Method (dom-methods/getElemByTag.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-getElemByTag
 
 /* -----------------------------------------------------------------------------
  * The setElemText Method (dom-methods/setElemText.js)
