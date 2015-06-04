@@ -1677,7 +1677,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @return {?Element} The selected DOM element.
    */
   vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
-                                    getElementsByClassNameAlt, floor) {
+                                                     getElemsByClass, floor) {
 
     return function getElemByClass(classname, index, root) {
 
@@ -1686,7 +1686,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
-      /** @type {!Array<!Element>} */
+      /** @type {Array<!Element>} */
       var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
@@ -1701,19 +1701,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         root = defaults.getElemByClassRoot;
       }
 
-      elems = ( (!!root.getElementsByClassName) ?
-        root.getElementsByClassName(classname)
-        : getElementsByClassNameAlt(classname, root)
-      );
+      elems = getElemsByClass(classname, root);
 
-      if (index < 0 || (index && index >= elems.length)) {
+      if (elems && (index < 0 || index >= elems.length)) {
         index = elems.length - 1;
       }
 
-      return (elems.length) ? elems[ index ] : null;
+      return elems && elems[ index ];
     };
-  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt,
-     Math.floor);
+
+  })(vitalsModuleAPI.checkType, vitalsModuleAPI.getElemsByClass, Math.floor);
 
 /* -----------------------------------------------------------------------------
  * The getElemByTag Method (dom-methods/getElemByTag.js)
