@@ -8,7 +8,7 @@
    * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {Array<!Element>} The selected DOM elements.
+   * @return {?Array<!Element>} The selected DOM elements.
    */
   vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
                                      getElementsByClassNameAlt) {
@@ -20,7 +20,7 @@
 
       /** @type {string} */
       var errorMsg;
-      /** @type {Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
       if (!checkType(classname, 'string') || classname === '') {

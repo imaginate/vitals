@@ -22,7 +22,7 @@
 
       /** @type {string} */
       var errorMsg;
-      /** @type {Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
@@ -31,16 +31,17 @@
         throw new TypeError(errorMsg);
       }
 
-      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
-
       if (!root || !checkType(root, '!element|document')) {
         root = defaults.getElemByClassRoot;
       }
 
       elems = getElemsByClass(classname, root);
 
-      if (elems && (index < 0 || index >= elems.length)) {
-        index = elems.length - 1;
+      if (elems) {
+        index = ( (!checkType(index, 'number') || index < -1) ?
+          0 : (index < 0 || index >= elems.length) ?
+            elems.length - 1 : floor(index)
+        );
       }
 
       return elems && elems[ index ];

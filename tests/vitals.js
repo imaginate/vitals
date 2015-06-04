@@ -1623,7 +1623,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {Array<!Element>} The selected DOM elements.
+   * @return {?Array<!Element>} The selected DOM elements.
    */
   vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
                                      getElementsByClassNameAlt) {
@@ -1635,7 +1635,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
-      /** @type {Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
@@ -1686,7 +1686,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
-      /** @type {Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
@@ -1695,16 +1695,17 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         throw new TypeError(errorMsg);
       }
 
-      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
-
       if (!root || !checkType(root, '!element|document')) {
         root = defaults.getElemByClassRoot;
       }
 
       elems = getElemsByClass(classname, root);
 
-      if (elems && (index < 0 || index >= elems.length)) {
-        index = elems.length - 1;
+      if (elems) {
+        index = ( (!checkType(index, 'number') || index < -1) ?
+          0 : (index < 0 || index >= elems.length) ?
+            elems.length - 1 : floor(index)
+        );
       }
 
       return elems && elems[ index ];
