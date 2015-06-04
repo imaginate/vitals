@@ -108,8 +108,8 @@ Vitals.hasOwnProp( theObject, theProperty ) // returns: boolean
 Vitals.getElemById( theIdName ) // returns: ?Element
 Vitals.getElemByClass( theClassName [, theIndex [, theRoot ]]) // returns: ?Element
 Vitals.getElemByTag( theTagName [, theIndex [, theRoot ]]) // returns: ?Element
-Vitals.getElemsByClass( theClassName [, theRoot ]) // returns: !Array<!Element>
-Vitals.getElemsByTag( theTagName [, theRoot ]) // returns: !Array<!Element>
+Vitals.getElemsByClass( theClassName [, theRoot ]) // returns: ?Array<!Element>
+Vitals.getElemsByTag( theTagName [, theRoot ]) // returns: ?Array<!Element>
 Vitals.makeElem( theTagName|allTheSettings ) // returns: !Element
 Vitals.setElemText( theElement, theText ) // returns: !Element
 Vitals.addElemText( theElement, theText ) // returns: !Element
