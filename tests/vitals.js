@@ -404,12 +404,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * ---------------------------------------------------
      * Public Method (checkType)
      * ---------------------------------------------------
-     * @desc Checks a value's data type against the given optional types.
-     * @param {*} val - The value to be evaluated.
-     * @param {string} type - A string of the data types to evaluate against.
-     * @param {boolean=} noTypeValCheck - If true this method does not check
-     *   the data type string for correctness. By default this is set to false.
-     * @return {boolean} The evaluation result.
+     * @desc See the description for vitalsModuleAPI.checkType.
+     * @param {*} val
+     * @param {string} type
+     * @param {boolean=} noTypeValCheck
+     * @return {boolean}
      */
     var checkType = function(val, type, noTypeValCheck) {
 
