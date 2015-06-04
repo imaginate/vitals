@@ -5,10 +5,10 @@
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
    * @param {string} classname - The class name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {!Array<!Element>} The selected DOM elements.
+   * @return {Array<!Element>} The selected DOM elements.
    */
   vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
                                      getElementsByClassNameAlt) {
@@ -20,6 +20,8 @@
 
       /** @type {string} */
       var errorMsg;
+      /** @type {Array<!Element>} */
+      var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
         errorMsg = 'A Vitals.getElemsByClass call received a non-string or ';
@@ -31,9 +33,12 @@
         root = defaults.getElemsByClassRoot;
       }
 
-      return ( (!!root.getElementsByClassName) ?
+      elems = ( (!!root.getElementsByClassName) ?
         root.getElementsByClassName(classname)
         : getElementsByClassNameAlt(classname, root)
       );
+
+      return (elems && elems.length) ? elems : null;
     };
+
   })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt);
