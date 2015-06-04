@@ -146,14 +146,14 @@
 // insert-dom-methods-getElemById
 
 /* -----------------------------------------------------------------------------
- * The getElemByClass Method (dom-methods/getElemByClass.js)
- * -------------------------------------------------------------------------- */
-// insert-dom-methods-getElemByClass
-
-/* -----------------------------------------------------------------------------
  * The getElemsByClass Method (dom-methods/getElemsByClass.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemsByClass
+
+/* -----------------------------------------------------------------------------
+ * The getElemByClass Method (dom-methods/getElemByClass.js)
+ * -------------------------------------------------------------------------- */
+// insert-dom-methods-getElemByClass
 
 /* -----------------------------------------------------------------------------
  * The getElemByTag Method (dom-methods/getElemByTag.js)
