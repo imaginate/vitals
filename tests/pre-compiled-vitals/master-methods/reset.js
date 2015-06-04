@@ -3,13 +3,14 @@
    * Public Method (vitalsModuleAPI.reset)
    * -----------------------------------------------------
    * @desc Allows you to reset the default settings for each Vitals method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original
-   *   default.
+   * @param {...(string|!Array<string>)=} setting - The setting(s) to reset
+   *   to the on-load default. If undefined then all settings are reset.
    * @return {boolean} The success of the new settings update.
    */
   vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
                                                 getObjKeys, sliceArr) {
 
+    /** @type {function(...(string|!Array<string>)=): boolean} */
     return function reset() {
 
       // Public vitals module vars used in this method:
@@ -50,5 +51,6 @@
 
       return true;
     };
+
   })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
      Object.keys, Array.prototype.slice);
