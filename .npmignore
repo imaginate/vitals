@@ -19,6 +19,7 @@ $RECYCLE.BIN/
 .env
 .env.php
 .env.*.php
+.git
 .hg
 .lock-wscript
 .LSOverride
