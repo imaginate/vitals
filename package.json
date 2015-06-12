@@ -1,0 +1,46 @@
+{
+  "name": "vitals-js",
+  "version": "2.0.0",
+  "description": "Better JavaScript = Better Life",
+  "main": "src/vitals.min.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaginate/vitals.git"
+  },
+  "author": "Adam Smith <adamsmith@algorithmiv.com> (https://github.com/imaginate)",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  },
+  "bugs": {
+    "url": "https://github.com/imaginate/vitals/issues"
+  },
+  "homepage": "http://www.algorithmiv.com/vitals",
+  "devDependencies": {
+    "shelljs": "0.5.1"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "keywords": [
+    "vitals",
+    "js vitals",
+    "vitals js",
+    "vitalsjs",
+    "vitals-js",
+    "js",
+    "dom",
+    "javascript",
+    "shortcuts",
+    "js shortcuts",
+    "dom shortcuts",
+    "javascript shortcuts",
+    "type check",
+    "type checker",
+    "type",
+    "js type",
+    "javascript type",
+    "data types",
+    "imaginate"
+  ]
+}
