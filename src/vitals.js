@@ -1,16 +1,16 @@
-/** @preserve blank line */
+/** @preserve blank-line */
 
 /**
  * -----------------------------------------------------------------------------
- * Vitals.js (v1.0.7)
+ * Vitals.js (v2.0.0)
  * -----------------------------------------------------------------------------
  * @file Vitals.js is a collection of cross-browser compatible JavaScript & DOM
  *   shortcut methods that make programming in JavaScript simple! You will be
  *   able to accurately type check values, deep freeze objects, create elements,
  *   and so much more with ease. With an intuitive API and clear documentation
  *   you will rejoice from the time saved and the stress lost!
- * @module vitals
- * @version 1.0.7
+ * @module Vitals
+ * @version 2.0.0
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
  * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
@@ -33,129 +33,158 @@
  */
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Dependencies
+// JS & DOM Environment Stabilizers
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * Cure.js v0.0.2 (dependencies/cure.min.js)
+ * Cure.js v0.0.5 (dev/stabilize-env.js) @see http://algorithmiv.com/cure
  * -----------------------------------------------------------------------------
- * @desc JavaScript & DOM Polyfills for Browser Compatibility
- * @see [algorithmiv.com/cure]{@link http://www.algorithmiv.com/cure}
+ * JSON3 v3.3.2 (dev/stabilize-env.js) @see https://bestiejs.github.io/json3
  * -------------------------------------------------------------------------- */
 
-/* -----------------------------------------------------------------------------
- * JSON3 v3.3.2 (dependencies/cure.min.js)
- * -----------------------------------------------------------------------------
- * @desc JSON Polyfills for Browser Compatibility
- * @see [bestiejs.github.io/json3]{@link https://bestiejs.github.io/json3}
- * -------------------------------------------------------------------------- */
-
-/* JSON3 v3.3.2 | https://bestiejs.github.io/json3 | Copyright 2012-2015, Kit Cambridge, Benjamin Tan | http://kit.mit-license.org */
-(function(){function M(r,q){function p(a,l){try{a()}catch(c){l&&l()}}function k(a){if(null!=k[a])return k[a];var l;if("bug-string-char-index"==a)l="a"!="a"[0];else if("json"==a)l=k("json-stringify")&&k("date-serialization")&&k("json-parse");else if("date-serialization"==a){if(l=k("json-stringify")&&v){var c=q.stringify;p(function(){l='"-271821-04-20T00:00:00.000Z"'==c(new z(-864E13))&&'"+275760-09-13T00:00:00.000Z"'==c(new z(864E13))&&'"-000001-01-01T00:00:00.000Z"'==c(new z(-621987552E5))&&'"1969-12-31T23:59:59.999Z"'==
-c(new z(-1))})}}else{var b;if("json-stringify"==a){var c=q.stringify,e="function"==typeof c;e&&((b=function(){return 1}).toJSON=b,p(function(){e="0"===c(0)&&"0"===c(new B)&&'""'==c(new A)&&c(t)===u&&c(u)===u&&c()===u&&"1"===c(b)&&"[1]"==c([b])&&"[null]"==c([u])&&"null"==c(null)&&"[null,null,null]"==c([u,t,null])&&'{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'==c({a:[b,!0,!1,null,"\x00\b\n\f\r\t"]})&&"1"===c(null,b)&&"[\n 1,\n 2\n]"==c([1,2],null,1)},function(){e=!1}));l=e}if("json-parse"==a){var n=
-q.parse,d;"function"==typeof n&&p(function(){0===n("0")&&!n(!1)&&(b=n('{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'),d=5==b.a.length&&1===b.a[0])&&(p(function(){d=!n('"\t"')}),d&&p(function(){d=1!==n("01")}),d&&p(function(){d=1!==n("1.")}))},function(){d=!1});l=d}}return k[a]=!!l}r||(r=f.Object());q||(q=f.Object());var B=r.Number||f.Number,A=r.String||f.String,E=r.Object||f.Object,z=r.Date||f.Date,I=r.SyntaxError||f.SyntaxError,J=r.TypeError||f.TypeError,K=r.Math||f.Math,F=r.JSON||f.JSON;"object"==
-typeof F&&F&&(q.stringify=F.stringify,q.parse=F.parse);var E=E.prototype,t=E.toString,G=E.hasOwnProperty,u,v=new z(-0xc782b5b800cec);p(function(){v=-109252==v.getUTCFullYear()&&0===v.getUTCMonth()&&1===v.getUTCDate()&&10==v.getUTCHours()&&37==v.getUTCMinutes()&&6==v.getUTCSeconds()&&708==v.getUTCMilliseconds()});k["bug-string-char-index"]=k["date-serialization"]=k.json=k["json-stringify"]=k["json-parse"]=null;if(!k("json")){var N=k("bug-string-char-index"),C=function(a,b){var c=0,g,e,n;(g=function(){this.valueOf=
-0}).prototype.valueOf=0;e=new g;for(n in e)G.call(e,n)&&c++;g=e=null;c?C=function(a,c){var b="[object Function]"==t.call(a),l,e;for(l in a)b&&"prototype"==l||!G.call(a,l)||(e="constructor"===l)||c(l);(e||G.call(a,l="constructor"))&&c(l)}:(e="valueOf toString toLocaleString propertyIsEnumerable isPrototypeOf hasOwnProperty constructor".split(" "),C=function(a,c){var b="[object Function]"==t.call(a),l,g=!b&&"function"!=typeof a.constructor&&D[typeof a.hasOwnProperty]&&a.hasOwnProperty||G;for(l in a)b&&
-"prototype"==l||!g.call(a,l)||c(l);for(b=e.length;l=e[--b];g.call(a,l)&&c(l));});return C(a,b)};if(!k("json-stringify")||!k(" date-serialization")){var L={92:"\\\\",34:'\\"',8:"\\b",12:"\\f",10:"\\n",13:"\\r",9:"\\t"},x=function(a,b){return("000000"+(b||0)).slice(-a)},V=function(a){a=a.charCodeAt(0);var b=L[a];return b?b:"\\u00"+x(2,a.toString(16))},O=/[\x00-\x1f\x22\x5c]/g,S=function(a){O.lastIndex=0;return'"'+(O.test(a)?a.replace(O,V):a)+'"'},P=function(a){var b,c,g,e,n,d,h,f,m;if(v)b=function(a){c=
-a.getUTCFullYear();g=a.getUTCMonth();e=a.getUTCDate();d=a.getUTCHours();h=a.getUTCMinutes();f=a.getUTCSeconds();m=a.getUTCMilliseconds()};else{var w=K.floor,k=[0,31,59,90,120,151,181,212,243,273,304,334],p=function(a,c){return k[c]+365*(a-1970)+w((a-1969+(c=+(1<c)))/4)-w((a-1901+c)/100)+w((a-1601+c)/400)};b=function(a){e=w(a/864E5);for(c=w(e/365.2425)+1970-1;p(c+1,0)<=e;c++);for(g=w((e-p(c,0))/30.42);p(c,g+1)<=e;g++);e=1+e-p(c,g);n=(a%864E5+864E5)%864E5;d=w(n/36E5)%24;h=w(n/6E4)%60;f=w(n/1E3)%60;
-m=n%1E3}}P=function(a){a>-1/0&&a<1/0?(b(a),a=(0>=c||1E4<=c?(0>c?"-":"+")+x(6,0>c?-c:c):x(4,c))+"-"+x(2,g+1)+"-"+x(2,e)+"T"+x(2,d)+":"+x(2,h)+":"+x(2,f)+"."+x(3,m)+"Z",c=g=e=d=h=f=m=null):a=null;return a};return P(a)},Q=function(a,b,c,g,e,n,d){var h,f,m,k,q,r;p(function(){h=b[a]});"object"==typeof h&&h&&(h.getUTCFullYear&&"[object Date]"==t.call(h)&&h.toJSON===z.prototype.toJSON?h=P(h):"function"==typeof h.toJSON&&(h=h.toJSON(a)));c&&(h=c.call(b,a,h));if(h==u)return h===u?h:"null";f=typeof h;"object"==
-f&&(m=t.call(h));switch(m||f){case "boolean":case "[object Boolean]":return""+h;case "number":case "[object Number]":return h>-1/0&&h<1/0?""+h:"null";case "string":case "[object String]":return S(""+h)}if("object"==typeof h){for(f=d.length;f--;)if(d[f]===h)throw J();d.push(h);k=[];r=n;n+=e;if("[object Array]"==m){q=0;for(f=h.length;q<f;q++)m=Q(q,h,c,g,e,n,d),k.push(m===u?"null":m);f=k.length?e?"[\n"+n+k.join(",\n"+n)+"\n"+r+"]":"["+k.join(",")+"]":"[]"}else C(g||h,function(a){var b=Q(a,h,c,g,e,n,
-d);b!==u&&k.push(S(a)+":"+(e?" ":"")+b)}),f=k.length?e?"{\n"+n+k.join(",\n"+n)+"\n"+r+"}":"{"+k.join(",")+"}":"{}";d.pop();return f}};q.stringify=function(a,b,c){var g,e,f,d;if(D[typeof b]&&b)if(d=t.call(b),"[object Function]"==d)e=b;else if("[object Array]"==d){f={};for(var h=0,m=b.length,k;h<m;k=b[h++],(d=t.call(k),"[object String]"==d||"[object Number]"==d)&&(f[k]=1));}if(c)if(d=t.call(c),"[object Number]"==d){if(0<(c-=c%1))for(g="",10<c&&(c=10);g.length<c;g+=" ");}else"[object String]"==d&&(g=
-10>=c.length?c:c.slice(0,10));return Q("",(k={},k[""]=a,k),e,f,g,"",[])}}if(!k("json-parse")){var W=A.fromCharCode,X={92:"\\",34:'"',47:"/",98:"\b",116:"\t",110:"\n",102:"\f",114:"\r"},b,H,m=function(){b=H=null;throw I();},y=function(){for(var a=H,l=a.length,c,g,e,f,d;b<l;)switch(d=a.charCodeAt(b),d){case 9:case 10:case 13:case 32:b++;break;case 123:case 125:case 91:case 93:case 58:case 44:return c=N?a.charAt(b):a[b],b++,c;case 34:c="@";for(b++;b<l;)if(d=a.charCodeAt(b),32>d)m();else if(92==d)switch(d=
-a.charCodeAt(++b),d){case 92:case 34:case 47:case 98:case 116:case 110:case 102:case 114:c+=X[d];b++;break;case 117:g=++b;for(e=b+4;b<e;b++)d=a.charCodeAt(b),48<=d&&57>=d||97<=d&&102>=d||65<=d&&70>=d||m();c+=W("0x"+a.slice(g,b));break;default:m()}else{if(34==d)break;d=a.charCodeAt(b);for(g=b;32<=d&&92!=d&&34!=d;)d=a.charCodeAt(++b);c+=a.slice(g,b)}if(34==a.charCodeAt(b))return b++,c;m();default:g=b;45==d&&(f=!0,d=a.charCodeAt(++b));if(48<=d&&57>=d){for(48==d&&(d=a.charCodeAt(b+1),48<=d&&57>=d)&&m();b<
-l&&(d=a.charCodeAt(b),48<=d&&57>=d);b++);if(46==a.charCodeAt(b)){for(e=++b;e<l&&(d=a.charCodeAt(e),48<=d&&57>=d);e++);e==b&&m();b=e}d=a.charCodeAt(b);if(101==d||69==d){d=a.charCodeAt(++b);43!=d&&45!=d||b++;for(e=b;e<l&&(d=a.charCodeAt(e),48<=d&&57>=d);e++);e==b&&m();b=e}return+a.slice(g,b)}f&&m();c=a.slice(b,b+4);if("true"==c)return b+=4,!0;if("fals"==c&&101==a.charCodeAt(b+4))return b+=5,!1;if("null"==c)return b+=4,null;m()}return"$"},R=function(a){var b,c;"$"==a&&m();if("string"==typeof a){if("@"==
-(N?a.charAt(0):a[0]))return a.slice(1);if("["==a){for(b=[];;){a=y();if("]"==a)break;c?","==a?(a=y(),"]"==a&&m()):m():c=!0;","==a&&m();b.push(R(a))}return b}if("{"==a){for(b={};;){a=y();if("}"==a)break;c?","==a?(a=y(),"}"==a&&m()):m():c=!0;","!=a&&"string"==typeof a&&"@"==(N?a.charAt(0):a[0])&&":"==y()||m();b[a.slice(1)]=R(y())}return b}m()}return a},U=function(a,b,c){c=T(a,b,c);c===u?delete a[b]:a[b]=c},T=function(a,b,c){var g=a[b],e;if("object"==typeof g&&g)if("[object Array]"==t.call(g))for(e=g.length;e--;U(g,
-e,c));else C(g,function(a){U(g,a,c)});return c.call(a,b,g)};q.parse=function(a,f){var c,g;b=0;H=""+a;c=R(y());"$"!=y()&&m();b=H=null;return f&&"[object Function]"==t.call(f)?T((g={},g[""]=c,g),"",f):c}}}q.runInContext=M;return q}var I=typeof define==="function"&&define.amd,D={"function":!0,object:!0},A=D[typeof exports]&&exports&&!exports.nodeType&&exports,f=D[typeof window]&&window||this,p=A&&D[typeof module]&&module&&!module.nodeType&&"object"==typeof global&&global;!p||p.global!==p&&p.window!==
-p&&p.self!==p||(f=p);if(A&&!I)M(f,A);else{var J=f.JSON,K=f.JSON3,L=!1,B=M(f,f.JSON3={noConflict:function(){L||(L=!0,f.JSON=J,f.JSON3=K,J=K=null);return B}});f.JSON={parse:B.parse,stringify:B.stringify}}I&&define(function(){return B})}).call(this);
-
-/* Cure.js (v0.0.2) (learn@algorithmiv.com)
+/* Cure.js (v0.0.5) (learn@algorithmiv.com)
  * Author: Adam Smith (adamsmith@algorithmiv.com)
  * Copyright (c) 2015 Adam A Smith (github.com/imaginate)
- * The Apache License (algorithmiv.com/cure/license) */
-(function(h,m,n){h.console=h.console||{};(function(a,b){a.log||(a.log=b);a.error||(a.error=a.log);a.assert||(a.assert=function(b){var c;if(!b)return c=1<arguments.length?Array.prototype.slice.call(arguments,1):["A console.assert call failed."],a.error.apply(this,c)});a.clear||(a.clear=b);a.count||(a.count=b);a.debug||(a.debug=a.log);a.dir||(a.dir=a.log);a.dirxml||(a.dirxml=a.log);a.exception||(a.exception=a.error);a.group||(a.group=b);a.groupCollapsed||(a.groupCollapsed=a.group);a.groupEnd||(a.groupEnd=
-b);a.info||(a.info=a.log);a.markTimeline||(a.markTimeline=a.timeStamp?a.timeStamp:b);a.profile||(a.profile=b);a.profileEnd||(a.profileEnd=b);a.table||(a.table=b);a.time||(a.time=b);a.timeEnd||(a.timeEnd=b);a.timeline||(a.timeline=b);a.timelineEnd||(a.timelineEnd=b);a.timeStamp||(a.timeStamp=a.markTimeline);a.trace||(a.trace=a.log);a.warn||(a.warn=a.error);(function(b,c,e,h){var f,k,l,g;if(b)if(l=["assert","error","info","log","warn"],g=["clear","dir","profile","profileEnd"],g=l.concat(g),c)for(f=
-g.length;f--;)k=a[g[f]],a[g[f]]=c.call(k,a);else for(f=l.length;f--;)k=a[l[f]],e.call(k,a,h.call(arguments))})("object"===typeof a.log,Function.prototype.bind,Function.prototype.call,Array.prototype.slice)})(h.console,function(){});Object.keys||(Object.keys=function(){var a,b;a=!{toString:null}.propertyIsEnumerable("toString");b="toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable constructor".split(" ");return function(d){var c,e;if(!d||"object"!==typeof d&&"function"!==
-typeof d)throw new TypeError("An Object.keys call received an invalid object parameter. Note: It only accepts non-null objects and functions.");e=[];for(c in d)d.hasOwnProperty(c)&&e.push(c);if(a)for(c=b.length;c--;)d.hasOwnProperty(b[c])&&e.push(b[c]);return e}}());Object.freeze||(Object.freeze=function(a){if(!a||"object"!==typeof a&&"function"!==typeof a)throw new TypeError("An Object.freeze call received an invalid object parameter. Note: It only accepts non-null objects and functions.");return a});
-try{Object.freeze(function(){})}catch(p){Object.freeze=function(a){return function(b){return"function"===typeof b?b:a(b)}}(Object.freeze)}Object.isFrozen||(Object.isFrozen=function(a){if(!a||"object"!==typeof a&&"function"!==typeof a)throw new TypeError("An Object.isFrozen call received an invalid object parameter. Note: It only accepts non-null objects and functions.");return!0});Array.isArray||(Array.isArray=function(a){return"[object Array]"===Object.prototype.toString.call(a)});(function(a){a&&
-(a=[8,9],a=-1===a.indexOf(8,2)&&-1===a.indexOf(9,-1));return a})(!!Array.prototype.indexOf)||(Array.prototype.indexOf=function(a,b){var d,c,e;if(!Array.isArray(this))throw new TypeError("An Array.prototype.indexOf call was made on a non-array.");"number"!==typeof b&&(b=0);c=this.length;d=-1;if(0!==c&&Math.abs(b)<c)for(0>b&&(c-=b),e=0>b?-1:--b;++e<c;)if(this[e]===a){d=e;break}return d});XMLHttpRequest||(XMLHttpRequest=function(){var a;try{a=new ActiveXObject("Msxml2.XMLHTTP.6.0")}catch(b){try{a=new ActiveXObject("Msxml2.XMLHTTP.3.0")}catch(d){try{a=
-new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does not support XMLHttpRequest.");}}}return a})})(window,document);
+ * The Apache License (algorithmiv.com/cure/license)
+ *
+ * 3RD PARTY SCRIPTS USED IN Cure.js:
+ * JSON3 (v3.3.2) (bestiejs.github.io/json3)
+ * Copyright (c) 2012-2015 Kit Cambridge, Benjamin Tan
+ * MIT License (kit.mit-license.org) */
+(function(q,y){function r(a,g){return"object"===a||!g&&"function"===a||null}function a(a,g){a&&(g&&a.nodeType||!g&&!a.Object)&&(a=null);return a}var g=r(typeof g)&&a(g,!0),e=r(typeof e)&&a(e,!0),c=r(typeof c)&&a(c);q=function(a,g,e,c){return g||e||c||a}(q,g&&e&&r(typeof global,!0)&&a(global),c&&q&&c===q.window?null:c,r(typeof self)&&a(self));y.call(q,!!c)})(this,function(q,y){(function(){function a(c,
+h){function n(a,w){try{a()}catch(d){w&&w()}}function k(a){if(null!=k[a])return k[a];var w;if("bug-string-char-index"==a)w="a"!="a"[0];else if("json"==a)w=k("json-stringify")&&k("date-serialization")&&k("json-parse");else if("date-serialization"==a){if(w=k("json-stringify")&&x){var d=h.stringify;n(function(){w='"-271821-04-20T00:00:00.000Z"'==d(new r(-864E13))&&'"+275760-09-13T00:00:00.000Z"'==d(new r(864E13))&&'"-000001-01-01T00:00:00.000Z"'==d(new r(-621987552E5))&&'"1969-12-31T23:59:59.999Z"'==
+d(new r(-1))})}}else{var b;if("json-stringify"==a){var d=h.stringify,p="function"==typeof d;p&&((b=function(){return 1}).toJSON=b,n(function(){p="0"===d(0)&&"0"===d(new q)&&'""'==d(new t)&&d(u)===v&&d(v)===v&&d()===v&&"1"===d(b)&&"[1]"==d([b])&&"[null]"==d([v])&&"null"==d(null)&&"[null,null,null]"==d([v,u,null])&&'{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'==d({a:[b,!0,!1,null,"\x00\b\n\f\r\t"]})&&"1"===d(null,b)&&"[\n 1,\n 2\n]"==d([1,2],null,1)},function(){p=!1}));w=p}if("json-parse"==a){var c=
+h.parse,f;"function"==typeof c&&n(function(){0===c("0")&&!c(!1)&&(b=c('{"a":[1,true,false,null,"\\u0000\\b\\n\\f\\r\\t"]}'),f=5==b.a.length&&1===b.a[0])&&(n(function(){f=!c('"\t"')}),f&&n(function(){f=1!==c("01")}),f&&n(function(){f=1!==c("1.")}))},function(){f=!1});w=f}}return k[a]=!!w}c||(c=e.Object());h||(h=e.Object());var q=c.Number||e.Number,t=c.String||e.String,B=c.Object||e.Object,r=c.Date||e.Date,y=c.SyntaxError||e.SyntaxError,Q=c.TypeError||e.TypeError,R=c.Math||e.Math,F=c.JSON||e.JSON;"object"==
+typeof F&&F&&(h.stringify=F.stringify,h.parse=F.parse);var B=B.prototype,u=B.toString,G=B.hasOwnProperty,v,x=new r(-0xc782b5b800cec);n(function(){x=-109252==x.getUTCFullYear()&&0===x.getUTCMonth()&&1===x.getUTCDate()&&10==x.getUTCHours()&&37==x.getUTCMinutes()&&6==x.getUTCSeconds()&&708==x.getUTCMilliseconds()});k["bug-string-char-index"]=k["date-serialization"]=k.json=k["json-stringify"]=k["json-parse"]=null;if(!k("json")){var I=k("bug-string-char-index"),E=function(a,b){var d=0,c,p,e;(c=function(){this.valueOf=
+0}).prototype.valueOf=0;p=new c;for(e in p)G.call(p,e)&&d++;c=p=null;d?E=function(a,d){var D="[object Function]"==u.call(a),b,c;for(b in a)D&&"prototype"==b||!G.call(a,b)||(c="constructor"===b)||d(b);(c||G.call(a,b="constructor"))&&d(b)}:(p="valueOf toString toLocaleString propertyIsEnumerable isPrototypeOf hasOwnProperty constructor".split(" "),E=function(a,d){var D="[object Function]"==u.call(a),b,c=!D&&"function"!=typeof a.constructor&&g[typeof a.hasOwnProperty]&&a.hasOwnProperty||G;for(b in a)D&&
+"prototype"==b||!c.call(a,b)||d(b);for(D=p.length;b=p[--D];c.call(a,b)&&d(b));});return E(a,b)};if(!k("json-stringify")||!k(" date-serialization")){var S={92:"\\\\",34:'\\"',8:"\\b",12:"\\f",10:"\\n",13:"\\r",9:"\\t"},A=function(a,b){return("000000"+(b||0)).slice(-a)},T=function(a){a=a.charCodeAt(0);var b=S[a];return b?b:"\\u00"+A(2,a.toString(16))},J=/[\x00-\x1f\x22\x5c]/g,N=function(a){J.lastIndex=0;return'"'+(J.test(a)?a.replace(J,T):a)+'"'},K=function(a){var b,d,c,p,g,f,e,n,h;if(x)b=function(a){d=
+a.getUTCFullYear();c=a.getUTCMonth();p=a.getUTCDate();f=a.getUTCHours();e=a.getUTCMinutes();n=a.getUTCSeconds();h=a.getUTCMilliseconds()};else{var z=R.floor,m=[0,31,59,90,120,151,181,212,243,273,304,334],k=function(a,d){return m[d]+365*(a-1970)+z((a-1969+(d=+(1<d)))/4)-z((a-1901+d)/100)+z((a-1601+d)/400)};b=function(a){p=z(a/864E5);for(d=z(p/365.2425)+1970-1;k(d+1,0)<=p;d++);for(c=z((p-k(d,0))/30.42);k(d,c+1)<=p;c++);p=1+p-k(d,c);g=(a%864E5+864E5)%864E5;f=z(g/36E5)%24;e=z(g/6E4)%60;n=z(g/1E3)%60;
+h=g%1E3}}K=function(a){a>-1/0&&a<1/0?(b(a),a=(0>=d||1E4<=d?(0>d?"-":"+")+A(6,0>d?-d:d):A(4,d))+"-"+A(2,c+1)+"-"+A(2,p)+"T"+A(2,f)+":"+A(2,e)+":"+A(2,n)+"."+A(3,h)+"Z",d=c=p=f=e=n=h=null):a=null;return a};return K(a)},L=function(a,b,d,c,g,e,f){var l,h,k,m,q,t;n(function(){l=b[a]});"object"==typeof l&&l&&(l.getUTCFullYear&&"[object Date]"==u.call(l)&&l.toJSON===r.prototype.toJSON?l=K(l):"function"==typeof l.toJSON&&(l=l.toJSON(a)));d&&(l=d.call(b,a,l));if(l==v)return l===v?l:"null";h=typeof l;"object"==
+h&&(k=u.call(l));switch(k||h){case "boolean":case "[object Boolean]":return""+l;case "number":case "[object Number]":return l>-1/0&&l<1/0?""+l:"null";case "string":case "[object String]":return N(""+l)}if("object"==typeof l){for(h=f.length;h--;)if(f[h]===l)throw Q();f.push(l);m=[];t=e;e+=g;if("[object Array]"==k){q=0;for(h=l.length;q<h;q++)k=L(q,l,d,c,g,e,f),m.push(k===v?"null":k);h=m.length?g?"[\n"+e+m.join(",\n"+e)+"\n"+t+"]":"["+m.join(",")+"]":"[]"}else E(c||l,function(a){var b=L(a,l,d,c,g,e,
+f);b!==v&&m.push(N(a)+":"+(g?" ":"")+b)}),h=m.length?g?"{\n"+e+m.join(",\n"+e)+"\n"+t+"}":"{"+m.join(",")+"}":"{}";f.pop();return h}};h.stringify=function(a,b,d){var c,e,h,f;if(g[typeof b]&&b)if(f=u.call(b),"[object Function]"==f)e=b;else if("[object Array]"==f){h={};for(var l=0,m=b.length,k;l<m;k=b[l++],(f=u.call(k),"[object String]"==f||"[object Number]"==f)&&(h[k]=1));}if(d)if(f=u.call(d),"[object Number]"==f){if(0<(d-=d%1))for(c="",10<d&&(d=10);c.length<d;c+=" ");}else"[object String]"==f&&(c=
+10>=d.length?d:d.slice(0,10));return L("",(k={},k[""]=a,k),e,h,c,"",[])}}if(!k("json-parse")){var U=t.fromCharCode,V={92:"\\",34:'"',47:"/",98:"\b",116:"\t",110:"\n",102:"\f",114:"\r"},b,H,m=function(){b=H=null;throw y();},C=function(){for(var a=H,c=a.length,d,g,e,h,f;b<c;)switch(f=a.charCodeAt(b),f){case 9:case 10:case 13:case 32:b++;break;case 123:case 125:case 91:case 93:case 58:case 44:return d=I?a.charAt(b):a[b],b++,d;case 34:d="@";for(b++;b<c;)if(f=a.charCodeAt(b),32>f)m();else if(92==f)switch(f=
+a.charCodeAt(++b),f){case 92:case 34:case 47:case 98:case 116:case 110:case 102:case 114:d+=V[f];b++;break;case 117:g=++b;for(e=b+4;b<e;b++)f=a.charCodeAt(b),48<=f&&57>=f||97<=f&&102>=f||65<=f&&70>=f||m();d+=U("0x"+a.slice(g,b));break;default:m()}else{if(34==f)break;f=a.charCodeAt(b);for(g=b;32<=f&&92!=f&&34!=f;)f=a.charCodeAt(++b);d+=a.slice(g,b)}if(34==a.charCodeAt(b))return b++,d;m();default:g=b;45==f&&(h=!0,f=a.charCodeAt(++b));if(48<=f&&57>=f){for(48==f&&(f=a.charCodeAt(b+1),48<=f&&57>=f)&&m();b<
+c&&(f=a.charCodeAt(b),48<=f&&57>=f);b++);if(46==a.charCodeAt(b)){for(e=++b;e<c&&(f=a.charCodeAt(e),48<=f&&57>=f);e++);e==b&&m();b=e}f=a.charCodeAt(b);if(101==f||69==f){f=a.charCodeAt(++b);43!=f&&45!=f||b++;for(e=b;e<c&&(f=a.charCodeAt(e),48<=f&&57>=f);e++);e==b&&m();b=e}return+a.slice(g,b)}h&&m();d=a.slice(b,b+4);if("true"==d)return b+=4,!0;if("fals"==d&&101==a.charCodeAt(b+4))return b+=5,!1;if("null"==d)return b+=4,null;m()}return"$"},M=function(a){var b,d;"$"==a&&m();if("string"==typeof a){if("@"==
+(I?a.charAt(0):a[0]))return a.slice(1);if("["==a){for(b=[];;){a=C();if("]"==a)break;d?","==a?(a=C(),"]"==a&&m()):m():d=!0;","==a&&m();b.push(M(a))}return b}if("{"==a){for(b={};;){a=C();if("}"==a)break;d?","==a?(a=C(),"}"==a&&m()):m():d=!0;","!=a&&"string"==typeof a&&"@"==(I?a.charAt(0):a[0])&&":"==C()||m();b[a.slice(1)]=M(C())}return b}m()}return a},P=function(a,b,d){d=O(a,b,d);d===v?delete a[b]:a[b]=d},O=function(a,b,d){var c=a[b],e;if("object"==typeof c&&c)if("[object Array]"==u.call(c))for(e=c.length;e--;P(c,
+e,d));else E(c,function(a){P(c,a,d)});return d.call(a,b,c)};h.parse=function(a,c){var d,e;b=0;H=""+a;d=M(C());"$"!=C()&&m();b=H=null;return c&&"[object Function]"==u.call(c)?O((e={},e[""]=d,e),"",c):d}}}h.runInContext=a;return h}var g={"function":!0,object:!0},e=g[typeof window]&&window||this,c=g[typeof exports]&&exports&&!exports.nodeType&&exports&&g[typeof module]&&module&&!module.nodeType&&"object"==typeof global&&global;!c||c.global!==c&&c.window!==c&&c.self!==c||(e=c);var n=e.JSON,q=e.JSON3,
+t=!1,B=a(e,e.JSON3={noConflict:function(){t||(t=!0,e.JSON=n,e.JSON3=q,n=q=null);return B}});e.JSON={parse:B.parse,stringify:B.stringify}}).call(this);q&&!window.XMLHttpRequest&&(window.XMLHttpRequest=function(){var a;try{a=new ActiveXObject("Msxml2.XMLHTTP.6.0")}catch(g){try{a=new ActiveXObject("Msxml2.XMLHTTP.3.0")}catch(e){try{a=new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does not support XMLHttpRequest.");}}}return a});Array.isArray||(Array.isArray=function(a){return"[object Array]"===
+Object.prototype.toString.call(a)});Array.prototype.indexOf&&function(a){return-1===a.indexOf(8,2)&&-1===a.indexOf(9,-1)}([8,9])||(Array.prototype.indexOf=function(a,g){var e,c,n;if(!Array.isArray(this))throw new TypeError("An Array.prototype.indexOf call was made on a non-array.");"number"!==typeof g&&(g=0);c=this.length;e=-1;if(0!==c&&Math.abs(g)<c)for(0>g&&(c-=g),n=0>g?-1:--g;++n<c;)if(this[n]===a){e=n;break}return e});q?window.console=window.console||{}:this.console=this.console||{};(function(a,
+g){a.log||(a.log=g);a.error||(a.error=a.log);a.assert||(a.assert=function(e){var c;if(!e)return c=1<arguments.length?Array.prototype.slice.call(arguments,1):["A console.assert call failed."],a.error.apply(this,c)});a.clear||(a.clear=g);a.count||(a.count=g);a.debug||(a.debug=a.log);a.dir||(a.dir=a.log);a.dirxml||(a.dirxml=a.log);a.exception||(a.exception=a.error);a.group||(a.group=g);a.groupCollapsed||(a.groupCollapsed=a.group);a.groupEnd||(a.groupEnd=g);a.info||(a.info=a.log);a.markTimeline||(a.markTimeline=
+a.timeStamp?a.timeStamp:g);a.profile||(a.profile=g);a.profileEnd||(a.profileEnd=g);a.table||(a.table=g);a.time||(a.time=g);a.timeEnd||(a.timeEnd=g);a.timeline||(a.timeline=g);a.timelineEnd||(a.timelineEnd=g);a.timeStamp||(a.timeStamp=a.markTimeline);a.trace||(a.trace=a.log);a.warn||(a.warn=a.error);(function(e,c,g,q){var t,r,y,h;if(e)if(y=["assert","error","info","log","warn"],h=["clear","dir","profile","profileEnd"],h=y.concat(h),c)for(t=h.length;t--;)r=a[h[t]],a[h[t]]=c.call(r,a);else for(t=y.length;t--;)r=
+a[y[t]],g.call(r,a,q.call(arguments))})("object"===typeof a.log,Function.prototype.bind,Function.prototype.call,Array.prototype.slice)})(q?window.console:this.console,function(){});Object.keys||(Object.keys=function(){var a,g;a=!{toString:null}.propertyIsEnumerable("toString");g="toString toLocaleString valueOf hasOwnProperty isPrototypeOf propertyIsEnumerable constructor".split(" ");return function(e){var c,n;if(!e||"object"!==typeof e&&"function"!==typeof e)throw new TypeError("An Object.keys call received an invalid object parameter. Note: It only accepts non-null objects and functions.");
+n=[];for(c in e)e.hasOwnProperty(c)&&n.push(c);if(a)for(c=g.length;c--;)e.hasOwnProperty(g[c])&&n.push(g[c]);return n}}());Object.freeze||(Object.freeze=function(a){if(!a||"object"!==typeof a&&"function"!==typeof a)throw new TypeError("An Object.freeze call received an invalid object parameter. Note: It only accepts non-null objects and functions.");return a});try{Object.freeze(function(){})}catch(r){Object.freeze=function(a){return function(g){return"function"===typeof g?g:a(g)}}(Object.freeze)}Object.isFrozen||
+(Object.isFrozen=function(a){if(!a||"object"!==typeof a&&"function"!==typeof a)throw new TypeError("An Object.isFrozen call received an invalid object parameter. Note: It only accepts non-null objects and functions.");return!0})});
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Public API
+// Export Vitals
 ////////////////////////////////////////////////////////////////////////////////
 
-(function(window, vitalsModuleAPI) {
-  "use strict";
+;(function(/** Object */ root, /** function(Object): Object */ makeVitals) {
 
 /* -----------------------------------------------------------------------------
- * The Public API (public-api.js)
+ * Export Vitals (dev/export.js)
  * -------------------------------------------------------------------------- */
 
-  /**
-   * ---------------------------------------------------
-   * Global Object (Vitals)
-   * ---------------------------------------------------
-   * @desc Holds the public API for Vitals.js. For more details on each of the
-   *   shortcuts see their complete definitions located in JSDoc before each
-   *   method's declaration in the src folder.
-   * @see [JavaScript Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/js-methods}
-   * @see [DOM Shortcuts]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/dom-methods}
-   * @see [Master Methods]{@link https://github.com/imaginate/vitals/tree/master/src/pre-compiled-parts/master-methods}
-   * @type {!{
-   *   checkType        : function(*, string, boolean=): boolean,
-   *   isValidTypeString: function(string): boolean,
-   *   checkArgs        : function(...*, ...string): boolean,
-   *   getTypeOf        : function(*): string,
-   *   freezeObj        : function((!Object|function), boolean=): (!Object|function),
-   *   hasOwnProp       : function((!Object|function), string): boolean,
-   *   getElemById      : function(string): !Element,
-   *   getElemByClass   : function(string): !Element,
-   *   getElemsByClass  : function(string): !Array<!Element>,
-   *   getElemByTag     : function(string): !Element,
-   *   getElemsByTag    : function(string): !Array<!Element>,
-   *   makeElem         : function((string|!Object<string, string>)=): !Element,
-   *   setElemText      : function(!Element, string): !Element,
-   *   addElemText      : function(!Element, string): !Element
-   * }}
-   * @struct
-   * @global
-   */
-  window.Vitals = window.Vitals || vitalsModuleAPI;
+  /** @type {!Object} */
+  var Vitals;
+  /** @type {(Object|?function)} */
+  var exports = isObj(typeof exports) && getObj(exports, true);
+  /** @type {(Object|?function)} */
+  var module = isObj(typeof module) && getObj(module, true);
+
+  root = (function(root, global, window, self) {
+
+    if ( window && root && (window === root.window) ) {
+      window = null;
+    }
+    return global || window || self || root;
+
+  })(
+    root,
+    exports && module && isObj(typeof global, true) && getObj(global),
+    isObj(typeof window) && getObj(window),
+    isObj(typeof self) && getObj(self)
+  );
+
+  Vitals = makeVitals(root);
+
+  // AMD
+  if (typeof define === 'function' &&
+      typeof define.amd === 'object' && define.amd) {
+    root.Vitals = Vitals;
+    root.V = Vitals;
+    define(function() {
+      return Vitals;
+    });
+  }
+  // Node.js or CommonJS
+  else if (exports && module) {
+    if (exports === module.exports) {
+      module.exports = Vitals;
+    }
+    module.exports.Vitals = Vitals;
+    module.exports.V = Vitals;
+  }
+  // Browser
+  else {
+    root.Vitals = Vitals;
+    root.V = Vitals;
+  }
 
   /**
    * ---------------------------------------------------
-   * Global Object (Vx)
+   * Private Function (isObj)
    * ---------------------------------------------------
-   * @desc Also holds the public API for Vitals.js. This global object is the
-   *   same as the Vitals object. It is simply a shorter reference name option
-   *   for developers who like shorter names.
-   * @struct
-   * @global
+   * @desc A helper method that checks if a value is an object.
+   * @private
+   * @param {string} typeOf
+   * @param {boolean=} noFunc
+   * @return {?boolean}
    */
-  window.Vx = Vitals;
+  function isObj(typeOf, noFunc) {
+    return (typeOf === 'object') || (!noFunc && typeOf === 'function') || null;
+  }
 
-})(window,
+  /**
+   * ---------------------------------------------------
+   * Private Function (getObj)
+   * ---------------------------------------------------
+   * @desc A helper method that checks if an object is a valid object and
+   *   returns the object or null.
+   * @private
+   * @param {(Object|?function)} obj
+   * @param {boolean=} checkNode
+   * @return {boolean}
+   */
+  function getObj(obj, checkNode) {
+    if (obj && ( (checkNode && obj.nodeType) ||
+                 (!checkNode && !obj.Object) )) {
+      obj = null;
+    }
+    return obj;
+  }
 
-////////////////////////////////////////////////////////////////////////////////
-// Vitals Module
-////////////////////////////////////////////////////////////////////////////////
+})(this, function(/** Object */ root, undefined) {
 
-(function(window, document, undefined) {
   "use strict";
 
+////////////////////////////////////////////////////////////////////////////////
+// The Vitals Module
+////////////////////////////////////////////////////////////////////////////////
+
 /* -----------------------------------------------------------------------------
- * The Module's Public Variables (module-vars.js)
+ * The Module's Public Variables (dev/module-vars.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * -----------------------------------------------------
-   * Public Variable (vitalsModuleAPI)
+   * Public Variable (Vitals)
    * -----------------------------------------------------
    * @desc Holds the module's public properties and methods.
    * @type {!Object<string, function>}
    * @struct
    */
-  var vitalsModuleAPI = {};
+  var Vitals = {};
 
   /**
    * -----------------------------------------------------
@@ -164,6 +193,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc Holds each method's orginal defaults.
    * @type {!{
    *   checkArgsErrorMsg  : function,
+   *   getElemByIdRoot    : !Document,
    *   getElemByClassRoot : !Document,
    *   getElemsByClassRoot: !Document,
    *   getElemByTagRoot   : !Document,
@@ -173,6 +203,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   var DEFAULTS = {
     checkArgsErrorMsg  : 'A method call received an invalid parameter type.',
+    getElemByIdRoot    : document,
     getElemByClassRoot : document,
     getElemsByClassRoot: document,
     getElemByTagRoot   : document,
@@ -189,10 +220,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    */
   DEFAULTS.types = {
     checkArgsErrorMsg  : 'string|function',
-    getElemByClassRoot : '!(Document|Element)',
-    getElemsByClassRoot: '!(Document|Element)',
-    getElemByTagRoot   : '!(Document|Element)',
-    getElemsByTagRoot  : '!(Document|Element)'
+    getElemByIdRoot    : '!Document',
+    getElemByClassRoot : '!Document|Element',
+    getElemsByClassRoot: '!Document|Element',
+    getElemByTagRoot   : '!Document|Element',
+    getElemsByTagRoot  : '!Document|Element'
   };
 
   Object.freeze(DEFAULTS);
@@ -205,14 +237,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc Holds each method's defaults.
    * @type {!{
    *   checkArgsErrorMsg  : (string|function),
-   *   getElemByClassRoot : !(Document|Element),
-   *   getElemsByClassRoot: !(Document|Element),
-   *   getElemByTagRoot   : !(Document|Element),
-   *   getElemsByTagRoot  : !(Document|Element)
+   *   getElemByIdRoot    : !Document,
+   *   getElemByClassRoot : (!Document|!Element),
+   *   getElemsByClassRoot: (!Document|!Element),
+   *   getElemByTagRoot   : (!Document|!Element),
+   *   getElemsByTagRoot  : (!Document|!Element)
    * }}
    */
   var defaults = {
     checkArgsErrorMsg  : DEFAULTS.checkArgsErrorMsg,
+    getElemByIdRoot    : DEFAULTS.getElemByIdRoot,
     getElemByClassRoot : DEFAULTS.getElemByClassRoot,
     getElemsByClassRoot: DEFAULTS.getElemsByClassRoot,
     getElemByTagRoot   : DEFAULTS.getElemByTagRoot,
@@ -224,7 +258,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The JS Feature Detection (js-methods/feature-detect.js)
+ * The JS Feature Detection (dev/js-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -274,7 +308,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   Object.freeze(JsFeatures);
 
 /* -----------------------------------------------------------------------------
- * The JS Helper Methods (js-methods/helpers.js)
+ * The JS Helper Methods (dev/js-methods/helpers.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -294,20 +328,10 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @desc A regex of all of the data types available to checkType.
    * @type {!RegExp}
    */
-  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '' +
-    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^elem$|'    +
-    '^element$|^undefined$|^null$|^document$|^strings$|^numbers$|^booleans$|'  +
-    '^objects$|^arrays$|^elems$|^elements$|^functions$|^stringmap$|'           +
-    '^numbermap$|^booleanmap$|^objectmap$|^arraymap$|^functionmap$|^elemmap$|' +
-    '^elementmap$';
-
-    return new RegExp(types);
-  })();
+  JsHelpers.allDataTypes = new RegExp('^(?:any|string|number|boolean|object|'  +
+  'array|function|null|undefined|elem|element|document|regexp|strings|numbers|'+
+  'booleans|objects|arrays|functions|elems|elements|regexps|stringmap|elemmap|'+
+  "numbermap|booleanmap|objectmap|arraymap|functionmap|elementmap|regexpmap)$");
 
   /**
    * -----------------------------------------------------
@@ -321,12 +345,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   Object.freeze(JsHelpers);
 
 /* -----------------------------------------------------------------------------
- * The checkType Method (js-methods/checkType.js)
+ * The checkType Method (dev/js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.checkType)
+   * Public Method (Vitals.checkType)
    * ---------------------------------------------------
    * @desc Checks a value's data type against the given optional types.
    * @param {*} val - The value to be evaluated.
@@ -337,15 +361,18 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *     <tr>
    *       <td>
    *         <span>'string', 'number', 'boolean', 'object', 'array', </span>
-   *         <span>'function', 'elem', 'element', 'undefined', 'document'</span>
+   *         <span>'function', 'undefined', 'elem', 'element', </span>
+   *         <span>'document', 'regexp'</span>
    *       </td>
    *       <td>
    *         <span>'strings', 'numbers', 'booleans', 'objects', </span>
-   *         <span>'arrays', 'functions', 'elems', 'elements'</span>
+   *         <span>'arrays', 'functions', 'elems', 'elements', </span>
+   *         <span>'regexps'</span>
    *       </td>
    *       <td>
    *         <span>'stringMap', 'numberMap', 'booleanMap', 'objectMap', </span>
    *         <span>'arrayMap', 'functionMap', 'elemMap', 'elementMap'</span>
+   *         <span>'regexpMap'</span>
    *       </td>
    *     </tr>
    *   </table>
@@ -390,7 +417,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  vitalsModuleAPI.checkType = (function setup_checkType(allDataTypes,
+  Vitals.checkType = (function setup_checkType(allDataTypes,
                                exceptLowerAlphaAndPipe) {
 
     ////////////////////////////////////////////////////////////////////////////
@@ -401,64 +428,51 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * ---------------------------------------------------
      * Public Method (checkType)
      * ---------------------------------------------------
-     * @desc Checks a value's data type against the given optional types.
-     * @param {*} val - The value to be evaluated.
-     * @param {string} type - A string of the data types to evaluate against.
-     * @param {boolean=} noTypeValCheck - If true this method does not check
-     *   the data type string for correctness. By default this is set to false.
-     * @return {boolean} The evaluation result.
+     * @desc See the description for Vitals.checkType.
+     * @param {*} val
+     * @param {string} type
+     * @param {boolean=} noTypeValCheck
+     * @return {boolean}
      */
     var checkType = function(val, type, noTypeValCheck) {
 
-      /** @type {boolean} */
-      var pass;
       /** @type {!strings} */
       var types;
-      /** @type {boolean} */
-      var nullable;
       /** @type {string} */
       var errorMsg;
-      /** @type {boolean} */
-      var nullableOverride;
 
       if ( !checkTypeOf(type, 'string') ) {
         errorMsg = 'A Vitals.checkType call received a non-string type param.';
         throw new TypeError(errorMsg);
       }
 
-      // Check for automatic pass (* = any value) & catch asterisk error
+      // Check for automatic pass ('*' = any value)
       if ( asterisk.test(type) ) {
         (type.length > 1) && throwInvalidAsteriskUse();
         return true;
       }
 
-      // Check for an optional undefined value
-      pass = (val === undefined && equalSign.test(type));
+      // Check for an optional value ('=' = undefined)
+      if (val === undefined && equalSign.test(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return true;
+      }
 
-      nullableOverride = (pass) ? true : checkForNullOverride(val, type);
-      nullable = ( (pass || !nullableOverride || exclamationPoint.test(type)) ?
-        false : questionMark.test(type)
+      // Check for a nullable override ('!' = non-nullable) ('?' = nullable)
+      if (val === null && checkForNullOverride(type)) {
+        noTypeValCheck || isValidTypeStrings(type);
+        return checkIfNullable(type);
+      }
+
+      type = type.toLowerCase();
+      type = type.replace(exceptLowerAlphaAndPipe, '');
+      types = type.split('|');
+
+      noTypeValCheck || isValidTypeStrings(types);
+
+      return ( (val === null) ?
+        checkEachNullType(types) : checkEachType(val, types)
       );
-
-      // Check for null value with nullable true and override enabled
-      pass = pass || (nullable && nullableOverride);
-
-      if (!noTypeValCheck || !pass) {
-        type = type.toLowerCase();
-        type = type.replace(exceptLowerAlphaAndPipe, '');
-        types = type.split('|');
-
-        noTypeValCheck || isValidTypeStrings(types);
-      }
-
-      if (!pass) {
-        pass = ( (val === null) ?
-          checkEachNullType(types, nullable, nullableOverride)
-          : checkEachType(val, types)
-        );
-      }
-
-      return pass;
     };
 
     ////////////////////////////////////////////////////////////////////////////
@@ -472,15 +486,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * @desc The non-nullable data types available to this module.
      * @type {!RegExp}
      */
-    var nonNullableDataTypes = (function setup_nonNullableDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^string$|^number$|^boolean$|^function$|^undefined$';
-
-      return new RegExp(types);
-    })();
+    var nonNullableDataTypes = /^(?:string|number|boolean|function|undefined)$/;
 
     /**
      * -----------------------------------------------
@@ -490,25 +496,17 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      *   native JavaScript typeof operator.
      * @type {!RegExp}
      */
-    var typeOfDataTypes = (function setup_typeOfDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
-
-      return new RegExp(types);
-    })();
+    var typeOfDataTypes = new RegExp('^(?:string|number|boolean|object|' +
+                                         "function|undefined)$");
 
     /**
      * -----------------------------------------------
-     * Private Property (domNodeDataTypes)
+     * Private Property (objClassDataTypes)
      * -----------------------------------------------
-     * @desc The data types that can be accurately checked with the
-     *   DOM Node's interface.
+     * @desc The object types that must have their constructors checked.
      * @type {!RegExp}
      */
-    var domNodeDataTypes = /^elem$|^element$|^document$/;
+    var objClassDataTypes = /^(?:array|elem|element|document|regexp)$/;
 
     /**
      * -----------------------------------------------
@@ -517,16 +515,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * @desc The array data types available to this module.
      * @type {!RegExp}
      */
-    var arrayDataTypes = (function setup_arrayDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^array$|^strings$|^numbers$|^booleans$|^objects$|' +
-              '^arrays$|^elems$|^elements$|^functions$';
-
-      return new RegExp(types);
-    })();
+    var arrayDataTypes = new RegExp('^(?:strings|numbers|booleans|objects|' +
+                                 "arrays|functions|elems|elements|regexps)$");
 
     /**
      * -----------------------------------------------
@@ -535,16 +525,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * @desc The hash map types available to this module.
      * @type {!RegExp}
      */
-    var mapDataTypes = (function setup_mapDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|' +
-              '^arraymap$|^functionmap$|^elemmap$|^elementmap$';
-
-      return new RegExp(types);
-    })();
+    var mapDataTypes = new RegExp('^(?:stringmap|numbermap|booleanmap|' +
+         "objectmap|arraymap|functionmap|elemmap|elementmap|regexpmap)$");
 
     /**
      * -----------------------------------------------
@@ -610,26 +592,25 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * Private Method (checkForNullOverride)
      * ---------------------------------------------------
      * @desc Checks if a nullable override exists.
-     * @param {*} val - The value to be evaluated.
      * @param {string} type - A string of the data types to evaluate against.
      * @return {boolean} The nullable override value.
      */
-    var checkForNullOverride = function(val, type) {
+    var checkForNullOverride = function(type) {
+      return ( (questionMark.test(type)) ?
+        !exclamationPoint.test(type) : exclamationPoint.test(type)
+      );
+    };
 
-      /** @type {boolean} */
-      var nullCheck;
-      /** @type {boolean} */
-      var override;
-
-      nullCheck = (val === null);
-
-      override = (nullCheck) ? exclamationPoint.test(type) : true;
-
-      if (nullCheck && questionMark.test(type)) {
-        override = !override;
-      }
-
-      return override;
+    /**
+     * ---------------------------------------------------
+     * Private Method (checkIfNullable)
+     * ---------------------------------------------------
+     * @desc Retrieves the starting nullable value.
+     * @param {string} type - A string of the data types to evaluate against.
+     * @return {boolean} The nullable start value.
+     */
+    var checkIfNullable = function(type) {
+      return !exclamationPoint.test(type) && questionMark.test(type);
     };
 
     /**
@@ -637,7 +618,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * Private Method (isValidTypeStrings)
      * ---------------------------------------------------
      * @desc Evaluates whether each value is a valid data type string.
-     * @param {!strings} types - The strings to evaluate.
+     * @param {(string|!strings)} types - The strings to evaluate.
      * @return {boolean} The evaluation result.
      */
     var isValidTypeStrings = function(types) {
@@ -649,8 +630,13 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       /** @type {string} */
       var errorMsg;
 
-      pass = true;
+      if ( checkTypeOf(types, 'string') ) {
+        types = types.toLowerCase();
+        types = types.replace(exceptLowerAlphaAndPipe, '');
+        types = types.split('|');
+      }
 
+      pass = true;
       i = types.length;
       while (pass && i--) {
         pass = allDataTypes.test(types[i]);
@@ -698,10 +684,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var pass;
 
       pass = false;
-
-      // Test the value against each type
       i = types.length;
-      while (!pass && i--) {
+      while (i-- && !pass) {
 
         type = types[i];
 
@@ -715,8 +699,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
           continue;
         }
 
-        if ( domNodeDataTypes.test(type) ) {
-          pass = checkNodeType(val, type);
+        if ( objClassDataTypes.test(type) ) {
+          pass = checkObjType(val, type);
           continue;
         }
 
@@ -740,11 +724,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * ---------------------------------------------------
      * @desc Checks the nullable values of the given types.
      * @param {!Array<string>} types - The data types to evaluate against.
-     * @param {boolean} nullable - The starting nullable value.
-     * @param {boolean} override - Whether a nullable override exists.
      * @return {boolean} The evaluation result.
      */
-    var checkEachNullType = function(types, nullable, override) {
+    var checkEachNullType = function(types) {
 
       /** @type {number} */
       var i;
@@ -752,16 +734,9 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       var pass;
 
       pass = false;
-
-      // Test the nullable value of each type
       i = types.length;
-      while (!pass && i--) {
-
-        if (!override) {
-          nullable = !nonNullableDataTypes.test(types[i]);
-        }
-
-        pass = nullable;
+      while (i-- && !pass) {
+        pass = !nonNullableDataTypes.test(types[i]);
       }
 
       return pass;
@@ -777,38 +752,38 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
      * @return {boolean} The evaluation result.
      */
     var checkTypeOf = function(val, type) {
-      if (val === null) {
-        return false;
-      }
-      return (typeof val === type);
+      return (val !== null) && (typeof val === type);
     };
 
     /**
      * ---------------------------------------------------
-     * Private Method (checkNodeType)
+     * Private Method (checkObjType)
      * ---------------------------------------------------
-     * @desc Checks a value's instanceof against the given type.
+     * @desc Checks if an object passes the given type's checks.
      * @param {*} val - The value to be evaluated.
      * @param {string} type - The data type.
      * @return {boolean} The evaluation result.
      */
-    var checkNodeType = function(val, type) {
+    var checkObjType = (function setup_checkObjType(objToString) {
 
-      /** @type {!Object<string, number>} */
-      var types;
+      /** @type {!Object<string, function(!Object): boolean>} */
+      var objChecks;
 
-      if (!val || !checkTypeOf(val, 'object') || !val.nodeType) {
-        return false;
-      }
-
-      types = {
-        'elem'    : 1,
-        'element' : 1,
-        'document': 9
+      objChecks = {
+        'array'   : function(obj) { return Array.isArray(obj);   },
+        'elem'    : function(obj) { return (obj.nodeType === 1); },
+        'element' : function(obj) { return (obj.nodeType === 1); },
+        'document': function(obj) { return (obj.nodeType === 9); },
+        'regexp'  : function(obj) {
+          return (objToString.call(obj) === '[object RegExp]');
+        }
       };
 
-      return (val.nodeType === types[ type ]);
-    };
+      return function checkObjType(val, type) {
+        return !!val && checkTypeOf(val, 'object') && objChecks[ type ](val);
+      };
+
+    })(Object.prototype.toString);
 
     /**
      * ---------------------------------------------------
@@ -832,19 +807,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         return false;
       }
 
-      if (type === 'array') {
-        return true;
-      }
-
       type = type.slice(0, -1);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       i = vals.length;
       while (pass && i--) {
         pass = testFunc(vals[i], type);
@@ -876,14 +844,11 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       }
 
       type = type.slice(0, -3);
-
-      testFunc = ( (type === 'array') ?
-        Array.isArray : ( domNodeDataTypes.test(type) ) ?
-          checkNodeType : checkTypeOf
+      testFunc = ( (objClassDataTypes.test(type)) ?
+        checkObjType : checkTypeOf
       );
 
       pass = true;
-
       for (prop in val) {
         if ( val.hasOwnProperty(prop) ) {
           pass = testFunc(val[ prop ], type);
@@ -905,18 +870,18 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
 
 /* -----------------------------------------------------------------------------
- * The isValidTypeString Method (js-methods/isValidTypeString.js)
+ * The isValidTypeString Method (dev/js-methods/isValidTypeString.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.isValidTypeString)
+   * Public Method (Vitals.isValidTypeString)
    * ---------------------------------------------------
    * @desc Evaluates whether a string is a valid data type string.
    * @param {string} typeString - The string to evaluate.
    * @return {boolean} The evaluation result.
    */
-  vitalsModuleAPI.isValidTypeString = (function setup_isValidTypeString(
+  Vitals.isValidTypeString = (function setup_isValidTypeString(
                                        allDataTypes, exceptLowerAlphaAndPipe) {
 
     return function isValidTypeString(typeString) {
@@ -951,12 +916,12 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   })(JsHelpers.allDataTypes, JsHelpers.exceptLowerAlphaAndPipe);
 
 /* -----------------------------------------------------------------------------
- * The checkArgs Method (js-methods/checkArgs.js)
+ * The checkArgs Method (dev/js-methods/checkArgs.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.checkArgs)
+   * Public Method (Vitals.checkArgs)
    * ---------------------------------------------------
    * @desc Catches invalid argument data types and throws an error.
    * @param {...*} val - Each argument passed to the method.
@@ -969,9 +934,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  vitalsModuleAPI.checkArgs = (function setup_checkArgs(checkType,
-                                                        isValidTypeString,
-	      sliceArr) {
+  Vitals.checkArgs = (function setup_checkArgs(checkType, isValidTypeString,
+                                               sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method
@@ -1088,16 +1052,16 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return checkArgs;
 
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.isValidTypeString,
+  })(Vitals.checkType, Vitals.isValidTypeString,
      Array.prototype.slice);
 
 /* -----------------------------------------------------------------------------
- * The getTypeOf Method (js-methods/getTypeOf.js)
+ * The getTypeOf Method (dev/js-methods/getTypeOf.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getTypeOf)
+   * Public Method (Vitals.getTypeOf)
    * ---------------------------------------------------
    * @desc A shortcut for the native typeof operator that additionally
    *   distinguishes null, array, document, and element types from an
@@ -1105,7 +1069,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {*} val - The value to get the typeof.
    * @return {string} The value's type.
    */
-  vitalsModuleAPI.getTypeOf = (function setup_getTypeOf(checkType, isArray) {
+  Vitals.getTypeOf = (function setup_getTypeOf(checkType, isArray) {
 
     return function getTypeOf(val) {
 
@@ -1124,15 +1088,262 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return type;
     };
-  })(vitalsModuleAPI.checkType, Array.isArray);
+  })(Vitals.checkType, Array.isArray);
 
 /* -----------------------------------------------------------------------------
- * The freezeObj Method (js-methods/freezeObj.js)
+ * The copyObj Method (dev/js-methods/copyObj.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.freezeObj)
+   * Public Method (Vitals.copyObj)
+   * ---------------------------------------------------
+   * @desc Creates a new Object, Function, Array, or RegExp with the same
+   *   properties and values as the provided object. Includes an optional deep
+   *   copy (i.e. every property's value that is an object is also copied).
+   * @param {(!Object|function|!Array|!RegExp)} oldObj - The object to copy.
+   * @param {boolean=} deep - Deep copy the object. The default is false.
+   * @return {(!Object|function|!Array|!RegExp)} The new object copy.
+   */
+  Vitals.copyObj = (function setup_copyObj(checkType) {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Public copyObj Method
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Public Method (copyObj)
+     * ---------------------------------------------------
+     * @desc See the description for Vitals.copyObj.
+     * @param {(!Object|function)} oldObj
+     * @param {boolean=} deep
+     * @return {(!Object|function)}
+     */
+    var copyObj = function(oldObj, deep) {
+
+      /** @type {(!Object|function|!Array|!RegExp)} */
+      var newObj;
+      /** @type {string} */
+      var errorMsg;
+
+      if ( !checkType(oldObj, '!object|function') ) {
+        errorMsg = 'A Vitals.copyObj call received an invalid obj param.';
+        throw new TypeError(errorMsg);
+      }
+
+      newObj = ( (Array.isArray(oldObj)) ?
+        copyArr(oldObj) : ( checkType(oldObj, 'function') ) ?
+          copyFunc(oldObj) : ( checkType(oldObj, 'regexp') ) ?
+            copyRegex(oldObj) : copyProps(oldObj, {})
+      );
+
+      if (deep === true) {
+        deepCopy(newObj);
+      }
+
+      return newObj;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The Private copyObj Methods
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * ---------------------------------------------------
+     * Public Method (copyProps)
+     * ---------------------------------------------------
+     * @desc Handles copying one object's properties to another object.
+     * @param {(!Object|function)} oldObj
+     * @param {(!Object|function)} newObj
+     * @return {(!Object|function)}
+     */
+    var copyProps = function(oldObj, newObj) {
+
+      /** @type {string} */
+      var prop;
+
+      for (prop in oldObj) {
+        if ( oldObj.hasOwnProperty(prop) ) {
+          newObj[ prop ] = oldObj[ prop ];
+        }
+      }
+
+      return newObj;
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (copyFunc)
+     * ---------------------------------------------------
+     * @desc A helper method that copies a function.
+     * @param {function} oldFunc - The function to copy.
+     * @return {function} The new copied function.
+     */
+    var copyFunc = (function setup_copyFunc() {
+
+      /** @type{!Object<string, !RegExp>} */
+      var patterns;
+
+      patterns = {
+        comments: /\/\/.*?(?:[\r\n\u2028\u2029]|$)+|\/\*[\s\S]*?\*\//g,
+        params  : /^function[\s\S]*?\(([\s\S]*?)\)[\s\S]*?$/,
+        space   : /\s/g,
+        start   : /^function[\s\S]*?\([\s\S]*?\)[\s\S]*?\{/,
+        end     : /\}\;?\s*?$/
+      };
+
+      return function copyFunc(oldFunc) {
+
+        /** @type {string} */
+        var funcString;
+        /** @type {string} */
+        var funcParams;
+        /** @type {string} */
+        var funcBody;
+        /** @type {function} */
+        var newFunc;
+
+        funcString = oldFunc.toString();
+        funcString = funcString.replace(patterns.comments, '');
+
+        funcParams = funcString.replace(patterns.params, '$1');
+        funcParams = funcParams.replace(patterns.space, '');
+
+        funcBody = funcString.replace(patterns.start, '');
+        funcBody = funcBody.replace(patterns.end, '');
+
+        newFunc = ( (funcParams) ?
+          new Function(funcParams, funcBody) : new Function(funcBody)
+        );
+
+        copyProps(oldFunc, newFunc);
+
+        return newFunc;
+      };
+    })();
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (copyArr)
+     * ---------------------------------------------------
+     * @desc A helper method that copies an Array.
+     * @param {!Array} oldArr - The aray to copy.
+     * @return {!Array} The new copied array.
+     */
+    var copyArr = function(oldArr) {
+      return oldArr.slice(0);
+    };
+
+    /**
+     * ---------------------------------------------------
+     * Private Method (copyRegex)
+     * ---------------------------------------------------
+     * @desc A helper method that copies a RegExp.
+     * @param {!RegExp} oldRegex - The RegExp to copy.
+     * @return {!RegExp} The new copied RegExp.
+     */
+    var copyRegex = (function setup_copyRegex() {
+
+      /** @type{!Object<string, string>} */
+      var flagVals;
+
+      flagVals = {
+        global    : 'g',
+        ignoreCase: 'i',
+        multiline : 'm',
+        sticky    : 'y'
+      };
+
+      return function copyRegex(oldRegex) {
+
+        /** @type {string} */
+        var source;
+        /** @type {string} */
+        var flags;
+        /** @type {string} */
+        var prop;
+
+        source = oldRegex.source;
+        flags = '';
+
+        for (prop in flagVals) {
+          if (flagVals.hasOwnProperty(prop) && oldRegex[ prop ]) {
+            flags += flagVals[ prop ];
+          }
+        }
+
+        return (flags) ? new RegExp(source, flags) : new RegExp(source);
+      };
+    })();
+
+    /**
+     * -------------------------------------------------
+     * Private Method (deepFreeze)
+     * -------------------------------------------------
+     * @desc A helper to copyObj that recursively makes copies of its
+     *   properties that are objects.
+     * @param {(!Object|function|!Array|!RegExp)} obj
+     */
+    var deepCopy = function(obj) {
+
+      /** @type {(!Object|function|!Array|!RegExp)} */
+      var oldObj;
+      /** @type {string} */
+      var prop;
+      /** @type {number} */
+      var i;
+
+      if ( checkType(oldObj, 'regexp') ) {
+        return;
+      }
+
+      if ( Array.isArray(obj) ) {
+        i = obj.length;
+        while (i--) {
+          oldObj = obj[i];
+          if ( checkType(oldObj, '!object|function') ) {
+            obj[i] = ( (Array.isArray(oldObj)) ?
+              copyArr(oldObj) : ( checkType(oldObj, 'function') ) ?
+                copyFunc(oldObj) : ( checkType(oldObj, 'regexp') ) ?
+                  copyRegex(oldObj) : copyProps(oldObj, {})
+            );
+            deepCopy(obj[i]);
+          }
+        }
+      }
+      else {
+        for (prop in obj) {
+          if ( obj.hasOwnProperty(prop) ) {
+            oldObj = obj[ prop ];
+            if ( checkType(oldObj, '!object|function') ) {
+              obj[ prop ] = ( (Array.isArray(oldObj)) ?
+                copyArr(oldObj) : ( checkType(oldObj, 'function') ) ?
+                  copyFunc(oldObj) : ( checkType(oldObj, 'regexp') ) ?
+                    copyRegex(oldObj) : copyProps(oldObj, {})
+              );
+              deepCopy(obj[ prop ]);
+            }
+          }
+        }
+      }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // The End Of The copyObj Module
+    ////////////////////////////////////////////////////////////////////////////
+
+    return copyObj;
+
+  })(Vitals.checkType);
+
+/* -----------------------------------------------------------------------------
+ * The freezeObj Method (dev/js-methods/freezeObj.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (Vitals.freezeObj)
    * ---------------------------------------------------
    * @desc A shortcut for the Object.freeze method with an optional
    *   deep freeze (i.e. freezes all of an object's object properties).
@@ -1140,7 +1351,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  vitalsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
+  Vitals.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
                                checkType, objFreeze) {
 
     ////////////////////////////////////////////////////////////////////////////
@@ -1167,7 +1378,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         throw new TypeError(errorMsg);
       }
 
-      if (hasFreezeRegExpBug && (obj instanceof RegExp)) {
+      if (hasFreezeRegExpBug && checkType(obj, 'regexp')) {
         return obj;
       }
 
@@ -1203,7 +1414,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
       for (prop in obj) {
         if (obj.hasOwnProperty(prop) &&
             checkType(obj[ prop ], '!object|function') &&
-            (!hasFreezeRegExpBug || !(obj[ prop ] instanceof RegExp))) {
+            (!hasFreezeRegExpBug || !checkType(obj, 'regexp'))) {
           deepFreeze(obj[ prop ]);
         }
       }
@@ -1215,15 +1426,15 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
     return freezeObj;
 
-  })(JsFeatures.freezeRegExpBug, vitalsModuleAPI.checkType, Object.freeze);
+  })(JsFeatures.freezeRegExpBug, Vitals.checkType, Object.freeze);
 
 /* -----------------------------------------------------------------------------
- * The hasOwnProp Method (js-methods/hasOwnProp.js)
+ * The hasOwnProp Method (dev/js-methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.hasOwnProp)
+   * Public Method (Vitals.hasOwnProp)
    * ---------------------------------------------------
    * @desc A shortcut for the Object.prototype.hasOwnProperty method that does
    *   not throw errors for null values.
@@ -1231,7 +1442,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string} prop - The property to check.
    * @return {boolean} The result of the check.
    */
-  vitalsModuleAPI.hasOwnProp = (function setup_hasOwnProp(checkType) {
+  Vitals.hasOwnProp = (function setup_hasOwnProp(checkType) {
 
     return function hasOwnProp(obj, prop) {
 
@@ -1250,14 +1461,14 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return !!obj && obj.hasOwnProperty(prop);
     };
-  })(vitalsModuleAPI.checkType);
+  })(Vitals.checkType);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The DOM Shortcuts
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The DOM Feature Detection (dom-methods/feature-detect.js)
+ * The DOM Feature Detection (dev/dom-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -1272,7 +1483,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
   /**
    * -----------------------------------------------------
-   * Public Property (HasFeature.textContent)
+   * Public Property (DomFeatures.textContent)
    * -----------------------------------------------------
    * @desc Indicates whether the browser supports the DOM property,
    *   [Node.textContent]{@link https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent}.
@@ -1283,7 +1494,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
   Object.freeze(DomFeatures);
 
 /* -----------------------------------------------------------------------------
- * The DOM Helper Methods (dom-methods/helpers.js)
+ * The DOM Helper Methods (dev/dom-methods/helpers.js)
  * -------------------------------------------------------------------------- */
 
   /**
@@ -1361,108 +1572,62 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
     return elems;
   };
 
-  vitalsModuleAPI.freezeObj(DomHelpers, true);
+  Vitals.freezeObj(DomHelpers, true);
 
 /* -----------------------------------------------------------------------------
- * The getElemById Method (dom-methods/getElemById.js)
+ * The getElemById Method (dev/dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemById)
+   * Public Method (Vitals.getElemById)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
+   * @param {!Document=} root - Choose the document to find the element within.
+   *   The default is the initial document instance or the document set with
+   *   Vitals.set({ getElemByIdRoot: [document] }).
    * @return {?Element} The DOM element with the given id.
    */
-  vitalsModuleAPI.getElemById = function(id) {
+  Vitals.getElemById = (function setup_getElemById(checkType) {
 
-    /** @type {string} */
-    var errorMsg;
-
-    if (!id || typeof id !== 'string') {
-      errorMsg = 'A Vitals.getElemById call received a non-string or ';
-      errorMsg += 'empty string id param.';
-      throw new TypeError(errorMsg);
-    }
-
-    return document.getElementById(id);
-  };
-
-/* -----------------------------------------------------------------------------
- * The getElemByClass Method (dom-methods/getElemByClass.js)
- * -------------------------------------------------------------------------- */
-
-  /**
-   * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemByClass)
-   * ---------------------------------------------------
-   * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByClassName[ [index] ].
-   * @param {string} classname - The class name of the element to select.
-   * @param {number=} index - The index of the array of found elements to
-   *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
-   *   children. The default is document or the element set with
-   *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
-   * @return {?Element} The selected DOM element.
-   */
-  vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
-                                    getElementsByClassNameAlt, floor) {
-
-    return function getElemByClass(classname, index, root) {
-
-      // Public vitals module vars used in this method:
-      // var defaults;
+    return function getElemById(id, root) {
 
       /** @type {string} */
       var errorMsg;
-      /** @type {!Array<!Element>} */
-      var elems;
 
-      if (!checkType(classname, 'string') || classname === '') {
-        errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
-        errorMsg += 'empty string classname param.';
+      if (!id || !checkType(id, 'string')) {
+        errorMsg = 'A Vitals.getElemById call received a non-string or ';
+        errorMsg += 'empty string id param.';
         throw new TypeError(errorMsg);
       }
 
-      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
-
       if (!root || !checkType(root, '!element|document')) {
-        root = defaults.getElemByClassRoot;
+        root = defaults.getElemByIdRoot;
       }
 
-      elems = ( (!!root.getElementsByClassName) ?
-        root.getElementsByClassName(classname)
-        : getElementsByClassNameAlt(classname, root)
-      );
-
-      if (index < 0 || (index && index >= elems.length)) {
-        index = elems.length - 1;
-      }
-
-      return (elems.length) ? elems[ index ] : null;
+      return root.getElementById(id);
     };
-  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt,
-     Math.floor);
+
+  })(Vitals.checkType);
 
 /* -----------------------------------------------------------------------------
- * The getElemsByClass Method (dom-methods/getElemsByClass.js)
+ * The getElemsByClass Method (dev/dom-methods/getElemsByClass.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemsByClass)
+   * Public Method (Vitals.getElemsByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
    * @param {string} classname - The class name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
-   * @return {!Array<!Element>} The selected DOM elements.
+   * @return {?Array<!Element>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
+  Vitals.getElemsByClass = (function setup_getElemsByClass(checkType,
                                      getElementsByClassNameAlt) {
 
     return function getElemsByClass(classname, root) {
@@ -1472,6 +1637,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
+      /** @type {?Array<!Element>} */
+      var elems;
 
       if (!checkType(classname, 'string') || classname === '') {
         errorMsg = 'A Vitals.getElemsByClass call received a non-string or ';
@@ -1483,83 +1650,91 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         root = defaults.getElemsByClassRoot;
       }
 
-      return ( (!!root.getElementsByClassName) ?
+      elems = ( (!!root.getElementsByClassName) ?
         root.getElementsByClassName(classname)
         : getElementsByClassNameAlt(classname, root)
       );
+
+      return (elems && elems.length) ? elems : null;
     };
-  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt);
+
+  })(Vitals.checkType, DomHelpers.getElementsByClassNameAlt);
 
 /* -----------------------------------------------------------------------------
- * The getElemByTag Method (dom-methods/getElemByTag.js)
+ * The getElemByClass Method (dev/dom-methods/getElemByClass.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemByTag)
+   * Public Method (Vitals.getElemByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
-   *   [DOM Node].getElementsByTagName[ [index] ].
-   * @param {string} tag - The tag name of the element to select.
+   *   [DOM Node].getElementsByClassName[ [index] ].
+   * @param {string} classname - The class name of the element to select.
    * @param {number=} index - The index of the array of found elements to
    *   select. The default is 0.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Element|!Document)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
-   *   Vitals.set({ getElemByTagRoot: [DOM Node] }).
+   *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
    */
-  vitalsModuleAPI.getElemByTag = (function setup_getElemByTag(checkType,
-                                                              floor) {
+  Vitals.getElemByClass = (function setup_getElemByClass(checkType,
+                                                     getElemsByClass, floor) {
 
-    return function getElemByTag(tag, index, root) {
+    /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
+    return function getElemByClass(classname, index, root) {
 
       // Public vitals module vars used in this method:
       // var defaults;
 
       /** @type {string} */
       var errorMsg;
-      /** @type {!Array<!Element>} */
+      /** @type {?Array<!Element>} */
       var elems;
 
-      if (!checkType(tag, 'string') || tag === '') {
-        errorMsg = 'A Vitals.getElemByTag call received a non-string or ';
-        errorMsg += 'empty string tag param.';
+      if (!classname || !checkType(classname, 'string')) {
+        errorMsg = 'A Vitals.getElemByClass call received a non-string or ';
+        errorMsg += 'empty string classname param.';
         throw new TypeError(errorMsg);
       }
 
-      index = (!checkType(index, 'number') || index < -1) ? 0 : floor(index);
-
       if (!root || !checkType(root, '!element|document')) {
-        root = defaults.getElemByTagRoot;
+        root = ( (checkType(index, '!element|document')) ?
+          index : defaults.getElemByClassRoot
+        );
       }
 
-      elems = root.getElementsByTagName(tag);
+      elems = getElemsByClass(classname, root);
 
-      if (index < 0 || (index && index >= elems.length)) {
-        index = elems.length - 1;
+      if (elems) {
+        index = ( (!checkType(index, 'number') || index < -1) ?
+          0 : (index < 0 || index >= elems.length) ?
+            elems.length - 1 : floor(index)
+        );
       }
 
-      return (elems.length) ? elems[ index ] : null;
+      return elems && elems[ index ];
     };
-  })(vitalsModuleAPI.checkType, Math.floor);
+
+  })(Vitals.checkType, Vitals.getElemsByClass, Math.floor);
 
 /* -----------------------------------------------------------------------------
- * The getElemsByTag Method (dom-methods/getElemsByTag.js)
+ * The getElemsByTag Method (dev/dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemsByTag)
+   * Public Method (Vitals.getElemsByTag)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByTagName.
    * @param {string} tag - The tag name of the elements to select.
-   * @param {!(Document|Element)=} root - Limit the selections to this element's
+   * @param {(!Document|!Element)=} root - Limit the selections to this element's
    *   children. The default is document or the element set with
    *   Vitals.set({ getElemsByTagRoot: [DOM Node] }).
-   * @return {!Array<!Element>} The selected DOM elements.
+   * @return {?Array<!Element>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElemsByTag = (function setup_getElemsByTag(checkType) {
+  Vitals.getElemsByTag = (function setup_getElemsByTag(checkType) {
 
     return function getElemsByTag(tag, root) {
 
@@ -1568,6 +1743,8 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       /** @type {string} */
       var errorMsg;
+      /** @type {?Array<!Element>} */
+      var elems;
 
       if (!checkType(tag, 'string') || tag === '') {
         errorMsg = 'A Vitals.getElemsByTag call received a non-string or ';
@@ -1579,17 +1756,78 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
         root = defaults.getElemsByTagRoot;
       }
 
-      return root.getElementsByTagName(tag);
+      elems = root.getElementsByTagName(tag);
+
+      return (elems && elems.length) ? elems : null;
     };
-  })(vitalsModuleAPI.checkType);
+
+  })(Vitals.checkType);
 
 /* -----------------------------------------------------------------------------
- * The setElemText Method (dom-methods/setElemText.js)
+ * The getElemByTag Method (dev/dom-methods/getElemByTag.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.setElemText)
+   * Public Method (Vitals.getElemByTag)
+   * ---------------------------------------------------
+   * @desc A shortcut for the native DOM method -
+   *   [DOM Node].getElementsByTagName[ [index] ].
+   * @param {string} tag - The tag name of the element to select.
+   * @param {number=} index - The index of the array of found elements to
+   *   select. The default is 0.
+   * @param {(!Element|!Document)=} root - Limit the selections to this element's
+   *   children. The default is document or the element set with
+   *   Vitals.set({ getElemByTagRoot: [DOM Node] }).
+   * @return {?Element} The selected DOM element.
+   */
+  Vitals.getElemByTag = (function setup_getElemByTag(checkType,
+                                                    getElemsByTag, floor) {
+
+    /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
+    return function getElemByTag(tag, index, root) {
+
+      // Public vitals module vars used in this method:
+      // var defaults;
+
+      /** @type {string} */
+      var errorMsg;
+      /** @type {?Array<!Element>} */
+      var elems;
+
+      if (!tag || !checkType(tag, 'string')) {
+        errorMsg = 'A Vitals.getElemByTag call received a non-string or ';
+        errorMsg += 'empty string tag param.';
+        throw new TypeError(errorMsg);
+      }
+
+      if (!root || !checkType(root, '!element|document')) {
+        root = ( (checkType(index, '!element|document')) ?
+          index : defaults.getElemByTagRoot
+        );
+      }
+
+      elems = getElemsByTag(tag, root);
+
+      if (elems) {
+        index = ( (!checkType(index, 'number') || index < -1) ?
+          0 : (index < 0 || index >= elems.length) ?
+            elems.length - 1 : floor(index)
+        );
+      }
+
+      return elems && elems[ index ];
+    };
+
+  })(Vitals.checkType, Vitals.getElemsByTag, Math.floor);
+
+/* -----------------------------------------------------------------------------
+ * The setElemText Method (dev/dom-methods/setElemText.js)
+ * -------------------------------------------------------------------------- */
+
+  /**
+   * ---------------------------------------------------
+   * Public Method (Vitals.setElemText)
    * ---------------------------------------------------
    * @desc A shortcut that sets the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -1598,7 +1836,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   innerText to.
    * @return {!Element} The updated DOM element.
    */
-  vitalsModuleAPI.setElemText = (function setup_setElemText(checkType,
+  Vitals.setElemText = (function setup_setElemText(checkType,
                                  hasTextContent) {
 
     return function setElemText(elem, text) {
@@ -1627,15 +1865,15 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return elem;
     };
-  })(vitalsModuleAPI.checkType, DomFeatures.textContent);
+  })(Vitals.checkType, DomFeatures.textContent);
 
 /* -----------------------------------------------------------------------------
- * The makeElem Method (dom-methods/makeElem.js)
+ * The makeElem Method (dev/dom-methods/makeElem.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.makeElem)
+   * Public Method (Vitals.makeElem)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.createElement.
    * @param {(string|!Object<string, string>)=} settings - A string of the
@@ -1649,7 +1887,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    * @param {string=} settings.className - The element's class name.
    * @return {!Element} The DOM element with the given id.
    */
-  vitalsModuleAPI.makeElem = (function setup_makeElem(checkType, setElemText) {
+  Vitals.makeElem = (function setup_makeElem(checkType, setElemText) {
 
     return function makeElem(settings) {
 
@@ -1692,15 +1930,15 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return elem;
     };
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.setElemText);
+  })(Vitals.checkType, Vitals.setElemText);
 
 /* -----------------------------------------------------------------------------
- * The addElemText Method (dom-methods/addElemText.js)
+ * The addElemText Method (dev/dom-methods/addElemText.js)
  * -------------------------------------------------------------------------- */
 
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.addElemText)
+   * Public Method (Vitals.addElemText)
    * ---------------------------------------------------
    * @desc A shortcut that adds to the native DOM property - Element.textContent
    *   or Element.innerText.
@@ -1709,7 +1947,7 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
    *   innerText.
    * @return {!Element} The updated DOM element.
    */
-  vitalsModuleAPI.addElemText = (function setup_addElemText(checkType,
+  Vitals.addElemText = (function setup_addElemText(checkType,
                                  hasTextContent) {
 
     return function addElemText(elem, text) {
@@ -1740,131 +1978,25 @@ new ActiveXObject("Microsoft.XMLHTTP")}catch(c){throw Error("Your browser does n
 
       return elem;
     };
-  })(vitalsModuleAPI.checkType, DomFeatures.textContent);
+  })(Vitals.checkType, DomFeatures.textContent);
 
 ////////////////////////////////////////////////////////////////////////////////
 // The Master Methods
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The set Method (master-methods/set.js)
+ * The set Method (dev/master-methods/set.js)
  * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------------
-   * Public Method (vitalsModuleAPI.set)
-   * -----------------------------------------------------
-   * @desc Allows you to set the default settings for each Vitals method.
-   * @param {!Object} settings - The default settings.
-   * @param {(string|function)=} settings.checkArgsErrorMsg
-   * @param {!(Document|Element)=} settings.getElemByClassRoot
-   * @param {!(Document|Element)=} settings.getElemsByClassRoot
-   * @param {!(Document|Element)=} settings.getElemByTagRoot
-   * @param {!(Document|Element)=} settings.getElemsByTagRoot
-   * @return {boolean} The success of the new settings update.
-   */
-  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp,
-                                            throwPropError, types) {
-
-    return function set(settings) {
-
-      // Public vitals module vars used in this method:
-      // var defaults;
-
-      /** @type {string} */
-      var errorMsg;
-      /** @type {string} */
-      var propName;
-
-      if ( !checkType(settings, '!object') ) {
-        errorMsg = 'A Vitals.set call received an invalid settings ';
-        errorMsg += 'param (should be an object).';
-        throw new TypeError(errorMsg);
-      }
-
-      for (propName in defaults) {
-        if (hasOwnProp(defaults, propName) && hasOwnProp(settings, propName)) {
-          if ( checkType(settings[ propName ], types[ propName ]) ) {
-            defaults[ propName ] = settings[ propName ];
-          }
-          else {
-            throwPropError(propName);
-          }
-        }
-      }
-
-      return true;
-    };
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, function(propName) {
-    var errorMsg = 'A Vitals.set call received an invalid ' + propName + ' ';
-    errorMsg += 'property for the settings param (the prop should be a ';
-    errorMsg += DEFAULTS.types[ propName ] + ').';
-    throw new TypeError(errorMsg);
-  }, DEFAULTS.types);
+// insert-master-method-set
 
 /* -----------------------------------------------------------------------------
- * The reset Method (master-methods/reset.js)
+ * The reset Method (dev/master-methods/reset.js)
  * -------------------------------------------------------------------------- */
-
-  /**
-   * -----------------------------------------------------
-   * Public Method (vitalsModuleAPI.reset)
-   * -----------------------------------------------------
-   * @desc Allows you to reset the default settings for each Vitals method.
-   * @param {...(string|strings)=} setting - A setting to reset to the original
-   *   default.
-   * @return {boolean} The success of the new settings update.
-   */
-  vitalsModuleAPI.reset = (function setup_reset(checkType, hasOwnProp,
-                                                getObjKeys, sliceArr) {
-
-    return function reset() {
-
-      // Public vitals module vars used in this method:
-      // var defaults;
-      // var DEFAULTS;
-
-      /** @type {string} */
-      var errorMsg;
-      /** @type {!Array<string>} */
-      var args;
-      /** @type {string} */
-      var prop;
-      /** @type {number} */
-      var len;
-      /** @type {number} */
-      var i;
-
-      len = arguments.length;
-      args = ( (!len) ?
-        getObjKeys(defaults) : (len > 1) ?
-          sliceArr.call(arguments, 0) : ( checkType(arguments[0], '!array') ) ?
-            arguments[0] : [ arguments[0] ]
-      );
-
-      if ( !checkType(args, '!strings') ) {
-        errorMsg = 'A Vitals.reset call received an invalid setting param ';
-        errorMsg += '(should be a string or array of strings).';
-        throw new TypeError(errorMsg);
-      }
-
-      i = args.length;
-      while (i--) {
-        prop = args[i];
-        if ( hasOwnProp(defaults, prop) ) {
-          defaults[ prop ] = DEFAULTS[ prop ];
-        }
-      }
-
-      return true;
-    };
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp,
-     Object.keys, Array.prototype.slice);
+// insert-master-method-reset
 
 ////////////////////////////////////////////////////////////////////////////////
 // Vitals Module End
 ////////////////////////////////////////////////////////////////////////////////
 
-  return vitalsModuleAPI;
-
-})(window, document));
+  return Vitals;
+});
