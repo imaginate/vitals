@@ -7,7 +7,7 @@
  * @version 2.0.0
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
- * @license The Apache License [algorithmiv.com/cure/license]{@link http://www.algorithmiv.com/vitals/license}
+ * @license The Apache License [algorithmiv.com/vitals/license]{@link http://www.algorithmiv.com/vitals/license}
  * // Cure.js Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
