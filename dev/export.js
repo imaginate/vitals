@@ -1,3 +1,4 @@
+
   /** @type {!Object} */
   var Vitals;
   /** @type {(Object|?function)} */

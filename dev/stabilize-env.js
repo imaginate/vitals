@@ -1,3 +1,4 @@
+
 /* Cure.js (v0.0.5) (learn@algorithmiv.com)
  * Author: Adam Smith (adamsmith@algorithmiv.com)
  * Copyright (c) 2015 Adam A Smith (github.com/imaginate)

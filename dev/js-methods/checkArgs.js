@@ -1,3 +1,4 @@
+
   /**
    * ---------------------------------------------------
    * Public Method (Vitals.checkArgs)
@@ -13,9 +14,8 @@
    *     checkArgs(arg1, '!object', arg2, 'number=');
    *   };
    */
-  Vitals.checkArgs = (function setup_checkArgs(checkType,
-                                                        isValidTypeString,
-	      sliceArr) {
+  Vitals.checkArgs = (function setup_checkArgs(checkType, isValidTypeString,
+                                               sliceArr) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public Method

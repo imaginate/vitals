@@ -1,3 +1,4 @@
+
   /**
    * ---------------------------------------------------
    * Public Method (Vitals.checkType)
@@ -136,15 +137,7 @@
      * @desc The non-nullable data types available to this module.
      * @type {!RegExp}
      */
-    var nonNullableDataTypes = (function setup_nonNullableDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^string$|^number$|^boolean$|^function$|^undefined$';
-
-      return new RegExp(types);
-    })();
+    var nonNullableDataTypes = /^(?:string|number|boolean|function|undefined)$/;
 
     /**
      * -----------------------------------------------
@@ -154,15 +147,8 @@
      *   native JavaScript typeof operator.
      * @type {!RegExp}
      */
-    var typeOfDataTypes = (function setup_typeOfDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^string$|^number$|^boolean$|^object$|^function$|^undefined$';
-
-      return new RegExp(types);
-    })();
+    var typeOfDataTypes = new RegExp('^(?:string|number|boolean|object|' +
+                                         "function|undefined)$");
 
     /**
      * -----------------------------------------------
@@ -171,7 +157,7 @@
      * @desc The object types that must have their constructors checked.
      * @type {!RegExp}
      */
-    var objClassDataTypes = /^array$|^elem$|^element$|^document$|^regexp$/;
+    var objClassDataTypes = /^(?:array|elem|element|document|regexp)$/;
 
     /**
      * -----------------------------------------------
@@ -180,16 +166,8 @@
      * @desc The array data types available to this module.
      * @type {!RegExp}
      */
-    var arrayDataTypes = (function setup_arrayDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^strings$|^numbers$|^booleans$|^objects$|^arrays$|' +
-              '^functions$|^elems$|^elements$|^regexps$';
-
-      return new RegExp(types);
-    })();
+    var arrayDataTypes = new RegExp('^(?:strings|numbers|booleans|objects|' +
+                                 "arrays|functions|elems|elements|regexps)$");
 
     /**
      * -----------------------------------------------
@@ -198,16 +176,8 @@
      * @desc The hash map types available to this module.
      * @type {!RegExp}
      */
-    var mapDataTypes = (function setup_mapDataTypes() {
-
-      /** @type {string} */
-      var types;
-
-      types = '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|' +
-              '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
-
-      return new RegExp(types);
-    })();
+    var mapDataTypes = new RegExp('^(?:stringmap|numbermap|booleanmap|' +
+         "objectmap|arraymap|functionmap|elemmap|elementmap|regexpmap)$");
 
     /**
      * -----------------------------------------------

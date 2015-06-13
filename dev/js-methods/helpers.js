@@ -1,3 +1,4 @@
+
   /**
    * -----------------------------------------------------
    * Public Variable (JsHelpers)
@@ -15,20 +16,10 @@
    * @desc A regex of all of the data types available to checkType.
    * @type {!RegExp}
    */
-  JsHelpers.allDataTypes = (function setupJsHelpers_allDataTypes() {
-
-    /** @type {string} */
-    var types;
-
-    types = '' +
-    '^any$|^string$|^number$|^boolean$|^object$|^array$|^function$|^null$|'    +
-    '^undefined$|^elem$|^element$|^document$|^regexp$|^strings$|^numbers$|'    +
-    '^booleans$|^objects$|^arrays$|^functions$|^elems$|^elements$|^regexps$|'  +
-    '^stringmap$|^numbermap$|^booleanmap$|^objectmap$|^arraymap$|'             +
-    '^functionmap$|^elemmap$|^elementmap$|^regexpmap$';
-
-    return new RegExp(types);
-  })();
+  JsHelpers.allDataTypes = new RegExp('^(?:any|string|number|boolean|object|'  +
+  'array|function|null|undefined|elem|element|document|regexp|strings|numbers|'+
+  'booleans|objects|arrays|functions|elems|elements|regexps|stringmap|elemmap|'+
+  "numbermap|booleanmap|objectmap|arraymap|functionmap|elementmap|regexpmap)$");
 
   /**
    * -----------------------------------------------------
