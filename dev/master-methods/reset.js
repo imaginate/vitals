@@ -9,7 +9,7 @@
    * @return {boolean} The success of the new settings update.
    */
   Vitals.reset = (function setup_reset(checkType, hasOwnProp,
-                                                getObjKeys, sliceArr) {
+                                       getObjKeys, sliceArr) {
 
     /** @type {function(...(string|!Array<string>)=): boolean} */
     return function reset() {
