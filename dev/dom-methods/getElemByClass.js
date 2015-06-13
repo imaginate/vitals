@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemByClass)
+   * Public Method (Vitals.getElemByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName[ [index] ].
@@ -12,7 +12,7 @@
    *   Vitals.set({ getElemByClassRoot: [DOM Node] }).
    * @return {?Element} The selected DOM element.
    */
-  vitalsModuleAPI.getElemByClass = (function setup_getElemByClass(checkType,
+  Vitals.getElemByClass = (function setup_getElemByClass(checkType,
                                                      getElemsByClass, floor) {
 
     /** @type {function(string, number=, (!Element|!Document)=): ?Element} */
@@ -50,4 +50,4 @@
       return elems && elems[ index ];
     };
 
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.getElemsByClass, Math.floor);
+  })(Vitals.checkType, Vitals.getElemsByClass, Math.floor);

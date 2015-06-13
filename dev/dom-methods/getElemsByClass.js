@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemsByClass)
+   * Public Method (Vitals.getElemsByClass)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByClassName.
@@ -10,7 +10,7 @@
    *   Vitals.set({ getElemsByClassRoot: [DOM Node] }).
    * @return {?Array<!Element>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElemsByClass = (function setup_getElemsByClass(checkType,
+  Vitals.getElemsByClass = (function setup_getElemsByClass(checkType,
                                      getElementsByClassNameAlt) {
 
     return function getElemsByClass(classname, root) {
@@ -41,4 +41,4 @@
       return (elems && elems.length) ? elems : null;
     };
 
-  })(vitalsModuleAPI.checkType, DomHelpers.getElementsByClassNameAlt);
+  })(Vitals.checkType, DomHelpers.getElementsByClassNameAlt);

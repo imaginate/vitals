@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemById)
+   * Public Method (Vitals.getElemById)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method - document.getElementById.
    * @param {string} id - The id of the element to select.
@@ -9,7 +9,7 @@
    *   Vitals.set({ getElemByIdRoot: [document] }).
    * @return {?Element} The DOM element with the given id.
    */
-  vitalsModuleAPI.getElemById = (function setup_getElemById(checkType) {
+  Vitals.getElemById = (function setup_getElemById(checkType) {
 
     return function getElemById(id, root) {
 
@@ -29,4 +29,4 @@
       return root.getElementById(id);
     };
 
-  })(vitalsModuleAPI.checkType);
+  })(Vitals.checkType);

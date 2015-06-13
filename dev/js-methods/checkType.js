@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.checkType)
+   * Public Method (Vitals.checkType)
    * ---------------------------------------------------
    * @desc Checks a value's data type against the given optional types.
    * @param {*} val - The value to be evaluated.
@@ -67,7 +67,7 @@
    *   the data type string for correctness. By default this is set to false.
    * @return {boolean} The evaluation result.
    */
-  vitalsModuleAPI.checkType = (function setup_checkType(allDataTypes,
+  Vitals.checkType = (function setup_checkType(allDataTypes,
                                exceptLowerAlphaAndPipe) {
 
     ////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@
      * ---------------------------------------------------
      * Public Method (checkType)
      * ---------------------------------------------------
-     * @desc See the description for vitalsModuleAPI.checkType.
+     * @desc See the description for Vitals.checkType.
      * @param {*} val
      * @param {string} type
      * @param {boolean=} noTypeValCheck

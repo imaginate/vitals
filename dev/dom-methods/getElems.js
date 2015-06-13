@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElems)
+   * Public Method (Vitals.getElems)
    * ---------------------------------------------------
    * @desc A version of the native DOM method, Node.querySelectorAll(), that
    *   only uses the following CSS selectors: '.', '#', ' ', and ','.
@@ -11,7 +11,7 @@
    *   by Vitals.set({ getElemsRoot: [DOM Node] }).
    * @return {?Array<!Element>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElems = (function setup_getElems(checkType, getElemById,
+  Vitals.getElems = (function setup_getElems(checkType, getElemById,
                                                getElemsByClass, getElemsByTag) {
 
     ////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,7 @@
      * ---------------------------------------------------
      * Public Method (getElems)
      * ---------------------------------------------------
-     * @desc See the description for vitalsModuleAPI.getElems.
+     * @desc See the description for Vitals.getElems.
      * @param {string} selectors
      * @param {(!Document|!Element)=} root
      * @return {?Array<!Element>}
@@ -73,5 +73,5 @@
 
     return getElems;
 
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.getElemById,
-     vitalsModuleAPI.getElemsByClass, vitalsModuleAPI.getElemsByTag);
+  })(Vitals.checkType, Vitals.getElemById,
+     Vitals.getElemsByClass, Vitals.getElemsByTag);

@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.copyObj)
+   * Public Method (Vitals.copyObj)
    * ---------------------------------------------------
    * @desc Creates a new Object, Function, Array, or RegExp with the same
    *   properties and values as the provided object. Includes an optional deep
@@ -9,7 +9,7 @@
    * @param {boolean=} deep - Deep copy the object. The default is false.
    * @return {(!Object|function|!Array|!RegExp)} The new object copy.
    */
-  vitalsModuleAPI.copyObj = (function setup_copyObj(checkType) {
+  Vitals.copyObj = (function setup_copyObj(checkType) {
 
     ////////////////////////////////////////////////////////////////////////////
     // The Public copyObj Method
@@ -19,7 +19,7 @@
      * ---------------------------------------------------
      * Public Method (copyObj)
      * ---------------------------------------------------
-     * @desc See the description for vitalsModuleAPI.copyObj.
+     * @desc See the description for Vitals.copyObj.
      * @param {(!Object|function)} oldObj
      * @param {boolean=} deep
      * @return {(!Object|function)}
@@ -239,4 +239,4 @@
 
     return copyObj;
 
-  })(vitalsModuleAPI.checkType);
+  })(Vitals.checkType);

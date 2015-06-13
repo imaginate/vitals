@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getElemsByTag)
+   * Public Method (Vitals.getElemsByTag)
    * ---------------------------------------------------
    * @desc A shortcut for the native DOM method -
    *   [DOM Node].getElementsByTagName.
@@ -10,7 +10,7 @@
    *   Vitals.set({ getElemsByTagRoot: [DOM Node] }).
    * @return {?Array<!Element>} The selected DOM elements.
    */
-  vitalsModuleAPI.getElemsByTag = (function setup_getElemsByTag(checkType) {
+  Vitals.getElemsByTag = (function setup_getElemsByTag(checkType) {
 
     return function getElemsByTag(tag, root) {
 
@@ -37,4 +37,4 @@
       return (elems && elems.length) ? elems : null;
     };
 
-  })(vitalsModuleAPI.checkType);
+  })(Vitals.checkType);

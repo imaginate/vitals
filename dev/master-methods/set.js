@@ -1,6 +1,6 @@
   /**
    * -----------------------------------------------------
-   * Public Method (vitalsModuleAPI.set)
+   * Public Method (Vitals.set)
    * -----------------------------------------------------
    * @desc Allows you to set the default settings for each Vitals method.
    * @param {!Object} settings - The default settings.
@@ -12,7 +12,7 @@
    * @param {(!Document|!Element)=} settings.getElemsByTagRoot
    * @return {boolean} The success of the new settings update.
    */
-  vitalsModuleAPI.set = (function setup_set(checkType, hasOwnProp, types) {
+  Vitals.set = (function setup_set(checkType, hasOwnProp, types) {
 
     /** @type {function(string)} */
     var throwPropError = function(propName) {
@@ -57,4 +57,4 @@
       return true;
     };
 
-  })(vitalsModuleAPI.checkType, vitalsModuleAPI.hasOwnProp, DEFAULTS.types);
+  })(Vitals.checkType, Vitals.hasOwnProp, DEFAULTS.types);

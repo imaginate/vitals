@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.hasOwnProp)
+   * Public Method (Vitals.hasOwnProp)
    * ---------------------------------------------------
    * @desc A shortcut for the Object.prototype.hasOwnProperty method that does
    *   not throw errors for null values.
@@ -8,7 +8,7 @@
    * @param {string} prop - The property to check.
    * @return {boolean} The result of the check.
    */
-  vitalsModuleAPI.hasOwnProp = (function setup_hasOwnProp(checkType) {
+  Vitals.hasOwnProp = (function setup_hasOwnProp(checkType) {
 
     return function hasOwnProp(obj, prop) {
 
@@ -27,4 +27,4 @@
 
       return !!obj && obj.hasOwnProperty(prop);
     };
-  })(vitalsModuleAPI.checkType);
+  })(Vitals.checkType);

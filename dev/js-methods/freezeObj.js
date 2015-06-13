@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.freezeObj)
+   * Public Method (Vitals.freezeObj)
    * ---------------------------------------------------
    * @desc A shortcut for the Object.freeze method with an optional
    *   deep freeze (i.e. freezes all of an object's object properties).
@@ -8,7 +8,7 @@
    * @param {boolean=} deep - Deep freeze the object. The default is false.
    * @return {(!Object|function)} The frozen object.
    */
-  vitalsModuleAPI.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
+  Vitals.freezeObj = (function setup_freezeObj(hasFreezeRegExpBug,
                                checkType, objFreeze) {
 
     ////////////////////////////////////////////////////////////////////////////
@@ -83,4 +83,4 @@
 
     return freezeObj;
 
-  })(JsFeatures.freezeRegExpBug, vitalsModuleAPI.checkType, Object.freeze);
+  })(JsFeatures.freezeRegExpBug, Vitals.checkType, Object.freeze);

@@ -1,6 +1,6 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.getTypeOf)
+   * Public Method (Vitals.getTypeOf)
    * ---------------------------------------------------
    * @desc A shortcut for the native typeof operator that additionally
    *   distinguishes null, array, document, and element types from an
@@ -8,7 +8,7 @@
    * @param {*} val - The value to get the typeof.
    * @return {string} The value's type.
    */
-  vitalsModuleAPI.getTypeOf = (function setup_getTypeOf(checkType, isArray) {
+  Vitals.getTypeOf = (function setup_getTypeOf(checkType, isArray) {
 
     return function getTypeOf(val) {
 
@@ -27,4 +27,4 @@
 
       return type;
     };
-  })(vitalsModuleAPI.checkType, Array.isArray);
+  })(Vitals.checkType, Array.isArray);

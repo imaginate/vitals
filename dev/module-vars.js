@@ -1,12 +1,12 @@
   /**
    * -----------------------------------------------------
-   * Public Variable (vitalsModuleAPI)
+   * Public Variable (Vitals)
    * -----------------------------------------------------
    * @desc Holds the module's public properties and methods.
    * @type {!Object<string, function>}
    * @struct
    */
-  var vitalsModuleAPI = {};
+  var Vitals = {};
 
   /**
    * -----------------------------------------------------

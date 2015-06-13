@@ -1,12 +1,12 @@
   /**
    * ---------------------------------------------------
-   * Public Method (vitalsModuleAPI.isValidTypeString)
+   * Public Method (Vitals.isValidTypeString)
    * ---------------------------------------------------
    * @desc Evaluates whether a string is a valid data type string.
    * @param {string} typeString - The string to evaluate.
    * @return {boolean} The evaluation result.
    */
-  vitalsModuleAPI.isValidTypeString = (function setup_isValidTypeString(
+  Vitals.isValidTypeString = (function setup_isValidTypeString(
                                        allDataTypes, exceptLowerAlphaAndPipe) {
 
     return function isValidTypeString(typeString) {
