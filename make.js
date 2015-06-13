@@ -120,8 +120,8 @@ if (!hasError) {
  * @param {string} arg - The command's argument.
  */
 function parseCmd(arg) {
-  isSrc(arg) && compileSrc();
-  isTest(arg) && compileTest();
+  isSrc(arg) && compileScript(true);
+  isTest(arg) && compileScript(false);
 }
 
 /**
@@ -216,6 +216,7 @@ function minifyScript(file) {
   regex = /^[\s\S]*?blank-line.*\n/;
   insertScript('resources/minified-copyright.txt', regex, file);
   insertScript('dev/stabilize-env.js', /^\n/, file);
+  sed('-i', /^\n/, '', file);
 }
 
 /**
@@ -232,11 +233,9 @@ function fixLineBreaks(file, inplace) {
   var fileStr;
 
   regex = /\r\n?/g;
-  fileStr = cat(file);
-  return ( (!regex.test(fileStr)) ?
-    fileStr : (inplace) ?
-      sed('-i', regex, '\n', file) : fileStr.replace(regex, '\n')
-  );
+  fileStr = cat(file).replace(regex, '\n');
+  inplace && fileStr.to(file);
+  return fileStr;
 }
 
 /**
@@ -268,11 +267,10 @@ function insertScripts(dir, parts, dest) {
  * @param {string} file - The file to insert.
  * @param {!RegExp} regex - The RegExp used to identify the spot to insert.
  * @param {string} dest - The file to insert into.
- * @return {string} The compiled file's contents.
  */
 function insertScript(file, regex, dest) {
   file = fixLineBreaks(file);
-  return sed('-i', regex, file, dest);
+  cat(dest).replace(regex, file).to(dest);
 }
 
 /**
@@ -280,11 +278,10 @@ function insertScript(file, regex, dest) {
  * @param {string} file - The file to remove from.
  * @param {!RegExp} remove - The section to remove.
  * @param {string=} replace - Contents to replace the section with.
- * @return {string} The file's contents after removal.
  */
 function removeScript(file, remove, replace) {
   replace = replace || '';
-  return sed('-i', remove, replace, file);
+  sed('-i', remove, replace, file);
 }
 
 /**
@@ -301,9 +298,7 @@ function cleanScript(file, inplace) {
   var fileStr;
 
   regex = /\n\n\/\*[\s\S]*?\*\/\n\/\/\sinsert-.*\n/g;
-  fileStr = cat(file);
-  return ( (!regex.test(fileStr)) ?
-    fileStr : (inplace) ?
-      sed('-i', regex, '', file) : fileStr.replace(regex, '')
-  );
+  fileStr = cat(file).replace(regex, '');
+  inplace && fileStr.to(file);
+  return fileStr;
 }
