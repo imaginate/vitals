@@ -37,19 +37,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * Cure.js v0.0.5 (resources/cure.min.js)
+ * Cure.js v0.0.5 (dev/stabilize-env.js) @see http://algorithmiv.com/cure
  * -----------------------------------------------------------------------------
- * @desc JavaScript & DOM Polyfills for Browser Compatibility
- * @see [algorithmiv.com/cure]{@link http://www.algorithmiv.com/cure}
+ * JSON3 v3.3.2 (dev/stabilize-env.js) @see https://bestiejs.github.io/json3
  * -------------------------------------------------------------------------- */
-
-/* -----------------------------------------------------------------------------
- * JSON3 v3.3.2 (resources/cure.min.js)
- * -----------------------------------------------------------------------------
- * @desc JSON Polyfills for Browser Compatibility
- * @see [bestiejs.github.io/json3]{@link https://bestiejs.github.io/json3}
- * -------------------------------------------------------------------------- */
-// insert-cure
+// insert-stabilize-env
 
 ////////////////////////////////////////////////////////////////////////////////
 // Export Vitals
@@ -58,7 +50,7 @@
 ;(function(/** Object */ root, /** function(Object): Object */ makeVitals) {
 
 /* -----------------------------------------------------------------------------
- * Export Vitals (export.js)
+ * Export Vitals (dev/export.js)
  * -------------------------------------------------------------------------- */
 // insert-export
 
@@ -71,7 +63,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The Module's Public Variables (module-vars.js)
+ * The Module's Public Variables (dev/module-vars.js)
  * -------------------------------------------------------------------------- */
 // insert-module-vars
 
@@ -80,47 +72,47 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The JS Feature Detection (js-methods/feature-detect.js)
+ * The JS Feature Detection (dev/js-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
-// insert-js-feature-detect
+// insert-js-methods-feature-detect
 
 /* -----------------------------------------------------------------------------
- * The JS Helper Methods (js-methods/helpers.js)
+ * The JS Helper Methods (dev/js-methods/helpers.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-helpers
 
 /* -----------------------------------------------------------------------------
- * The checkType Method (js-methods/checkType.js)
+ * The checkType Method (dev/js-methods/checkType.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-checkType
 
 /* -----------------------------------------------------------------------------
- * The isValidTypeString Method (js-methods/isValidTypeString.js)
+ * The isValidTypeString Method (dev/js-methods/isValidTypeString.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-isValidTypeString
 
 /* -----------------------------------------------------------------------------
- * The checkArgs Method (js-methods/checkArgs.js)
+ * The checkArgs Method (dev/js-methods/checkArgs.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-checkArgs
 
 /* -----------------------------------------------------------------------------
- * The getTypeOf Method (js-methods/getTypeOf.js)
+ * The getTypeOf Method (dev/js-methods/getTypeOf.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-getTypeOf
 
 /* -----------------------------------------------------------------------------
- * The copyObj Method (js-methods/copyObj.js)
+ * The copyObj Method (dev/js-methods/copyObj.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-copyObj
 
 /* -----------------------------------------------------------------------------
- * The freezeObj Method (js-methods/freezeObj.js)
+ * The freezeObj Method (dev/js-methods/freezeObj.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-freezeObj
 
 /* -----------------------------------------------------------------------------
- * The hasOwnProp Method (js-methods/hasOwnProp.js)
+ * The hasOwnProp Method (dev/js-methods/hasOwnProp.js)
  * -------------------------------------------------------------------------- */
 // insert-js-methods-hasOwnProp
 
@@ -129,52 +121,52 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The DOM Feature Detection (dom-methods/feature-detect.js)
+ * The DOM Feature Detection (dev/dom-methods/feature-detect.js)
  * -------------------------------------------------------------------------- */
-// insert-dom-feature-detect
+// insert-dom-methods-feature-detect
 
 /* -----------------------------------------------------------------------------
- * The DOM Helper Methods (dom-methods/helpers.js)
+ * The DOM Helper Methods (dev/dom-methods/helpers.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-helpers
 
 /* -----------------------------------------------------------------------------
- * The getElemById Method (dom-methods/getElemById.js)
+ * The getElemById Method (dev/dom-methods/getElemById.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemById
 
 /* -----------------------------------------------------------------------------
- * The getElemsByClass Method (dom-methods/getElemsByClass.js)
+ * The getElemsByClass Method (dev/dom-methods/getElemsByClass.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemsByClass
 
 /* -----------------------------------------------------------------------------
- * The getElemByClass Method (dom-methods/getElemByClass.js)
+ * The getElemByClass Method (dev/dom-methods/getElemByClass.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemByClass
 
 /* -----------------------------------------------------------------------------
- * The getElemsByTag Method (dom-methods/getElemsByTag.js)
+ * The getElemsByTag Method (dev/dom-methods/getElemsByTag.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemsByTag
 
 /* -----------------------------------------------------------------------------
- * The getElemByTag Method (dom-methods/getElemByTag.js)
+ * The getElemByTag Method (dev/dom-methods/getElemByTag.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-getElemByTag
 
 /* -----------------------------------------------------------------------------
- * The setElemText Method (dom-methods/setElemText.js)
+ * The setElemText Method (dev/dom-methods/setElemText.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-setElemText
 
 /* -----------------------------------------------------------------------------
- * The makeElem Method (dom-methods/makeElem.js)
+ * The makeElem Method (dev/dom-methods/makeElem.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-makeElem
 
 /* -----------------------------------------------------------------------------
- * The addElemText Method (dom-methods/addElemText.js)
+ * The addElemText Method (dev/dom-methods/addElemText.js)
  * -------------------------------------------------------------------------- */
 // insert-dom-methods-addElemText
 
@@ -183,12 +175,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /* -----------------------------------------------------------------------------
- * The set Method (master-methods/set.js)
+ * The set Method (dev/master-methods/set.js)
  * -------------------------------------------------------------------------- */
 // insert-master-method-set
 
 /* -----------------------------------------------------------------------------
- * The reset Method (master-methods/reset.js)
+ * The reset Method (dev/master-methods/reset.js)
  * -------------------------------------------------------------------------- */
 // insert-master-method-reset
 
