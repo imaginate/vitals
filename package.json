@@ -2,7 +2,7 @@
   "name": "vitals-js",
   "version": "2.0.0",
   "description": "Better JavaScript = Better Life",
-  "main": "src/vitals.min.js",
+  "main": "./src/vitals.min.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/imaginate/vitals.git"
@@ -10,12 +10,15 @@
   "author": "Adam Smith <adamsmith@algorithmiv.com> (https://github.com/imaginate)",
   "license": "Apache-2.0",
   "scripts": {
-    "test": "node tests/run-tests.js"
+    "test": "node \"./test/run-tests.js\""
   },
   "bugs": {
     "url": "https://github.com/imaginate/vitals/issues"
   },
   "homepage": "http://www.algorithmiv.com/vitals",
+  "dependencies": {
+    "curejs": ">=0.0.5"
+  },
   "devDependencies": {
     "shelljs": "^0.5.1"
   },

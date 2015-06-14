@@ -135,7 +135,7 @@ function compileScript(makeSrc) {
   /** @type {!Array<!Object<string, string>>} */
   var parts;
 
-  dest = (makeSrc) ? 'src' : 'tests';
+  dest = (makeSrc) ? 'src' : 'test';
   dest += '/vitals.js';
   parts = [
     {

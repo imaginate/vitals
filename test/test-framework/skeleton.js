@@ -1,10 +1,10 @@
 /**
  * -----------------------------------------------------------------------------
- * Vitals.js Unit Tests (v1.0.8)
+ * Testing Framework for Vitals.js
  * -----------------------------------------------------------------------------
- * @file The module used to run all testing for Vitals.
- * @module vitalsTests
- * @version 1.0.8
+ * @file The custom framework used to run all testing for Vitals.js.
+ * @module TestVitals
+ * @version 2.0.0
  * @author Adam Smith adamsmith@algorithmiv.com
  * @copyright 2015 Adam A Smith [github.com/imaginate]{@link https://github.com/imaginate}
  * @license The Apache License [algorithmiv.com/vitals/license]{@link http://algorithmiv.com/vitals/license}
@@ -18,8 +18,6 @@
  * -----------------------------------------------------------------------------
  * Pre-Defined JSDoc Types
  * -----------------------------------------------------------------------------
- * @typedef {*} val
- * @typedef {Array<*>} vals
  * @typedef {Array<string>} strings
  * @typedef {Array<number>} numbers
  * @typedef {Array<Object>} objects
@@ -27,25 +25,23 @@
  */
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Public API
+// Export TestVitals
 ////////////////////////////////////////////////////////////////////////////////
 
-;(function setupTheTestsPublicAPI(testsModuleAPI, undefined) {
-  "use strict";
+;(function(/** Object */ root, /** function(Object): Object */ makeTestVitals) {
 
 /* -----------------------------------------------------------------------------
- * The Public API (public-api.js)
+ * Export Vitals (test/test-framework/export.js)
  * -------------------------------------------------------------------------- */
-// insert-public-api
+// insert-export
 
-})(
+})(this, function(/** Object */ root, undefined) {
+
+  "use strict";
 
 ////////////////////////////////////////////////////////////////////////////////
-// The Tests Module
+// The TestVitals Module
 ////////////////////////////////////////////////////////////////////////////////
-
-(function setupTheTestsModule(undefined) {
-  "use strict"; 
 
 /* -----------------------------------------------------------------------------
  * The Tests Module API (module-api.js)
@@ -87,30 +83,9 @@
  * -------------------------------------------------------------------------- */
 // insert-tests-methods
 
-/* -----------------------------------------------------------------------------
- * Deep Freeze The Tests Class
- * -------------------------------------------------------------------------- */
-
-  (function(Tests) {
-
-    /** @type {string} */
-    var prop;
-
-    Object.freeze(Tests);
-
-    for (prop in Tests) {
-      if (Tests.hasOwnProperty(prop) && Tests[ prop ] &&
-          (typeof Tests[ prop ] === 'object' ||
-           typeof Tests[ prop ] === 'function')) {
-        Object.freeze(Tests[ prop ]);
-      }
-    }
-  })(Tests);
-
 ////////////////////////////////////////////////////////////////////////////////
-// The Tests Module End
+// TestVitals Module End
 ////////////////////////////////////////////////////////////////////////////////
 
-  return testsModuleAPI;
-
-})());
+  return TestVitals;
+});
