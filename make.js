@@ -166,7 +166,9 @@ function compileScript(makeSrc) {
   parts.forEach(function(/** !Object */ part) {
     insertScripts(part.dir, part.parts, dest);
   });
+
   makeSrc && minifySrc(dest);
+  makeSrc || makeOnlyJs(dest, 'test/vitals-only-js.js');
 }
 
 /**
@@ -183,14 +185,42 @@ function minifySrc(file) {
   minifyScript(dest);
 
   dest = 'src/vitals-only-js.min.js';
-  cp('-f', file, dest);
-  removeScript(dest, /\n\/\/\sThe\sJS\sShortcut.*\n\/{5,}\n[\s\S]*?\n\/{5,}\n/);
+  makeOnlyJs(file, dest);
   minifyScript(dest);
 
   dest = 'src/vitals-only-dom.min.js';
-  cp('-f', file, dest);
-  removeScript(dest, /\n\/\/\sThe\sDOM\sShortcu.*\n\/{5,}\n[\s\S]*?\n\/{5,}\n/);
+  makeOnlyDom(file, dest);
   minifyScript(dest);
+}
+
+/**
+ * Copies a file and removes all sections except JS from it.
+ * @param {string} file
+ * @param {string} dest
+ */
+function makeOnlyJs(file, dest) {
+
+  /** @type {!RegExp} */
+  var regex;
+
+  cp('-f', file, dest);
+  regex = /\n\/\/\sThe\sDOM\sShortcuts.*\n\/{5,}\n[\s\S]*?\n\/{5,}\n/; 
+  removeScript(dest, regex, '\n');
+}
+
+/**
+ * Copies a file and removes all sections except DOM from it.
+ * @param {string} file
+ * @param {string} dest
+ */
+function makeOnlyDom(file, dest) {
+
+  /** @type {!RegExp} */
+  var regex;
+
+  cp('-f', file, dest);
+  regex = /\n\/\/\sThe\sJS\sShortcuts.*\n\/{5,}\n[\s\S]*?\n\/{5,}\n/; 
+  removeScript(dest, regex);
 }
 
 /**
