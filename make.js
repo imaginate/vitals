@@ -58,15 +58,17 @@
 //   toEnd - String.prototype.toEnd(file): undefined
 //   which(command): command_path_string
 
-/** @type {boolean} */
-var hasError = false;
+/** @type {string} */
+var errorMsg;
 
 try {
   require('shelljs/global');
+  config.silent = true;
 }
-catch (error) {
-  console.error('Error: ShellJS is not installed. "' + error.toString() + '"');
-  hasError = true;
+catch (err) {
+  errorMsg = 'ShellJS is not installed.' + (err && ' "' + err.toString() + '"');
+  console.error(errorMsg);
+  process.exit(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -101,18 +103,19 @@ isTest = (function setup_isTest(/** !RegExp */ tests) {
 
 arg = process.argv[2];
 
-if (!hasError) {
-  if ( arg && (isSrc(arg) || isTest(arg)) ) {
-    try {
-      parseCmd(arg);
-    }
-    catch (error) {
-      console.error('"' + error.toString() + '"');
-    }
-  }
-  else {
-    console.error('Invalid "make" command used.');
-  }
+if ( !arg || ( !isSrc(arg) && !isTest(arg) ) ) {
+  errorMsg = 'Invalid make command. Valid format: "node make src|test"';
+  console.error(errorMsg);
+  process.exit(1);
+}
+
+try {
+  parseCmd(arg);
+}
+catch (err) {
+  errorMsg = (err) ? err.toString() : error();
+  console.error('Make Error: ' + errorMsg);
+  process.exit(1);
 }
 
 /**
@@ -120,8 +123,7 @@ if (!hasError) {
  * @param {string} arg - The command's argument.
  */
 function parseCmd(arg) {
-  isSrc(arg) && compileScript(true);
-  isTest(arg) && compileScript(false);
+  compileScript( isSrc(arg) );
 }
 
 /**
