@@ -89,7 +89,12 @@ catch (err) {
 ////////////////////////////////////////////////////////////////////////////////
 
 try {
-  exec('node "../node_modules/eslint/bin/eslint.js" vitals.js');
+  exec('node "../node_modules/eslint/bin/eslint.js" ' +
+       '--env browser,amd ' +
+       'vitals.js');
+  exec('node "../node_modules/eslint/bin/eslint.js" ' +
+       '--env node ' +
+       'vitals-only-js.js');
 }
 catch (err) {
   errorMsg = (err) ? err.toString() : error();
