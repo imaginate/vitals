@@ -20,8 +20,9 @@
     "curejs": ">=0.0.5"
   },
   "devDependencies": {
-    "shelljs": "^0.5.1",
-    "eslint": "^0.23.0"
+    "curejs": "^0.0.5",
+    "eslint": "^0.23.0",
+    "shelljs": "^0.5.1"
   },
   "engines": {
     "node": ">=0.8.0"
