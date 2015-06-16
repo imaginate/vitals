@@ -57,24 +57,58 @@
 //   toEnd - String.prototype.toEnd(file): undefined
 //   which(command): command_path_string
 
-/** @type {boolean} */
-var hasError = false;
+/** @type {string} */
+var errorMsg;
 
 try {
   require('shelljs/global');
+  config.silent = true;
 }
-catch (error) {
-  console.error('Error: ShellJS is not installed. "' + error.toString() + '"');
-  hasError = true;
+catch (err) {
+  errorMsg = 'ShellJS is not installed.' + (err && ' "' + err.toString() + '"');
+  console.error(errorMsg);
+  process.exit(1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// RUN THE TESTS
+// MAKE TEST FILE
+////////////////////////////////////////////////////////////////////////////////
+
+try {
+  cd(__dirname);
+  exec('node "../make.js" test');
+}
+catch (err) {
+  errorMsg = (err) ? err.toString() : error();
+  console.error('Test-Make Error: ' + errorMsg);
+  process.exit(1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RUN ESLINT
+////////////////////////////////////////////////////////////////////////////////
+
+try {
+  exec('node "../node_modules/eslint/bin/eslint.js" vitals.js');
+}
+catch (err) {
+  errorMsg = (err) ? err.toString() : error();
+  console.error('Test-ESLint Error: ' + errorMsg);
+  process.exit(1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RUN UNIT TESTS
 ////////////////////////////////////////////////////////////////////////////////
 // The CLI Test Command
 // @example $ npm run test
 
-if (!hasError) {
-  console.log('Vitals.js tests are not ready yet.');
-  // TEST SCRIPT TRIGGER GOES HERE
+try {
+  console.log('Automated Unit Tests for Vitals.js are NOT setup yet.');
+  // AUTOMATED UNIT TESTING GOES HERE
+}
+catch (err) {
+  errorMsg = (err) ? err.toString() : error();
+  console.error('Test- Error: ' + errorMsg);
+  process.exit(1);
 }
