@@ -28,17 +28,10 @@ var typeOf = require('./typeOf.js');
 
 
 // Note that clone also includes the following methods as props (the shorthand 
-//   methods - nil, bool, & func - should be used in browser environments for
-//   guaranteed compatibility):
+//   method - func - should be used in browser environments for compatibility):
 //
 // | Method    | Shorthand |
 // | :-------- | :-------- |
-// | null      | nil       |
-// | undefined |           |
-// | boolean   | bool      |
-// | string    | str       |
-// | number    | num       |
-// | nan       |           |
 // | object    | obj       |
 // | function  | func|fn   |
 // | regexp    | regex     |
@@ -220,24 +213,6 @@ var clone = (function() {
   function _same {
     return val;
   }
-
-  // Append a method that simply returns the same value for all primitives
-  clone = merge(clone, {
-    nil:       _same,
-    undefined: _same,
-    bool:      _same,
-    string:    _same,
-    str:       _same,
-    number:    _same,
-    num:       _same,
-    nan:       _same
-  };
-
-  try {
-    clone.null    = _same;
-    clone.boolean = _same;
-  }
-  catch (e) {}
 
   /**
    * A map that handles pointing clone to the right method. This is necessary
