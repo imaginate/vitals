@@ -80,4 +80,3 @@ var has = (function() {
   // END OF PRIVATE SCOPE FOR HAS
   return has;
 })();
-
