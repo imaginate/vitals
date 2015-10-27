@@ -76,7 +76,7 @@ function each(val, iteratee, thisArg) {
  * @param {!(Object|function)} obj
  * @param {function(*, (string|number)=, !(Object|function|Array)=)} iteratee
  * @param {Object=} thisArg
- * @return {(Object|function|Array)} 
+ * @return {!(Object|function|Array)} 
  */
 each.array = function eachArray(obj, iteratee, thisArg) {
 
@@ -98,7 +98,7 @@ each.array = function eachArray(obj, iteratee, thisArg) {
     iteratee.apply(thisArg, arguments);
   } : iteratee;
 
-  len = val.length;
+  len = obj.length;
   i = -1;
   while (++i < len) {
     iteratee(obj[i], prop, obj);
