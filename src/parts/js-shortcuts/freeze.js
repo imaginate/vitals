@@ -21,7 +21,6 @@
 module.exports = freeze;
 
 var is = require('node-are').is;
-var are = require('node-are').are;
 var has = require('./has.js');
 
 
