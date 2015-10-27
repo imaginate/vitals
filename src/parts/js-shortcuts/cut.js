@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - CUT PROP
+ * VITALS - JS SHORTCUTS - CUT
  * -----------------------------------------------------------------------------
  * @version 0.1.0
- * @see [vitals.cutProp]{@link https://github.com/imaginate/vitals/blob/master/src/parts/js-shortcuts/cutProp.js}
+ * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/parts/js-shortcuts/cut.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -18,7 +18,7 @@
 
 'use strict';
 
-module.exports = cutProp;
+module.exports = cut;
 
 var is = require('node-are').is;
 var has = require('./has.js');
@@ -31,7 +31,7 @@ var has = require('./has.js');
  * @param {*} prop
  * @return {*} The value of the deleted property.
  */
-function cutProp(obj, prop) {
+function cut(obj, prop) {
 
   /** @type {*} */
   var val;
