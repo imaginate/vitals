@@ -34,57 +34,115 @@ var clone = require('./clone.js');
  *   the iteratee's third param to avoid accidental results).
  * @public
  * @param {!(Object|function|Array|number)} val
- * @param {function(*, (string|number)=, (Object|function|Array)=)} iteratee
+ * @param {function(*, (string|number)=, !(Object|function|Array)=)} iteratee
  * @param {Object=} thisArg
  * @return {(Object|function|Array)} 
  */
 function each(val, iteratee, thisArg) {
 
-  /** @type {(string|number)} */
-  var prop;
-  /** @type {number} */
-  var len;
+  if ( is._arr(val) ) {
+    return each.arr.apply(null, arguments);
+  }
+
+  if ( is._obj(val) ) {
+    return each.obj.apply(null, arguments);
+  }
+
+  if ( !is.num(val) ) {
+    throw new TypeError('Invalid val param in vitals.each call.');
+  }
 
   if ( !is.func(iteratee) ) {
     throw new TypeError('Invalid iteratee param in vitals.each call.');
   }
 
-  len = iteratee.length;
   iteratee = arguments.length > 2 ? function iteratee() {
     iteratee.apply(thisArg, arguments);
   } : iteratee;
 
-  if ( is._obj(val) ) {
-
-    // iterate over an array or arguments obj
-    if ( is._arr(val) ) {
-      val = len > 2 ? clone.arr(val) : val;
-      len = val.length;
-      prop = -1;
-      while (++prop < len) {
-        iteratee(val[prop], prop, val);
-      }
-    }
-
-    // iterate over an object's own props
-    else {
-      val = len > 2 ? clone(val) : val;
-      for (prop in val) {
-        if ( has(val, prop) ) {
-          iteratee(val[prop], prop, val);
-        }
-      }
-    }
-    return val;
+  while(val--) {
+    iteratee();
   }
 
-  // iterate specified number of times
-  else if ( is.num(val) ) {
-    while(val--) {
-      iteratee();
-    }
-    return null;
-  }
-
-  throw new TypeError('Invalid val param in vitals.each call.');
+  return null;
 }
+
+/**
+ * A shortcut for iterating over array-like objects. Note that this method
+ * lazily clones the object based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+ *   (i.e. if you alter the source object within the iteratee ensure to define
+ *   the iteratee's third param to avoid accidental results).
+ * @public
+ * @param {!(Object|function)} obj
+ * @param {function(*, (string|number)=, !(Object|function|Array)=)} iteratee
+ * @param {Object=} thisArg
+ * @return {(Object|function|Array)} 
+ */
+each.array = function eachArray(obj, iteratee, thisArg) {
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  if ( !is._obj(obj) || !has(obj, 'length') ) {
+    throw new TypeError('Invalid obj param in vitals.each.array call.');
+  }
+
+  if ( !is.func(iteratee) ) {
+    throw new TypeError('Invalid iteratee param in vitals.each.array call.');
+  }
+
+  obj = iteratee.length > 2 ? clone.arr(obj) : obj;
+  iteratee = arguments.length > 2 ? function iteratee() {
+    iteratee.apply(thisArg, arguments);
+  } : iteratee;
+
+  len = val.length;
+  i = -1;
+  while (++i < len) {
+    iteratee(obj[i], prop, obj);
+  }
+
+  return obj;
+};
+each.arr = each.array;
+
+/**
+ * A shortcut for iterating over object maps. Note that this method lazily
+ *   clones the object based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+ *   (i.e. if you alter the source object within the iteratee ensure to define
+ *   the iteratee's third param to avoid accidental results).
+ * @public
+ * @param {!(Object|function)} obj
+ * @param {function(*, string=, !(Object|function)=)} iteratee
+ * @param {Object=} thisArg
+ * @return {(Object|function|Array)} 
+ */
+each.object = function eachObject(obj, iteratee, thisArg) {
+
+  /** @type {string} */
+  var prop;
+  /** @type {number} */
+  var len;
+
+  if ( !is._obj(obj) ) {
+    throw new TypeError('Invalid obj param in vitals.each.object call.');
+  }
+
+  if ( !is.func(iteratee) ) {
+    throw new TypeError('Invalid iteratee param in vitals.each.object call.');
+  }
+
+  obj = iteratee.length > 2 ? clone(obj) : obj;
+  iteratee = arguments.length > 2 ? function iteratee() {
+    iteratee.apply(thisArg, arguments);
+  } : iteratee;
+
+  for (prop in obj) {
+    has(obj, prop) && iteratee(obj[prop], prop, obj);
+  }
+
+  return obj;
+};
+each.obj = each.object;
