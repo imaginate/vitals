@@ -17,7 +17,7 @@
  */
 
 
-;(function(/** Object */ root, /** !Vitals */ vitals) {
+;(function(/** Object */ root, /** !Object */ vitals) {
 
   /** @type {!Object} */
   var checks = {
@@ -92,12 +92,40 @@
 
 })(this, (function(undefined) {
 
-  // INSERT 
+  'use strict';
+
+  // INSERT has.js
+  // INSERT merge.js
+  // INSERT slice.js
+  // INSERT typeOf.js
+  // INSERT clone.js
+  // INSERT create.js
+  // INSERT cut.js
+  // INSERT each.js
+  // INSERT fill.js
+  // INSERT freeze.js
+  // INSERT get.js
+  // INSERT remap.js
+  // INSERT seal.js
 
 
 // *****************************************************************************
 // SECTION: END
 // *****************************************************************************
 
-  return vitals;
+  return {
+    clone:  clone,
+    create: create,
+    cut:    cut,
+    each:   each,
+    fill:   fill,
+    freeze: freeze,
+    get:    get,
+    has:    has,
+    merge:  merge,
+    remap:  remap,
+    seal:   seal,
+    slice:  slice,
+    typeOf: typeOf
+  };
 })());
