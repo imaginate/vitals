@@ -23,6 +23,10 @@ var has = require('./has.js');
 var clone = require('./clone.js');
 
 
+////////////////////////////////////////////////////////////////////////////////
+// EACH
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * A shortcut for iterating over object maps and arrays or for invoking an
  *   action a set number of times. If iterating over an object note that this

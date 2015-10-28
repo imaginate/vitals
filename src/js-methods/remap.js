@@ -23,6 +23,10 @@ var has = require('./has.js');
 var clone = require('./clone.js');
 
 
+////////////////////////////////////////////////////////////////////////////////
+// REMAP
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * A shortcut for making a new object/array by invoking an action over the 
  *   values of an existing object/array or a new string by replacing a pattern.

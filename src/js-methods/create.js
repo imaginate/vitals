@@ -21,8 +21,12 @@
 var is = require('node-are').is;
 var has = require('./has.js');
 var merge = require('./merge.js');
-var clone = require('./clone.js').obj;
+var clone = require('./clone.js');
 
+
+////////////////////////////////////////////////////////////////////////////////
+// CREATE
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * A shortcut for Object.create(proto[, props]) that allows you to choose the
@@ -72,7 +76,7 @@ var create = (function() {
       keys = props;
       props = {};
       while (prop--) {
-        props[ keys[prop] ] = clone(descriptor);
+        props[ keys[prop] ] = clone.obj(descriptor);
       }
     }
     else {
@@ -147,7 +151,7 @@ var create = (function() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone(descriptor);
+    prop = clone.obj(descriptor);
 
     if ( _isDescriptor(val) ) {
       prop = merge(prop, val);
@@ -165,7 +169,7 @@ var create = (function() {
    * @return {!Object}
    */
   function _getDescriptor(descriptor) {
-    return merge( clone( _isAccessor(descriptor) ?
+    return merge( clone.obj( _isAccessor(descriptor) ?
       ACCESSOR_DESCRIPTOR : DATA_DESCRIPTOR
     ), descriptor);
   }

@@ -25,6 +25,10 @@ var merge = require('./merge.js');
 var typeOf = require('./typeOf.js');
 
 
+////////////////////////////////////////////////////////////////////////////////
+// CLONE
+////////////////////////////////////////////////////////////////////////////////
+
 // Note that clone also includes the following methods as props (the shorthand 
 //   method - func - should be used in browser environments for compatibility):
 //

@@ -24,6 +24,10 @@ var slice = require('./slice.js');
 var merge = require('./merge.js');
 
 
+////////////////////////////////////////////////////////////////////////////////
+// CUT
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * Deletes properties from an object and returns them or deletes a pattern from
  *   a string and returns the amended string. Note that if a source array and
