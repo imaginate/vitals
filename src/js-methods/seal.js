@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = seal;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -78,3 +76,6 @@ var seal = (function() {
   // END OF PRIVATE SCOPE FOR SEAL
   return seal;
 })();
+
+
+module.exports = seal;

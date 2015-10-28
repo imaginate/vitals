@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = freeze;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -78,3 +76,6 @@ var freeze = (function() {
   // END OF PRIVATE SCOPE FOR FREEZE
   return freeze;
 })();
+
+
+module.exports = freeze;

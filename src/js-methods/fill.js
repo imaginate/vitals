@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = fill;
-
 var is = require('node-are').is;
 var are = require('node-are').are;
 
@@ -124,3 +122,6 @@ fill.string = function fillString(count, val) {
   return str;
 };
 fill.str = fill.string;
+
+
+module.exports = fill;

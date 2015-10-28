@@ -16,7 +16,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-module.exports = has;
+'use strict';
 
 var is = require('node-are').is;
 
@@ -80,3 +80,6 @@ var has = (function() {
   // END OF PRIVATE SCOPE FOR HAS
   return has;
 })();
+
+
+module.exports = has;

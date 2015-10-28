@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = cut;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 var slice = require('./slice.js');
@@ -139,3 +137,6 @@ cut.string = function cutString(source, pattern) {
   return source.replace(pattern, '');
 };
 cut.str = cut.string;
+
+
+module.exports = cut;

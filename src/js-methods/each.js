@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = each;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 var clone = require('./clone.js');
@@ -146,3 +144,6 @@ each.object = function eachObject(obj, iteratee, thisArg) {
   return obj;
 };
 each.obj = each.object;
+
+
+module.exports = each;

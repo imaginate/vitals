@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = create;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 var merge = require('./merge.js');
@@ -250,3 +248,6 @@ var create = (function() {
   // END OF PRIVATE SCOPE FOR CREATE
   return create;
 })();
+
+
+module.exports = create;

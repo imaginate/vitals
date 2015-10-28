@@ -16,7 +16,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-module.exports = slice;
+'use strict';
 
 var is = require('node-are').is;
 var are = require('node-are').are;
@@ -104,3 +104,6 @@ slice.string = function sliceString(str, start, end) {
   return str.slice(start, end);
 };
 slice.str = slice.string;
+
+
+module.exports = slice;

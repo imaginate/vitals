@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = clone;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 var slice = require('./slice.js');
@@ -240,3 +238,6 @@ var clone = (function() {
   // END OF PRIVATE SCOPE FOR CLONE
   return clone;
 })();
+
+
+module.exports = clone;

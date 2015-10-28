@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = get;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -55,3 +53,6 @@ get.keys = function getKeys(obj) {
 
   return arr;
 };
+
+
+module.exports = get;

@@ -18,8 +18,6 @@
 
 'use strict';
 
-module.exports = remap;
-
 var is = require('node-are').is;
 var has = require('./has.js');
 var clone = require('./clone.js');
@@ -176,3 +174,6 @@ remap.object = function remapObject(source, iteratee, thisArg) {
   return obj;
 };
 remap.obj = remap.object;
+
+
+module.exports = remap;
