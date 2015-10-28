@@ -53,5 +53,6 @@ module.exports = {
   merge:  merge,
   remap:  remap,
   seal:   seal,
-  slice:  slice
+  slice:  slice,
+  typeOf: typeOf
 };
