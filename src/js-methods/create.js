@@ -43,7 +43,7 @@ var clone = require('./clone.js');
  *   [default= { writable: true, enumerable: true, configurable: true }]
  * @return {!Object}
  */
-var create = (function() {
+var create = (function createPrivateScope() {
 
   /**
    * @public
@@ -67,9 +67,7 @@ var create = (function() {
     descriptor = is.obj(descriptor) ? descriptor : null;
     descriptor = _getDescriptor(descriptor);
 
-    if (!props) {
-      return _objCreate(proto);
-    }
+    if (!props) return _objCreate(proto);
 
     if ( is.arr(props) ) {
       prop = props.length;
@@ -127,15 +125,16 @@ var create = (function() {
 
   /**
    * @private
-   * @param {string} props - One of the chars in the following list is used as the
-   *   separator (chars listed in order of use):  ", "  ","  "|"  " "
+   * @param {string} props - One of the chars in the following list is used as
+   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
    * @return {!Array<string>}
    */
   function _splitPropStr(props) {
-    return props.split( has(props, ', ') ?
-      ', ' : has(props, ',') ?
-        ',' : has(props, '|') ?
-          '|' : ' '
+    return props.split(
+      has(props, ', ')
+        ? ', ' : has(props, ',')
+          ? ',' : has(props, '|')
+            ? '|' : ' '
     );
   }
 
@@ -169,8 +168,8 @@ var create = (function() {
    * @return {!Object}
    */
   function _getDescriptor(descriptor) {
-    return merge( clone.obj( _isAccessor(descriptor) ?
-      ACCESSOR_DESCRIPTOR : DATA_DESCRIPTOR
+    return merge( clone.obj( _isAccessor(descriptor)
+      ? ACCESSOR_DESCRIPTOR : DATA_DESCRIPTOR
     ), descriptor);
   }
 
@@ -184,9 +183,7 @@ var create = (function() {
     /** @type {string} */
     var prop;
 
-    if ( !is.obj(val) ) {
-      return false;
-    }
+    if ( !is.obj(val) ) return false;
 
     for (prop in obj) {
       if ( has(obj, prop) && has(DESCRIPTOR_PROPS, prop) ) {
