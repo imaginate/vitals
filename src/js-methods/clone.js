@@ -20,43 +20,32 @@
 
 var is = require('node-are').is;
 var has = require('./has.js');
-var slice = require('./slice.js');
-var merge = require('./merge.js');
-var typeOf = require('./typeOf.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // CLONE
 ////////////////////////////////////////////////////////////////////////////////
 
-// Note that clone also includes the following methods as props (the shorthand 
-//   method - func - should be used in browser environments for compatibility):
-//
-// | Method    | Shorthand |
-// | :-------- | :-------- |
-// | object    | obj       |
-// | function  | func|fn   |
-// | regexp    | regex     |
-// | array     | arr       |
-// | args      |           |
-
-/**
- * Returns a clone of the given value.
- * @public
- * @param {*} val
- * @param {boolean=} deep
- * @return {*}
- */
-var clone = (function() {
+var clone = (function clonePrivateScope() {
 
   /**
+   * Returns a clone of the given value.
    * @public
    * @param {*} val
    * @param {boolean=} deep
    * @return {*}
    */
   function clone(val, deep) {
-    return CLONE_MAP[ '_' + typeOf(val) ](val, deep);
+
+    if ( is.func(val) ) return _cloneFunc(val, deep);
+
+    if ( is.obj(val) ) {
+      if ( is._arr(val) ) return _cloneArr(val, deep);
+      if ( is.regex(val) ) return _cloneRegex(val);
+      return _cloneObj(val, deep);
+    }
+
+    return val;
   }
 
   /**
@@ -68,82 +57,29 @@ var clone = (function() {
    */
   clone.object = function cloneObject(obj, deep) {
 
-    /** @type {!Object} */
-    var newObj;
-    /** @type {string} */
-    var prop;
+    if ( !is.obj(obj) ) throw _error('obj', 'object');
 
-    if ( !is.obj(obj) ) {
-      throw new TypeError('Invalid obj param in vitals.clone.object call.');
-    }
-
-    newObj = {};
-    for (prop in obj) {
-      if ( has(obj, prop) ) {
-        newObj[prop] = clone(obj[prop], deep);
-      }
-    }
-    return newObj;
+    return _cloneObj(obj, deep);
   };
+  // define shorthand
   clone.obj = clone.object;
 
   /**
    * Creates a new array with the properties of the given object.
    * @public
-   * @param {!(Object|Array|function)} obj
+   * @param {!Object} obj
    * @param {boolean=} deep
    * @return {!Array}
    */
   clone.array = function cloneArray(obj, deep) {
 
-    /** @type {string} */
-    var prop;
-    /** @type {!Array} */
-    var arr;
+    if ( !is.obj(obj) || !has(obj, 'length')  ) throw _error('obj', 'array');
 
-    if ( !is._obj(obj) || !has(obj, 'length') ) {
-      throw new TypeError('Invalid obj param in vitals.clone.array call.');
-    }
-
-    arr = slice(obj);
-    for (prop in obj) {
-      if ( has(obj, prop) && !has(arr, prop) ) {
-        arr[prop] = clone(obj[prop], deep);
-      }
-    }
-    return arr;
+    return _cloneArr(obj, deep);
   };
+  // define shorthand
   clone.arr = clone.array;
   clone.args = clone.array;
-
-  /**
-   * Returns the properly escaped RegExp.prototype.source.
-   * @private
-   * @param {!RegExp}
-   * @return {string}
-   * @const
-   */
-  var _getSource = (function() {
-
-    /** @type {?RegExp} */
-    var replacer = /\n/.source !== '\\n' ? /\\/g : null;
-
-    return function _getSource(regex) {
-      return replacer ? regex.source.replace(replacer, '\\\\') : regex.source;
-    };
-  })();
-
-  /**
-   * All the flag properties available to RegExp.
-   * @private
-   * @type {!Object<string, string>}
-   * @const
-   */
-  var FLAGS = merge({
-    ignoreCase: 'i',
-    multiline:  'm',
-    global:     'g'
-  }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
 
   /**
    * Creates a new RegExp from a given RegExp.
@@ -153,28 +89,17 @@ var clone = (function() {
    */
   clone.regexp = function cloneRegexp(regex) {
 
-    /** @type {string} */
-    var source;
-    /** @type {string} */
-    var flags;
-    /** @type {string} */
-    var flag;
+    if ( !is.regex(regex) ) throw _error('regex', 'regexp');
 
-    if ( !is.regex(regex) ) {
-      throw new TypeError('Invalid regex param in vitals.clone.regexp call.');
-    }
-
-    source = _escapeRegex ? regex.source.replace(/\\/g, '\\\\') : regex.source;
-    flags = '';
-    for (flag in flags) {
-      flags += has(_regexFlags, flag) && regex[flag] ? _regexFlags[flag] : '';
-    }
-    return flags ? new RegExp(source, flags) : new RegExp(source);
+    return _cloneRegex(regex);
   };
+  // define shorthand
   clone.regex = clone.regexp;
 
   /**
-   * Creates a new function with the properties of the given function.
+   * Creates a new function with the properties of the given function. Use
+   *   clone.func instead of clone.function in browser environments for
+   *   compatibility.
    * @public
    * @param {function} func
    * @param {boolean=} deep
@@ -182,25 +107,11 @@ var clone = (function() {
    */
   clone.func = function cloneFunction(func, deep) {
 
-    /** @type {function} */
-    var newFunc;
-    /** @type {string} */
-    var prop;
+    if ( !is.func(func) ) throw _error('func', 'function');
 
-    if ( !is.func(func) ) {
-      throw new TypeError('Invalid func param in vitals.clone.function call.');
-    }
-
-    newFunc = function() {
-      return func.apply(null, arguments);
-    };
-    for (prop in func) {
-      if ( has(func, prop) ) {
-        newFunc[prop] = clone(func[prop], deep);
-      }
-    }
-    return newFunc;
+    return _cloneFunc(func, deep);
   };
+  // define shorthand
   try {
     clone.fn = clone.func;
     clone.function = clone.func;
@@ -209,35 +120,127 @@ var clone = (function() {
 
   /**
    * @private
-   * @param {*} val
-   * @return {*}
+   * @param {!Object} obj
+   * @param {boolean=} deep
+   * @return {!Object}
    */
-  function _same {
-    return val;
+  function _cloneObj(obj, deep) {
+    return _merge({}, obj, deep);
   }
 
   /**
-   * A map that handles pointing clone to the right method. This is necessary
-   *   for ES3, ES5, & ES6 compatibility.
    * @private
-   * @type {!Object<string, function>}
+   * @param {!Object} obj
+   * @param {boolean=} deep
+   * @return {!Array}
+   */
+  function _cloneArr(obj, deep) {
+    return _merge(new Array(obj.length), obj, deep);
+  }
+
+  /**
+   * @private
+   * @param {!RegExp} regex
+   * @return {!RegExp}
+   */
+  function _cloneRegex(regex) {
+
+    /** @type {string} */
+    var source;
+    /** @type {string} */
+    var flags;
+    /** @type {string} */
+    var key;
+
+    source = _escape(regex.source);
+    flags = '';
+    for (key in FLAGS) {
+      if ( has(FLAGS, key) && regex[key] ) {
+        flags += FLAGS[key];
+      }
+    }
+    return flags ? new RegExp(source, flags) : new RegExp(source);
+  }
+
+  /**
+   * @private
+   * @param {function} func
+   * @param {boolean=} deep
+   * @return {function}
+   */
+  function _cloneFunc(func, deep) {
+    return _merge(function clonedFunc() {
+      return func.apply(null, arguments);
+    }, func, deep);
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!(Object|function)} source
+   * @param {boolean=} deep
+   * @return {!(Object|function)}
+   */
+  function _merge(dest, source, deep) {
+
+    /** @type {string} */
+    var key;
+
+    if (deep) {
+      for (key in source) {
+        if ( has(source, key) ) {
+          dest[key] = clone(source[key], true);
+        }
+      }
+    }
+    else {
+      for (key in source) {
+        if ( has(source, key) ) {
+          dest[key] = source[key];
+        }
+      }
+    }
+    return dest;
+  }
+
+  /**
+   * Returns the properly escaped RegExp.prototype.source.
+   * @private
+   * @param {string} source
+   * @return {string}
+   */
+  var _escape = (function() {
+
+    /** @type {?RegExp} */
+    var replacer = /\n/.source !== '\\n' ? /\\/g : null;
+
+    return function _escape(source) {
+      return replacer ? source.replace(replacer, '\\\\') : source;
+    };
+  })();
+
+  /**
+   * @private
+   * @type {!Object<string, string>}
    * @const
    */
-  var CLONE_MAP = {
-    _null:      _same,
-    _undefined: _same,
-    _boolean:   _same,
-    _string:    _same,
-    _number:    _same,
-    _nan:       _same,
-    _object:    clone.obj,
-    _function:  clone.func,
-    _regexp:    clone.regex,
-    _array:     clone.arr,
-    _arguments: clone.arr,
-    _element:   clone.obj,
-    _document:  clone.obj
-  };
+  var FLAGS = _merge({
+    ignoreCase: 'i',
+    multiline:  'm',
+    global:     'g'
+  }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
+
+  /**
+   * @private
+   * @param {string} param
+   * @param {string} method
+   * @return {!TypeError} 
+   */
+  function _error(param, method) {
+    param += ' param';
+    method = 'vitals.clone.' + method;
+    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+  }
 
   // END OF PRIVATE SCOPE FOR CLONE
   return clone;
