@@ -21,126 +21,259 @@
 var is = require('node-are').is;
 var has = require('./has.js');
 var slice = require('./slice.js');
-var merge = require('./merge.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // CUT
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Deletes properties from an object and returns them or deletes a pattern from
- *   a string and returns the amended string. Note that if a source array and
- *   numerical properties are provided splice is used on the array.
- * @public
- * @param {!(Object|function|Array|string)} source
- * @param {!(string|RegExp)=} pattern - Use for a string source.
- * @param {...*=} props - Use for an object source. Each array is considered an
- *   array of props.
- * @return {!(Object|string)} The values of the deleted properties or the new
- *   string.
- */
-function cut(source, pattern, props) {
+var cut = (function cutPrivateScope() {
 
-  if ( is.str(source) ) {
-    return cut.str(source, pattern);
-  }
+  /**
+   * Removes properties (by key) from an object/array or patterns from a string
+   *   and returns the amended source.
+   * @public
+   * @param {!(Object|function|Array|string)} source
+   * @param {...*} removals - The keys/patterns to remove. Each array is
+   *   considered an array of keys/patterns. Each pattern may be a string or
+   *   RegExp. All other (i.e. not array or regex) key/pattern types are
+   *   converted to a string.
+   * @return {!(Object|function|Array|string)} The amended source.
+   */
+  function cut(source, removals) {
 
-  if ( is._obj(obj) ) {
-    return cut.props.apply(null, arguments);
-  }
+    removals = arguments.length > 2 ? slice(arguments, 1) : removals;
 
-  throw new TypeError('Invalid source param in vitals.cut call.');
-}
+    if ( is.undefined(removals) ) throw _error('No removal defined');
 
-/**
- * Deletes a property from an object and returns it.
- * @public
- * @param {!(Object|function|Array)} obj
- * @param {*} prop
- * @return {*} The value of the deleted property.
- */
-cut.property = function cutProperty(obj, prop) {
-
-  /** @type {*} */
-  var val;
-
-  if ( !is._obj(obj) ) {
-    throw new TypeError('Invalid obj param in vitals.cut.property call.');
-  }
-
-  if ( !has(obj, prop) ) {
-    throw new TypeError('No prop in obj for vitals.cut.property call.');
-  }
-
-  val = obj[prop];
-  if ( is.arr(obj) && is.num(prop) ) {
-    obj.splice(prop, 1);
-  }
-  else {
-    delete obj[prop];
-  }
-  return val;
-};
-cut.prop = cut.property;
-
-/**
- * Deletes properties from an object and returns an object with them.
- * @public
- * @param {!(Object|function|Array)} source
- * @param {...*} props - Each array is considered an array of props.
- * @return {!Object} The deleted properties and their values.
- */
-cut.properties = function cutProperties(source, props) {
-
-  /** @type {string} */
-  var prop;
-  /** @type {!Object} */
-  var obj;
-  /** @type {number} */
-  var i;
-
-  if ( !is._obj(source) ) {
-    throw new TypeError('Invalid source param in vitals.cut.properties call.');
-  }
-
-  props = slice(arguments, 1);
-  obj = {};
-  i = props.length;
-  while (i--) {
-    prop = props[i];
-    if ( is.arr(prop) ) {
-      prop = cut.props(source, prop);
-      obj = merge(obj, prop);
+    if ( is.str(source) ) {
+      if ( is.arr(removals) ) return _cutPatterns(source, removals);
+      return _cutPattern(source, removals);
     }
-    else {
-      obj[prop] = cut.prop(source, prop);
+
+    if ( !is._obj(source) ) throw _typeError('source');
+
+    if ( !is.arr(removals) ) {
+      if ( !has(source, removals) ) {
+        throw _error('Key does not exist in source');
+      }
+      return _cutKey(source, removals);
     }
-  }
-  return obj;
-};
-cut.props = cut.properties;
 
-/**
- * Deletes a pattern from a string and returns the amended string.
- * @public
- * @param {string} source
- * @param {!(string|RegExp)} pattern
- * @return {string} The new string.
- */
-cut.string = function cutString(source, pattern) {
-
-  if ( !is.str(source) ) {
-    throw new TypeError('Invalid source param in vitals.cut.string call.');
+    if ( is.arr(source) ) return _cutKeysArr(source, removals);
+    return _cutKeys(source, removals);
   }
 
-  if ( !is('!str|regex', pattern) ) {
-    throw new TypeError('Invalid pattern param in vitals.cut.string call.');
+  /**
+   * Removes a property (by key) from an object/array and returns the object.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {*} key - If key is a number and source an array then the array is
+   *   correctly spliced. All other non-string types are converted to a string.
+   * @return {!(Object|function|Array)}
+   */
+  cut.key = function cutKey(source, key) {
+
+    if ( !is._obj(source)  ) throw _typeError('source', 'key');
+    if ( !has(source, key) ) throw _error('Key does not exist in source','key');
+
+    return _cutKey(source, key);
+  };
+
+  /**
+   * Removes properties (by key) from an object/array and returns the object.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {...*} keys - If a key is a number and the source an array then the
+   *   array is correctly spliced. If a key is an array it is considered an
+   *   array of keys. All other non-string types are converted to a string.
+   * @return {!(Object|function|Array)}
+   */
+  cut.keys = function cutKeys(source, keys) {
+
+    if ( !is._obj(source) ) throw _typeError('source', 'keys');
+
+    keys = arguments.length > 2 ? slice(arguments, 1) : keys;
+
+    if ( is.undefined(keys) ) throw _error('No keys defined', 'keys');
+
+    if ( !is.arr(keys) ) {
+      if ( !has(source, keys) ) {
+        throw _error('Key does not exist in source', 'keys');
+      }
+      return _cutKey(source, keys);
+    }
+
+    if ( is.arr(source) ) return _cutKeysArr(source, keys);
+    return _cutKeys(source, keys);
+  };
+
+  /**
+   * Removes a pattern from a string and returns the amended string.
+   * @public
+   * @param {string} source
+   * @param {*} pattern - If pattern is not a string or RegExp it is converted
+   *   to a string.
+   * @return {string}
+   */
+  cut.pattern = function cutPattern(source, pattern) {
+
+    if ( !is.str(source) ) throw _typeError('source', 'pattern');
+
+    return _cutPattern(source, pattern);
+  };
+
+  /**
+   * Removes a pattern from a string and returns the amended string.
+   * @public
+   * @param {string} source
+   * @param {...*} patterns - If a pattern is an array it is considered an array
+   *   of patterns. If a pattern is not a string, RegExp, or array it is
+   *   converted to a string.
+   * @return {string}
+   */
+  cut.patterns = function cutPatterns(source, patterns) {
+
+    if ( !is.str(source) ) throw _typeError('source', 'patterns');
+
+    patterns = arguments.length > 2 ? slice(arguments, 1) : patterns;
+
+    if ( is.undefined(patterns) ) {
+      throw _error('No patterns defined', 'patterns');
+    }
+
+    if ( !is.arr(patterns) ) {
+      patterns = is.regex(patterns) ? patterns : String(patterns);
+      return source.replace(patterns, '');
+    }
+
+    return _cutPatterns(source, patterns);
+  };
+
+  /**
+   * @private
+   * @param {!(Object|function|Array)} source
+   * @param {*} key
+   * @return {!(Object|function|Array)}
+   */
+  function _cutKey(source, key) {
+    if ( is.arr(source) && is.num(key) ) source.splice(key, 1);
+    else delete source[ String(key) ];
+    return source;
   }
 
-  return source.replace(pattern, '');
-};
-cut.str = cut.string;
+  /**
+   * @private
+   * @param {!(Object|function|Array)} source
+   * @param {!Array} keys
+   * @return {!(Object|function|Array)}
+   */
+  function _cutKeys(source, keys) {
+
+    /** @type {*} */
+    var key;
+    /** @type {number} */
+    var i;
+
+    i = keys.length;
+    while (i--) {
+      key = keys[i];
+      if ( is.arr(key) && _cutKeys(source, key) ) continue;
+      if ( !has(source, key) ) throw _error('A key does not exist in source');
+      delete source[ String(key) ];
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function|Array)} source
+   * @param {!Array} keys
+   * @return {!(Object|function|Array)}
+   */
+  function _cutKeysArr(source, keys) {
+
+    /** @type {*} */
+    var key;
+    /** @type {number} */
+    var i;
+
+    i = keys.length;
+    while (i--) {
+      key = keys[i];
+      if ( is.arr(key) && _cutKeysArr(source, key) ) continue;
+      if ( !has(source, key) ) throw _error('A key does not exist in source');
+      if ( is.num(key) ) source.splice(key, 1);
+      else delete source[ String(key) ];
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} pattern
+   * @return {string}
+   */
+  function _cutPattern(source, pattern) {
+    pattern = is.regex(pattern) ? pattern : String(pattern);
+    return source.replace(pattern, '');
+  }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {!Array} patterns
+   * @return {string}
+   */
+  function _cutPatterns(source, patterns) {
+
+    /** @type {*} */
+    var pattern;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = patterns.length;
+    i = -1;
+    while (++i < len) {
+      pattern = patterns[i];
+      source = is.arr(pattern)
+        ? _cutPatterns(source, pattern)
+        : _cutPattern(source, pattern);
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  function _typeError(param, method) {
+    param += ' param';
+    method = method || '';
+    method = 'vitals.cut' + ( method && '.' ) + method;
+    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+  }
+
+  /**
+   * @private
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  function _error(msg, method) {
+    method = method || '';
+    method = 'vitals.cut' + ( method && '.' ) + method;
+    return new Error(msg + ' for ' + method + ' call.');
+  }
+
+  // END OF PRIVATE SCOPE FOR CUT
+  return cut;
+})();
 
 
 module.exports = cut;
