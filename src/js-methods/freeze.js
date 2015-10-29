@@ -26,16 +26,10 @@ var has = require('./has.js');
 // FREEZE
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Freezes an object with optional deep freeze.
- * @public
- * @param {?(Object|function)} obj
- * @param {boolean=} deep
- * @return {?(Object|function)}
- */
-var freeze = (function() {
+var freeze = (function freezePrivateScope() {
 
   /**
+   * Freezes an object with optional deep freeze.
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -43,30 +37,15 @@ var freeze = (function() {
    */
   function freeze(obj, deep) {
 
-    /** @type {string} */
-    var prop;
-
-    if ( is.null(obj) ) {
-      return null;
-    }
+    if ( is.null(obj) ) return null;
 
     if ( !is._obj(obj) ) {
       throw new TypeError('Invalid obj param in vitals.freeze call.');
     }
 
-    if (!HAS_OBJ_FREEZE) {
-      return obj;
-    }
+    if (!HAS_OBJ_FREEZE) return obj;
 
-    if (deep) {
-      for (prop in obj) {
-        if ( has(obj, prop) && is._obj( obj[prop] ) ) {
-          obj[prop] = freeze(obj[prop], true);
-        }
-      }
-    }
-
-    return Object.freeze(obj);
+    return deep ? _deepFreeze(obj) : Object.freeze(obj);
   }
 
   /**
@@ -76,6 +55,29 @@ var freeze = (function() {
    * @const
    */
   var HAS_OBJ_FREEZE = !!Object.freeze;
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @return {?(Object|function)}
+   */
+  function _deepFreeze(obj) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    for (key in obj) {
+      if ( has(obj, key) ) {
+        val = obj[key];
+        if ( is._obj(val) ) {
+          obj[key] = _deepFreeze(val);
+        }
+      }
+    }
+    return Object.freeze(obj);
+  }
 
   // END OF PRIVATE SCOPE FOR FREEZE
   return freeze;

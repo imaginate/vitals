@@ -26,16 +26,10 @@ var has = require('./has.js');
 // SEAL
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Seals an object with optional deep seal.
- * @public
- * @param {?(Object|function)} obj
- * @param {boolean=} deep
- * @return {?(Object|function)}
- */
-var seal = (function() {
+var seal = (function sealPrivateScope() {
 
   /**
+   * Seals an object with optional deep seal.
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -43,30 +37,15 @@ var seal = (function() {
    */
   function seal(obj, deep) {
 
-    /** @type {string} */
-    var prop;
-
-    if ( is.null(obj) ) {
-      return null;
-    }
+    if ( is.null(obj) ) return null;
 
     if ( !is._obj(obj) ) {
       throw new TypeError('Invalid obj param in vitals.seal call.');
     }
 
-    if (!HAS_OBJ_SEAL) {
-      return obj;
-    }
+    if (!HAS_OBJ_SEAL) return obj;
 
-    if (deep) {
-      for (prop in obj) {
-        if ( has(obj, prop) && is._obj( obj[prop] ) ) {
-          obj[prop] = seal(obj[prop], true);
-        }
-      }
-    }
-
-    return Object.seal(obj);
+    return deep ? _deepSeal(obj) : Object.seal(obj);
   }
 
   /**
@@ -76,6 +55,29 @@ var seal = (function() {
    * @const
    */
   var HAS_OBJ_SEAL = !!Object.seal;
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @return {?(Object|function)}
+   */
+  function _deepSeal(obj) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    for (key in obj) {
+      if ( has(obj, key) ) {
+        val = obj[key];
+        if ( is._obj(val) ) {
+          obj[key] = _deepSeal(val);
+        }
+      }
+    }
+    return Object.seal(obj);
+  }
 
   // END OF PRIVATE SCOPE FOR SEAL
   return seal;
