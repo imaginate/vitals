@@ -75,7 +75,7 @@ slice.array = function sliceArray(obj, start, end) {
   start = start || 0;
   start = start < 0 ? len + start : start;
   end = end || len;
-  end = end > len ? len : end < 0 ? len + end : end;
+  end = end > len ? len : end < 0 ? 0 - end : end;
 
   arr = start < end ? new Array(end - start) : [];
   ii = start - 1;
