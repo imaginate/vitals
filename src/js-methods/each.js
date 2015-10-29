@@ -27,7 +27,7 @@ var clone = require('./clone.js');
 // EACH
 ////////////////////////////////////////////////////////////////////////////////
 
-var each = (function() {
+var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps and arrays or for invoking an
