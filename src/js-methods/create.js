@@ -28,28 +28,21 @@ var clone = require('./clone.js');
 // CREATE
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * A shortcut for Object.create(proto[, props]) that allows you to choose the
- *   default config for the props.
- * @public
- * @param {Object} proto
- * @param {!(Object<string, *>|Array<string>|string)=} props - details per type:
- *   object: Defined as "propName => propVal" or "propName => propDescriptor".
- *   array:  Each value should be a property name.
- *   string: Converted to an array of property names. One of the chars in the
- *     following list is used as the separator (chars listed in order of use):
- *     ", "  ","  "|"  " "
- * @param {!Object=} descriptor - The default descriptor values for each prop.
- *   [default= { writable: true, enumerable: true, configurable: true }]
- * @return {!Object}
- */
 var create = (function createPrivateScope() {
 
   /**
+   * A shortcut for Object.create(proto[, props]) that allows you to choose the
+   *   default config for the props.
    * @public
    * @param {Object} proto
-   * @param {!(Object<string, *>|Array<string>|string)=} props
-   * @param {!Object=} descriptor
+   * @param {!(Object<string, *>|Array<string>|string)=} props - more per type:
+   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
+   *   array:  Each value should be a property name (i.e. key).
+   *   string: Converted to an array of property names. One of the chars in the
+   *     following list is used as the separator (chars listed in order of use):
+   *     ", "  ","  "|"  " "
+   * @param {!Object=} descriptor - The default descriptor values for each prop.
+   *   [default= { writable: true, enumerable: true, configurable: true }]
    * @return {!Object}
    */
   function create(proto, props, descriptor) {
