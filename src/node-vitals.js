@@ -57,7 +57,6 @@ var slice = require('./js-methods/slice.js');
  *   | remap      |              |
  *   | seal       |              |
  *   | slice      |              |
- *   | typeOf     |              |
  *
  * ------------------------------------
  */
@@ -79,8 +78,7 @@ var METHODS = {
     'merge':  true,
     'remap':  true,
     'seal':   true,
-    'slice':  true,
-    'typeOf': true
+    'slice':  true
   },
   'node-methods': {}
 };

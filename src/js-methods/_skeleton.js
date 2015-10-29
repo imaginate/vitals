@@ -29,7 +29,6 @@ var are = require('node-are').are;
 // INSERT has.js
 // INSERT merge.js
 // INSERT slice.js
-// INSERT typeOf.js
 // INSERT clone.js
 // INSERT create.js
 // INSERT cut.js
@@ -53,6 +52,5 @@ module.exports = {
   merge:  merge,
   remap:  remap,
   seal:   seal,
-  slice:  slice,
-  typeOf: typeOf
+  slice:  slice
 };
