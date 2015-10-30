@@ -26,37 +26,62 @@ var has = require('./has.js');
 // GET
 ////////////////////////////////////////////////////////////////////////////////
 
-/** @type {!Object} */
-var get = {};
+var get = (function getPrivateScope() {
 
-/**
- * Gets an object's property keys.
- * @public
- * @param {?(Object|function)} obj
- * @return {Array<string>}
- */
-get.keys = function getKeys(obj) {
+  /**
+   * @public
+   * @type {function}
+   */
+  function get() {}
 
-  /** @type {string} */
-  var prop;
-  /** @type {!Array<string>} */
-  var arr;
+  /**
+   * Gets an object's property keys.
+   * @public
+   * @param {?(Object|function)} obj
+   * @return {Array<string>}
+   */
+  get.keys = function getKeys(obj) {
 
-  if ( is.null(obj) ) {
-    return null;
+    if ( is.null(obj) ) return null;
+
+    if ( !is._obj(obj) ) throw _error('obj', 'keys');
+
+    return _getKeys(obj);
+  };
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @return {!Array<string>}
+   */
+  function _getKeys(obj) {
+
+    /** @type {string} */
+    var key;
+    /** @type {!Array<string>} */
+    var arr;
+
+    arr = [];
+    for (key in obj) has.key(obj, key) && arr.push(key);
+    return arr;
   }
 
-  if ( !is._obj(obj) ) {
-    throw new TypeError('Invalid obj param in vitals.get.keys call.');
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  function _error(param, method) {
+    param += ' param';
+    method = method || '';
+    method = 'vitals.get' + ( method && '.' ) + method;
+    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
   }
 
-  arr = [];
-  for (prop in obj) {
-    has(obj, prop) && arr.push(prop);
-  }
-
-  return arr;
-};
+  // END OF PRIVATE SCOPE FOR GET
+  return get;
+})();
 
 
 module.exports = get;
