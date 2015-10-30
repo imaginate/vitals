@@ -54,7 +54,7 @@ var cut = (function cutPrivateScope() {
     if ( !is._obj(source) ) throw _typeError('source');
 
     if ( !is.arr(removals) ) {
-      if ( !has(source, removals) ) {
+      if ( !_has(source, removals) ) {
         throw _error('Key does not exist in source');
       }
       return _cutKey(source, removals);
@@ -74,8 +74,8 @@ var cut = (function cutPrivateScope() {
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !is._obj(source)  ) throw _typeError('source', 'key');
-    if ( !has(source, key) ) throw _error('Key does not exist in source','key');
+    if ( !is._obj(source) ) throw _typeError('source', 'key');
+    if ( !_has(source, key)) throw _error('Key does not exist in source','key');
 
     return _cutKey(source, key);
   };
@@ -98,7 +98,7 @@ var cut = (function cutPrivateScope() {
     if ( is.undefined(keys) ) throw _error('No keys defined', 'keys');
 
     if ( !is.arr(keys) ) {
-      if ( !has(source, keys) ) {
+      if ( !_has(source, keys) ) {
         throw _error('Key does not exist in source', 'keys');
       }
       return _cutKey(source, keys);
@@ -158,7 +158,7 @@ var cut = (function cutPrivateScope() {
    */
   function _cutKey(source, key) {
     if ( is.arr(source) && is.num(key) ) source.splice(key, 1);
-    else delete source[ String(key) ];
+    else delete source[key];
     return source;
   }
 
@@ -173,14 +173,20 @@ var cut = (function cutPrivateScope() {
     /** @type {*} */
     var key;
     /** @type {number} */
+    var len;
+    /** @type {number} */
     var i;
 
-    i = keys.length;
-    while (i--) {
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
       key = keys[i];
-      if ( is.arr(key) && _cutKeys(source, key) ) continue;
-      if ( !has(source, key) ) throw _error('A key does not exist in source');
-      delete source[ String(key) ];
+      if ( is.arr(key) ) {
+        _cutKeys(source, key);
+        continue;
+      }
+      if ( !_has(source, key) ) throw _error('A key does not exist in source');
+      delete source[key];
     }
     return source;
   }
@@ -196,15 +202,21 @@ var cut = (function cutPrivateScope() {
     /** @type {*} */
     var key;
     /** @type {number} */
+    var len;
+    /** @type {number} */
     var i;
 
-    i = keys.length;
-    while (i--) {
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
       key = keys[i];
-      if ( is.arr(key) && _cutKeysArr(source, key) ) continue;
-      if ( !has(source, key) ) throw _error('A key does not exist in source');
+      if ( is.arr(key) ) {
+        _cutKeysArr(source, key);
+        continue;
+      }
+      if ( !_has(source, key) ) throw _error('A key does not exist in source');
       if ( is.num(key) ) source.splice(key, 1);
-      else delete source[ String(key) ];
+      else delete source[key];
     }
     return source;
   }
@@ -245,6 +257,14 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _has = has.key;
 
   /**
    * @private

@@ -73,7 +73,7 @@ var clone = (function clonePrivateScope() {
    */
   clone.array = function cloneArray(obj, deep) {
 
-    if ( !is.obj(obj) || !has(obj, 'length')  ) throw _error('obj', 'array');
+    if ( !is.obj(obj) || !is.num(obj.length)  ) throw _error('obj', 'array');
 
     return _cloneArr(obj, deep);
   };
@@ -155,7 +155,7 @@ var clone = (function clonePrivateScope() {
     source = _escape(regex.source);
     flags = '';
     for (key in FLAGS) {
-      if ( has(FLAGS, key) && regex[key] ) {
+      if ( _has(FLAGS, key) && regex[key] ) {
         flags += FLAGS[key];
       }
     }
@@ -188,14 +188,14 @@ var clone = (function clonePrivateScope() {
 
     if (deep) {
       for (key in source) {
-        if ( has(source, key) ) {
+        if ( _has(source, key) ) {
           dest[key] = clone(source[key], true);
         }
       }
     }
     else {
       for (key in source) {
-        if ( has(source, key) ) {
+        if ( _has(source, key) ) {
           dest[key] = source[key];
         }
       }
@@ -229,6 +229,14 @@ var clone = (function clonePrivateScope() {
     multiline:  'm',
     global:     'g'
   }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _has = has.key;
 
   /**
    * @private

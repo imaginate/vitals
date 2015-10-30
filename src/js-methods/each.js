@@ -69,7 +69,7 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj) || !has(obj, 'length') ) throw _error('obj', 'array');
+    if ( !is._obj(obj) || !is.num(obj.length) ) throw _error('obj', 'array');
     if ( !is.func(iteratee)   ) throw _error('iteratee', 'array');
     if ( !is('obj=', thisArg) ) throw _error('thisArg',  'array');
 
@@ -164,9 +164,9 @@ var each = (function eachPrivateScope() {
       : iteratee;
 
     switch (iteratee.length) {
-      case 1:  for (key in obj) has(obj, key) && iteratee(obj[key]); break;
-      case 2:  for (key in obj) has(obj, key) && iteratee(obj[key], key); break;
-      default: for (key in obj) has(obj, key) && iteratee(obj[key], key, obj);
+      case 1: for (key in obj) _has(obj, key) && iteratee(obj[key]); break;
+      case 2: for (key in obj) _has(obj, key) && iteratee(obj[key], key); break;
+      default: for (key in obj) _has(obj, key) && iteratee(obj[key], key, obj);
     }
 
     return obj;
@@ -205,6 +205,14 @@ var each = (function eachPrivateScope() {
       func.call(thisArg, val, key, obj);
     };
   }
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _has = has.key;
 
   /**
    * @private

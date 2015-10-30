@@ -112,7 +112,7 @@ remap.array = function remapArray(source, iteratee, thisArg) {
   /** @type {number} */
   var i;
 
-  if ( !is._obj(source) || !has(source, 'length') ) {
+  if ( !is._obj(source) || !is.num(obj.length) ) {
     throw new TypeError('Invalid source param in vitals.remap.array call.');
   }
 

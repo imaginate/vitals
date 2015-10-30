@@ -174,7 +174,7 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( has(obj, key) ) {
+      if ( has.key(obj, key) ) {
         obj[key] = val;
       }
     }
@@ -191,11 +191,14 @@ var fill = (function fillPrivateScope() {
   function _fillKeys(obj, keys, val) {
 
     /** @type {number} */
+    var len;
+    /** @type {number} */
     var i;
 
     keys = _split(keys);
-    i = keys.length;
-    while (i--) {
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
       obj[ keys[i] ] = val;
     }
     return obj;

@@ -51,6 +51,8 @@ var create = (function createPrivateScope() {
     var keys;
     /** @type {(number|string)} */
     var prop;
+    /** @type {number} */
+    var len;
 
     if ( !is('?obj', proto) ) {
       throw new TypeError('Invalid proto param in vitals.create call.');
@@ -63,10 +65,11 @@ var create = (function createPrivateScope() {
     if (!props) return _objCreate(proto);
 
     if ( is.arr(props) ) {
-      prop = props.length;
       keys = props;
       props = {};
-      while (prop--) {
+      len = keys.length;
+      prop = -1;
+      while (++prop < len) {
         props[ keys[prop] ] = clone.obj(descriptor);
       }
     }

@@ -69,7 +69,7 @@ var seal = (function sealPrivateScope() {
     var val;
 
     for (key in obj) {
-      if ( has(obj, key) ) {
+      if ( _has(obj, key) ) {
         val = obj[key];
         if ( is._obj(val) ) {
           obj[key] = _deepSeal(val);
@@ -78,6 +78,14 @@ var seal = (function sealPrivateScope() {
     }
     return Object.seal(obj);
   }
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _has = has.key;
 
   // END OF PRIVATE SCOPE FOR SEAL
   return seal;

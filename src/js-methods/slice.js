@@ -63,7 +63,7 @@ slice.array = function sliceArray(obj, start, end) {
     return null;
   }
 
-  if ( !is._obj(obj) || !has(obj, 'length') ) {
+  if ( !is._obj(obj) || !is.num(obj.length) ) {
     throw new TypeError('Invalid obj param in vitals.slice.array call.');
   }
 
