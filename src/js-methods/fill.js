@@ -214,8 +214,6 @@ var fill = (function fillPrivateScope() {
 
     /** @type {string} */
     var str;
-    /** @type {number} */
-    var i;
 
     count = count < 0 ? 0 : count;
     val = String(val);
