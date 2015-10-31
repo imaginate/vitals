@@ -20,7 +20,6 @@
 
 var is = require('node-are').is;
 var has = require('./has.js');
-var merge = require('./merge.js');
 var clone = require('./clone.js');
 
 
@@ -149,7 +148,7 @@ var create = (function createPrivateScope() {
     prop = clone.obj(descriptor);
 
     if ( _isDescriptor(val) ) {
-      prop = merge(prop, val);
+      prop = _merge(prop, val);
     }
     else {
       prop.value = val;
@@ -164,7 +163,7 @@ var create = (function createPrivateScope() {
    * @return {!Object}
    */
   function _getDescriptor(descriptor) {
-    return merge( clone.obj( _isAccessor(descriptor)
+    return _merge( clone.obj( _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR : DATA_DESCRIPTOR
     ), descriptor);
   }
@@ -240,6 +239,25 @@ var create = (function createPrivateScope() {
         }
       }
     }
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!(Object|function)} obj
+   * @return {!(Object|function)}
+   */
+  function _merge(dest, obj) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in obj) {
+      if ( _has(obj, key) ) {
+        dest[key] = obj[key];
+      }
+    }
+    return dest;
   }
 
   // END OF PRIVATE SCOPE FOR CREATE
