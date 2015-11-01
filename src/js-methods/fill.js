@@ -162,7 +162,7 @@ var fill = (function fillPrivateScope() {
     end = end || len;
     end = end > len ? len : end < 0 ? len + end : end;
 
-    if (start >= end) throw _error('The start index was >= to the end index');
+    if (start >= end) return arr;
 
     i = start - 1;
     while (++i < end) {
