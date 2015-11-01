@@ -30,32 +30,89 @@ var has = require('./has.js');
 var get = (function getPrivateScope() {
 
   /**
+   * Gets keys, indexes, values, or substrings from an object, array, or string.
    * @public
-   * @type {function}
+   * @param {?(Object|function|Array|string)} source - If source is the only
+   *   defined param the following applies: For object sources this method will
+   *   return an array of its keys. For array sources this method will return an
+   *   array of its indexes.
+   * @param {RegExp=} key - If a key is given this method will return an array
+   *   of the values of the matching keys. This param is only valid for objects
+   *   and strings. A key and val param cannot both be given.
+   * @param {*=} val - If a val is given this method will return an array of the
+   *   keys/indexes with matching values.
+   * @return {Array}
    */
-  function get() {}
+  function get(source, key, val) {
+
+    if (arguments.length > 2) throw _error('Only one key/val may be defined');
+
+    if ( is.null(source) ) return null;
+
+    if (arguments.length === 1) {
+      if ( !is._obj(source) ) throw _error.type('source');
+      return _getObjKeysAll(source);
+    }
+
+    if ( is.str(source) ) {
+      if ( is.regex(key) ) return _getStrVals(source, key);
+      val = String(key);
+      return _getStrKeys(source, val);
+    }
+
+    if ( !is._obj(source) ) throw _error.type('source');
+
+    if ( is._arr(source) ) {
+      val = key;
+      return _getArrKeys(source, val);
+    }
+
+    if ( is.regex(key) ) return _getObjVals(source, key);
+    val = key;
+    return _getObjKeys(source, val);
+  }
 
   /**
-   * Gets an object's property keys.
+   * Gets an array of keys/indexes from an object, array, or string.
    * @public
-   * @param {?(Object|function)} obj
+   * @param {?(Object|function|Array|string)} source - If source is the only
+   *   defined param all of the keys/indexes are returned.
+   * @param {*=} pattern - For string sources a pattern must be defined. If a
+   *   pattern is defined this method will return an array of the keys/indexes
+   *   with matching values (for string sources the starting index of each match
+   *   is used). If the pattern is not a RegExp, string, or number it is
+   *   converted to a string.
    * @return {Array<string>}
    */
-  get.keys = function getKeys(obj) {
+  get.keys = function getKeys(source, pattern) {
 
-    if ( is.null(obj) ) return null;
+    if ( is.null(source) ) return null;
 
-    if ( !is._obj(obj) ) throw _error.type('obj', 'keys');
+    if (arguments.length === 1) {
+      if ( !is._obj(source) ) throw _error.type('source', 'keys');
+      return _getObjKeysAll(source);
+    }
 
-    return _getKeys(obj);
+    if ( is.str(source) ) {
+      pattern = is.regex(pattern) ? pattern : String(pattern);
+      return _getStrKeys(source, pattern);
+    }
+
+    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+
+    return is._arr(source)
+      ? _getArrKeys(source, pattern)
+      : _getObjKeys(source, pattern);
   };
+  // define shorthand
+  get.indexes = get.keys;
 
   /**
    * @private
    * @param {!(Object|function)} obj
    * @return {!Array<string>}
    */
-  function _getKeys(obj) {
+  function _getObjKeysAll(obj) {
 
     /** @type {string} */
     var key;
