@@ -19,95 +19,161 @@
 'use strict';
 
 var is = require('node-are').is;
-var are = require('node-are').are;
-var has = require('./has.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // SLICE
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * A shortcut for Array.prototype.slice.call(obj, start, end) and
- *   String.prototype.slice(start, end).
- * @public
- * @param {?(Object|Array|function|string)} val
- * @param {number=} start [default= 0]
- * @param {number=} end [default= val.length]
- * @return {?(Array|string)}
- */
-function slice(val, start, end) {
-  return is.str(val) ? slice.str(val, start, end) : slice.arr(val, start, end);
-}
+var slice = (function slicePrivateScope() {
 
-/**
- * A shortcut for Array.prototype.slice.call(obj, start, end).
- * @public
- * @param {?(Object|Array|function)} obj
- * @param {number=} start [default= 0]
- * @param {number=} end [default= obj.length]
- * @return {Array}
- */
-slice.array = function sliceArray(obj, start, end) {
+  /**
+   * A shortcut for Array.prototype.slice.call(obj, start, end) and
+   *   String.prototype.slice(start, end).
+   * @public
+   * @param {?(Object|Array|function|string)} source
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= source.length]
+   * @return {?(Array|string)}
+   */
+  function slice(source, start, end) {
 
-  /** @type {!Array} */
-  var arr;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var ii;
-  /** @type {number} */
-  var i;
+    if ( !is('num=', start) ) throw _typeError('start');
+    if ( !is('num=', end)   ) throw _typeError('end');
 
-  if ( is.null(obj) ) {
-    return null;
+    if ( is.null(source) ) return null;
+
+    if ( is.str(source) ) return _sliceStr(source, start, end);
+
+    if ( !is._obj(source)       ) throw _typeError('source');
+    if ( !is.num(source.length) ) throw _typeError('source.length');
+
+    return _sliceArr(source, start, end);
   }
 
-  if ( !is._obj(obj) || !is.num(obj.length) ) {
-    throw new TypeError('Invalid obj param in vitals.slice.array call.');
+  /**
+   * A shortcut for Array.prototype.slice.call(obj, start, end).
+   * @public
+   * @param {?(Object|Array|function)} source
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= source.length]
+   * @return {!Array}
+   */
+  slice.array = function sliceArray(source, start, end) {
+
+    if ( !is._obj(source)       ) throw _typeError('source',        'array');
+    if ( !is.num(source.length) ) throw _typeError('source.length', 'array');
+    if ( !is('num=', start)     ) throw _typeError('start',         'array');
+    if ( !is('num=', end)       ) throw _typeError('end',           'array');
+
+    return _sliceArr(source, start, end);
+  };
+  // define shorthand
+  slice.arr = slice.array;
+
+  /**
+   * A shortcut for String.prototype.slice(start, end).
+   * @public
+   * @param {string} str
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= str.length]
+   * @return {string}
+   */
+  slice.string = function sliceString(str, start, end) {
+
+    if ( !is.str(str)       ) throw _typeError('str',   'string');
+    if ( !is('num=', start) ) throw _typeError('start', 'string');
+    if ( !is('num=', end)   ) throw _typeError('end',   'string');
+
+    return _sliceStr(str, start, end);
+  };
+  // define shorthand
+  slice.str = slice.string;
+
+  /**
+   * @private
+   * @param {!(Object|Array|function)} source
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= source.length]
+   * @return {!Array}
+   */
+  function _sliceArr(source, start, end) {
+
+    /** @type {!Array} */
+    var arr;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var ii;
+    /** @type {number} */
+    var i;
+
+    len = source.length;
+    start = start || 0;
+    start = start < 0 ? len + start : start;
+    end = end || len;
+    end = end > len ? len : end < 0 ? len + end : end;
+
+    if (start >= end) return [];
+
+    arr = new Array(end - start);
+    ii = start - 1;
+    i = 0;
+    while (++ii < end) {
+      arr[i++] = source[ii];
+    }
+    return arr;
   }
 
-  if ( !are('num=', start, end) ) {
-    throw new TypeError('Invalid start/end param in vitals.slice.array call.');
+  /**
+   * @private
+   * @param {string} str
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= str.length]
+   * @return {!Array}
+   */
+  function _sliceStr(str, start, end) {
+
+    /** @type {number} */
+    var len;
+
+    len = str.length;
+    start = start || 0;
+    start = start < 0 ? len + start : start;
+    end = end || len;
+    end = end > len ? len : end < 0 ? len + end : end;
+
+    return start >= end ? '' : str.substring(start, end);
   }
 
-  len = obj.length;
-  start = start || 0;
-  start = start < 0 ? len + start : start;
-  end = end || len;
-  end = end > len ? len : end < 0 ? 0 - end : end;
-
-  arr = start < end ? new Array(end - start) : [];
-  ii = start - 1;
-  i = 0;
-  while (++ii < end) {
-    arr[i++] = obj[ii];
-  }
-  return arr;
-};
-slice.arr = slice.array;
-
-/**
- * A shortcut for String.prototype.slice(start, end).
- * @public
- * @param {string} str
- * @param {number=} start [default= 0]
- * @param {number=} end [default= str.length]
- * @return {string}
- */
-slice.string = function sliceString(str, start, end) {
-
-  if ( !is.str(str) ) {
-    throw new TypeError('Invalid str param in vitals.slice.string call.');
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  function _typeError(param, method) {
+    param += ' param';
+    method = method || '';
+    method = 'vitals.slice' + ( method && '.' ) + method;
+    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
   }
 
-  if ( !are('num=', start, end) ) {
-    throw new TypeError('Invalid start/end param in vitals.slice.string call.');
+  /**
+   * @private
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  function _error(msg, method) {
+    method = method || '';
+    method = 'vitals.slice' + ( method && '.' ) + method;
+    return new Error(msg + ' for ' + method + ' call.');
   }
 
-  return str.slice(start, end);
-};
-slice.str = slice.string;
+  // END OF PRIVATE SCOPE FOR SLICE
+  return slice;
+})();
 
 
 module.exports = slice;
