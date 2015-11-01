@@ -19,7 +19,6 @@
 'use strict';
 
 var is = require('node-are').is;
-var are = require('node-are').are;
 var has = require('./has.js');
 
 
@@ -43,30 +42,35 @@ var fill = (function fillPrivateScope() {
    * @param {number=} end - [default= arr.length] Only for fill.array.
    * @return {?(Array|Object|function|string)}
    */
-  function fill(source, val, start, end) {
+  function fill(source, keys, val, start, end) {
 
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( is.null(source) ) return null;
 
-    if ( is._obj(source) ) {
-
-      if ( is.arr(source) ) {
-        if ( !are('num=', start, end) ) throw _typeError('start/end');
-        return _fillArr(source, val, start, end);
-      }
-
-      if (arguments > 2) {
-        if ( !is.str(val) ) throw _typeError('keys');
-        return _fillKeys(source, val, start);
-      }
-
-      return _fillObj(source, val);
+    if ( is.num(source) ) {
+      val = keys;
+      return _fillStr(source, val);
     }
-    
-    if ( !is.num(source) ) throw _typeError('source');
 
-    return _fillStr(source, val);
+    if ( !is._obj(source) ) throw _typeError('source');
+
+    if ( is.arr(source) ) {
+      end = start;
+      start = val;
+      val = keys;
+      if ( !is('num=', start) ) throw _typeError('start');
+      if ( !is('num=', end)   ) throw _typeError('end');
+      return _fillArr(source, val, start, end);
+    }
+
+    if (arguments.length > 2) {
+      if ( !is.str(keys) ) throw _typeError('keys');
+      return _fillKeys(source, keys, val);
+    }
+
+    val = keys;
+    return _fillObj(source, val);
   }
 
   /**
@@ -82,9 +86,11 @@ var fill = (function fillPrivateScope() {
 
     arr = is.num(arr) ? new Array(arr) : arr;
 
-    if ( !is.arr(arr) ) throw _typeError('arr', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
-    if ( !are('num=', start, end) ) throw _typeError('start/end', 'array');
+
+    if ( !is.arr(arr)       ) throw _typeError('arr',   'array');
+    if ( !is('num=', start) ) throw _typeError('start', 'array');
+    if ( !is('num=', end)   ) throw _typeError('end',   'array');
 
     return _fillArr(arr, val, start, end);
   };
@@ -112,7 +118,8 @@ var fill = (function fillPrivateScope() {
       return _fillKeys(obj, keys, val);
     }
 
-    return _fillObj(obj, keys);
+    val = keys;
+    return _fillObj(obj, val);
   };
   // define shorthand
   fill.obj = fill.object;
@@ -153,7 +160,9 @@ var fill = (function fillPrivateScope() {
     start = start || 0;
     start = start < 0 ? len + start : start;
     end = end || len;
-    end = end > len ? len : end < 0 ? 0 - end : end;
+    end = end > len ? len : end < 0 ? len + end : end;
+
+    if (start >= end) throw _error('The start index was >= to the end index');
 
     i = start - 1;
     while (++i < end) {
