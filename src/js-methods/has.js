@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 
 
@@ -53,7 +54,7 @@ var has = (function hasPrivateScope() {
       return _hasStr(source, key);
     }
 
-    if ( !is._obj(source) ) throw _typeError('source');
+    if ( !is._obj(source) ) throw _error.type('source');
 
     return is._arr(source) ? _hasValArr(source, key) : _hasKey(source, key);
   }
@@ -71,7 +72,7 @@ var has = (function hasPrivateScope() {
 
     if ( is.null(source) ) return false;
 
-    if ( !is._obj(source) ) throw _typeError('source', 'key');
+    if ( !is._obj(source) ) throw _error.type('source', 'key');
 
     return _hasKey(source, key);
   }
@@ -89,7 +90,7 @@ var has = (function hasPrivateScope() {
 
     if ( is.null(source) ) return false;
 
-    if ( !is._obj(source) ) throw _typeError('source', 'value');
+    if ( !is._obj(source) ) throw _error.type('source', 'value');
 
     return is._arr(source) ? _hasValArr(source, val) : _hasVal(source, val);
   }
@@ -105,7 +106,7 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _typeError('source', 'pattern');
+    if ( !is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     if (!source) return !String(pattern);
@@ -196,28 +197,9 @@ var has = (function hasPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.has' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.has' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('has');
 
   // END OF PRIVATE SCOPE FOR HAS
   return has;

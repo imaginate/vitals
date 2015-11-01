@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 var clone = require('./clone.js');
@@ -44,15 +45,15 @@ var each = (function eachPrivateScope() {
    */
   function each(val, iteratee, thisArg) {
 
-    if ( !is.func(iteratee)   ) throw _typeError('iteratee');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
     if ( is.num(val) ) {
       _eachCycle(val, iteratee, thisArg);
       return;
     }
 
-    if ( !is._obj(val) ) throw _typeError('val');
+    if ( !is._obj(val) ) throw _error.type('val');
 
     return is._arr(val)
       ? _eachArr(val, iteratee, thisArg)
@@ -75,9 +76,9 @@ var each = (function eachPrivateScope() {
    */
   each.object = function eachObject(obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _typeError('obj',      'object');
-    if ( !is.func(iteratee)   ) throw _typeError('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg',  'object');
+    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _eachObj(obj, iteratee, thisArg);
   };
@@ -99,10 +100,10 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _typeError('obj',        'array');
-    if ( !is.num(obj.length)  ) throw _typeError('obj.length', 'array');
-    if ( !is.func(iteratee)   ) throw _typeError('iteratee',   'array');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg',    'array');
+    if ( !is._obj(obj)        ) throw _error.type('obj',        'array');
+    if ( !is.num(obj.length)  ) throw _error.type('obj.length', 'array');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee',   'array');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',    'array');
 
     return _eachArr(obj, iteratee, thisArg);
   };
@@ -118,9 +119,9 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, action, thisArg) {
 
-    if ( !is.num(count)       ) throw _typeError('count',   'cycle');
-    if ( !is.func(action)     ) throw _typeError('action',  'cycle');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg', 'cycle');
+    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
+    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
 
     _eachCycle(count, action, thisArg);
   };
@@ -223,16 +224,9 @@ var each = (function eachPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.each' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
+  var _error = makeErrorAid('each');
 
   // END OF PRIVATE SCOPE FOR EACH
   return each;

@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 var clone = require('./clone.js');
@@ -63,15 +64,15 @@ var remap = (function remapPrivateScope() {
     if ( is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !is('obj=', thisArg) ) throw _typeError('thisArg');
+      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !is._obj(source)     ) throw _typeError('source');
-    if ( !is.func(iteratee)   ) throw _typeError('iteratee');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg');
+    if ( !is._obj(source)     ) throw _error.type('source');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
     return is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
@@ -96,9 +97,9 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _typeError('source',   'object');
-    if ( !is.func(iteratee)   ) throw _typeError('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg',  'object');
+    if ( !is._obj(source)     ) throw _error.type('source',   'object');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
@@ -122,10 +123,10 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)       ) throw _typeError('source',        'array');
-    if ( !is.num(source.length) ) throw _typeError('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _typeError('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _typeError('thisArg',       'array');
+    if ( !is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -148,8 +149,8 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !is.str(source)      ) throw _typeError('source',  'string');
-    if ( !is('obj=', thisArg) ) throw _typeError('thisArg', 'string');
+    if ( !is.str(source)      ) throw _error.type('source',  'string');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
@@ -318,28 +319,9 @@ var remap = (function remapPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.remap' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.remap' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('remap');
 
   // END OF PRIVATE SCOPE FOR REMAP
   return remap;

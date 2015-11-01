@@ -18,25 +18,26 @@
 
 'use strict';
 
+module.exports = makeErrorAid;
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - ERROR
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @public
  * @param {string} vitalsMethod
- * @return {!ErrorHelper}
+ * @return {!ErrorAid}
  */
-module.exports = function makeErrorHelper(vitalsMethod) {
-  return new ErrorHelper(vitalsMethod);
-};
+function makeErrorAid(vitalsMethod) {
+  return new ErrorAid(vitalsMethod).error;
+}
 
 /**
  * @param {string} vitalsMethod
  * @constructor
  */
-function ErrorHelper(vitalsMethod) {
+function ErrorAid(vitalsMethod) {
 
   vitalsMethod = 'vitals.' + vitalsMethod;
 

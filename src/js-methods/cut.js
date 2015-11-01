@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 var slice = require('./slice.js');
@@ -51,7 +52,7 @@ var cut = (function cutPrivateScope() {
       return _cutPattern(source, removals);
     }
 
-    if ( !is._obj(source) ) throw _typeError('source');
+    if ( !is._obj(source) ) throw _error.type('source');
 
     if ( !is.arr(removals) ) {
       if ( !_has(source, removals) ) {
@@ -74,7 +75,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !is._obj(source) ) throw _typeError('source', 'key');
+    if ( !is._obj(source) ) throw _error.type('source', 'key');
     if ( !_has(source, key)) throw _error('Key does not exist in source','key');
 
     return _cutKey(source, key);
@@ -91,7 +92,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.keys = function cutKeys(source, keys) {
 
-    if ( !is._obj(source) ) throw _typeError('source', 'keys');
+    if ( !is._obj(source) ) throw _error.type('source', 'keys');
 
     keys = arguments.length > 2 ? slice(arguments, 1) : keys;
 
@@ -118,7 +119,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.pattern = function cutPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _typeError('source', 'pattern');
+    if ( !is.str(source) ) throw _error.type('source', 'pattern');
 
     return _cutPattern(source, pattern);
   };
@@ -134,7 +135,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.patterns = function cutPatterns(source, patterns) {
 
-    if ( !is.str(source) ) throw _typeError('source', 'patterns');
+    if ( !is.str(source) ) throw _error.type('source', 'patterns');
 
     patterns = arguments.length > 2 ? slice(arguments, 1) : patterns;
 
@@ -268,28 +269,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.cut' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.cut' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('cut');
 
   // END OF PRIVATE SCOPE FOR CUT
   return cut;

@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -53,19 +54,19 @@ var fill = (function fillPrivateScope() {
       return _fillStr(source, val);
     }
 
-    if ( !is._obj(source) ) throw _typeError('source');
+    if ( !is._obj(source) ) throw _error.type('source');
 
     if ( is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
-      if ( !is('num=', start) ) throw _typeError('start');
-      if ( !is('num=', end)   ) throw _typeError('end');
+      if ( !is('num=', start) ) throw _error.type('start');
+      if ( !is('num=', end)   ) throw _error.type('end');
       return _fillArr(source, val, start, end);
     }
 
     if (arguments.length > 2) {
-      if ( !is.str(keys) ) throw _typeError('keys');
+      if ( !is.str(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
 
@@ -88,9 +89,9 @@ var fill = (function fillPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    if ( !is.arr(arr)       ) throw _typeError('arr',   'array');
-    if ( !is('num=', start) ) throw _typeError('start', 'array');
-    if ( !is('num=', end)   ) throw _typeError('end',   'array');
+    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
+    if ( !is('num=', start) ) throw _error.type('start', 'array');
+    if ( !is('num=', end)   ) throw _error.type('end',   'array');
 
     return _fillArr(arr, val, start, end);
   };
@@ -110,11 +111,11 @@ var fill = (function fillPrivateScope() {
    */
   fill.object = function fillObject(obj, keys, val) {
 
-    if ( !is._obj(obj) ) throw _typeError('obj', 'object');
+    if ( !is._obj(obj) ) throw _error.type('obj', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      if ( !is.str(keys) ) throw _typeError('keys', 'object');
+      if ( !is.str(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
 
@@ -133,7 +134,7 @@ var fill = (function fillPrivateScope() {
    */
   fill.string = function fillString(count, val) {
 
-    if ( !is.num(count) ) throw _typeError('count', 'string');
+    if ( !is.num(count) ) throw _error.type('count', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     return _fillStr(count, val);
@@ -249,28 +250,9 @@ var fill = (function fillPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.fill' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.fill' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('fill');
 
   // END OF PRIVATE SCOPE FOR FILL
   return fill;

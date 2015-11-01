@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 
 
@@ -38,15 +39,15 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    if ( !is('num=', start) ) throw _typeError('start');
-    if ( !is('num=', end)   ) throw _typeError('end');
+    if ( !is('num=', start) ) throw _error.type('start');
+    if ( !is('num=', end)   ) throw _error.type('end');
 
     if ( is.null(source) ) return null;
 
     if ( is.str(source) ) return _sliceStr(source, start, end);
 
-    if ( !is._obj(source)       ) throw _typeError('source');
-    if ( !is.num(source.length) ) throw _typeError('source.length');
+    if ( !is._obj(source)       ) throw _error.type('source');
+    if ( !is.num(source.length) ) throw _error.type('source.length');
 
     return _sliceArr(source, start, end);
   }
@@ -61,10 +62,10 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !is._obj(source)       ) throw _typeError('source',        'array');
-    if ( !is.num(source.length) ) throw _typeError('source.length', 'array');
-    if ( !is('num=', start)     ) throw _typeError('start',         'array');
-    if ( !is('num=', end)       ) throw _typeError('end',           'array');
+    if ( !is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is('num=', start)     ) throw _error.type('start',         'array');
+    if ( !is('num=', end)       ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -81,9 +82,9 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !is.str(str)       ) throw _typeError('str',   'string');
-    if ( !is('num=', start) ) throw _typeError('start', 'string');
-    if ( !is('num=', end)   ) throw _typeError('end',   'string');
+    if ( !is.str(str)       ) throw _error.type('str',   'string');
+    if ( !is('num=', start) ) throw _error.type('start', 'string');
+    if ( !is('num=', end)   ) throw _error.type('end',   'string');
 
     return _sliceStr(str, start, end);
   };
@@ -148,28 +149,9 @@ var slice = (function slicePrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.slice' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.slice' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('slice');
 
   // END OF PRIVATE SCOPE FOR SLICE
   return slice;

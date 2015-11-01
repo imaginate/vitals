@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -44,7 +45,7 @@ var get = (function getPrivateScope() {
 
     if ( is.null(obj) ) return null;
 
-    if ( !is._obj(obj) ) throw _error('obj', 'keys');
+    if ( !is._obj(obj) ) throw _error.type('obj', 'keys');
 
     return _getKeys(obj);
   };
@@ -68,16 +69,9 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _error(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.get' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
+  var _error = makeErrorAid('get');
 
   // END OF PRIVATE SCOPE FOR GET
   return get;

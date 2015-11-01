@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -57,7 +58,7 @@ var clone = (function clonePrivateScope() {
    */
   clone.object = function cloneObject(obj, deep) {
 
-    if ( !is.obj(obj) ) throw _error('obj', 'object');
+    if ( !is.obj(obj) ) throw _error.type('obj', 'object');
 
     return _cloneObj(obj, deep);
   };
@@ -73,7 +74,8 @@ var clone = (function clonePrivateScope() {
    */
   clone.array = function cloneArray(obj, deep) {
 
-    if ( !is.obj(obj) || !is.num(obj.length)  ) throw _error('obj', 'array');
+    if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
+    if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
 
     return _cloneArr(obj, deep);
   };
@@ -89,7 +91,7 @@ var clone = (function clonePrivateScope() {
    */
   clone.regexp = function cloneRegexp(regex) {
 
-    if ( !is.regex(regex) ) throw _error('regex', 'regexp');
+    if ( !is.regex(regex) ) throw _error.type('regex', 'regexp');
 
     return _cloneRegex(regex);
   };
@@ -107,7 +109,7 @@ var clone = (function clonePrivateScope() {
    */
   clone.func = function cloneFunction(func, deep) {
 
-    if ( !is.func(func) ) throw _error('func', 'function');
+    if ( !is.func(func) ) throw _error.type('func', 'function');
 
     return _cloneFunc(func, deep);
   };
@@ -240,15 +242,9 @@ var clone = (function clonePrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _error(param, method) {
-    param += ' param';
-    method = 'vitals.clone.' + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
+  var _error = makeErrorAid('clone');
 
   // END OF PRIVATE SCOPE FOR CLONE
   return clone;

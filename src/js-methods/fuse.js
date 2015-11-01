@@ -18,6 +18,7 @@
 
 'use strict';
 
+var makeErrorAid = require('./_error.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 var slice = require('./slice.js');
@@ -55,7 +56,7 @@ var fuse = (function fusePrivateScope() {
       return _fuseStrs(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _typeError('dest');
+    if ( !is._obj(dest) ) throw _error.type('dest');
 
     dest = is.args(dest) ? slice(dest) : dest;
 
@@ -83,7 +84,7 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.object = function fuseObject(dest, vals) {
 
-    if ( !is._obj(dest) ) throw _typeError('dest', 'object');
+    if ( !is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length === 2) {
@@ -107,7 +108,7 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.array = function fuseArray(dest, vals) {
 
-    if ( !is._arr(dest) ) throw _typeError('dest', 'array');
+    if ( !is._arr(dest) ) throw _error.type('dest', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
     dest = is.args(dest) ? slice(dest) : dest;
@@ -129,7 +130,7 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.string = function fuseString(dest, vals) {
 
-    if ( !is.str(dest) ) throw _typeError('dest', 'string');
+    if ( !is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     if (arguments.length === 2) return _fuseStr(dest, vals);
@@ -276,28 +277,9 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
+   * @type {!ErrorAid}
    */
-  function _typeError(param, method) {
-    param += ' param';
-    method = method || '';
-    method = 'vitals.fuse' + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-  }
-
-  /**
-   * @private
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  function _error(msg, method) {
-    method = method || '';
-    method = 'vitals.fuse' + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
-  }
+  var _error = makeErrorAid('fuse');
 
   // END OF PRIVATE SCOPE FOR FUSE
   return fuse;
