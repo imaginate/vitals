@@ -182,8 +182,8 @@ var each = (function eachPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {number} count
+   * @param {function} action
    * @param {Object=} thisArg
    */
   function _eachCycle(count, action, thisArg) {
