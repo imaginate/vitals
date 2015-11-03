@@ -29,6 +29,19 @@ var has = require('./has.js');
 
 var clone = (function clonePrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - clone
+  // - clone.object (clone.obj)
+  // - clone.array  (clone.arr|clone.args)
+  // - clone.regexp (clone.re|clone.regex)
+  // - clone.func   (clone.fn|clone.function*)
+  //
+  // * Note that clone.function will fail in all ES3 browser
+  //   environments and even some ES5. Use clone.func for
+  //   compatibility with older browser environments.
+  //////////////////////////////////////////////////////////
+
   /**
    * Returns a clone of the given value.
    * @public
@@ -60,7 +73,8 @@ var clone = (function clonePrivateScope() {
    */
   clone.object = function cloneObject(obj, deep) {
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'object');
+    if ( !is.obj(obj)       ) throw _error.type('obj',  'object');
+    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
 
     return _cloneObj(obj, deep);
   };
@@ -78,6 +92,7 @@ var clone = (function clonePrivateScope() {
 
     if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
     if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
+    if ( !is('bool=', deep)  ) throw _error.type('deep',       'array');
 
     return _cloneArr(obj, deep);
   };
@@ -94,12 +109,13 @@ var clone = (function clonePrivateScope() {
    */
   clone.regexp = function cloneRegexp(regex, forceGlobal) {
 
-    if ( !is.regex(regex) ) throw _error.type('regex', 'regexp');
+    if ( !is.regex(regex)          ) throw _error.type('regex',       'regexp');
     if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
     return _cloneRegex(regex, forceGlobal);
   };
   // define shorthand
+  clone.re = clone.regexp;
   clone.regex = clone.regexp;
 
   /**
@@ -113,7 +129,8 @@ var clone = (function clonePrivateScope() {
    */
   clone.func = function cloneFunction(func, deep) {
 
-    if ( !is.func(func) ) throw _error.type('func', 'function');
+    if ( !is.func(func)     ) throw _error.type('func', 'function');
+    if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
 
     return _cloneFunc(func, deep);
   };
@@ -123,6 +140,10 @@ var clone = (function clonePrivateScope() {
     clone.function = clone.func;
   }
   catch (e) {}
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -156,24 +177,10 @@ var clone = (function clonePrivateScope() {
     var source;
     /** @type {string} */
     var flags;
-    /** @type {string} */
-    var key;
 
     source = _escape(regex.source);
-    flags = '';
-    for (key in FLAGS) {
-      if ( _has(FLAGS, key) && regex[key] ) {
-        flags += FLAGS[key];
-      }
-    }
-    if ( is.bool(forceGlobal) ) {
-      if ( has(flags, 'g') ) {
-        flags = forceGlobal ? flags : flags.replace('g', '');
-      }
-      else {
-        flags = forceGlobal ? flags + 'g' : flags;
-      }
-    }
+    flags = _setupFlags(regex, forceGlobal);
+
     return flags ? new RegExp(source, flags) : new RegExp(source);
   }
 
@@ -189,6 +196,72 @@ var clone = (function clonePrivateScope() {
     }, func, deep);
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE PROPERTIES - CLONE.REGEXP
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Returns a properly escaped RegExp.prototype.source.
+   * @private
+   * @param {string} source
+   * @return {string}
+   */
+  var _escape = (function() {
+
+    /** @type {?RegExp} */
+    var pattern = /\n/.source !== '\\n' ? /\\/g : null;
+
+    return pattern
+      ? function _escape(source) { return source.replace(pattern, '\\\\'); }
+      : function _escape(source) { return source; };
+  })();
+
+  /**
+   * @private
+   * @type {!Object}
+   * @const
+   */
+  var FLAGS = _merge({
+    ignoreCase: 'i',
+    multiline:  'm',
+    global:     'g'
+  }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
+
+  /**
+   * @private
+   * @param {!RegExp} regex
+   * @param {boolean=} forceGlobal
+   * @return {string}
+   */
+  function _setupFlags(regex, forceGlobal) {
+
+    /** @type {string} */
+    var flags;
+    /** @type {string} */
+    var key;
+
+    flags = '';
+    for (key in FLAGS) {
+      if ( _own(FLAGS, key) && regex[key] ) {
+        flags += FLAGS[key];
+      }
+    }
+
+    if ( is.undefined(forceGlobal) ) return flags;
+
+    return has(flags, 'g')
+      ? forceGlobal
+        ? flags
+        : flags.replace('g', '')
+      : forceGlobal
+        ? flags + 'g'
+        : flags;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {!(Object|function)} dest
@@ -203,14 +276,14 @@ var clone = (function clonePrivateScope() {
 
     if (deep) {
       for (key in source) {
-        if ( _has(source, key) ) {
+        if ( _own(source, key) ) {
           dest[key] = clone(source[key], true);
         }
       }
     }
     else {
       for (key in source) {
-        if ( _has(source, key) ) {
+        if ( _own(source, key) ) {
           dest[key] = source[key];
         }
       }
@@ -219,39 +292,12 @@ var clone = (function clonePrivateScope() {
   }
 
   /**
-   * Returns the properly escaped RegExp.prototype.source.
-   * @private
-   * @param {string} source
-   * @return {string}
-   */
-  var _escape = (function() {
-
-    /** @type {?RegExp} */
-    var replacer = /\n/.source !== '\\n' ? /\\/g : null;
-
-    return function _escape(source) {
-      return replacer ? source.replace(replacer, '\\\\') : source;
-    };
-  })();
-
-  /**
-   * @private
-   * @type {!Object<string, string>}
-   * @const
-   */
-  var FLAGS = _merge({
-    ignoreCase: 'i',
-    multiline:  'm',
-    global:     'g'
-  }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
-
-  /**
    * @private
    * @param {?(Object|function)} obj
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
   /**
    * @private
@@ -259,6 +305,7 @@ var clone = (function clonePrivateScope() {
    */
   var _error = makeErrorAid('clone');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CLONE
   return clone;
 })();
