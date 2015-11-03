@@ -48,9 +48,10 @@ var has = (function hasPrivateScope() {
     if ( is.null(source) ) return false;
 
     if ( is.str(source) ) {
-      if (!source) return !String(key);
       if ( is.regex(key) ) return _hasPattern(source, key);
       key = String(key);
+      if (!source) return !key;
+      if (!key) return true;
       return _hasStr(source, key);
     }
 
@@ -109,9 +110,11 @@ var has = (function hasPrivateScope() {
     if ( !is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
-    if (!source) return !String(pattern);
     if ( is.regex(pattern) ) return _hasPattern(source, pattern);
+
     pattern = String(pattern);
+    if (!source) return !pattern;
+    if (!pattern) return true;
     return _hasStr(source, pattern);
   }
   // define shorthand
