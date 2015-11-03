@@ -107,6 +107,7 @@
   // INSERT get.js
   // INSERT remap.js
   // INSERT seal.js
+  // INSERT until.js
 
 
 // *****************************************************************************
@@ -126,6 +127,6 @@
     remap:  remap,
     seal:   seal,
     slice:  slice,
-    typeOf: typeOf
+    until:  until
   };
 })());

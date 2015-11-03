@@ -19,7 +19,6 @@
 'use strict';
 
 var is = require('node-are').is;
-var are = require('node-are').are;
 
 
 // *****************************************************************************
@@ -38,6 +37,7 @@ var are = require('node-are').are;
 // INSERT get.js
 // INSERT remap.js
 // INSERT seal.js
+// INSERT until.js
 
 
 module.exports = {
@@ -52,5 +52,6 @@ module.exports = {
   merge:  merge,
   remap:  remap,
   seal:   seal,
-  slice:  slice
+  slice:  slice,
+  until:  until
 };
