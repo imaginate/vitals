@@ -46,7 +46,7 @@ var clone = (function clonePrivateScope() {
    * Returns a clone of the given value.
    * @public
    * @param {*} val
-   * @param {boolean=} deep - If the val is a RegExp this param is forceGlobal.
+   * @param {boolean=} deep
    * @return {*}
    */
   function clone(val, deep) {
@@ -60,7 +60,7 @@ var clone = (function clonePrivateScope() {
         : is._arr(val)
           ? _cloneArr(val, deep)
           : is.regex(val)
-            ? _cloneRegex(val, deep)
+            ? _cloneRegex(val)
             : _cloneObj(val, deep);  
   }
 
@@ -274,18 +274,30 @@ var clone = (function clonePrivateScope() {
     /** @type {string} */
     var key;
 
-    if (deep) {
-      for (key in source) {
-        if ( _own(source, key) ) {
-          dest[key] = clone(source[key], true);
-        }
+    if (deep) return _mergeDeep(dest, source);
+
+    for (key in source) {
+      if ( _own(source, key) ) {
+        dest[key] = source[key];
       }
     }
-    else {
-      for (key in source) {
-        if ( _own(source, key) ) {
-          dest[key] = source[key];
-        }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!(Object|function)} source
+   * @return {!(Object|function)}
+   */
+  function _mergeDeep(dest, source) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( _own(source, key) ) {
+        dest[key] = clone(source[key], true);
       }
     }
     return dest;
