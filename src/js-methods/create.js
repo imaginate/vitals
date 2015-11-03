@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - CREATE
+ * VITALS - JS METHOD - CREATE
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/create.js}
@@ -29,12 +29,19 @@ var clone = require('./clone.js');
 
 var create = (function createPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - create
+  // - create.object (create.obj)
+  //////////////////////////////////////////////////////////
+
   /**
    * A shortcut for Object.create(proto[, props]) that allows you to choose the
-   *   default config for the props.
+   *   default configuration for the properties.
    * @public
    * @param {Object} proto
-   * @param {!(Object<string, *>|Array<string>|string)=} props - more per type:
+   * @param {!(Object<string, *>|Array<string>|string)=} props - If defined the
+   *   details for the props param are as follows (per props type):
    *   object: Defined as "propName => propVal" or "propName => propDescriptor".
    *   array:  Each value should be a property name (i.e. key).
    *   string: Converted to an array of property names. One of the chars in the
@@ -46,42 +53,158 @@ var create = (function createPrivateScope() {
    */
   function create(proto, props, descriptor) {
 
-    /** @type {!Array<string>} */
-    var keys;
-    /** @type {(number|string)} */
-    var prop;
+    if ( !is('?obj', proto) ) throw _error.type('proto');
+
+    if ( is.str(props) ) props = _splitProps(props);
+
+    if ( !is('!obj=', props)      ) throw _error.type('props');
+    if ( !is('!obj=', descriptor) ) throw _error.type('descriptor');
+
+    return _create(proto, props, descriptor);
+  }
+
+  /**
+   * A shortcut for Object.create(proto[, props]) that allows you to choose the
+   *   default configuration for the properties.
+   * @public
+   * @param {Object} proto
+   * @param {!(Object<string, *>|Array<string>|string)=} props - If defined the
+   *   details for the props param are as follows (per props type):
+   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
+   *   array:  Each value should be a property name (i.e. key).
+   *   string: Converted to an array of property names. One of the chars in the
+   *     following list is used as the separator (chars listed in order of use):
+   *     ", "  ","  "|"  " "
+   * @param {!Object=} descriptor - The default descriptor values for each prop.
+   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @return {!Object}
+   */
+  create.object = function createObject(proto, props, descriptor) {
+
+    if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
+
+    if ( is.str(props) ) props = _splitProps(props);
+
+    if ( !is('!obj=', props)      ) throw _error.type('props',      'object');
+    if ( !is('!obj=', descriptor) ) throw _error.type('descriptor', 'object');
+
+    return _create(proto, props, descriptor);
+  }
+  // define shorthand
+  create.obj = create.object;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {string} props - One of the chars in the following list is used as
+   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
+   * @return {!Array<string>}
+   */
+  function _splitProps(props) {
+    return props.split(
+      has(props, ', ')
+        ? ', ' : has(props, ',')
+          ? ',' : has(props, '|')
+            ? '|' : ' '
+    );
+  }
+
+  /**
+   * @private
+   * @param {Object} proto
+   * @param {!(Object<string, *>|Array<string>|string)=} props
+   * @param {!Object=} descriptor
+   * @return {!Object}
+   */
+  function _create(proto, props, descriptor) {
+
+    if (!props) return _ObjectCreate(proto);
+
+    descriptor = _getDescriptor(descriptor || null);
+    props = is.arr(props)
+      ? _setupPropsWithKeys(props, descriptor)
+      : _setupPropsWithVals(props, descriptor);
+
+    return _ObjectCreate(proto, props);
+  }
+
+  /**
+   * @private
+   * @param {!Array<string>} keys
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupPropsWithKeys(keys, descriptor) {
+
+    /** @type {!Object} */
+    var props;
+    /** @type {string} */
+    var key;
     /** @type {number} */
     var len;
+    /** @type {number} */
+    var i;
 
-    if ( !is('?obj', proto) ) {
-      throw new TypeError('Invalid proto param in vitals.create call.');
+    props = {};
+
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
+      key = keys[i];
+      props[key] = clone.obj(descriptor);
     }
+    return props;
+  }
 
-    props = is.str(props) ? _splitPropStr(props) : is.obj(props) ? props : null;
-    descriptor = is.obj(descriptor) ? descriptor : null;
-    descriptor = _getDescriptor(descriptor);
+  /**
+   * @private
+   * @param {!Object} props
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupPropsWithVals(props, descriptor) {
 
-    if (!props) return _objCreate(proto);
+    /** @type {string} */
+    var key;
 
-    if ( is.arr(props) ) {
-      keys = props;
-      props = {};
-      len = keys.length;
-      prop = -1;
-      while (++prop < len) {
-        props[ keys[prop] ] = clone.obj(descriptor);
+    for (key in props) {
+      if ( _own(props, key) ) {
+        props[key] = _getPropWithVal(key, props[key], descriptor);
       }
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {string} key
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _getPropWithVal(key, val, descriptor) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = clone.obj(descriptor);
+
+    if ( _isDescriptor(val) ) {
+      prop = _merge(prop, val);
     }
     else {
-      for (prop in props) {
-        if ( has(props, prop) ) {
-          _setProp(props, prop, props[prop], descriptor);
-        }
-      }
+      prop.value = val;
     }
 
-    return _objCreate(proto, props);
+    return prop;
   }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE PROPERTIES - DESCRIPTORS
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -120,52 +243,20 @@ var create = (function createPrivateScope() {
 
   /**
    * @private
-   * @param {string} props - One of the chars in the following list is used as
-   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
-   * @return {!Array<string>}
-   */
-  function _splitPropStr(props) {
-    return props.split(
-      has(props, ', ')
-        ? ', ' : has(props, ',')
-          ? ',' : has(props, '|')
-            ? '|' : ' '
-    );
-  }
-
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {string} key
-   * @param {*} val
-   * @param {!Object} descriptor
-   */
-  function _setProp(obj, key, val, descriptor) {
-
-    /** @type {!Object} */
-    var prop;
-
-    prop = clone.obj(descriptor);
-
-    if ( _isDescriptor(val) ) {
-      prop = _merge(prop, val);
-    }
-    else {
-      prop.value = val;
-    }
-
-    obj[key] = prop;
-  }
-
-  /**
-   * @private
    * @param {Object} descriptor
    * @return {!Object}
    */
   function _getDescriptor(descriptor) {
-    return _merge( clone.obj( _isAccessor(descriptor)
-      ? ACCESSOR_DESCRIPTOR : DATA_DESCRIPTOR
-    ), descriptor);
+
+    /** @type {!Object} */
+    var defaultDescriptor;
+
+    defaultDescriptor = _isAccessor(descriptor)
+      ? ACCESSOR_DESCRIPTOR
+      : DATA_DESCRIPTOR;
+    defaultDescriptor = clone.obj(defaultDescriptor);
+
+    return _merge(defaultDescriptor, descriptor);
   }
 
   /**
@@ -176,26 +267,28 @@ var create = (function createPrivateScope() {
   function _isDescriptor(obj) {
 
     /** @type {string} */
-    var prop;
+    var key;
 
     if ( !is.obj(val) ) return false;
 
-    for (prop in obj) {
-      if ( has(obj, prop) && has(DESCRIPTOR_PROPS, prop) ) {
-        return true;
-      }
+    for (key in obj) {
+      if ( _own(obj, key) && _own(DESCRIPTOR_PROPS, key) ) return true;
     }
     return false;
   }
 
   /**
    * @private
-   * @param {!Object} obj
+   * @param {Object} obj
    * @return {boolean}
    */
   function _isAccessor(obj) {
-    return has(obj, 'get') || has(obj, 'set');
+    return _own(obj, 'get') || _own(obj, 'set');
   }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - OBJECT.CREATE POLYFILL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -203,24 +296,18 @@ var create = (function createPrivateScope() {
    * @param {Object=} props
    * @return {!Object}
    */
-  var _objCreate = !!Object.create ? Object.create : _objCreatePolyfill;
+  var _ObjectCreate = !!Object.create
+    ? Object.create
+    : function ObjectCreate(proto, props) {
 
-  /**
-   * @private
-   * @param {Object} proto
-   * @param {Object=} props
-   * @return {!Object}
-   */
-  function _objCreatePolyfill(proto, props) {
+      /** @type {!Object} */
+      var obj;
 
-    /** @type {!Object} */
-    var obj;
-
-    _Object.prototype = proto;
-    obj = new _Object(props);
-    _Object.prototype = null;
-    return obj;
-  }
+      _Object.prototype = proto;
+      obj = new _Object(props);
+      _Object.prototype = null;
+      return obj;
+    };
 
   /**
    * @private
@@ -230,16 +317,20 @@ var create = (function createPrivateScope() {
   function _Object(props) {
 
     /** @type {string} */
-    var prop;
+    var key;
 
     if (props) {
-      for (prop in props) {
-        if ( has(props, prop) ) {
-          this[prop] = props[prop].value;
+      for (key in props) {
+        if ( _own(props, key) ) {
+          this[key] = props[key].value;
         }
       }
     }
   }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -253,13 +344,28 @@ var create = (function createPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _has(obj, key) ) {
+      if ( _own(obj, key) ) {
         dest[key] = obj[key];
       }
     }
     return dest;
   }
 
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _own = has.key;
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = makeErrorAid('create');
+
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CREATE
   return create;
 })();
