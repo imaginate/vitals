@@ -33,20 +33,22 @@ var clone = (function clonePrivateScope() {
    * Returns a clone of the given value.
    * @public
    * @param {*} val
-   * @param {boolean=} deep
+   * @param {boolean=} deep - If the val is a RegExp this param is forceGlobal.
    * @return {*}
    */
   function clone(val, deep) {
 
-    if ( is.func(val) ) return _cloneFunc(val, deep);
+    if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    if ( is.obj(val) ) {
-      if ( is._arr(val) ) return _cloneArr(val, deep);
-      if ( is.regex(val) ) return _cloneRegex(val);
-      return _cloneObj(val, deep);
-    }
-
-    return val;
+    return !is._obj(val)
+      ? val
+      : is.func(val)
+        ? _cloneFunc(val, deep)
+        : is._arr(val)
+          ? _cloneArr(val, deep)
+          : is.regex(val)
+            ? _cloneRegex(val, deep)
+            : _cloneObj(val, deep);  
   }
 
   /**
@@ -87,13 +89,15 @@ var clone = (function clonePrivateScope() {
    * Creates a new RegExp from a given RegExp.
    * @public
    * @param {!RegExp} regex
+   * @param {boolean=} forceGlobal
    * @return {!RegExp}
    */
-  clone.regexp = function cloneRegexp(regex) {
+  clone.regexp = function cloneRegexp(regex, forceGlobal) {
 
     if ( !is.regex(regex) ) throw _error.type('regex', 'regexp');
+    if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
-    return _cloneRegex(regex);
+    return _cloneRegex(regex, forceGlobal);
   };
   // define shorthand
   clone.regex = clone.regexp;
@@ -143,9 +147,10 @@ var clone = (function clonePrivateScope() {
   /**
    * @private
    * @param {!RegExp} regex
+   * @param {boolean=} forceGlobal
    * @return {!RegExp}
    */
-  function _cloneRegex(regex) {
+  function _cloneRegex(regex, forceGlobal) {
 
     /** @type {string} */
     var source;
@@ -159,6 +164,14 @@ var clone = (function clonePrivateScope() {
     for (key in FLAGS) {
       if ( _has(FLAGS, key) && regex[key] ) {
         flags += FLAGS[key];
+      }
+    }
+    if ( is.bool(forceGlobal) ) {
+      if ( has(flags, 'g') ) {
+        flags = forceGlobal ? flags : flags.replace('g', '');
+      }
+      else {
+        flags = forceGlobal ? flags + 'g' : flags;
       }
     }
     return flags ? new RegExp(source, flags) : new RegExp(source);
