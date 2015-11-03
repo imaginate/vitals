@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - SLICE
  * -----------------------------------------------------------------------------
  * @version 0.1.0
- * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/parts/js-shortcuts/slice.js}
+ * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/slice.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

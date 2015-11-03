@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - CREATE
  * -----------------------------------------------------------------------------
  * @version 0.1.0
- * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/parts/js-shortcuts/create.js}
+ * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/create.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
