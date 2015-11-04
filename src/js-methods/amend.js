@@ -123,6 +123,123 @@ var amend = (function amendPrivateScope() {
     return _amendProps(obj, props, val, descriptor, staticType, setter);
   }
 
+  /**
+   * A shortcut for Object.defineProperty.
+   * @public
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {*=} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  amend.property = function amendProperty(obj, key, val, descriptor) {
+
+    if ( !is.obj(obj) ) throw _error.type('obj', 'property');
+    if ( !is.str(key) ) throw _error.type('key', 'property');
+
+    if (arguments.length < 4) descriptor = val;
+
+    if ( !is.obj(descriptor) ) throw _error.type('descriptor', 'property');
+
+    if ( arguments.length > 3 && !_isAccessor(descriptor) ) {
+      descriptor.value = val;
+    }
+
+    return _amendProp(obj, key, descriptor);
+  };
+  // define shorthand
+  amend.prop = amend.property;
+
+  /**
+   * A shortcut for Object.defineProperties that includes easier property
+   *   assignment, static type assignment, and more flexible default descriptor
+   *   options.
+   * @public
+   * @param {!Object} obj
+   * @param {!(Object<string, *>|Array<string>|string)} props - The details for
+   *   the props param are as follows (per props type):
+   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
+   *   array:  An array of key names to define.
+   *   string: Converted to an array of key names to define. Use the following
+   *     list of chars for the separator (chars listed in order of rank):
+   *     ", "  ","  "|"  " "
+   * @param {*=} val - Only use (and required) if an array or string of keys is
+   *   given for the props param. This param defines the value assigned for all
+   *   keys regardless of descriptor type.
+   * @param {!Object=} descriptor - The default descriptor values for each prop.
+   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {string=} staticType - If defined all new properties are assigned
+   *   an accessor descriptor (unless assigned a data descriptor in the props
+   *   param) that includes a setter (unless assigned a setter in the props
+   *   param) that only sets the property if the new value passes an
+   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   type test. The setter is as follows:
+   *     ```
+   *     prop.set = function setter(newVal) {
+   *       if ( is(staticType, newVal) ) {
+   *         value = newVal;
+   *       }
+   *     };
+   *     ```
+   * @param {function(*, *): *=} setter - If defined all new properties are
+   *   assigned an accessor descriptor (unless assigned a data descriptor in the
+   *   props param) that includes a setter (unless assigned a setter in the
+   *   props param) that sets the property to the value returned by this setter.
+   *   Note that this setter function will receive two params, the new value and
+   *   the current value. Also note that if the staticType param is defined this
+   *   setter will not get called until the new value passes the type test.
+   * @return {!Object}
+   */
+  amend.properties = function amendProperties(obj, props, val, descriptor,
+                                                       staticType, setter) {
+
+    /** @type {!Array} */
+    var args;
+    /** @type {number} */
+    var len;
+
+    if ( !is.obj(obj) ) throw _error.type('obj', 'properties');
+
+    if ( is.str(props) ) props = _splitProps(props);
+
+    if ( !is.obj(props) ) throw _error.type('props', 'properties');
+
+    len = arguments.length;
+
+    if ( is.arr(props) ) {
+      if (len < 3) throw _error('No val defined', 'properties');
+      if (len === 4 || len === 5) {
+        args = _parseArgs(len - 1, descriptor, staticType, setter);
+        descriptor = args[0];
+        staticType = args[1];
+        setter = args[2];
+      }
+      if ( staticType && !is(staticType, val) ) {
+        throw _error('The val and staticType do not match', 'properties');
+      }
+    }
+    else if (len > 2) {
+      setter = staticType;
+      staticType = descriptor;
+      descriptor = val;
+      val = undefined;
+      if (len === 3 || len === 4) {
+        args = _parseArgs(len, descriptor, staticType, setter);
+        descriptor = args[0];
+        staticType = args[1];
+        setter = args[2];
+      }
+    }
+
+    if ( !is('!obj=', descriptor)) throw _error.type('descriptor','properties');
+    if ( !is('str=',  staticType)) throw _error.type('staticType','properties');
+    if ( !is('func=', setter)    ) throw _error.type('setter',    'properties');
+
+    return _amendProps(obj, props, val, descriptor, staticType, setter);
+  };
+  // define shorthand
+  amend.props = amend.properties;
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ARG PARSING
   //////////////////////////////////////////////////////////
@@ -208,6 +325,18 @@ var amend = (function amendPrivateScope() {
         : _setupProps(props, descriptor);
 
     return _ObjectDefineProperties(obj, props);
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _amendProp(obj, key, descriptor) {
+    descriptor = _getDescriptor(descriptor);
+    return _ObjectDefineProperty(obj, key, descriptor);
   }
 
   /**
@@ -502,7 +631,7 @@ var amend = (function amendPrivateScope() {
   }
 
   //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - OBJECT.DEFINE_PROPERTIES POLYFILL
+  // PRIVATE METHODS - OBJECT.DEFINE_PROPERTIES POLYFILLS
   //////////////////////////////////////////////////////////
 
   /**
@@ -537,6 +666,20 @@ var amend = (function amendPrivateScope() {
 
     return obj.prop === obj;
   })();
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  var _ObjectDefineProperty = HAS_DEFINE_PROPS
+    ? Object.defineProperty
+    : function ObjectDefineProperty(obj, key, descriptor) {
+      obj[key] = _own(descriptor, 'get') ? descriptor.get() : descriptor.value;
+      return obj;
+    };
 
   /**
    * @private
