@@ -78,64 +78,41 @@ var amend = (function amendPrivateScope() {
    */
   function amend(obj, props, val, descriptor, staticType, setter) {
 
+    /** @type {!Array} */
+    var args;
+    /** @type {number} */
+    var len;
+
     if ( !is.obj(obj) ) throw _error.type('obj');
 
     if ( is.str(props) ) props = _splitProps(props);
 
     if ( !is.obj(props) ) throw _error.type('props');
 
-    // Set the descriptor, staticType, & setter values
+    len = arguments.length;
+
     if ( is.arr(props) ) {
-      if (arguments.length < 3) throw _error('No val defined');
-      if (arguments.length === 4) {
-        if ( is.str(descriptor) ) {
-          staticType = descriptor;
-          descriptor = undefined;
-        }
-        else if ( is.func(descriptor) ) {
-          setter = descriptor;
-          descriptor = undefined;
-        }
+      if (len < 3) throw _error('No val defined');
+      if (len === 4 || len === 5) {
+        args = _parseArgs(len - 1, descriptor, staticType, setter);
+        descriptor = args[0];
+        staticType = args[1];
+        setter = args[2];
       }
-      else if (arguments.length === 5) {
-        if ( is.func(staticType) ) {
-          setter = staticType;
-          if ( is.str(descriptor) ) {
-            staticType = descriptor;
-            descriptor = undefined;
-          }
-          else {
-            staticType = undefined;
-          }
-        }
+      if ( staticType && !is(staticType, val) ) {
+        throw _error('The val and staticType do not match');
       }
     }
-    else if (arguments.length > 2) {
+    else if (len > 2) {
       setter = staticType;
       staticType = descriptor;
       descriptor = val;
       val = undefined;
-      if (arguments.length === 3) {
-        if ( is.str(descriptor) ) {
-          staticType = descriptor;
-          descriptor = undefined;
-        }
-        else if ( is.func(descriptor) ) {
-          setter = descriptor;
-          descriptor = undefined;
-        }
-      }
-      else if (arguments.length === 4) {
-        if ( is.func(staticType) ) {
-          setter = staticType;
-          if ( is.str(descriptor) ) {
-            staticType = descriptor;
-            descriptor = undefined;
-          }
-          else {
-            staticType = undefined;
-          }
-        }
+      if (len === 3 || len === 4) {
+        args = _parseArgs(len, descriptor, staticType, setter);
+        descriptor = args[0];
+        staticType = args[1];
+        setter = args[2];
       }
     }
 
@@ -145,6 +122,445 @@ var amend = (function amendPrivateScope() {
 
     return _amendProps(obj, props, val, descriptor, staticType, setter);
   }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARG PARSING
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {string} props - One of the chars in the following list is used as
+   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
+   * @return {!Array<string>}
+   */
+  function _splitProps(props) {
+    return props.split(
+      has(props, ', ')
+        ? ', ' : has(props, ',')
+          ? ',' : has(props, '|')
+            ? '|' : ' '
+    );
+  }
+
+  /**
+   * @private
+   * @param {number} len
+   * @param {!Object=} descriptor
+   * @param {string=} staticType
+   * @param {function(*, *): *=} setter
+   * @return {!Array}
+   */
+  function _parseArgs(len, descriptor, staticType, setter) {
+
+    if (len === 3) {
+      if ( is.str(descriptor) ) {
+        staticType = descriptor;
+        descriptor = undefined;
+      }
+      else if ( is.func(descriptor) ) {
+        setter = descriptor;
+        descriptor = undefined;
+      }
+    }
+    else if (len === 4) {
+      if ( is.func(staticType) ) {
+        setter = staticType;
+        if ( is.str(descriptor) ) {
+          staticType = descriptor;
+          descriptor = undefined;
+        }
+        else {
+          staticType = undefined;
+        }
+      }
+    }
+
+    return [ descriptor, staticType, setter ];
+  }
+
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {!Object} props
+   * @param {*} val
+   * @param {!Object=} descriptor
+   * @param {string=} staticType
+   * @param {function=} setter
+   * @return {!Object}
+   */
+  function _amendProps(obj, props, val, descriptor, staticType, setter) {
+
+    descriptor = _getDescriptor(descriptor || null, !!staticType || !!setter);
+    staticType = staticType && function typeCheckNewValue(val) {
+      return is(staticType, val);
+    };
+    props = is.arr(props)
+      ? staticType || setter
+        ? _setupKeysWithSetter(props, val, descriptor, staticType, setter)
+        : _setupKeys(props, val, descriptor)
+      : staticType || setter
+        ? _setupPropsWithSetter(props, descriptor, staticType, setter)
+        : _setupProps(props, descriptor);
+
+    return _ObjectDefineProperties(obj, props);
+  }
+
+  /**
+   * @private
+   * @param {!Array<string>} keys
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupKeys(keys, val, descriptor) {
+
+    /** @type {!Object} */
+    var props;
+    /** @type {string} */
+    var key;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    props = {};
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
+      key = keys[i];
+      props[key] = clone.obj(descriptor);
+      props[key].value = val;
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {!Array<string>} keys
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {function} staticType
+   * @param {function} setter
+   * @return {!Object}
+   */
+  function _setupKeysWithSetter(keys, val, descriptor, staticType, setter) {
+
+    /** @type {!Object} */
+    var props;
+    /** @type {string} */
+    var key;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    props = {};
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
+      key = keys[i];
+      props[key] = _keyWithSetter(val, descriptor, staticType, setter);
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {function} staticType
+   * @param {function} setter
+   * @return {!Object}
+   */
+  function _keyWithSetter(val, descriptor, staticType, setter) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = clone.obj(descriptor);
+    prop.get = function() { return val; };
+    prop.set = staticType && setter
+      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      : staticType
+        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        : function(newVal) { val = setter(newVal, val); };
+    return prop;
+  }
+
+  /**
+   * @private
+   * @param {!Object} props
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupProps(props, descriptor) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in props) {
+      if ( _own(props, key) ) {
+        props[key] = _prop(key, props[key], descriptor);
+      }
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {string} key
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _prop(key, val, descriptor) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = clone.obj(descriptor);
+
+    if ( _isDescriptor(val) ) {
+      prop = _merge(prop, val);
+    }
+    else {
+      prop.value = val;
+    }
+
+    return prop;
+  }
+
+  /**
+   * @private
+   * @param {!Object} props
+   * @param {!Object} descriptor
+   * @param {function} staticType
+   * @param {function} setter
+   * @return {!Object}
+   */
+  function _setupPropsWithSetter(props, descriptor, staticType, setter) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    for (key in props) {
+      if ( _own(props, key) ) {
+        val = props[key];
+        props[key] = _propWithSetter(key, val, descriptor, staticType, setter);
+      }
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {string} key
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {function} staticType
+   * @param {function} setter
+   * @return {!Object}
+   */
+  function _propWithSetter(key, val, descriptor, staticType, setter) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = clone.obj(descriptor);
+
+    if ( _isDescriptor(val) ) {
+      prop = _merge(prop, val);
+      if ( _own(prop, 'writable') ) return prop;
+      if ( _own(prop, 'value') ) {
+        val = prop.value;
+        delete prop.value;
+      }
+      else {
+        val = undefined;
+      }
+    }
+
+    prop.get = function() { return val; };
+    prop.set = staticType && setter
+      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      : staticType
+        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        : function(newVal) { val = setter(newVal, val); };
+    return prop;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE PROPERTIES - DESCRIPTORS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!Object}
+   * @const
+   */
+  var DATA_DESCRIPTOR = {
+    writable: true,
+    enumerable: true,
+    configurable: true
+  };
+
+  /**
+   * @private
+   * @type {!Object}
+   * @const
+   */
+  var ACCESSOR_DESCRIPTOR = {
+    enumerable: true,
+    configurable: true
+  };
+
+  /**
+   * @private
+   * @type {!Object}
+   * @const
+   */
+  var DESCRIPTOR_PROPS = {
+    get: true,
+    set: true,
+    value: true,
+    writable: true,
+    enumerable: true,
+    configurable: true
+  };
+
+  /**
+   * @private
+   * @param {Object} descriptor
+   * @param {boolean=} hasSetter
+   * @return {!Object}
+   */
+  function _getDescriptor(descriptor, hasSetter) {
+
+    /** @type {!Object} */
+    var defaultDescriptor;
+
+    if ( hasSetter && _isData(descriptor) ) {
+      defaultDescriptor = {};
+      if ( _own(descriptor, 'enumerable') ) {
+        defaultDescriptor.enumerable = descriptor.enumerable;
+      }
+      if ( _own(descriptor, 'configurable') ) {
+        defaultDescriptor.configurable = descriptor.configurable;
+      }
+      descriptor = defaultDescriptor;
+    }
+
+    defaultDescriptor = hasSetter || _isAccessor(descriptor)
+      ? ACCESSOR_DESCRIPTOR
+      : DATA_DESCRIPTOR;
+    defaultDescriptor = clone.obj(defaultDescriptor);
+
+    return _merge(defaultDescriptor, descriptor);
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @return {boolean}
+   */
+  function _isDescriptor(obj) {
+
+    /** @type {string} */
+    var key;
+
+    if ( !is.obj(val) ) return false;
+
+    for (key in obj) {
+      if ( _own(obj, key) && _own(DESCRIPTOR_PROPS, key) ) return true;
+    }
+    return false;
+  }
+
+  /**
+   * @private
+   * @param {Object} obj
+   * @return {boolean}
+   */
+  function _isData(obj) {
+    return _own(obj, 'value') || _own(obj, 'writable');
+  }
+
+  /**
+   * @private
+   * @param {Object} obj
+   * @return {boolean}
+   */
+  function _isAccessor(obj) {
+    return _own(obj, 'get') || _own(obj, 'set');
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - OBJECT.DEFINE_PROPERTIES POLYFILL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {boolean}
+   * @const
+   */
+  var HAS_DEFINE_PROPS = !!Object.defineProperties && (function () {
+
+    /** @type {!Object} */
+    var descriptor;
+    /** @type {!Object} */
+    var obj;
+    /** @type {string} */
+    var key;
+
+    obj = {};
+    descriptor = {
+      enumerable: false,
+      value: obj
+    };
+
+    try {
+      Object.defineProperty(obj, 'prop', descriptor);
+      for (key in obj) {
+        if (key === 'prop') return false;
+      }
+    }
+    catch (e) {
+      return false;
+    }
+
+    return obj.prop === obj;
+  })();
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {!Object} props
+   * @return {!Object}
+   */
+  var _ObjectDefineProperties = HAS_DEFINE_PROPS
+    ? Object.defineProperties
+    : function ObjectDefineProperties(obj, props) {
+
+      /** @type {!Object} */
+      var prop;
+      /** @type {string} */
+      var key;
+
+      for (key in props) {
+        if ( _own(props, key) ) {
+          prop = props[key];
+          obj[key] = _own(prop, 'get') ? prop.get() : prop.value;
+        }
+      }
+      return obj;
+    };
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
