@@ -30,56 +30,118 @@ var slice = require('./slice.js');
 
 var cut = (function cutPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - cut
+  // - cut.property   (cut.prop)
+  // - cut.key
+  // - cut.index      (cut.i)
+  // - cut.properties (cut.props)
+  // - cut.keys
+  // - cut.indexes
+  // - cut.pattern
+  // - cut.patterns
+  //////////////////////////////////////////////////////////
+
   /**
-   * Removes properties (by key) from an object/array or patterns from a string
-   *   and returns the amended source.
+   * Removes properties from an object/array or patterns from a string
+   *   and returns the amended source. Note that the use of the word, "match",
+   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
    * @public
    * @param {!(Object|function|Array|string)} source
-   * @param {...*} removals - The keys/patterns to remove. Each array is
-   *   considered an array of keys/patterns. Each pattern may be a string or
-   *   RegExp. All other (i.e. not array or regex) key/pattern types are
-   *   converted to a string.
+   * @param {...*} vals - If only one val is provided and it is an array it is
+   *   considered an array of vals. Details are as follows (per source type):
+   *     object source: If the leading val is a RegExp or string this method
+   *       will delete all properties with keys that match each val. If any
+   *       following vals are not a RegExp or string they are converted to a
+   *       string. Otherwise if the leading val is not a RegExp or string this
+   *       method will delete all properties where value === val. 
+   *     array source: If all vals are a number each corresponding index is
+   *       spliced from the array. Otherwise all properties where value === val
+   *       are spliced from the array.
+   *     string source: All vals that are not a RegExp or string are converted
+   *       to a string. Each matching substring is removed from the source.
    * @return {!(Object|function|Array|string)} The amended source.
    */
-  function cut(source, removals) {
+  function cut(source, vals) {
 
-    removals = arguments.length > 2 ? slice(arguments, 1) : removals;
+    if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.undefined(removals) ) throw _error('No removal defined');
+    vals = arguments.length > 2 ? slice(arguments, 1) : vals;
 
     if ( is.str(source) ) {
-      if ( is.arr(removals) ) return _cutPatterns(source, removals);
-      return _cutPattern(source, removals);
+      return is.arr(vals)
+        ? _cutPatterns(source, vals)
+        : _cutPattern(source, vals);
     }
 
     if ( !is._obj(source) ) throw _error.type('source');
 
-    if ( !is.arr(removals) ) {
-      if ( !_has(source, removals) ) {
-        throw _error('Key does not exist in source');
-      }
-      return _cutKey(source, removals);
-    }
-
-    if ( is.arr(source) ) return _cutKeysArr(source, removals);
-    return _cutKeys(source, removals);
+    source = is.args(source) ? slice(source) : source;
+    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
   /**
-   * Removes a property (by key) from an object/array and returns the object.
+   * Removes a property from an object/array and returns the object. Note that
+   *   the use of the word, "match", within vitals.cut.property refers to
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {*} key - If key is a number and source an array then the array is
-   *   correctly spliced. All other non-string types are converted to a string.
+   * @param {*} val - The details are as follows (per source type):
+   *   object source: If val is a RegExp or string this method will delete all
+   *     properties with keys that match the val. Otherwise this method will
+   *     delete all properties where value === val.
+   *   array source: If val is a number the corresponding index is spliced from
+   *     the array. Otherwise all properties where value === val are spliced
+   *     from the array.
    * @return {!(Object|function|Array)}
+   */
+  cut.property = function cutProperty(source, val) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'property');
+    if (arguments.length < 2) throw _error('No val defined', 'property');
+
+    return _cutProp(source, val);
+  };
+
+  /**
+   * Removes a property by key from an object and returns the object.
+   * @public
+   * @param {!(Object|function)} source
+   * @param {*} key - If the key is not a string it is converted to a string.
+   *   If the key exists in the source object it is deleted.
+   * @return {!(Object|function)}
    */
   cut.key = function cutKey(source, key) {
 
     if ( !is._obj(source) ) throw _error.type('source', 'key');
-    if ( !_has(source, key)) throw _error('Key does not exist in source','key');
+    if (arguments.length < 2) throw _error('No key defined', 'key');
 
     return _cutKey(source, key);
   };
+
+  /**
+   * Removes a property by index from an array and returns the array. If an
+   *   array-like object is supplied it is sliced before removing the property.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {number} key - The index to remove.
+   * @param {number=} toKey - If defined all indexes from key to toKey (but not
+   *   including toKey) are removed.
+   * @return {!Array}
+   */
+  cut.index = function cutIndex(source, key, toKey) {
+
+    if ( !is._obj(source)       ) throw _error.type('source',        'index');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'index');
+    if ( !is.num(key)           ) throw _error.type('key',           'index');
+    if ( !is('num=', toKey)     ) throw _error.type('toKey',         'index');
+
+    source = is.arr(source) ? source : slice(source);
+    return _cutIndex(source, key, toKey);
+  };
+  // define shorthand
+  cut.i = cut.index;
 
   /**
    * Removes properties (by key) from an object/array and returns the object.
@@ -151,28 +213,61 @@ var cut = (function cutPrivateScope() {
     return _cutPatterns(source, patterns);
   };
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {!(Object|function|Array)} source
-   * @param {*} key
+   * @param {*} val
    * @return {!(Object|function|Array)}
    */
-  function _cutKey(source, key) {
-    if ( is.arr(source) && is.num(key) ) source.splice(key, 1);
-    else delete source[key];
-    return source;
+  function _cutProp(source, val) {
+    return is.arr(source)
+      ? is.num(val)
+        ? _spliceKey(source, val)
+        : _spliceVal(source, val)
+      : is('!str|regex', val)
+        ? _deleteKey(source, val)
+        : _deleteVal(source, val);
   }
 
   /**
    * @private
    * @param {!(Object|function|Array)} source
-   * @param {!Array} keys
+   * @param {!Array<*>} vals
    * @return {!(Object|function|Array)}
+   */
+  function _cutProps(source, vals) {
+    return is.arr(source)
+      ? is('nums', vals)
+        ? _spliceKeys(source, vals)
+        : _spliceVals(source, vals)
+      : is('!str|regex', vals[0])
+        ? _deleteKeys(source, vals)
+        : _deleteVals(source, vals);
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {*} key
+   * @return {!(Object|function)}
+   */
+  function _cutKey(source, key) {
+    delete source[key];
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {!Array} keys
+   * @return {!(Object|function)}
    */
   function _cutKeys(source, keys) {
 
-    /** @type {*} */
-    var key;
     /** @type {number} */
     var len;
     /** @type {number} */
@@ -180,46 +275,54 @@ var cut = (function cutPrivateScope() {
 
     len = keys.length;
     i = -1;
-    while (++i < len) {
-      key = keys[i];
-      if ( is.arr(key) ) {
-        _cutKeys(source, key);
-        continue;
-      }
-      if ( !_has(source, key) ) throw _error('A key does not exist in source');
-      delete source[key];
-    }
+    while (++i < len) delete source[ keys[i] ];
     return source;
   }
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
-   * @param {!Array} keys
-   * @return {!(Object|function|Array)}
+   * @param {!Array} source
+   * @param {number} key
+   * @param {number=} toKey
+   * @return {!Array}
    */
-  function _cutKeysArr(source, keys) {
+  function _cutIndex(source, key, toKey) {
 
-    /** @type {*} */
-    var key;
     /** @type {number} */
     var len;
-    /** @type {number} */
-    var i;
 
-    len = keys.length;
-    i = -1;
-    while (++i < len) {
-      key = keys[i];
-      if ( is.arr(key) ) {
-        _cutKeysArr(source, key);
-        continue;
-      }
-      if ( !_has(source, key) ) throw _error('A key does not exist in source');
-      if ( is.num(key) ) source.splice(key, 1);
-      else delete source[key];
+    len = source.length;
+    key = key < 0 ? len + key : key;
+
+    if (key >= len) return source;
+
+    if ( is.undefined(toKey) ) {
+      if (key < 0) return source;
+      source.splice(key, 1);
+      return source;
     }
+
+    key = key < 0 ? 0 : key;
+    toKey = toKey > len
+      ? len
+      : toKey < 0
+        ? len + toKey
+        : toKey;
+
+    if (key >= toKey) return source;
+
+    source.splice(key, toKey - key);
     return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {!Array<number>} keys
+   * @return {!Array}
+   */
+  function _cutIndexes(source, keys) {
+    return _spliceKeys(source, keys);
   }
 
   /**
@@ -259,13 +362,151 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - DELETE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {*} key
+   * @return {!(Object|function)}
+   */
+  function _deleteKey(source, key) {
+
+    /** @type {!RegExp} */
+    var pattern;
+
+    if ( is.regex(key) ) {
+      pattern = key;
+      for (key in source) {
+        if ( _own(source, key) && _match(source, pattern) ) {
+          delete source[key];
+        }
+      }
+    }
+    else if ( _own(source, key) ) {
+      delete source[key];
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {!Array} keys
+   * @return {!(Object|function)}
+   */
+  function _deleteKeys(source, keys) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
+      source = _deleteKey(source, keys[i]);
+    }
+    return source;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - SPLICE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {number} key
+   * @return {!Array}
+   */
+  function _spliceKey(source, key) {
+
+    /** @type {number} */
+    var len;
+
+    len = source.length;
+    key = key < 0 ? len + key : key;
+
+    if (key < 0 || key >= len) return source;
+
+    source.splice(key, 1);
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {!Array<number>} keys
+   * @return {!Array}
+   */
+  function _spliceKeys(source, keys) {
+
+    /** @type {!Object} */
+    var sorted;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+    /** @type {number} */
+    var first;
+    /** @type {number} */
+    var count;
+
+    sorted = _sortIndexes(keys, source.length - 1);
+    len = sorted.first.length;
+    i = -1;
+    while (++i < len) {
+      first = sorted.first[i];
+      count = sorted.last[i] - first + 1;
+      source.splice(first, count);
+    }
+    return source;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - SORT
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Array<number>} keys
+   * @param {number} max
+   * @return {!{
+   *   first: !Array<number>,
+   *   last:  !Array<number>
+   * }}
+   */
+  var _sortIndexes = (function() {
+
+    // setup
+    // main sort
+    // find pos up
+    // find pos down
+
+  })();
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {?(Object|function)} obj
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} pattern
+   * @return {boolean}
+   */
+  var _match = has.pattern;
 
   /**
    * @private
@@ -273,6 +514,7 @@ var cut = (function cutPrivateScope() {
    */
   var _error = makeErrorAid('cut');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CUT
   return cut;
 })();
