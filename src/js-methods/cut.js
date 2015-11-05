@@ -36,10 +36,10 @@ var cut = (function cutPrivateScope() {
   // - cut.property   (cut.prop)
   // - cut.key
   // - cut.index      (cut.i)
+  // - cut.pattern
   // - cut.properties (cut.props)
   // - cut.keys
-  // - cut.indexes
-  // - cut.pattern
+  // - cut.indexes    (cut.ii)
   // - cut.patterns
   //////////////////////////////////////////////////////////
 
@@ -101,6 +101,7 @@ var cut = (function cutPrivateScope() {
     if ( !is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
+    source = is.args(source) ? slice(source) : source;
     return _cutProp(source, val);
   };
 
@@ -144,34 +145,6 @@ var cut = (function cutPrivateScope() {
   cut.i = cut.index;
 
   /**
-   * Removes properties (by key) from an object/array and returns the object.
-   * @public
-   * @param {!(Object|function|Array)} source
-   * @param {...*} keys - If a key is a number and the source an array then the
-   *   array is correctly spliced. If a key is an array it is considered an
-   *   array of keys. All other non-string types are converted to a string.
-   * @return {!(Object|function|Array)}
-   */
-  cut.keys = function cutKeys(source, keys) {
-
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
-
-    keys = arguments.length > 2 ? slice(arguments, 1) : keys;
-
-    if ( is.undefined(keys) ) throw _error('No keys defined', 'keys');
-
-    if ( !is.arr(keys) ) {
-      if ( !_has(source, keys) ) {
-        throw _error('Key does not exist in source', 'keys');
-      }
-      return _cutKey(source, keys);
-    }
-
-    if ( is.arr(source) ) return _cutKeysArr(source, keys);
-    return _cutKeys(source, keys);
-  };
-
-  /**
    * Removes a pattern from a string and returns the amended string.
    * @public
    * @param {string} source
@@ -182,35 +155,107 @@ var cut = (function cutPrivateScope() {
   cut.pattern = function cutPattern(source, pattern) {
 
     if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _cutPattern(source, pattern);
   };
 
   /**
-   * Removes a pattern from a string and returns the amended string.
+   * Removes properties from an object/array and returns the object. Note that
+   *   the use of the word, "match", within vitals.cut.properties refers to
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {...*} vals - If only one val is provided and it is an array it is
+   *   considered an array of vals. Details are as follows (per source type):
+   *     object source: If the leading val is a RegExp or string this method
+   *       will delete all properties with keys that match each val. If any
+   *       following vals are not a RegExp or string they are converted to a
+   *       string. Otherwise if the leading val is not a RegExp or string this
+   *       method will delete all properties where value === val. 
+   *     array source: If all vals are a number each corresponding index is
+   *       spliced from the array. Otherwise all properties where value === val
+   *       are spliced from the array.
+   * @return {!(Object|function|Array)}
+   */
+  cut.properties = function cutProperties(source, vals) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'properties');
+    if (arguments.length < 2) throw _error('No val defined', 'properties');
+
+    source = is.args(source) ? slice(source) : source;
+    vals = arguments.length > 2 ? slice(arguments, 1) : vals;
+    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+  };
+  // define shorthand
+  cut.props = cut.properties;
+
+  /**
+   * Removes properties by key from an object and returns the object.
+   * @public
+   * @param {!(Object|function)} source
+   * @param {...*} keys - If only one key is provided and it is an array it is
+   *   considered an array of keys. If a key is not a string it is converted to
+   *   a string. If the key exists in the source object it is deleted.
+   * @return {!(Object|function)}
+   */
+  cut.keys = function cutKeys(source, keys) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if (arguments.length < 2) throw _error('No key defined', 'keys');
+
+    keys = arguments.length > 2 ? slice(arguments, 1) : keys;
+    return is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
+  };
+
+  /**
+   * Removes properties by index from an array and returns the array. If an
+   *   array-like object is supplied it is sliced before completing the cut.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {...number} indexes - If only one index is provided and it is an
+   *   array it is considered an array of indexes. The indexes to remove.
+   * @return {!Array}
+   */
+  cut.indexes = function cutIndexes(source, indexes) {
+
+    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if (arguments.length < 2) throw _error('No index defined', 'indexes');
+
+    source = is.arr(source) ? source : slice(source);
+    indexes = arguments.length > 2 ? slice(arguments, 1) : indexes;
+
+    if ( !is.arr(indexes) ) {
+      if ( !is.num(indexes) ) throw _error.type('index', 'indexes');
+      return _cutIndex(source, indexes);
+    }
+
+    if ( !is('!nums', indexes) ) throw _error.type('index', 'indexes');
+
+    return _cutIndexes(source, indexes);
+  };
+  // define shorthand
+  cut.ii = cut.indexes;
+
+  /**
+   * Removes patterns from a string and returns the amended string.
    * @public
    * @param {string} source
-   * @param {...*} patterns - If a pattern is an array it is considered an array
-   *   of patterns. If a pattern is not a string, RegExp, or array it is
-   *   converted to a string.
+   * @param {...*} patterns - If only one pattern is provided and it is an array
+   *   it is considered an array of patterns. If a pattern is not a string or
+   *   RegExp it is converted to a string.
    * @return {string}
    */
   cut.patterns = function cutPatterns(source, patterns) {
 
     if ( !is.str(source) ) throw _error.type('source', 'patterns');
+    if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
 
     patterns = arguments.length > 2 ? slice(arguments, 1) : patterns;
-
-    if ( is.undefined(patterns) ) {
-      throw _error('No patterns defined', 'patterns');
-    }
-
-    if ( !is.arr(patterns) ) {
-      patterns = is.regex(patterns) ? patterns : String(patterns);
-      return source.replace(patterns, '');
-    }
-
-    return _cutPatterns(source, patterns);
+    return is.arr(patterns)
+      ? _cutPatterns(source, patterns)
+      : _cutPattern(source, patterns);
   };
 
   //////////////////////////////////////////////////////////
@@ -344,8 +389,6 @@ var cut = (function cutPrivateScope() {
    */
   function _cutPatterns(source, patterns) {
 
-    /** @type {*} */
-    var pattern;
     /** @type {number} */
     var len;
     /** @type {number} */
@@ -354,10 +397,7 @@ var cut = (function cutPrivateScope() {
     len = patterns.length;
     i = -1;
     while (++i < len) {
-      pattern = patterns[i];
-      source = is.arr(pattern)
-        ? _cutPatterns(source, pattern)
-        : _cutPattern(source, pattern);
+      source = _cutPattern(source, patterns[i]);
     }
     return source;
   }
