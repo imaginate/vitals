@@ -40,16 +40,14 @@ module.exports = newTask('version', 'all', {
       { argMap: true, version: version }
     );
 
-    filepaths = retrieve.filepaths('.', {
-      validExts: '.js',
-      validDirs: 'parts|src',
-      invalidFiles: 'make.js'
+    filepaths = retrieve.filepaths('./src', {
+      validExts: '.js'
     }, true);
-    filepaths.push('package.json');
 
     each(filepaths, function(/** string */ filepath) {
-      insertVersion(filepath, version);
+      insertVersion('src/' + filepath, version);
     });
+    insertVersion('package.json', version);
 
     log.pass('Completed `version.all` Task');
   },
