@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - ERROR HELPER
  * -----------------------------------------------------------------------------
- * @version 0.1.0
+ * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/js-methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
