@@ -30,18 +30,31 @@ var slice = require('./slice.js');
 
 var fuse = (function fusePrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - fuse
+  // - fuse.object (fuse.obj)
+  // - fuse.array  (fuse.arr)
+  // - fuse.string (fuse.str)
+  //////////////////////////////////////////////////////////
+
   /**
-   * Appends properties/keys to an object, array values to an array, or strings
-   *   to a string.
+   * Merges objects, concatenates arrays, appends properties, and combines
+   *   strings.
    * @public
    * @param {!(Object|function|Array|string)} dest
-   * @param {...*} vals - For object/array dest null vals do not throw
-   *   exceptions, but are simply skipped. For string dest all non-string vals
-   *   are converted to strings. For object dest all number and string vals are
-   *   appended as new keys (if key exists on the dest the key's value is
-   *   replaced with undefined). For array dest all non-array vals are appended
-   *   to the end of the dest array. For object/string dest if only one val is
-   *   provided and it is an array then it is considered an array of vals.
+   * @param {...*} vals - All rules occur in order of appearance. For object and
+   *   array dest types null does not throw an exception (it is simply skipped).
+   *   Remaining details per dest type:
+   *     object: If only one val is provided and it is an array it is considered
+   *       an array of vals. Object vals are merged with the dest. All other
+   *       values are converted to strings and appended as new keys (if key
+   *       exists on the dest the property's value is replaced with undefined).
+   *     array: Array vals are concatenated to the dest. All other values are
+   *       pushed to the dest.
+   *     string: If only one val is provided and it is an array it is considered
+   *       an array of vals. All non-string vals are converted to strings and
+   *       appended to the dest.
    * @return {!(Object|function|Array|string)}
    */
   function fuse(dest, vals) {
@@ -49,37 +62,37 @@ var fuse = (function fusePrivateScope() {
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( is.str(dest) ) {
-      if (arguments.length === 2) {
-        return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
-      }
-      vals = slice(arguments, 1);
-      return _fuseStrs(dest, vals);
+      vals = arguments.length > 2 ? slice(arguments, 1) : vals;
+      return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
     }
 
     if ( !is._obj(dest) ) throw _error.type('dest');
 
     dest = is.args(dest) ? slice(dest) : dest;
 
-    if (arguments.length === 2) {
-      if ( is.arr(dest) ) return _fuseArr(dest, vals);
-      return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    if ( is.arr(dest) ) {
+      if (arguments.length > 2) {
+        vals = slice(arguments, 1);
+        return _fuseArrs(dest, vals);
+      }
+      return _fuseArr(dest, vals);
     }
 
-    vals = slice(arguments, 1);
-    return is.arr(dest) ? _fuseArrs(dest, vals) : _fuseObjs(dest, vals);
+    vals = arguments.length > 2 ? slice(arguments, 1) : vals;
+    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   }
 
   /**
    * Appends properties/keys to an object.
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions, but
-   *   are simply skipped. All number and string vals are appended as new keys
-   *   (if key exists on the dest the key's value is replaced with undefined).
-   *   If only one val is provided and it is an array then it is considered an
-   *   array of vals. For object vals every key => value is appended to the dest
-   *   (if the key exists on the dest the key's value is with replaced with the
-   *   value from the vals object).
+   * @param {...*} vals - Any vals that are null do not throw exceptions (they
+   *   are simply skipped). All other vals that are not objects are converted to
+   *   a string and appended as new keys (if key exists on the dest the key's
+   *   value is replaced with undefined). If only one val is provided and it is
+   *   an array then it is considered an array of vals. All object vals are
+   *   merged with the dest (if the key exists on the dest the key's value is
+   *   with replaced with the value from the vals object).
    * @return {!(Object|function)}
    */
   fuse.object = function fuseObject(dest, vals) {
@@ -87,23 +100,19 @@ var fuse = (function fusePrivateScope() {
     if ( !is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
-    if (arguments.length === 2) {
-      return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
-    }
-
-    vals = slice(arguments, 1);
-    return _fuseObjs(dest, vals);
+    vals = arguments.length > 2 ? slice(arguments, 1) : vals;
+    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   };
   // define shorthand
   fuse.obj = fuse.object;
 
   /**
-   * Appends array values to an array or zips multiple arrays into one.
+   * Appends values to an array and concatenates arrays.
    * @public
    * @param {!Array} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions, but
-   *   are simply skipped. All other non-array vals are pushed to the end of the
-   *   dest array.
+   * @param {...*} vals - Any vals that are null do not throw exceptions (they
+   *   are simply skipped). All other non-array vals are pushed to the dest
+   *   array. All array vals are concatenated to the dest.
    * @return {!Array}
    */
   fuse.array = function fuseArray(dest, vals) {
@@ -113,10 +122,12 @@ var fuse = (function fusePrivateScope() {
 
     dest = is.args(dest) ? slice(dest) : dest;
 
-    if (arguments.length === 2) _fuseArr(dest, vals);
+    if (arguments.length > 2) {
+      vals = slice(arguments, 1);
+      return _fuseArrs(dest, vals);
+    }
 
-    vals = slice(arguments, 1);
-    return _fuseArrs(dest, vals);
+    return _fuseArr(dest, vals);
   };
   // define shorthand
   fuse.arr = fuse.array;
@@ -133,13 +144,15 @@ var fuse = (function fusePrivateScope() {
     if ( !is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
-    if (arguments.length === 2) return _fuseStr(dest, vals);
-
-    vals = slice(arguments, 1);
-    return _fuseStrs(dest, vals);
+    vals = arguments.length > 2 ? slice(arguments, 1) : vals;
+    return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
   };
   // define shorthand
   fuse.str = fuse.string;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -148,15 +161,9 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObj(dest, val) {
-
-    if ( is('str|num', val) ) {
-      dest[val] = undefined;
-      return dest;
-    }
-
-    if ( !is._obj(val) ) return dest;
-
-    return _merge(dest, val);
+    if ( is._obj(val) ) return _merge(dest, val);
+    if ( !is.null(val) ) dest[val] = undefined;
+    return dest;
   }
 
   /**
@@ -187,12 +194,8 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArr(dest, val) {
-
-    if ( is.null(val) ) return dest;
-
     if ( is.arr(val) ) return dest.concat(val);
-
-    dest.push(val);
+    if ( !is.null(val) ) dest.push(val);
     return dest;
   }
 
@@ -248,6 +251,10 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {!(Object|function)} dest
@@ -260,7 +267,7 @@ var fuse = (function fusePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _has(obj, key) ) {
+      if ( _own(obj, key) ) {
         dest[key] = obj[key];
       }
     }
@@ -273,7 +280,7 @@ var fuse = (function fusePrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
   /**
    * @private
@@ -281,6 +288,7 @@ var fuse = (function fusePrivateScope() {
    */
   var _error = makeErrorAid('fuse');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FUSE
   return fuse;
 })();
