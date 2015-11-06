@@ -30,6 +30,14 @@ var clone = require('./clone.js');
 
 var until = (function untilPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - until
+  // - until.object (until.obj)
+  // - until.array  (until.arr)
+  // - until.cycle  (until.time)
+  //////////////////////////////////////////////////////////
+
   /**
    * A shortcut for iterating over object maps and arrays or for invoking an
    *   action until an end value is returned. If iterating over an object note
@@ -162,6 +170,12 @@ var until = (function untilPrivateScope() {
 
     return _untilCycle(end, count, action, thisArg);
   };
+  // define shorthand
+  until.time = until.cycle;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -191,37 +205,35 @@ var until = (function untilPrivateScope() {
 
     obj = iteratee.length > 2 ? clone(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _has(obj, key) ) {
+        if ( _own(obj, key) ) {
           if (iteratee() === end) return true;
         }
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _has(obj, key) ) {
+        if ( _own(obj, key) ) {
           if (iteratee(obj[key]) === end) return true;
         }
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _has(obj, key) ) {
+        if ( _own(obj, key) ) {
           if (iteratee(obj[key], key) === end) return true;
         }
       }
       break;
       default:
       for (key in obj) {
-        if ( _has(obj, key) ) {
+        if ( _own(obj, key) ) {
           if (iteratee(obj[key], key, obj) === end) return true;
         }
       }
     }
-
     return false;
   }
 
@@ -242,7 +254,6 @@ var until = (function untilPrivateScope() {
 
     obj = iteratee.length > 2 ? clone.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -266,7 +277,6 @@ var until = (function untilPrivateScope() {
         if (iteratee(obj[i], i, obj) === end) return true;
       }
     }
-
     return false;
   }
 
@@ -286,6 +296,10 @@ var until = (function untilPrivateScope() {
     return false;
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {function} func
@@ -294,15 +308,12 @@ var until = (function untilPrivateScope() {
    */
   function _bind(func, thisArg) {
     switch (func.length) {
-      case 0: return function iteratee() {
-        func.call(thisArg);
-      };
-      case 1: return function iteratee(val) {
-        func.call(thisArg, val);
-      };
-      case 2: return function iteratee(val, key) {
-        func.call(thisArg, val, key);
-      };
+      case 0:
+      return function iteratee() { func.call(thisArg); };
+      case 1:
+      return function iteratee(val) { func.call(thisArg, val); };
+      case 2:
+      return function iteratee(val, key) { func.call(thisArg, val, key); };
     }
     return function iteratee(val, key, obj) {
       func.call(thisArg, val, key, obj);
@@ -315,7 +326,7 @@ var until = (function untilPrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
   /**
    * @private
@@ -323,6 +334,7 @@ var until = (function untilPrivateScope() {
    */
   var _error = makeErrorAid('until');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR UNTIL
   return until;
 })();
