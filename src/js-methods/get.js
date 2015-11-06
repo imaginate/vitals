@@ -30,6 +30,16 @@ var clone = require('./clone.js');
 
 var get = (function getPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - get
+  // - get.keys
+  // - get.keys.byKey
+  // - get.keys.byValue (get.keys.byVal)
+  // - get.indexes      (get.ii)
+  // - get.values
+  //////////////////////////////////////////////////////////
+
   /**
    * Gets keys, indexes, values, or substrings from an object, array, or string.
    *   Note that the use of the word, "match", within vitals.get refers to
@@ -55,64 +65,44 @@ var get = (function getPrivateScope() {
     if ( is.null(source) ) return null;
 
     if ( is.str(source) ) {
-      if (arguments.length === 1) throw _error('No val defined');
-      return is.regex(val)
-        ? _getStrVals(source, val)
-        : _getStrKeys(source, val);
+      if (arguments.length < 2) throw _error('No val defined');
+      return is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
     }
 
     if ( !is._obj(source) ) throw _error.type('source');
 
-    if (arguments.length === 1) {
-      return is._arr(source) ? _getAllArrKeys(source) : _getAllObjKeys(source);
-    }
-
-    if ( is._arr(source) ) return _getByValArrKeys(source, val);
-
-    return is.regex(val)
-      ? _getByKeyObjVals(source, val)
-      : _getByValObjKeys(source, val);
+    return arguments.length < 2
+      ? is._arr(source)
+        ? _allIndexes(source)
+        : _allKeys(source)
+      : is._arr(source)
+        ? _byValIndexes(source, val)
+        : is.regex(val)
+          ? _byKeyObjVals(source, val)
+          : _byValKeys(source, val);
   }
 
   /**
-   * Gets an array of keys/indexes from an object, array, or string. Note that
-   *   the use of the word, "match", within vitals.get.keys refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   * Gets an array of keys from an object. Note that the use of the word,
+   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
    * @public
-   * @param {!(Object|function|Array|string)} source - If no val param is
-   *   defined this method will return an array of all an object's own keys or
-   *   all an array's indexes. If the source is a string a val is required.
-   * @param {*=} val - For a RegExp val and object/string source this method
-   *   will return the following values (per source type):
-   *     object source: an array of source keys where the key matches the val
-   *     string source: an array of starting indexes that match the val
-   *   Otherwise this method will return the following values (per source type):
-   *     object source: an array of source keys where the value === val
-   *     array source:  an array of source indexes where the value === val
-   *     string source: an array of starting indexes where the substring == val
+   * @param {!(Object|function)} source - If no val param is defined this method
+   *   will return an array of all an object's own keys.
+   * @param {*=} val - This method will return an array of source keys where the
+   *   key matches the val if the val is a RegExp. Otherwise this method will
+   *   return an array of source keys where the value === val.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
 
-    if ( is.str(source) ) {
-      if (arguments.length === 1) throw _error('No val defined', 'keys');
-      return _getStrKeys(source, val);
-    }
-
     if ( !is._obj(source) ) throw _error.type('source', 'keys');
 
-    if (arguments.length === 1) {
-      return is._arr(source) ? _getAllArrKeys(source) : _getAllObjKeys(source);
-    }
-
-    if ( is._arr(source) ) return _getByValArrKeys(source, val);
-
-    return is.regex(val)
-      ? _getByKeyObjKeys(source, val)
-      : _getByValObjKeys(source, val);
+    return arguments.length < 2
+      ? allKeys(source)
+      : is.regex(val)
+        ? _byKeyKeys(source, val)
+        : _byValKeys(source, val);
   };
-  // define shorthand
-  get.indexes = get.keys;
 
   /**
    * Gets an array of keys from an object that match a pattern.
@@ -126,29 +116,58 @@ var get = (function getPrivateScope() {
   get.keys.byKey = function getKeysByKey(source, pattern) {
 
     if ( !is._obj(source) ) throw _error.type('source', 'keys.byKey');
-    if (arguments.length === 1) throw _error('No pattern defined','keys.byKey');
+    if (arguments.length < 2) throw _error('No pattern defined', 'keys.byKey');
 
-    return _getByKeyObjKeys(source, pattern);
+    return _byKeyKeys(source, pattern);
   };
 
   /**
-   * Gets an array of keys/indexes from an object/array where the value === val.
+   * Gets an array of keys from an object where the value === val.
    * @public
-   * @param {!(Object|function|Array)} source
+   * @param {!(Object|function)} source
    * @param {*} val
    * @return {!Array}
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
     if ( !is._obj(source) ) throw _error.type('source', 'keys.byValue');
-    if (arguments.length === 1) throw _error('No val defined', 'keys.byValue');
+    if (arguments.length < 2) throw _error('No val defined', 'keys.byValue');
 
-    return is._arr(source)
-      ? _getByValArrKeys(source, val)
-      : _getByValObjKeys(source, val);
+    return _byValKeys(source, val);
   };
   // define shorthand
   get.keys.byVal = get.keys.byValue;
+
+  /**
+   * Gets an array of indexes from an array or string by value/pattern. Note
+   *   that the use of the word, "match", within vitals.get.indexes refers to
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   * @public
+   * @param {!(Object|string)} source - If no val param is defined this method
+   *   will return an array of all an array's indexes or throw an error if the
+   *   source is a string.
+   * @param {*=} val - If source is an array this method will return an array of
+   *   indexes where the value === val. Otherwise if the source is a string the
+   *   val is converted to a string if it is not a RegExp or string and an array
+   *   of starting indexes that match the val are returned.
+   * @return {!Array}
+   */
+  get.indexes = function getIndexes(source, val) {
+
+    if ( is.str(source) ) {
+      if (arguments.length < 2) throw _error('No val defined', 'indexes');
+      return _strIndexes(source, val);
+    }
+
+    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+
+    return arguments.length < 2
+      ? _allIndexes(source)
+      : _byValIndexes(source, val);
+  };
+  // define shorthand
+  get.ii = get.indexes;
 
   /**
    * Gets an array of values/substrings from an object or string. Note that the
@@ -156,8 +175,8 @@ var get = (function getPrivateScope() {
    *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
    * @public
    * @param {!(Object|function|string)} source - If no val param is defined this
-   *   method will return an array of all the object's values. If the source is
-   *   a string a val param is required.
+   *   method will return an array of all the object's values or an error if the
+   *   source is a string.
    * @param {*=} val - If the val is not a RegExp or string it is converted to a
    *   string. This method will return the following values (per source type):
    *     object source: an array of source values where the key matches the val
@@ -167,25 +186,29 @@ var get = (function getPrivateScope() {
   get.values = function getValues(source, val) {
 
     if ( is.str(source) ) {
-      if (arguments.length === 1) throw _error('No val defined', 'values');
-      return _getStrVals(source, val);
+      if (arguments.length < 2) throw _error('No val defined', 'values');
+      return _strVals(source, val);
     }
 
     if ( !is._obj(source) ) throw _error.type('source', 'values');
 
-    return arguments.length === 1
-      ? _getAllObjVals(source)
-      : _getByKeyObjVals(source, val);
+    return arguments.length < 2
+      ? _allObjVals(source)
+      : _byKeyObjVals(source, val);
   };
   // define shorthand
   get.vals = get.values;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GET OBJECT DETAILS
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
    * @param {!(Object|function)} obj
    * @return {!Array<string>}
    */
-  function _getAllObjKeys(obj) {
+  function _allKeys(obj) {
 
     /** @type {!Array<string>} */
     var arr;
@@ -199,32 +222,11 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!Object} obj
-   * @return {!Array<number>}
-   */
-  function _getAllArrKeys(obj) {
-
-    /** @type {!Array<number>} */
-    var arr;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = obj.length;
-    arr = new Array(len);
-    i = -1;
-    while (++i < len) arr[i] = i;
-    return arr;
-  }
-
-  /**
-   * @private
    * @param {!(Object|function)} obj
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _getByKeyObjKeys(obj, pattern) {
+  function _byKeyKeys(obj, pattern) {
 
     /** @type {!Array<string>} */
     var arr;
@@ -243,7 +245,7 @@ var get = (function getPrivateScope() {
    * @param {*} val
    * @return {!Array<string>}
    */
-  function _getByValObjKeys(obj, val) {
+  function _byValKeys(obj, val) {
 
     /** @type {!Array<string>} */
     var arr;
@@ -257,95 +259,10 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!Object} obj
-   * @param {*} val
-   * @return {!Array<number>}
-   */
-  function _getByValArrKeys(obj, val) {
-
-    /** @type {!Array<number>} */
-    var arr;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = obj.length;
-    arr = [];
-    i = -1;
-    while (++i < len) obj[i] === val && arr.push(i);
-    return arr;
-  }
-
-  /**
-   * @private
-   * @param {string} str
-   * @param {*} pattern
-   * @return {!Array<number>}
-   */
-  function _getStrKeys(str, pattern) {
-
-    if ( !_match(str, pattern) ) return [];
-
-    return is.regex(pattern)
-      ? _getStrKeysByRegex(str, pattern)
-      : _getStrKeysByStr(str, pattern);
-  }
-
-  /**
-   * @private
-   * @param {string} str
-   * @param {!RegExp} pattern
-   * @return {!Array<number>}
-   */
-  function _getStrKeysByRegex(str, pattern) {
-
-    /** @type {!Array<number>} */
-    var arr;
-    /** @type {Object} */
-    var obj;
-
-    pattern = clone.regex(pattern, true);
-
-    arr = [];
-    obj = pattern.exec(str);
-    while (obj) {
-      arr.push(obj.index);
-      obj = pattern.exec(str);
-    }
-    return arr;
-  }
-
-  /**
-   * @private
-   * @param {string} str
-   * @param {*} pattern
-   * @return {!Array<number>}
-   */
-  function _getStrKeysByStr(str, pattern) {
-
-    /** @type {!Array<number>} */
-    var arr;
-    /** @type {number} */
-    var i;
-
-    pattern = String(pattern);
-
-    arr = [];
-    i = str.indexOf(pattern);
-    while (i !== -1) {
-      arr.push(i);
-      i = str.indexOf(pattern, ++i);
-    }
-    return arr;
-  }
-
-  /**
-   * @private
    * @param {!(Object|function)} obj
    * @return {!Array<*>}
    */
-  function _getAllObjKeys(obj) {
+  function _allObjVals(obj) {
 
     /** @type {!Array<*>} */
     var arr;
@@ -363,7 +280,7 @@ var get = (function getPrivateScope() {
    * @param {*} pattern
    * @return {!Array<*>}
    */
-  function _getByKeyObjVals(obj, pattern) {
+  function _byKeyObjVals(obj, pattern) {
 
     /** @type {!Array<*>} */
     var arr;
@@ -378,19 +295,129 @@ var get = (function getPrivateScope() {
     return arr;
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GET ARRAY DETAILS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @return {!Array<number>}
+   */
+  function _allIndexes(obj) {
+
+    /** @type {!Array<number>} */
+    var arr;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = obj.length;
+    arr = new Array(len);
+    i = -1;
+    while (++i < len) arr[i] = i;
+    return arr;
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {*} val
+   * @return {!Array<number>}
+   */
+  function _byValIndexes(obj, val) {
+
+    /** @type {!Array<number>} */
+    var arr;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = obj.length;
+    arr = [];
+    i = -1;
+    while (++i < len) obj[i] === val && arr.push(i);
+    return arr;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GET STRING DETAILS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {string} str
+   * @param {*} pattern
+   * @return {!Array<number>}
+   */
+  function _strIndexes(str, pattern) {
+    return _match(str, pattern)
+      ? is.regex(pattern)
+        ? _byRegexStrKeys(str, pattern)
+        : _byStrStrKeys(str, pattern)
+      : [];
+  }
+
   /**
    * @private
    * @param {string} str
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _getStrVals(str, pattern) {
+  function _strVals(str, pattern) {
+    return _match(str, pattern)
+      ? is.regex(pattern)
+        ? _byRegexStrVals(str, pattern)
+        : _byStrStrVals(str, pattern)
+      : [];
+  }
 
-    if ( !_match(str, pattern) ) return [];
+  /**
+   * @private
+   * @param {string} str
+   * @param {!RegExp} pattern
+   * @return {!Array<number>}
+   */
+  function _byRegexStrKeys(str, pattern) {
 
-    return is.regex(pattern)
-      ? _getStrValsByRegex(str, pattern)
-      : _getStrValsByStr(str, pattern);
+    /** @type {!Array<number>} */
+    var arr;
+    /** @type {Object} */
+    var obj;
+
+    pattern = clone.regex(pattern, true);
+    arr = [];
+    obj = pattern.exec(str);
+    while (obj) {
+      arr.push(obj.index);
+      obj = pattern.exec(str);
+    }
+    return arr;
+  }
+
+  /**
+   * @private
+   * @param {string} str
+   * @param {*} pattern
+   * @return {!Array<number>}
+   */
+  function _byStrStrKeys(str, pattern) {
+
+    /** @type {!Array<number>} */
+    var arr;
+    /** @type {number} */
+    var i;
+
+    pattern = String(pattern);
+    arr = [];
+    i = str.indexOf(pattern);
+    while (i !== -1) {
+      arr.push(i);
+      i = str.indexOf(pattern, ++i);
+    }
+    return arr;
   }
 
   /**
@@ -399,7 +426,7 @@ var get = (function getPrivateScope() {
    * @param {!RegExp} pattern
    * @return {!Array<string>}
    */
-  function _getStrValsByRegex(str, pattern) {
+  function _byRegexStrVals(str, pattern) {
 
     /** @type {!Array<string>} */
     var arr;
@@ -407,7 +434,6 @@ var get = (function getPrivateScope() {
     var obj;
 
     pattern = clone.regex(pattern, true);
-
     arr = [];
     obj = pattern.exec(str);
     while (obj) {
@@ -423,7 +449,7 @@ var get = (function getPrivateScope() {
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _getStrValsByStr(str, pattern) {
+  function _byStrStrVals(str, pattern) {
 
     /** @type {!Array<string>} */
     var arr;
@@ -431,7 +457,6 @@ var get = (function getPrivateScope() {
     var i;
 
     pattern = String(pattern);
-
     arr = [];
     i = str.indexOf(pattern);
     while (i !== -1) {
@@ -440,6 +465,10 @@ var get = (function getPrivateScope() {
     }
     return arr;
   }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -463,6 +492,7 @@ var get = (function getPrivateScope() {
    */
   var _error = makeErrorAid('get');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR GET
   return get;
 })();
