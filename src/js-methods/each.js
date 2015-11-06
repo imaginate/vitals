@@ -30,6 +30,14 @@ var clone = require('./clone.js');
 
 var each = (function eachPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - each
+  // - each.object (each.obj)
+  // - each.array  (each.arr)
+  // - each.cycle  (each.time)
+  //////////////////////////////////////////////////////////
+
   /**
    * A shortcut for iterating over object maps and arrays or for invoking an
    *   action a set number of times. If iterating over an object note that this
@@ -125,6 +133,12 @@ var each = (function eachPrivateScope() {
 
     _eachCycle(count, action, thisArg);
   };
+  // define shorthand
+  each.time = each.cycle;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -140,14 +154,12 @@ var each = (function eachPrivateScope() {
 
     obj = iteratee.length > 2 ? clone(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-
     switch (iteratee.length) {
-      case 0:  for (key in obj) _has(obj, key) && iteratee();             break;
-      case 1:  for (key in obj) _has(obj, key) && iteratee(obj[key]);     break;
-      case 2:  for (key in obj) _has(obj, key) && iteratee(obj[key], key);break;
-      default: for (key in obj) _has(obj, key) && iteratee(obj[key], key, obj);
+      case 0: for (key in obj) _own(obj, key) && iteratee();              break;
+      case 1: for (key in obj) _own(obj, key) && iteratee(obj[key]);      break;
+      case 2: for (key in obj) _own(obj, key) && iteratee(obj[key], key); break;
+     default: for (key in obj) _own(obj, key) && iteratee(obj[key], key, obj);
     }
-
     return obj;
   }
 
@@ -167,16 +179,14 @@ var each = (function eachPrivateScope() {
 
     obj = iteratee.length > 2 ? clone.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) iteratee();           break;
-      case 1:  while (++i < len) iteratee(obj[i]);     break;
-      case 2:  while (++i < len) iteratee(obj[i], i);  break;
+      case 0:  while (++i < len) iteratee();             break;
+      case 1:  while (++i < len) iteratee(obj[i]);       break;
+      case 2:  while (++i < len) iteratee(obj[i], i);    break;
       default: while (++i < len) iteratee(obj[i], i, obj);
     }
-
     return obj;
   }
 
@@ -191,6 +201,10 @@ var each = (function eachPrivateScope() {
     while(count--) action();
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {function} func
@@ -199,15 +213,12 @@ var each = (function eachPrivateScope() {
    */
   function _bind(func, thisArg) {
     switch (func.length) {
-      case 0: return function iteratee() {
-        func.call(thisArg);
-      };
-      case 1: return function iteratee(val) {
-        func.call(thisArg, val);
-      };
-      case 2: return function iteratee(val, key) {
-        func.call(thisArg, val, key);
-      };
+      case 0:
+      return function iteratee() { func.call(thisArg); };
+      case 1:
+      return function iteratee(val) { func.call(thisArg, val); };
+      case 2:
+      return function iteratee(val, key) { func.call(thisArg, val, key); };
     }
     return function iteratee(val, key, obj) {
       func.call(thisArg, val, key, obj);
@@ -220,7 +231,7 @@ var each = (function eachPrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
   /**
    * @private
@@ -228,6 +239,7 @@ var each = (function eachPrivateScope() {
    */
   var _error = makeErrorAid('each');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR EACH
   return each;
 })();
