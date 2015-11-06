@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - REMAP
+ * VITALS - JS METHOD - REMAP
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.remap]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/remap.js}
@@ -29,6 +29,14 @@ var clone = require('./clone.js');
 ////////////////////////////////////////////////////////////////////////////////
 
 var remap = (function remapPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - remap
+  // - remap.object (remap.obj)
+  // - remap.array  (remap.arr)
+  // - remap.string (remap.str)
+  //////////////////////////////////////////////////////////
 
   /**
    * A shortcut for making a new object/array/string by invoking an action over
@@ -157,6 +165,10 @@ var remap = (function remapPrivateScope() {
   // define shorthand
   remap.str = remap.string;
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {!(Object|function)} source
@@ -171,32 +183,30 @@ var remap = (function remapPrivateScope() {
     /** @type {string} */
     var key;
 
+    obj = {};
     source = iteratee.length > 2 ? clone(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
-
-    obj = {};
     switch (iteratee.length) {
       case 0:
       for (key in source) {
-        if ( _has(source, key) ) obj[key] = iteratee();
+        if ( _own(source, key) ) obj[key] = iteratee();
       }
       break;
       case 1:
       for (key in source) {
-        if ( _has(source, key) ) obj[key] = iteratee(source[key]);
+        if ( _own(source, key) ) obj[key] = iteratee(source[key]);
       }
       break;
       case 2:
       for (key in source) {
-        if ( _has(source, key) ) obj[key] = iteratee(source[key], key);
+        if ( _own(source, key) ) obj[key] = iteratee(source[key], key);
       }
       break;
       default:
       for (key in source) {
-        if ( _has(source, key) ) obj[key] = iteratee(source[key], key, source);
+        if ( _own(source, key) ) obj[key] = iteratee(source[key], key, source);
       }
     }
-
     return obj;
   }
 
@@ -218,7 +228,6 @@ var remap = (function remapPrivateScope() {
 
     source = iteratee.length > 2 ? clone.arr(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
-
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -228,7 +237,6 @@ var remap = (function remapPrivateScope() {
       case 2:  while (++i < len) arr[i] = iteratee(source[i], i);  break;
       default: while (++i < len) arr[i] = iteratee(source[i], i, source);
     }
-
     return arr;
   }
 
@@ -254,13 +262,17 @@ var remap = (function remapPrivateScope() {
     return source.replace(pattern, replacement);
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {?(Object|function)} obj
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
   /**
    * @private
@@ -270,15 +282,12 @@ var remap = (function remapPrivateScope() {
    */
   function _bindI(func, thisArg) {
     switch (func.length) {
-      case 0: return function iteratee() {
-        func.call(thisArg);
-      };
-      case 1: return function iteratee(val) {
-        func.call(thisArg, val);
-      };
-      case 2: return function iteratee(val, key) {
-        func.call(thisArg, val, key);
-      };
+      case 0:
+      return function iteratee() { func.call(thisArg); };
+      case 1:
+      return function iteratee(val) { func.call(thisArg, val); };
+      case 2:
+      return function iteratee(val, key) { func.call(thisArg, val, key); };
     }
     return function iteratee(val, key, obj) {
       func.call(thisArg, val, key, obj);
@@ -323,6 +332,7 @@ var remap = (function remapPrivateScope() {
    */
   var _error = makeErrorAid('remap');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR REMAP
   return remap;
 })();
