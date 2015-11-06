@@ -33,6 +33,7 @@ module.exports = newTask('compile', 'browser-node', {
     contents += '\n' + getFileIntro('src/vitals.js');
     contents += getFile('src/_vitals-parts/gen-export.js');
     contents = insertMethods(contents, 'src/js-methods');
+    contents = contents.replace(/is\.null\(/g, 'is.nil(');
     contents.to('src/vitals.js');
 
     log.pass('Completed `compile.browser` Task');
