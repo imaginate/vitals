@@ -97,8 +97,8 @@
   // INSERT has.js
   // INSERT merge.js
   // INSERT slice.js
-  // INSERT typeOf.js
   // INSERT clone.js
+  // INSERT amend.js
   // INSERT create.js
   // INSERT cut.js
   // INSERT each.js
@@ -115,6 +115,7 @@
 // *****************************************************************************
 
   return {
+    amend:  amend,
     clone:  clone,
     create: create,
     cut:    cut,

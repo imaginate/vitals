@@ -29,6 +29,7 @@ var is = require('node-are').is;
 // INSERT merge.js
 // INSERT slice.js
 // INSERT clone.js
+// INSERT amend.js
 // INSERT create.js
 // INSERT cut.js
 // INSERT each.js
@@ -41,6 +42,7 @@ var is = require('node-are').is;
 
 
 module.exports = {
+  amend:  amend,
   clone:  clone,
   create: create,
   cut:    cut,
