@@ -50,6 +50,7 @@ module.exports = newTask('minify', 'src', {
     );
 
     copy.file(source, dest);
+    stripAre(dest);
     minify(dest);
 
     log.pass('Completed `minify.src` Task');
@@ -60,6 +61,25 @@ module.exports = newTask('minify', 'src', {
 ////////////////////////////////////////////////////////////////////////////////
 // DEFINE PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {string} filepath
+ */
+function stripAre(filepath) {
+
+  /** @type {string} */
+  var content;
+  /** @type {!RegExp} */
+  var regex;
+
+  content = getFile(filepath);
+  regex = /^\/\* are\.js[\s\S]*?(\/\*\*\n)/;
+
+  if ( !has(content, regex) ) return;
+
+  content = content.replace(regex, '$1');
+  content.to(filepath);
+}
 
 /**
  * @param {string} filepath
@@ -84,6 +104,7 @@ function minify(filepath) {
   content = exec(cmd, { silent: true }).output
     .replace(/\r\n?/g, '\n'); // normalize line breaks
   content = insertCopyright(content, filepath);
+  content = insertAre(content);
   content.to(filepath);
 }
 
@@ -108,6 +129,14 @@ function insertCopyright(content, filepath) {
     ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n' +
     ' * The Apache License ('+ linkBase +'/blob/master/LICENSE.md) */';
   return content.replace(/^\/\*[\s\S]*?\*\//, copyright);
+}
+
+/**
+ * @param {string} content
+ * @return {string}
+ */
+function insertAre(content) {
+  return getFile('vendor/are.min.js') + '\n' + content;
 }
 
 /**
