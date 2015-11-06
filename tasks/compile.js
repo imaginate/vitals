@@ -19,7 +19,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {!Task} */
-module.exports = newTask('compile', 'browser', {
+module.exports = newTask('compile', 'browser-node', {
 
   /**
    * @type {function}
@@ -29,7 +29,8 @@ module.exports = newTask('compile', 'browser', {
     /** @type {string} */
     var contents;
 
-    contents = getFileIntro('src/vitals.js');
+    contents = getFile('vendor/are.min.js', true);
+    contents += '\n' + getFileIntro('src/vitals.js');
     contents += getFile('src/_vitals-parts/gen-export.js');
     contents = insertMethods(contents, 'src/js-methods');
     contents.to('src/vitals.js');
@@ -99,7 +100,7 @@ function insertMethods(contents, dirpath) {
   var regex;
 
   dirpath = dirpath.replace(/[^\/]$/, '$&/');
-  regex = / *\/\/ INSERT ([a-zA-Z-]\.js)\n/g;
+  regex = / *\/\/ INSERT ([a-zA-Z-_]+\.js)\n/g;
   return contents.replace(regex, function(org, filepath) {
     return getMethod(dirpath + filepath);
   });
@@ -111,5 +112,5 @@ function insertMethods(contents, dirpath) {
  */
 function getFileIntro(filepath) {
   return getFile(filepath, true)
-    .replace(/^(\/\*[\s\S]*?\*\/\n)[\s\S]*$/, '$1'); // extract file intro
+    .replace(/^[\s\S]*?(\/\*\*[\s\S]*?\*\/\n)[\s\S]*$/, '$1'); // extract intro
 }
