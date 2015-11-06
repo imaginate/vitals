@@ -29,6 +29,14 @@ var has = require('./has.js');
 
 var fill = (function fillPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - fill
+  // - fill.object (fill.obj)
+  // - fill.array  (fill.arr)
+  // - fill.string (fill.str)
+  //////////////////////////////////////////////////////////
+
   /**
    * Fills an array, object, or string with specified values.
    * @public
@@ -75,30 +83,6 @@ var fill = (function fillPrivateScope() {
   }
 
   /**
-   * Fills an existing or new array with specified values.
-   * @public
-   * @param {!(Array|number)} arr - If number makes new array with arr length.
-   * @param {*} val
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= arr.length]
-   * @return {!Array}
-   */
-  fill.array = function fillArray(arr, val, start, end) {
-
-    arr = is.num(arr) ? new Array(arr) : arr;
-
-    if (arguments.length < 2) throw _error('No val defined', 'array');
-
-    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
-    if ( !is('num=', start) ) throw _error.type('start', 'array');
-    if ( !is('num=', end)   ) throw _error.type('end',   'array');
-
-    return _fillArr(arr, val, start, end);
-  };
-  // define shorthand
-  fill.arr = fill.array;
-
-  /**
    * Fills an existing object/function with specified keys and values.
    * @public
    * @param {!(Object|function)} obj
@@ -126,6 +110,30 @@ var fill = (function fillPrivateScope() {
   fill.obj = fill.object;
 
   /**
+   * Fills an existing or new array with specified values.
+   * @public
+   * @param {!(Array|number)} arr - If number makes new array with arr length.
+   * @param {*} val
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= arr.length]
+   * @return {!Array}
+   */
+  fill.array = function fillArray(arr, val, start, end) {
+
+    arr = is.num(arr) ? new Array(arr) : arr;
+
+    if (arguments.length < 2) throw _error('No val defined', 'array');
+
+    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
+    if ( !is('num=', start) ) throw _error.type('start', 'array');
+    if ( !is('num=', end)   ) throw _error.type('end',   'array');
+
+    return _fillArr(arr, val, start, end);
+  };
+  // define shorthand
+  fill.arr = fill.array;
+
+  /**
    * Fills a new string with specified values.
    * @public
    * @param {number} count
@@ -142,35 +150,9 @@ var fill = (function fillPrivateScope() {
   // define shorthand
   fill.str = fill.string;
 
-  /**
-   * @private
-   * @param {!Array} arr
-   * @param {*} val
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= arr.length]
-   * @return {!Array}
-   */
-  function _fillArr(arr, val, start, end) {
-
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = arr.length;
-    start = start || 0;
-    start = start < 0 ? len + start : start;
-    end = end || len;
-    end = end > len ? len : end < 0 ? len + end : end;
-
-    if (start >= end) return arr;
-
-    i = start - 1;
-    while (++i < end) {
-      arr[i] = val;
-    }
-    return arr;
-  }
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -184,7 +166,7 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( has.key(obj, key) ) {
+      if ( _own(obj, key) ) {
         obj[key] = val;
       }
     }
@@ -216,6 +198,39 @@ var fill = (function fillPrivateScope() {
 
   /**
    * @private
+   * @param {!Array} arr
+   * @param {*} val
+   * @param {number=} start - [default= 0]
+   * @param {number=} end - [default= arr.length]
+   * @return {!Array}
+   */
+  function _fillArr(arr, val, start, end) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arr.length;
+    start = start || 0;
+    start = start < 0 ? len + start : start;
+    start = start < 0 ? 0 : start;
+    end = end || len;
+    end = end > len
+      ? len : end < 0
+        ? len + end : end;
+
+    if (start >= end) return arr;
+
+    i = start - 1;
+    while (++i < end) {
+      arr[i] = val;
+    }
+    return arr;
+  }
+
+  /**
+   * @private
    * @param {number} count
    * @param {*} val
    * @return {string}
@@ -226,6 +241,9 @@ var fill = (function fillPrivateScope() {
     var str;
 
     count = count < 0 ? 0 : count;
+
+    if (!count) return '';
+
     val = String(val);
     str = '';
     while (count--) {
@@ -234,19 +252,42 @@ var fill = (function fillPrivateScope() {
     return str;
   }
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {string} keys
    * @return {!Array<string>}
    */
   function _split(keys) {
-    return keys.split(
-      has(keys, ', ')
-        ? ', ' : has(keys, ',')
-          ? ',' : has(keys, '|')
-            ? '|' : ' '
-    );
+
+    /** @type {string} */
+    var separator;
+
+    separator = _match(keys, ', ')
+      ? ', '  : _match(keys, ',')
+        ? ',' : _match(keys, '|')
+          ? '|' : ' ';
+    return keys.split(separator);
   }
+
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _own = has.key;
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} pattern
+   * @return {boolean}
+   */
+  var _match = has.pattern;
 
   /**
    * @private
@@ -254,6 +295,7 @@ var fill = (function fillPrivateScope() {
    */
   var _error = makeErrorAid('fill');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FILL
   return fill;
 })();
