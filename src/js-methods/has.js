@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - HAS
+ * VITALS - JS METHOD - HAS
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.has]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}
@@ -28,6 +28,15 @@ var is = require('node-are').is;
 
 var has = (function hasPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - has
+  // - has.key
+  // - has.value     (has.val)
+  // - has.pattern
+  // - has.substring (has.substr)
+  //////////////////////////////////////////////////////////
+
   /**
    * A shortcut for Object.prototype.hasOwnProperty (that accepts null),
    *   String.prototype.includes, RegExp.prototype.test, and
@@ -47,17 +56,11 @@ var has = (function hasPrivateScope() {
     
     if ( is.null(source) ) return false;
 
-    if ( is.str(source) ) {
-      if ( is.regex(key) ) return _hasPattern(source, key);
-      key = String(key);
-      if (!source) return !key;
-      if (!key) return true;
-      return _hasStr(source, key);
-    }
+    if ( is.str(source) ) return _hasPattern(source, key);
 
     if ( !is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _hasValArr(source, key) : _hasKey(source, key);
+    return is._arr(source) ? _hasVal(source, key) : _hasKey(source, key);
   }
 
   /**
@@ -76,7 +79,7 @@ var has = (function hasPrivateScope() {
     if ( !is._obj(source) ) throw _error.type('source', 'key');
 
     return _hasKey(source, key);
-  }
+  };
 
   /**
    * A shortcut that checks for a value in an object.
@@ -93,8 +96,8 @@ var has = (function hasPrivateScope() {
 
     if ( !is._obj(source) ) throw _error.type('source', 'value');
 
-    return is._arr(source) ? _hasValArr(source, val) : _hasVal(source, val);
-  }
+    return _hasVal(source, val);
+  };
   // define shorthand
   has.val = has.value;
 
@@ -110,16 +113,29 @@ var has = (function hasPrivateScope() {
     if ( !is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
-    if ( is.regex(pattern) ) return _hasPattern(source, pattern);
+    return _hasPattern(source, pattern);
+  };
 
-    pattern = String(pattern);
-    if (!source) return !pattern;
-    if (!pattern) return true;
-    return _hasStr(source, pattern);
-  }
+  /**
+   * A shortcut for String.prototype.includes.
+   * @public
+   * @param {string} source
+   * @param {*} str
+   * @return {boolean}
+   */
+  has.substring = function hasSubstring(source, str) {
+
+    if ( !is.str(source) ) throw _error.type('source', 'substring');
+    if (arguments.length < 2) throw _error('No str defined', 'substring');
+
+    return _hasSubstr(source, str);
+  };
   // define shorthand
-  has.string = has.pattern;
-  has.str = has.pattern;
+  has.substr = has.substring;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -138,14 +154,51 @@ var has = (function hasPrivateScope() {
    * @return {boolean}
    */
   function _hasVal(source, val) {
+    return is._arr(source) ? _valInArr(source, val) : _valInObj(source, val);
+  }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} pattern
+   * @return {boolean}
+   */
+  function _hasPattern(source, pattern) {
+    return is.regex(pattern)
+      ? pattern.test(source)
+      : _hasSubstr(source, pattern);
+  }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} str
+   * @return {boolean}
+   */
+  function _hasSubstr(source, str) {
+    str = String(str);
+    if (!source) return !str;
+    if (!str) return true;
+    return _strInStr(source, str);
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - VAL IN TESTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _valInObj(source, val) {
 
     /** @type {string} */
     var key;
 
     for (key in source) {
-      if ( _hasKey(source, key) && source[key] === val ) {
-        return true;
-      }
+      if ( _own(source, key) && source[key] === val ) return true;
     }
     return false;
   }
@@ -156,7 +209,7 @@ var has = (function hasPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  function _hasValArr(source, val) {
+  function _valInArr(source, val) {
 
     /** @type {number} */
     var len;
@@ -174,22 +227,16 @@ var has = (function hasPrivateScope() {
   /**
    * @private
    * @param {string} source
-   * @param {!RegExp} pattern
-   * @return {boolean}
-   */
-  function _hasPattern(source, pattern) {
-    return pattern.test(source);
-  }
-
-  /**
-   * @private
-   * @param {string} source
    * @param {*} str
    * @return {boolean}
    */
-  var _hasStr = !!String.prototype.includes
-    ? function _hasStr(source, str) { return source.includes(str); }
-    : function _hasStr(source, str) { return source.indexOf(str) !== -1; };
+  var _strInStr = !!String.prototype.includes
+    ? function _strInStr(source, str) { return source.includes(str); }
+    : function _strInStr(source, str) { return source.indexOf(str) !== -1; };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -200,10 +247,21 @@ var has = (function hasPrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
    * @type {!ErrorAid}
    */
   var _error = makeErrorAid('has');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR HAS
   return has;
 })();
