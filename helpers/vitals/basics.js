@@ -34,6 +34,8 @@ global.are = require('node-are').are;
 // APPEND SHORTCUT METHODS
 ////////////////////////////////////////////////////////////////////////////////
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 /**
  * A shortcut for Object.prototype.hasOwnProperty that accepts null objects or a
  *   shortcut for String.prototype.includes and RegExp.prototype.test.
@@ -45,37 +47,25 @@ global.are = require('node-are').are;
 global.has = function(source, prop) {
 
   if (!source) {
-    if ( !is('?str', source) ) {
-      log.error(
-        'Invalid `Vitals.has` Call',
-        'invalid type for `source` param',
-        mapArgs({ source: source, prop: prop })
-      );
-    }
+    if ( !is('?str', source) ) log.error(
+      'Invalid `Vitals.has` Call',
+      'invalid type for `source` param',
+      mapArgs({ source: source, prop: prop })
+    );
     return false;
   }
 
   if ( is.str(source) ) {
-    if ( is.str(prop) ) {
-      return source.includes(prop);
-    }
-    else if ( is.regex(prop) ) {
-      return prop.test(source);
-    }
-    else {
-      log.error(
-        'Invalid `Vitals.has` Call',
-        'invalid type for `prop` param',
-        mapArgs({ source: source, prop: prop })
-      );
-    }
+    if ( is.str(prop) ) return source.includes(prop);
+    if ( is.regex(prop) ) return prop.test(source);
+    log.error(
+      'Invalid `Vitals.has` Call',
+      'invalid type for `prop` param',
+      mapArgs({ source: source, prop: prop })
+    );
   }
 
-  if ( is._obj(source) ) {
-    prop = String(prop);
-    return 'hasOwnProperty' in source ?
-      source.hasOwnProperty(prop) : prop in source;
-  }
+  if ( is._obj(source) ) return hasOwnProperty.call(source, prop);
 
   log.error(
     'Invalid `Vitals.has` Call',
@@ -88,7 +78,7 @@ global.has = function(source, prop) {
  * A shortcut for iterating over object maps and arrays or invoking an action a
  *   set number of times.
  * @param {!(Object|function|Array|number)} val
- * @param {function(*, (string|number)=, (Object|function|Array)=)} iteratee
+ * @param {function(*, (string|number)=)} iteratee
  * @return {(Object|function|Array)}
  */
 global.each = function(val, iteratee) {
@@ -98,43 +88,30 @@ global.each = function(val, iteratee) {
   /** @type {number} */
   var len;
 
-  if ( !is.func(iteratee) ) {
-    log.error(
-      'Invalid `Vitals.each` Call',
-      'invalid type for `iteratee` param',
-      mapArgs({ val: val, iteratee: iteratee })
-    );
-  }
+  if ( !is.func(iteratee) ) log.error(
+    'Invalid `Vitals.each` Call',
+    'invalid type for `iteratee` param',
+    mapArgs({ val: val, iteratee: iteratee })
+  );
 
   if ( is._obj(val) ) {
 
     // iterate over an array or arguments obj
     if ( is._arr(val) ) {
-      val = slice(val);
       len = val.length;
       prop = -1;
-      while (++prop < len) {
-        iteratee(val[prop], prop, val);
-      }
+      while (++prop < len) iteratee(val[prop], prop);
+      return val;
     }
 
     // iterate over an object's own props
-    else {
-      val = is.func(val) ? val : clone(val);
-      for (prop in val) {
-        if ( has(val, prop) ) {
-          iteratee(val[prop], prop, val);
-        }
-      }
-    }
+    for (prop in val) has(val, prop) && iteratee(val[prop], prop);
     return val;
   }
 
   // iterate specified number of times
-  else if ( is.num(val) ) {
-    while(cycles--) {
-      iteratee();
-    }
+  if ( is.num(val) ) {
+    while(cycles--) iteratee();
     return null;
   }
 
@@ -164,31 +141,28 @@ global.slice = function slice(val, start, end) {
   /** @type {number} */
   var i;
 
-  if ( is.str(val) ) {
-    return val.slice(start, end);
-  }
+  if ( is.null(val) ) return null;
 
-  if ( is.null(val) ) {
-    return null;
-  }
-
-  if ( !is._obj(val) || !has(val, 'length') ) {
-    log.error(
-      'Invalid `Vitals.slice` Call',
-      'invalid type for `val` param',
-      mapArgs({ val: val, start: start, end: end })
-    );
-  }
+  if ( !is.str(val) && ( !is._obj(val) || !is.num(val.length) ) ) log.error(
+    'Invalid `Vitals.slice` Call',
+    'invalid type for `val` param',
+    mapArgs({ val: val, start: start, end: end })
+  );
 
   len = val.length;
   start = start || 0;
   start = start < 0 ? len + start : start;
+  start = start < 0 ? 0 : start;
   end = end || len;
-  end = end > len ?
-    len : end < 0 ?
-      len + end : end;
+  end = end > len
+    ? len : end < 0
+      ? len + end : end;
 
-  arr = start < end ? new Array(end - start) : [];
+  if ( is.str(val) ) return start >= end ? '' : val.slice(start, end);
+
+  if (start >= end) return [];
+
+  arr = new Array(end - start);
   ii = start - 1;
   i = 0;
   while (++ii < end) {
@@ -208,25 +182,32 @@ global.clone = function clone(obj, deep) {
   /** @type {!Object} */
   var newObj;
   /** @type {string} */
-  var prop;
+  var key;
+  /** @type {*} */
+  var val;
 
-  if ( is.null(obj) ) {
-    return null;
-  }
+  if ( is.null(obj) ) return null;
 
-  if ( !is.obj(obj) ) {
-    log.error(
-      'Invalid `Vitals.clone` Call',
-      'invalid type for `obj` param',
-      mapArgs({ obj: obj, deep: deep })
-    );
-  }
+  if ( !is.obj(obj) ) log.error(
+    'Invalid `Vitals.clone` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj, deep: deep })
+  );
 
   newObj = is.arr(obj) ? [] : {};
-  for (prop in obj) {
-    if ( has(obj, prop) ) {
-      newObj[prop] = deep && is.obj( obj[prop] ) ?
-        clone(obj[prop], true) : obj[prop];
+  if (deep) {
+    for (key in obj) {
+      if ( has(obj, key) ) {
+        val = obj[key];
+        newObj[key] = is.obj(val) ? clone(val, true) : obj[key];
+      }
+    }
+  }
+  else {
+    for (key in obj) {
+      if ( has(obj, key) ) {
+        newObj[key] = obj[key];
+      }
     }
   }
   return newObj;
@@ -241,30 +222,31 @@ global.clone = function clone(obj, deep) {
 global.merge = function merge(dest, source) {
 
   /** @type {string} */
-  var prop;
+  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  if ( !is._obj(dest) || arguments.length > 2 ?
-         !are('?obj|func', slice(arguments, 1)) : !is('?obj|func', source) ) {
-    log.error(
-      'Invalid `Vitals.merge` Call',
-      'invalid type for a param or params',
-      mapArgs({ dest: dest, sources: slice(arguments, 1) })
-    );
-  }
+  if ( !is._obj(dest) ) log.error(
+    'Invalid `Vitals.merge` Call',
+    'invalid type for dest param',
+    mapArgs({ dest: dest })
+  );
 
   len = arguments.length;
   i = 0;
   while(++i < len) {
     source = arguments[i];
-    if (source) {
-      for (prop in source) {
-        if ( has(source, prop) ) {
-          dest[prop] = source[prop];
-        }
+    if ( is.null(source) ) continue;
+    if ( !is._obj(source) ) log.error(
+      'Invalid `Vitals.merge` Call',
+      'invalid type for a source param',
+      mapArgs({ sources: slice(arguments, 1) })
+    );
+    for (key in source) {
+      if ( has(source, key) ) {
+        dest[key] = source[key];
       }
     }
   }
@@ -277,36 +259,33 @@ global.merge = function merge(dest, source) {
  * @param {function(*, number): *} iteratee
  * @return {Array}
  */
-global.mapArr = function mapArr(obj, iteratee) {
+global.remap = function remap(obj, iteratee) {
 
   /** @type {!Array} */
   var arr;
   /** @type {number} */
+  var len;
+  /** @type {number} */
   var i;
 
-  if ( !is.func(iteratee) ) {
-    log.error(
-      'Invalid `Vitals.map` Call',
-      'invalid type for `iteratee` param',
-      mapArgs({ obj: obj, iteratee: iteratee })
-    );
-  }
+  if ( !is.func(iteratee) ) log.error(
+    'Invalid `Vitals.map` Call',
+    'invalid type for `iteratee` param',
+    mapArgs({ obj: obj, iteratee: iteratee })
+  );
 
-  if ( is.null(obj) ) {
-    return null;
-  }
+  if ( is.null(obj) ) return null;
 
-  if ( !is.obj(obj) || !has(obj, 'length') ) {
-    log.error(
-      'Invalid `Vitals.map` Call',
-      'invalid type for `obj` param',
-      mapArgs({ obj: obj, iteratee: iteratee })
-    );
-  }
+  if ( !is.obj(obj) || !is.num(obj.length) ) log.error(
+    'Invalid `Vitals.remap` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj, iteratee: iteratee })
+  );
 
-  i = obj.length;
-  arr = i ? new Array(i) : [];
-  while (i--) {
+  len = obj.length;
+  arr = new Array(len);
+  i = -1;
+  while (++i < len) {
     arr[i] = iteratee(obj[i], i);
   }
   return arr;
@@ -320,29 +299,21 @@ global.mapArr = function mapArr(obj, iteratee) {
  */
 global.objKeys = function objKeys(obj) {
 
-  /** @type {string} */
-  var prop;
   /** @type {!Array<string>} */
   var arr;
+  /** @type {string} */
+  var key;
 
-  if ( is.null(obj) ) {
-    return null;
-  }
+  if ( is.null(obj) ) return null;
 
-  if ( !is._obj(obj) ) {
-    log.error(
-      'Invalid `Vitals.objKeys` Call',
-      'invalid type for `obj` param',
-      mapArgs({ obj: obj })
-    );
-  }
+  if ( !is._obj(obj) ) log.error(
+    'Invalid `Vitals.objKeys` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj })
+  );
 
   arr = [];
-  for (prop in obj) {
-    if ( has(obj, prop) ) {
-      arr.push(prop);
-    }
-  }
+  for (key in obj) has(obj, key) && arr.push(key);
   return arr;
 };
 
@@ -356,23 +327,20 @@ global.objKeys = function objKeys(obj) {
 global.seal = function seal(obj, deep) {
 
   /** @type {string} */
-  var prop;
+  var key;
 
-  if ( !is._obj(obj) ) {
-    if ( !is.null(obj) ) {
-      log.error(
-        'Invalid `Vitals.seal` Call',
-        'invalid type for `obj` param',
-        mapArgs({ obj: obj, deep: deep })
-      );
-    }
-    return null;
-  }
+  if ( is.null(obj) ) return null;
+
+  if ( !is._obj(obj) ) log.error(
+    'Invalid `Vitals.seal` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj, deep: deep })
+  );
 
   if (deep) {
-    for (prop in obj) {
-      if ( has(obj, prop) && is._obj( obj[prop] ) ) {
-        obj[prop] = seal(obj[prop], true);
+    for (key in obj) {
+      if ( has(obj, key) && is._obj( obj[key] ) ) {
+        obj[key] = seal(obj[key], true);
       }
     }
   }
@@ -390,23 +358,20 @@ global.seal = function seal(obj, deep) {
 global.freeze = function freeze(obj, deep) {
 
   /** @type {string} */
-  var prop;
+  var key;
 
-  if ( !is._obj(obj) ) {
-    if ( !is.null(obj) ) {
-      log.error(
-        'Invalid `Vitals.freeze` Call',
-        'invalid type for `obj` param',
-        mapArgs({ obj: obj, deep: deep })
-      );
-    }
-    return null;
-  }
+  if ( is.null(obj) ) return null;
+
+  if ( !is._obj(obj) ) log.error(
+    'Invalid `Vitals.freeze` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj, deep: deep })
+  );
 
   if (deep) {
-    for (prop in obj) {
-      if ( has(obj, prop) && is._obj( obj[prop] ) ) {
-        obj[prop] = freeze(obj[prop], true);
+    for (key in obj) {
+      if ( has(obj, key) && is._obj( obj[key] ) ) {
+        obj[key] = freeze(obj[key], true);
       }
     }
   }
