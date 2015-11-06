@@ -38,7 +38,7 @@ module.exports = newTask('compile', 'browser', {
   },
 
   /**
-   * @param {string} section
+   * @param {string=} section
    */
   node: function node(section) {
 
