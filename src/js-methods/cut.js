@@ -487,18 +487,19 @@ var cut = (function cutPrivateScope() {
     /** @type {!Object} */
     var sorted;
     /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-    /** @type {number} */
     var first;
     /** @type {number} */
     var count;
+    /** @type {number} */
+    var i;
 
-    sorted = _sortIndexes(keys, source.length - 1);
-    len = sorted.first.length;
-    i = -1;
-    while (++i < len) {
+    if (!source.length || !keys.length) return source;
+
+    if (keys.length < 2) return _spliceKey(source, keys);
+
+    sorted = _sortIndexes(keys, source.length);
+    i = sorted.first.length;
+    while (i--) {
       first = sorted.first[i];
       count = sorted.last[i] - first + 1;
       source.splice(first, count);
@@ -511,21 +512,243 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * @private
-   * @param {!Array<number>} keys
-   * @param {number} max
-   * @return {!{
+   * @typedef {!{
    *   first: !Array<number>,
    *   last:  !Array<number>
-   * }}
+   * }} SortedIndexes
+   */
+
+  /**
+   * @private
+   * @param {!Array<number>} indexes
+   * @param {number} sourceLen
+   * @return {!SortedIndexes}
    */
   var _sortIndexes = (function() {
 
-    // setup
-    // main sort
-    // find pos up
-    // find pos down
+    /**
+     * @private
+     * @param {!Array<number>} indexes
+     * @param {number} sourceLen
+     * @return {!SortedIndexes}
+     */
+    function sortIndexes(indexes, sourceLen)
 
+      /** @type {number} */
+      var index;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
+
+      setup();
+
+      len = indexes.length;
+      i = 0;
+
+      // push 1st index
+      index = parse(indexes[i], sourceLen);
+      while (index === -1 && ++i < len) {
+        index = parse(indexes[i], sourceLen);
+      }
+      push(index);
+
+      // push remaining indexes
+      while (++i < len) {
+        index = parse(indexes[i], sourceLen);
+        if (index !== -1) sort(index, 0, last.length);
+      }
+
+      return result();
+    }
+
+    //////////////////////////////
+    // SORT MEMBERS
+    // - FIRST
+    // - LAST
+
+    /** @type {!Array<number>} */
+    var first;
+    /** @type {!Array<number>} */
+    var last;
+
+    //////////////////////////////
+    // SORT METHODS
+    // - SETUP
+    // - RESULT
+    // - PARSE
+    // - PUSH
+    // - UNSHIFT
+    // - INSERT
+    // - REMOVE
+    // - SORT
+    // - COMPARE PREV
+    // - COMPARE NEXT
+
+    /**
+     * @private
+     * @type {function}
+     */
+    function setup() {
+      first = [];
+      last  = [];
+    }
+
+    /**
+     * @private
+     * @return {!SortedIndexes}
+     */
+    function result() {
+      return {
+        first: first,
+        last:  last
+      };
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} len
+     * @return {number} If invalid index is given -1 is returned.
+     */
+    function parse(index, len) {
+      index = index < 0 ? len + index : index;
+      return index < 0 || index >= len ? -1 : index;
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     */
+    function push(index) {
+      first.push(index);
+      last.push(index);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     */
+    function unshift(index) {
+      first.unshift(index);
+      last.unshift(index);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} pos
+     */
+    function insert(index, pos) {
+      first.splice(pos, 0, index);
+      last.splice(pos, 0, index);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} pos
+     */
+    function remove(pos) {
+      first.splice(pos, 1);
+      last.splice(pos, 1);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} left
+     * @param {number} right
+     */
+    function sort(index, left, right) {
+
+      /** @type {number} */
+      var mid;
+      /** @type {number} */
+      var min;
+
+      mid = (left + right) >>> 1;
+      min = first[mid];
+      if (index < min) comparePrev(index, left, mid);
+      else if (index > last[mid]) compareNext(index, mid, right);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} left
+     * @param {number} mid
+     */
+    function comparePrev(index, left, mid) {
+
+      /** @type {number} */
+      var prev;
+      /** @type {number} */
+      var min;
+      /** @type {number} */
+      var max;
+
+      min = first[mid];
+      if (!mid) {
+        if (index === --min) first[mid] = index;
+        else unshift(index);
+        return;
+      }
+      prev = mid - 1;
+      max = last[prev];
+      if (index === --min) {
+        if (index === ++max) {
+          last[prev] = last[mid];
+          remove(mid);
+        }
+        else first[mid] = index;
+      }
+      else if (index > max) {
+        if (index === ++max) last[prev] = index;
+        else insert(index, mid);
+      }
+      else sort(index, left, prev);
+    }
+
+    /**
+     * @private
+     * @param {number} index
+     * @param {number} mid
+     * @param {number} right
+     */
+    function compareNext(index, mid, right) {
+
+      /** @type {number} */
+      var next;
+      /** @type {number} */
+      var min;
+      /** @type {number} */
+      var max;
+
+      next = mid + 1;
+      max = last[mid];
+      if (next === last.length) {
+        if (index === ++max) last[mid] = index;
+        else push(index);
+        return;
+      }
+      min = first[next];
+      if (index === ++max) {
+        if (index === --min) {
+          last[mid] = last[next];
+          remove(next);
+        }
+        else last[mid] = index;
+      }
+      else if (index < min) {
+        if (index === --min) first[next] = index;
+        else insert(index, next);
+      }
+      else sort(index, next, right);
+    }
+
+    // END OF INDEX SORT PRIVATE SCOPE
+    return sortIndexes;
   })();
 
   //////////////////////////////////////////////////////////
