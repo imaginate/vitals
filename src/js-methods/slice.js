@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - SLICE
+ * VITALS - JS METHOD - SLICE
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/slice.js}
@@ -27,6 +27,13 @@ var is = require('node-are').is;
 ////////////////////////////////////////////////////////////////////////////////
 
 var slice = (function slicePrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - slice
+  // - slice.array  (slice.arr)
+  // - slice.string (slice.str)
+  //////////////////////////////////////////////////////////
 
   /**
    * A shortcut for Array.prototype.slice.call(obj, start, end) and
@@ -91,6 +98,10 @@ var slice = (function slicePrivateScope() {
   // define shorthand
   slice.str = slice.string;
 
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
   /**
    * @private
    * @param {!(Object|Array|function)} source
@@ -110,10 +121,8 @@ var slice = (function slicePrivateScope() {
     var i;
 
     len = source.length;
-    start = start || 0;
-    start = start < 0 ? len + start : start;
-    end = end || len;
-    end = end > len ? len : end < 0 ? len + end : end;
+    start = start ? _parseStart(len, start) : 0;
+    end = end ? _parseEnd(len, end) : len;
 
     if (start >= end) return [];
 
@@ -139,13 +148,37 @@ var slice = (function slicePrivateScope() {
     var len;
 
     len = str.length;
-    start = start || 0;
-    start = start < 0 ? len + start : start;
-    end = end || len;
-    end = end > len ? len : end < 0 ? len + end : end;
-
+    start = start ? _parseStart(len, start) : 0;
+    end = end ? _parseEnd(len, end) : len;
     return start >= end ? '' : str.substring(start, end);
   }
+
+  /**
+   * @private
+   * @param {number} len
+   * @param {number} start
+   * @return {number}
+   */
+  function _parseStart(len, start) {
+    start = start < 0 ? len + start : start;
+    return start < 0 ? 0 : start;
+  }
+
+  /**
+   * @private
+   * @param {number} len
+   * @param {number} end
+   * @return {number}
+   */
+  function _parseEnd(len, end) {
+    return end > len
+      ? len : end < 0
+        ? len + end : end;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -153,6 +186,7 @@ var slice = (function slicePrivateScope() {
    */
   var _error = makeErrorAid('slice');
 
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SLICE
   return slice;
 })();
