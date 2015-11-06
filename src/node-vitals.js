@@ -25,7 +25,7 @@ var has = require('./js-methods/has.js');
 /** @type {function} */
 var each = require('./js-methods/each.js');
 /** @type {function} */
-var merge = require('./js-methods/merge.js');
+var fuse = require('./js-methods/fuse.js');
 /** @type {function} */
 var slice = require('./js-methods/slice.js');
 
@@ -45,18 +45,20 @@ var slice = require('./js-methods/slice.js');
  *
  *   | JS Methods | Node Methods |
  *   | :--------- | :----------- |
+ *   | amend      |              |
  *   | clone      |              |
  *   | create     |              |
  *   | cut        |              |
  *   | each       |              |
  *   | fill       |              |
  *   | freeze     |              |
+ *   | fuse       |              |
  *   | get        |              |
  *   | has        |              |
- *   | merge      |              |
  *   | remap      |              |
  *   | seal       |              |
  *   | slice      |              |
+ *   | until      |              |
  *
  * ------------------------------------
  */
@@ -67,18 +69,20 @@ var slice = require('./js-methods/slice.js');
  */
 var METHODS = {
   'js-methods': {
+    'amend':  true,
     'clone':  true,
     'create': true,
     'cut':    true,
     'each':   true,
     'fill':   true,
     'freeze': true,
+    'fuse':   true,
     'get':    true,
     'has':    true,
-    'merge':  true,
     'remap':  true,
     'seal':   true,
-    'slice':  true
+    'slice':  true,
+    'until':  true
   },
   'node-methods': {}
 };
@@ -120,7 +124,7 @@ module.exports = function setupVitals(setup, methods) {
     if ( isSection(method) ) {
       method += has(method, '-methods') ? '' : '-methods';
       section = require('./' + method);
-      vitals = merge(vitals, section);
+      vitals = fuse(vitals, section);
       return;
     }
 

@@ -26,7 +26,6 @@ var is = require('node-are').is;
 // *****************************************************************************
 
 // INSERT has.js
-// INSERT merge.js
 // INSERT slice.js
 // INSERT clone.js
 // INSERT amend.js
@@ -35,10 +34,12 @@ var is = require('node-are').is;
 // INSERT each.js
 // INSERT fill.js
 // INSERT freeze.js
+// INSERT fuse.js
 // INSERT get.js
 // INSERT remap.js
 // INSERT seal.js
 // INSERT until.js
+// INSERT _error.js
 
 
 module.exports = {
@@ -49,9 +50,9 @@ module.exports = {
   each:   each,
   fill:   fill,
   freeze: freeze,
+  fuse:   fuse,
   get:    get,
   has:    has,
-  merge:  merge,
   remap:  remap,
   seal:   seal,
   slice:  slice,
