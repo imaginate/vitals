@@ -69,6 +69,8 @@ function minify(filepath) {
   /** @type {string} */
   var compiler;
   /** @type {string} */
+  var content;
+  /** @type {string} */
   var cmd;
 
   compiler = 'vendor/closure-compiler.jar';
@@ -79,27 +81,54 @@ function minify(filepath) {
   );
 
   cmd = 'java -jar ' + compiler + ' --js ' + filepath + ' -W QUIET';
-  exec(cmd, { silent: true }).output
-    .replace(/\r\n?/g, '\n') // normalize line breaks
-    .replace(/^\/\*[\s\S]*?\*\//, getCopyright(filepath)) // insert copyright
-    .to(filepath);
+  content = exec(cmd, { silent: true }).output
+    .replace(/\r\n?/g, '\n'); // normalize line breaks
+  content = insertCopyright(content, filepath);
+  content.to(filepath);
+}
+
+/**
+ * @param {string} content
+ * @param {string} filepath
+ * @return {string}
+ */
+function insertCopyright(content, filepath) {
+
+  /** @type {string} */
+  var copyright;
+  /** @type {string} */
+  var linkBase;
+  /** @type {string} */
+  var version;
+
+  filepath = filepath.replace(/^(?:.*\/)?([a-z-]+)\..*$/i, '$1.js');
+  linkBase = 'https://github.com/imaginate/vitals';
+  version  = 'v' + getVersion();
+  copyright = '/* '+ filepath +' '+ version +' ('+ linkBase +')\n' +
+    ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n' +
+    ' * The Apache License ('+ linkBase +'/blob/master/LICENSE.md) */';
+  return content.replace(/^\/\*[\s\S]*?\*\//, copyright);
+}
+
+/**
+ * @return {string}
+ */
+function getVersion() {
+
+  /** @type {string} */
+  var content;
+
+  content = getFile('src/_vitals-parts/gen-export.js');
+  return /\@version ([0-9]+\.[0-9]+\.[0-9]+)/.exec(content)[1];
 }
 
 /**
  * @param {string} filepath
  * @return {string}
  */
-function getCopyright(filepath) {
-
-  /** @type {string} */
-  var linkBase;
-
-  filepath = filepath.replace(/^(?:.*\/)?([a-z-]+)\..*$/i, '$1.js');
-  linkBase = 'https://github.com/imaginate/vitals';
-
-  return '/* '+ filepath +' v0.1.1 ('+ linkBase +')\n' +
-    ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n' +
-    ' * The Apache License ('+ linkBase +'/blob/master/LICENSE.md) */';
+function getFile(filepath) {
+  return retrieve.file(filepath)
+    .replace(/\r\n?/g, '\n'); // normalize line breaks
 }
 
 /**
