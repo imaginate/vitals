@@ -452,6 +452,46 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {*} val
+   * @return {!(Object|function)}
+   */
+  function _deleteVal(source, val) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( _own(source, key) && source[key] === val ) {
+        delete source[key];
+      }
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {!Array} vals
+   * @return {!(Object|function)}
+   */
+  function _deleteVals(source, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      source = _deleteVal(source, vals[i]);
+    }
+    return source;
+  }
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - SPLICE
   //////////////////////////////////////////////////////////
@@ -503,6 +543,45 @@ var cut = (function cutPrivateScope() {
       first = sorted.first[i];
       count = sorted.last[i] - first + 1;
       source.splice(first, count);
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _spliceVal(source, val) {
+
+    /** @type {number} */
+    var i;
+
+    i = source.length;
+    while (i--) {
+      if (source[i] === val) source.splice(i, 1);
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {!Array} vals
+   * @return {!Array}
+   */
+  function _spliceVals(source, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      source = _spliceVals(source, vals[i]);
     }
     return source;
   }
