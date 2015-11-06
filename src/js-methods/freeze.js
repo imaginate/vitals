@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - FREEZE
+ * VITALS - JS METHOD - FREEZE
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/freeze.js}
@@ -28,6 +28,12 @@ var has = require('./has.js');
 
 var freeze = (function freezePrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - freeze
+  // - freeze.object (freeze.obj)
+  //////////////////////////////////////////////////////////
+
   /**
    * Freezes an object with optional deep freeze.
    * @public
@@ -39,45 +45,72 @@ var freeze = (function freezePrivateScope() {
 
     if ( is.null(obj) ) return null;
 
-    if ( !is._obj(obj) ) {
-      throw new TypeError('Invalid obj param in vitals.freeze call.');
-    }
+    if ( !is._obj(obj)      ) throw _error.type('obj');
+    if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    if (!HAS_OBJ_FREEZE) return obj;
-
-    return deep ? _deepFreeze(obj) : Object.freeze(obj);
+    return deep ? _deepFreeze(obj) : _freeze(obj);
   }
 
   /**
-   * Feature detect for Object.freeze.
-   * @private
-   * @type {boolean}
-   * @const
+   * Freezes an object with optional deep freeze.
+   * @public
+   * @param {?(Object|function)} obj
+   * @param {boolean=} deep
+   * @return {?(Object|function)}
    */
-  var HAS_OBJ_FREEZE = !!Object.freeze;
+  freeze.object = function freezeObject(obj, deep) {
+
+    if ( is.null(obj) ) return null;
+
+    if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
+    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+
+    return deep ? _deepFreeze(obj) : _freeze(obj);
+  };
+  // define shorthand
+  freeze.obj = freeze.object;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE PROPERTIES - MAIN
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @return {!(Object|function)}
+   */
+  var _freeze = !Object.freeze
+    ? function ObjectFreeze(obj) { return obj; }
+    : Object.freeze;
 
   /**
    * @private
    * @param {?(Object|function)} obj
    * @return {?(Object|function)}
    */
-  function _deepFreeze(obj) {
+  var _deepFreeze = !Object.freeze
+    ? function _deepFreeze(obj) { return obj; }
+    : function _deepFreeze(obj) {
 
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
+      /** @type {string} */
+      var key;
+      /** @type {*} */
+      var val;
 
-    for (key in obj) {
-      if ( _has(obj, key) ) {
-        val = obj[key];
-        if ( is._obj(val) ) {
-          obj[key] = _deepFreeze(val);
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          val = obj[key];
+          if ( is._obj(val) ) {
+            obj[key] = _deepFreeze(val);
+          }
         }
       }
-    }
-    return Object.freeze(obj);
-  }
+      return _freeze(obj);
+    };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -85,8 +118,15 @@ var freeze = (function freezePrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = makeErrorAid('freeze');
+
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FREEZE
   return freeze;
 })();

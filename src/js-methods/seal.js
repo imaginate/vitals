@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - SEAL
+ * VITALS - JS METHOD - SEAL
  * -----------------------------------------------------------------------------
  * @version 0.1.0
  * @see [vitals.seal]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/seal.js}
@@ -28,6 +28,12 @@ var has = require('./has.js');
 
 var seal = (function sealPrivateScope() {
 
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - seal
+  // - seal.object (seal.obj)
+  //////////////////////////////////////////////////////////
+
   /**
    * Seals an object with optional deep seal.
    * @public
@@ -39,45 +45,72 @@ var seal = (function sealPrivateScope() {
 
     if ( is.null(obj) ) return null;
 
-    if ( !is._obj(obj) ) {
-      throw new TypeError('Invalid obj param in vitals.seal call.');
-    }
+    if ( !is._obj(obj)      ) throw _error.type('obj');
+    if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    if (!HAS_OBJ_SEAL) return obj;
-
-    return deep ? _deepSeal(obj) : Object.seal(obj);
+    return deep ? _deepSeal(obj) : _seal(obj);
   }
 
   /**
-   * Feature detect for Object.seal.
-   * @private
-   * @type {boolean}
-   * @const
+   * Seals an object with optional deep seal.
+   * @public
+   * @param {?(Object|function)} obj
+   * @param {boolean=} deep
+   * @return {?(Object|function)}
    */
-  var HAS_OBJ_SEAL = !!Object.seal;
+  seal.object = function sealObject(obj, deep) {
+
+    if ( is.null(obj) ) return null;
+
+    if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
+    if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
+
+    return deep ? _deepSeal(obj) : _seal(obj);
+  };
+  // define shorthand
+  seal.obj = seal.object;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - MAIN
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @return {!(Object|function)}
+   */
+  var _seal = !Object.seal
+    ? function ObjectSeal(obj) { return obj; }
+    : Object.seal;
 
   /**
    * @private
    * @param {?(Object|function)} obj
    * @return {?(Object|function)}
    */
-  function _deepSeal(obj) {
+  var _deepSeal = !Object.seal
+    ? function _deepSeal(obj) { return obj; }
+    : function _deepSeal(obj) {
 
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
+      /** @type {string} */
+      var key;
+      /** @type {*} */
+      var val;
 
-    for (key in obj) {
-      if ( _has(obj, key) ) {
-        val = obj[key];
-        if ( is._obj(val) ) {
-          obj[key] = _deepSeal(val);
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          val = obj[key];
+          if ( is._obj(val) ) {
+            obj[key] = _deepSeal(val);
+          }
         }
       }
-    }
-    return Object.seal(obj);
-  }
+      return _seal(obj);
+    };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -85,8 +118,15 @@ var seal = (function sealPrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var _has = has.key;
+  var _own = has.key;
 
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = makeErrorAid('seal');
+
+  //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SEAL
   return seal;
 })();
