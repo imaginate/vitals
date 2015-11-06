@@ -39,17 +39,16 @@ global.fill = function fill(arr, val, start, end) {
 
   arr = is.num(arr) ? new Array(arr) : arr;
 
-  if ( !is.arr(arr) ) {
-    return null;
-  }
+  if ( !is.arr(arr) ) return null;
 
   len = arr.length;
   start = start || 0;
   start = start < 0 ? len + start : start;
+  start = start < 0 ? 0 : start;
   end = end || len;
-  end = end > len ?
-    len : end < 0 ?
-      len + end : end;
+  end = end > len
+    ? len : end < 0
+      ? len + end : end;
 
   i = start - 1;
   while (++i < end) {
