@@ -43,12 +43,12 @@ var shortcuts;
 var tasks;
 
 shortcuts = {
-  dev: 'compile'
+  dev: 'compile minify'
 };
 
 tasks = process.argv;
 tasks = tasks.length > 2 ? slice(tasks, 2) : shortcuts.dev.split(' ');
-tasks = tasks.map(task => {
+tasks = remap(tasks, task => {
   task = task.replace(/^--/, '');
   return has(shortcuts, task) ? shortcuts[task] : task;
 });
@@ -99,7 +99,7 @@ each(tasks, taskStr => {
   task.name = name;
 
   methods = methods.length ? methods : task.defaultMethods;
-  methods = defaultVal ? mapArr(methods, method => {
+  methods = defaultVal ? remap(methods, method => {
     return has(method, '=') ? method : method + defaultVal;
   }) : methods;
 
