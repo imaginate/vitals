@@ -2400,7 +2400,7 @@ var cut = (function cutPrivateScope() {
      * @param {number} sourceLen
      * @return {!SortedIndexes}
      */
-    function sortIndexes(indexes, sourceLen)
+    function sortIndexes(indexes, sourceLen) {
 
       /** @type {number} */
       var index;
