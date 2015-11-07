@@ -83,15 +83,15 @@ var METHODS = {
     'seal':   true,
     'slice':  true,
     'until':  true
-  },
-  'node-methods': {}
+  }
+  //'node-methods': {}
 };
 
 /**
  * @param {number=} setup - [default= 0] options:
  *   0= nothing is appended to the global
  *   1= the vitals object is appended to the global
- *   2= each individual method and component is appended to the global
+ *   2= each vitals method is appended to the global
  * @param {...string=} methods - [default= "js"] The vitals methods to include.
  *   Methods may be included by section or individually.
  * @return {!Object} The vitals methods.
@@ -114,7 +114,11 @@ module.exports = function setupVitals(setup, methods) {
   }
 
   vitals = {};
-  methods = methods || [ 'js' ];
+  methods = methods && methods.length
+    ? methods.length < 2 && methods[0] === 'all'
+      ? Object.keys(methods)
+      : methods
+    : [ 'js' ];
   each(methods, function(method) {
 
     if ( !is.str(method) ) {
