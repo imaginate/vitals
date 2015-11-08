@@ -604,7 +604,7 @@ var amend = (function amendPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !is.obj(val) ) return false;
+    if ( !is.obj(obj) ) return false;
 
     for (key in obj) {
       if ( _own(obj, key) && _own(DESCRIPTOR_PROPS, key) ) return true;
