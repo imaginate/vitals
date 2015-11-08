@@ -313,9 +313,11 @@ var amend = (function amendPrivateScope() {
   function _amendProps(obj, props, val, descriptor, staticType, setter) {
 
     descriptor = _getDescriptor(descriptor || null, !!staticType || !!setter);
-    staticType = staticType && function typeCheckNewValue(val) {
-      return is(staticType, val);
-    };
+    staticType = staticType && (function(staticType) {
+      return function typeCheckNewValue(val) {
+        return is(staticType, val);
+      };
+    })(staticType);
     props = is.arr(props)
       ? staticType || setter
         ? _setupKeysWithSetter(props, val, descriptor, staticType, setter)
