@@ -251,7 +251,7 @@ describe('amend', function() {
     obj = freeze({ a: 1, b: 2, c: 3 });
     result = vitals.amend({}, make(obj), getSetter());
     each(obj, function(val, key) {
-      assert(result[key] === ++val);
+      assert(result[key] === val);
       assert(key in result);
       assert( hasEnum(result, key) );
       result[key] = 1;
@@ -266,11 +266,11 @@ describe('amend', function() {
     arr = freeze([ 'a', 'b', 'c' ]);
     result = vitals.amend({}, slice(arr), 5, getSetter());
     each(arr, function(val) {
-      assert(result[val] === 6);
+      assert(result[val] === 5);
       assert(val in result);
       assert( hasEnum(result, val) );
       result[val] = 1;
-      assert(result[val] === 7);
+      assert(result[val] === 6);
     });
   });
 
@@ -279,11 +279,11 @@ describe('amend', function() {
     var result;
     result = vitals.amend({}, 'a,b,c', 5, getSetter());
     each([ 'a','b','c' ], function(val) {
-      assert(result[val] === 6);
+      assert(result[val] === 5);
       assert(val in result);
       assert( hasEnum(result, val) );
       result[val] = 1;
-      assert(result[val] === 7);
+      assert(result[val] === 6);
     });
   });
 
@@ -298,7 +298,7 @@ describe('amend', function() {
       b: { value: 2, enumerable: false }
     }, getSetter());
     each({ a: 1, b: 2 }, function(val, key) {
-      assert(result[key] === ++val);
+      assert(result[key] === val);
       assert(key in result);
       assert( !hasEnum(result, key) );
       result[key] = 1;
@@ -317,7 +317,7 @@ describe('amend', function() {
       b: { value: 2, enumerable: false }
     }, { enumerable: false }, getSetter());
     each({ a: 1, b: 2 }, function(val, key) {
-      assert(result[key] === ++val);
+      assert(result[key] === val);
       assert(key in result);
       if (key === 'a') assert( hasEnum(result, key) );
       if (key === 'b') assert( !hasEnum(result, key) );
@@ -337,7 +337,7 @@ describe('amend', function() {
       b: { value: 2, enumerable: false }
     }, { enumerable: false }, 'number', getSetter());
     each({ a: 1, b: 2 }, function(val, key) {
-      assert(result[key] === ++val);
+      assert(result[key] === val);
       assert(key in result);
       if (key === 'a') assert( hasEnum(result, key) );
       if (key === 'b') assert( !hasEnum(result, key) );
