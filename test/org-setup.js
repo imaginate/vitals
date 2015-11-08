@@ -17,7 +17,13 @@
 
 // appends global helpers
 // see ../helpers/setup.js
-require('../helpers/setup')();
+require('../helpers/setup')('display');
+
+/**
+ * @global
+ * @type {!Object}
+ */
+global.assert = require('assert');
 
 // appends vitals to global
 require('../src/vitals.js');

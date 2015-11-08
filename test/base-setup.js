@@ -17,7 +17,13 @@
 
 // appends global helpers
 // see ../helpers/setup.js
-require('../helpers/setup')('file-system');
+require('../helpers/setup')('file-system', 'display');
+
+/**
+ * @global
+ * @type {!Object}
+ */
+global.assert = require('assert');
 
 /**
  * @global
