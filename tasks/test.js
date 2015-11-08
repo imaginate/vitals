@@ -142,8 +142,8 @@ module.exports = newTask('test', 'base', {
  * @const
  */
 var SECTIONS = {
-  'js':   'JS Methods',
-  'node': 'Node Methods'
+  'js':   'JS Methods'
+  //'node': 'Node Methods'
 };
 
 /**
