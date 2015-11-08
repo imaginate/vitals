@@ -110,8 +110,11 @@ function objToStr(obj) {
   result = [];
   result.push( is.func(obj) ? '[Function] { ' : '{ ' );
 
-  // convert all object values to a string
   keys = objKeys(obj);
+
+  if (!keys.length) return slice(result[0], -1) + '}';
+
+  // convert all object values to a string
   last = keys.length - 1;
   each(keys, function(key, i) {
     key = key + ': ' + toStr( obj[key] );
@@ -138,6 +141,8 @@ function arrToStr(obj) {
 
   result = [];
   result.push( is.args(obj) ? '[Arguments] [ ' : '[ ' );
+
+  if (!obj.length) return slice(result[0], -1) + ']';
 
   // convert all array values to a string
   last = obj.length - 1;
