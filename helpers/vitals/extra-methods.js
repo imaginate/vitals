@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS LIBRARY - THE MAIN METHODS
+ * VITALS LIBRARY - THE EXTRA METHODS
  * -----------------------------------------------------------------------------
  * @file Vitals libraries, functional shortcuts, and other helpers.
  *
