@@ -52,6 +52,8 @@ module.exports = newTask('test', 'base', {
     var options;
     /** @type {string} */
     var tests;
+    /** @type {string} */
+    var title;
 
     if ( !isMethod(methodName) ) log.error(
       'Invalid `test.method` Task Call',
@@ -62,12 +64,13 @@ module.exports = newTask('test', 'base', {
     options = getOptions() + '--require ./test/base-setup.js ';
     options += '--grep ' + methodName;
     tests = './test/*-methods/*.js';
+    title = '`vitals.' + methodName + '`';
 
     configLog();
 
-    logStart(method);
+    logStart(title);
     runTests(options, tests);
-    logFinish(method);
+    logFinish(title);
 
     resetLog();
   },
