@@ -112,7 +112,7 @@ function objToStr(obj) {
 
   keys = objKeys(obj);
 
-  if (!keys.length) return slice(result[0], -2, -1) + '}';
+  if (!keys.length) return slice(result[0], 0, -1) + '}';
 
   // convert all object values to a string
   last = keys.length - 1;
@@ -142,7 +142,7 @@ function arrToStr(obj) {
   result = [];
   result.push( is.args(obj) ? '[Arguments] [ ' : '[ ' );
 
-  if (!obj.length) return slice(result[0], -2, -1) + ']';
+  if (!obj.length) return slice(result[0], 0, -1) + ']';
 
   // convert all array values to a string
   last = obj.length - 1;
