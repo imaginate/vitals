@@ -351,7 +351,7 @@ function makeStr(val) {
     val || '""' : is.func(val) ?
       'function() { ... } props => {' : is.arr(val) ?
         '[ '+ val.join(', ') +' ]' : is.regex(val) ?
-          '/'+ val.source +'/'+ val.flags : is.obj(val) ?
+          val.toString() : is.obj(val) ?
             '{' : String(val);
 }
 
