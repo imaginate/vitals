@@ -348,6 +348,44 @@ describe('amend', function() {
     });
   });
 
+  //////////////////////////////////////////////
+  // ERROR TESTS
+
+  title = callStr('string', 'a,b,c', 5);
+  it(title, function() {
+    assert.throws(function() {
+      vitals.amend('string', 'a,b,c', 5);
+    });
+  });
+
+  title = callStr({}, 5, 5);
+  it(title, function() {
+    assert.throws(function() {
+      vitals.amend({}, 5, 5);
+    });
+  });
+
+  title = callStr({}, 'a,b,c');
+  it(title, function() {
+    assert.throws(function() {
+      vitals.amend({}, 'a,b,c');
+    });
+  });
+
+  title = callStr({}, 'a,b,c', 5, 'string');
+  it(title, function() {
+    assert.throws(function() {
+      vitals.amend({}, 'a,b,c', 5, 'string');
+    });
+  });
+
+  title = callStr({}, 'a,b,c', 5, 'string', {});
+  it(title, function() {
+    assert.throws(function() {
+      vitals.amend({}, 'a,b,c', 5, 'string', {});
+    });
+  });
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////
