@@ -399,7 +399,7 @@ describe('amend', function() {
  */
 function callStr(args) {
   args = slice(arguments);
-  return testCall('amend', args);
+  return testCall('amend', args, 3, true);
 }
 
 /**

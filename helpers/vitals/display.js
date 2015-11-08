@@ -27,9 +27,10 @@
  * @param {string} method
  * @param {Array=} args
  * @param {number=} indent
+ * @param {boolean=} noLeadIndent
  * @return {string}
  */
-global.testCall = function testCall(method, args, indent) {
+global.testCall = function testCall(method, args, indent, noLeadIndent) {
 
   /** @type {string} */
   var result;
@@ -57,17 +58,18 @@ global.testCall = function testCall(method, args, indent) {
     result += toStr(arg);
     if (i < last) result += ', ';
   });
-  result += ')';
-  return indentStr(result, indent);
+  result += ');';
+  return indentStr(result, indent, noLeadIndent);
 };
 
 /**
  * @global
  * @param {*} val
  * @param {number=} indent
+ * @param {boolean=} noLeadIndent
  * @return {string}
  */
-global.toStr = function toStr(val, indent) {
+global.toStr = function toStr(val, indent, noLeadIndent) {
   indent = is.num(indent) && indent > 0 ? indent : 0;
   val = is._obj(val)
     ? is.regex(val)
@@ -78,7 +80,7 @@ global.toStr = function toStr(val, indent) {
     : is.str(val)
       ? '"' + val + '"'
       : String(val);
-  return indentStr(val, indent);
+  return indentStr(val, indent, noLeadIndent);
 };
 
 
@@ -91,7 +93,7 @@ global.toStr = function toStr(val, indent) {
  * @type {number}
  * @const
  */
-var MAX_LENGTH = 150;
+var MAX_LENGTH = 50;
 
 /**
  * @private
@@ -106,6 +108,8 @@ function objToStr(obj) {
   var keys;
   /** @type {number} */
   var last;
+  /** @type {*} */
+  var val;
 
   result = [];
   result.push( is.func(obj) ? '[Function] { ' : '{ ' );
@@ -117,14 +121,15 @@ function objToStr(obj) {
   // convert all object values to a string
   last = keys.length - 1;
   each(keys, function(key, i) {
-    key = key + ': ' + toStr( obj[key] );
-    key += i < last ? ', ' : ' ';
+    val = obj[key];
+    key = key + ': ' + toStr(val);
+    key += i < last && ( !is._obj(val) || is.regex(val) ) ? ', ' : ' ';
     result.push(key);
   });
 
-  result.push('}');
-
-  return result.join( isValidLength(result) ? '' : '\n  ' );
+  return isValidLength(result)
+    ? result.join('') + '}'
+    : result.join('\n  ') + '\n}';
 }
 
 /**
@@ -138,6 +143,8 @@ function arrToStr(obj) {
   var result;
   /** @type {number} */
   var last;
+  /** @type {*} */
+  var val;
 
   result = [];
   result.push( is.args(obj) ? '[Arguments] [ ' : '[ ' );
@@ -146,15 +153,16 @@ function arrToStr(obj) {
 
   // convert all array values to a string
   last = obj.length - 1;
-  each(obj, function(val, i) {
-    val = toStr(val);
-    val += i < last ? ', ' : ' ';
-    result.push(val);
+  each(obj, function(_val, i) {
+    val = _val;
+    _val = toStr(val);
+    _val += i < last && ( !is._obj(val) || is.regex(val) ) ? ', ' : ' ';
+    result.push(_val);
   });
 
-  result.push(']');
-
-  return result.join( isValidLength(result) ? '' : '\n  ' );
+  return isValidLength(result)
+    ? result.join('') + ']'
+    : result.join('\n  ') + '\n]';
 }
 
 /**
@@ -188,14 +196,16 @@ function isValidLength(result) {
  * @private
  * @param {string} str
  * @param {number} times
+ * @param {boolean=} noLeadIndent
  * @return {string}
  */
-function indentStr(str, times) {
+function indentStr(str, times, noLeadIndent) {
 
   /** @type {string} */
   var indent;
 
   indent = '';
   while (times--) indent += '  ';
-  return indent ? indent + str.replace('\n', '\n' + indent) : str;
+  str = indent ? str.replace(/\n/g, '\n' + indent) : str;
+  return noLeadIndent ? str : indent + str;
 }
