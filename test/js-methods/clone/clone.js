@@ -21,9 +21,9 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // CLONE TESTS
 
-  title = callStr();
+  title = callStr(true);
   it(title, function() {
-    // insert test
+    assert( vitals.clone(true) );
   });
 
 });
@@ -40,15 +40,4 @@ describe('clone', function() {
 function callStr(args) {
   args = slice(arguments);
   return testCall('clone', args, 3, true);
-}
-
-/**
- * @private
- * @param {string} subMethod
- * @param {...*} args
- * @return {string}
- */
-function callStrSub(subMethod, args) {
-  args = slice(arguments, 1);
-  return testCall('clone.' + subMethod, args, 3, true);
 }

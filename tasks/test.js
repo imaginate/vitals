@@ -34,7 +34,7 @@ module.exports = newTask('test', 'base', {
     configLog();
 
     each(SECTIONS, function(title, section) {
-      tests = './test/' + section + '-methods/*.js';
+      tests = './test/' + section + '-methods';
       logStart(title);
       runTests(options, tests);
       logFinish(title);
@@ -49,21 +49,24 @@ module.exports = newTask('test', 'base', {
   method: function method(methodName) {
 
     /** @type {string} */
+    var section;
+    /** @type {string} */
     var options;
     /** @type {string} */
     var tests;
     /** @type {string} */
     var title;
 
-    if ( !isMethod(methodName) ) log.error(
+    section = getMethodSection(methodName);
+
+    if ( !section ) log.error(
       'Invalid `test.method` Task Call',
       'invalid `methodName` was provided',
       { argMap: true, methodName: methodName }
     );
 
     options = getOptions() + '--require ./test/base-setup.js ';
-    options += '--grep ' + methodName;
-    tests = './test/*-methods/*.js';
+    tests = './test/' + section + '/' + methodName;
     title = '`vitals.' + methodName + '`';
 
     configLog();
@@ -88,14 +91,14 @@ module.exports = newTask('test', 'base', {
     var title;
 
     sectionName = sectionName.toLowerCase();
-    if ( !SECTIONS[sectionName] ) log.error(
+    if ( !has(SECTIONS, sectionName) ) log.error(
       'Invalid `test.section` Task Call',
       'invalid `sectionName` was provided',
       { argMap: true, sectionName: sectionName }
     );
 
     options = getOptions() + '--require ./test/base-setup.js ';
-    tests = './test/' + sectionName + '-methods/*.js';
+    tests = './test/' + sectionName + '-methods';
     title = SECTIONS[sectionName];
 
     configLog();
@@ -122,7 +125,7 @@ module.exports = newTask('test', 'base', {
     configLog();
 
     each(SETUPS, function(section, name) {
-      tests = './test/' + section + '-methods/*.js';
+      tests = './test/' + section + '-methods';
       logStart(name);
       runTests(options + '--require ./test/'+ name +'-setup.js ', tests);
       logFinish(name);
@@ -190,7 +193,7 @@ function getOptions(options) {
     result += '--' + hyphenate(option) + ' ' + val + ' ';
   });
 
-  return result + '--globals * ';
+  return result + '--globals * --recursive ';
 }
 
 /**
@@ -251,19 +254,19 @@ function hyphenate(str) {
 
 /**
  * @param {string} method
- * @return {boolean}
+ * @return {?string}
  */
-function isMethod(method) {
+function getMethodSection(method) {
 
-  /** @type {boolean} */
-  var result;
+  /** @type {string} */
+  var section;
 
-  result = false;
   method += '.js';
-  each(SECTIONS, function(title, section) {
-    if (result) return;
-    section += '-methods';
-    result = is.file('src/' + section + '/' + method);
-  });
-  return result;
+  for (section in SECTIONS) {
+    if ( has(SECTIONS, section) ) {
+      section += '-methods';
+      if ( is.file('src/' + section + '/' + method) ) return section;
+    }
+  }
+  return null;
 }
