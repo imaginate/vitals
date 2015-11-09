@@ -26,11 +26,11 @@ describe('amend', function() {
     var obj;
     var result;
     obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, make(obj));
+    result = vitals.amend({}, clone(obj));
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( hasEnum(result, key) );
+      assert( has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
     });
@@ -45,7 +45,7 @@ describe('amend', function() {
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( hasEnum(result, val) );
+      assert( has.enum(result, val) );
       result[val] = 6;
       assert(result[val] === 6);
     });
@@ -58,7 +58,7 @@ describe('amend', function() {
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( hasEnum(result, val) );
+      assert( has.enum(result, val) );
       result[val] = 6;
       assert(result[val] === 6);
     });
@@ -77,7 +77,7 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( !hasEnum(result, key) );
+      assert( !has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
     });
@@ -91,11 +91,11 @@ describe('amend', function() {
     var obj;
     var result;
     obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, make(obj), { enumerable: false });
+    result = vitals.amend({}, clone(obj), { enumerable: false });
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( !hasEnum(result, key) );
+      assert( !has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
     });
@@ -110,7 +110,7 @@ describe('amend', function() {
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( !hasEnum(result, val) );
+      assert( !has.enum(result, val) );
       result[val] = 6;
       assert(result[val] === 6);
     });
@@ -123,7 +123,7 @@ describe('amend', function() {
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( !hasEnum(result, val) );
+      assert( !has.enum(result, val) );
       result[val] = 6;
       assert(result[val] === 6);
     });
@@ -142,8 +142,8 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      if (key === 'a') assert( hasEnum(result, key) );
-      if (key === 'b') assert( !hasEnum(result, key) );
+      if (key === 'a') assert( has.enum(result, key) );
+      if (key === 'b') assert( !has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
     });
@@ -157,7 +157,7 @@ describe('amend', function() {
     var obj;
     var result;
     obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, make(obj), 'number');
+    result = vitals.amend({}, clone(obj), 'number');
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
@@ -211,7 +211,7 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( !hasEnum(result, key) );
+      assert( !has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
       result[key] = 'string';
@@ -232,8 +232,8 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      if (key === 'a') assert( hasEnum(result, key) );
-      if (key === 'b') assert( !hasEnum(result, key) );
+      if (key === 'a') assert( has.enum(result, key) );
+      if (key === 'b') assert( !has.enum(result, key) );
       result[key] = ++val;
       assert(result[key] === val);
       result[key] = 'string';
@@ -249,11 +249,11 @@ describe('amend', function() {
     var obj;
     var result;
     obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, make(obj), getSetter());
+    result = vitals.amend({}, clone(obj), getSetter());
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( hasEnum(result, key) );
+      assert( has.enum(result, key) );
       result[key] = 1;
       assert(result[key] === ++val);
     });
@@ -268,7 +268,7 @@ describe('amend', function() {
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( hasEnum(result, val) );
+      assert( has.enum(result, val) );
       result[val] = 1;
       assert(result[val] === 6);
     });
@@ -281,7 +281,7 @@ describe('amend', function() {
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
-      assert( hasEnum(result, val) );
+      assert( has.enum(result, val) );
       result[val] = 1;
       assert(result[val] === 6);
     });
@@ -300,7 +300,7 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      assert( !hasEnum(result, key) );
+      assert( !has.enum(result, key) );
       result[key] = 1;
       assert(result[key] === ++val);
     });
@@ -319,8 +319,8 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      if (key === 'a') assert( hasEnum(result, key) );
-      if (key === 'b') assert( !hasEnum(result, key) );
+      if (key === 'a') assert( has.enum(result, key) );
+      if (key === 'b') assert( !has.enum(result, key) );
       result[key] = 1;
       assert(result[key] === ++val);
     });
@@ -339,8 +339,8 @@ describe('amend', function() {
     each({ a: 1, b: 2 }, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
-      if (key === 'a') assert( hasEnum(result, key) );
-      if (key === 'b') assert( !hasEnum(result, key) );
+      if (key === 'a') assert( has.enum(result, key) );
+      if (key === 'b') assert( !has.enum(result, key) );
       result[key] = 1;
       assert(result[key] === ++val);
       result[key] = 'string';
@@ -403,25 +403,6 @@ function callStr(args) {
 }
 
 /**
- * Creates a new object with the properties of the given object.
- * @param {!Object} obj
- * @return {!Object}
- */
-function make(obj) {
-
-  /** @type {!Object} */
-  var newObj;
-  /** @type {string} */
-  var key;
-
-  newObj = {};
-  for (key in obj) {
-    if ( has(obj, key) ) newObj[key] = obj[key];
-  }
-  return newObj;
-}
-
-/**
  * @private
  * @return {function}
  */
@@ -430,14 +411,4 @@ function getSetter() {
     oldVal = oldVal || 1;
     return newVal + oldVal;
   };
-}
-
-/**
- * @private
- * @param {!Object} obj
- * @param {string} prop
- * @return {boolean}
- */
-function hasEnum(obj, prop) {
-  return Object.prototype.propertyIsEnumerable.call(obj, prop);
 }
