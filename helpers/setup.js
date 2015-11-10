@@ -29,7 +29,7 @@
  */
 module.exports = function setupHelpers(sections) {
 
-  require('./basics');
+  if (!global.__basics) require('./basics');
 
   if (!arguments.length) return;
 

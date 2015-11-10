@@ -15,6 +15,9 @@
 
 'use strict';
 
+// append global helpers if they do not exist
+if (!global.__basics) require('./basics');
+
 /** @type {!Object} */
 var cp = require('child_process');
 
