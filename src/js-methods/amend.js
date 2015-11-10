@@ -330,7 +330,7 @@ var amend = (function amendPrivateScope() {
 
     if ( is.obj(val) && _isDescriptor(val) ) {
       descriptor = val;
-      val = undefined;
+      val = descriptor.value;
     }
 
     return [ val, descriptor, staticType, setter ];
