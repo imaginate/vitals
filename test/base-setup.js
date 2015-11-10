@@ -34,7 +34,9 @@ global.assert = require('assert');
  */
 global.vitals = {};
 
-each(retrieve.dirpaths('test'), function(section) {
+each(retrieve.dirpaths('test', {
+  validDirs: '*-methods'
+}), function(section) {
   each(retrieve.filepaths('src/' + section, {
     invalidNames: '_*|index',
     validExts:    'js'
