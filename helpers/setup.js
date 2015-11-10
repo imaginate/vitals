@@ -69,10 +69,10 @@ module.exports = function setupHelpers(sections) {
  */
 var HELPERS = {
   'retrieve': 'retrieve',
+  'toFile':   '',
   'copy':     'copy',
   'task':     'newTask',
-  'exec':     'exec',
-  'to':       ''
+  'exec':     'exec'
 };
 
 /**

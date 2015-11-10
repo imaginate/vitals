@@ -78,7 +78,7 @@ function stripAre(filepath) {
   if ( !has(content, regex) ) return;
 
   content = content.replace(regex, '$1');
-  content.to(filepath);
+  content.toFile(filepath);
 }
 
 /**
@@ -101,11 +101,11 @@ function minify(filepath) {
   );
 
   cmd = 'java -jar ' + compiler + ' --js ' + filepath + ' -W QUIET';
-  content = exec(cmd, { silent: true }).output
+  content = exec(cmd)
     .replace(/\r\n?/g, '\n'); // normalize line breaks
   content = insertCopyright(content, filepath);
   content = insertAre(content);
-  content.to(filepath);
+  content.toFile(filepath);
 }
 
 /**

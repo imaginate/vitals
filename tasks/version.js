@@ -107,7 +107,7 @@ function insertVersion(filepath, version) {
     : /("version": ")[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?/;
   retrieve.file(filepath)
     .replace(regex, '$1' + version)
-    .to(filepath);
+    .toFile(filepath);
 }
 
 /**

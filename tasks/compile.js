@@ -34,7 +34,7 @@ module.exports = newTask('compile', 'browser-node', {
     contents += getFile('src/_vitals-parts/gen-export.js');
     contents = insertMethods(contents, 'src/js-methods');
     contents = contents.replace(/is\.null\(/g, 'is.nil(');
-    contents.to('src/vitals.js');
+    contents.toFile('src/vitals.js');
 
     log.pass('Completed `compile.browser` Task');
   },
@@ -52,7 +52,7 @@ module.exports = newTask('compile', 'browser-node', {
     section = 'src/' + section + '/';
     contents = getFile(section + '_skeleton.js', true);
     contents = insertMethods(contents, section);
-    contents.to(section + 'index.js');
+    contents.toFile(section + 'index.js');
 
     log.pass('Completed `compile.node` Task');
   }
