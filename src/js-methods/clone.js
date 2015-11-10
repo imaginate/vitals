@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - CLONE
+ * VITALS - JS METHOD - CLONE
  * -----------------------------------------------------------------------------
  * @version 2.0.0
  * @see [vitals.clone]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/clone.js}
