@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * FILE SYSTEM HELPER - STRING.PROTOTYPE.TO-FILE
+ * FILE SYSTEM HELPER - TO-FILE
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -22,28 +22,34 @@ if (!global.__basics) require('./basics');
 var fs = require('fs');
 
 /**
- * @global
+ * @param {string} content
  * @param {string} filepath
  * @param {string=} encoding - [default= 'utf8']
  */
-String.prototype.toFile = function(filepath, encoding) {
+module.exports = function toFile(content, filepath, encoding) {
   
+  if ( !is.str(content) ) log.error(
+    'Invalid `helpers.toFile` Call',
+    'invalid type for `content` param',
+    { argMap: true, content: content, filepath: filepath }
+  );
+    
   if ( !is.str(filepath) ) log.error(
-    'Invalid `String.prototype.toFile` Call',
-    'invalid type for the `filepath` param',
+    'Invalid `helpers.toFile` Call',
+    'invalid type for `filepath` param',
     { argMap: true, filepath: filepath }
   );
   
   if ( !is('str=', encoding) ) log.error(
-    'Invalid `String.prototype.toFile` Call',
-    'invalid type for the `encoding` param',
+    'Invalid `helpers.toFile` Call',
+    'invalid type for `encoding` param',
     { argMap: true, filepath: filepath, encoding: encoding }
   );
 
   encoding = encoding || 'utf8';
 
   try {
-    fs.writeFileSync(filepath, this.toString(), encoding);
+    fs.writeFileSync(filepath, content, encoding);
   }
   catch (err) {
     log.error(

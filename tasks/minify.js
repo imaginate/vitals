@@ -78,7 +78,7 @@ function stripAre(filepath) {
   if ( !has(content, regex) ) return;
 
   content = content.replace(regex, '$1');
-  content.toFile(filepath);
+  toFile(content, filepath);
 }
 
 /**
@@ -105,7 +105,7 @@ function minify(filepath) {
     .replace(/\r\n?/g, '\n'); // normalize line breaks
   content = insertCopyright(content, filepath);
   content = insertAre(content);
-  content.toFile(filepath);
+  toFile(content, filepath);
 }
 
 /**

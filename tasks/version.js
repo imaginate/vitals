@@ -100,14 +100,16 @@ function isJSON(filepath) {
  */
 function insertVersion(filepath, version) {
 
+  /** @type {string} */
+  var content;
   /** @type {!RegExp} */
   var regex;
 
   regex = !isJSON(filepath) ? /\b(v?)[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?\b/g
     : /("version": ")[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?/;
-  retrieve.file(filepath)
-    .replace(regex, '$1' + version)
-    .toFile(filepath);
+  content = retrieve.file(filepath)
+    .replace(regex, '$1' + version);
+  toFile(content, filepath);
 }
 
 /**
