@@ -187,7 +187,7 @@ var amend = (function amendPrivateScope() {
     if ( staticType && !is(staticType + '=', val) ) {
       throw _error('The val param is not a valid staticType', 'property');
     }
-    if ( descriptor && (staticType || setter) && _isData(descriptor) ) {
+    if ( descriptor && (staticType || setter) && _own(descriptor, 'writable') ){
       throw _error(
         'A data descriptor may not be used with a staticType/setter', 'property'
       );
