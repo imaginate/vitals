@@ -40,7 +40,7 @@ var propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
 /**
  * A shortcut for Object.prototype.hasOwnProperty that accepts null objects or a
  *   shortcut for String.prototype.includes and RegExp.prototype.test.
- * @private
+ * @global
  * @param {?(Object|function|string)} source
  * @param {*} prop
  * @return {boolean}
@@ -68,7 +68,7 @@ global.has = function has(source, prop) {
 
 /**
  * A shortcut for Object.prototype.propertyIsEnumerable.
- * @private
+ * @global
  * @param {?(Object|function)} source
  * @param {*} prop
  * @return {boolean}
@@ -89,6 +89,7 @@ global.has.enum = function hasEnum(source, prop) {
 /**
  * A shortcut for iterating over object maps and arrays or invoking an action a
  *   set number of times.
+ * @global
  * @param {!(Object|function|Array|number)} val
  * @param {function(*, (string|number)=)} iteratee
  * @return {(Object|function|Array)}
@@ -134,6 +135,7 @@ global.each = function each(val, iteratee) {
 /**
  * A shortcut for Array.prototype.slice.call(obj, start, end) and
  *   String.prototype.slice(start, end).
+ * @global
  * @param {?(Object|string)} val
  * @param {number=} start [default= 0]
  * @param {number=} end [default= arr.length]
@@ -149,6 +151,12 @@ global.slice = function slice(val, start, end) {
   var ii;
   /** @type {number} */
   var i;
+
+  if ( !is('num=', start) || !is('num=', end) ) log.error(
+    'Invalid `helpers.slice` Call',
+    'invalid type for `start` or `end` param',
+    mapArgs({ val: val, start: start, end: end })
+  );
 
   if ( is.null(val) ) return null;
 
@@ -182,6 +190,7 @@ global.slice = function slice(val, start, end) {
 
 /**
  * Creates a new object with the properties of the given object.
+ * @global
  * @param {Object} obj
  * @param {boolean=} deep
  * @return {Object}
@@ -224,6 +233,7 @@ global.clone = function clone(obj, deep) {
 
 /**
  * Appends the properties of source objects to an existing object.
+ * @global
  * @param {!(Object|function)} dest
  * @param {...?(Object|function)} source
  * @return {!(Object|function)}
@@ -264,6 +274,7 @@ global.merge = function merge(dest, source) {
 
 /**
  * A shortcut for Array.prototype.map(obj, iteratee).
+ * @global
  * @param {Object} obj
  * @param {function(*, number): *} iteratee
  * @return {Array}
@@ -302,7 +313,7 @@ global.remap = function remap(obj, iteratee) {
 
 /**
  * Gets an object's property keys.
- * @private
+ * @global
  * @param {?(Object|function)} obj
  * @return {Array<string>}
  */
@@ -328,7 +339,7 @@ global.objKeys = function objKeys(obj) {
 
 /**
  * Seals an object.
- * @private
+ * @global
  * @param {!(Object|function)} obj
  * @param {boolean=} deep
  * @return {!Object}
@@ -359,7 +370,7 @@ global.seal = function seal(obj, deep) {
 
 /**
  * Freezes an object.
- * @private
+ * @global
  * @param {!Object} obj
  * @param {boolean=} deep
  * @return {!Object}
@@ -386,6 +397,88 @@ global.freeze = function freeze(obj, deep) {
   }
 
   return Object.freeze(obj);
+};
+
+/**
+ * Fills an existing or new array with specified values.
+ * @global
+ * @param {(Array|number)} arr
+ * @param {*} val
+ * @param {number=} start [default= 0]
+ * @param {number=} end [default= arr.length]
+ * @return {Array}
+ */
+global.fill = function fill(arr, val, start, end) {
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  if (arguments.length < 2) log.error(
+    'Invalid `helpers.fill` Call',
+    'missing a `val` param (i.e. no `val` was given)',
+    mapArgs({ arr: arr, val: val })
+  );
+
+  if ( !is('num=', start) || !is('num=', end) ) log.error(
+    'Invalid `helpers.fill` Call',
+    'invalid type for `start` or `end` param',
+    mapArgs({ arr: arr, val: val, start: start, end: end })
+  );
+
+  arr = is.num(arr) ? new Array(arr) : arr;
+
+  if ( !is.arr(arr) ) log.error(
+    'Invalid `helpers.fill` Call',
+    'invalid type for `arr` param',
+    mapArgs({ arr: arr })
+  );
+
+  len = arr.length;
+  start = start || 0;
+  start = start < 0 ? len + start : start;
+  start = start < 0 ? 0 : start;
+  end = end || len;
+  end = end > len
+    ? len : end < 0
+      ? len + end : end;
+
+  i = start - 1;
+  while (++i < end) {
+    arr[i] = val;
+  }
+  return arr;
+};
+
+/**
+ * Fills a new string with specified values.
+ * @global
+ * @param {number} cycles - The number of times to fill the string with the val.
+ * @param {*} val - A non-string val is converted to a string as String(val).
+ * @return {string}
+ */
+global.fill.str = function fillStr(cycles, val) {
+
+  /** @type {string} */
+  var str;
+
+  if ( !is.num(cycles) ) log.error(
+    'Invalid `helpers.fill.str` Call',
+    'invalid type for `cycles` param',
+    mapArgs({ cycles: cycles, val: val })
+  );
+
+  if (arguments.length < 2) log.error(
+    'Invalid `helpers.fill.str` Call',
+    'missing a `val` param (i.e. no `val` was given)',
+    mapArgs({ cycles: cycles, val: val })
+  );
+
+  val = String(val);
+  str = '';
+  while (cycles--) str += val;
+  return str;
 };
 
 
