@@ -338,7 +338,7 @@ var amend = (function amendPrivateScope() {
 
   /**
    * @private
-   * @param {string} props - One of the chars in the following list is used as
+   * @param {string} keys - One of the chars in the following list is used as
    *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
    * @return {!Array<string>}
    */
@@ -613,7 +613,7 @@ var amend = (function amendPrivateScope() {
 
     if ( _isDescriptor(val) ) {
       prop = _merge(prop, val);
-      if ( _own(prop, 'writable') ) return prop;
+      if ( _own(prop, 'writable') || _isAccessor(prop) ) return prop;
       val = prop.value;
       prop = _cloneAccessor(prop);
     }
