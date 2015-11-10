@@ -16,8 +16,8 @@
  */
 
 // appends global helpers
-// see ../helpers/setup.js
-require('../helpers/setup')('display');
+require('./helpers/basics');
+require('./helpers/display');
 
 /**
  * @global

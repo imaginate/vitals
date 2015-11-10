@@ -16,8 +16,11 @@
  */
 
 // appends global helpers
-// see ../helpers/setup.js
-require('../helpers/setup')('file-system', 'display');
+require('./helpers/basics');
+require('./helpers/display');
+
+/** @type {!Object} */
+var retrieve = require('../helpers/retrieve');
 
 /**
  * @global
