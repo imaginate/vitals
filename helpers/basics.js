@@ -1,9 +1,7 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS LIBRARY - THE BASICS
+ * HELPERS LIBRARY - THE BASICS
  * -----------------------------------------------------------------------------
- * @file Vitals libraries, functional shortcuts, and other helpers.
- *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
