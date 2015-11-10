@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * SETUP THE VITALS HELPERS
+ * SETUP THE TASK HELPERS
  * -----------------------------------------------------------------------------
  * @file Libraries, functional shortcuts, and other helpers.
  *
@@ -9,7 +9,6 @@
  *
  * Supporting Libraries:
  * @see [are]{@link https://github.com/imaginate/are}
- * @see [ShellJS]{@link https://github.com/shelljs/shelljs}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,32 +17,43 @@
 
 'use strict';
 
-/** @type {Function<string, function>} */
-var is = require('node-are').is;
-/** @type {!Object} */
-var fs = require('fs');
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORT THE FACTORY METHOD
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {...string} includes - The vitals sections to append to the global. If
- *   "all" is only given then all sections are appended.
+ * @param {...string=} sections - The additional helpers to append to the global
+ *   (the basic helpers are automatically appended if this method is called).
+ *   All sections are appended if sections is "all".
  */
-module.exports = function Vitals(includes) {
+module.exports = function setupHelpers(sections) {
 
-  /** @type {!Array} */
-  var sections;
+  require('./basics');
 
-  require('./vitals/basics');
+  if (!arguments.length) return;
 
-  sections = includes === 'all' ? getVitals() : slice(arguments);
+  if (sections === 'all') {
+    setupAllHelpers();
+    return;
+  }
 
-  each(sections, section => {
-    section = section.replace(/^([^\.]*)(?:\.js)?$/, '$1.js');
-    is.file('helpers/vitals/' + section) && require('./vitals/' + section);
+  sections = slice(arguments);
+  each(sections, function(section) {
+
+    if ( !is.str(section) ) log.error(
+      'Invalid `setupHelpers` Call',
+      'invalid type for a `section` param (i.e. the section was not a string)',
+      { argMap: true, invalidSection: section }
+    );
+
+    if ( !has(HELPERS, section) ) log.error(
+      'Invalid `setupHelpers` Call',
+      'invalid `section` param (i.e. the section did not exist)',
+      { argMap: true, invalidSection: section }
+    );
+
+    setupHelper(HELPERS[section], section);
   });
 };
 
@@ -53,10 +63,40 @@ module.exports = function Vitals(includes) {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * Get all of the filepaths from the Vitals directory.
- * @return {!Array<string>}
+ * @private
+ * @type {!Object}
+ * @const
  */
-function getVitals() {
-  return fs.readdirSync('helpers/vitals/')
-    .filter( filepath => is.file('helpers/vitals/' + filepath) );
+var HELPERS = {
+  'retrieve': 'retrieve',
+  'copy':     'copy',
+  'task':     'newTask',
+  'exec':     'exec',
+  'to':       ''
+};
+
+/**
+ * @private
+ * @param {string} key
+ * @param {string} section
+ */
+function setupHelper(key, section) {
+
+  /** @type {!(Object|function)} */
+  var exported;
+
+  exported = require('./' + section);
+  if (key) {
+    global[key] = exported;
+  }
+}
+
+/**
+ * @private
+ * @type {function}
+ */
+function setupAllHelpers() {
+  each(HELPERS, function(key, section) {
+    setupHelper(key, section);
+  });
 }
