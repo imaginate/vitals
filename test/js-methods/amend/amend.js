@@ -379,10 +379,10 @@ describe('amend', function() {
     });
   });
 
-  title = callStr({}, 'a,b,c', 5, 'string', {});
+  title = callStr({}, 'a,b,c', 5, 'number', {});
   it(title, function() {
     assert.throws(function() {
-      vitals.amend({}, 'a,b,c', 5, 'string', {});
+      vitals.amend({}, 'a,b,c', 5, 'number', {});
     });
   });
 
