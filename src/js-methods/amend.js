@@ -342,7 +342,7 @@ var amend = (function amendPrivateScope() {
    *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
    * @return {!Array<string>}
    */
-  function _splitProps(props) {
+  function _splitProps(keys) {
 
     /** @type {string} */
     var separator;
@@ -437,7 +437,7 @@ var amend = (function amendPrivateScope() {
     staticType = _getStaticType(staticType);
 
     descriptor = staticType || setter
-      ? _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter);
+      ? _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter)
       : _isAccessor(descriptor)
         ? clone.obj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
@@ -524,7 +524,7 @@ var amend = (function amendPrivateScope() {
    * @param {!Object} descriptor
    * @return {!Object}
    */
-  function _setupPropsByKeys(keys, val, descriptor) {
+  function _setupPropsByKey(keys, val, descriptor) {
 
     /** @type {function} */
     var setupDesc;
