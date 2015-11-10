@@ -19,11 +19,92 @@ describe('clone', function() {
   var title;
 
   //////////////////////////////////////////////
-  // CLONE TESTS
+  // BASIC TESTS
 
-  title = callStr(true);
+  title = callStr('primitive');
   it(title, function() {
-    assert( vitals.clone(true) );
+    var vals;
+    vals = [ null, undefined, true, false, 'string', 5 ];
+    each(vals, function(val) {
+      assert(vitals.clone(val) === val);
+    });
+    assert( is.nan( vitals.clone(NaN) ) );
+  });
+
+  title = callStr('primitive', true);
+  it(title, function() {
+    var vals;
+    vals = [ null, undefined, true, false, 'string', 5 ];
+    each(vals, function(val) {
+      assert(vitals.clone(val) === val);
+    });
+    assert( is.nan( vitals.clone(NaN) ) );
+  });
+
+  //////////////////////////////////////////////
+  // OBJECT TESTS
+
+  title = callStr('object');
+  it(title, function() {
+    var obj;
+    var copy;
+    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
+    copy = vitals.clone(obj);
+    assert(obj !== copy);
+    each(obj, function(val, key) {
+      assert( obj[key] === copy[key] );
+    });
+  });
+
+  title = callStr('object', true);
+  it(title, function() {
+    var obj;
+    var copy;
+    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
+    copy = vitals.clone(obj, true);
+    assert(obj !== copy);
+    assert(obj.a === copy.a);
+    assert(obj.b !== copy.b);
+    assert(obj.c === copy.c);
+  });
+
+  //////////////////////////////////////////////
+  // REGEXP TESTS
+
+  //////////////////////////////////////////////
+  // ARRAY TESTS
+
+  //////////////////////////////////////////////
+  // FUNCTION TESTS
+
+  title = callStr('function');
+  it(title, function() {
+    var func;
+    var copy;
+    func = function testFunc() { return 5; };
+    func.a = 1
+    func.b = { b: 2 };
+    func = freeze(func, true);
+    copy = vitals.clone(func);
+    assert(func !== copy);
+    assert(func.a === copy.a);
+    assert(func.b === copy.b);
+    assert( func() === copy() );
+  });
+
+  title = callStr('function', true);
+  it(title, function() {
+    var func;
+    var copy;
+    func = function testFunc() { return 5; };
+    func.a = 1
+    func.b = { b: 2 };
+    func = freeze(func, true);
+    copy = vitals.clone(func, true);
+    assert(func !== copy);
+    assert(func.a === copy.a);
+    assert(func.b !== copy.b);
+    assert( func() === copy() );
   });
 
 });
@@ -34,10 +115,12 @@ describe('clone', function() {
 
 /**
  * @private
- * @param {...*} args
+ * @param {string} type
+ * @param {boolean=} deep
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('clone', args, 3, true);
+function callStr(type, deep) {
+  type = '<' + type + '>';
+  deep = deep ? ', true' : '';
+  return 'clone(' + type + deep + ');';
 }
