@@ -29,7 +29,7 @@ var fs = require('fs');
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {!Object<string, function>} */
-var Retrieve = {};
+var retrieve = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -44,17 +44,20 @@ var Retrieve = {};
  * @param {boolean=} deep - get all of the sub directories [default= false]
  * @return {!Array<string>}
  */
-Retrieve.dirpaths = function(dirpath, options, deep) {
+retrieve.dirpaths = function(dirpath, options, deep) {
 
   /** @type {RegExp} */
   var valid;
   /** @type {RegExp} */
   var invalid;
 
-  is.dir(dirpath) || log.error(
-    'Invalid `Retrieve.dirpaths` Call', 'invalid `dirpath` param',
+  if ( !is.dir(dirpath) ) log.error(
+    'Invalid `helpers.retrieve.dirpaths` Call',
+    'invalid `dirpath` param (must be a valid dirpath string)',
     { argMap: true, dirpath: dirpath }
   );
+
+  if (arguments.length < 2)
 
   options = is.obj(options) ? options : {};
   valid   = options.validDirs;
@@ -325,3 +328,89 @@ Retrieve.img = function(imgpath) {
 ////////////////////////////////////////////////////////////////////////////////
 
 module.exports = Retrieve;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} dirpath
+ * @param {?RegExp} validDirs
+ * @param {?RegExp} invalidDirs
+ * @return {!Array<string>}
+ */
+function getDirpaths(dirpath, validDirs, invalidDirs) {
+
+  /** @type {function(string): boolean} */
+  var isValid;
+  /** @type {string} */
+  var base;
+
+  base = dirpath.replace(/[^\/]$/, '$&/');
+  isValid = getCheck(validDirs, invalidDirs);
+  return fs.readdirSync(base)
+    .filter(function(dirpath) {
+      return isValid(dirpath) && is.dir(base + dirpath);
+    });
+}
+
+/**
+ * @private
+ * @param {(Array|RegExp)} valid
+ * @param {(Array|RegExp)} invalid
+ * @return {function}
+ */
+function getCheck(valid, invalid) {
+
+  /** @type {function(string): boolean} */
+  var isInvalid;
+  /** @type {function(string): boolean} */
+  var isValid;
+
+  isInvalid = makeCheck(false, invalid);
+  isValid = makeCheck(true, valid);
+  return function isValidPath(str) {
+    return isInvalid(str) ? false : isValid(str);
+  };
+}
+
+/**
+ * @private
+ * @param {boolean} valid
+ * @param {(Array|RegExp)} regexs
+ * @return {function}
+ */
+function makeCheck(valid, regexs) {
+
+  /** @type {?RegExp} */
+  var regex;
+
+  if ( is.arr(regexs) ) {
+    regexs = regexs.filter( function(re) { return !!re; } );
+    regex = regexs.length === 1 ? regexs.pop() : null;
+  }
+  else {
+    regex = regexs;
+    regexs = [];
+  }
+
+  if (!regexs.length) {
+    return regex
+      ? valid
+        ? function isValid(str) { return regex.test(str); }
+        : function isInvalid(str) { return regex.test(str); }
+      : valid
+        ? function isValid() { return true; }
+        : function isInvalid() { return false; };
+  }
+
+  return valid
+    ? function isValid(str) {
+        return regexs.every( function(re) { return re.test(str); } );
+      }
+    : function isInvalid(str) {
+        return regexs.some( function(re) { return re.test(str); } );
+      };
+}
