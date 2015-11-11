@@ -18,127 +18,88 @@
 // append global helpers if they do not exist
 if (!global.__basics) require('./basics');
 
-/** @type {!Regex} */
-var Regex = require('./regex')( /([\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!])/g );
 /** @type {!Object} */
 var fs = require('fs');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// DEFINE EXPORTS OBJ
-////////////////////////////////////////////////////////////////////////////////
-
-/** @type {!Object<string, function>} */
-var retrieve = {};
-
-
-////////////////////////////////////////////////////////////////////////////////
-// SET LIBRARY FUNCTIONS
+// DEFINE RETRIEVE METHODS
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @public
+ * @param {string} filepath
+ * @return {!Buffer}
+ */
+function retrieve(filepath) {
+
+  if ( !is.file(filepath) ) log.error(
+    'Invalid `helpers.retrieve` Call',
+    'invalid `filepath` param (must be a string with a valid path to a file)',
+    { argMap: true, filepath: filepath }
+  );
+
+  return fs.readFileSync(filepath);
+}
+
+/**
+ * @public
  * @param {string} dirpath
- * @param {Object=} options [default= null]
+ * @param {Object=} options
  * @param {?(RegExp|Array<string>|string)=} options.validDirs
  * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
- * @param {boolean=} deep - get all of the sub directories [default= false]
+ * @param {boolean=} deep - get all of the sub-directories
  * @return {!Array<string>}
  */
 retrieve.dirpaths = function(dirpath, options, deep) {
 
-  /** @type {RegExp} */
-  var valid;
-  /** @type {RegExp} */
-  var invalid;
+  /** @type {function(string): boolean} */
+  var isValid;
+  /** @type {*} */
+  var temp;
 
   if ( !is.dir(dirpath) ) log.error(
     'Invalid `helpers.retrieve.dirpaths` Call',
-    'invalid `dirpath` param (must be a valid dirpath string)',
+    'invalid `dirpath` param (must be a string with a valid path to a ' +
+      'directory)',
     { argMap: true, dirpath: dirpath }
   );
 
-  if (arguments.length < 2)
-
-  options = is.obj(options) ? options : {};
-  valid   = options.validDirs;
-  invalid = options.invalidDirs;
-
-  if (options.pass !== true) {
-    valid = is.arr(valid) ? valid.join('|') : valid;
-    valid = is.str(valid) ? Regex.make(
-      '^(?:' + Regex.escape(valid).replace(/\*/g, '.*') + ')$',
-    'i') : valid;
-    valid = is.regex(valid) ? valid : null;
-
-    invalid = is.arr(invalid) ? invalid.join('|') : invalid;
-    invalid = is.str(invalid) ? Regex.make(
-      '^(?:' + Regex.escape(invalid).replace(/\*/g, '.*') + ')$',
-    'i') : invalid;
-    invalid = is.regex(invalid) ? invalid : null;
+  switch (arguments.length) {
+    case 2: deep = is.bool(options) ? options : deep; break;
+    case 3:
+    if ( is('bool=', options) && is('obj=', deep) ) {
+      temp = deep;
+      deep = options;
+      options = temp;
+    }
   }
 
-  if (deep === true) {
-    return Retrieve.dirpaths.deep(dirpath, {
-      pass:        true,
-      validDirs:   valid,
-      invalidDirs: invalid
-    });
-  }
+  if ( !is('obj=', options) ) log.error(
+    'Invalid `helpers.retrieve.dirpaths` Call',
+    'invalid type for `options` param',
+    { argMap: true, dirpath: dirpath, options: options }
+  );
 
-  dirpath = dirpath.replace(/([^\/])$/, '$1/');
-  return fs.readdirSync(dirpath).filter(function(dir) {
-    return (
-      ( !valid   || valid.test(dir)    ) &&
-      ( !invalid || !invalid.test(dir) ) &&
-        is.dir(dirpath + dir)
-    );
-  });
+  if ( !is('bool=', deep) ) log.error(
+    'Invalid `helpers.retrieve.dirpaths` Call',
+    'invalid type for `deep` param',
+    { argMap: true, dirpath: dirpath, deep: deep }
+  );
+
+  dirpath = dirpath.replace(/[^\/]$/, '$&/');
+  options = parseOptions(options);
+  isValid = makeTest(options.validDirs, options.invalidDirs);
+
+  return deep || options.deep
+    ? getDirpathsDeep(dirpath, isValid)
+    : getDirpaths(dirpath, isValid);
 };
 
 /**
+ * @public
  * @param {string} dirpath
- * @param {Object=} options [default= null]
- * @param {?(RegExp|Array<string>|string)=} options.validDirs
- * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
- * @return {!Array<string>}
- */
-Retrieve.dirpaths.deep = function(dirpath, options) {
-
-  /** @type {function(string, *): !Array<string>} */
-  var get;
-  /** @type {number} */
-  var len;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {!Array<string>} */
-  var kids;
-
-  get = Retrieve.dirpaths;
-  dirpath = dirpath.replace(/([^\/])$/, '$1/');
-
-  dirs = get(dirpath, options);
-  kids = dirs;
-  len = 0;
-  while (kids.length) {
-    kids = [];
-    each(dirs, function(/** string */ dir, /** number */ i) {
-      if (i >= len) {
-        kids = kids.concat(
-          get(dirpath + dir, options).map(function(/** string */ kid) {
-            return dir + '/' + kid;
-          })
-        );
-      }
-    });
-    len = dirs.length;
-    dirs = dirs.concat(kids);
-  }
-  return dirs;
-};
-
-/**
- * @param {string} dirpath
- * @param {Object=} options [default= null]
+ * @param {Object=} options
  * @param {?(RegExp|Array<string>|string)=} options.validDirs
  * @param {?(RegExp|Array<string>|string)=} options.validExts - [.]ext
  * @param {?(RegExp|Array<string>|string)=} options.validNames - filename
@@ -147,179 +108,90 @@ Retrieve.dirpaths.deep = function(dirpath, options) {
  * @param {?(RegExp|Array<string>|string)=} options.invalidExts - [.]ext
  * @param {?(RegExp|Array<string>|string)=} options.invalidNames - filename
  * @param {?(RegExp|Array<string>|string)=} options.invalidFiles - filename.ext
- * @param {boolean=} deep - get all of the sub directory files [default= false]
+ * @param {boolean=} deep - get all of the sub-directory files
  * @return {!Array<string>}
  */
-Retrieve.filepaths = function(dirpath, options, deep) {
+retrieve.filepaths = function(dirpath, options, deep) {
 
-  /** @type {RegExp} */
-  var validExts;
-  /** @type {RegExp} */
-  var validNames;
-  /** @type {RegExp} */
-  var validFiles;
-  /** @type {RegExp} */
-  var invalidExts;
-  /** @type {RegExp} */
-  var invalidNames;
-  /** @type {RegExp} */
-  var invalidFiles;
+  /** @type {function(string): boolean} */
+  var isValidDir;
+  /** @type {function(string): boolean} */
+  var isValid;
+  /** @type {!Array} */
+  var invalid;
+  /** @type {!Array} */
+  var valid;
+  /** @type {*} */
+  var temp;
 
-  is.dir(dirpath) || log.error(
-    'Invalid `Retrieve.filepaths` Call',
-    'invalid `dirpath` param (i.e. must be a valid directory)',
+  if ( !is.dir(dirpath) ) log.error(
+    'Invalid `helpers.retrieve.filepaths` Call',
+    'invalid `dirpath` param (must be a string with a valid path to a ' +
+      'directory)',
     { argMap: true, dirpath: dirpath }
   );
 
-  options = is.obj(options) ? options : {};
-  validExts = options.validExts;
-  validNames = options.validNames;
-  validFiles = options.validFiles;
-  invalidExts = options.invalidExts;
-  invalidNames = options.invalidNames;
-  invalidFiles = options.invalidFiles;
-
-  if (options.pass !== true) {
-    validExts = is.arr(validExts) ? validExts.join('|') : validExts;
-    validExts = is.str(validExts) ? Regex.make(
-      '^.*\\.(?:' + validExts.replace(/\./g, '') + ')$',
-    'i') : validExts;
-    validExts = is.regex(validExts) ? validExts : null;
-
-    validNames = is.arr(validNames) ? validNames.join('|') : validNames;
-    validNames = is.str(validNames) ? Regex.make(
-      '^(?:'+ Regex.escape(validNames).replace(/\*/g, '.*') +')\\.[a-z]{2,}$',
-    'i') : validNames;
-    validNames = is.regex(validNames) ? validNames : null;
-
-    validFiles = is.arr(validFiles) ? validFiles.join('|') : validFiles;
-    validFiles = is.str(validFiles) ? Regex.make(
-      '^(?:' + Regex.escape(validFiles).replace(/\*/g, '.*') + ')$',
-    'i') : validFiles;
-    validFiles = is.regex(validFiles) ? validFiles : null;
-
-    invalidExts = is.arr(invalidExts) ? invalidExts.join('|') : invalidExts;
-    invalidExts = is.str(invalidExts) ? Regex.make(
-      '^.*\\.(?:' + invalidExts.replace(/\./g, '') + ')$',
-    'i') : invalidExts;
-    invalidExts = is.regex(invalidExts) ? invalidExts : null;
-
-    invalidNames = is.arr(invalidNames) ? invalidNames.join('|') : invalidNames;
-    invalidNames = is.str(invalidNames) ? Regex.make(
-      '^(?:'+ Regex.escape(invalidNames).replace(/\*/g, '.*') +')\\.[a-z]{2,}$',
-    'i') : invalidNames;
-    invalidNames = is.regex(invalidNames) ? invalidNames : null;
-
-    invalidFiles = is.arr(invalidFiles) ? invalidFiles.join('|') : invalidFiles;
-    invalidFiles = is.str(invalidFiles) ? Regex.make(
-      '^(?:' + Regex.escape(invalidFiles).replace(/\*/g, '.*') + ')$',
-    'i') : invalidFiles;
-    invalidFiles = is.regex(invalidFiles) ? invalidFiles : null;
+  switch (arguments.length) {
+    case 2: deep = is.bool(options) ? options : deep; break;
+    case 3:
+    if ( is('bool=', options) && is('obj=', deep) ) {
+      temp = deep;
+      deep = options;
+      options = temp;
+    }
   }
 
-  if (deep === true) {
-    return Retrieve.filepaths.deep(dirpath, {
-      pass:         true,
-      validExts:    validExts,
-      validNames:   validNames,
-      validFiles:   validFiles,
-      invalidExts:  invalidExts,
-      invalidNames: invalidNames,
-      invalidFiles: invalidFiles,
-      validDirs:    options.validDirs || null,
-      invalidDirs:  options.invalidDirs || null
-    });
-  }
+  if ( !is('obj=', options) ) log.error(
+    'Invalid `helpers.retrieve.filepaths` Call',
+    'invalid type for `options` param',
+    { argMap: true, dirpath: dirpath, options: options }
+  );
 
-  dirpath = dirpath.replace(/([^\/])$/, '$1/');
-  return fs.readdirSync(dirpath).filter(function(file) {
-    return (
-      ( !validExts    || validExts.test(file)     ) &&
-      ( !validNames   || validNames.test(file)    ) &&
-      ( !validFiles   || validFiles.test(file)    ) &&
-      ( !invalidExts  || !invalidExts.test(file)  ) &&
-      ( !invalidNames || !invalidNames.test(file) ) &&
-      ( !invalidFiles || !invalidFiles.test(file) ) &&
-        is.file(dirpath + file)
-    );
-  });
+  if ( !is('bool=', deep) ) log.error(
+    'Invalid `helpers.retrieve.filepaths` Call',
+    'invalid type for `deep` param',
+    { argMap: true, dirpath: dirpath, deep: deep }
+  );
+
+  dirpath = dirpath.replace(/[^\/]$/, '$&/');
+  options = parseOptions(options);
+  deep = deep || options.deep;
+
+  valid   = [ options.validExts,   options.validNames,   options.validFiles   ];
+  invalid = [ options.invalidExts, options.invalidNames, options.invalidFiles ];
+  isValid = makeTest(valid, invalid);
+
+  isValidDir = deep && makeTest(options.validDirs, options.invalidDirs);
+
+  return deep
+    ? getFilepathsDeep(dirpath, isValid, isValidDir)
+    : getFilepaths(dirpath, isValid);
 };
 
 /**
- * @param {string} dirpath
- * @param {Object=} options [default= null]
- * @param {?(RegExp|Array<string>|string)=} options.validDirs
- * @param {?(RegExp|Array<string>|string)=} options.validExts - [.]ext
- * @param {?(RegExp|Array<string>|string)=} options.validNames - filename
- * @param {?(RegExp|Array<string>|string)=} options.validFiles - filename.ext
- * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
- * @param {?(RegExp|Array<string>|string)=} options.invalidExts - [.]ext
- * @param {?(RegExp|Array<string>|string)=} options.invalidNames - filename
- * @param {?(RegExp|Array<string>|string)=} options.invalidFiles - filename.ext
- * @return {!Array<string>}
- */
-Retrieve.filepaths.deep = function(dirpath, options) {
-
-  /** @type {function(string, Object): !Array<string>} */
-  var get;
-  /** @type {number} */
-  var len;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {!Array<string>} */
-  var kids;
-  /** @type {!Array<string>} */
-  var files;
-
-  get = Retrieve.filepaths;
-  dirpath = dirpath.replace(/([^\/])$/, '$1/');
-
-  options.pass = false;
-  dirs = Retrieve.dirpaths(dirpath, options, true);
-  files = get(dirpath, options);
-
-  each(dirs, function(/** string */ dir) {
-    files = files.concat(
-      get(dirpath + dir, options).map(function(/** string */ file) {
-        return dir + '/' + file;
-      })
-    );
-  });
-
-  return files;
-};
-
-/**
+ * @public
  * @param {string} filepath
  * @param {?string=} encoding [default= 'utf8']
- * @return {(string|Buffer)}
+ * @return {!(string|Buffer)}
  */
-Retrieve.file = function(filepath, encoding) {
+retrieve.file = function(filepath, encoding) {
 
-  is.file(filepath) || log.error(
-    'Invalid `Retrieve.file` Call',
-    'invalid `filepath` param (i.e. must be a valid file)',
+  if ( !is.file(filepath) ) log.error(
+    'Invalid `helpers.retrieve.file` Call',
+    'invalid `filepath` param (must be a string with a valid path to a file)',
     { argMap: true, filepath: filepath }
   );
 
-  encoding = is.str(encoding) || is.null(encoding) ? encoding : 'utf8';
-  return encoding ?
-    fs.readFileSync(filepath, encoding) : fs.readFileSync(filepath);
-};
-
-/**
- * @param {string} imgpath
- * @return {Buffer}
- */
-Retrieve.img = function(imgpath) {
-
-  is.file(imgpath) || log.error(
-    'Invalid `Retrieve.img` Call',
-    'invalid `imgpath` param (i.e. must be a valid file)',
-    { argMap: true, imgpath: imgpath }
+  if ( !is('?str=', encoding) ) log.error(
+    'Invalid `helpers.retrieve.file` Call',
+    'invalid type for `encoding` param',
+    { argMap: true, filepath: filepath, encoding: encoding }
   );
 
-  return fs.readFileSync(imgpath);
+  encoding = is.undefined(encoding) ? 'utf8' : encoding;
+  return encoding
+    ? fs.readFileSync(filepath, encoding)
+    : fs.readFileSync(filepath);
 };
 
 
@@ -327,34 +199,181 @@ Retrieve.img = function(imgpath) {
 // EXPORT LIBRARY
 ////////////////////////////////////////////////////////////////////////////////
 
-module.exports = Retrieve;
+module.exports = retrieve;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
+// PRIVATE HELPERS - MAIN
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {string} dirpath
- * @param {?RegExp} validDirs
- * @param {?RegExp} invalidDirs
+ * @param {string} basepath
+ * @param {function(string): boolean} isValid
  * @return {!Array<string>}
  */
-function getDirpaths(dirpath, validDirs, invalidDirs) {
-
-  /** @type {function(string): boolean} */
-  var isValid;
-  /** @type {string} */
-  var base;
-
-  base = dirpath.replace(/[^\/]$/, '$&/');
-  isValid = getCheck(validDirs, invalidDirs);
-  return fs.readdirSync(base)
+function getDirpaths(basepath, isValid) {
+  return fs.readdirSync(basepath)
     .filter(function(dirpath) {
-      return isValid(dirpath) && is.dir(base + dirpath);
+      return isValid(dirpath) && is.dir(basepath + dirpath);
     });
 }
+
+/**
+ * @private
+ * @param {string} basepath
+ * @param {function(string): boolean} isValid
+ * @return {!Array<string>}
+ */
+function getDirpathsDeep(basepath, isValid) {
+
+  /** @type {!Array<string>} */
+  var dirpaths;
+  /** @type {!Array<string>} */
+  var newpaths;
+  /** @type {string} */
+  var dirpath;
+  /** @type {number} */
+  var i;
+
+  dirpaths = getDirpaths(basepath, isValid);
+  i = -1;
+  while (++i < dirpaths.length) {
+    dirpath = dirpaths[i].replace(/[^\/]$/, '$&/');
+    newpaths = getDirpaths(basepath + dirpath, isValid);
+    newpaths = remap(newpaths, function(newpath) {
+      return dirpath + newpath;
+    });
+    dirpaths = dirpaths.concat(newpaths);
+  }
+  return dirpaths;
+}
+
+/**
+ * @private
+ * @param {string} basepath
+ * @param {function(string): boolean} isValid
+ * @return {!Array<string>}
+ */
+function getFilepaths(basepath, isValid) {
+  return fs.readdirSync(basepath)
+    .filter(function(filepath) {
+      return isValid(filepath) && is.file(basepath + filepath);
+    });
+}
+
+/**
+ * @private
+ * @param {string} basepath
+ * @param {function(string): boolean} isValid
+ * @param {function(string): boolean} isValidDir
+ * @return {!Array<string>}
+ */
+function getFilepathsDeep(basepath, isValid, isValidDir) {
+
+  /** @type {!Array<string>} */
+  var filepaths;
+  /** @type {!Array<string>} */
+  var dirpaths;
+  /** @type {!Array<string>} */
+  var newpaths;
+  /** @type {number} */
+  var i;
+
+  filepaths = getFilepaths(basepath, isValid);
+  dirpaths = getDirpathsDeep(basepath, isValidDir);
+  each(dirpaths, function(dirpath) {
+    dirpath = dirpath.replace(/[^\/]$/, '$&/');
+    newpaths = getFilepaths(basepath + dirpath, isValid);
+    newpaths = remap(newpaths, function(newpath) {
+      return dirpath + newpath;
+    });
+    filepaths = filepaths.concat(newpaths);
+  });
+  return filepaths;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS - OPTION PARSING
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * The characters to escape for each new RegExp option.
+ * @private
+ * @type {!RegExp}
+ * @const
+ */
+var CHARS = /[\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!]/g;
+
+/**
+ * @private
+ * @param {Object=} options
+ * @return {!Object}
+ */
+function parseOptions(options) {
+  
+  if (!options) return {};
+
+  return remap(options, function(val, key) {
+    key = has(key, 'valid') ? key : '';
+    key = key.replace(/^(?:in)?valid([a-z]*)s$/i, '$1');
+    key = key.toLowerCase();
+    return key ? parseOption(val, key) : val;
+  });
+}
+
+/**
+ * @private
+ * @param {?(RegExp|Array<string>|string|undefined)} option
+ * @param {string} type
+ * @return {?RegExp}
+ */
+function parseOption(option, type) {
+
+  if ( is('null=', option) ) return null;
+
+  if ( !is('!arr|str|regex', option) ) log.error(
+    'Invalid `helpers.retrieve.`[`file`|`dir`]`paths` Call',
+    'invalid `options` property (each valid/invalid property must be either ' +
+    'null/undefined or an array, string, or RegExp)',
+    { argMap: true, invalidProperty: option }
+  );
+
+  option = is.arr(option) ? option.join('|') : option;
+  return is.str(option) ? parseOptStr(option) : option;
+}
+
+/**
+ * @private
+ * @param {string} option
+ * @param {string} type
+ * @return {!RegExp}
+ */
+function parseOptStr(option, type) {
+
+  if ( type === 'ext' && has(option, /[^a-zA-Z\.\*\|]/) ) log.error(
+    'Invalid `helpers.retrieve.filepaths` Call',
+    'invalid `options` property (`validExts` and `invalidExts` may only ' +
+    'contain letters, periods, and asterisks)',
+    { argMap: true, invalidProperty: option }
+  );
+
+  option = option.replace(CHARS, '\\$&');
+  option = option.replace(/\\?\*/g, '.*');
+  switch (type) {
+    case 'dir':  option = '^(?:' + option + ')$';             break;
+    case 'name': option = '^(?:' + option + ')\\.[a-z]{2,}$'; break;
+    case 'file': option = '^(?:' + option + ')$';             break;
+    case 'ext':  option = '^.*\\.(?:' + option.replace(/\\?\./g, '') + ')$';
+  }
+  return new RegExp(option, 'i');
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS - TEST FACTORIES
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
@@ -362,7 +381,7 @@ function getDirpaths(dirpath, validDirs, invalidDirs) {
  * @param {(Array|RegExp)} invalid
  * @return {function}
  */
-function getCheck(valid, invalid) {
+function makeTest(valid, invalid) {
 
   /** @type {function(string): boolean} */
   var isInvalid;
