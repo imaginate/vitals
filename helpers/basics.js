@@ -273,18 +273,26 @@ global.merge = function merge(dest, source) {
 /**
  * A shortcut for Array.prototype.map(obj, iteratee).
  * @global
- * @param {Object} obj
- * @param {function(*, number): *} iteratee
- * @return {Array}
+ * @param {!(Object|Array)} obj
+ * @param {function(*, (string|number)): *} iteratee
+ * @return {!(Object|Array)}
  */
 global.remap = function remap(obj, iteratee) {
 
-  /** @type {!Array} */
-  var arr;
+  /** @type {!Object} */
+  var newObj;
+  /** @type {string} */
+  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
+
+  if ( !is.obj(obj) ) log.error(
+    'Invalid `helpers.remap` Call',
+    'invalid type for `obj` param',
+    mapArgs({ obj: obj, iteratee: iteratee })
+  );
 
   if ( !is.func(iteratee) ) log.error(
     'Invalid `helpers.map` Call',
@@ -292,21 +300,23 @@ global.remap = function remap(obj, iteratee) {
     mapArgs({ obj: obj, iteratee: iteratee })
   );
 
-  if ( is.null(obj) ) return null;
-
-  if ( !is.obj(obj) || !is.num(obj.length) ) log.error(
-    'Invalid `helpers.remap` Call',
-    'invalid type for `obj` param',
-    mapArgs({ obj: obj, iteratee: iteratee })
-  );
-
-  len = obj.length;
-  arr = new Array(len);
-  i = -1;
-  while (++i < len) {
-    arr[i] = iteratee(obj[i], i);
+  if ( is._arr(obj) ) {
+    newObj = new Array(obj.length);
+    len = obj.length;
+    i = -1;
+    while (++i < len) {
+      newObj[i] = iteratee(obj[i], i);
+    }
   }
-  return arr;
+  else {
+    newObj = {};
+    for (key in obj) {
+      if ( has(obj, key) ) {
+        newObj[key] = iteratee(obj[key], key);
+      }
+    }
+  }
+  return newObj;
 };
 
 /**
