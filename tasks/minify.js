@@ -49,7 +49,7 @@ module.exports = newTask('minify', 'src', {
       { argMap: true, filename: filename }
     );
 
-    copy.file(source, dest);
+    copy(source, dest);
     stripAre(dest);
     minify(dest);
 

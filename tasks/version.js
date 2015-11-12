@@ -65,7 +65,7 @@ module.exports = newTask('version', 'all', {
     }, false);
 
     each(filepaths, function(/** string */ filepath) {
-      copy.file( filepath, hashFile(filepath) );
+      copy( filepath, hashFile(filepath) );
     });
 
     log.pass('Completed `version.hash` Task');
