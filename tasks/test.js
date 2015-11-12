@@ -29,7 +29,7 @@ module.exports = newTask('test', 'base', {
     /** @type {string} */
     var tests;
 
-    options = getOptions(options) + '--require ./test/base-setup.js ';
+    options = getOptions(options) + '--require ./test/setups/base.js ';
 
     configLog();
 
@@ -65,7 +65,7 @@ module.exports = newTask('test', 'base', {
       { argMap: true, methodName: methodName }
     );
 
-    options = getOptions() + '--require ./test/base-setup.js ';
+    options = getOptions() + '--require ./test/setups/base.js ';
     tests = './test/' + section + '/' + methodName;
     title = '`vitals.' + methodName + '`';
 
@@ -97,7 +97,7 @@ module.exports = newTask('test', 'base', {
       { argMap: true, sectionName: sectionName }
     );
 
-    options = getOptions() + '--require ./test/base-setup.js ';
+    options = getOptions() + '--require ./test/setups/base.js ';
     tests = './test/' + sectionName + '-methods';
     title = SECTIONS[sectionName];
 
@@ -124,11 +124,13 @@ module.exports = newTask('test', 'base', {
 
     configLog();
 
-    each(SETUPS, function(section, name) {
-      tests = './test/' + section + '-methods';
-      logStart(name);
-      runTests(options + '--require ./test/'+ name +'-setup.js ', tests);
-      logFinish(name);
+    each(SETUPS, function(sections, name) {
+      each(sections, function(section) {
+        tests = './test/' + section + '-methods';
+        logStart(name);
+        runTests(options + '--require ./test/setups/'+ name +'.js ', tests);
+        logFinish(name);
+      });
     });
 
     resetLog();
@@ -154,10 +156,10 @@ var SECTIONS = {
  * @const
  */
 var SETUPS = {
-  'base': '*',
-  'node': '*',
-  'org':  'js',
-  'min':  'js'
+  'base': objKeys(SECTIONS),
+  'node': objKeys(SECTIONS),
+  'org':  [ 'js' ],
+  'min':  [ 'js' ]
 };
 
 /**

@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS TESTS: ORG SETUP
+ * VITALS TESTS: BASE SETUP
  * -----------------------------------------------------------------------------
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
@@ -16,8 +16,11 @@
  */
 
 // appends global helpers
-require('./helpers/basics');
-require('./helpers/display');
+require('../helpers/basics');
+require('../helpers/display');
+
+/** @type {!Object} */
+var retrieve = require('../../helpers/retrieve');
 
 /**
  * @global
@@ -25,5 +28,20 @@ require('./helpers/display');
  */
 global.assert = require('assert');
 
-// appends vitals to global
-require('../src/vitals.js');
+/**
+ * @global
+ * @type {!Object}
+ */
+global.vitals = {};
+
+each(retrieve.dirpaths('test', {
+  validDirs: '*-methods'
+}), function(section) {
+  each(retrieve.filepaths('src/' + section, {
+    invalidNames: '_*|index',
+    validExts:    'js'
+  }), function(method) {
+    method = method.replace(/\.js$/, '');
+    global.vitals[method] = require('../../src/' + section + '/' + method);
+  });
+});
