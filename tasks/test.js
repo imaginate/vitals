@@ -28,15 +28,18 @@ module.exports = newTask('test', 'base', {
 
     /** @type {string} */
     var tests;
+    /** @type {string} */
+    var setup;
 
-    options = getOptions(options) + '--require ./test/setups/base.js ';
+    options = getOptions(options);
+    setup = 'base';
 
     configLog();
 
     each(SECTIONS, function(title, section) {
       tests = './test/' + section + '-methods';
       logStart(title);
-      runTests(options, tests);
+      runTests(options, tests, setup);
       logFinish(title);
     });
 
@@ -56,6 +59,8 @@ module.exports = newTask('test', 'base', {
     var tests;
     /** @type {string} */
     var title;
+    /** @type {string} */
+    var setup;
 
     section = getMethodSection(methodName);
 
@@ -65,14 +70,15 @@ module.exports = newTask('test', 'base', {
       { argMap: true, methodName: methodName }
     );
 
-    options = getOptions() + '--require ./test/setups/base.js ';
+    options = getOptions();
     tests = './test/' + section + '/' + methodName;
     title = '`vitals.' + methodName + '`';
+    setup = 'base';
 
     configLog();
 
     logStart(title);
-    runTests(options, tests);
+    runTests(options, tests, setup);
     logFinish(title);
 
     resetLog();
@@ -89,6 +95,8 @@ module.exports = newTask('test', 'base', {
     var tests;
     /** @type {string} */
     var title;
+    /** @type {string} */
+    var setup;
 
     sectionName = sectionName.toLowerCase();
     if ( !has(SECTIONS, sectionName) ) log.error(
@@ -97,14 +105,15 @@ module.exports = newTask('test', 'base', {
       { argMap: true, sectionName: sectionName }
     );
 
-    options = getOptions() + '--require ./test/setups/base.js ';
+    options = getOptions();
     tests = './test/' + sectionName + '-methods';
     title = SECTIONS[sectionName];
+    setup = 'base';
 
     configLog();
 
     logStart(title);
-    runTests(options, tests);
+    runTests(options, tests, setup);
     logFinish(title);
 
     resetLog();
@@ -124,12 +133,12 @@ module.exports = newTask('test', 'base', {
 
     configLog();
 
-    each(SETUPS, function(sections, name) {
+    each(SETUPS, function(sections, setup) {
       each(sections, function(section) {
         tests = './test/' + section + '-methods';
-        logStart(name);
-        runTests(options + '--require ./test/setups/'+ name +'.js ', tests);
-        logFinish(name);
+        logStart(setup);
+        runTests(options, tests, setup);
+        logFinish(setup);
       });
     });
 
@@ -201,10 +210,20 @@ function getOptions(options) {
 /**
  * @param {string} options
  * @param {string} tests
+ * @param {string=} setup
  */
-function runTests(options, tests) {
-  options = options.replace(/([^ ])$/, '$1 ');
-  exec('node ./node_modules/mocha/bin/mocha ' + options + tests);
+function runTests(options, tests, setup) {
+
+  /** @type {string} */
+  var result;
+  /** @type {string} */
+  var cmd;
+
+  options = options.replace(/[^ ]$/, '$& ');
+  setup = setup ? '--require ./test/setups/' + setup + '.js ' : '';
+  cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
+  result = exec(cmd).toString();
+  console.log(result);
 }
 
 /**
