@@ -101,8 +101,8 @@ function minify(filepath) {
   );
 
   cmd = 'java -jar ' + compiler + ' --js ' + filepath + ' -W QUIET';
-  content = exec(cmd)
-    .replace(/\r\n?/g, '\n'); // normalize line breaks
+  content = exec(cmd).toString();
+  content = content.replace(/\r\n?/g, '\n'); // normalize line breaks
   content = insertCopyright(content, filepath);
   content = insertAre(content);
   toFile(content, filepath);
