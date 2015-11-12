@@ -3357,7 +3357,7 @@ var freeze = (function freezePrivateScope() {
     if ( !is._obj(obj)      ) throw _error.type('obj');
     if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    return deep ? _deepFreeze(obj) : _freeze(obj);
+    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   }
 
   /**
@@ -3374,7 +3374,7 @@ var freeze = (function freezePrivateScope() {
     if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
 
-    return deep ? _deepFreeze(obj) : _freeze(obj);
+    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   };
   // define shorthand
   freeze.obj = freeze.object;
@@ -3388,34 +3388,43 @@ var freeze = (function freezePrivateScope() {
    * @param {!(Object|function)} obj
    * @return {!(Object|function)}
    */
-  var _freeze = !Object.freeze
-    ? function ObjectFreeze(obj) { return obj; }
-    : Object.freeze;
+  function _deepFreeze(obj) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in obj) {
+      if ( _own(obj, key) && is._obj( obj[key] ) ) {
+        obj[key] = _deepFreeze( obj[key] );
+      }
+    }
+    return _ObjectFreeze(obj);
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - OBJECT.FREEZE POLYFILL
+  //////////////////////////////////////////////////////////
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @return {?(Object|function)}
+   * @param {!(Object|function)} obj
+   * @return {!(Object|function)}
    */
-  var _deepFreeze = !Object.freeze
-    ? function _deepFreeze(obj) { return obj; }
-    : function _deepFreeze(obj) {
+  var _ObjectFreeze = (function() {
 
-      /** @type {string} */
-      var key;
-      /** @type {*} */
-      var val;
+    if (!Object.freeze) return function ObjectFreeze(obj) { return obj; };
 
-      for (key in obj) {
-        if ( _own(obj, key) ) {
-          val = obj[key];
-          if ( is._obj(val) ) {
-            obj[key] = _deepFreeze(val);
-          }
-        }
-      }
-      return _freeze(obj);
-    };
+    try {
+      Object.freeze( function testObjectFreeze(){} );
+    }
+    catch (e) {
+      return function ObjectFreeze(obj) {
+        return is.func(obj) ? obj : Object.freeze(obj);
+      };
+    }
+
+    return Object.freeze;
+  })();
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
@@ -4966,6 +4975,25 @@ function ErrorAid(vitalsMethod) {
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
     return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+  };
+
+  /**
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  this.error.range = function rangeError(param, valid, method) {
+
+    /** @type {string} */
+    var msg;
+
+    param += ' param';
+    method = method || '';
+    method = vitalsMethod + ( method && '.' ) + method;
+    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
+    msg += valid ? ' The valid options are: ' + valid : '';
+    return new RangeError(msg);
   };
 }
 
