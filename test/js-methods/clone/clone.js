@@ -71,8 +71,56 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // REGEXP TESTS
 
+  title = callStr('RegExp');
+  it(title, function() {
+    var regex;
+    var copy;
+    regex = freeze(/a/);
+    copy = vitals.clone(regex);
+    assert(regex !== copy);
+    assert(regex.source === copy.source);
+    assert(regex.global === copy.global);
+    assert(regex.ignoreCase === copy.ignoreCase);
+  });
+
+  title = callStr('RegExp', true);
+  it(title, function() {
+    var regex;
+    var copy;
+    regex = freeze(/a/);
+    copy = vitals.clone(regex, true);
+    assert(regex !== copy);
+    assert(regex.source === copy.source);
+    assert(regex.global === copy.global);
+    assert(regex.ignoreCase === copy.ignoreCase);
+  });
+
   //////////////////////////////////////////////
   // ARRAY TESTS
+
+  title = callStr('array');
+  it(title, function() {
+    var arr;
+    var copy;
+    arr = freeze([ 1, { b: 2 }, 3 ], true);
+    copy = vitals.clone(arr);
+    assert(arr !== copy);
+    each(arr, function(val, i) {
+      assert( arr[i] === copy[i] );
+    });
+  });
+
+  title = callStr('array', true);
+  it(title, function() {
+    var arr;
+    var copy;
+    arr = freeze([ 1, { b: 2 }, 3 ], true);
+    copy = vitals.clone(arr, true);
+    assert(arr !== copy);
+    assert(arr[1] === copy[1]);
+    assert(arr[2] !== copy[2]);
+    assert(arr[3] === copy[3]);
+  });
 
   //////////////////////////////////////////////
   // FUNCTION TESTS
