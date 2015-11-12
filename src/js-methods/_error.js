@@ -63,4 +63,23 @@ function ErrorAid(vitalsMethod) {
     method = vitalsMethod + ( method && '.' ) + method;
     return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
   };
+
+  /**
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  this.error.range = function rangeError(param, valid, method) {
+
+    /** @type {string} */
+    var msg;
+
+    param += ' param';
+    method = method || '';
+    method = vitalsMethod + ( method && '.' ) + method;
+    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
+    msg += valid ? ' The valid options are: ' + valid : '';
+    return new RangeError(msg);
+  };
 }
