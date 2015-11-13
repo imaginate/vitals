@@ -21,7 +21,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {Function<string, function>} */
-global.log = require('./log');
+global.log = require('./log')();
 /** @type {Function<string, function>} */
 global.is = require('node-are').is;
 /** @type {Function<string, function>} */
