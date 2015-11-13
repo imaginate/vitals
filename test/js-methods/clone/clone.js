@@ -21,7 +21,7 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // BASIC TESTS
 
-  title = callStr('primitive');
+  title = genCallStr('primitive');
   it(title, function() {
     var vals;
     vals = [ null, undefined, true, false, 'string', 5 ];
@@ -31,7 +31,7 @@ describe('clone', function() {
     assert( is.nan( vitals.clone(NaN) ) );
   });
 
-  title = callStr('primitive', true);
+  title = genCallStr('primitive', true);
   it(title, function() {
     var vals;
     vals = [ null, undefined, true, false, 'string', 5 ];
@@ -44,7 +44,7 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // OBJECT TESTS
 
-  title = callStr('object');
+  title = genCallStr('object');
   it(title, function() {
     var obj;
     var copy;
@@ -56,7 +56,7 @@ describe('clone', function() {
     });
   });
 
-  title = callStr('object', true);
+  title = genCallStr('object', true);
   it(title, function() {
     var obj;
     var copy;
@@ -71,7 +71,7 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // REGEXP TESTS
 
-  title = callStr('RegExp');
+  title = genCallStr('RegExp');
   it(title, function() {
     var regex;
     var copy;
@@ -83,7 +83,7 @@ describe('clone', function() {
     assert(regex.ignoreCase === copy.ignoreCase);
   });
 
-  title = callStr('RegExp', true);
+  title = genCallStr('RegExp', true);
   it(title, function() {
     var regex;
     var copy;
@@ -98,7 +98,7 @@ describe('clone', function() {
   //////////////////////////////////////////////
   // ARRAY TESTS
 
-  title = callStr('array');
+  title = genCallStr('array');
   it(title, function() {
     var arr;
     var copy;
@@ -110,22 +110,22 @@ describe('clone', function() {
     });
   });
 
-  title = callStr('array', true);
+  title = genCallStr('array', true);
   it(title, function() {
     var arr;
     var copy;
     arr = freeze([ 1, { b: 2 }, 3 ], true);
     copy = vitals.clone(arr, true);
     assert(arr !== copy);
-    assert(arr[1] === copy[1]);
-    assert(arr[2] !== copy[2]);
-    assert(arr[3] === copy[3]);
+    assert(arr[0] === copy[0]);
+    assert(arr[1] !== copy[1]);
+    assert(arr[2] === copy[2]);
   });
 
   //////////////////////////////////////////////
   // FUNCTION TESTS
 
-  title = callStr('function');
+  title = genCallStr('function');
   it(title, function() {
     var func;
     var copy;
@@ -140,7 +140,7 @@ describe('clone', function() {
     assert( func() === copy() );
   });
 
-  title = callStr('function', true);
+  title = genCallStr('function', true);
   it(title, function() {
     var func;
     var copy;
@@ -155,6 +155,23 @@ describe('clone', function() {
     assert( func() === copy() );
   });
 
+  //////////////////////////////////////////////
+  // ERROR TESTS
+
+  title = callStr({}, 'fail');
+  it(title, function() {
+    assert.throws(function() {
+      vitals.clone({}, 'fail');
+    });
+  });
+
+  title = callStr(true, 'fail');
+  it(title, function() {
+    assert.throws(function() {
+      vitals.clone(true, 'fail');
+    });
+  });
+
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -163,11 +180,21 @@ describe('clone', function() {
 
 /**
  * @private
+ * @param {...*} args
+ * @return {string}
+ */
+function callStr(args) {
+  args = slice(arguments);
+  return testCall('clone', args, 3, true);
+}
+
+/**
+ * @private
  * @param {string} type
  * @param {boolean=} deep
  * @return {string}
  */
-function callStr(type, deep) {
+function genCallStr(type, deep) {
   type = '<' + type + '>';
   deep = deep ? ', true' : '';
   return 'clone(' + type + deep + ');';
