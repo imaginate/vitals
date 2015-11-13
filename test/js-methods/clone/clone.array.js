@@ -21,7 +21,7 @@ describe('clone.array', function() {
   //////////////////////////////////////////////
   // BASIC TESTS
 
-  title = callStr([ 1, { b: 2 }, 3 ]);
+  title = callStr( newArr() );
   it(title, function() {
     var arr = newArr();
     var copy = vitals.clone.arr(arr);
@@ -31,7 +31,7 @@ describe('clone.array', function() {
     });
   });
 
-  title = callStr([ 1, { b: 2 }, 3 ], true);
+  title = callStr(newArr(), true);
   it(title, function() {
     var arr = newArr();
     var copy = vitals.clone.arr(arr, true);
@@ -41,7 +41,7 @@ describe('clone.array', function() {
     assert(arr[2] === copy[2]);
   });
 
-  title = callStr([ 1, { b: 2 }, 3 ], false);
+  title = callStr(newArr(), false);
   it(title, function() {
     var arr = newArr();
     var copy = vitals.clone.arr(arr, false);
