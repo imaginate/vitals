@@ -25,6 +25,7 @@ var is = require('node-are').is;
 // SECTION: JS METHODS
 // *****************************************************************************
 
+// INSERT _own.js
 // INSERT has.js
 // INSERT slice.js
 // INSERT clone.js

@@ -94,6 +94,7 @@
 
   'use strict';
 
+  // INSERT _own.js
   // INSERT has.js
   // INSERT slice.js
   // INSERT clone.js
