@@ -22,22 +22,22 @@ module.exports = makeErrorAid;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ERROR
+// PRIVATE HELPER - ERROR-AID
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @typedef {function(string, string=): !Error} ErrorAid
+ */
+
+/**
+ * The ErrorAid constructor.
  * @param {string} vitalsMethod
  * @return {!ErrorAid}
  */
 function makeErrorAid(vitalsMethod) {
-  return new ErrorAid(vitalsMethod).error;
-}
 
-/**
- * @param {string} vitalsMethod
- * @constructor
- */
-function ErrorAid(vitalsMethod) {
+  /** @type {!ErrorAid} */
+  var errorAid;
 
   vitalsMethod = 'vitals.' + vitalsMethod;
 
@@ -46,7 +46,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!Error} 
    */
-  this.error = function error(msg, method) {
+  errorAid = function error(msg, method) {
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
     return new Error(msg + ' for ' + method + ' call.');
@@ -57,7 +57,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!TypeError} 
    */
-  this.error.type = function typeError(param, method) {
+  errorAid.type = function typeError(param, method) {
     param += ' param';
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
@@ -70,7 +70,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!RangeError} 
    */
-  this.error.range = function rangeError(param, valid, method) {
+  errorAid.range = function rangeError(param, valid, method) {
 
     /** @type {string} */
     var msg;
@@ -82,4 +82,6 @@ function ErrorAid(vitalsMethod) {
     msg += valid ? ' The valid options are: ' + valid : '';
     return new RangeError(msg);
   };
+
+  return errorAid;
 }
