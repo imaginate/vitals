@@ -27,23 +27,47 @@ var cp = require('child_process');
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @typedef {(!Buffer|string)} BuffStr
+ */
+
+/**
+ * @typedef {!{
+ *   pid:    number,
+ *   output: !Array,
+ *   stdout: BuffStr,
+ *   stderr: BuffStr,
+ *   status: number,
+ *   signal: string,
+ *   error:  ?Error
+ * }} SpawnResult
+ */
+
+/**
  * @global
  * @param {string} command
  * @param {Object=} options
+ * @param {string=} options.result - [default= "string"] Note that if stdout is
+ *   already a string and options.result is "buffer", a string will be returned.
+ *   valid strings: "buffer", "buff", "buf", "string", "str"
+ * @param {boolean=} options.catchExit - [default= true] If process is exited
+ *   with an error code an error is logged.
  * @param {string=} options.cwd
- * @param {(string|!Buffer)=} options.input
- * @param {!Array=} options.stdio
+ * @param {BuffStr=} options.input
  * @param {!Object=} options.env
- * @param {string=} options.shell
  * @param {number=} options.uid
  * @param {number=} options.gid
  * @param {number=} options.timeout
  * @param {string=} options.killSignal
  * @param {number=} options.maxBuffer
  * @param {string=} options.encoding
- * @return {(string|!Buffer)}
+ * @return {BuffStr}
  */
-function exec(command, options) {
+module.exports = function exec(command, options) {
+
+  /** @type {SpawnResult} */
+  var result;
+  /** @type {!Array} */
+  var args;
 
   if ( !is.str(command) ) log.error(
     'Invalid `helpers.exec` Call',
@@ -57,21 +81,62 @@ function exec(command, options) {
     { argMap: true, command: command, options: options }
   );
 
-  try {
-    return cp.execSync(command, options);
-  }
-  catch (err) {
-    log.error(
-      'Failed `helpers.exec` Call',
-      'error occurred within `child_process.execSync`',
-      err.stack
-    );
-  }
+  options = options || {};
+  if ( !is.str(options.result)     ) options.result = 'string';
+  if ( !is.bool(options.catchExit) ) options.catchExit = true;
+
+  args = command.split(' ');
+  command = args.shift();
+  result = cp.spawnSync(command, args, options);
+
+  if (result.error) log.error('Failed `helpers.exec` Call', result.error, {
+    syscall: result.error.syscall,
+    errno:   result.error.errno,
+    code:    result.error.code
+  });
+
+  if (options.catchExit && result.status) log.error(
+    'Failed `helpers.exec` Call',
+    'an error code was used to exit the command\'s process',
+    { exitCode: getExitCode(result.status) }
+  );
+
+  return has(options.result, /^buff?(?:er)?$/i)
+    ? result.stdout
+    : result.stdout.toString();
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @type {!Array}
+ * @const
+ */
+var EXIT_CODES = freeze([
+  'Uncaught Fatal Exception',
+  '(unused exit code)',
+  'Internal JavaScript Parse Error',
+  'Internal JavaScript Evaluation Error',
+  'Fatal Error',
+  'Non-function Internal Exception Handler',
+  'Internal Exception Handler Run-Time Failure',
+  'Uncaught Exception',
+  'Invalid Argument',
+  'Internal JavaScript Run-Time Failure',
+  '(unused exit code)',
+  'Invalid Debug Argument'
+]);
+
+/**
+ * @private
+ * @param {number} code
+ * @return {string}
+ */
+function getExitCode(code) {
+  if (code >= 128) return code + ': UNIX Signal Exit';
+  return code + ': ' + EXIT_CODES[--code];
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-// EXPORT EXEC
-////////////////////////////////////////////////////////////////////////////////
-
-module.exports = exec;
