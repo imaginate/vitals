@@ -265,7 +265,7 @@ logOCD.pass = function(header) {
  * @this {!LogOCD}
  * @param {string=} header - Only optional if the header config is disabled.
  * @param {string} msg
- * @param {*...=} args
+ * @param {...*=} args
  * @return {boolean}
  */
 logOCD.error = function(header, msg) {
@@ -273,7 +273,8 @@ logOCD.error = function(header, msg) {
   /** @type {?Stack} */
   var stack;
 
-  stack = this._config.error.stack ? newStack() : null;
+  stack = this._config.error.stack ? newStack(msg) : null;
+  msg = is.obj(msg) ? msg.toString && msg.toString() : msg;
 
   logSpaces(this._config.error.spaceBefore);
 
