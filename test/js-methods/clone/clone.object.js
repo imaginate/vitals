@@ -19,7 +19,7 @@ describe('clone.object', function() {
   var title;
 
   //////////////////////////////////////////////
-  // CLONE TESTS
+  // BASIC TESTS
 
   title = callStr({ a: 1, b: { b: 2 }, c: 3 });
   it(title, function() {
