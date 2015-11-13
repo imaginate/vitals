@@ -94,8 +94,8 @@
 
   'use strict';
 
+  // INSERT _inStr.js
   // INSERT _own.js
-  // INSERT has.js
   // INSERT slice.js
   // INSERT clone.js
   // INSERT amend.js
@@ -106,10 +106,15 @@
   // INSERT freeze.js
   // INSERT fuse.js
   // INSERT get.js
+  // INSERT has.js
   // INSERT remap.js
   // INSERT seal.js
   // INSERT until.js
   // INSERT _error.js
+  // INSERT _inObj.js
+  // INSERT _inArr.js
+  // INSERT _match.js
+  // INSERT _splitKeys.js
 
 
 // *****************************************************************************
