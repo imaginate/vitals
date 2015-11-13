@@ -13,6 +13,9 @@
 
 'use strict';
 
+/** @type {!Object} */
+var colors = require('colors/safe');
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // DEFINE & EXPORT THE TASK
@@ -172,6 +175,25 @@ var SETUPS = {
 };
 
 /**
+ * @type {!Object}
+ * @const
+ */
+var MOCHA_DEFAULTS = {
+  reporter: 'spec',
+  slow:     50,
+  timeout:  5000
+};
+
+/**
+ * @type {!Object}
+ * @const
+ */
+var TERMINAL_SYMBOLS = {
+  pass: process.platform === 'win32' ? '\u221A' : '\u2714',
+  fail: process.platform === 'win32' ? 'X'      : '\u2716'
+};
+
+/**
  * @param {string=} options
  * @return {string}
  */
@@ -184,11 +206,7 @@ function getOptions(options) {
 
   options = is.str(options) ? options.split('+') : [];
 
-  defaults = {
-    reporter: 'spec',
-    slow:     50,
-    timeout:  5000
-  };
+  defaults = clone(MOCHA_DEFAULTS);
   result = '--colors ';
 
   each(options, function(/** string */ option) {
@@ -222,8 +240,20 @@ function runTests(options, tests, setup) {
   options = options.replace(/[^ ]$/, '$& ');
   setup = setup ? '--require ./test/setups/' + setup + '.js ' : '';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
-  result = exec(cmd).toString();
+  result = exec(cmd, { catchExit: false });
+  result = parseResults(result);
   console.log(result);
+}
+
+/**
+ * @param {string} results
+ * @return {string}
+ */
+function parseResults(results) {
+
+  if ( !has(results, /^\s*\{\s*"stats":\s*\{/) ) return results;
+
+  return results;
 }
 
 /**
