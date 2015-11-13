@@ -129,6 +129,8 @@ module.exports = newTask('test', 'base', {
 
     /** @type {string} */
     var tests;
+    /** @type {string} */
+    var title;
 
     options = options ? options + '+' : '';
     options += 'reporter=dot';
@@ -138,10 +140,11 @@ module.exports = newTask('test', 'base', {
 
     each(SETUPS, function(sections, setup) {
       each(sections, function(section) {
+        title = '`' + setup + '`';
         tests = './test/' + section + '-methods';
-        logStart(setup);
+        logStart(title);
         runTests(options, tests, setup);
-        logFinish(setup);
+        logFinish(title);
       });
     });
 
