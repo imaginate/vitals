@@ -46,10 +46,8 @@ describe('clone', function() {
 
   title = genCallStr('object');
   it(title, function() {
-    var obj;
-    var copy;
-    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-    copy = vitals.clone(obj);
+    var obj = newObj();
+    var copy = vitals.clone(obj);
     assert(obj !== copy);
     each(obj, function(val, key) {
       assert( obj[key] === copy[key] );
@@ -58,10 +56,8 @@ describe('clone', function() {
 
   title = genCallStr('object', true);
   it(title, function() {
-    var obj;
-    var copy;
-    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-    copy = vitals.clone(obj, true);
+    var obj = newObj();
+    var copy = vitals.clone(obj, true);
     assert(obj !== copy);
     assert(obj.a === copy.a);
     assert(obj.b !== copy.b);
@@ -73,10 +69,8 @@ describe('clone', function() {
 
   title = genCallStr('RegExp');
   it(title, function() {
-    var regex;
-    var copy;
-    regex = freeze(/a/);
-    copy = vitals.clone(regex);
+    var regex = newRegex();
+    var copy = vitals.clone(regex);
     assert(regex !== copy);
     assert(regex.source === copy.source);
     assert(regex.global === copy.global);
@@ -85,10 +79,8 @@ describe('clone', function() {
 
   title = genCallStr('RegExp', true);
   it(title, function() {
-    var regex;
-    var copy;
-    regex = freeze(/a/);
-    copy = vitals.clone(regex, true);
+    var regex = newRegex();
+    var copy = vitals.clone(regex, true);
     assert(regex !== copy);
     assert(regex.source === copy.source);
     assert(regex.global === copy.global);
@@ -100,10 +92,8 @@ describe('clone', function() {
 
   title = genCallStr('array');
   it(title, function() {
-    var arr;
-    var copy;
-    arr = freeze([ 1, { b: 2 }, 3 ], true);
-    copy = vitals.clone(arr);
+    var arr = newArr();
+    var copy = vitals.clone(arr);
     assert(arr !== copy);
     each(arr, function(val, i) {
       assert( arr[i] === copy[i] );
@@ -112,10 +102,8 @@ describe('clone', function() {
 
   title = genCallStr('array', true);
   it(title, function() {
-    var arr;
-    var copy;
-    arr = freeze([ 1, { b: 2 }, 3 ], true);
-    copy = vitals.clone(arr, true);
+    var arr = newArr();
+    var copy = vitals.clone(arr, true);
     assert(arr !== copy);
     assert(arr[0] === copy[0]);
     assert(arr[1] !== copy[1]);
@@ -127,13 +115,8 @@ describe('clone', function() {
 
   title = genCallStr('function');
   it(title, function() {
-    var func;
-    var copy;
-    func = function testFunc() { return 5; };
-    func.a = 1
-    func.b = { b: 2 };
-    func = freeze(func, true);
-    copy = vitals.clone(func);
+    var func = newFunc();
+    var copy = vitals.clone(func);
     assert(func !== copy);
     assert(func.a === copy.a);
     assert(func.b === copy.b);
@@ -142,13 +125,8 @@ describe('clone', function() {
 
   title = genCallStr('function', true);
   it(title, function() {
-    var func;
-    var copy;
-    func = function testFunc() { return 5; };
-    func.a = 1
-    func.b = { b: 2 };
-    func = freeze(func, true);
-    copy = vitals.clone(func, true);
+    var func = newFunc();
+    var copy = vitals.clone(func, true);
     assert(func !== copy);
     assert(func.a === copy.a);
     assert(func.b !== copy.b);
@@ -198,4 +176,43 @@ function genCallStr(type, deep) {
   type = '<' + type + '>';
   deep = deep ? ', true' : '';
   return 'clone(' + type + deep + ');';
+}
+
+/**
+ * @private
+ * @return {!Object}
+ */
+function newObj() {
+  return freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
+}
+
+/**
+ * @private
+ * @return {!RegExp}
+ */
+function newRegex() {
+  return freeze( /a/ );
+}
+
+/**
+ * @private
+ * @return {!Array}
+ */
+function newArr() {
+  return freeze([ 1, { b: 2 }, 3 ], true);
+}
+
+/**
+ * @private
+ * @return {function}
+ */
+function newFunc() {
+
+  /** @type {function} */
+  var func;
+
+  func = function testFunc() { return 5; };
+  func.a = 1
+  func.b = { b: 2 };
+  return freeze(func, true);
 }

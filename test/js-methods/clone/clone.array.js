@@ -23,10 +23,8 @@ describe('clone.array', function() {
 
   title = callStr([ 1, { b: 2 }, 3 ]);
   it(title, function() {
-    var arr;
-    var copy;
-    arr = freeze([ 1, { b: 2 }, 3 ], true);
-    copy = vitals.clone.arr(arr);
+    var arr = newArr();
+    var copy = vitals.clone.arr(arr);
     assert(arr !== copy);
     each(arr, function(val, i) {
       assert( arr[i] === copy[i] );
@@ -35,10 +33,8 @@ describe('clone.array', function() {
 
   title = callStr([ 1, { b: 2 }, 3 ], true);
   it(title, function() {
-    var arr;
-    var copy;
-    arr = freeze([ 1, { b: 2 }, 3 ], true);
-    copy = vitals.clone.arr(arr, true);
+    var arr = newArr();
+    var copy = vitals.clone.arr(arr, true);
     assert(arr !== copy);
     assert(arr[0] === copy[0]);
     assert(arr[1] !== copy[1]);
@@ -47,10 +43,8 @@ describe('clone.array', function() {
 
   title = callStr([ 1, { b: 2 }, 3 ], false);
   it(title, function() {
-    var arr;
-    var copy;
-    arr = freeze([ 1, { b: 2 }, 3 ], true);
-    copy = vitals.clone.arr(arr, false);
+    var arr = newArr();
+    var copy = vitals.clone.arr(arr, false);
     assert(arr !== copy);
     each(arr, function(val, i) {
       assert( arr[i] === copy[i] );
@@ -95,4 +89,12 @@ describe('clone.array', function() {
 function callStr(args) {
   args = slice(arguments);
   return testCall('clone.arr', args, 3, true);
+}
+
+/**
+ * @private
+ * @return {!Array}
+ */
+function newArr() {
+  return freeze([ 1, { b: 2 }, 3 ], true);
 }

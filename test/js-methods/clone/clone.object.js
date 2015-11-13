@@ -21,36 +21,30 @@ describe('clone.object', function() {
   //////////////////////////////////////////////
   // BASIC TESTS
 
-  title = callStr({ a: 1, b: { b: 2 }, c: 3 });
+  title = callStr( newObj() );
   it(title, function() {
-    var obj;
-    var copy;
-    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-    copy = vitals.clone.obj(obj);
+    var obj = newObj();
+    var copy = vitals.clone.obj(obj);
     assert(obj !== copy);
     each(obj, function(val, key) {
       assert( obj[key] === copy[key] );
     });
   });
 
-  title = callStr({ a: 1, b: { b: 2 }, c: 3 }, true);
+  title = callStr(newObj(), true);
   it(title, function() {
-    var obj;
-    var copy;
-    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-    copy = vitals.clone.obj(obj, true);
+    var obj = newObj();
+    var copy = vitals.clone.obj(obj, true);
     assert(obj !== copy);
     assert(obj.a === copy.a);
     assert(obj.b !== copy.b);
     assert(obj.c === copy.c);
   });
 
-  title = callStr({ a: 1, b: { b: 2 }, c: 3 }, false);
+  title = callStr(newObj(), false);
   it(title, function() {
-    var obj;
-    var copy;
-    obj = freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-    copy = vitals.clone.obj(obj, false);
+    var obj = newObj();
+    var copy = vitals.clone.obj(obj, false);
     assert(obj !== copy);
     each(obj, function(val, key) {
       assert( obj[key] === copy[key] );
@@ -88,4 +82,12 @@ describe('clone.object', function() {
 function callStr(args) {
   args = slice(arguments);
   return testCall('clone.obj', args, 3, true);
+}
+
+/**
+ * @private
+ * @return {!Object}
+ */
+function newObj() {
+  return freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
 }
