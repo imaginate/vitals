@@ -114,6 +114,36 @@ _nilmap:"nullmap",_strmap:"stringmap",_nummap:"numbermap",_boolmap:"booleanmap",
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  /**
+   * @private
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // HAS
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -328,23 +358,6 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  /**
-   * @private
-   * @param {!(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return _hasOwnProperty.call(source, key);
-  }
 
   /**
    * @private
@@ -807,14 +820,6 @@ var clone = (function clonePrivateScope() {
     }
     return dest;
   }
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -1707,14 +1712,6 @@ var amend = (function amendPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {boolean}
@@ -2060,14 +2057,6 @@ var create = (function createPrivateScope() {
     }
     return dest;
   }
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -2893,14 +2882,6 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {boolean}
@@ -3119,14 +3100,6 @@ var each = (function eachPrivateScope() {
       func.call(thisArg, val, key, obj);
     };
   }
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -3392,14 +3365,6 @@ var fill = (function fillPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {boolean}
@@ -3516,14 +3481,6 @@ var freeze = (function freezePrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -3786,14 +3743,6 @@ var fuse = (function fusePrivateScope() {
     }
     return dest;
   }
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -4255,14 +4204,6 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {boolean}
@@ -4525,14 +4466,6 @@ var remap = (function remapPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @param {function} func
    * @param {Object} thisArg
    * @return {function} 
@@ -4684,14 +4617,6 @@ var seal = (function sealPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
@@ -5003,14 +4928,6 @@ var until = (function untilPrivateScope() {
 
   /**
    * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
-
-  /**
-   * @private
    * @type {!ErrorAid}
    */
   var _error = makeErrorAid('until');
@@ -5022,22 +4939,22 @@ var until = (function untilPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ERROR
+// PRIVATE HELPER - ERROR-AID
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @typedef {function(string, string=): !Error} ErrorAid
+ */
+
+/**
+ * The ErrorAid constructor.
  * @param {string} vitalsMethod
  * @return {!ErrorAid}
  */
 function makeErrorAid(vitalsMethod) {
-  return new ErrorAid(vitalsMethod).error;
-}
 
-/**
- * @param {string} vitalsMethod
- * @constructor
- */
-function ErrorAid(vitalsMethod) {
+  /** @type {!ErrorAid} */
+  var errorAid;
 
   vitalsMethod = 'vitals.' + vitalsMethod;
 
@@ -5046,7 +4963,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!Error} 
    */
-  this.error = function error(msg, method) {
+  errorAid = function error(msg, method) {
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
     return new Error(msg + ' for ' + method + ' call.');
@@ -5057,7 +4974,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!TypeError} 
    */
-  this.error.type = function typeError(param, method) {
+  errorAid.type = function typeError(param, method) {
     param += ' param';
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
@@ -5070,7 +4987,7 @@ function ErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!RangeError} 
    */
-  this.error.range = function rangeError(param, valid, method) {
+  errorAid.range = function rangeError(param, valid, method) {
 
     /** @type {string} */
     var msg;
@@ -5082,6 +4999,8 @@ function ErrorAid(vitalsMethod) {
     msg += valid ? ' The valid options are: ' + valid : '';
     return new RangeError(msg);
   };
+
+  return errorAid;
 }
 
 
