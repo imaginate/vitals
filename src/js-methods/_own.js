@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - HAS-OWN-PROPERTY HELPER
+ * VITALS - JS METHOD HELPER - HAS-OWN-PROPERTY
  * -----------------------------------------------------------------------------
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/js-methods}
@@ -26,14 +26,6 @@
 var _own = (function _ownPrivateScope() {
 
   /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  /**
-   * @private
    * @param {?(Object|function)} source
    * @param {*} key
    * @return {boolean}
@@ -42,6 +34,12 @@ var _own = (function _ownPrivateScope() {
     return !!source && _hasOwnProperty.call(source, key);
   }
 
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR OWN
