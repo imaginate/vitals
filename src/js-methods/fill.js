@@ -19,9 +19,9 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _splitKeys = require('./_splitKeys.js');
 var _own = require('./_own.js');
 var is = require('node-are').is;
-var has = require('./has.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -188,7 +188,7 @@ var fill = (function fillPrivateScope() {
     /** @type {number} */
     var i;
 
-    keys = _split(keys);
+    keys = _splitKeys(keys);
     len = keys.length;
     i = -1;
     while (++i < len) {
@@ -256,31 +256,6 @@ var fill = (function fillPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {string} keys
-   * @return {!Array<string>}
-   */
-  function _split(keys) {
-
-    /** @type {string} */
-    var separator;
-
-    separator = _match(keys, ', ')
-      ? ', '  : _match(keys, ',')
-        ? ',' : _match(keys, '|')
-          ? '|' : ' ';
-    return keys.split(separator);
-  }
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} pattern
-   * @return {boolean}
-   */
-  var _match = has.pattern;
 
   /**
    * @private

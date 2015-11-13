@@ -19,6 +19,10 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _inObj = require('./_inObj.js');
+var _inArr = require('./_inArr.js');
+var _inStr = require('./_inStr.js');
+var _match = require('./_match.js');
 var _own = require('./_own.js');
 var is = require('node-are').is;
 
@@ -57,11 +61,11 @@ var has = (function hasPrivateScope() {
     
     if ( is.null(source) ) return false;
 
-    if ( is.str(source) ) return _hasPattern(source, key);
+    if ( is.str(source) ) return _match(source, key);
 
     if ( !is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _hasVal(source, key) : _hasKey(source, key);
+    return is._arr(source) ? _inArr(source, key) : _own(source, key);
   }
 
   /**
@@ -79,7 +83,7 @@ var has = (function hasPrivateScope() {
 
     if ( !is._obj(source) ) throw _error.type('source', 'key');
 
-    return _hasKey(source, key);
+    return _own(source, key);
   };
 
   /**
@@ -97,7 +101,7 @@ var has = (function hasPrivateScope() {
 
     if ( !is._obj(source) ) throw _error.type('source', 'value');
 
-    return _hasVal(source, val);
+    return is._arr(source) ? _inArr(source, val) : _inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -114,7 +118,7 @@ var has = (function hasPrivateScope() {
     if ( !is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
-    return _hasPattern(source, pattern);
+    return _match(source, pattern);
   };
 
   /**
@@ -129,111 +133,10 @@ var has = (function hasPrivateScope() {
     if ( !is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No str defined', 'substring');
 
-    return _hasSubstr(source, str);
+    return _inStr(source, str);
   };
   // define shorthand
   has.substr = has.substring;
-
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
-  //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _hasKey(source, key) {
-    return _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {!(Object|function)} source
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _hasVal(source, val) {
-    return is._arr(source) ? _valInArr(source, val) : _valInObj(source, val);
-  }
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} pattern
-   * @return {boolean}
-   */
-  function _hasPattern(source, pattern) {
-    return is.regex(pattern)
-      ? pattern.test(source)
-      : _hasSubstr(source, pattern);
-  }
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} str
-   * @return {boolean}
-   */
-  function _hasSubstr(source, str) {
-    str = String(str);
-    if (!source) return !str;
-    if (!str) return true;
-    return _strInStr(source, str);
-  }
-
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - VAL IN TESTS
-  //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} source
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _valInObj(source, val) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in source) {
-      if ( _own(source, key) && source[key] === val ) return true;
-    }
-    return false;
-  }
-
-  /**
-   * @private
-   * @param {!Object} source
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _valInArr(source, val) {
-
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = source.length;
-    i = -1;
-    while (++i < len) {
-      if (source[i] === val) return true;
-    }
-    return false;
-  }
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} str
-   * @return {boolean}
-   */
-  var _strInStr = !!String.prototype.includes
-    ? function _strInStr(source, str) { return source.includes(str); }
-    : function _strInStr(source, str) { return source.indexOf(str) !== -1; };
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL

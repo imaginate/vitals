@@ -19,6 +19,8 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _splitKeys = require('./_splitKeys.js');
+var _match = require('./_match.js');
 var _own = require('./_own.js');
 var has = require('./has.js');
 var clone = require('./clone.js');
@@ -88,7 +90,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !is.obj(obj) ) throw _error.type('obj');
 
-    if ( is.str(props) ) props = _splitProps(props);
+    if ( is.str(props) ) props = _splitKeys(props);
 
     if ( !is.obj(props) ) throw _error.type('props');
 
@@ -249,7 +251,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !is.obj(obj) ) throw _error.type('obj', 'properties');
 
-    if ( is.str(props) ) props = _splitProps(props);
+    if ( is.str(props) ) props = _splitKeys(props);
 
     if ( !is.obj(props) ) throw _error.type('props', 'properties');
 
@@ -334,24 +336,6 @@ var amend = (function amendPrivateScope() {
     }
 
     return [ val, descriptor, staticType, setter ];
-  }
-
-  /**
-   * @private
-   * @param {string} keys - One of the chars in the following list is used as
-   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
-   * @return {!Array<string>}
-   */
-  function _splitProps(keys) {
-
-    /** @type {string} */
-    var separator;
-
-    separator = _match(keys, ', ')
-      ? ', '  : _match(keys, ',')
-        ? ',' : _match(keys, '|')
-          ? '|' : ' ';
-    return keys.split(separator);
   }
 
   /**
@@ -900,14 +884,6 @@ var amend = (function amendPrivateScope() {
     }
     return dest;
   }
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} pattern
-   * @return {boolean}
-   */
-  var _match = has.pattern;
 
   /**
    * @private

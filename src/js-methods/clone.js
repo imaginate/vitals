@@ -19,9 +19,9 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _inStr = require('./_inStr.js');
 var _own = require('./_own.js');
 var is = require('node-are').is;
-var has = require('./has.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -250,7 +250,7 @@ var clone = (function clonePrivateScope() {
 
     if ( is.undefined(forceGlobal) ) return flags;
 
-    return has(flags, 'g')
+    return _inStr(flags, 'g')
       ? forceGlobal
         ? flags
         : flags.replace('g', '')

@@ -19,9 +19,9 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _match = require('./_match.js');
 var _own = require('./_own.js');
 var is = require('node-are').is;
-var has = require('./has.js');
 var slice = require('./slice.js');
 
 
@@ -834,14 +834,6 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {string} source
-   * @param {*} pattern
-   * @return {boolean}
-   */
-  var _match = has.pattern;
 
   /**
    * @private

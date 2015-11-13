@@ -19,9 +19,9 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _splitKeys = require('./_splitKeys.js');
 var _own = require('./_own.js');
 var is = require('node-are').is;
-var has = require('./has.js');
 var clone = require('./clone.js');
 
 
@@ -57,7 +57,7 @@ var create = (function createPrivateScope() {
 
     if ( !is('?obj', proto) ) throw _error.type('proto');
 
-    if ( is.str(props) ) props = _splitProps(props);
+    if ( is.str(props) ) props = _splitKeys(props);
 
     if ( !is('!obj=', props)      ) throw _error.type('props');
     if ( !is('!obj=', descriptor) ) throw _error.type('descriptor');
@@ -85,7 +85,7 @@ var create = (function createPrivateScope() {
 
     if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
 
-    if ( is.str(props) ) props = _splitProps(props);
+    if ( is.str(props) ) props = _splitKeys(props);
 
     if ( !is('!obj=', props)      ) throw _error.type('props',      'object');
     if ( !is('!obj=', descriptor) ) throw _error.type('descriptor', 'object');
@@ -98,21 +98,6 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - MAIN
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {string} props - One of the chars in the following list is used as
-   *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
-   * @return {!Array<string>}
-   */
-  function _splitProps(props) {
-    return props.split(
-      has(props, ', ')
-        ? ', ' : has(props, ',')
-          ? ',' : has(props, '|')
-            ? '|' : ' '
-    );
-  }
 
   /**
    * @private
