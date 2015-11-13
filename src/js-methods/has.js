@@ -19,6 +19,7 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _own = require('./_own.js');
 var is = require('node-are').is;
 
 
@@ -237,23 +238,6 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  /**
-   * @private
-   * @param {!(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return _hasOwnProperty.call(source, key);
-  }
 
   /**
    * @private

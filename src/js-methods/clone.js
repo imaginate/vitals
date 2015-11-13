@@ -19,6 +19,7 @@
 'use strict';
 
 var makeErrorAid = require('./_error.js');
+var _own = require('./_own.js');
 var is = require('node-are').is;
 var has = require('./has.js');
 
@@ -302,14 +303,6 @@ var clone = (function clonePrivateScope() {
     }
     return dest;
   }
-
-  /**
-   * @private
-   * @param {?(Object|function)} obj
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _own = has.key;
 
   /**
    * @private
