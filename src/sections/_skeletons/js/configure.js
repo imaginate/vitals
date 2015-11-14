@@ -28,13 +28,13 @@ var is = require('node-are').is;
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT _helpers/own.js
-// INSERT _helpers/inStr.js
-// INSERT _helpers/match.js
-// INSERT _helpers/merge.js
-// INSERT _helpers/cloneObj.js
-// INSERT _helpers/errorAid.js
-// INSERT _helpers/splitKeys.js
+// INSERT methods/_helpers/cloneObj.js
+// INSERT methods/_helpers/errorAid.js
+// INSERT methods/_helpers/inStr.js
+// INSERT methods/_helpers/match.js
+// INSERT methods/_helpers/merge.js
+// INSERT methods/_helpers/own.js
+// INSERT methods/_helpers/splitKeys.js
 
 
 // *****************************************************************************

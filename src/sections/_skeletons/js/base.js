@@ -27,21 +27,22 @@ var is = require('node-are').is;
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT _helpers/own.js
-// INSERT _helpers/inObj.js
-// INSERT _helpers/inArr.js
-// INSERT _helpers/inStr.js
-// INSERT _helpers/match.js
-// INSERT _helpers/merge.js
-// INSERT _helpers/errorAid.js
-// INSERT _helpers/splitKeys.js
+// INSERT methods/_helpers/errorAid.js
+// INSERT methods/_helpers/inArr.js
+// INSERT methods/_helpers/inObj.js
+// INSERT methods/_helpers/inStr.js
+// INSERT methods/_helpers/match.js
+// INSERT methods/_helpers/merge.js
+// INSERT methods/_helpers/own.js
+// INSERT methods/_helpers/sliceArr.js
+// INSERT methods/_helpers/sliceStr.js
+// INSERT methods/_helpers/splitKeys.js
 
 
 // *****************************************************************************
 // SECTION: BASE JS METHODS
 // *****************************************************************************
 
-// INSERT methods/slice.js
 // INSERT methods/clone.js
 // INSERT methods/cut.js
 // INSERT methods/each.js
@@ -50,6 +51,7 @@ var is = require('node-are').is;
 // INSERT methods/get.js
 // INSERT methods/has.js
 // INSERT methods/remap.js
+// INSERT methods/slice.js
 // INSERT methods/until.js
 
 
