@@ -13,7 +13,6 @@
  *
  * Supporting Libraries:
  * @see [are]{@link https://github.com/imaginate/are}
- * @see [ShellJS]{@link https://github.com/shelljs/shelljs}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -22,7 +21,7 @@
 
 'use strict';
 
-require('./helpers/setup')('all'); // appends global helpers for all tasks
+require('./tasks/helpers/setup')('all'); // appends global helpers for all tasks
 
 
 ////////////////////////////////////////////////////////////////////////////////
