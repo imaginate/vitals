@@ -2,9 +2,9 @@
  * -----------------------------------------------------------------------------
  * VITALS JS - NODE VERSION - CONFIGURE JS METHODS
  * -----------------------------------------------------------------------------
- * @file A JavaScript utility library designed for simplicity, readability,
- *   elegance, performance, and reliability. The configure section includes
- *   methods for configuring objects and object properties as allowed in ES5+.
+ * @file A JavaScript library of utility methods designed for elegance,
+ *   performance, and reliability. The configure section includes methods for
+ *   configuring objects and object properties as allowed in ES5+.
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *

@@ -2,8 +2,8 @@
  * -----------------------------------------------------------------------------
  * VITALS JS - BROWSER VERSION - BASE JS METHODS
  * -----------------------------------------------------------------------------
- * @file A JavaScript utility library designed for simplicity, readability,
- *   elegance, performance, and reliability.
+ * @file A JavaScript library of utility methods designed for elegance,
+ *   performance, and reliability.
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *

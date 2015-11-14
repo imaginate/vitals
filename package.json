@@ -1,8 +1,8 @@
 {
   "name": "node-vitals",
   "version": "2.0.0",
-  "description": "JS Shortcuts; Better JavaScript = Better Life",
-  "main": "./src/vitals.min.js",
+  "description": "Less = More |> A JavaScript library of utility methods designed for elegance, performance, and reliability;",
+  "main": "node-vitals.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/imaginate/vitals.git"
@@ -32,12 +32,19 @@
     "vitalsjs",
     "vitals",
     "javascript",
-    "shortcuts",
-    "dom shortcuts",
-    "functional shortcuts",
-    "javascript shortcuts",
-    "nodejs shortcuts",
-    "node shortcuts",
-    "js shortcuts"
+    "utilities",
+    "utility",
+    "dom utilities",
+    "dom utility",
+    "functional utilities",
+    "functional utility",
+    "javascript utilities",
+    "javascript utility",
+    "nodejs utilities",
+    "nodejs utility",
+    "node utilities",
+    "node utility",
+    "js utilities",
+    "js utility"
   ]
 }
