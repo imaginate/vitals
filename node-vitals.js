@@ -1,7 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * NODE-VITALS
+ * VITALS JS - NODE VERSION - VITALS SETUP
  * -----------------------------------------------------------------------------
+ * @file A JavaScript utility library designed for simplicity, readability,
+ *   elegance, performance, and reliability.
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
@@ -19,21 +21,17 @@
 'use strict';
 
 /** @type {function} */
-var _error = require('./_error.js')('setup');
+var _error = require('./src/_helpers/errorAid.js')('setup');
+/** @type {function} */
+var _sliceArr = require('./src/_helpers/sliceArr.js');
+/** @type {function} */
+var _inStr = require('./src/_helpers/inStr.js');
+/** @type {function} */
+var _merge = require('./src/_helpers/merge.js');
+/** @type {function} */
+var _own = require('./src/_helpers/own.js');
 /** @type {function} */
 var is = require('node-are').is;
-/** @type {function} */
-var has = require('./js-methods/has.js');
-/** @type {function} */
-var each = require('./js-methods/each.js');
-/** @type {function} */
-var fuse = require('./js-methods/fuse.js');
-/** @type {function} */
-var slice = require('./js-methods/slice.js');
-/** @type {function} */
-var until = require('./js-methods/until.js');
-/** @type {function} */
-var freeze = require('./js-methods/freeze.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,10 +59,10 @@ module.exports = function setupVitals(makeGlobal, methods) {
     if (makeGlobal < 0 || makeGlobal > 2) {
       throw _error.range('makeGlobal', '0, 1, 2');
     }
-    methods = slice(arguments, 1);
+    methods = _sliceArr(arguments, 1);
   }
   else {
-    methods = slice(arguments);
+    methods = _sliceArr(arguments);
     makeGlobal = 0;
   }
 
@@ -84,42 +82,41 @@ module.exports = function setupVitals(makeGlobal, methods) {
  * @type {!Array}
  * @const
  */
-var DEFAULT_METHODS = freeze([
-  'js'
-]);
+var DEFAULT_METHODS = [ 'js' ];
 
 /**
  * @private
  * @type {!Object}
  * @const
  */
-var METHODS = (function() {
+var SECTIONS = {
+  'all':          /^all$/i,
+  'js/all':       /^(?:all)?-?js-?(?:all)?$/i,
+  'js/base':      /^(?:js)?-?base-?(?:js)?$/i,
+  'js/configure': /^(?:js)?-?configure-?(?:js)?$/i
+};
 
-  /** @type {!Object} */
-  var js;
-
-  js = freeze({
-    'amend':  true,
-    'clone':  true,
-    'create': true,
-    'cut':    true,
-    'each':   true,
-    'fill':   true,
-    'freeze': true,
-    'fuse':   true,
-    'get':    true,
-    'has':    true,
-    'remap':  true,
-    'seal':   true,
-    'slice':  true,
-    'until':  true
-  });
-
-  return freeze({
-    'js-methods': js,
-    'js':         js
-  });
-})();
+/**
+ * @private
+ * @type {!Object}
+ * @const
+ */
+var METHODS = {
+  'amend':  true,
+  'clone':  true,
+  'create': true,
+  'cut':    true,
+  'each':   true,
+  'fill':   true,
+  'freeze': true,
+  'fuse':   true,
+  'get':    true,
+  'has':    true,
+  'remap':  true,
+  'seal':   true,
+  'slice':  true,
+  'until':  true
+};
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +142,7 @@ function setupMethod(makeGlobal, method) {
     'method', 'see docs for all vitals sections and methods'
   );
 
-  vitals = fetchMethod(method);
+  vitals = requireMethod(method);
   vitals[method] = vitals;
   setupGlobal(makeGlobal, vitals, method);
   return vitals;
@@ -161,22 +158,32 @@ function setupMethods(makeGlobal, methods) {
 
   /** @type {!Object} */
   var vitals;
+  /** @type {string} */
+  var method;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
   vitals = {};
-  each(methods, function(method) {
+  len = methods.length;
+  i = -1;
+  while (++i < len) {
+    method = methods[i];
+
     if ( !is.str(method) ) throw _error.type('method');
 
     if ( isSection(method) ) {
-      vitals = fuse(vitals, fetchSection(method));
-      return;
+      vitals = _merge(vitals, requireSection(method));
+      continue;
     }
 
     if ( !isMethod(method) ) throw _error.range(
       'method', 'see docs for all vitals sections and methods'
     );
 
-    vitals[method] = fetchMethod(method);
-  });
+    vitals[method] = requireMethod(method);
+  }
 
   setupGlobal(makeGlobal, vitals);
   return vitals;
@@ -193,7 +200,7 @@ function setupSection(makeGlobal, section) {
   /** @type {!Object} */
   var vitals;
 
-  vitals = fetchSection(section);
+  vitals = requireSection(section);
   setupGlobal(makeGlobal, vitals);
   return vitals;
 }
@@ -215,15 +222,17 @@ function setupGlobal(makeGlobal, vitals, key) {
   }
 
   if (makeGlobal === 2) {
-    each(vitals, function(method, key) {
-      global[key] = method;
-    });
+    for (key in vitals) {
+      if ( _own(vitals, key) ) {
+        global[key] = vitals[key];
+      }
+    }
   }
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - FETCH
+// PRIVATE HELPERS - REQUIRE
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -231,9 +240,8 @@ function setupGlobal(makeGlobal, vitals, key) {
  * @param {string} method
  * @return {function}
  */
-function fetchMethod(method) {
-  method = getSection(method) + '/' + method;
-  return require('./' + method);
+function requireMethod(method) {
+  return require('./src/methods/' + method);
 }
 
 /**
@@ -241,26 +249,16 @@ function fetchMethod(method) {
  * @param {string} section
  * @return {!Object}
  */
-function fetchSection(section) {
-  section += has(section, '-') ? '' : '-methods';
-  return require('./' + section);
-}
-
-/**
- * @private
- * @param {string} method
- * @return {string}
- */
-function getSection(method) {
+function requireSection(section) {
 
   /** @type {string} */
-  var section;
+  var key;
 
-  for (section in METHODS) {
-    if ( has(METHODS, section) ) {
-      if ( has(METHODS[section], method) ) {
-        return has(section, '-') ? section : section + '-methods';
-      }
+  if ( _own(SECTIONS, section) ) return require('./src/sections/' + section);
+
+  for (key in SECTIONS) {
+    if ( _own(SECTIONS, key) && SECTIONS[key].test(section) ) {
+      return require('./src/sections/' + section);
     }
   }
 }
@@ -276,9 +274,7 @@ function getSection(method) {
  * @return {boolean}
  */
 function isMethod(method) {
-  return until(true, METHODS, function(section) {
-    return has(METHODS[section], method);
-  });
+  return _own(METHODS, method);
 }
 
 /**
@@ -287,5 +283,14 @@ function isMethod(method) {
  * @return {boolean}
  */
 function isSection(section) {
-  return has(METHODS, section);
+
+  /** @type {string} */
+  var key;
+
+  if ( _own(SECTIONS, section) ) return true;
+
+  for (key in SECTIONS) {
+    if ( _own(SECTIONS, key) && SECTIONS[key].test(section) ) return true;
+  }
+  return false;
 }
