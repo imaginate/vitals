@@ -1,7 +1,10 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS LIBRARY - CONFIGURE SECTION
+ * VITALS JS - BROWSER VERSION - CONFIGURE JS METHODS
  * -----------------------------------------------------------------------------
+ * @file A JavaScript utility library designed for simplicity, readability,
+ *   elegance, performance, and reliability. The configure section includes
+ *   methods for configuring objects and object properties as allowed in ES5+.
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
@@ -94,19 +97,28 @@
 
   'use strict';
 
-  // INSERT _helpers/inStr.js
+
+// *****************************************************************************
+// PRIVATE HELPERS
+// *****************************************************************************
+
   // INSERT _helpers/own.js
+  // INSERT _helpers/inStr.js
+  // INSERT _helpers/match.js
+  // INSERT _helpers/merge.js
+  // INSERT _helpers/cloneObj.js
+  // INSERT _helpers/errorAid.js
+  // INSERT _helpers/splitKeys.js
+
+
+// *****************************************************************************
+// SECTION: CONFIGURE JS METHODS
+// *****************************************************************************
+
   // INSERT methods/amend.js
   // INSERT methods/create.js
   // INSERT methods/freeze.js
   // INSERT methods/seal.js
-  // INSERT _helpers/errorAid.js
-  // INSERT _helpers/inObj.js
-  // INSERT _helpers/inArr.js
-  // INSERT _helpers/match.js
-  // INSERT _helpers/merge.js
-  // INSERT _helpers/cloneObj.js
-  // INSERT _helpers/splitKeys.js
 
 
 // *****************************************************************************
@@ -115,18 +127,8 @@
 
   return {
     amend:  amend,
-    clone:  clone,
     create: create,
-    cut:    cut,
-    each:   each,
-    fill:   fill,
     freeze: freeze,
-    fuse:   fuse,
-    get:    get,
-    has:    has,
-    remap:  remap,
-    seal:   seal,
-    slice:  slice,
-    until:  until
+    seal:   seal
   };
 })());
