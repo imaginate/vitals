@@ -96,7 +96,6 @@
 
   // INSERT _helpers/inStr.js
   // INSERT _helpers/own.js
-  // INSERT _helpers/clone.js
   // INSERT methods/amend.js
   // INSERT methods/create.js
   // INSERT methods/freeze.js
@@ -105,6 +104,8 @@
   // INSERT _helpers/inObj.js
   // INSERT _helpers/inArr.js
   // INSERT _helpers/match.js
+  // INSERT _helpers/merge.js
+  // INSERT _helpers/cloneObj.js
   // INSERT _helpers/splitKeys.js
 
 

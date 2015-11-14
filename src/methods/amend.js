@@ -20,9 +20,10 @@
 
 var newErrorAid = require('../_helpers/errorAid.js');
 var _splitKeys = require('../_helpers/splitKeys.js');
+var _cloneObj = require('../_helpers/cloneObj.js');
 var _match = require('../_helpers/match.js');
+var _merge = require('../_helpers/merge.js');
 var _own = require('../_helpers/own.js');
-var clone = require('./clone.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -422,7 +423,7 @@ var amend = (function amendPrivateScope() {
     descriptor = staticType || setter
       ? _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter)
       : _isAccessor(descriptor)
-        ? clone.obj(descriptor)
+        ? _cloneObj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
 
     return _ObjectDefineProperty(obj, key, descriptor);
@@ -519,7 +520,7 @@ var amend = (function amendPrivateScope() {
     var i;
 
     setupDesc = _isAccessor(descriptor)
-      ? function setupDesc(val, desc) { return clone.obj(desc); }
+      ? function setupDesc(val, desc) { return _cloneObj(desc); }
       : _setupDescriptorByKey;
     props = {};
     len = keys.length;
@@ -574,7 +575,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone.obj(descriptor);
+    prop = _cloneObj(descriptor);
     val = _isDescriptor(val) ? val : { value: val };
     return _merge(prop, val);
   }
@@ -592,7 +593,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone.obj(descriptor);
+    prop = _cloneObj(descriptor);
 
     if ( _isDescriptor(val) ) {
       prop = _merge(prop, val);
@@ -621,7 +622,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone.obj(descriptor);
+    prop = _cloneObj(descriptor);
     prop.value = val;
     return prop;
   }
@@ -639,7 +640,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone.obj(descriptor);
+    prop = _cloneObj(descriptor);
     prop.get = function() { return val; };
     prop.set = staticType && setter
       ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
@@ -749,7 +750,7 @@ var amend = (function amendPrivateScope() {
     defaultDescriptor = hasSetter || _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR
       : DATA_DESCRIPTOR;
-    defaultDescriptor = clone.obj(defaultDescriptor);
+    defaultDescriptor = _cloneObj(defaultDescriptor);
 
     return _merge(defaultDescriptor, descriptor);
   }
@@ -864,25 +865,6 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} dest
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
-   */
-  function _merge(dest, obj) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in obj) {
-      if ( _own(obj, key) ) {
-        dest[key] = obj[key];
-      }
-    }
-    return dest;
-  }
 
   /**
    * @private

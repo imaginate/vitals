@@ -19,6 +19,7 @@
 'use strict';
 
 var newErrorAid = require('../_helpers/errorAid.js');
+var _merge = require('../_helpers/merge.js');
 var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 var slice = require('./slice.js');
@@ -254,25 +255,6 @@ var fuse = (function fusePrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} dest
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
-   */
-  function _merge(dest, obj) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in obj) {
-      if ( _own(obj, key) ) {
-        dest[key] = obj[key];
-      }
-    }
-    return dest;
-  }
 
   /**
    * @private

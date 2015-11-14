@@ -20,6 +20,7 @@
 
 var newErrorAid = require('../_helpers/errorAid.js');
 var _inStr = require('../_helpers/inStr.js');
+var _merge = require('../_helpers/merge.js');
 var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 
@@ -153,7 +154,7 @@ var clone = (function clonePrivateScope() {
    * @return {!Object}
    */
   function _cloneObj(obj, deep) {
-    return _merge({}, obj, deep);
+    return deep ? _mergeDeep({}, obj) : _merge({}, obj);
   }
 
   /**
@@ -163,7 +164,12 @@ var clone = (function clonePrivateScope() {
    * @return {!Array}
    */
   function _cloneArr(obj, deep) {
-    return _merge(new Array(obj.length), obj, deep);
+
+    /** @type {!Array} */
+    var arr;
+
+    arr = new Array(obj.length);
+    return deep ? _mergeDeep(arr, obj) : _merge(arr, obj);
   }
 
   /**
@@ -192,9 +198,14 @@ var clone = (function clonePrivateScope() {
    * @return {function}
    */
   function _cloneFunc(func, deep) {
-    return _merge(function clonedFunc() {
+
+    /** @type {function} */
+    var clonedFunc;
+
+    clonedFunc = function clonedFunc() {
       return func.apply(null, arguments);
-    }, func, deep);
+    };
+    return deep ? _mergeDeep(clonedFunc, func) : _merge(clonedFunc, func);
   }
 
   //////////////////////////////////////////////////////////
@@ -262,28 +273,6 @@ var clone = (function clonePrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} dest
-   * @param {!(Object|function)} source
-   * @param {boolean=} deep
-   * @return {!(Object|function)}
-   */
-  function _merge(dest, source, deep) {
-
-    /** @type {string} */
-    var key;
-
-    if (deep) return _mergeDeep(dest, source);
-
-    for (key in source) {
-      if ( _own(source, key) ) {
-        dest[key] = source[key];
-      }
-    }
-    return dest;
-  }
 
   /**
    * @private

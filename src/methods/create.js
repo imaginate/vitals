@@ -20,9 +20,10 @@
 
 var newErrorAid = require('../_helpers/errorAid.js');
 var _splitKeys = require('../_helpers/splitKeys.js');
+var _cloneObj = require('../_helpers/cloneObj.js');
+var _merge = require('../_helpers/merge.js');
 var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +142,7 @@ var create = (function createPrivateScope() {
     i = -1;
     while (++i < len) {
       key = keys[i];
-      props[key] = clone.obj(descriptor);
+      props[key] = _cloneObj(descriptor);
     }
     return props;
   }
@@ -177,7 +178,7 @@ var create = (function createPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = clone.obj(descriptor);
+    prop = _cloneObj(descriptor);
 
     if ( _isDescriptor(val) ) {
       prop = _merge(prop, val);
@@ -241,7 +242,7 @@ var create = (function createPrivateScope() {
     defaultDescriptor = _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR
       : DATA_DESCRIPTOR;
-    defaultDescriptor = clone.obj(defaultDescriptor);
+    defaultDescriptor = _cloneObj(defaultDescriptor);
 
     return _merge(defaultDescriptor, descriptor);
   }
@@ -318,25 +319,6 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} dest
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
-   */
-  function _merge(dest, obj) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in obj) {
-      if ( _own(obj, key) ) {
-        dest[key] = obj[key];
-      }
-    }
-    return dest;
-  }
 
   /**
    * @private
