@@ -18,7 +18,7 @@
 
 'use strict';
 
-module.exports = makeErrorAid;
+module.exports = newErrorAid;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ module.exports = makeErrorAid;
  * @param {string} vitalsMethod
  * @return {!ErrorAid}
  */
-function makeErrorAid(vitalsMethod) {
+function newErrorAid(vitalsMethod) {
 
   /** @type {!ErrorAid} */
   var errorAid;

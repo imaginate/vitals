@@ -18,12 +18,12 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
-var _inObj = require('../_helpers/inObj.js');
-var _inArr = require('../_helpers/inArr.js');
-var _inStr = require('../_helpers/inStr.js');
-var _match = require('../_helpers/match.js');
-var _own = require('../_helpers/own.js');
+var newErrorAid = require('./_helpers/errorAid.js');
+var _inObj = require('./_helpers/inObj.js');
+var _inArr = require('./_helpers/inArr.js');
+var _inStr = require('./_helpers/inStr.js');
+var _match = require('./_helpers/match.js');
+var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
 
 

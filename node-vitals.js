@@ -21,15 +21,15 @@
 'use strict';
 
 /** @type {function} */
-var _error = require('./src/_helpers/errorAid.js')('setup');
+var _error = requireHelper('errorAid.js')('setup');
 /** @type {function} */
-var _sliceArr = require('./src/_helpers/sliceArr.js');
+var _sliceArr = requireHelper('sliceArr.js');
 /** @type {function} */
-var _inStr = require('./src/_helpers/inStr.js');
+var _inStr = requireHelper('inStr.js');
 /** @type {function} */
-var _merge = require('./src/_helpers/merge.js');
+var _merge = requireHelper('merge.js');
 /** @type {function} */
-var _own = require('./src/_helpers/own.js');
+var _own = requireHelper('own.js');
 /** @type {function} */
 var is = require('node-are').is;
 
@@ -234,6 +234,15 @@ function setupGlobal(makeGlobal, vitals, key) {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS - REQUIRE
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} method
+ * @return {function}
+ */
+function requireHelper(method) {
+  return require('./src/methods/_helpers/' + method);
+}
 
 /**
  * @private

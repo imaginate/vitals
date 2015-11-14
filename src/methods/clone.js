@@ -18,10 +18,10 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
-var _inStr = require('../_helpers/inStr.js');
-var _merge = require('../_helpers/merge.js');
-var _own = require('../_helpers/own.js');
+var newErrorAid = require('./_helpers/errorAid.js');
+var _inStr = require('./_helpers/inStr.js');
+var _merge = require('./_helpers/merge.js');
+var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
 
 

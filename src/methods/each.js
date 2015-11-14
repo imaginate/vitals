@@ -18,8 +18,8 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
-var _own = require('../_helpers/own.js');
+var newErrorAid = require('./_helpers/errorAid.js');
+var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
 var clone = require('./clone.js');
 

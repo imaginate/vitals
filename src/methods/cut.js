@@ -18,10 +18,10 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
-var _sliceArr = require('../_helpers/sliceArr.js');
-var _match = require('../_helpers/match.js');
-var _own = require('../_helpers/own.js');
+var newErrorAid = require('./_helpers/errorAid.js');
+var _sliceArr = require('./_helpers/sliceArr.js');
+var _match = require('./_helpers/match.js');
+var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
 
 
