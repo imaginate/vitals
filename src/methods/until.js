@@ -18,8 +18,8 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 var clone = require('./clone.js');
 
@@ -324,7 +324,7 @@ var until = (function untilPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('until');
+  var _error = newErrorAid('until');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR UNTIL

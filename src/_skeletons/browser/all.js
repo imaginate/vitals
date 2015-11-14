@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * EXPORT VITALS
+ * VITALS - JS LIBRARY
  * -----------------------------------------------------------------------------
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
@@ -94,27 +94,28 @@
 
   'use strict';
 
-  // INSERT _inStr.js
-  // INSERT _own.js
-  // INSERT slice.js
-  // INSERT clone.js
-  // INSERT amend.js
-  // INSERT create.js
-  // INSERT cut.js
-  // INSERT each.js
-  // INSERT fill.js
-  // INSERT freeze.js
-  // INSERT fuse.js
-  // INSERT get.js
-  // INSERT has.js
-  // INSERT remap.js
-  // INSERT seal.js
-  // INSERT until.js
-  // INSERT _error.js
-  // INSERT _inObj.js
-  // INSERT _inArr.js
-  // INSERT _match.js
-  // INSERT _splitKeys.js
+  // INSERT _helpers/inStr.js
+  // INSERT _helpers/own.js
+  // INSERT _helpers/clone.js
+  // INSERT methods/slice.js
+  // INSERT methods/clone.js
+  // INSERT methods/amend.js
+  // INSERT methods/create.js
+  // INSERT methods/cut.js
+  // INSERT methods/each.js
+  // INSERT methods/fill.js
+  // INSERT methods/freeze.js
+  // INSERT methods/fuse.js
+  // INSERT methods/get.js
+  // INSERT methods/has.js
+  // INSERT methods/remap.js
+  // INSERT methods/seal.js
+  // INSERT methods/until.js
+  // INSERT _helpers/errorAid.js
+  // INSERT _helpers/inObj.js
+  // INSERT _helpers/inArr.js
+  // INSERT _helpers/match.js
+  // INSERT _helpers/splitKeys.js
 
 
 // *****************************************************************************

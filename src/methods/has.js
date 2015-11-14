@@ -18,12 +18,12 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _inObj = require('./_inObj.js');
-var _inArr = require('./_inArr.js');
-var _inStr = require('./_inStr.js');
-var _match = require('./_match.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _inObj = require('../_helpers/inObj.js');
+var _inArr = require('../_helpers/inArr.js');
+var _inStr = require('../_helpers/inStr.js');
+var _match = require('../_helpers/match.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 
 
@@ -146,7 +146,7 @@ var has = (function hasPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('has');
+  var _error = newErrorAid('has');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR HAS

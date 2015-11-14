@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - FREEZE
+ * VITALS - JS METHOD - SEAL
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/freeze.js}
+ * @see [vitals.seal]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/seal.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -18,61 +18,61 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FREEZE
+// SEAL
 ////////////////////////////////////////////////////////////////////////////////
 
-var freeze = (function freezePrivateScope() {
+var seal = (function sealPrivateScope() {
 
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
-  // - freeze
-  // - freeze.object (freeze.obj)
+  // - seal
+  // - seal.object (seal.obj)
   //////////////////////////////////////////////////////////
 
   /**
-   * Freezes an object with optional deep freeze.
+   * Seals an object with optional deep seal.
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
    * @return {?(Object|function)}
    */
-  function freeze(obj, deep) {
+  function seal(obj, deep) {
 
     if ( is.null(obj) ) return null;
 
     if ( !is._obj(obj)      ) throw _error.type('obj');
     if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
+    return deep ? _deepSeal(obj) : _seal(obj);
   }
 
   /**
-   * Freezes an object with optional deep freeze.
+   * Seals an object with optional deep seal.
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
    * @return {?(Object|function)}
    */
-  freeze.object = function freezeObject(obj, deep) {
+  seal.object = function sealObject(obj, deep) {
 
     if ( is.null(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
+    if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
 
-    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
+    return deep ? _deepSeal(obj) : _seal(obj);
   };
   // define shorthand
-  freeze.obj = freeze.object;
+  seal.obj = seal.object;
 
   //////////////////////////////////////////////////////////
-  // PRIVATE PROPERTIES - MAIN
+  // PRIVATE METHODS - MAIN
   //////////////////////////////////////////////////////////
 
   /**
@@ -80,43 +80,34 @@ var freeze = (function freezePrivateScope() {
    * @param {!(Object|function)} obj
    * @return {!(Object|function)}
    */
-  function _deepFreeze(obj) {
+  var _seal = !Object.seal
+    ? function ObjectSeal(obj) { return obj; }
+    : Object.seal;
 
-    /** @type {string} */
-    var key;
+  /**
+   * @private
+   * @param {?(Object|function)} obj
+   * @return {?(Object|function)}
+   */
+  var _deepSeal = !Object.seal
+    ? function _deepSeal(obj) { return obj; }
+    : function _deepSeal(obj) {
 
-    for (key in obj) {
-      if ( _own(obj, key) && is._obj( obj[key] ) ) {
-        obj[key] = _deepFreeze( obj[key] );
+      /** @type {string} */
+      var key;
+      /** @type {*} */
+      var val;
+
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          val = obj[key];
+          if ( is._obj(val) ) {
+            obj[key] = _deepSeal(val);
+          }
+        }
       }
-    }
-    return _ObjectFreeze(obj);
-  }
-
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - OBJECT.FREEZE POLYFILL
-  //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
-   */
-  var _ObjectFreeze = (function() {
-
-    if (!Object.freeze) return function ObjectFreeze(obj) { return obj; };
-
-    try {
-      Object.freeze( function testObjectFreeze(){} );
-    }
-    catch (e) {
-      return function ObjectFreeze(obj) {
-        return is.func(obj) ? obj : Object.freeze(obj);
-      };
-    }
-
-    return Object.freeze;
-  })();
+      return _seal(obj);
+    };
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
@@ -126,12 +117,12 @@ var freeze = (function freezePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('freeze');
+  var _error = newErrorAid('seal');
 
   //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR FREEZE
-  return freeze;
+  // END OF PRIVATE SCOPE FOR SEAL
+  return seal;
 })();
 
 
-module.exports = freeze;
+module.exports = seal;

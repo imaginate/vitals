@@ -18,7 +18,7 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
+var newErrorAid = require('../_helpers/errorAid.js');
 var is = require('node-are').is;
 
 
@@ -184,7 +184,7 @@ var slice = (function slicePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('slice');
+  var _error = newErrorAid('slice');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SLICE

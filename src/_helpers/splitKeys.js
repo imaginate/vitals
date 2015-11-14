@@ -18,7 +18,7 @@
 
 'use strict';
 
-var _inStr = require('./_inStr.js');
+var _inStr = require('./inStr.js');
 
 module.exports = _splitKeys;
 

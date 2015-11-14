@@ -18,9 +18,9 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _splitKeys = require('./_splitKeys.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _splitKeys = require('../_helpers/splitKeys.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 var clone = require('./clone.js');
 
@@ -342,7 +342,7 @@ var create = (function createPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('create');
+  var _error = newErrorAid('create');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CREATE

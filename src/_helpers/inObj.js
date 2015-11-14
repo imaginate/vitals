@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - CHECK STRING FOR MATCH
+ * VITALS - JS METHOD HELPER - VALUE IN OBJECT
  * -----------------------------------------------------------------------------
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/js-methods}
@@ -18,22 +18,27 @@
 
 'use strict';
 
-var _inStr = require('./_inStr.js');
-var is = require('node-are').is;
+var _own = require('./own.js');
 
-module.exports = _match;
+module.exports = _inObj;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MATCH
+// PRIVATE HELPER - IN-OBJ
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * A shortcut for String.prototype.includes and RegExp.prototype.test.
- * @param {string} source
- * @param {*} pattern
+ * @param {!(Object|function)} source
+ * @param {*} val
  * @return {boolean}
  */
-function _match(source, pattern) {
-  return is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+function _inObj(source, val) {
+
+  /** @type {string} */
+  var key;
+
+  for (key in source) {
+    if ( _own(source, key) && source[key] === val ) return true;
+  }
+  return false;
 }

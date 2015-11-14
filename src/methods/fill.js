@@ -18,9 +18,9 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _splitKeys = require('./_splitKeys.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _splitKeys = require('../_helpers/splitKeys.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 
 
@@ -261,7 +261,7 @@ var fill = (function fillPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('fill');
+  var _error = newErrorAid('fill');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FILL

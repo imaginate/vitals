@@ -18,8 +18,8 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 var clone = require('./clone.js');
 
@@ -229,7 +229,7 @@ var each = (function eachPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('each');
+  var _error = newErrorAid('each');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR EACH

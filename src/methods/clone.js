@@ -18,9 +18,9 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _inStr = require('./_inStr.js');
-var _own = require('./_own.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _inStr = require('../_helpers/inStr.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 
 
@@ -308,7 +308,7 @@ var clone = (function clonePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('clone');
+  var _error = newErrorAid('clone');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CLONE

@@ -18,11 +18,10 @@
 
 'use strict';
 
-var makeErrorAid = require('./_error.js');
-var _splitKeys = require('./_splitKeys.js');
-var _match = require('./_match.js');
-var _own = require('./_own.js');
-var has = require('./has.js');
+var newErrorAid = require('../_helpers/errorAid.js');
+var _splitKeys = require('../_helpers/splitKeys.js');
+var _match = require('../_helpers/match.js');
+var _own = require('../_helpers/own.js');
 var clone = require('./clone.js');
 
 
@@ -889,7 +888,7 @@ var amend = (function amendPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = makeErrorAid('amend');
+  var _error = newErrorAid('amend');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR AMEND
