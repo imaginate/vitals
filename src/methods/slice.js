@@ -19,6 +19,8 @@
 'use strict';
 
 var newErrorAid = require('../_helpers/errorAid.js');
+var _sliceArr = require('../_helpers/sliceArr.js');
+var _sliceStr = require('../_helpers/sliceStr.js');
 var is = require('node-are').is;
 
 
@@ -97,84 +99,6 @@ var slice = (function slicePrivateScope() {
   };
   // define shorthand
   slice.str = slice.string;
-
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
-  //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @param {!(Object|Array|function)} source
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= source.length]
-   * @return {!Array}
-   */
-  function _sliceArr(source, start, end) {
-
-    /** @type {!Array} */
-    var arr;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var ii;
-    /** @type {number} */
-    var i;
-
-    len = source.length;
-    start = start ? _parseStart(len, start) : 0;
-    end = end ? _parseEnd(len, end) : len;
-
-    if (start >= end) return [];
-
-    arr = new Array(end - start);
-    ii = start - 1;
-    i = 0;
-    while (++ii < end) {
-      arr[i++] = source[ii];
-    }
-    return arr;
-  }
-
-  /**
-   * @private
-   * @param {string} str
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= str.length]
-   * @return {!Array}
-   */
-  function _sliceStr(str, start, end) {
-
-    /** @type {number} */
-    var len;
-
-    len = str.length;
-    start = start ? _parseStart(len, start) : 0;
-    end = end ? _parseEnd(len, end) : len;
-    return start >= end ? '' : str.substring(start, end);
-  }
-
-  /**
-   * @private
-   * @param {number} len
-   * @param {number} start
-   * @return {number}
-   */
-  function _parseStart(len, start) {
-    start = start < 0 ? len + start : start;
-    return start < 0 ? 0 : start;
-  }
-
-  /**
-   * @private
-   * @param {number} len
-   * @param {number} end
-   * @return {number}
-   */
-  function _parseEnd(len, end) {
-    return end > len
-      ? len : end < 0
-        ? len + end : end;
-  }
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
