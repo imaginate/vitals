@@ -219,7 +219,7 @@ retrieve.file = function(filepath, options) {
       ? null
       : 'LF';
 
-  if ( eol && !has(EOL, eol) ) log.error(
+  if ( eol && !has(EOL.chars, eol) ) log.error(
     'Invalid `helpers.retrieve.file` Call',
     'invalid `options.eol` param (valid: null, "LF", "CR", "CRLF")',
     { argMap: true, filepath: filepath, options: options }
