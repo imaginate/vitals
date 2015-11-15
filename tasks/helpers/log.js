@@ -1219,7 +1219,6 @@ function newStack(stack) {
 
   // set the base path
   stack.some(function(str) {
-    console.log(str);
     dir = !TRACE_NATIVE.test(str) && TRACE_FILE.exec(str)[2];
     if ( !dir || NODE_MODULE.test(dir) ) return false;
     base = dir.split('/');
