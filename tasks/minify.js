@@ -105,7 +105,7 @@ function insertCopyright(contents, filename) {
 
   linkBase = 'https://github.com/imaginate/vitals';
   version  = 'v' + getVersion();
-  copyright = '/* '+ filepath +' '+ version +' ('+ linkBase +')\n' +
+  copyright = '/* '+ filename +' '+ version +' ('+ linkBase +')\n' +
     ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n'   +
     ' * The Apache License ('+ linkBase +'/blob/master/LICENSE.md) */';
   return contents.replace(/^\/\*[\s\S]*?\*\//, copyright);
