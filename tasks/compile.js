@@ -45,7 +45,7 @@ module.exports = newTask('compile', 'browser-sections', {
       contents = getFile(basepath + filepath);
       contents = insertFiles(contents);
       contents = cleanContent(contents);
-      toFile(contents, newpath + filepath);
+      toFile(are + contents, newpath + filepath);
     });
 
     log.pass('Completed `compile.browser` Task');
