@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS TESTS: ORG SETUP
+ * VITALS TESTS: BROWSER SETUP
  * -----------------------------------------------------------------------------
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
@@ -16,8 +16,8 @@
  */
 
 // appends global helpers
-require('../helpers/basics');
-require('../helpers/display');
+require('../_helpers/basics');
+require('../_helpers/display');
 
 /**
  * @global
@@ -26,4 +26,4 @@ require('../helpers/display');
 global.assert = require('assert');
 
 // appends vitals to global
-require('../../src/node-vitals.js')(1, 'all');
+require('../../src/browser/vitals-configure.js');
