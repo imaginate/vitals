@@ -82,7 +82,7 @@ module.exports = function setupVitals(makeGlobal, methods) {
  * @type {!Array}
  * @const
  */
-var DEFAULT_METHODS = [ 'js' ];
+var DEFAULT_METHODS = [ 'all' ];
 
 /**
  * @private
@@ -267,7 +267,7 @@ function requireSection(section) {
 
   for (key in SECTIONS) {
     if ( _own(SECTIONS, key) && SECTIONS[key].test(section) ) {
-      return require('./src/sections/' + section);
+      return require('./src/sections/' + key);
     }
   }
 }
