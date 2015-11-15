@@ -13,139 +13,103 @@
 
 'use strict';
 
-/** @type {!Object} */
-var colors = require('colors/safe');
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // DEFINE & EXPORT THE TASK
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {!Task} */
-module.exports = newTask('test', 'base', {
+module.exports = newTask('test', 'method', {
 
   /**
    * @param {string=} options
    */
-  base: function base(options) {
+  methods: function methods(options) {
 
     /** @type {string} */
     var tests;
     /** @type {string} */
+    var title;
+    /** @type {string} */
     var setup;
 
     options = getOptions(options);
-    setup = 'base';
+    title = '`vitals` Methods';
+    tests = './test/methods';
+    setup = 'node';
 
     configLog();
 
-    each(SECTIONS, function(title, section) {
-      tests = './test/' + section + '-methods';
+    logStart(title);
+    runTests(options, tests, setup);
+    logFinish(title);
+
+    resetLog();
+  },
+
+  /**
+   * @param {string} method
+   */
+  method: function method(method) {
+
+    /** @type {string} */
+    var options;
+    /** @type {string} */
+    var tests;
+    /** @type {string} */
+    var title;
+    /** @type {string} */
+    var setup;
+
+    if ( !is.file('src/methods/' + method + '.js') ) log.error(
+      'Invalid `test.method` Task Call',
+      'invalid `method` was provided',
+      { argMap: true, method: method }
+    );
+
+    options = getOptions();
+    tests = './test/methods/' + method;
+    title = '`vitals.' + method + '`';
+    setup = 'node';
+
+    configLog();
+
+    logStart(title);
+    runTests(options, tests, setup);
+    logFinish(title);
+
+    resetLog();
+  },
+
+  /**
+   * @param {string=} options
+   */
+  browser: function browser(options) {
+
+    /** @type {!Array} */
+    var setups;
+    /** @type {string} */
+    var tests;
+    /** @type {string} */
+    var title;
+    /** @type {string} */
+    var src;
+
+    options = ( options ? options + '+' : '' ) + 'reporter=dot';
+    options = getOptions(options);
+    options += '--grep node ';
+    options += '--invert ';
+    tests = './test/methods';
+    src = 'src/browser/';
+
+    configLog();
+
+    setups = retrieve.filepaths('test/_setup/', { validNames: 'browser*' });
+    each(setups, function(setup) {
+      title = '`' + src + setup.replace('browser', 'vitals') + '`';
       logStart(title);
       runTests(options, tests, setup);
       logFinish(title);
-    });
-
-    resetLog();
-  },
-
-  /**
-   * @param {string} methodName
-   */
-  method: function method(methodName) {
-
-    /** @type {string} */
-    var section;
-    /** @type {string} */
-    var options;
-    /** @type {string} */
-    var tests;
-    /** @type {string} */
-    var title;
-    /** @type {string} */
-    var setup;
-
-    section = getMethodSection(methodName);
-
-    if ( !section ) log.error(
-      'Invalid `test.method` Task Call',
-      'invalid `methodName` was provided',
-      { argMap: true, methodName: methodName }
-    );
-
-    options = getOptions();
-    tests = './test/' + section + '/' + methodName;
-    title = '`vitals.' + methodName + '`';
-    setup = 'base';
-
-    configLog();
-
-    logStart(title);
-    runTests(options, tests, setup);
-    logFinish(title);
-
-    resetLog();
-  },
-
-  /**
-   * @param {string} sectionName
-   */
-  section: function section(sectionName) {
-
-    /** @type {string} */
-    var options;
-    /** @type {string} */
-    var tests;
-    /** @type {string} */
-    var title;
-    /** @type {string} */
-    var setup;
-
-    sectionName = sectionName.toLowerCase();
-    if ( !has(SECTIONS, sectionName) ) log.error(
-      'Invalid `test.section` Task Call',
-      'invalid `sectionName` was provided',
-      { argMap: true, sectionName: sectionName }
-    );
-
-    options = getOptions();
-    tests = './test/' + sectionName + '-methods';
-    title = SECTIONS[sectionName];
-    setup = 'base';
-
-    configLog();
-
-    logStart(title);
-    runTests(options, tests, setup);
-    logFinish(title);
-
-    resetLog();
-  },
-
-  /**
-   * @param {string=} options
-   */
-  full: function full(options) {
-
-    /** @type {string} */
-    var tests;
-    /** @type {string} */
-    var title;
-
-    options = options ? options + '+' : '';
-    options += 'reporter=dot';
-    options = getOptions(options);
-
-    configLog();
-
-    each(SETUPS, function(sections, setup) {
-      each(sections, function(section) {
-        title = '`' + setup + '`';
-        tests = './test/' + section + '-methods';
-        logStart(title);
-        runTests(options, tests, setup);
-        logFinish(title);
-      });
     });
 
     resetLog();
@@ -156,26 +120,6 @@ module.exports = newTask('test', 'base', {
 ////////////////////////////////////////////////////////////////////////////////
 // DEFINE PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @type {!Object}
- * @const
- */
-var SECTIONS = {
-  'js':   'JS Methods'
-  //'node': 'Node Methods'
-};
-
-/**
- * @type {!Object}
- * @const
- */
-var SETUPS = {
-  'base': objKeys(SECTIONS),
-  'node': objKeys(SECTIONS),
-  'org':  [ 'js' ],
-  'min':  [ 'js' ]
-};
 
 /**
  * @type {!Object}
@@ -241,10 +185,10 @@ function runTests(options, tests, setup) {
   var cmd;
 
   options = options.replace(/[^ ]$/, '$& ');
-  setup = setup ? '--require ./test/setups/' + setup + '.js ' : '';
+  setup = setup ? '--require ./test/_setup/' + setup + '.js ' : '';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
   result = exec(cmd, { catchExit: false });
-  result = parseResults(result);
+  //result = parseResults(result);
   console.log(result);
 }
 
@@ -256,6 +200,7 @@ function parseResults(results) {
 
   if ( !has(results, /^\s*\{\s*"stats":\s*\{/) ) return results;
 
+  // ...
   return results;
 }
 
@@ -304,23 +249,4 @@ function getVal(str) {
  */
 function hyphenate(str) {
   return str && str.replace(/([A-Z])/g, '-$1').toLowerCase();
-}
-
-/**
- * @param {string} method
- * @return {?string}
- */
-function getMethodSection(method) {
-
-  /** @type {string} */
-  var section;
-
-  method += '.js';
-  for (section in SECTIONS) {
-    if ( has(SECTIONS, section) ) {
-      section += '-methods';
-      if ( is.file('src/' + section + '/' + method) ) return section;
-    }
-  }
-  return null;
 }
