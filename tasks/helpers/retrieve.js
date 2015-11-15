@@ -171,10 +171,21 @@ retrieve.filepaths = function(dirpath, options, deep) {
 /**
  * @public
  * @param {string} filepath
- * @param {?string=} encoding [default= 'utf8']
- * @return {!(string|Buffer)}
+ * @param {Object=} options
+ * @param {string=} options.encoding - [default= "utf8"]
+ * @param {?string=} options.eol - [default= "LF"] The end of line character to
+ *   use when normalizing the result. If options.eol is null no normalization is
+ *   completed. Optional values: "LF", "CR", "CRLF"
+ * @return {string}
  */
-retrieve.file = function(filepath, encoding) {
+retrieve.file = function(filepath, options) {
+
+  /** @type {string} */
+  var encoding;
+  /** @type {string} */
+  var contents;
+  /** @type {?string} */
+  var eol;
 
   if ( !is.file(filepath) ) log.error(
     'Invalid `helpers.retrieve.file` Call',
@@ -182,16 +193,52 @@ retrieve.file = function(filepath, encoding) {
     { argMap: true, filepath: filepath }
   );
 
-  if ( !is('?str=', encoding) ) log.error(
+  if ( !is('obj=', options) ) log.error(
     'Invalid `helpers.retrieve.file` Call',
-    'invalid type for `encoding` param',
-    { argMap: true, filepath: filepath, encoding: encoding }
+    'invalid type for `options` param',
+    { argMap: true, filepath: filepath, options: options }
   );
 
-  encoding = is.undefined(encoding) ? 'utf8' : encoding;
-  return encoding
-    ? fs.readFileSync(filepath, encoding)
-    : fs.readFileSync(filepath);
+  options = options || {};
+
+  if ( !is('str=', options.encoding) ) log.error(
+    'Invalid `helpers.retrieve.file` Call',
+    'invalid type for `options.encoding` param',
+    { argMap: true, filepath: filepath, options: options }
+  );
+
+  if ( !is('?str=', options.eol) ) log.error(
+    'Invalid `helpers.retrieve.file` Call',
+    'invalid type for `options.eol` param',
+    { argMap: true, filepath: filepath, options: options }
+  );
+
+  eol = is.str(options.eol)
+    ? options.eol.toUpperCase()
+    : is.null(options.eol)
+      ? null
+      : 'LF';
+
+  if ( eol && !has(EOL, eol) ) log.error(
+    'Invalid `helpers.retrieve.file` Call',
+    'invalid `options.eol` param (valid: null, "LF", "CR", "CRLF")',
+    { argMap: true, filepath: filepath, options: options }
+  );
+
+  encoding = options.encoding || 'utf8';
+
+  try {
+    contents = fs.readFileSync(filepath, encoding);
+  }
+  catch (err) {
+    log.error('Failed `fs.readFileSync` in `retrieve.file` Call', err, {
+      syscall: err.syscall,
+      errno:   err.errno,
+      code:    err.code
+    });
+  }
+
+  return eol ? normalizeEOL(contents, eol) : contents;
 };
 
 
@@ -200,6 +247,40 @@ retrieve.file = function(filepath, encoding) {
 ////////////////////////////////////////////////////////////////////////////////
 
 module.exports = retrieve;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS - NORMALIZE
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @type {!Object}
+ * @const
+ */
+var EOL = {
+  chars: {
+    'CRLF': '\r\n',
+    'CR':   '\r',
+    'LF':   '\n'
+  },
+  find: {
+    'CRLF': /\r?\n|\r\n?/g,
+    'CR':   /\r?\n/g,
+    'LF':   /\r\n?/g
+  }
+};
+
+/**
+ * @private
+ * @param {string} str
+ * @param {string=} eol
+ * @return {string}
+ */
+function normalizeEOL(str, eol) {
+  eol = eol || 'LF';
+  return str.replace(EOL.find[eol], EOL.chars[eol]);
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -304,7 +385,7 @@ function getFilepathsDeep(basepath, isValid, isValidDir) {
  * @type {!RegExp}
  * @const
  */
-var CHARS = /[\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!]/g;
+var ESCAPE_CHARS = /[\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!]/g;
 
 /**
  * @private
@@ -359,7 +440,7 @@ function parseOptStr(option, type) {
     { argMap: true, invalidProperty: option }
   );
 
-  option = option.replace(CHARS, '\\$&');
+  option = option.replace(ESCAPE_CHARS, '\\$&');
   option = option.replace(/\\?\*/g, '.*');
   switch (type) {
     case 'dir':  option = '^(?:' + option + ')$';             break;
