@@ -34,7 +34,7 @@ module.exports = newTask('test', 'method', {
     var setup;
 
     options = getOptions(options);
-    title = '`vitals` Methods';
+    title = '`vitals`';
     tests = './test/methods';
     setup = 'node';
 
@@ -185,9 +185,11 @@ function runTests(options, tests, setup) {
   var cmd;
 
   options = options.replace(/[^ ]$/, '$& ');
-  setup = setup ? '--require ./test/_setup/' + setup + '.js ' : '';
+  setup = setup || '';
+  setup = setup.replace(/\.js$/, '');
+  setup = setup && '--require ./test/_setup/' + setup + '.js ';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
-  result = exec(cmd, { catchExit: false });
+  result = exec(cmd, { catchExit: false, eol: null });
   //result = parseResults(result);
   console.log(result);
 }
