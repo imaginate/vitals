@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - BASE JS METHODS
+ * VITALS JS - BROWSER VERSION - BASE JS METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -18,9 +18,89 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-'use strict';
 
-var is = require('node-are').is;
+////////////////////////////////////////////////////////////////////////////////
+// EXPORT VITALS
+////////////////////////////////////////////////////////////////////////////////
+
+;(function(/** Object= */ root, /** !Object */ vitals) {
+
+  /** @type {!Object} */
+  var checks = {
+    exp: isObj(typeof exports) && getObj(exports, true),
+    mod: isObj(typeof module) && getObj(module, true),
+    glo: isObj(typeof global, true) && getObj(global),
+    win: isObj(typeof window) && getObj(window),
+    sel: isObj(typeof self) && getObj(self),
+    roo: isObj(typeof root) && getObj(root)
+  };
+  checks.glo = checks.exp && checks.mod && checks.glo;
+
+  root = ( checks.glo ?
+    global : checks.win && window !== (root && root.window) ?
+      window : checks.sel ?
+        self : checks.roo ?
+          root : Function('return this')()
+  );
+
+  // window | self | global | this
+  checks.win && setVitals(window);
+  checks.sel && setVitals(self);
+  setVitals(root);
+
+  // exports
+  if (checks.exp && checks.mod) {
+    if (module.exports === exports) {
+      module.exports = vitals;
+    }
+    else {
+      setVitals(exports);
+    }
+  }
+
+  // AMD
+  if (typeof define === 'function' && define.amd &&
+      typeof define.amd === 'object') {
+    define(function() {
+      return vitals;
+    });
+  }
+
+  /**
+   * @private
+   * @param {string} typeOf
+   * @param {boolean=} noFunc
+   * @return {boolean}
+   */
+  function isObj(typeOf, noFunc) {
+    return typeOf === 'object' || (!noFunc && typeOf === 'function');
+  }
+
+  /**
+   * @private
+   * @param {(Object|?function)} obj
+   * @param {boolean=} testNodeType
+   * @return {boolean}
+   */
+  function getObj(obj, testNodeType) {
+    obj = obj && testNodeType && obj.nodeType ? false : obj;
+    return obj && !testNodeType && obj.Object !== Object ? false : !!obj;
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   */
+  function setVitals(obj) {
+    obj.vitals = vitals;
+    obj.Vitals = vitals;
+  }
+
+})(this,
+
+(function(undefined) {
+
+  'use strict';
 
 
 // *****************************************************************************
@@ -1689,7 +1769,7 @@ var fill = (function fillPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.null(source) ) return null;
+    if ( is.nil(source) ) return null;
 
     if ( is.num(source) ) {
       val = keys;
@@ -2040,7 +2120,7 @@ var fuse = (function fusePrivateScope() {
    */
   function _fuseObj(dest, val) {
     if ( is._obj(val) ) return _merge(dest, val);
-    if ( !is.null(val) ) dest[val] = undefined;
+    if ( !is.nil(val) ) dest[val] = undefined;
     return dest;
   }
 
@@ -2073,7 +2153,7 @@ var fuse = (function fusePrivateScope() {
    */
   function _fuseArr(dest, val) {
     if ( is.arr(val) ) return dest.concat(val);
-    if ( !is.null(val) ) dest.push(val);
+    if ( !is.nil(val) ) dest.push(val);
     return dest;
   }
 
@@ -2183,7 +2263,7 @@ var get = (function getPrivateScope() {
    */
   function get(source, val) {
 
-    if ( is.null(source) ) return null;
+    if ( is.nil(source) ) return null;
 
     if ( is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined');
@@ -2635,7 +2715,7 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined');
     
-    if ( is.null(source) ) return false;
+    if ( is.nil(source) ) return false;
 
     if ( is.str(source) ) return _match(source, key);
 
@@ -2655,7 +2735,7 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
-    if ( is.null(source) ) return false;
+    if ( is.nil(source) ) return false;
 
     if ( !is._obj(source) ) throw _error.type('source', 'key');
 
@@ -2673,7 +2753,7 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.null(source) ) return false;
+    if ( is.nil(source) ) return false;
 
     if ( !is._obj(source) ) throw _error.type('source', 'value');
 
@@ -3063,7 +3143,7 @@ var slice = (function slicePrivateScope() {
     if ( !is('num=', start) ) throw _error.type('start');
     if ( !is('num=', end)   ) throw _error.type('end');
 
-    if ( is.null(source) ) return null;
+    if ( is.nil(source) ) return null;
 
     if ( is.str(source) ) return _sliceStr(source, start, end);
 
@@ -3441,15 +3521,17 @@ var until = (function untilPrivateScope() {
 // SECTION: END
 // *****************************************************************************
 
-module.exports = {
-  clone:  clone,
-  cut:    cut,
-  each:   each,
-  fill:   fill,
-  fuse:   fuse,
-  get:    get,
-  has:    has,
-  remap:  remap,
-  slice:  slice,
-  until:  until
-};
+  return {
+    clone:  clone,
+    cut:    cut,
+    each:   each,
+    fill:   fill,
+    fuse:   fuse,
+    get:    get,
+    has:    has,
+    remap:  remap,
+    slice:  slice,
+    until:  until
+  };
+})() // close methods iife (do not add semicolon)
+);   // close export iife

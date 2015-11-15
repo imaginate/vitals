@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - CONFIGURE JS METHODS
+ * VITALS JS - BROWSER VERSION - CONFIGURE JS METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability. The configure section includes methods for
@@ -19,9 +19,89 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-'use strict';
 
-var is = require('node-are').is;
+////////////////////////////////////////////////////////////////////////////////
+// EXPORT VITALS
+////////////////////////////////////////////////////////////////////////////////
+
+;(function(/** Object= */ root, /** !Object */ vitals) {
+
+  /** @type {!Object} */
+  var checks = {
+    exp: isObj(typeof exports) && getObj(exports, true),
+    mod: isObj(typeof module) && getObj(module, true),
+    glo: isObj(typeof global, true) && getObj(global),
+    win: isObj(typeof window) && getObj(window),
+    sel: isObj(typeof self) && getObj(self),
+    roo: isObj(typeof root) && getObj(root)
+  };
+  checks.glo = checks.exp && checks.mod && checks.glo;
+
+  root = ( checks.glo ?
+    global : checks.win && window !== (root && root.window) ?
+      window : checks.sel ?
+        self : checks.roo ?
+          root : Function('return this')()
+  );
+
+  // window | self | global | this
+  checks.win && setVitals(window);
+  checks.sel && setVitals(self);
+  setVitals(root);
+
+  // exports
+  if (checks.exp && checks.mod) {
+    if (module.exports === exports) {
+      module.exports = vitals;
+    }
+    else {
+      setVitals(exports);
+    }
+  }
+
+  // AMD
+  if (typeof define === 'function' && define.amd &&
+      typeof define.amd === 'object') {
+    define(function() {
+      return vitals;
+    });
+  }
+
+  /**
+   * @private
+   * @param {string} typeOf
+   * @param {boolean=} noFunc
+   * @return {boolean}
+   */
+  function isObj(typeOf, noFunc) {
+    return typeOf === 'object' || (!noFunc && typeOf === 'function');
+  }
+
+  /**
+   * @private
+   * @param {(Object|?function)} obj
+   * @param {boolean=} testNodeType
+   * @return {boolean}
+   */
+  function getObj(obj, testNodeType) {
+    obj = obj && testNodeType && obj.nodeType ? false : obj;
+    return obj && !testNodeType && obj.Object !== Object ? false : !!obj;
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   */
+  function setVitals(obj) {
+    obj.vitals = vitals;
+    obj.Vitals = vitals;
+  }
+
+})(this,
+
+(function(undefined) {
+
+  'use strict';
 
 
 // *****************************************************************************
@@ -1416,7 +1496,7 @@ var freeze = (function freezePrivateScope() {
    */
   function freeze(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( is.nil(obj) ) return null;
 
     if ( !is._obj(obj)      ) throw _error.type('obj');
     if ( !is('bool=', deep) ) throw _error.type('deep');
@@ -1433,7 +1513,7 @@ var freeze = (function freezePrivateScope() {
    */
   freeze.object = function freezeObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( is.nil(obj) ) return null;
 
     if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
@@ -1527,7 +1607,7 @@ var seal = (function sealPrivateScope() {
    */
   function seal(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( is.nil(obj) ) return null;
 
     if ( !is._obj(obj)      ) throw _error.type('obj');
     if ( !is('bool=', deep) ) throw _error.type('deep');
@@ -1544,7 +1624,7 @@ var seal = (function sealPrivateScope() {
    */
   seal.object = function sealObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( is.nil(obj) ) return null;
 
     if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
@@ -1613,9 +1693,11 @@ var seal = (function sealPrivateScope() {
 // SECTION: END
 // *****************************************************************************
 
-module.exports = {
-  amend:  amend,
-  create: create,
-  freeze: freeze,
-  seal:   seal
-};
+  return {
+    amend:  amend,
+    create: create,
+    freeze: freeze,
+    seal:   seal
+  };
+})() // close methods iife (do not add semicolon)
+);   // close export iife
