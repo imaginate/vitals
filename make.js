@@ -21,7 +21,7 @@
 
 'use strict';
 
-require('./tasks/helpers/setup')('all'); // appends global helpers for all tasks
+require('./_tasks/helpers/setup')('all'); // appends global helpers for tasks
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ require('./tasks/helpers/setup')('all'); // appends global helpers for all tasks
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {string} */
-var taskDir = './tasks';
+var taskDir = './_tasks';
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ tasks = remap(tasks, task => {
 // PREP THE TASK DIRECTORY
 ////////////////////////////////////////////////////////////////////////////////
 
-taskDir = taskDir ? taskDir.replace(/([^\/])$/, '$1/') : './tasks/';
+taskDir = taskDir ? taskDir.replace(/([^\/])$/, '$1/') : './_tasks/';
 
 is.dir(taskDir) || log.error(
   'Invalid `makefile` Config',
