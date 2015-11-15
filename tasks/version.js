@@ -34,20 +34,20 @@ module.exports = newTask('version', 'all', {
     /** @type {!Array<string>} */
     var filepaths;
 
-    isSemVersion(version) || log.error(
+    if ( !isSemVersion(version) ) log.error(
       'Invalid `version.all` Task Call',
       'a new semantic version was not provided',
       { argMap: true, version: version }
     );
 
-    filepaths = retrieve.filepaths('./src', {
-      validExts: '.js'
-    }, true);
+    filepaths = retrieve.filepaths('./src', true, { validExts: 'js' });
 
-    each(filepaths, function(/** string */ filepath) {
+    each(filepaths, function(filepath) {
       insertVersion('src/' + filepath, version);
     });
+
     insertVersion('package.json', version);
+    insertVersion('node-vitals.js', version);
 
     log.pass('Completed `version.all` Task');
   },
@@ -62,9 +62,9 @@ module.exports = newTask('version', 'all', {
 
     filepaths = retrieve.filepaths('.', {
       validExts: 'jpg|png|gif|jpeg'
-    }, false);
+    });
 
-    each(filepaths, function(/** string */ filepath) {
+    each(filepaths, function(filepath) {
       copy( filepath, hashFile(filepath) );
     });
 
@@ -82,8 +82,7 @@ module.exports = newTask('version', 'all', {
  * @return {boolean}
  */
 function isSemVersion(version) {
-  return is._str(version) &&
-    /^[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?$/.test(version);
+  return !!version && /^[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?$/.test(version);
 }
 
 /**
@@ -101,15 +100,16 @@ function isJSON(filepath) {
 function insertVersion(filepath, version) {
 
   /** @type {string} */
-  var content;
+  var contents;
   /** @type {!RegExp} */
   var regex;
 
-  regex = !isJSON(filepath) ? /\b(v?)[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?\b/g
+  regex = !isJSON(filepath)
+    ? /\b(v?)[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?\b/g
     : /("version": ")[0-9][0-9]?\.[0-9][0-9]?\.[0-9][0-9]?/;
-  content = retrieve.file(filepath)
-    .replace(regex, '$1' + version);
-  toFile(content, filepath);
+  contents = retrieve.file(filepath);
+  contents = contents.replace(regex, '$1' + version);
+  toFile(contents, filepath);
 }
 
 /**
@@ -123,7 +123,7 @@ function hashFile(filepath) {
   /** @type {string} */
   var hash;
 
-  content = retrieve.file(filepath, null);
+  content = retrieve(filepath);
   hash = crypto.createHash('sha1')
     .update(content)
     .digest('hex')
