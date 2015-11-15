@@ -24,36 +24,37 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {!Task} */
-module.exports = newTask('minify', 'src', {
+module.exports = newTask('minify', 'browser', {
 
   /**
-   * @param {string=} filename
+   * @type {function}
    */
-  src: function src(filename) {
+  browser: function browser() {
 
+    /** @type {!Array} */
+    var filenames;
+    /** @type {string} */
+    var basepath;
+    /** @type {string} */
+    var contents;
     /** @type {string} */
     var source;
     /** @type {string} */
-    var dest;
+    var are;
 
-    filename = stripFileExt(filename);
-    filename = hyphenate(filename);
-    filename = filename || 'vitals';
+    are = retrieve.file('vendor/are.min.js') + '\n';
+    basepath = 'src/browser/';
+    filenames = retrieve.filepaths(basepath + '_skeletons');
+    each(filenames, function(filename) {
+      contents = retrieve.file(basepath + filename);
+      contents = stripAre(contents);
+      contents = minify(contents);
+      contents = insertCopyright(contents, filename);
+      filename = stripFileExt(filename) + '.min.js';
+      toFile(are + contents, basepath + filename)
+    });
 
-    source = 'src/' + filename + '.js';
-    dest = 'src/' + filename + '.min.js';
-
-    if ( !is.file(source) ) log.error(
-      'Failed `minify.src` Task',
-      'invalid `filename` param (must be a valid file in the `src` dir)',
-      { argMap: true, filename: filename }
-    );
-
-    copy(source, dest);
-    stripAre(dest);
-    minify(dest);
-
-    log.pass('Completed `minify.src` Task');
+    log.pass('Completed `minify.browser` Task');
   }
 });
 
@@ -63,57 +64,37 @@ module.exports = newTask('minify', 'src', {
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {string} filepath
+ * @private
+ * @type {string}
+ * @const
  */
-function stripAre(filepath) {
-
-  /** @type {string} */
-  var content;
-  /** @type {!RegExp} */
-  var regex;
-
-  content = getFile(filepath);
-  regex = /^\/\* are\.js[\s\S]*?(\/\*\*\n)/;
-
-  if ( !has(content, regex) ) return;
-
-  content = content.replace(regex, '$1');
-  toFile(content, filepath);
-}
+var MINIFIER = 'vendor/closure-compiler.jar';
 
 /**
- * @param {string} filepath
+ * @private
+ * @param {string} contents
  */
-function minify(filepath) {
+function minify(contents) {
 
-  /** @type {string} */
-  var compiler;
-  /** @type {string} */
-  var content;
   /** @type {string} */
   var cmd;
 
-  compiler = 'vendor/closure-compiler.jar';
-
-  if ( !is.file(compiler) ) log.error(
+  if ( !is.file(MINIFIER) ) log.error(
     'Failed `minify` Task',
-    'missing compiler: `' + compiler + '`'
+    'missing minifier: `' + MINIFIER + '`'
   );
 
-  cmd = 'java -jar ' + compiler + ' --js ' + filepath + ' -W QUIET';
-  content = exec(cmd).toString();
-  content = content.replace(/\r\n?/g, '\n'); // normalize line breaks
-  content = insertCopyright(content, filepath);
-  content = insertAre(content);
-  toFile(content, filepath);
+  cmd = 'java -jar ' + MINIFIER;
+  return exec(cmd, { input: contents });
 }
 
 /**
- * @param {string} content
- * @param {string} filepath
+ * @private
+ * @param {string} contents
+ * @param {string} filename
  * @return {string}
  */
-function insertCopyright(content, filepath) {
+function insertCopyright(contents, filename) {
 
   /** @type {string} */
   var copyright;
@@ -122,56 +103,40 @@ function insertCopyright(content, filepath) {
   /** @type {string} */
   var version;
 
-  filepath = filepath.replace(/^(?:.*\/)?([a-z-]+)\..*$/i, '$1.js');
   linkBase = 'https://github.com/imaginate/vitals';
   version  = 'v' + getVersion();
   copyright = '/* '+ filepath +' '+ version +' ('+ linkBase +')\n' +
-    ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n' +
+    ' * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>\n'   +
     ' * The Apache License ('+ linkBase +'/blob/master/LICENSE.md) */';
-  return content.replace(/^\/\*[\s\S]*?\*\//, copyright);
+  return contents.replace(/^\/\*[\s\S]*?\*\//, copyright);
 }
 
 /**
- * @param {string} content
- * @return {string}
+ * @private
+ * @param {string} contents
  */
-function insertAre(content) {
-  return getFile('vendor/are.min.js') + '\n' + content;
+function stripAre(contents) {
+  return contents.replace(/^\/\* are\.js[\s\S]*?(\/\*\*\n)/, '$1');
 }
 
 /**
+ * @private
  * @return {string}
  */
 function getVersion() {
 
   /** @type {string} */
-  var content;
+  var contents;
 
-  content = getFile('src/_vitals-parts/gen-export.js');
-  return /\@version ([0-9]+\.[0-9]+\.[0-9]+)/.exec(content)[1];
+  contents = retrieve.file('package.json');
+  return /\"version": "([0-9]+\.[0-9]+\.[0-9]+)/.exec(contents)[1];
 }
 
 /**
- * @param {string} filepath
- * @return {string}
- */
-function getFile(filepath) {
-  return retrieve.file(filepath)
-    .replace(/\r\n?/g, '\n'); // normalize line breaks
-}
-
-/**
+ * @private
  * @param {string} filename
  * @return {string}
  */
 function stripFileExt(filename) {
-  return filename && filename.replace(/^(.*)(?:\.js)?$/, '$1');
-}
-
-/**
- * @param {string} filename
- * @return {string}
- */
-function hyphenate(filename) {
-  return filename && filename.replace(/([A-Z])/g, '-$1').toLowerCase();
+  return filename && filename.replace(/^\.js$/, '');
 }
