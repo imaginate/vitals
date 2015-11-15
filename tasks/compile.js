@@ -111,7 +111,7 @@ function stripIntro(contents) {
  * @return {string}
  */
 function stripEnd(contents) {
-  return contents.replace(/\n *module\.exports = [a-zA-Z_]+;\n$/, '$1');
+  return contents.replace(/\n *module\.exports = [a-zA-Z_]+;\n$/, '');
 }
 
 /**
