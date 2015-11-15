@@ -273,7 +273,7 @@ logOCD.error = function(header, msg) {
   /** @type {?Stack} */
   var stack;
 
-  stack = this._config.error.stack ? newStack(msg) : null;
+  stack = this._config.error.stack && is.obj(msg) ? newStack(msg) : null;
   msg = is.obj(msg) ? msg.toString && msg.toString() : msg;
 
   logSpaces(this._config.error.spaceBefore);
@@ -452,7 +452,7 @@ logOCD.fail = function(msg) {
   /** @type {?Stack} */
   var stack;
 
-  stack = this._config.fail.stack ? newStack(msg) : null;
+  stack = this._config.fail.stack && is.obj(msg) ? newStack(msg) : null;
   msg = is.obj(msg) ? msg.toString && msg.toString() : msg;
 
   if ( !is._str(msg) ) {
@@ -1108,7 +1108,15 @@ function StackTrace(stack) {
  * @type {!RegExp}
  * @const
  */
-var TRACE = /^([^\(]+\()?(.*\/)?([^\/]+\.[a-z]+):([0-9]+):([0-9]+)\)?$/i;
+var TRACE_FILE = /^([^\(]+\()?(.*\/)?([^\/]+\.[a-z]+):([0-9]+):([0-9]+)\)?$/i;
+
+/**
+ * For newTrace & newStack use only.
+ * @private
+ * @type {!RegExp}
+ * @const
+ */
+var TRACE_NATIVE = /^([^\(]+\()?native\)?$/;
 
 /**
  * For newTrace & newStack use only.
@@ -1139,6 +1147,8 @@ var NODE_MODULE = /\/node_modules\/([^\/]+)\//;
  */
 function newTrace(str, i, base) {
 
+  /** @type {boolean} */
+  var isNative;
   /** @type {!Trace} */
   var trace;
   /** @type {!Array<string>} */
@@ -1146,19 +1156,29 @@ function newTrace(str, i, base) {
   /** @type {number} */
   var len;
 
-  arr = TRACE.exec(str);
+  isNative = TRACE_NATIVE.test(str);
+  arr = isNative ? TRACE_NATIVE.exec(str) : TRACE_FILE.exec(str);
   arr = slice(arr, 1);
   arr[0] = arr[0] && arr[0].slice(0, -2);
 
-  trace = {
-    pos:    ( ++i < 10 ? ' ' : '' ) + i,
-    event:  arr.shift() || '(none)',
-    dir:    arr.shift() || '',
-    file:   arr.shift(),
-    line:   arr.shift(),
-    column: arr.shift(),
-    module: ''
-  };
+  trace = {};
+  trace.pos = ( ++i < 10 ? ' ' : '' ) + i,
+  trace.event = arr.shift() || '(none)';
+
+  if (isNative) {
+    trace.dir    = '';
+    trace.file   = '';
+    trace.line   = '';
+    trace.column = '';
+    trace.module = '(native)';
+    return trace;
+  }
+
+  trace.dir    = arr.shift() || '';
+  trace.file   = arr.shift();
+  trace.line   = arr.shift();
+  trace.column = arr.shift();
+  trace.module = '';
 
   arr = base && trace.dir && !NODE_MODULE.test(trace.dir);
   arr = arr && trace.dir.split('/');
@@ -1199,7 +1219,8 @@ function newStack(stack) {
 
   // set the base path
   stack.some(function(str) {
-    dir = TRACE.exec(str)[2];
+    console.log(str);
+    dir = !TRACE_NATIVE.test(str) && TRACE_FILE.exec(str)[2];
     if ( !dir || NODE_MODULE.test(dir) ) return false;
     base = dir.split('/');
     return true;
