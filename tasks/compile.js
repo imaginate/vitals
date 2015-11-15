@@ -19,42 +19,62 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /** @type {!Task} */
-module.exports = newTask('compile', 'browser-node', {
+module.exports = newTask('compile', 'browser-sections', {
 
   /**
    * @type {function}
    */
   browser: function browser() {
 
+    /** @type {!Array} */
+    var filepaths;
+    /** @type {string} */
+    var basepath;
     /** @type {string} */
     var contents;
+    /** @type {string} */
+    var newpath;
+    /** @type {string} */
+    var are;
 
-    contents = getFile('vendor/are.min.js', true);
-    contents += '\n' + getFileIntro('src/vitals.js');
-    contents += getFile('src/_vitals-parts/gen-export.js');
-    contents = insertMethods(contents, 'src/js-methods');
-    contents = contents.replace(/is\.null\(/g, 'is.nil(');
-    toFile(contents, 'src/vitals.js');
+    are = getFile('vendor/are.min.js') + '\n';
+    basepath = 'src/browser/_skeletons/';
+    newpath = 'src/browser/';
+    filepaths = retrieve.filepaths(basepath);
+    each(filepaths, function(filepath) {
+      contents = getFile(basepath + filepath);
+      contents = insertFiles(contents);
+      contents = cleanContent(contents);
+      toFile(contents, newpath + filepath);
+    });
 
     log.pass('Completed `compile.browser` Task');
   },
 
   /**
-   * @param {string=} section
+   * @type {function}
    */
-  node: function node(section) {
+  sections: function sections() {
 
+    /** @type {!Array} */
+    var filepaths;
+    /** @type {string} */
+    var basepath;
     /** @type {string} */
     var contents;
+    /** @type {string} */
+    var newpath;
 
-    section = section || 'js-methods';
-    section = has(section, /-methods$/) ? section : section + '-methods';
-    section = 'src/' + section + '/';
-    contents = getFile(section + '_skeleton.js', true);
-    contents = insertMethods(contents, section);
-    toFile(contents, section + 'index.js');
+    basepath = 'src/sections/_skeletons/';
+    newpath = 'src/sections/';
+    filepaths = retrieve.filepaths(basepath, true);
+    each(filepaths, function(filepath) {
+      contents = getFile(basepath + filepath);
+      contents = insertFiles(contents);
+      toFile(contents, newpath + filepath);
+    });
 
-    log.pass('Completed `compile.node` Task');
+    log.pass('Completed `compile.sections` Task');
   }
 });
 
@@ -65,53 +85,54 @@ module.exports = newTask('compile', 'browser-node', {
 
 /**
  * @param {string} filepath
- * @param {boolean=} keepIntro
+ * @param {boolean=} strip
  * @return {string}
  */
-function getFile(filepath, keepIntro) {
+function getFile(filepath, strip) {
 
   /** @type {string} */
   var contents;
 
-  contents = retrieve.file(filepath)
-    .replace(/\r\n?/g, '\n'); // normalize line breaks
-  return keepIntro
-    ? contents
-    : contents.replace(/^\/\*[\s\S]*?\*\/\n\n/, ''); // strip intro
-}
-
-/**
- * @param {string} filepath
- * @return {string}
- */
-function getMethod(filepath) {
-  return getFile(filepath)
-    .replace(/^[\s\S]*?(\n\/{80}\n)/, '$1')               // strip requires
-    .replace(/\n *module\.exports = [a-zA-Z_]+;\n$/, ''); // strip exports
+  contents = retrieve.file(filepath);
+  contents = strip ? stripIntro(contents) : contents;
+  return strip ? stripEnd(contents) : contents;
 }
 
 /**
  * @param {string} contents
- * @param {string} dirpath
  * @return {string}
  */
-function insertMethods(contents, dirpath) {
+function stripIntro(contents) {
+  return contents.replace(/^[\s\S]*?(\n\/{80}\n)/, '$1');
+}
+
+/**
+ * @param {string} contents
+ * @return {string}
+ */
+function stripEnd(contents) {
+  return contents.replace(/\n *module\.exports = [a-zA-Z_]+;\n$/, '$1');
+}
+
+/**
+ * @param {string} contents
+ * @return {string}
+ */
+function cleanContent(contents) {
+  return contents.replace(/is\.null\(/g, 'is.nil(');
+}
+
+/**
+ * @param {string} contents
+ * @return {string}
+ */
+function insertFiles(contents) {
 
   /** @type {!RegExp} */
   var regex;
 
-  dirpath = dirpath.replace(/[^\/]$/, '$&/');
-  regex = / *\/\/ INSERT ([a-zA-Z-_]+\.js)\n/g;
+  regex = / *\/\/ INSERT ([a-zA-Z-_\/]+\.js)\n/g;
   return contents.replace(regex, function(org, filepath) {
-    return getMethod(dirpath + filepath);
+    return getFile('src/' + filepath, true);
   });
-}
-
-/**
- * @param {string} filepath
- * @return {string}
- */
-function getFileIntro(filepath) {
-  return getFile(filepath, true)
-    .replace(/^[\s\S]*?(\/\*\*[\s\S]*?\*\/\n)[\s\S]*$/, '$1'); // extract intro
 }
