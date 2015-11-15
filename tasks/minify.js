@@ -138,5 +138,5 @@ function getVersion() {
  * @return {string}
  */
 function stripFileExt(filename) {
-  return filename && filename.replace(/^\.js$/, '');
+  return filename && filename.replace(/\.js$/, '');
 }
