@@ -44,13 +44,18 @@ var cp = require('child_process');
 
 /**
  * @global
- * @param {string} command
+ * @param {string} cmd
  * @param {Object=} options
- * @param {string=} options.result - [default= "string"] Note that if stdout is
- *   already a string and options.result is "buffer", a string will be returned.
- *   valid strings: "buffer", "buff", "buf", "string", "str"
+ * @param {?string=} options.eol - [default= "LF"] The end of line character to
+ *   use when normalizing the result. If options.eol is null or options.buffer
+ *   is true and options.eol is undefined no normalization is completed.
+ *   Optional values: "LF", "CR", "CRLF"
+ * @param {boolean=} options.buffer - [default= false] If true and stdout is a
+ *   buffer the buffer is returned. Otherwise a string of stdout is returned.
  * @param {boolean=} options.catchExit - [default= true] If process is exited
  *   with an error code an error is logged.
+ * @param {string=} options.encoding - [default= "utf8"] If options.buffer is
+ *   true and options.encoding is undefined no encoding is set.
  * @param {string=} options.cwd
  * @param {BuffStr=} options.input
  * @param {!Object=} options.env
@@ -59,35 +64,77 @@ var cp = require('child_process');
  * @param {number=} options.timeout
  * @param {string=} options.killSignal
  * @param {number=} options.maxBuffer
- * @param {string=} options.encoding
  * @return {BuffStr}
  */
-module.exports = function exec(command, options) {
+module.exports = function exec(cmd, options) {
 
-  /** @type {SpawnResult} */
+  /** @type {(SpawnResult|BuffStr)} */
   var result;
   /** @type {!Array} */
   var args;
+  /** @type {?string} */
+  var eol;
 
-  if ( !is.str(command) ) log.error(
+  if ( !is.str(cmd) ) log.error(
     'Invalid `helpers.exec` Call',
-    'invalid type for `command` param',
-    { argMap: true, command: command }
+    'invalid type for `cmd` param',
+    { argMap: true, command: cmd }
   );
 
   if ( !is('obj=', options) ) log.error(
     'Invalid `helpers.exec` Call',
     'invalid type for `options` param',
-    { argMap: true, command: command, options: options }
+    { argMap: true, command: cmd, options: options }
   );
 
   options = options || {};
-  if ( !is.str(options.result)     ) options.result = 'string';
-  if ( !is.bool(options.catchExit) ) options.catchExit = true;
 
-  args = command.split(' ');
-  command = args.shift();
-  result = cp.spawnSync(command, args, options);
+  if ( !is('bool=', options.buffer) ) log.error(
+    'Invalid `helpers.exec` Call',
+    'invalid type for `options.buffer` param',
+    { argMap: true, command: cmd, options: options }
+  );
+
+  if ( !is('bool=', options.catchExit) ) log.error(
+    'Invalid `helpers.exec` Call',
+    'invalid type for `options.catchExit` param',
+    { argMap: true, command: cmd, options: options }
+  );
+
+  if ( !is('str=', options.encoding) ) log.error(
+    'Invalid `helpers.exec` Call',
+    'invalid type for `options.encoding` param',
+    { argMap: true, command: cmd, options: options }
+  );
+
+  if ( !is('?str=', options.eol) ) log.error(
+    'Invalid `helpers.exec` Call',
+    'invalid type for `options.eol` param',
+    { argMap: true, command: cmd, options: options }
+  );
+
+  if (options.buffer) {
+    options.eol = options.eol || null;
+  }
+  else {
+    options.encoding = options.encoding || 'utf8';
+  }
+
+  eol = is.str(options.eol)
+    ? options.eol.toUpperCase()
+    : is.null(options.eol)
+      ? null
+      : 'LF';
+
+  if ( eol && !has(EOL.chars, eol) ) log.error(
+    'Invalid `helpers.exec` Call',
+    'invalid `options.eol` param (valid: null, "LF", "CR", "CRLF")',
+    { argMap: true, command: cmd, options: options }
+  );
+
+  args = cmd.split(' ');
+  cmd  = args.shift();
+  result = cp.spawnSync(cmd, args, options);
 
   if (result.error) log.error('Failed `helpers.exec` Call', result.error, {
     syscall: result.error.syscall,
@@ -95,21 +142,55 @@ module.exports = function exec(command, options) {
     code:    result.error.code
   });
 
-  if (options.catchExit && result.status) log.error(
+  if (options.catchExit !== false && result.status) log.error(
     'Failed `helpers.exec` Call',
     'an error code was used to exit the command\'s process',
     { exitCode: getExitCode(result.status) }
   );
 
-  return has(options.result, /^buff?(?:er)?$/i)
-    ? result.stdout
-    : result.stdout.toString();
+  result = result.stdout;
+
+  if ( is.buffer(result) ) {
+    if (options.buffer) return result;
+    result = result.toString();
+  }
+
+  return eol ? normalizeEOL(result, eol) : result;
 };
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @type {!Object}
+ * @const
+ */
+var EOL = {
+  chars: {
+    'CRLF': '\r\n',
+    'CR':   '\r',
+    'LF':   '\n'
+  },
+  find: {
+    'CRLF': /\r?\n|\r\n?/g,
+    'CR':   /\r?\n/g,
+    'LF':   /\r\n?/g
+  }
+};
+
+/**
+ * @private
+ * @param {string} str
+ * @param {string=} eol
+ * @return {string}
+ */
+function normalizeEOL(str, eol) {
+  eol = eol || 'LF';
+  return str.replace(EOL.find[eol], EOL.chars[eol]);
+}
 
 /**
  * @private
