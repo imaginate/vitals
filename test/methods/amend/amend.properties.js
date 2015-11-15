@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('amend.properties', function() {
+describe('js-configure method: amend.properties', function() {
   var title;
 
   //////////////////////////////////////////////
