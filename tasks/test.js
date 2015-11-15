@@ -93,12 +93,12 @@ module.exports = newTask('test', 'method', {
     /** @type {string} */
     var title;
     /** @type {string} */
+    var opts;
+    /** @type {string} */
     var src;
 
     options = ( options ? options + '+' : '' ) + 'reporter=dot';
     options = getOptions(options);
-    options += '--grep node ';
-    options += '--invert ';
     tests = './test/methods';
     src = 'src/browser/';
 
@@ -107,8 +107,10 @@ module.exports = newTask('test', 'method', {
     setups = retrieve.filepaths('test/_setup/', { validNames: 'browser*' });
     each(setups, function(setup) {
       title = '`' + src + setup.replace('browser', 'vitals') + '`';
+      opts = getSection(setup);
+      opts = opts && '--grep ' + opts + ' ';
       logStart(title);
-      runTests(options, tests, setup);
+      runTests(options + opts, tests, setup);
       logFinish(title);
     });
 
@@ -251,4 +253,12 @@ function getVal(str) {
  */
 function hyphenate(str) {
   return str && str.replace(/([A-Z])/g, '-$1').toLowerCase();
+}
+
+/**
+ * @param {string} str
+ * @return {string}
+ */
+function getSection(str) {
+  return str.includes('-') ? /-([a-z-_]+)\./i.exec(str)[1] : '';
 }
