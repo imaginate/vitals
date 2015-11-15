@@ -66,7 +66,12 @@ retrieve.dirpaths = function(dirpath, options, deep) {
   );
 
   switch (arguments.length) {
-    case 2: deep = is.bool(options) ? options : deep; break;
+    case 2:
+    if ( is.bool(options) ) {
+      deep = options;
+      options = undefined;
+    }
+    break;
     case 3:
     if ( is('bool=', options) && is('obj=', deep) ) {
       temp = deep;
@@ -132,7 +137,12 @@ retrieve.filepaths = function(dirpath, options, deep) {
   );
 
   switch (arguments.length) {
-    case 2: deep = is.bool(options) ? options : deep; break;
+    case 2:
+    if ( is.bool(options) ) {
+      deep = options;
+      options = undefined;
+    }
+    break;
     case 3:
     if ( is('bool=', options) && is('obj=', deep) ) {
       temp = deep;
