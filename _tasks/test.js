@@ -344,7 +344,7 @@ function hyphenate(str) {
  * @return {string}
  */
 function getSection(str) {
-  return str.includes('-') ? /-([a-z-_]+)\./i.exec(str)[1] : '';
+  return /-([a-z-_]+)\./i.exec(str)[1];
 }
 
 /**
