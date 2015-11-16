@@ -3,7 +3,7 @@
  * VITALS - JS METHOD HELPER - MERGE OBJECTS
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/js-methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
