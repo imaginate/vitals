@@ -273,8 +273,13 @@ logOCD.error = function(header, msg) {
   /** @type {?Stack} */
   var stack;
 
-  stack = this._config.error.stack && is.obj(msg) ? newStack(msg) : null;
-  msg = is.obj(msg) ? msg.toString && msg.toString() : msg;
+  if ( is.obj(msg) ) {
+    stack = this._config.error.stack ? newStack(msg) : null;
+    msg = msg.toString && msg.toString();
+  }
+  else {
+    stack = this._config.error.stack ? newStack() : null;
+  }
 
   logSpaces(this._config.error.spaceBefore);
 
@@ -452,8 +457,13 @@ logOCD.fail = function(msg) {
   /** @type {?Stack} */
   var stack;
 
-  stack = this._config.fail.stack && is.obj(msg) ? newStack(msg) : null;
-  msg = is.obj(msg) ? msg.toString && msg.toString() : msg;
+  if ( is.obj(msg) ) {
+    stack = this._config.fail.stack ? newStack(msg) : null;
+    msg = msg.toString && msg.toString();
+  }
+  else {
+    stack = this._config.fail.stack ? newStack() : null;
+  }
 
   if ( !is._str(msg) ) {
     this.error('Invalid `logOCD.fail` Call',
