@@ -6,7 +6,7 @@
  *   Tasks are executed in the order given. Tasks may be repeated. You may view
  *   each task's source code in the "tasks" directory as "taskname.js".
  *
- * @see [makefile docs](https://github.com/imaginate/vitals/blob/master/docs/makefile.md)
+ * @see [makefile docs](https://github.com/imaginate/vitals/blob/master/_tasks/README.md)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
