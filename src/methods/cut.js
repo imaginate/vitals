@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - CUT
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/cut.js}
+ * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -47,7 +47,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties from an object/array or patterns from a string
    *   and returns the amended source. Note that the use of the word, "match",
-   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -85,7 +85,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes a property from an object/array and returns the object. Note that
    *   the use of the word, "match", within vitals.cut.property refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
@@ -164,7 +164,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties from an object/array and returns the object. Note that
    *   the use of the word, "match", within vitals.cut.properties refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is

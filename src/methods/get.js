@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - KEYS
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals.keys]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/keys.js}
+ * @see [vitals.keys]{@link https://github.com/imaginate/vitals/blob/master/src/methods/keys.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -44,7 +44,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets keys, indexes, values, or substrings from an object, array, or string.
    *   Note that the use of the word, "match", within vitals.get refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {?(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
@@ -85,7 +85,7 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets an array of keys from an object. Note that the use of the word,
-   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
@@ -107,7 +107,7 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets an array of keys from an object that match a pattern.
-   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function)} source
    * @param {*} pattern - If pattern is not a RegExp or string it is converted
@@ -142,7 +142,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets an array of indexes from an array or string by value/pattern. Note
    *   that the use of the word, "match", within vitals.get.indexes refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|string)} source - If no val param is defined this method
    *   will return an array of all an array's indexes or throw an error if the
@@ -173,7 +173,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets an array of values/substrings from an object or string. Note that the
    *   use of the word, "match", within vitals.get.values refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the

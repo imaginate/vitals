@@ -3,7 +3,7 @@
  * VITALS - JS METHOD - UNTIL
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals.until]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/until.js}
+ * @see [vitals.until]{@link https://github.com/imaginate/vitals/blob/master/src/methods/until.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -127,7 +127,7 @@ var until = (function untilPrivateScope() {
    * @param {!(Object|function)} obj
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/clone.js})
+   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js})
    *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the

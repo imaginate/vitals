@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - FILL
  * -----------------------------------------------------------------------------
  * @version 2.0.0
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/fill.js}
+ * @see [vitals.fill]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fill.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
