@@ -21,7 +21,7 @@
 
 'use strict';
 
-require('./_tasks/helpers/setup')('all'); // appends global helpers for tasks
+require('./_tasks/_helpers/setup')('all'); // appends global helpers for tasks
 
 
 ////////////////////////////////////////////////////////////////////////////////
