@@ -84,6 +84,44 @@ module.exports = newTask('test', 'method', {
   /**
    * @param {string=} options
    */
+  sections: function sections(options) {
+
+    /** @type {string} */
+    var section;
+    /** @type {!Array} */
+    var setups;
+    /** @type {string} */
+    var tests;
+    /** @type {string} */
+    var title;
+
+    options = ( options ? options + '+' : '' ) + 'reporter=dot';
+    options = getOptions(options);
+    tests = './test/methods';
+
+    configLog();
+
+    title = '`vitals all`';
+    logStart(title);
+    runTests(options, tests, 'section');
+    logFinish(title);
+
+    options += '--grep ';
+    setups = retrieve.filepaths('test/_setup/', { validNames: 'section-*' });
+    each(setups, function(setup) {
+      section = getSection(setup);
+      title = '`vitals ' + section + '`';
+      logStart(title);
+      runTests(options + section, tests, setup);
+      logFinish(title);
+    });
+
+    resetLog();
+  },
+
+  /**
+   * @param {string=} options
+   */
   browser: function browser(options) {
 
     /** @type {!Array} */
@@ -188,8 +226,8 @@ function runTests(options, tests, setup) {
 
   options = options.replace(/[^ ]$/, '$& ');
   setup = setup || '';
-  setup = setup.replace(/\.js$/, '');
-  setup = setup && '--require ./test/_setup/' + setup + '.js ';
+  setup += setup && !has(setup, /\.js$/) ? '.js' : '';
+  setup = setup && '--require ./test/_setup/' + setup + ' ';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
   result = exec(cmd, { catchExit: false, eol: null });
   //result = parseResults(result);
@@ -235,16 +273,18 @@ function resetLog() {
 
 /**
  * @param {string} str
+ * @return {string}
  */
 function getName(str) {
-  return str && str.replace(/^([a-z]+)(?:[^a-z].*)?$/i, '$1');
+  return str.replace(/^([a-z]+)(?:[^a-z].*)?$/i, '$1');
 }
 
 /**
  * @param {string} str
+ * @return {string}
  */
 function getVal(str) {
-  return str && str.replace(/^[a-z]+\=(.*)?$/i, '$1');
+  return str.replace(/^[a-z]+\=(.*)?$/i, '$1');
 }
 
 /**
@@ -252,7 +292,7 @@ function getVal(str) {
  * @return {string}
  */
 function hyphenate(str) {
-  return str && str.replace(/([A-Z])/g, '-$1').toLowerCase();
+  return str.replace(/[A-Z]/g, '-$&').toLowerCase();
 }
 
 /**
