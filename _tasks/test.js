@@ -120,6 +120,45 @@ module.exports = newTask('test', 'method', {
   },
 
   /**
+   * @param {string} section
+   */
+  section: function section(section) {
+
+    /** @type {string} */
+    var options;
+    /** @type {string} */
+    var tests;
+    /** @type {string} */
+    var title;
+    /** @type {string} */
+    var setup;
+
+    if ( !isSection(section) ) log.error(
+      'Invalid `test.section` Task Call',
+      'invalid `section` was provided',
+      { argMap: true, section: section }
+    );
+
+    options = getOptions();
+    tests = './test/methods';
+    title = '`vitals ' + section + '`';
+    setup = 'section';
+
+    if (section !== 'all') {
+      options += '--grep ' + section;
+      setup += '-' + section;
+    }
+
+    configLog();
+
+    logStart(title);
+    runTests(options, tests, setup);
+    logFinish(title);
+
+    resetLog();
+  },
+
+  /**
    * @param {string=} options
    */
   browser: function browser(options) {
@@ -306,4 +345,39 @@ function hyphenate(str) {
  */
 function getSection(str) {
   return str.includes('-') ? /-([a-z-_]+)\./i.exec(str)[1] : '';
+}
+
+/**
+ * @return {!Array}
+ */
+function getSections() {
+
+  /** @type {!Array} */
+  var sections;
+
+  sections = retrieve.filepaths('src/sections', true, { invalidDirs: '_*' });
+  return remap(sections, function(section) {
+    section = stripExt(section);
+    return has(section, '/')
+      ? has(section, /\/all$/)
+        ? /^[a-z]+/.exec(section)[0]
+        : /[a-z]+$/.exec(section)[0]
+      : section;
+  });
+}
+
+/**
+ * @param {string} section
+ * @return {boolean}
+ */
+function isSection(section) {
+  return getSections().indexOf(section) !== -1;
+}
+
+/**
+ * @param {string} filename
+ * @return {string}
+ */
+function stripExt(filename) {
+  return filename.replace(/\.js$/, '');
 }
