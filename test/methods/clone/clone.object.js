@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('clone.object (base method)', function() {
+describe('clone.object (js,base)', function() {
   var title;
 
   //////////////////////////////////////////////
