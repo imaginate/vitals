@@ -124,31 +124,36 @@ module.exports = newTask('test', 'method', {
    */
   browser: function browser(options) {
 
+    /** @type {string} */
+    var section;
     /** @type {!Array} */
     var setups;
     /** @type {string} */
     var tests;
     /** @type {string} */
     var title;
-    /** @type {string} */
-    var opts;
-    /** @type {string} */
-    var src;
 
     options = ( options ? options + '+' : '' ) + 'reporter=dot';
     options = getOptions(options);
     tests = './test/methods';
-    src = 'src/browser/';
 
     configLog();
 
-    setups = retrieve.filepaths('test/_setup/', { validNames: 'browser*' });
+    setups = [ 'browser', 'browser.min' ];
     each(setups, function(setup) {
-      title = '`' + src + setup.replace('browser', 'vitals') + '`';
-      opts = getSection(setup);
-      opts = opts && '--grep ' + opts + ' ';
+      title = '`src/browser/' + setup.replace('browser', 'vitals') + '`';
       logStart(title);
-      runTests(options + opts, tests, setup);
+      runTests(options, tests, setup);
+      logFinish(title);
+    });
+
+    options += '--grep '
+    setups = retrieve.filepaths('test/_setup/', { validNames: 'browser-*' });
+    each(setups, function(setup) {
+      title = '`src/browser/' + setup.replace('browser', 'vitals') + '`';
+      section = getSection(setup);
+      logStart(title);
+      runTests(options + section, tests, setup);
       logFinish(title);
     });
 
