@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * RETRIEVE LIBRARY
+ * RETRIEVE - FILE SYSTEM HELPERS
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
