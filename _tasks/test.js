@@ -36,7 +36,7 @@ module.exports = newTask('test', 'method', {
     options = getOptions(options);
     title = '`vitals`';
     tests = './test/methods';
-    setup = 'node';
+    setup = 'methods';
 
     configLog();
 
@@ -70,7 +70,7 @@ module.exports = newTask('test', 'method', {
     options = getOptions();
     tests = './test/methods/' + method;
     title = '`vitals.' + method + '`';
-    setup = 'node';
+    setup = 'methods';
 
     configLog();
 
