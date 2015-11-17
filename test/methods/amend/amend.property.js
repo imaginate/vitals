@@ -18,209 +18,202 @@
 describe('amend.property (sections:js,configure)', function() {
   var title;
 
-  //////////////////////////////////////////////
-  // BASIC TESTS
+  title = 'basic tests should amend prop to obj with the correct config';
+  describe(title, function() {
 
-  title = callStr({}, 'a', 1);
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1);
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
+    title = callStr({}, 'a', 1);
+    it(title, function() {
+      var obj = vitals.amend.prop({}, 'a', 1);
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+    });
+
+    title = callStr({}, 'a', { value: 1, enumerable: false });
+    it(title, function() {
+      var desc = freeze({ value: 1, enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', desc);
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+    });
+
+    title = callStr({}, 'a', 1, { enumerable: false });
+    it(title, function() {
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', 1, desc);
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+    });
+
   });
 
-  title = callStr({}, 'a', { value: 1, enumerable: false });
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', { value: 1, enumerable: false });
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
+  title = 'static type tests should amend prop to obj ';
+  title += 'with the correct static type setter';
+  describe(title, function() {
+
+    title = callStr({}, 'a', 1, 'number');
+    it(title, function() {
+      var obj = vitals.amend.prop({}, 'a', 1, 'number');
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+      obj.a = 'string';
+      assert(obj.a === 2);
+    });
+
+    title = callStr({}, 'a', 1, { enumerable: false }, 'number');
+    it(title, function() {
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number');
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+      obj.a = 'string';
+      assert(obj.a === 2);
+    });
+
+    title = callStr({}, 'a', { value: 1, enumerable: false }, 'number');
+    it(title, function() {
+      var desc = freeze({ value: 1, enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', desc, 'number');
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 2);
+      obj.a = 'string';
+      assert(obj.a === 2);
+    });
+
   });
 
-  title = callStr({}, 'a', 1, { enumerable: false });
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, { enumerable: false });
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
-  });
+  title = 'setter tests should amend prop to obj with the correct setter';
+  describe(title, function() {
 
-  //////////////////////////////////////////////
-  // STATIC TYPE TESTS
+    title = callStr({}, 'a', 1, getSetter());
+    it(title, function() {
+      var obj = vitals.amend.prop({}, 'a', 1, getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+    });
 
-  title = callStr({}, 'a', 1, 'number');
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, 'number');
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
-    result.a = 'string';
-    assert(result.a === 2);
-  });
+    title = callStr({}, 'a', 1, { enumerable: false }, getSetter());
+    it(title, function() {
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', 1, desc, getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+    });
 
-  title = callStr({}, 'a', 1, { enumerable: false }, 'number');
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, { enumerable: false }, 'number');
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
-    result.a = 'string';
-    assert(result.a === 2);
-  });
+    title = callStr({}, 'a', { value: 1, enumerable: false }, getSetter());
+    it(title, function() {
+      var desc = freeze({ value: 1, enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', desc, getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+    });
 
-  title = callStr({}, 'a', { value: 1, enumerable: false }, 'number');
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', {
-      enumerable: false,
-      value: 1
-    }, 'number');
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 2);
-    result.a = 'string';
-    assert(result.a === 2);
-  });
+    title = callStr({}, 'a', 1, 'number', getSetter());
+    it(title, function() {
+      var obj = vitals.amend.prop({}, 'a', 1, 'number', getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+      obj.a = 'string';
+      assert(obj.a === 3);
+    });
 
-  //////////////////////////////////////////////
-  // SETTER TESTS
+    title = callStr({}, 'a', 1, { enumerable: false }, 'number', getSetter());
+    it(title, function() {
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number', getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+      obj.a = 'string';
+      assert(obj.a === 3);
+    });
 
-  title = callStr({}, 'a', 1, getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-  });
-
-  title = callStr({}, 'a', 1, { enumerable: false }, getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, { enumerable: false }, getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-  });
-
-  title = callStr({}, 'a', { value: 1, enumerable: false }, getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', {
-      enumerable: false,
-      value: 1
-    }, getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-  });
-
-  title = callStr({}, 'a', 1, 'number', getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, 'number', getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-    result.a = 'string';
-    assert(result.a === 3);
-  });
-
-  title = callStr({}, 'a', 1, { enumerable: false }, 'number', getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', 1, {
-      enumerable: false
-    }, 'number', getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-    result.a = 'string';
-    assert(result.a === 3);
-  });
-
-  title = callStr({}, 'a', {
-    enumerable: false,
-    value: 1
-  }, 'number', getSetter());
-  it(title, function() {
-    var result;
-    result = vitals.amend.prop({}, 'a', {
+    title = callStr({}, 'a', {
       enumerable: false,
       value: 1
     }, 'number', getSetter());
-    assert(result.a === 1);
-    assert('a' in result);
-    assert( !has.enum(result, 'a') );
-    result.a = 2;
-    assert(result.a === 3);
-    result.a = 'string';
-    assert(result.a === 3);
+    it(title, function() {
+      var desc = freeze({ value: 1, enumerable: false });
+      var obj = vitals.amend.prop({}, 'a', desc, 'number', getSetter());
+      assert(obj.a === 1);
+      assert('a' in obj);
+      assert( !has.enum(obj, 'a') );
+      obj.a = 2;
+      assert(obj.a === 3);
+      obj.a = 'string';
+      assert(obj.a === 3);
+    });
+
   });
 
-  //////////////////////////////////////////////
-  // ERROR TESTS
+  describe('error tests should throw an error', function() {
 
-  title = callStr('string', 'a', 5);
-  it(title, function() {
-    assert.throws(function() {
-      vitals.amend('string', 'a', 5);
+    title = callStr('string', 'a', 5);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend('string', 'a', 5);
+      });
     });
-  });
 
-  title = callStr({}, 5, 5);
-  it(title, function() {
-    assert.throws(function() {
-      vitals.amend({}, 5, 5);
+    title = callStr({}, 5, 5);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend({}, 5, 5);
+      });
     });
-  });
 
-  title = callStr({}, 'a');
-  it(title, function() {
-    assert.throws(function() {
-      vitals.amend({}, 'a');
+    title = callStr({}, 'a');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend({}, 'a');
+      });
     });
-  });
 
-  title = callStr({}, 'a', 5, 'string');
-  it(title, function() {
-    assert.throws(function() {
-      vitals.amend({}, 'a', 5, 'string');
+    title = callStr({}, 'a', 5, 'string');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend({}, 'a', 5, 'string');
+      });
     });
-  });
 
-  title = callStr({}, 'a', 5, 'number', {});
-  it(title, function() {
-    assert.throws(function() {
-      vitals.amend({}, 'a', 5, 'number', {});
+    title = callStr({}, 'a', 5, 'number', {});
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend({}, 'a', 5, 'number', {});
+      });
     });
+
   });
 
 });
@@ -234,9 +227,8 @@ describe('amend.property (sections:js,configure)', function() {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('amend.prop', args, 3, true);
+function callStr() {
+  return testCall('amend.prop', arguments, 4, true);
 }
 
 /**
