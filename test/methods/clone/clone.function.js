@@ -18,61 +18,65 @@
 describe('clone.function (sections:js,base)', function() {
   var title;
 
-  //////////////////////////////////////////////
-  // BASIC TESTS
+  title = 'basic tests should return a new function with ';
+  title += 'the same body and key => value pairs as the input';
+  describe(title, function() {
 
-  title = callStr( newFunc() );
-  it(title, function() {
-    var func = newFunc();
-    var copy = vitals.clone.func(func);
-    assert(func !== copy);
-    assert(func.a === copy.a);
-    assert(func.b === copy.b);
-    assert( func() === copy() );
-  });
-
-  title = callStr(newFunc(), true);
-  it(title, function() {
-    var func = newFunc();
-    var copy = vitals.clone.func(func, true);
-    assert(func !== copy);
-    assert(func.a === copy.a);
-    assert(func.b !== copy.b);
-    assert( func() === copy() );
-  });
-
-  title = callStr(newFunc(), false);
-  it(title, function() {
-    var func = newFunc();
-    var copy = vitals.clone.func(func, false);
-    assert(func !== copy);
-    assert(func.a === copy.a);
-    assert(func.b === copy.b);
-    assert( func() === copy() );
-  });
-
-  //////////////////////////////////////////////
-  // ERROR TESTS
-
-  title = callStr(null);
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.func(null);
+    title = callStr( newFunc() );
+    it(title, function() {
+      var func = newFunc();
+      var copy = vitals.clone.func(func);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b === copy.b);
+      assert( func() === copy() );
     });
+
+    title = callStr(newFunc(), true);
+    it(title, function() {
+      var func = newFunc();
+      var copy = vitals.clone.func(func, true);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b !== copy.b);
+      assert( func() === copy() );
+    });
+
+    title = callStr(newFunc(), false);
+    it(title, function() {
+      var func = newFunc();
+      var copy = vitals.clone.func(func, false);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b === copy.b);
+      assert( func() === copy() );
+    });
+
   });
 
-  title = callStr({});
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.func({});
-    });
-  });
+  describe('error tests should throw an error', function() {
 
-  title = callStr(newFunc(true), 'fail');
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.func(newFunc(true), 'fail');
+    title = callStr(null);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.func(null);
+      });
     });
+
+    title = callStr({});
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.func({});
+      });
+    });
+
+    title = callStr(newFunc(true), 'fail');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.func(newFunc(true), 'fail');
+      });
+    });
+
   });
 
 });
@@ -86,9 +90,8 @@ describe('clone.function (sections:js,base)', function() {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('clone.func', args, 3, true);
+function callStr() {
+  return testCall('clone.func', arguments, 4, true);
 }
 
 /**

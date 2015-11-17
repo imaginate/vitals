@@ -18,61 +18,65 @@
 describe('clone.array (sections:js,base)', function() {
   var title;
 
-  //////////////////////////////////////////////
-  // BASIC TESTS
+  title = 'basic tests should return a new array with ';
+  title += 'the same values as the input';
+  describe(title, function() {
 
-  title = callStr( newArr() );
-  it(title, function() {
-    var arr = newArr();
-    var copy = vitals.clone.arr(arr);
-    assert(arr !== copy);
-    each(arr, function(val, i) {
-      assert( arr[i] === copy[i] );
+    title = callStr( newArr() );
+    it(title, function() {
+      var arr = newArr();
+      var copy = vitals.clone.arr(arr);
+      assert(arr !== copy);
+      each(arr, function(val, i) {
+        assert( arr[i] === copy[i] );
+      });
     });
+
+    title = callStr(newArr(), true);
+    it(title, function() {
+      var arr = newArr();
+      var copy = vitals.clone.arr(arr, true);
+      assert(arr !== copy);
+      assert(arr[0] === copy[0]);
+      assert(arr[1] !== copy[1]);
+      assert(arr[2] === copy[2]);
+    });
+
+    title = callStr(newArr(), false);
+    it(title, function() {
+      var arr = newArr();
+      var copy = vitals.clone.arr(arr, false);
+      assert(arr !== copy);
+      each(arr, function(val, i) {
+        assert( arr[i] === copy[i] );
+      });
+    });
+
   });
 
-  title = callStr(newArr(), true);
-  it(title, function() {
-    var arr = newArr();
-    var copy = vitals.clone.arr(arr, true);
-    assert(arr !== copy);
-    assert(arr[0] === copy[0]);
-    assert(arr[1] !== copy[1]);
-    assert(arr[2] === copy[2]);
-  });
+  describe('error tests should throw an error', function() {
 
-  title = callStr(newArr(), false);
-  it(title, function() {
-    var arr = newArr();
-    var copy = vitals.clone.arr(arr, false);
-    assert(arr !== copy);
-    each(arr, function(val, i) {
-      assert( arr[i] === copy[i] );
+    title = callStr(null);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.arr(null);
+      });
     });
-  });
 
-  //////////////////////////////////////////////
-  // ERROR TESTS
-
-  title = callStr(null);
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.arr(null);
+    title = callStr({});
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.arr({});
+      });
     });
-  });
 
-  title = callStr({});
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.arr({});
+    title = callStr([], 'fail');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.arr([], 'fail');
+      });
     });
-  });
 
-  title = callStr([], 'fail');
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.arr([], 'fail');
-    });
   });
 
 });
@@ -86,9 +90,8 @@ describe('clone.array (sections:js,base)', function() {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('clone.arr', args, 3, true);
+function callStr() {
+  return testCall('clone.arr', arguments, 4, true);
 }
 
 /**

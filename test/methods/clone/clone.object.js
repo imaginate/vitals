@@ -18,54 +18,58 @@
 describe('clone.object (sections:js,base)', function() {
   var title;
 
-  //////////////////////////////////////////////
-  // BASIC TESTS
+  title = 'basic tests should return a new object ';
+  title += 'with same key => value pairs as the input';
+  describe(title, function() {
 
-  title = callStr( newObj() );
-  it(title, function() {
-    var obj = newObj();
-    var copy = vitals.clone.obj(obj);
-    assert(obj !== copy);
-    each(obj, function(val, key) {
-      assert( obj[key] === copy[key] );
+    title = callStr( newObj() );
+    it(title, function() {
+      var obj = newObj();
+      var copy = vitals.clone.obj(obj);
+      assert(obj !== copy);
+      each(obj, function(val, key) {
+        assert( obj[key] === copy[key] );
+      });
     });
+
+    title = callStr(newObj(), true);
+    it(title, function() {
+      var obj = newObj();
+      var copy = vitals.clone.obj(obj, true);
+      assert(obj !== copy);
+      assert(obj.a === copy.a);
+      assert(obj.b !== copy.b);
+      assert(obj.c === copy.c);
+    });
+
+    title = callStr(newObj(), false);
+    it(title, function() {
+      var obj = newObj();
+      var copy = vitals.clone.obj(obj, false);
+      assert(obj !== copy);
+      each(obj, function(val, key) {
+        assert( obj[key] === copy[key] );
+      });
+    });
+
   });
 
-  title = callStr(newObj(), true);
-  it(title, function() {
-    var obj = newObj();
-    var copy = vitals.clone.obj(obj, true);
-    assert(obj !== copy);
-    assert(obj.a === copy.a);
-    assert(obj.b !== copy.b);
-    assert(obj.c === copy.c);
-  });
+  describe('error tests should throw an error', function() {
 
-  title = callStr(newObj(), false);
-  it(title, function() {
-    var obj = newObj();
-    var copy = vitals.clone.obj(obj, false);
-    assert(obj !== copy);
-    each(obj, function(val, key) {
-      assert( obj[key] === copy[key] );
+    title = callStr(null);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.obj(null);
+      });
     });
-  });
 
-  //////////////////////////////////////////////
-  // ERROR TESTS
-
-  title = callStr(null);
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.obj(null);
+    title = callStr({}, 'fail');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.clone.obj({}, 'fail');
+      });
     });
-  });
 
-  title = callStr({}, 'fail');
-  it(title, function() {
-    assert.throws(function() {
-      vitals.clone.obj({}, 'fail');
-    });
   });
 
 });
@@ -79,9 +83,8 @@ describe('clone.object (sections:js,base)', function() {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('clone.obj', args, 3, true);
+function callStr() {
+  return testCall('clone.obj', arguments, 4, true);
 }
 
 /**
