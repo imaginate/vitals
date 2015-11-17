@@ -44,6 +44,8 @@ global.testCall = function testCall(method, args, indent, noLeadIndent) {
     { argMap: true, method: method }
   );
 
+  args = is.args(args) ? slice(args) : args;
+
   if ( !is('arr=', args) ) log.error(
     'Invalid `testCall` Call',
     'invalid type for `args` param',
@@ -79,7 +81,9 @@ global.toStr = function toStr(val, indent, noLeadIndent) {
         ? arrToStr(val)
         : objToStr(val)
     : is.str(val)
-      ? '"' + val + '"'
+      ? has(val, /^<.+>$/)
+        ? val
+        : '"' + val + '"'
       : String(val);
   return indentStr(val, indent, noLeadIndent);
 };
