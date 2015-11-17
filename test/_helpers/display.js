@@ -88,6 +88,68 @@ global.toStr = function toStr(val, indent, noLeadIndent) {
   return indentStr(val, indent, noLeadIndent);
 };
 
+/**
+ * @global
+ * @param {string} section
+ * @param {string} details
+ * @param {number=} indent
+ * @param {boolean=} noLeadIndent
+ * @return {string}
+ */
+global.testTitle = function testTitle(section, details, indent, noLeadIndent) {
+
+  /** @type {string} */
+  var result;
+
+  if ( !is.str(section) ) log.error(
+    'Invalid `testTitle` Call',
+    'invalid type for `section` param',
+    { argMap: true, section: section }
+  );
+
+  if ( !is.str(details) ) log.error(
+    'Invalid `testTitle` Call',
+    'invalid type for `details` param',
+    { argMap: true, section: section, details: details }
+  );
+
+  indent = is.num(indent) && indent > 0 ? indent : 0;
+  result = section + ' tests: ' + details;
+  result = breakStr(result);
+  return indentStr(result, ++indent, noLeadIndent);
+};
+
+/**
+ * @global
+ * @param {string} str
+ * @param {number} times
+ * @param {boolean=} noLeadIndent
+ * @return {string}
+ */
+global.indentStr = function indentStr(str, times, noLeadIndent) {
+
+  /** @type {string} */
+  var indent;
+
+  if ( !is.str(str) ) log.error(
+    'Invalid `indentStr` Call',
+    'invalid type for `str` param',
+    { argMap: true, str: str }
+  );
+
+  if ( !is.num(times) ) log.error(
+    'Invalid `indentStr` Call',
+    'invalid type for `times` param',
+    { argMap: true, str: str, times: times }
+  );
+
+  times = times < 0 ? 0 : times;
+  indent = '';
+  while (times--) indent += '  ';
+  str = indent ? str.replace(/\n/g, '\n' + indent) : str;
+  return noLeadIndent ? str : indent + str;
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
@@ -199,18 +261,46 @@ function isValidLength(result) {
 
 /**
  * @private
- * @param {string} str
- * @param {number} times
- * @param {boolean=} noLeadIndent
+ * @param {string} title
  * @return {string}
  */
-function indentStr(str, times, noLeadIndent) {
+function breakStr(title) {
 
   /** @type {string} */
-  var indent;
+  var result;
+  /** @type {number} */
+  var max;
+  /** @type {number} */
+  var i;
 
-  indent = '';
-  while (times--) indent += '  ';
-  str = indent ? str.replace(/\n/g, '\n' + indent) : str;
-  return noLeadIndent ? str : indent + str;
+  max = MAX_LENGTH;
+
+  if (title.length <= max) return title;
+
+  i = getLastSpace(title, max) || title.length;
+  result = title.substr(0, i);
+  title = title.slice(i);
+  max -= 5;
+  while (title.length > max) {
+    i = getLastSpace(title, max) || title.length;
+    result += '\n' + title.substr(0, i);
+    title = title.slice(i);
+  }
+  result += title && '\n' + title;
+  return result;
+}
+
+/**
+ * @private
+ * @param {string} str
+ * @param {number=} limit
+ * @return {number}
+ */
+function getLastSpace(str, limit) {
+
+  /** @type {string} */
+  var temp;
+
+  temp = limit ? str.substr(0, limit) : str;
+  return ( temp.lastIndexOf(' ') || str.indexOf(' ') ) + 1;
 }
