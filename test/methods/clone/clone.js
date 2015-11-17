@@ -15,10 +15,11 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('clone (sections:js,base)', function() {
+describe('vitals.clone (sections:js,base)', function() {
   var title;
 
-  describe('basic tests should return same value as input', function() {
+  title = titleStr('basic', 'should return same value as input');
+  describe(title, function() {
 
     title = callStr('<primitive>');
     it(title, function() {
@@ -40,8 +41,8 @@ describe('clone (sections:js,base)', function() {
 
   });
 
-  title = 'object tests should return a new object ';
-  title += 'with same key => value pairs as the input';
+  title = 'should return new object with same key => value pairs as input';
+  title = titleStr('object', title);
   describe(title, function() {
 
     title = callStr( newObj() );
@@ -66,8 +67,8 @@ describe('clone (sections:js,base)', function() {
 
   });
 
-  title = 'regex tests should return a new regex with ';
-  title += 'the same source and flags as the input';
+  title = 'should return new regex with same source and flags as input';
+  title = titleStr('regex', title);
   describe(title, function() {
 
     title = callStr( newRegex() );
@@ -92,8 +93,8 @@ describe('clone (sections:js,base)', function() {
 
   });
 
-  title = 'array tests should return a new array with ';
-  title += 'the same values as the input';
+  title = 'should return new array with same values as input';
+  title = titleStr('array', title);
   describe(title, function() {
 
     title = callStr( newArr() );
@@ -118,8 +119,9 @@ describe('clone (sections:js,base)', function() {
 
   });
 
-  title = 'function tests should return a new function with ';
-  title += 'the same body and key => value pairs as the input';
+  title = 'should return new function with same body ';
+  title += 'and key => value pairs as input';
+  title = titleStr('function', title);
   describe(title, function() {
 
     title = callStr( newFunc() );
@@ -144,7 +146,8 @@ describe('clone (sections:js,base)', function() {
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr({}, 'fail');
     it(title, function() {
@@ -167,6 +170,16 @@ describe('clone (sections:js,base)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
 
 /**
  * @private

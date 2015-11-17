@@ -15,11 +15,12 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('clone.regexp (sections:js,base)', function() {
+describe('vitals.clone.regexp (sections:js,base)', function() {
   var title;
 
-  title = 'basic tests should return a new regex with ';
-  title += 'the same source and flags as the input';
+  title = 'should return new regex with same source and flags as input ';
+  title += '(except when global override param is set)';
+  title = titleStr('basic', title);
   describe(title, function() {
 
     title = callStr( newRegex() );
@@ -42,19 +43,20 @@ describe('clone.regexp (sections:js,base)', function() {
       assert(regex.ignoreCase === copy.ignoreCase);
     });
 
-    title = callStr(newRegex(), false);
+    title = callStr(newRegex(true), false);
     it(title, function() {
-      var regex = newRegex();
+      var regex = newRegex(true);
       var copy = vitals.clone.regex(regex, false);
       assert(regex !== copy);
       assert(regex.source === copy.source);
-      assert(regex.global === copy.global);
+      assert(regex.global !== copy.global);
       assert(regex.ignoreCase === copy.ignoreCase);
     });
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr(null);
     it(title, function() {
@@ -87,6 +89,16 @@ describe('clone.regexp (sections:js,base)', function() {
 
 /**
  * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
+
+/**
+ * @private
  * @param {...*} args
  * @return {string}
  */
@@ -96,8 +108,9 @@ function callStr() {
 
 /**
  * @private
+ * @param {boolean=} makeGlobal
  * @return {!RegExp}
  */
-function newRegex() {
-  return freeze( /a/ );
+function newRegex(makeGlobal) {
+  return freeze( makeGlobal ? /a/gi : /a/i );
 }

@@ -15,11 +15,11 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('clone.array (sections:js,base)', function() {
+describe('vitals.clone.array (sections:js,base)', function() {
   var title;
 
-  title = 'basic tests should return a new array with ';
-  title += 'the same values as the input';
+  title = 'should return new array with same values as input';
+  title = titleStr('basic', title);
   describe(title, function() {
 
     title = callStr( newArr() );
@@ -54,7 +54,8 @@ describe('clone.array (sections:js,base)', function() {
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr(null);
     it(title, function() {
@@ -84,6 +85,16 @@ describe('clone.array (sections:js,base)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
 
 /**
  * @private
