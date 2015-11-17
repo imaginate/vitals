@@ -67,7 +67,7 @@ module.exports = newTask('test', 'method', {
       { argMap: true, method: method }
     );
 
-    options = getOptions();
+    options = getOptions('reporter=spec');
     tests = './test/methods/' + method;
     title = '`vitals.' + method + '`';
     setup = 'methods';
@@ -95,7 +95,6 @@ module.exports = newTask('test', 'method', {
     /** @type {string} */
     var title;
 
-    options = ( options ? options + '+' : '' ) + 'reporter=dot';
     options = getOptions(options);
     tests = './test/methods';
 
@@ -173,7 +172,6 @@ module.exports = newTask('test', 'method', {
     /** @type {string} */
     var title;
 
-    options = ( options ? options + '+' : '' ) + 'reporter=dot';
     options = getOptions(options);
     tests = './test/methods';
 
@@ -211,7 +209,7 @@ module.exports = newTask('test', 'method', {
  * @const
  */
 var MOCHA_DEFAULTS = {
-  reporter: 'spec',
+  reporter: 'dot',
   slow:     50,
   timeout:  5000
 };
