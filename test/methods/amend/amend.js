@@ -147,10 +147,6 @@ describe('amend (sections:js,configure)', function() {
 
   });
 
-  //////////////////////////////////////////////
-  // STATIC TYPE TESTS
-
-
   title = 'static type tests should amend props to obj ';
   title += 'with the correct static type setter';
   describe(title, function() {
