@@ -168,8 +168,7 @@ global.slice = function slice(val, start, end) {
   start = start || 0;
   start = start < 0 ? len + start : start;
   start = start < 0 ? 0 : start;
-  end = end || len;
-  end = end > len
+  end = is.undefined(end) || end > len
     ? len : end < 0
       ? len + end : end;
 
