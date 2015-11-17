@@ -821,15 +821,18 @@ var amend = (function amendPrivateScope() {
    */
   function _setupProps(props, descriptor) {
 
+    /** @type {!Object} */
+    var newProps;
     /** @type {string} */
     var key;
 
+    newProps = {};
     for (key in props) {
       if ( _own(props, key) ) {
-        props[key] = _setupDescriptor(props[key], descriptor);
+        newProps[key] = _setupDescriptor(props[key], descriptor);
       }
     }
-    return props;
+    return newProps;
   }
 
   /**
@@ -842,17 +845,20 @@ var amend = (function amendPrivateScope() {
    */
   function _setupPropsWithSetter(props, descriptor, staticType, setter) {
 
+    /** @type {!Object} */
+    var newProps;
     /** @type {string} */
     var key;
 
+    newProps = {};
     for (key in props) {
       if ( _own(props, key) ) {
-        props[key] = _setupDescriptorWithSetter(
+        newProps[key] = _setupDescriptorWithSetter(
           props[key], descriptor, staticType, setter
         );
       }
     }
-    return props;
+    return newProps;
   }
 
   /**

@@ -755,7 +755,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties from an object/array or patterns from a string
    *   and returns the amended source. Note that the use of the word, "match",
-   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -793,7 +793,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes a property from an object/array and returns the object. Note that
    *   the use of the word, "match", within vitals.cut.property refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
@@ -872,7 +872,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties from an object/array and returns the object. Note that
    *   the use of the word, "match", within vitals.cut.properties refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -2275,7 +2275,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets keys, indexes, values, or substrings from an object, array, or string.
    *   Note that the use of the word, "match", within vitals.get refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {?(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
@@ -2316,7 +2316,7 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets an array of keys from an object. Note that the use of the word,
-   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
@@ -2338,7 +2338,7 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets an array of keys from an object that match a pattern.
-   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function)} source
    * @param {*} pattern - If pattern is not a RegExp or string it is converted
@@ -2373,7 +2373,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets an array of indexes from an array or string by value/pattern. Note
    *   that the use of the word, "match", within vitals.get.indexes refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|string)} source - If no val param is defined this method
    *   will return an array of all an array's indexes or throw an error if the
@@ -2404,7 +2404,7 @@ var get = (function getPrivateScope() {
   /**
    * Gets an array of values/substrings from an object or string. Note that the
    *   use of the word, "match", within vitals.get.values refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/has.js}.
+   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
    * @public
    * @param {!(Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the
@@ -3342,7 +3342,7 @@ var until = (function untilPrivateScope() {
    * @param {!(Object|function)} obj
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/js-methods/clone.js})
+   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js})
    *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
@@ -3994,15 +3994,18 @@ var amend = (function amendPrivateScope() {
    */
   function _setupProps(props, descriptor) {
 
+    /** @type {!Object} */
+    var newProps;
     /** @type {string} */
     var key;
 
+    newProps = {};
     for (key in props) {
       if ( _own(props, key) ) {
-        props[key] = _setupDescriptor(props[key], descriptor);
+        newProps[key] = _setupDescriptor(props[key], descriptor);
       }
     }
-    return props;
+    return newProps;
   }
 
   /**
@@ -4015,17 +4018,20 @@ var amend = (function amendPrivateScope() {
    */
   function _setupPropsWithSetter(props, descriptor, staticType, setter) {
 
+    /** @type {!Object} */
+    var newProps;
     /** @type {string} */
     var key;
 
+    newProps = {};
     for (key in props) {
       if ( _own(props, key) ) {
-        props[key] = _setupDescriptorWithSetter(
+        newProps[key] = _setupDescriptorWithSetter(
           props[key], descriptor, staticType, setter
         );
       }
     }
-    return props;
+    return newProps;
   }
 
   /**
