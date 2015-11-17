@@ -15,10 +15,10 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('create.object (sections:js,configure)', function() {
+describe('vitals.create.object (sections:js,configure)', function() {
   var title;
 
-  title = 'basic tests should create a new obj with the given prototype';
+  title = titleStr('basic', 'should create new obj with given prototype');
   describe(title, function() {
 
     title = callStr(null);
@@ -42,8 +42,8 @@ describe('create.object (sections:js,configure)', function() {
 
   });
 
-  title = 'basic prop tests should create a new obj with the given ';
-  title += 'prototype and amend the input props';
+  title = 'should create new obj with given prototype and amend given props';
+  title = titleStr('basic prop', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 });
@@ -115,8 +115,9 @@ describe('create.object (sections:js,configure)', function() {
 
   });
 
-  title = 'default descriptor tests should create a new obj with the given ';
-  title += 'prototype and amend the input props with the correct config';
+  title = 'should create new obj with given prototype ';
+  title += 'and amend given props with correct config';
+  title = titleStr('default descriptor', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, { enumerable: false });
@@ -185,8 +186,9 @@ describe('create.object (sections:js,configure)', function() {
 
   });
 
-  title = 'static type tests should create a new obj with the given prototype ';
-  title += 'and amend the input props with the correct static type setter';
+  title = 'should create new obj with given prototype and amend ';
+  title += 'given props with correct static type setter';
+  title = titleStr('static type', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
@@ -288,8 +290,9 @@ describe('create.object (sections:js,configure)', function() {
 
   });
 
-  title = 'setter tests should create a new obj with the given prototype ';
-  title += 'and amend the input props with the correct setter';
+  title = 'should create new obj with given prototype ';
+  title += 'and amend given props with correct setter';
+  title = titleStr('setter', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, getSetter());
@@ -410,7 +413,8 @@ describe('create.object (sections:js,configure)', function() {
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr('string');
     it(title, function() {
@@ -454,6 +458,16 @@ describe('create.object (sections:js,configure)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
 
 /**
  * @private
