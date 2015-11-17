@@ -4472,6 +4472,9 @@ var create = (function createPrivateScope() {
    */
   create.object = function createObject(proto, props, val, descriptor, staticType, setter) {
 
+    /** @type {!Array} */
+    var args;
+
     if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
