@@ -23,10 +23,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, { a: 1, b: 2, c: 3 });
   it(title, function() {
-    var obj;
-    var result;
-    obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, clone(obj));
+    var obj = freeze({ a: 1, b: 2, c: 3 });
+    var result = vitals.amend({}, clone(obj));
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
@@ -38,10 +36,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, [ 'a', 'b', 'c' ], 5);
   it(title, function() {
-    var arr;
-    var result;
-    arr = freeze([ 'a', 'b', 'c' ]);
-    result = vitals.amend({}, slice(arr), 5);
+    var arr = freeze([ 'a', 'b', 'c' ]);
+    var result = vitals.amend({}, slice(arr), 5);
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -53,8 +49,7 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, 'a,b,c', 5);
   it(title, function() {
-    var result;
-    result = vitals.amend({}, 'a,b,c', 5);
+    var result = vitals.amend({}, 'a,b,c', 5);
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -69,8 +64,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2, enumerable: false }
   });
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: false },
       b: { value: 2, enumerable: false }
     });
@@ -88,10 +82,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, { a: 1, b: 2, c: 3 }, { enumerable: false });
   it(title, function() {
-    var obj;
-    var result;
-    obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, clone(obj), { enumerable: false });
+    var obj = freeze({ a: 1, b: 2, c: 3 });
+    var result = vitals.amend({}, clone(obj), { enumerable: false });
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
@@ -103,10 +95,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, [ 'a', 'b', 'c' ], 5, { enumerable: false });
   it(title, function() {
-    var arr;
-    var result;
-    arr = freeze([ 'a', 'b', 'c' ]);
-    result = vitals.amend({}, slice(arr), 5, { enumerable: false });
+    var arr = freeze([ 'a', 'b', 'c' ]);
+    var result = vitals.amend({}, slice(arr), 5, { enumerable: false });
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -118,8 +108,7 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, 'a,b,c', 5, { enumerable: false });
   it(title, function() {
-    var result;
-    result = vitals.amend({}, 'a,b,c', 5, { enumerable: false });
+    var result = vitals.amend({}, 'a,b,c', 5, { enumerable: false });
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -134,8 +123,7 @@ describe('amend (js,configure)', function() {
     b: 2
   }, { enumerable: false });
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: true },
       b: 2
     }, { enumerable: false });
@@ -154,10 +142,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
   it(title, function() {
-    var obj;
-    var result;
-    obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, clone(obj), 'number');
+    var obj = freeze({ a: 1, b: 2, c: 3 });
+    var result = vitals.amend({}, clone(obj), 'number');
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
@@ -170,10 +156,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, [ 'a', 'b', 'c' ], 5, 'number');
   it(title, function() {
-    var arr;
-    var result;
-    arr = freeze([ 'a', 'b', 'c' ]);
-    result = vitals.amend({}, slice(arr), 5, 'number');
+    var arr = freeze([ 'a', 'b', 'c' ]);
+    var result = vitals.amend({}, slice(arr), 5, 'number');
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -186,8 +170,7 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, 'a,b,c', 5, 'number');
   it(title, function() {
-    var result;
-    result = vitals.amend({}, 'a,b,c', 5, 'number');
+    var result = vitals.amend({}, 'a,b,c', 5, 'number');
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -203,8 +186,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2, enumerable: false }
   }, 'number');
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: false },
       b: { value: 2, enumerable: false }
     }, 'number');
@@ -224,8 +206,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2 }
   }, { enumerable: false }, 'number');
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: true },
       b: { value: 2 }
     }, { enumerable: false }, 'number');
@@ -246,10 +227,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, { a: 1, b: 2, c: 3 }, getSetter());
   it(title, function() {
-    var obj;
-    var result;
-    obj = freeze({ a: 1, b: 2, c: 3 });
-    result = vitals.amend({}, clone(obj), getSetter());
+    var obj = freeze({ a: 1, b: 2, c: 3 });
+    var result = vitals.amend({}, clone(obj), getSetter());
     each(obj, function(val, key) {
       assert(result[key] === val);
       assert(key in result);
@@ -261,10 +240,8 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, [ 'a', 'b', 'c' ], 5, getSetter());
   it(title, function() {
-    var arr;
-    var result;
-    arr = freeze([ 'a', 'b', 'c' ]);
-    result = vitals.amend({}, slice(arr), 5, getSetter());
+    var arr = freeze([ 'a', 'b', 'c' ]);
+    var result = vitals.amend({}, slice(arr), 5, getSetter());
     each(arr, function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -276,8 +253,7 @@ describe('amend (js,configure)', function() {
 
   title = callStr({}, 'a,b,c', 5, getSetter());
   it(title, function() {
-    var result;
-    result = vitals.amend({}, 'a,b,c', 5, getSetter());
+    var result = vitals.amend({}, 'a,b,c', 5, getSetter());
     each([ 'a','b','c' ], function(val) {
       assert(result[val] === 5);
       assert(val in result);
@@ -292,8 +268,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2, enumerable: false }
   }, getSetter());
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: false },
       b: { value: 2, enumerable: false }
     }, getSetter());
@@ -311,8 +286,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2, enumerable: false }
   }, { enumerable: false }, getSetter());
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: true },
       b: { value: 2, enumerable: false }
     }, { enumerable: false }, getSetter());
@@ -331,8 +305,7 @@ describe('amend (js,configure)', function() {
     b: { value: 2, enumerable: false }
   }, { enumerable: false }, 'number', getSetter());
   it(title, function() {
-    var result;
-    result = vitals.amend({}, {
+    var result = vitals.amend({}, {
       a: { value: 1, enumerable: true },
       b: { value: 2, enumerable: false }
     }, { enumerable: false }, 'number', getSetter());
@@ -397,9 +370,8 @@ describe('amend (js,configure)', function() {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = slice(arguments);
-  return testCall('amend', args, 3, true);
+function callStr() {
+  return testCall('amend', arguments, 3, true);
 }
 
 /**
