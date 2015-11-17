@@ -15,10 +15,11 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('amend.property (sections:js,configure)', function() {
+describe('vitals.amend.property (sections:js,configure)', function() {
   var title;
 
-  title = 'basic tests should amend prop to obj with the correct config';
+  title = 'should amend prop to obj with correct config';
+  title = titleStr('basic', title);
   describe(title, function() {
 
     title = callStr({}, 'a', 1);
@@ -55,8 +56,8 @@ describe('amend.property (sections:js,configure)', function() {
 
   });
 
-  title = 'static type tests should amend prop to obj ';
-  title += 'with the correct static type setter';
+  title = 'should amend prop to obj with correct static type setter';
+  title = titleStr('static type', title);
   describe(title, function() {
 
     title = callStr({}, 'a', 1, 'number');
@@ -99,7 +100,7 @@ describe('amend.property (sections:js,configure)', function() {
 
   });
 
-  title = 'setter tests should amend prop to obj with the correct setter';
+  title = titleStr('setter', 'should amend prop to obj with correct setter');
   describe(title, function() {
 
     title = callStr({}, 'a', 1, getSetter());
@@ -177,7 +178,8 @@ describe('amend.property (sections:js,configure)', function() {
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr('string', 'a', 5);
     it(title, function() {
@@ -221,6 +223,16 @@ describe('amend.property (sections:js,configure)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
 
 /**
  * @private

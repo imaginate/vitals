@@ -15,10 +15,11 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('amend (sections:js,configure)', function() {
+describe('vitals.amend (sections:js,configure)', function() {
   var title;
 
-  describe('basic tests should amend props to obj', function() {
+  title = titleStr('basic', 'should amend props to obj');
+  describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 });
     it(title, function() {
@@ -81,8 +82,8 @@ describe('amend (sections:js,configure)', function() {
 
   });
 
-  title = 'default descriptor tests should amend props to obj ';
-  title += 'with the correct config';
+  title = 'should amend props to obj with correct config';
+  title = titleStr('default descriptor', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, { enumerable: false });
@@ -147,8 +148,8 @@ describe('amend (sections:js,configure)', function() {
 
   });
 
-  title = 'static type tests should amend props to obj ';
-  title += 'with the correct static type setter';
+  title = 'should amend props to obj with correct static type setter';
+  title = titleStr('static type', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
@@ -241,7 +242,7 @@ describe('amend (sections:js,configure)', function() {
 
   });
 
-  title = 'setter tests should amend props to obj with the correct setter';
+  title = titleStr('setter', 'should amend props to obj with correct setter');
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, getSetter());
@@ -351,7 +352,8 @@ describe('amend (sections:js,configure)', function() {
 
   });
 
-  describe('error tests should throw an error', function() {
+  title = titleStr('error', 'should throw an error');
+  describe(title, function() {
 
     title = callStr('string', 'a,b,c', 5);
     it(title, function() {
@@ -395,6 +397,16 @@ describe('amend (sections:js,configure)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(section, shouldMsg) {
+  return testTitle(section, shouldMsg, 2, true);
+}
 
 /**
  * @private
