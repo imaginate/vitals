@@ -62,7 +62,7 @@ var create = (function createPrivateScope() {
       args = _sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
-    } 
+    }
 
     return _ObjectCreate(proto);
   }
