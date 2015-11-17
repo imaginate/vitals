@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('clone.array (js,base)', function() {
+describe('clone.array (sections:js,base)', function() {
   var title;
 
   //////////////////////////////////////////////

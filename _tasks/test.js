@@ -106,11 +106,12 @@ module.exports = newTask('test', 'method', {
     runTests(options, tests, 'section');
     logFinish(title);
 
-    options += '--grep ';
+    options += '--grep sections:(?:[a-z,]+,)?';
     setups = retrieve.filepaths('test/_setup/', { validNames: 'section-*' });
     each(setups, function(setup) {
       section = getSection(setup);
       title = '`vitals ' + section + '`';
+      section += '[,\)]';
       logStart(title);
       runTests(options + section, tests, setup);
       logFinish(title);
@@ -145,7 +146,7 @@ module.exports = newTask('test', 'method', {
     setup = 'section';
 
     if (section !== 'all') {
-      options += '--grep ' + section;
+      options += '--grep sections:(?:[a-z,]+,)?' + section + '[,\)]';
       setup += '-' + section;
     }
 
@@ -186,11 +187,11 @@ module.exports = newTask('test', 'method', {
       logFinish(title);
     });
 
-    options += '--grep '
+    options += '--grep sections:(?:[a-z,]+,)?'
     setups = retrieve.filepaths('test/_setup/', { validNames: 'browser-*' });
     each(setups, function(setup) {
       title = '`src/browser/' + setup.replace('browser', 'vitals') + '`';
-      section = getSection(setup);
+      section = getSection(setup) + '[,\)]';
       logStart(title);
       runTests(options + section, tests, setup);
       logFinish(title);

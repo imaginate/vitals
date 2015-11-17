@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('create.object (js,configure)', function() {
+describe('create.object (sections:js,configure)', function() {
   var title;
 
   //////////////////////////////////////////////
