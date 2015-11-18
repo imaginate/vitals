@@ -37,6 +37,7 @@ var cut = (function cutPrivateScope() {
   // - cut.property   (cut.prop)
   // - cut.key
   // - cut.index      (cut.i)
+  // - cut.type
   // - cut.pattern
   // - cut.properties (cut.props)
   // - cut.keys
@@ -144,6 +145,28 @@ var cut = (function cutPrivateScope() {
   };
   // define shorthand
   cut.i = cut.index;
+
+  /**
+   * Removes all properties from an object/array with a value that matches a
+   *   given type and returns the object. This method uses the
+   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   from [are]{@link https://github.com/imaginate/are} to complete type
+   *   checks.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {string} type - The type to check for. Refer to the
+   *   [is main function docs]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   for acceptable options.
+   * @return {!(Object|function|Array)}
+   */
+  cut.type = function cutType(source, type) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'type');
+    if ( !is.str(type)    ) throw _error.type('type',   'type');
+
+    source = is.args(source) ? _sliceArr(source) : source;
+    return _cutType(source, type);
+  };
 
   /**
    * Removes a pattern from a string and returns the amended string.
