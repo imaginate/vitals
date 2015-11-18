@@ -524,7 +524,7 @@ var cut = (function cutPrivateScope() {
 
     pattern = key;
     for (key in source) {
-      if ( _own(source, key) && _match(source, pattern) ) {
+      if ( _own(source, key) && _match(key, pattern) ) {
         delete source[key];
       }
     }
