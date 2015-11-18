@@ -23,6 +23,7 @@ var _sliceArr = require('./_helpers/sliceArr.js');
 var _match = require('./_helpers/match.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
+var clone = require('./clone.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -47,31 +48,50 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes properties from an object/array or patterns from a string
-   *   and returns the amended source. Note that the use of the word, "match",
-   *   within vitals.cut refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   *   and returns the amended source.
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source: If the leading val is a RegExp or string this method
-   *       will delete all properties with keys that match each val. If any
-   *       following vals are not a RegExp or string they are converted to a
-   *       string. Otherwise if the leading val is not a RegExp or string this
-   *       method will delete all properties where value === val. 
-   *     array source: If all vals are a number each corresponding index is
-   *       spliced from the array. Otherwise all properties where value === val
-   *       are spliced from the array.
+   *     object source:
+   *       - leading val is RegExp: This method will delete all properties with
+   *       keys that match each val. If any following vals are not a RegExp they
+   *       are converted to a string.
+   *       - leading val is string: This method will delete all properties where
+   *       key === val. All vals are converted to a string.
+   *       - leading val is function: The val is considered a filter function
+   *       (i.e. if it returns false the property is deleted). It has the
+   *       optional params - value, key, source. Note this method lazily clones
+   *       the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *       - all other cases: This method will delete all properties where
+   *       value === val. 
+   *     array source:
+   *       - all vals are numbers: This method will splice from the source each
+   *       corresponding index.
+   *       - leading val is function: The val is considered a filter function
+   *       (i.e. if it returns false the property is spliced from the source).
+   *       It has the optional params - value, index, source. Note this method
+   *       lazily clones the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *       - all other cases: This method will splice from the source all
+   *       properties where value === val.
    *     string source: All vals that are not a RegExp or string are converted
    *       to a string. Each matching substring is removed from the source.
+   * @param {Object=} thisArg - If source is an object/array, val is a filter
+   *   function, and thisArg is defined the filter is bound to its value.
    * @return {!(Object|function|Array|string)} The amended source.
    */
-  function cut(source, vals) {
+  function cut(source, vals, thisArg) {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-
     if ( is.str(source) ) {
+      vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
       return is.arr(vals)
         ? _cutPatterns(source, vals)
         : _cutPattern(source, vals);
@@ -80,30 +100,66 @@ var cut = (function cutPrivateScope() {
     if ( !is._obj(source) ) throw _error.type('source');
 
     source = is.args(source) ? _sliceArr(source) : source;
+
+    if ( is.func(vals) ) {
+      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+      return is.arr(source)
+        ? _filterArr(source, vals, thisArg)
+        : _filterObj(source, vals, thisArg);
+    }
+
+    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
     return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
   /**
-   * Removes a property from an object/array and returns the object. Note that
-   *   the use of the word, "match", within vitals.cut.property refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Removes a property from an object/array and returns the object.
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
-   *   object source: If val is a RegExp or string this method will delete all
-   *     properties with keys that match the val. Otherwise this method will
-   *     delete all properties where value === val.
-   *   array source: If val is a number the corresponding index is spliced from
-   *     the array. Otherwise all properties where value === val are spliced
-   *     from the array.
+   *   object source:
+   *     - val is RegExp: This method will delete all properties with a key that
+   *     matches the val.
+   *     - val is string: This method will delete all properties where
+   *     key === val.
+   *     - val is function: The val is considered a filter function (i.e. if it
+   *     returns false the property is deleted). It has the optional params -
+   *     value, key, source. Note this method lazily clones the source based on
+   *     the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     (i.e. if you alter the source object within the filter ensure to define
+   *     the filter's third param so you can safely assume all references to the
+   *     source are its original values).
+   *     - all other cases: This method will delete all properties where
+   *     value === val.
+   *   array source:
+   *     - val is number: This method will splice the index from the source.
+   *     - val is function: The val is considered a filter function (i.e. if it
+   *     returns false the property is spliced from the source). It has the
+   *     optional params - value, index, source. Note this method lazily clones
+   *     the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     (i.e. if you alter the source object within the filter ensure to define
+   *     the filter's third param so you can safely assume all references to the
+   *     source are its original values).
+   *     - all other cases: This method will splice from the source all
+   *     properties where value === val.
+   * @param {Object=} thisArg - If val is a filter function and thisArg is
+   *   defined the filter is bound to its value.
    * @return {!(Object|function|Array)}
    */
-  cut.property = function cutProperty(source, val) {
+  cut.property = function cutProperty(source, val, thisArg) {
 
     if ( !is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
     source = is.args(source) ? _sliceArr(source) : source;
+
+    if ( is.func(val) ) {
+      if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'property');
+      return is.arr(source)
+        ? _filterArr(source, val, thisArg)
+        : _filterObj(source, val, thisArg);
+    }
+
     return _cutProp(source, val);
   };
 
@@ -192,14 +248,19 @@ var cut = (function cutPrivateScope() {
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source: If the leading val is a RegExp or string this method
-   *       will delete all properties with keys that match each val. If any
-   *       following vals are not a RegExp or string they are converted to a
-   *       string. Otherwise if the leading val is not a RegExp or string this
-   *       method will delete all properties where value === val. 
-   *     array source: If all vals are a number each corresponding index is
-   *       spliced from the array. Otherwise all properties where value === val
-   *       are spliced from the array.
+   *     object source:
+   *       - leading val is RegExp: This method will delete all properties with
+   *       keys that match each val. If any following vals are not a RegExp they
+   *       are converted to a string.
+   *       - leading val is string: This method will delete all properties where
+   *       key === val. All vals are converted to a string.
+   *       - all other cases: This method will delete all properties where
+   *       value === val. 
+   *     array source:
+   *       - all vals are numbers: This method will splice from the source each
+   *       corresponding index.
+   *       - all other cases: This method will splice from the source all
+   *       properties where value === val.
    * @return {!(Object|function|Array)}
    */
   cut.properties = function cutProperties(source, vals) {
@@ -446,23 +507,26 @@ var cut = (function cutPrivateScope() {
    * @private
    * @param {!(Object|function)} source
    * @param {*} key
+   * @param {boolean=} match
    * @return {!(Object|function)}
    */
-  function _deleteKey(source, key) {
+  function _deleteKey(source, key, match) {
 
     /** @type {!RegExp} */
     var pattern;
 
-    if ( is.regex(key) ) {
-      pattern = key;
-      for (key in source) {
-        if ( _own(source, key) && _match(source, pattern) ) {
-          delete source[key];
-        }
-      }
+    match = is.undefined(match) ? is.regex(key) : match;
+
+    if (!match) {
+      if ( _own(source, key) ) delete source[key];
+      return source;
     }
-    else if ( _own(source, key) ) {
-      delete source[key];
+
+    pattern = key;
+    for (key in source) {
+      if ( _own(source, key) && _match(source, pattern) ) {
+        delete source[key];
+      }
     }
     return source;
   }
@@ -475,15 +539,18 @@ var cut = (function cutPrivateScope() {
    */
   function _deleteKeys(source, keys) {
 
+    /** @type {boolean} */
+    var match;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
+    match = is.regex( keys[0] );
     len = keys.length;
     i = -1;
     while (++i < len) {
-      source = _deleteKey(source, keys[i]);
+      source = _deleteKey(source, keys[i], match);
     }
     return source;
   }
@@ -655,6 +722,80 @@ var cut = (function cutPrivateScope() {
     i = -1;
     while (++i < len) {
       source = _spliceVals(source, vals[i]);
+    }
+    return source;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - FILTER
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
+   * @param {function} filter
+   * @param {Object=} thisArg
+   * @return {!(Object|function)}
+   */
+  function _filterObj(source, filter, thisArg) {
+
+    /** @type {string} */
+    var key;
+
+    source = filter.length > 2 ? clone(source) : source;
+    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    switch (filter.length) {
+      case 0:
+      for (key in source) {
+        if ( _own(source, key) && !filter() ) {
+          delete source[key];
+        }
+      }
+      break;
+      case 1:
+      for (key in source) {
+        if ( _own(source, key) && !filter(source[key]) ) {
+          delete source[key];
+        }
+      }
+      break;
+      case 2:
+      for (key in source) {
+        if ( _own(source, key) && !filter(source[key], key) ) {
+          delete source[key];
+        }
+      }
+      break;
+      default:
+      for (key in source) {
+        if ( _own(source, key) && !filter(source[key], key, source) ) {
+          delete source[key];
+        }
+      }
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {function} filter
+   * @param {Object=} thisArg
+   * @return {!Array}
+   */
+  function _filterArr(source, filter, thisArg) {
+
+    /** @type {number} */
+    var i;
+
+    source = filter.length > 2 ? clone.arr(source) : source;
+    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    i = source.length;
+    switch (filter.length) {
+      case 0:  while (i--) filter() || source.splice(i, 1);              break;
+      case 1:  while (i--) filter(source[i]) || source.splice(i, 1);     break;
+      case 2:  while (i--) filter(source[i], i) || source.splice(i, 1);  break;
+      default: while (i--) filter(source[i], i, source) || source.splice(i, 1);
     }
     return source;
   }
@@ -906,6 +1047,26 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {function} func
+   * @param {Object} thisArg
+   * @return {function} 
+   */
+  function _bind(func, thisArg) {
+    switch (func.length) {
+      case 0:
+      return function filter() { func.call(thisArg); };
+      case 1:
+      return function filter(val) { func.call(thisArg, val); };
+      case 2:
+      return function filter(val, key) { func.call(thisArg, val, key); };
+    }
+    return function filter(val, key, obj) {
+      func.call(thisArg, val, key, obj);
+    };
+  }
 
   /**
    * @private
