@@ -396,6 +396,18 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function|Array)} source
+   * @param {string} type
+   * @return {!(Object|function|Array)}
+   */
+  function _cutType(source, type) {
+    return is.arr(source)
+      ? _spliceValByType(source, type)
+      : _deleteValByType(source, type);
+  }
+
+  /**
+   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {string}
@@ -498,6 +510,25 @@ var cut = (function cutPrivateScope() {
   /**
    * @private
    * @param {!(Object|function)} source
+   * @param {string} type
+   * @return {!(Object|function)}
+   */
+  function _deleteValByType(source, type) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( _own(source, key) && is(type, source[key]) ) {
+        delete source[key];
+      }
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} source
    * @param {!Array} vals
    * @return {!(Object|function)}
    */
@@ -585,6 +616,24 @@ var cut = (function cutPrivateScope() {
     i = source.length;
     while (i--) {
       if (source[i] === val) source.splice(i, 1);
+    }
+    return source;
+  }
+
+  /**
+   * @private
+   * @param {!Array} source
+   * @param {string} type
+   * @return {!Array}
+   */
+  function _spliceValByType(source, type) {
+
+    /** @type {number} */
+    var i;
+
+    i = source.length;
+    while (i--) {
+      if ( is(type, source[i]) ) source.splice(i, 1);
     }
     return source;
   }
