@@ -93,10 +93,9 @@ global.toStr = function toStr(val, indent, noLeadIndent) {
  * @param {string} section
  * @param {string} details
  * @param {number=} indent
- * @param {boolean=} noLeadIndent
  * @return {string}
  */
-global.testTitle = function testTitle(section, details, indent, noLeadIndent) {
+global.testTitle = function testTitle(section, details, indent) {
 
   /** @type {string} */
   var result;
@@ -115,8 +114,7 @@ global.testTitle = function testTitle(section, details, indent, noLeadIndent) {
 
   indent = is.num(indent) && indent > 0 ? indent : 0;
   result = section + ' tests: ' + details;
-  result = breakStr(result);
-  return indentStr(result, ++indent, noLeadIndent);
+  return breakStr(result, ++indent, true);
 };
 
 /**
@@ -148,6 +146,45 @@ global.indentStr = function indentStr(str, times, noLeadIndent) {
   while (times--) indent += '  ';
   str = indent ? str.replace(/\n/g, '\n' + indent) : str;
   return noLeadIndent ? str : indent + str;
+};
+
+/**
+ * @global
+ * @param {string} str
+ * @param {number=} indent
+ * @param {boolean=} noLeadIndent
+ * @return {string}
+ */
+global.breakStr = function breakStr(str, indent, noLeadIndent) {
+
+  /** @type {string} */
+  var result;
+  /** @type {number} */
+  var max;
+  /** @type {number} */
+  var i;
+
+  if ( !is.str(str) ) log.error(
+    'Invalid `breakStr` Call',
+    'invalid type for `str` param',
+    { argMap: true, str: str }
+  );
+
+  indent = is.num(indent) && indent > 0 ? indent : 0;
+
+  if (str.length <= MAX_LENGTH) return str;
+
+  i = getLastSpace(str, MAX_LENGTH) || str.length;
+  result = str.substr(0, i);
+  str = str.slice(i);
+  max = MAX_LENGTH - 5;
+  while (str.length > max) {
+    i = getLastSpace(str, max) || str.length;
+    result += '\n' + str.substr(0, i);
+    str = str.slice(i);
+  }
+  result += str && '\n' + str;
+  return indentStr(result, indent, noLeadIndent);
 };
 
 
@@ -257,37 +294,6 @@ function isValidLength(result) {
     if (str.length > MAX_LENGTH) return false;
   }
   return true;
-}
-
-/**
- * @private
- * @param {string} title
- * @return {string}
- */
-function breakStr(title) {
-
-  /** @type {string} */
-  var result;
-  /** @type {number} */
-  var max;
-  /** @type {number} */
-  var i;
-
-  max = MAX_LENGTH;
-
-  if (title.length <= max) return title;
-
-  i = getLastSpace(title, max) || title.length;
-  result = title.substr(0, i);
-  title = title.slice(i);
-  max -= 5;
-  while (title.length > max) {
-    i = getLastSpace(title, max) || title.length;
-    result += '\n' + title.substr(0, i);
-    title = title.slice(i);
-  }
-  result += title && '\n' + title;
-  return result;
 }
 
 /**
