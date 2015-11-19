@@ -1311,7 +1311,6 @@ var cut = (function cutPrivateScope() {
     if ( !is.regex(pattern) ) {
       pattern = String(pattern);
       pattern = _escape(pattern, true);
-      pattern = '^' + pattern + '$';
       pattern = new RegExp(pattern, 'g');
     }
     return source.replace(pattern, '');
