@@ -106,6 +106,80 @@ function newErrorAid(vitalsMethod) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - ESCAPE
+////////////////////////////////////////////////////////////////////////////////
+
+var _escape = (function _escapePrivateScope() {
+
+  /**
+   * @param {string} source
+   * @param {boolean=} anyChars
+   * @param {?RegExp=} escapeChars
+   * @return {string}
+   */
+  function _escape(source, anyChars, escapeChars) {
+    return escapeChars
+      ? source.replace(escapeChars, '\\$&')
+      : anyChars
+        ? anyEscape(source)
+        : source.replace(ALL_ESCAPE_CHARS, '\\$&');
+  }
+
+  /**
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var ALL_ESCAPE_CHARS = /[\\^$.*+?|(){}[\]]/g;
+
+  /**
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var ANY_ESCAPE_CHARS = /[\\^$.+?|(){}[\]]/g;
+
+  /**
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var ANY_REPLACE = /(\\+)\*/g;
+
+  /**
+   * @private
+   * @param {string} source
+   * @return {string}
+   */
+  function anyEscape(source) {
+    source = source.replace(ANY_ESCAPE_CHARS, '\\$&');
+    return ANY_REPLACE.test(source)
+      ? source.replace(ANY_REPLACE, anyReplacer)
+      : source;
+  }
+
+  /**
+   * @private
+   * @param {string} match
+   * @param {?string=} capture
+   * @return {string}
+   */
+  function anyReplacer(match, capture) {
+
+    /** @type {number} */
+    var len;
+
+    len = capture.length >>> 1; // len = capture.length / 2;
+    return len % 2 ? match.substr(1) : match; // is.odd(len) ? ...
+  }
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR ESCAPE
+  return _escape;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - IN-ARR
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -347,24 +421,6 @@ function _splitKeys(keys) {
       ? ',' : _inStr(keys, '|')
         ? '|' : ' ';
   return keys.split(separator);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - TO-REGEX
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @param {*} source
- * @param {string=} flags
- * @param {boolean=} anyChars
- * @param {?RegExp=} escapeChars
- * @return {!RegExp}
- */
-function _toRegex(source, flags, anyChars, escapeChars) {
-  source = String(source);
-  source = _escape(source, anyChars, escapeChars);
-  flags = flags || '';
-  return flags ? new RegExp(source, flags) : new RegExp(source);
 }
 
 
@@ -1165,7 +1221,12 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    pattern = is.regex(pattern) ? pattern : _toRegex(pattern, 'g', true);
+    if ( !is.regex(pattern) ) {
+      pattern = String(pattern);
+      pattern = _escape(pattern, true);
+      pattern = '^' + pattern + '$';
+      pattern = new RegExp(pattern, 'g');
+    }
     return source.replace(pattern, '');
   }
 
