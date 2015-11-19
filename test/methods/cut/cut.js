@@ -415,6 +415,79 @@ describe('vitals.cut (sections:js,base)', function() {
 
   });
 
+  describe('string tests', function() {
+
+    // newStr()= "abc123a1b2c3"
+
+    title = titleStr('should remove all substring occurrences from string');
+    describe(title, function() {
+
+      title = callStr(newStr(), 'a');
+      it(title, function() {
+        var str = vitals.cut(newStr(), 'a');
+        var be = 'bc1231b2c3';
+        console.log('');
+        console.log('str => ', str);
+        console.log('');
+        process.exit(1);
+        assert(str === be);
+      });
+
+      title = callStr(newStr(), 1, 'a');
+      it(title, function() {
+        var str = vitals.cut(newStr(), 1, 'a');
+        var be = 'bc23b2c3';
+        assert(str === be);
+      });
+
+      title = callStr(newStr(), [ [ 'a' ], 1, 'c' ]);
+      it(title, function() {
+        var str = vitals.cut(newStr(), [ [ 'a' ], 1, 'c' ]);
+        var be = 'ab23ab23';
+        assert(str === be);
+      });
+
+    });
+
+    title = titleStr('should remove all substring patterns from string');
+    describe(title, function() {
+
+      title = callStr(newStr(), /[a-z]/);
+      it(title, function() {
+        var str = vitals.cut(newStr(), /[a-z]/);
+        var be = 'bc123a1b2c3';
+        assert(str === be);
+      });
+
+      title = callStr(newStr(), /[a-z]/g);
+      it(title, function() {
+        var str = vitals.cut(newStr(), /[a-z]/g);
+        var be = '123123';
+        assert(str === be);
+      });
+
+      title = callStr(newStr(), /[a-z]/, 1, 'c');
+      it(title, function() {
+        var str = vitals.cut(newStr(), /[a-z]/, 1, 'c');
+        var be = 'b23ab23';
+        assert(str === be);
+      });
+
+      title = callStr(newStr(), [ 1, 'a', /[a-z][0-9]/ ]);
+      it(title, function() {
+        var str = vitals.cut(newStr(), [ 1, 'a', /[a-z][0-9]/ ]);
+        var be = 'b3b2c3';
+        assert(str === be);
+        // Test Result Explained              (str= "abc123a1b2c3")
+        // Step 1) cuts "1" from str          (str= "abc23ab2c3")
+        // Step 2) cuts "a" from str          (str= "bc23b2c3")
+        // Step 3) cuts /[a-z][0-9]/ from str (str= "b3b2c3")
+      });
+
+    });
+
+  });
+
   describe('error tests', function() {
     describe('should throw an error', function() {
 
@@ -475,5 +548,13 @@ function newObj() {
  * @return {!Array}
  */
 function newArr() {
-  return [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ];
+  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+}
+
+/**
+ * @private
+ * @return {string}
+ */
+function newStr() {
+  return 'abc123a1b2c3';
 }
