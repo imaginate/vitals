@@ -1412,38 +1412,32 @@ var cut = (function cutPrivateScope() {
    */
   function _filterObj(source, filter, thisArg) {
 
+    /** @type {!Object} */
+    var obj;
     /** @type {string} */
     var key;
 
-    source = filter.length > 2 ? clone(source) : source;
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    obj = filter.length > 2 ? clone(source) : source;
     switch (filter.length) {
       case 0:
-      for (key in source) {
-        if ( _own(source, key) && !filter() ) {
-          delete source[key];
-        }
+      for (key in obj) {
+        if ( _own(obj, key) && !filter() ) delete source[key];
       }
       break;
       case 1:
-      for (key in source) {
-        if ( _own(source, key) && !filter(source[key]) ) {
-          delete source[key];
-        }
+      for (key in obj) {
+        if ( _own(obj, key) && !filter(obj[key]) ) delete source[key];
       }
       break;
       case 2:
-      for (key in source) {
-        if ( _own(source, key) && !filter(source[key], key) ) {
-          delete source[key];
-        }
+      for (key in obj) {
+        if ( _own(obj, key) && !filter(obj[key], key) ) delete source[key];
       }
       break;
       default:
-      for (key in source) {
-        if ( _own(source, key) && !filter(source[key], key, source) ) {
-          delete source[key];
-        }
+      for (key in obj) {
+        if ( _own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
       }
     }
     return source;
@@ -1458,17 +1452,19 @@ var cut = (function cutPrivateScope() {
    */
   function _filterArr(source, filter, thisArg) {
 
+    /** @type {!Array} */
+    var arr;
     /** @type {number} */
     var i;
 
-    source = filter.length > 2 ? clone.arr(source) : source;
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    i = source.length;
+    arr = filter.length > 2 ? clone.arr(source) : source;
+    i = arr.length;
     switch (filter.length) {
       case 0:  while (i--) filter() || source.splice(i, 1);              break;
-      case 1:  while (i--) filter(source[i]) || source.splice(i, 1);     break;
-      case 2:  while (i--) filter(source[i], i) || source.splice(i, 1);  break;
-      default: while (i--) filter(source[i], i, source) || source.splice(i, 1);
+      case 1:  while (i--) filter(arr[i]) || source.splice(i, 1);        break;
+      case 2:  while (i--) filter(arr[i], i) || source.splice(i, 1);     break;
+      default: while (i--) filter(arr[i], i, arr) || source.splice(i, 1);
     }
     return source;
   }
