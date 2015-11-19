@@ -1473,15 +1473,26 @@ var cut = (function cutPrivateScope() {
    */
   function _spliceVals(source, vals) {
 
+    /** @type {*} */
+    var val;
     /** @type {number} */
     var len;
+    /** @type {number} */
+    var ii;
     /** @type {number} */
     var i;
 
     len = vals.length;
-    i = -1;
-    while (++i < len) {
-      source = _spliceVals(source, vals[i]);
+    i = source.length;
+    while (i--) {
+      val = source[i];
+      ii = len;
+      while (ii--) {
+        if (vals[ii] === val) {
+          source.splice(i, 1);
+          break;
+        }
+      }
     }
     return source;
   }
