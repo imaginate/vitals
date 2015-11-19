@@ -35,7 +35,7 @@ var _escape = (function _escapePrivateScope() {
     return escapeChars
       ? source.replace(escapeChars, '\\$&')
       : anyChars
-        ? anyEscape(source);
+        ? anyEscape(source)
         : source.replace(ALL_ESCAPE_CHARS, '\\$&');
   }
 
