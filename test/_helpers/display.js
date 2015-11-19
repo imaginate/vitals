@@ -81,8 +81,8 @@ global.toStr = function toStr(val, indent, noLeadIndent) {
         ? arrToStr(val)
         : objToStr(val)
     : is.str(val)
-      ? has(val, /^<.+>$/)
-        ? val
+      ? has(val, /^<[\s\S]+>$/)
+        ? val.replace(/^<<|>>$/g, '')
         : '"' + val + '"'
       : String(val);
   return indentStr(val, indent, noLeadIndent);
