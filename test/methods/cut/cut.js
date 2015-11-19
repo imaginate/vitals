@@ -426,10 +426,6 @@ describe('vitals.cut (sections:js,base)', function() {
       it(title, function() {
         var str = vitals.cut(newStr(), 'a');
         var be = 'bc1231b2c3';
-        console.log('');
-        console.log('str => ', str);
-        console.log('');
-        process.exit(1);
         assert(str === be);
       });
 
