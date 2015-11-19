@@ -279,6 +279,142 @@ describe('vitals.cut (sections:js,base)', function() {
 
   });
 
+  describe('array tests', function() {
+
+    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
+
+    title = titleStr('should splice props from array where index === val');
+    describe(title, function() {
+
+      title = callStr('<array>', 1);
+      it(title, function() {
+        var arr = vitals.cut(newArr(), 1);
+        var be = [ 'a', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', 1, 3, 6, 9);
+      it(title, function() {
+        var arr = vitals.cut(newArr(), 1, 3, 6, 9);
+        var be = [ 'a', 'c', 2, 3, 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', [ 0, 1 ]);
+      it(title, function() {
+        var arr = vitals.cut(newArr(), [ 0, 1 ]);
+        var be = [ 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+    });
+
+    title = titleStr('should splice props from array where value === val');
+    describe(title, function() {
+
+      title = callStr('<array>', 'a');
+      it(title, function() {
+        var arr = vitals.cut(newArr(), 'a');
+        var be = [ 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', 1, 2, 'a');
+      it(title, function() {
+        var arr = vitals.cut(newArr(), 1, 2, 'a');
+        var be = [ 'b', 'c', 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', [ 1, 2, 'a', /b/ ]);
+      it(title, function() {
+        var arr = vitals.cut(newArr(), 1, 2, 'a');
+        var be = [ 'b', 'c', 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+    });
+
+    title = 'should splice props from array where filter function returns false';
+    title = titleStr(title);
+    describe(title, function() {
+
+      title = callStr('<array>', '<filterFunc>');
+      it(title, function() {
+        var filter = function() { return true; };
+        var arr = vitals.cut(newArr(), filter);
+        var be = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', '<filterFunc>');
+      it(title, function() {
+        var filter = function() { return false; };
+        var arr = vitals.cut(newArr(), filter);
+        assert( !arr.length );
+      });
+
+      title = callStr('<array>', '<filterFunc>');
+      it(title, function() {
+        var filter = function(val, i) {
+          var combined = String(val + i);
+          return combined.length > 2;
+        };
+        var arr = vitals.cut(newArr(), filter);
+        var be = [ 'a1', 'b2', 'c3' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', '<filterFunc>');
+      it(title, function() {
+        var filter = function(val, i, arr) {
+          return arr.some(function(subval) {
+            return arr.indexOf(val + subval) !== -1;
+          });
+        };
+        var arr = vitals.cut(newArr(), filter);
+        var be = [ 'a', 'b', 'c' ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+      title = callStr('<array>', '<filterFunc>', '<thisArg>');
+      it(title, function() {
+        var filter = function(val, i, arr) {
+          var that = this;
+          return arr.some(function(subval) {
+            return that.indexOf(val + subval) !== -1;
+          });
+        };
+        var thisArg = [ 4, 6, 8 ];
+        var arr = vitals.cut(newArr(), filter, thisArg);
+        var be = [ 1, 2, 3 ];
+        each(be, function(val, i) {
+          assert(arr[i] === val);
+        });
+      });
+
+    });
+
+  });
+
   describe('error tests', function() {
     describe('should throw an error', function() {
 
@@ -332,4 +468,12 @@ function newObj() {
     'b2': '2',
     'c3': '3'
   };
+}
+
+/**
+ * @private
+ * @return {!Array}
+ */
+function newArr() {
+  return [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ];
 }
