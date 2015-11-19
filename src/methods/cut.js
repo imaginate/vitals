@@ -20,6 +20,7 @@
 
 var newErrorAid = require('./_helpers/errorAid.js');
 var _sliceArr = require('./_helpers/sliceArr.js');
+var _toRegex = require('./_helpers/toRegex.js');
 var _match = require('./_helpers/match.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
@@ -538,7 +539,7 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = is.regex(pattern) ? pattern : _toRegex(pattern, 'g', true);
     return source.replace(pattern, '');
   }
 
