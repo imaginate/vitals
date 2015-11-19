@@ -15,23 +15,269 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('cut (sections:js,base)', function() {
+describe('vitals.cut (sections:js,base)', function() {
   var title;
 
-  //////////////////////////////////////////////
-  // BASIC TESTS
+  title = 'object tests\n' + newObjStr();
+  describe(title, function() {
 
-  title = callStr();
-  it(title, function() {
+    title = titleStr('should delete props from obj where key === val');
+    describe(title, function() {
+
+      title = callStr('<source>', 'a');
+      it(title, function() {
+        var obj = vitals.cut(newObj(), 'a');
+        assert( !has(obj, 'a')  );
+        assert(  has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert(  has(obj, '2')  );
+        assert(  has(obj, '3')  );
+        assert(  has(obj, 'a1') );
+        assert(  has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+      title = callStr('<source>', 'a', 'b');
+      it(title, function() {
+        var obj = vitals.cut(newObj(), 'a', 'b');
+        assert( !has(obj, 'a')  );
+        assert( !has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert(  has(obj, '2')  );
+        assert(  has(obj, '3')  );
+        assert(  has(obj, 'a1') );
+        assert(  has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+      title = callStr('<source>', [ 'a', 'b', 2, /^[0-9]$/ ]);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), [ 'a', 'b', 2, /^[0-9]$/ ]);
+        assert( !has(obj, 'a')  );
+        assert( !has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert( !has(obj, '2')  );
+        assert(  has(obj, '3')  );
+        assert(  has(obj, 'a1') );
+        assert(  has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+    });
+
+    title = 'should delete props from obj where key matches pattern';
+    title = titleStr(title);
+    describe(title, function() {
+
+      title = callStr('<source>', /a/);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), /a/);
+        assert( !has(obj, 'a')  );
+        assert(  has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert(  has(obj, '2')  );
+        assert(  has(obj, '3')  );
+        assert( !has(obj, 'a1') );
+        assert(  has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+      title = callStr('<source>', /^[0-9]$/);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), /^[0-9]$/);
+        assert(  has(obj, 'a')  );
+        assert(  has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert( !has(obj, '1')  );
+        assert( !has(obj, '2')  );
+        assert( !has(obj, '3')  );
+        assert(  has(obj, 'a1') );
+        assert(  has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+      title = callStr('<source>', /a/, 'b');
+      it(title, function() {
+        var obj = vitals.cut(newObj(), /a/, 'b');
+        assert( !has(obj, 'a')  );
+        assert( !has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert(  has(obj, '2')  );
+        assert(  has(obj, '3')  );
+        assert( !has(obj, 'a1') );
+        assert( !has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+      title = callStr('<source>', [ /a/, 2, /^3/ ]);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), [ /a/, 2, /^3/ ]);
+        assert( !has(obj, 'a')  );
+        assert(  has(obj, 'b')  );
+        assert(  has(obj, 'c')  );
+        assert(  has(obj, '1')  );
+        assert( !has(obj, '2')  );
+        assert( !has(obj, '3')  );
+        assert( !has(obj, 'a1') );
+        assert( !has(obj, 'b2') );
+        assert(  has(obj, 'c3') );
+      });
+
+    });
+
+    title = titleStr('should delete props from obj where value === val');
+    describe(title, function() {
+
+      title = callStr('<source>', 4);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), 4);
+        assert(  has(obj, 'a')  ); // = "d"
+        assert(  has(obj, 'b')  ); // = "e"
+        assert(  has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert(  has(obj, '2')  ); // =  5
+        assert(  has(obj, '3')  ); // =  6
+        assert(  has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', 4, 'd');
+      it(title, function() {
+        var obj = vitals.cut(newObj(), 4, 'd');
+        assert( !has(obj, 'a')  ); // = "d"
+        assert(  has(obj, 'b')  ); // = "e"
+        assert(  has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert(  has(obj, '2')  ); // =  5
+        assert(  has(obj, '3')  ); // =  6
+        assert(  has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', [ 6, '1', 8 ]);
+      it(title, function() {
+        var obj = vitals.cut(newObj(), [ 6, '1', 8 ]);
+        assert(  has(obj, 'a')  ); // = "d"
+        assert(  has(obj, 'b')  ); // = "e"
+        assert(  has(obj, 'c')  ); // = "f"
+        assert(  has(obj, '1')  ); // =  4
+        assert(  has(obj, '2')  ); // =  5
+        assert( !has(obj, '3')  ); // =  6
+        assert( !has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+    });
+
+    title = 'should delete props from obj where filter function returns false';
+    title = titleStr(title);
+    describe(title, function() {
+
+      title = callStr('<source>', '<filterFunc>');
+      it(title, function() {
+        var filter = function() { return true; };
+        var obj = vitals.cut(newObj(), filter);
+        assert(  has(obj, 'a')  ); // = "d"
+        assert(  has(obj, 'b')  ); // = "e"
+        assert(  has(obj, 'c')  ); // = "f"
+        assert(  has(obj, '1')  ); // =  4
+        assert(  has(obj, '2')  ); // =  5
+        assert(  has(obj, '3')  ); // =  6
+        assert(  has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', '<filterFunc>');
+      it(title, function() {
+        var filter = function() { return false; };
+        var obj = vitals.cut(newObj(), filter);
+        assert( !has(obj, 'a')  ); // = "d"
+        assert( !has(obj, 'b')  ); // = "e"
+        assert( !has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert( !has(obj, '2')  ); // =  5
+        assert( !has(obj, '3')  ); // =  6
+        assert( !has(obj, 'a1') ); // = "1"
+        assert( !has(obj, 'b2') ); // = "2"
+        assert( !has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', '<filterFunc>');
+      it(title, function() {
+        var filter = function(val, key) {
+          var combined = val + key;
+          return combined.length > 2;
+        };
+        var obj = vitals.cut(newObj(), filter);
+        assert( !has(obj, 'a')  ); // = "d"
+        assert( !has(obj, 'b')  ); // = "e"
+        assert( !has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert( !has(obj, '2')  ); // =  5
+        assert( !has(obj, '3')  ); // =  6
+        assert(  has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', '<filterFunc>');
+      it(title, function() {
+        var filter = function(val, key, obj) {
+          return has(obj, val);
+        };
+        var obj = vitals.cut(newObj(), filter);
+        assert( !has(obj, 'a')  ); // = "d"
+        assert( !has(obj, 'b')  ); // = "e"
+        assert( !has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert( !has(obj, '2')  ); // =  5
+        assert( !has(obj, '3')  ); // =  6
+        assert(  has(obj, 'a1') ); // = "1"
+        assert(  has(obj, 'b2') ); // = "2"
+        assert(  has(obj, 'c3') ); // = "3"
+      });
+
+      title = callStr('<source>', '<filterFunc>', '<thisArg>');
+      it(title, function() {
+        var filter = function(val, key) {
+          return has(this, key);
+        };
+        var thisArg = { a: 1, b: 1, c: 1 };
+        var obj = vitals.cut(newObj(), filter, thisArg);
+        assert(  has(obj, 'a')  ); // = "d"
+        assert(  has(obj, 'b')  ); // = "e"
+        assert(  has(obj, 'c')  ); // = "f"
+        assert( !has(obj, '1')  ); // =  4
+        assert( !has(obj, '2')  ); // =  5
+        assert( !has(obj, '3')  ); // =  6
+        assert( !has(obj, 'a1') ); // = "1"
+        assert( !has(obj, 'b2') ); // = "2"
+        assert( !has(obj, 'c3') ); // = "3"
+      });
+
+    });
+
   });
 
-  //////////////////////////////////////////////
-  // ERROR TESTS
+  describe('error tests', function() {
+    describe('should throw an error', function() {
 
-  title = callStr();
-  it(title, function() {
-    assert.throws(function() {
-      vitals.cut();
+      title = callStr();
+      it(title, function() {
+        assert.throws(function() {
+          vitals.cut();
+        });
+      });
+
     });
   });
 
@@ -43,9 +289,51 @@ describe('cut (sections:js,base)', function() {
 
 /**
  * @private
+ * @param {string} shouldMsg
+ * @return {string}
+ */
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 4, true);
+}
+
+/**
+ * @private
  * @param {...*} args
  * @return {string}
  */
 function callStr() {
-  return testCall('cut', arguments, 3, true);
+  return testCall('cut', arguments, 5, true);
+}
+
+/**
+ * @private
+ * @return {!Object}
+ */
+function newObj() {
+  return {
+    'a':  'd',
+    'b':  'e',
+    'c':  'f',
+    '1':   4,
+    '2':   5,
+    '3':   6,
+    'a1': '1',
+    'b2': '2',
+    'c3': '3'
+  };
+}
+
+/**
+ * @private
+ * @return {string}
+ */
+function newObjStr() {
+
+  /** @type {string} */
+  var objStr;
+
+  objStr =  'source= {  "a": "d", "1": 4, "a1": "1",\n';
+  objStr += '           "b": "e", "2": 5, "b2": "2",\n';
+  objStr += '           "c": "f", "3": 6, "c3": "3"  }';
+  return indentStr(objStr, 3);
 }
