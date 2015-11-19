@@ -37,6 +37,7 @@ var is = require('node-are').is;
 // INSERT methods/_helpers/sliceArr.js
 // INSERT methods/_helpers/sliceStr.js
 // INSERT methods/_helpers/splitKeys.js
+// INSERT methods/_helpers/toRegex.js
 
 
 // *****************************************************************************
