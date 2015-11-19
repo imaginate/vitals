@@ -735,10 +735,12 @@ var cut = (function cutPrivateScope() {
   // - cut.key
   // - cut.index      (cut.i)
   // - cut.type
+  // - cut.value      (cut.val)
   // - cut.pattern
   // - cut.properties (cut.props)
   // - cut.keys
   // - cut.indexes    (cut.ii)
+  // - cut.values     (cut.vals)
   // - cut.patterns
   //////////////////////////////////////////////////////////
 
@@ -921,6 +923,25 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
+   * Removes all properties from an object/array with a value and returns the
+   *   object.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {*} val
+   * @return {!(Object|function|Array)}
+   */
+  cut.value = function cutValue(source, val) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if (arguments.length < 2) throw _error('No val defined', 'value');
+
+    source = is.args(source) ? _sliceArr(source) : source;
+    return _cutVal(source, val);
+  };
+  // define shorthand
+  cut.val = cut.value;
+
+  /**
    * Removes a pattern from a string and returns the amended string.
    * @public
    * @param {string} source
@@ -1018,6 +1039,27 @@ var cut = (function cutPrivateScope() {
   };
   // define shorthand
   cut.ii = cut.indexes;
+
+  /**
+   * Removes all properties from an object/array with a value and returns the
+   *   object.
+   * @public
+   * @param {!(Object|function|Array)} source
+   * @param {...*} vals - If only one val is provided and it is an array it is
+   *   considered an array of vals.
+   * @return {!(Object|function|Array)}
+   */
+  cut.values = function cutValues(source, vals) {
+
+    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if (arguments.length < 2) throw _error('No val defined', 'value');
+
+    source = is.args(source) ? _sliceArr(source) : source;
+    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    return is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
+  };
+  // define shorthand
+  cut.vals = cut.values;
 
   /**
    * Removes patterns from a string and returns the amended string.
@@ -1165,6 +1207,28 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function|Array)} source
+   * @param {*} val
+   * @return {!(Object|function|Array)}
+   */
+  function _cutVal(source, val) {
+    return is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function|Array)} source
+   * @param {!Array<*>} vals
+   * @return {!(Object|function|Array)}
+   */
+  function _cutVals(source, vals) {
+    return is.arr(source)
+      ? _spliceVals(source, vals)
+      : _deleteVals(source, vals);
+  }
+
+  /**
+   * @private
    * @param {string} source
    * @param {*} pattern
    * @return {string}
@@ -1220,7 +1284,7 @@ var cut = (function cutPrivateScope() {
 
     pattern = key;
     for (key in source) {
-      if ( _own(source, key) && _match(source, pattern) ) {
+      if ( _own(source, key) && _match(key, pattern) ) {
         delete source[key];
       }
     }
