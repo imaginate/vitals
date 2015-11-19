@@ -28,6 +28,7 @@ var is = require('node-are').is;
 // *****************************************************************************
 
 // INSERT methods/_helpers/errorAid.js
+// INSERT methods/_helpers/escape.js
 // INSERT methods/_helpers/inArr.js
 // INSERT methods/_helpers/inObj.js
 // INSERT methods/_helpers/inStr.js
@@ -37,7 +38,6 @@ var is = require('node-are').is;
 // INSERT methods/_helpers/sliceArr.js
 // INSERT methods/_helpers/sliceStr.js
 // INSERT methods/_helpers/splitKeys.js
-// INSERT methods/_helpers/toRegex.js
 
 
 // *****************************************************************************
