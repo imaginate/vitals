@@ -18,13 +18,24 @@
 describe('vitals.cut (sections:js,base)', function() {
   var title;
 
-  title = 'object tests\n' + newObjStr();
-  describe(title, function() {
+  describe('object tests', function() {
+
+    // newObj()= {
+    //   'a':  'd',
+    //   'b':  'e',
+    //   'c':  'f',
+    //   '1':   4,
+    //   '2':   5,
+    //   '3':   6,
+    //   'a1': '1',
+    //   'b2': '2',
+    //   'c3': '3'
+    // }
 
     title = titleStr('should delete props from obj where key === val');
     describe(title, function() {
 
-      title = callStr('<source>', 'a');
+      title = callStr('<object>', 'a');
       it(title, function() {
         var obj = vitals.cut(newObj(), 'a');
         assert( !has(obj, 'a')  );
@@ -38,7 +49,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') );
       });
 
-      title = callStr('<source>', 'a', 'b');
+      title = callStr('<object>', 'a', 'b');
       it(title, function() {
         var obj = vitals.cut(newObj(), 'a', 'b');
         assert( !has(obj, 'a')  );
@@ -52,7 +63,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') );
       });
 
-      title = callStr('<source>', [ 'a', 'b', 2, /^[0-9]$/ ]);
+      title = callStr('<object>', [ 'a', 'b', 2, /^[0-9]$/ ]);
       it(title, function() {
         var obj = vitals.cut(newObj(), [ 'a', 'b', 2, /^[0-9]$/ ]);
         assert( !has(obj, 'a')  );
@@ -72,7 +83,7 @@ describe('vitals.cut (sections:js,base)', function() {
     title = titleStr(title);
     describe(title, function() {
 
-      title = callStr('<source>', /a/);
+      title = callStr('<object>', /a/);
       it(title, function() {
         var obj = vitals.cut(newObj(), /a/);
         assert( !has(obj, 'a')  );
@@ -86,7 +97,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') );
       });
 
-      title = callStr('<source>', /^[0-9]$/);
+      title = callStr('<object>', /^[0-9]$/);
       it(title, function() {
         var obj = vitals.cut(newObj(), /^[0-9]$/);
         assert(  has(obj, 'a')  );
@@ -100,7 +111,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') );
       });
 
-      title = callStr('<source>', /a/, 'b');
+      title = callStr('<object>', /a/, 'b');
       it(title, function() {
         var obj = vitals.cut(newObj(), /a/, 'b');
         assert( !has(obj, 'a')  );
@@ -114,7 +125,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') );
       });
 
-      title = callStr('<source>', [ /a/, 2, /^3/ ]);
+      title = callStr('<object>', [ /a/, 2, /^3/ ]);
       it(title, function() {
         var obj = vitals.cut(newObj(), [ /a/, 2, /^3/ ]);
         assert( !has(obj, 'a')  );
@@ -133,7 +144,7 @@ describe('vitals.cut (sections:js,base)', function() {
     title = titleStr('should delete props from obj where value === val');
     describe(title, function() {
 
-      title = callStr('<source>', 4);
+      title = callStr('<object>', 4);
       it(title, function() {
         var obj = vitals.cut(newObj(), 4);
         assert(  has(obj, 'a')  ); // = "d"
@@ -147,7 +158,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', 4, 'd');
+      title = callStr('<object>', 4, 'd');
       it(title, function() {
         var obj = vitals.cut(newObj(), 4, 'd');
         assert( !has(obj, 'a')  ); // = "d"
@@ -161,7 +172,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', [ 6, '1', 8 ]);
+      title = callStr('<object>', [ 6, '1', 8 ]);
       it(title, function() {
         var obj = vitals.cut(newObj(), [ 6, '1', 8 ]);
         assert(  has(obj, 'a')  ); // = "d"
@@ -181,7 +192,7 @@ describe('vitals.cut (sections:js,base)', function() {
     title = titleStr(title);
     describe(title, function() {
 
-      title = callStr('<source>', '<filterFunc>');
+      title = callStr('<object>', '<filterFunc>');
       it(title, function() {
         var filter = function() { return true; };
         var obj = vitals.cut(newObj(), filter);
@@ -196,7 +207,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', '<filterFunc>');
+      title = callStr('<object>', '<filterFunc>');
       it(title, function() {
         var filter = function() { return false; };
         var obj = vitals.cut(newObj(), filter);
@@ -211,7 +222,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert( !has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', '<filterFunc>');
+      title = callStr('<object>', '<filterFunc>');
       it(title, function() {
         var filter = function(val, key) {
           var combined = val + key;
@@ -229,7 +240,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', '<filterFunc>');
+      title = callStr('<object>', '<filterFunc>');
       it(title, function() {
         var filter = function(val, key, obj) {
           return has(obj, val);
@@ -246,7 +257,7 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(  has(obj, 'c3') ); // = "3"
       });
 
-      title = callStr('<source>', '<filterFunc>', '<thisArg>');
+      title = callStr('<object>', '<filterFunc>', '<thisArg>');
       it(title, function() {
         var filter = function(val, key) {
           return has(this, key);
@@ -321,19 +332,4 @@ function newObj() {
     'b2': '2',
     'c3': '3'
   };
-}
-
-/**
- * @private
- * @return {string}
- */
-function newObjStr() {
-
-  /** @type {string} */
-  var objStr;
-
-  objStr =  'source= {  "a": "d", "1": 4, "a1": "1",\n';
-  objStr += '           "b": "e", "2": 5, "b2": "2",\n';
-  objStr += '           "c": "f", "3": 6, "c3": "3"  }';
-  return indentStr(objStr, 3);
 }
