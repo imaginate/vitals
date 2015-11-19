@@ -32,7 +32,7 @@ module.exports = _toRegex;
  * @param {string=} flags
  * @param {boolean=} anyChars
  * @param {?RegExp=} escapeChars
- * @return {boolean}
+ * @return {!RegExp}
  */
 function _toRegex(source, flags, anyChars, escapeChars) {
   source = String(source);
