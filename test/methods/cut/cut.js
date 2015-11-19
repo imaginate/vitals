@@ -436,9 +436,9 @@ describe('vitals.cut (sections:js,base)', function() {
         assert(str === be);
       });
 
-      title = callStr(newStr(), [ [ 'a' ], 1, 'c' ]);
+      title = callStr(newStr(), [ { 'a': 2 }, 1, 'c' ]);
       it(title, function() {
-        var str = vitals.cut(newStr(), [ [ 'a' ], 1, 'c' ]);
+        var str = vitals.cut(newStr(), [ { 'a': 2 }, 1, 'c' ]);
         var be = 'ab23ab23';
         assert(str === be);
       });
