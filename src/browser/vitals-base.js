@@ -1813,14 +1813,14 @@ var cut = (function cutPrivateScope() {
   function _bind(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function filter() { func.call(thisArg); };
+      return function filter() { return func.call(thisArg); };
       case 1:
-      return function filter(val) { func.call(thisArg, val); };
+      return function filter(val) { return func.call(thisArg, val); };
       case 2:
-      return function filter(val, key) { func.call(thisArg, val, key); };
+      return function filter(val, key) { return func.call(thisArg, val, key); };
     }
     return function filter(val, key, obj) {
-      func.call(thisArg, val, key, obj);
+      return func.call(thisArg, val, key, obj);
     };
   }
 
