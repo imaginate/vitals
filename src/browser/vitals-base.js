@@ -436,6 +436,24 @@ function _splitKeys(keys) {
   return keys.split(separator);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - TO-REGEX
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {*} source
+ * @param {string=} flags
+ * @param {boolean=} anyChars
+ * @param {?RegExp=} escapeChars
+ * @return {!RegExp}
+ */
+function _toRegex(source, flags, anyChars, escapeChars) {
+  source = String(source);
+  source = _escape(source, anyChars, escapeChars);
+  flags = flags || '';
+  return flags ? new RegExp(source, flags) : new RegExp(source);
+}
+
 
 // *****************************************************************************
 // SECTION: BASE JS METHODS
@@ -1234,7 +1252,7 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = is.regex(pattern) ? pattern : _toRegex(pattern, 'g', true);
     return source.replace(pattern, '');
   }
 
