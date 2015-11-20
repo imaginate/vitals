@@ -871,20 +871,20 @@ var cut = (function cutPrivateScope() {
    *   array-like object is supplied it is sliced before removing the property.
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {number} key - The index to remove.
-   * @param {number=} toKey - If defined all indexes from key to toKey (but not
-   *   including toKey) are removed.
+   * @param {number} index - The index to remove.
+   * @param {number=} toIndex - If defined all indexes from index to toIndex
+   *   (not including toIndex) are removed.
    * @return {!Array}
    */
-  cut.index = function cutIndex(source, key, toKey) {
+  cut.index = function cutIndex(source, index, toIndex) {
 
     if ( !is._obj(source)       ) throw _error.type('source',        'index');
     if ( !is.num(source.length) ) throw _error.type('source.length', 'index');
-    if ( !is.num(key)           ) throw _error.type('key',           'index');
-    if ( !is('num=', toKey)     ) throw _error.type('toKey',         'index');
+    if ( !is.num(index)         ) throw _error.type('index',         'index');
+    if ( !is('num=', toIndex)   ) throw _error.type('toIndex',       'index');
 
     source = is.arr(source) ? source : _sliceArr(source);
-    return _cutIndex(source, key, toKey);
+    return _cutIndex(source, index, toIndex);
   };
   // define shorthand
   cut.i = cut.index;
