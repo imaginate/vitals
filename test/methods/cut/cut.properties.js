@@ -336,11 +336,3 @@ function newObj() {
 function newArr() {
   return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
 }
-
-/**
- * @private
- * @return {string}
- */
-function newStr() {
-  return 'abc123a1b2c3';
-}
