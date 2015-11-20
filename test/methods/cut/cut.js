@@ -494,6 +494,27 @@ describe('vitals.cut (sections:js,base)', function() {
         });
       });
 
+      title = callStr({});
+      it(title, function() {
+        assert.throws(function() {
+          vitals.cut({});
+        });
+      });
+
+      title = callStr(1, 1);
+      it(title, function() {
+        assert.throws(function() {
+          vitals.cut(1, 1);
+        });
+      });
+
+      title = callStr({}, function(){}, false);
+      it(title, function() {
+        assert.throws(function() {
+          vitals.cut({}, function(){}, false);
+        });
+      });
+
     });
   });
 
