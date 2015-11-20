@@ -934,6 +934,8 @@ var cut = (function cutPrivateScope() {
 
     return _cutProp(source, val);
   };
+  // define shorthand
+  cut.prop = cut.property;
 
   /**
    * Removes a property by key from an object and returns the object.
