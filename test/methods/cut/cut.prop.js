@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - CUT.PROPERTY
  * -----------------------------------------------------------------------------
- * @see [vitals.cut.prop]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.prop.js}
+ * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.cut.prop.property (sections:js,base)', function() {
+describe('vitals.cut.property (sections:js,base)', function() {
   var title;
 
   describe('object tests', function() {
