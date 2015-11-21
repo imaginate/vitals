@@ -1,10 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - BROWSER VERSION - CONFIGURE JS METHODS
+ * VITALS JS - BROWSER VERSION - STRICT JS METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
- *   performance, and reliability. The configure section includes methods for
- *   configuring objects and object properties as allowed in ES5+.
+ *   performance, and reliability.
  * @version 2.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
@@ -41,7 +40,7 @@
 
 
 // *****************************************************************************
-// SECTION: CONFIGURE JS METHODS
+// SECTION: STRICT JS METHODS
 // *****************************************************************************
 
 // INSERT methods/amend.js

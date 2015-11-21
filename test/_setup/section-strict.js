@@ -26,4 +26,4 @@ require('../_helpers/display');
 global.assert = require('assert');
 
 // appends vitals to global
-require('../../node-vitals.js')(1, 'configure');
+require('../../node-vitals.js')(1, 'strict');

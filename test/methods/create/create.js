@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.create (sections:js,configure)', function() {
+describe('vitals.create (sections:js,strict)', function() {
   var title;
 
   title = titleStr('basic', 'should create new obj with given prototype');

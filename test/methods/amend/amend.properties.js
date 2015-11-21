@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.amend.properties (sections:js,configure)', function() {
+describe('vitals.amend.properties (sections:js,strict)', function() {
   var title;
 
   title = titleStr('basic', 'should amend props to obj');

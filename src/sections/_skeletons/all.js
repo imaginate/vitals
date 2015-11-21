@@ -58,7 +58,7 @@ var is = require('node-are').is;
 
 
 // *****************************************************************************
-// SECTION: CONFIGURE JS METHODS
+// SECTION: STRICT JS METHODS
 // *****************************************************************************
 
 // INSERT methods/amend.js
