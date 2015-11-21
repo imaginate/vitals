@@ -53,11 +53,9 @@ Base Methods                                                              | Stri
 
 
 ## Other Details
-**contributing:** [see contributing guideline](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)
-
-**bugs/improvements:** [open an issue](https://github.com/imaginate/vitals/issues)
-
-**questions:** learn@algorithmiv.com
+**contributing:** [see contributing guideline](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)<br>
+**bugs/improvements:** [open an issue](https://github.com/imaginate/vitals/issues)<br>
+**questions:** learn@algorithmiv.com<br>
 
 
 --
