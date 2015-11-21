@@ -77,7 +77,7 @@ describe('vitals.cut.keys (sections:js,base)', function() {
 
       title = callStr('<object>', 1, 'b');
       it(title, function() {
-        var obj = vitals.cut(newObj(), 1, 'b');
+        var obj = vitals.cut.keys(newObj(), 1, 'b');
         assert(  has(obj, 'a')  );
         assert( !has(obj, 'b')  );
         assert(  has(obj, 'c')  );
@@ -91,7 +91,7 @@ describe('vitals.cut.keys (sections:js,base)', function() {
 
       title = callStr('<object>', [ 'a', 'b', 2, /^[0-9]$/ ]);
       it(title, function() {
-        var obj = vitals.cut(newObj(), [ 'a', 'b', 2, /^[0-9]$/ ]);
+        var obj = vitals.cut.keys(newObj(), [ 'a', 'b', 2, /^[0-9]$/ ]);
         assert( !has(obj, 'a')  );
         assert( !has(obj, 'b')  );
         assert(  has(obj, 'c')  );
