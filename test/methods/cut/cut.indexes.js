@@ -35,7 +35,7 @@ describe('vitals.cut.indexes (sections:js,base)', function() {
     title = callStr('<array>', -1);
     it(title, function() {
       var arr = vitals.cut.ii(newArr(), -1);
-      var be = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+      var be = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2' ];
       each(be, function(val, i) {
         assert(arr[i] === val);
       });
@@ -59,19 +59,19 @@ describe('vitals.cut.indexes (sections:js,base)', function() {
       });
     });
 
-    title = callStr('<array>', [ 8, 2, 0, 5 ]);
+    title = callStr('<array>', 2, -1, 0);
     it(title, function() {
-      var arr = vitals.cut.ii(newArr(), [ 8, 2, 0, 5 ]);
-      var be = [ 'b', 1, 2, 'a1', 'b2' ];
+      var arr = vitals.cut.ii(newArr(), 2, -1, 0);
+      var be = [ 'b', 1, 2, 3, 'a1', 'b2' ];
       each(be, function(val, i) {
         assert(arr[i] === val);
       });
     });
 
-    title = callStr('<array>', 8, 2, 0, 5, -6);
+    title = callStr('<array>', [ 2, -1, 0 ]);
     it(title, function() {
-      var arr = vitals.cut.ii(newArr(), 8, 2, 0, 5, -6);
-      var be = [ 'b', 1, 2, 'a1', 'b2' ];
+      var arr = vitals.cut.ii(newArr(), [ 2, -1, 0 ]);
+      var be = [ 'b', 1, 2, 3, 'a1', 'b2' ];
       each(be, function(val, i) {
         assert(arr[i] === val);
       });
