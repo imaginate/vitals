@@ -1,150 +1,65 @@
-# Vitals.js ~ Powerful & Easy JavaScript Shortcuts
+# vitals
+### Give Your JS Life
+A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#js-methods) attempt to reduce all of the JavaScript functionality that you need to only 20 methods (its at 10 right now). It also contains [strict methods](#js-methods) that give you more control over object states (e.g. [setting static type properties](https://github.com/imaginate/vitals/blob/master/methods/amend.js#L60-72)), and [node methods](#node-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
 
-#### Vitals.js is a collection of cross-browser compatible JavaScript & DOM shortcut methods that make programming in JavaScript simpler! You will be able to accurately type check values, deep freeze objects, create elements, and much more with ease. With an intuitive API and clear documentation you will rejoice from the time saved and the stress lost!
 
-<br />
-## Three Examples
-Here are three examples of how Vitals.js will save you time, improve your code's readability, and make you feel just plain awesome!
-- **Precise & Painless Type Checking**
+## Example
+#### Own That String
 ```javascript
-// Check if the variable arr is an array of strings
-var arr, strArrCheck;
-arr = [ 'str', 'str', 5 ];
-// CHECK GOES HERE: Set strArrCheck to the result of the check
-if (strArrCheck) {
-  // Do something
-}
-else {
-  // Do something else
-}
-///////////////////////////////////////////////////////////////////////////
+// append each base vitals method to the global object
+require('node-vitals')(2, 'base');
 
-// Without Vitals
-strArrCheck = (Object.prototype.toString.call(arr) === '[object Array]');
-var i = (strArrCheck) ? arr.length : 0;
-while (i-- && strArrCheck) {
-  strArrCheck = (typeof arr[i] === 'string');
-}
+var v, i, t, a, l, s;
+var life;
 
-// With Vitals
-strArrCheck = Vx.checkType(arr, '!strings');
-```
-- **Easy & Seamless Error Throwing**
-```javascript
-/**
- * An example method.
- * @param {(!Object|function)} obj
- * @param {(string|undefined)} str
- */
-function exampleMethod(obj, str) {
-  // CHECK GOES HERE: Check the method's arguments for invalid types
-  // Method does something else ...
-}
-///////////////////////////////////////////////////////////////////////////////////////
-
-// Without Vitals
-var checkArgsVals = !obj || (typeof obj !== 'object' && typeof obj !== 'function') ||
-                    (typeof str !== 'string' && typeof str !== 'undefined');
-if (!checkArgsVals) {
-  throw new TypeError('the error message');
-}
-
-// With Vitals
-Vx.checkArgs(obj, '!object|function', str, 'string=');
-```
-- **Short & Simple DOM Manipulation**
-```javascript
-// Create a new span element with 'some text' and the id of 'childElem'.
-// Then append it to the first element with the class of 'parentClass'.
-
-var parentElem, childElem;
-// CREATION GOES HERE: Set childElem to a new span element and append it
-///////////////////////////////////////////////////////////////////////////////////////
-
-// Without Vitals
-childElem = document.createElement('span');
-childElem.id = 'childElem';
-if ('textContent' in childElem) {
-  childElem.textContent = 'some text';
-}
-else {
-  childElem.innerText = 'some text';
-}
-parentElem = document.getElementByClassName('parentClass')[0]; // is NOT cross-browser compatible
-parentElem.appendChild(childElem);
-
-// With Vitals
-childElem = Vx.makeElem({
-  tag : 'span',
-  id  : 'childElem',
-  text: 'some text'
-});
-parentElem = Vx.getElemByClass('parentClass'); // is cross-browser compatible
-parentElem.appendChild(childElem);
+life = '123abc345XYZ';
+v = slice(life, -3, -1); // "XY"
+i = fill(4, '+>'); // "+>+>+>+>"
+t = cut(life, 1, 2, 3, /[a-z]/g); // "45XYZ"
+a = has(life, 'Z') ? 'life has it' : 'meh'; // "life has it"
+l = remap(life, /[0-9]/, '0$&'); // "0123abc345XYZ"
+s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 ```
 
-<br />
-## Getting Started
-- Download [vitals.min.js](https://github.com/imaginate/vitals/blob/master/src/vitals.min.js)
-- Add it to your HTML ``` <head> ``` or ``` <body> ``` (before any scripts that will use the shortcuts)
-```html
-<html>
-    <head>
-        ...
-        <script src="vitals.min.js"></script>
-        ...
-    </head>
-    <body>...</body>
-</html>
-```
-- Use the global object, ``` Vitals ``` or ``` Vx ```, to access any shortcut
-```javascript
-Vitals.checkType( anyValue, theTypeString ) // returns: boolean
-Vitals.isValidTypeString( theTypeString ) // returns: boolean
-Vitals.checkArgs( theArg, theTypeString, theArg, theTypeString, ...) // returns: boolean
-Vitals.getTypeOf( anyValue ) // returns: string
-Vitals.freezeObj( theObject [, applyDeepFreeze ]) // returns: !Object
-Vitals.hasOwnProp( theObject, theProperty ) // returns: boolean
-Vitals.getElemById( theIdName ) // returns: ?Element
-Vitals.getElemByClass( theClassName [, theIndex [, theRoot ]]) // returns: ?Element
-Vitals.getElemByTag( theTagName [, theIndex [, theRoot ]]) // returns: ?Element
-Vitals.getElemsByClass( theClassName [, theRoot ]) // returns: ?Array<!Element>
-Vitals.getElemsByTag( theTagName [, theRoot ]) // returns: ?Array<!Element>
-Vitals.makeElem( theTagName|allTheSettings ) // returns: !Element
-Vitals.setElemText( theElement, theText ) // returns: !Element
-Vitals.addElemText( theElement, theText ) // returns: !Element
-```
+## Install & Use
+#### node.js
+- ``` npm install node-vitals ```
+- ``` var vitals = require('node-vitals')([makeGlobal][, ...methods]) ```
 
-<br />
-## The Shortcuts
-- **[checkType](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js)** - Allows you to quickly check a value's data type. A shortcut for native operators and methods like [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof), [instanceof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/instanceof), [Array.isArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray), and many more.
-- **[isValidTypeString](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/isValidTypeString.js)** - Allows you to verify a data type string before you submit it to [Vx.checkType](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkType.js).
-- **[checkArgs](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/checkArgs.js)** - Allows you to easily catch invalid argument data types and throw custom error messages.
-- **[getTypeOf](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/getTypeOf.js)** - A shortcut for the native [typeof](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof) operator with the added ability to identify a null, array, document, or element type from an object.
-- **[freezeObj](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/freezeObj.js)** - Allows you to deep or shallow freeze objects at will. A shortcut for the native [Object.freeze](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze).
-- **[hasOwnProp](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/js-methods/hasOwnProp.js)** - A shortcut for the native [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
-- **[getElemById](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemById.js)** - A shortcut for the native [Document.getElementById](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
-- **[getElemByClass](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByClass.js)** - A shortcut for the native [( Document | Element ).getElementsByClassName[ index ]](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName).
-- **[getElemByTag](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName[ index ]](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
-- **[getElemsByClass](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByClass.js)** - A shortcut for the native [( Document | Element ).getElementsByClassName](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementsByClassName).
-- **[getElemsByTag](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/getElemsByTag.js)** - A shortcut for the native [( Document | Element ).getElementsByTagName](https://developer.mozilla.org/en-US/docs/Web/API/document/getElementsByTagName).
-- **[makeElem](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/makeElem.js)** - A shortcut for the native [Document.createElement](https://developer.mozilla.org/en-US/docs/Web/API/Document/createElement) and optionally a shortcut to set the new element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) / [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx), [innerHTML](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML), [id](https://developer.mozilla.org/en-US/docs/Web/API/Element/id), and [className](https://developer.mozilla.org/en-US/docs/Web/API/Element/className).
-- **[setElemText](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/setElemText.js)** - A shortcut to set an element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) or [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx) property.
-- **[addElemText](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/dom-methods/addElemText.js)** - A shortcut to add to an element's [textContent](https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent) or [innerText](https://msdn.microsoft.com/en-us/library/ms533899(v=vs.85).aspx) property.
+#### browser
+- download [vitals.min.js](https://github.com/imaginate/vitals/blob/master/src/browser/vitals.min.js)
+- ``` <script src="vitals.min.js"></script> ``` ([add to html](http://javascript.info/tutorial/adding-script-html#external-scripts))
+- ``` vitals.<method> ``` (appended to [window](https://developer.mozilla.org/en-US/docs/Web/API/Window))
 
-<br />
-## The Master Methods
-- **[set](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/master-methods/set.js)** - Allows you to set the default values for all of our shortcuts.
-- **[reset](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/master-methods/reset.js)** - Allows you to reset the default values for all of our shortcuts.
+#### amd
+- download [vitals.min.js](https://github.com/imaginate/vitals/blob/master/src/browser/vitals.min.js)
+- ``` require([ 'vitals' ], function(null) { ... }) ```
+- ``` vitals.<method> ``` (appended to [window](https://developer.mozilla.org/en-US/docs/Web/API/Window))
 
-<br />
-## Contact Us
-- **Contributing:** First read our [guideline for contributing](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md) then open an issue or email us.
-- **API Questions:** First read the [Public API](https://github.com/imaginate/vitals/blob/master/src/pre-compiled-parts/public-api.js) then open an issue or email us.
-- **Bugs & Improvements:** [Open an issue](https://github.com/imaginate/vitals/issues) on this GitHub repository.
-- **All Other Questions:** Send an email to [learn@algorithmiv.com](mailto:learn@algorithmiv.com).
 
-<br />
+## JS Methods
+Base Methods                                                              | Strict Methods
+:-----------------------------------------------------------------------: | :-------------------------------------------------------------------------:
+[clone](https://github.com/imaginate/vitals/blob/master/methods/clone.js) | [amend](https://github.com/imaginate/vitals/blob/master/methods/amend.js)
+[cut](https://github.com/imaginate/vitals/blob/master/methods/cut.js)     | [create](https://github.com/imaginate/vitals/blob/master/methods/create.js)
+[each](https://github.com/imaginate/vitals/blob/master/methods/each.js)   | [freeze](https://github.com/imaginate/vitals/blob/master/methods/freeze.js)
+[fill](https://github.com/imaginate/vitals/blob/master/methods/fill.js)   | [seal](https://github.com/imaginate/vitals/blob/master/methods/seal.js)
+[fuse](https://github.com/imaginate/vitals/blob/master/methods/fuse.js)   | 
+[get](https://github.com/imaginate/vitals/blob/master/methods/get.js)     | 
+[has](https://github.com/imaginate/vitals/blob/master/methods/has.js)     | 
+[remap](https://github.com/imaginate/vitals/blob/master/methods/remap.js) | 
+[slice](https://github.com/imaginate/vitals/blob/master/methods/slice.js) | 
+[until](https://github.com/imaginate/vitals/blob/master/methods/until.js) | 
+
+
+## Other Details
+**contributing:** [see contributing guideline](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)
+
+**bugs/improvements:** [open an issue](https://github.com/imaginate/vitals/issues)
+
+**questions:** learn@algorithmiv.com
+
+
 --
 **Happy Developing,**
 
