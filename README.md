@@ -1,6 +1,6 @@
 # vitals
 ### Give Your JS Life
-A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#js-methods) attempt to reduce all of the JavaScript functionality that you need to only 20 methods (its at 10 right now). It also contains [strict methods](#js-methods) that give you more control over object states (e.g. [setting static type properties](https://github.com/imaginate/vitals/blob/master/methods/amend.js#L60-72)), and [node methods](#node-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
+A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#js-methods) give you all of the basic JavaScript functionality (100+ methods) with only 12 methods. It also contains [strict methods](#js-methods) that give you more control over easily handling object states (such as [setting static type properties](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L60-72)), and [node methods](#node-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
 
 
 ## Example
@@ -38,18 +38,25 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 
 
 ## JS Methods
-Base Methods                                                              | Strict Methods
-:-----------------------------------------------------------------------: | :-------------------------------------------------------------------------:
-[clone](https://github.com/imaginate/vitals/blob/master/methods/clone.js) | [amend](https://github.com/imaginate/vitals/blob/master/methods/amend.js)
-[cut](https://github.com/imaginate/vitals/blob/master/methods/cut.js)     | [create](https://github.com/imaginate/vitals/blob/master/methods/create.js)
-[each](https://github.com/imaginate/vitals/blob/master/methods/each.js)   | [freeze](https://github.com/imaginate/vitals/blob/master/methods/freeze.js)
-[fill](https://github.com/imaginate/vitals/blob/master/methods/fill.js)   | [seal](https://github.com/imaginate/vitals/blob/master/methods/seal.js)
-[fuse](https://github.com/imaginate/vitals/blob/master/methods/fuse.js)   | 
-[get](https://github.com/imaginate/vitals/blob/master/methods/get.js)     | 
-[has](https://github.com/imaginate/vitals/blob/master/methods/has.js)     | 
-[remap](https://github.com/imaginate/vitals/blob/master/methods/remap.js) | 
-[slice](https://github.com/imaginate/vitals/blob/master/methods/slice.js) | 
-[until](https://github.com/imaginate/vitals/blob/master/methods/until.js) | 
+Base Methods                                                                  | Strict Methods
+:---------------------------------------------------------------------------: | :-----------------------------------------------------------------------------:
+[clone](https://github.com/imaginate/vitals/blob/master/src/methods/clone.js) | [amend](https://github.com/imaginate/vitals/blob/master/src/methods/amend.js)
+[cut](https://github.com/imaginate/vitals/blob/master/src/methods/cut.js)     | [create](https://github.com/imaginate/vitals/blob/master/src/methods/create.js)
+[each](https://github.com/imaginate/vitals/blob/master/src/methods/each.js)   | [freeze](https://github.com/imaginate/vitals/blob/master/src/methods/freeze.js)
+[fill](https://github.com/imaginate/vitals/blob/master/src/methods/fill.js)   | [seal](https://github.com/imaginate/vitals/blob/master/src/methods/seal.js)
+[fuse](https://github.com/imaginate/vitals/blob/master/src/methods/fuse.js)   | 
+[get](https://github.com/imaginate/vitals/blob/master/src/methods/get.js)     | 
+[has](https://github.com/imaginate/vitals/blob/master/src/methods/has.js)     | 
+[remap](https://github.com/imaginate/vitals/blob/master/src/methods/remap.js) | 
+[slice](https://github.com/imaginate/vitals/blob/master/src/methods/slice.js) | 
+to*                                                                           | 
+trim*                                                                         | 
+[until](https://github.com/imaginate/vitals/blob/master/src/methods/until.js) | 
+\* Scheduled for future release.
+
+
+## Node Methods
+Coming soon.
 
 
 ## Other Details
