@@ -1,4 +1,4 @@
-##License for [Vitals.js](http://www.algorithmiv.com/vitals)
+##License for [vitals.js](http://www.algorithmiv.com/vitals)
 
 **Copyright 2015 Adam A Smith [github.com/imaginate](https://github.com/imaginate)**
 
