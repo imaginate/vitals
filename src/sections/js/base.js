@@ -895,6 +895,16 @@ var cut = (function cutPrivateScope() {
     if ( !is._obj(source) ) throw _error.type('source', 'type');
     if ( !is.str(type)    ) throw _error.type('type',   'type');
 
+    try {
+      is(type, '_');
+    }
+    catch (err) {
+      throw new RangeError(
+        'Invalid type value for vitals.cut.type call. ' +
+        'See error from are: ' + err.toString()
+      );
+    }
+
     source = is.args(source) ? _sliceArr(source) : source;
     return _cutType(source, type);
   };
