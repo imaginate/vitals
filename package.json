@@ -1,0 +1,50 @@
+{
+  "name": "node-vitals",
+  "version": "2.0.0",
+  "description": "Less = More |> A JavaScript library of utility methods designed for elegance, performance, and reliability;",
+  "main": "node-vitals.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/imaginate/vitals.git"
+  },
+  "author": "Adam Smith <adam@imaginate.life> (https://github.com/imaginate)",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "node make test-methods"
+  },
+  "bugs": {
+    "url": "https://github.com/imaginate/vitals/issues"
+  },
+  "homepage": "http://www.algorithmiv.com/vitals",
+  "dependencies": {
+    "node-are": "0.x"
+  },
+  "devDependencies": {
+    "mocha": "2.x",
+    "colors": "1.x"
+  },
+  "keywords": [
+    "imaginate",
+    "javascript vitals",
+    "node vitals",
+    "js vitals",
+    "vitals js",
+    "vitalsjs",
+    "vitals",
+    "javascript",
+    "utilities",
+    "utility",
+    "dom utilities",
+    "dom utility",
+    "functional utilities",
+    "functional utility",
+    "javascript utilities",
+    "javascript utility",
+    "nodejs utilities",
+    "nodejs utility",
+    "node utilities",
+    "node utility",
+    "js utilities",
+    "js utility"
+  ]
+}

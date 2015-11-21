@@ -1,4 +1,0 @@
-/* Vitals.js (v1.0.7) (learn@algorithmiv.com)
- * Author: Adam Smith (adamsmith@algorithmiv.com)
- * Copyright (c) 2015 Adam A Smith (github.com/imaginate)
- * The Apache License (algorithmiv.com/vitals/license) */
