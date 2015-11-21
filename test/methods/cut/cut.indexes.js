@@ -59,6 +59,15 @@ describe('vitals.cut.indexes (sections:js,base)', function() {
       });
     });
 
+    title = callStr('<array>', [ 8, 2, 0, 5 ]);
+    it(title, function() {
+      var arr = vitals.cut.ii(newArr(), [ 8, 2, 0, 5 ]);
+      var be = [ 'b', 1, 2, 'a1', 'b2' ];
+      each(be, function(val, i) {
+        assert(arr[i] === val);
+      });
+    });
+
     title = callStr('<array>', 8, 2, 0, 5, -6);
     it(title, function() {
       var arr = vitals.cut.ii(newArr(), 8, 2, 0, 5, -6);
