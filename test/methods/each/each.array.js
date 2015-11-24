@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.each.array (sections:js,base)', function() {
+describe('vitals.each.array (section:base)', function() {
   var title;
 
   // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]

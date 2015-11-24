@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.cut.type (sections:js,base)', function() {
+describe('vitals.cut.type (section:base)', function() {
   var title;
 
   title = 'should delete props from obj where is(type, value)';

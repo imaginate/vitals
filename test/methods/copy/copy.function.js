@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy.function (sections:js,base)', function() {
+describe('vitals.copy.function (section:base)', function() {
   var title;
 
   title = 'should return new function with same body ';

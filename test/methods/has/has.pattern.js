@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.has.pattern (sections:js,base)', function() {
+describe('vitals.has.pattern (section:base)', function() {
   var title;
 
   describe('basic tests', function() {

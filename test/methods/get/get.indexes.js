@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.get.indexes (sections:js,base)', function() {
+describe('vitals.get.indexes (section:base)', function() {
   var title;
 
   describe('array tests', function() {

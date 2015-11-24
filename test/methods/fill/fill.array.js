@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.fill.array (sections:js,base)', function() {
+describe('vitals.fill.array (section:base)', function() {
   var title;
 
   describe('basic tests', function() {

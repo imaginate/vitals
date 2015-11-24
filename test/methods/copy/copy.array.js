@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy.array (sections:js,base)', function() {
+describe('vitals.copy.array (section:base)', function() {
   var title;
 
   title = 'should return new array with same values as input';

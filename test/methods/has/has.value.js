@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.has.value (sections:js,base)', function() {
+describe('vitals.has.value (section:base)', function() {
   var title;
 
   describe('object tests', function() {

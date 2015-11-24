@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.cut.keys (sections:js,base)', function() {
+describe('vitals.cut.keys (section:base)', function() {
   var title;
 
   title = titleStr('basic', 'should delete props from obj where key === val');

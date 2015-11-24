@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy (sections:js,base)', function() {
+describe('vitals.copy (section:base)', function() {
   var title;
 
   title = titleStr('basic', 'should return same value as input');

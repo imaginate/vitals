@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.get.keys.byValue (sections:js,base)', function() {
+describe('vitals.get.keys.byValue (section:base)', function() {
   var title;
 
   describe('basic tests', function() {

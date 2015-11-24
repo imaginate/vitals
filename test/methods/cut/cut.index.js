@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.cut.index (sections:js,base)', function() {
+describe('vitals.cut.index (section:base)', function() {
   var title;
 
   title = titleStr('basic', 'should splice array indexes from index to toIndex');

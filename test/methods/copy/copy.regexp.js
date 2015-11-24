@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy.regexp (sections:js,base)', function() {
+describe('vitals.copy.regexp (section:base)', function() {
   var title;
 
   title = 'should return new regex with same source and flags as input ';

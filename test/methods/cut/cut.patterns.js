@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.cut.patterns (sections:js,base)', function() {
+describe('vitals.cut.patterns (section:base)', function() {
   var title;
 
   title = 'should remove all substring patterns from string';

@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.freeze (sections:js,strict)', function() {
+describe('vitals.freeze (section:strict)', function() {
   var title;
 
   title = titleStr('basic', 'should shallowly freeze the object');

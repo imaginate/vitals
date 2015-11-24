@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy.object (sections:js,base)', function() {
+describe('vitals.copy.object (section:base)', function() {
   var title;
 
   title = 'should return new object with same key => value pairs as input';
