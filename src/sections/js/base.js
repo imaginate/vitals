@@ -316,6 +316,34 @@ var _own = (function _ownPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN-ENUM
+////////////////////////////////////////////////////////////////////////////////
+
+var _ownEnum = (function _ownEnumPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _ownEnum(source, key) {
+    return !!source && _propertyIsEnumerable.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN-ENUM
+  return _ownEnum;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - SLICE-ARR
 ////////////////////////////////////////////////////////////////////////////////
 
