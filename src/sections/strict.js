@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - STRICT JS METHODS
+ * VITALS JS - NODE VERSION - STRICT METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -277,7 +277,7 @@ function _splitKeys(keys) {
 
 
 // *****************************************************************************
-// SECTION: STRICT JS METHODS
+// SECTION: STRICT METHODS
 // *****************************************************************************
 
 

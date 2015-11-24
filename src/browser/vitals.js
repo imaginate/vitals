@@ -19,7 +19,7 @@ _nilmap:"nullmap",_strmap:"stringmap",_nummap:"numbermap",_boolmap:"booleanmap",
 
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - BROWSER VERSION - ALL JS METHODS
+ * VITALS JS - BROWSER VERSION - ALL METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -552,7 +552,7 @@ function _splitKeys(keys) {
 
 
 // *****************************************************************************
-// SECTION: BASE JS METHODS
+// SECTION: BASE METHODS
 // *****************************************************************************
 
 
@@ -4009,7 +4009,7 @@ var until = (function untilPrivateScope() {
 
 
 // *****************************************************************************
-// SECTION: STRICT JS METHODS
+// SECTION: STRICT METHODS
 // *****************************************************************************
 
 

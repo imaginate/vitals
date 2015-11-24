@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - BROWSER VERSION - ALL JS METHODS
+ * VITALS JS - BROWSER VERSION - ALL METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -45,7 +45,7 @@
 
 
 // *****************************************************************************
-// SECTION: BASE JS METHODS
+// SECTION: BASE METHODS
 // *****************************************************************************
 
 // INSERT methods/copy.js
@@ -61,7 +61,7 @@
 
 
 // *****************************************************************************
-// SECTION: STRICT JS METHODS
+// SECTION: STRICT METHODS
 // *****************************************************************************
 
 // INSERT methods/amend.js

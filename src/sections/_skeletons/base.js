@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - ALL JS METHODS
+ * VITALS JS - NODE VERSION - BASE METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -27,7 +27,6 @@ var is = require('node-are').is;
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT methods/_helpers/cloneObj.js
 // INSERT methods/_helpers/errorAid.js
 // INSERT methods/_helpers/escape.js
 // INSERT methods/_helpers/inArr.js
@@ -43,7 +42,7 @@ var is = require('node-are').is;
 
 
 // *****************************************************************************
-// SECTION: BASE JS METHODS
+// SECTION: BASE METHODS
 // *****************************************************************************
 
 // INSERT methods/copy.js
@@ -59,32 +58,18 @@ var is = require('node-are').is;
 
 
 // *****************************************************************************
-// SECTION: STRICT JS METHODS
-// *****************************************************************************
-
-// INSERT methods/amend.js
-// INSERT methods/create.js
-// INSERT methods/freeze.js
-// INSERT methods/seal.js
-
-
-// *****************************************************************************
 // SECTION: END
 // *****************************************************************************
 
 module.exports = {
-  amend:  amend,
   copy:   copy,
-  create: create,
   cut:    cut,
   each:   each,
   fill:   fill,
-  freeze: freeze,
   fuse:   fuse,
   get:    get,
   has:    has,
   remap:  remap,
-  seal:   seal,
   slice:  slice,
   until:  until
 };

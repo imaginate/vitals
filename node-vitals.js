@@ -90,10 +90,9 @@ var DEFAULT_METHODS = [ 'all' ];
  * @const
  */
 var SECTIONS = {
-  'all':       /^all$/i,
-  'js/all':    /^(?:all)?-?js-?(?:all)?$/i,
-  'js/base':   /^(?:js)?-?base-?(?:js)?$/i,
-  'js/strict': /^(?:js)?-?strict-?(?:js)?$/i
+  'all':    /^all$/i,
+  'base':   /^base$/i,
+  'strict': /^strict$/i
 };
 
 /**

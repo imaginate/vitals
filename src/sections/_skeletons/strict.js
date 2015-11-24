@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - BASE JS METHODS
+ * VITALS JS - NODE VERSION - STRICT METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -27,34 +27,24 @@ var is = require('node-are').is;
 // PRIVATE HELPERS
 // *****************************************************************************
 
+// INSERT methods/_helpers/cloneObj.js
 // INSERT methods/_helpers/errorAid.js
-// INSERT methods/_helpers/escape.js
-// INSERT methods/_helpers/inArr.js
-// INSERT methods/_helpers/inObj.js
 // INSERT methods/_helpers/inStr.js
 // INSERT methods/_helpers/match.js
 // INSERT methods/_helpers/merge.js
 // INSERT methods/_helpers/own.js
-// INSERT methods/_helpers/ownEnum.js
 // INSERT methods/_helpers/sliceArr.js
-// INSERT methods/_helpers/sliceStr.js
 // INSERT methods/_helpers/splitKeys.js
 
 
 // *****************************************************************************
-// SECTION: BASE JS METHODS
+// SECTION: STRICT METHODS
 // *****************************************************************************
 
-// INSERT methods/copy.js
-// INSERT methods/cut.js
-// INSERT methods/each.js
-// INSERT methods/fill.js
-// INSERT methods/fuse.js
-// INSERT methods/get.js
-// INSERT methods/has.js
-// INSERT methods/remap.js
-// INSERT methods/slice.js
-// INSERT methods/until.js
+// INSERT methods/amend.js
+// INSERT methods/create.js
+// INSERT methods/freeze.js
+// INSERT methods/seal.js
 
 
 // *****************************************************************************
@@ -62,14 +52,8 @@ var is = require('node-are').is;
 // *****************************************************************************
 
 module.exports = {
-  copy:   copy,
-  cut:    cut,
-  each:   each,
-  fill:   fill,
-  fuse:   fuse,
-  get:    get,
-  has:    has,
-  remap:  remap,
-  slice:  slice,
-  until:  until
+  amend:  amend,
+  create: create,
+  freeze: freeze,
+  seal:   seal
 };
