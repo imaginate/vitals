@@ -107,7 +107,8 @@ global.each = function each(val, iteratee) {
 
   // iterate specified number of times
   if ( is.num(val) ) {
-    while(cycles--) iteratee();
+    prop = 0;
+    while(cycles--) iteratee(prop++);
     return null;
   }
 

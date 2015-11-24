@@ -122,7 +122,7 @@ var each = (function eachPrivateScope() {
    * A shortcut for invoking an action a set number of times.
    * @public
    * @param {number} count
-   * @param {function} action
+   * @param {function(number=)} action
    * @param {Object=} thisArg
    */
   each.cycle = function eachCycle(count, action, thisArg) {
@@ -197,8 +197,18 @@ var each = (function eachPrivateScope() {
    * @param {Object=} thisArg
    */
   function _eachCycle(count, action, thisArg) {
+
+    /** @type {number} */
+    var i;
+
     action = is.undefined(thisArg) ? action : _bind(action, thisArg);
-    while(count--) action();
+    if (action.length) {
+      i = 0;
+      while(count--) action(i++);
+    }
+    else {
+      while(count--) action();
+    }
   }
 
   //////////////////////////////////////////////////////////

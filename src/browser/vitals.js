@@ -2047,7 +2047,7 @@ var each = (function eachPrivateScope() {
    * A shortcut for invoking an action a set number of times.
    * @public
    * @param {number} count
-   * @param {function} action
+   * @param {function(number=)} action
    * @param {Object=} thisArg
    */
   each.cycle = function eachCycle(count, action, thisArg) {
@@ -2122,8 +2122,18 @@ var each = (function eachPrivateScope() {
    * @param {Object=} thisArg
    */
   function _eachCycle(count, action, thisArg) {
+
+    /** @type {number} */
+    var i;
+
     action = is.undefined(thisArg) ? action : _bind(action, thisArg);
-    while(count--) action();
+    if (action.length) {
+      i = 0;
+      while(count--) action(i++);
+    }
+    else {
+      while(count--) action();
+    }
   }
 
   //////////////////////////////////////////////////////////
@@ -2187,7 +2197,7 @@ var fill = (function fillPrivateScope() {
    *   the string (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {*} val - The value to fill the array, object, or string with.
    * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= arr.length] Only for fill.array.
+   * @param {number=} end - [default= source.length] Only for fill.array.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
@@ -2276,7 +2286,7 @@ var fill = (function fillPrivateScope() {
    * Fills a new string with specified values.
    * @public
    * @param {number} count
-   * @param {*} val - Value converted to string via String(val).
+   * @param {*} val - All val types are converted to string via String(val).
    * @return {string}
    */
   fill.string = function fillString(count, val) {
