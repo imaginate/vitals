@@ -38,20 +38,20 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 
 <br>
 ## Methods
-[Base Methods](#base-methods) | [Strict Methods](#strict-methods)
-:----------:                  | :------------:
-[clone](#vitals-clone)        | [amend](#vitals-amend)
-[cut](#vitals-cut)            | [create](#vitals-create)
-[each](#vitals-each)          | [freeze](#vitals-freeze)
-[fill](#vitals-fill)          | [seal](#vitals-seal)
-[fuse](#vitals-fuse)          | 
-[get](#vitals-get)            | 
-[has](#vitals-has)            | 
-[remap](#vitals-remap)        | 
-[slice](#vitals-slice)        | 
-to*                           | 
-trim*                         | 
-[until](#vitals-until)        | 
+[Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [Node Methods*](#node-methods)
+:----------:                  | :------------:                    | :----------:
+[clone](#vitals-clone)        | [amend](#vitals-amend)            | 
+[cut](#vitals-cut)            | [create](#vitals-create)          | 
+[each](#vitals-each)          | [freeze](#vitals-freeze)          | 
+[fill](#vitals-fill)          | [seal](#vitals-seal)              | 
+[fuse](#vitals-fuse)          |                                   | 
+[get](#vitals-get)            |                                   | 
+[has](#vitals-has)            |                                   | 
+[remap](#vitals-remap)        |                                   | 
+[slice](#vitals-slice)        |                                   | 
+to*                           |                                   | 
+trim*                         |                                   | 
+[until](#vitals-until)        |                                   | 
 \* Scheduled for future release.
 
 
