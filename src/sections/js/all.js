@@ -2092,10 +2092,10 @@ var fill = (function fillPrivateScope() {
    * @public
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
-   * @param {string=} keys - Only use with an object/function source. If
-   *   provided it is converted to an array of keys to limit the object fill to.
-   *   The chars in the following list can be used as the separator for keys in
-   *   the string (chars listed in order of rank):  ", "  ","  "|"  " "
+   * @param {(!Array|string)=} keys - Only use with an object/function source.
+   *   If provided it is converted to an array of keys to limit the object fill
+   *   to. The chars in the following list can be used as the separator for keys
+   *   in a keys string (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {*} val - The value to fill the array, object, or string with.
    * @param {number=} start - [default= 0] Only for fill.array.
    * @param {number=} end - [default= source.length] Only for fill.array.
@@ -2124,7 +2124,8 @@ var fill = (function fillPrivateScope() {
     }
 
     if (arguments.length > 2) {
-      if ( !is.str(keys) ) throw _error.type('keys');
+      keys = is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
 
@@ -2136,10 +2137,10 @@ var fill = (function fillPrivateScope() {
    * Fills an existing object/function with specified keys and values.
    * @public
    * @param {!(Object|function)} obj
-   * @param {string=} keys - If provided it is converted to an array of keys to
-   *   limit the object fill to. The chars in the following list can be used as
-   *   the separator for keys in the string (chars listed in order of rank):
-   *   ", "  ","  "|"  " "
+   * @param {(!Array|string)=} keys - If provided it is converted to an array of
+   *   keys to limit the object fill to. The chars in the following list can be
+   *   used as the separator for keys in a keys string (chars listed in order of
+   *   rank):  ", "  ","  "|"  " "
    * @param {*} val
    * @return {!(Object|function)}
    */
@@ -2149,7 +2150,8 @@ var fill = (function fillPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      if ( !is.str(keys) ) throw _error.type('keys', 'object');
+      keys = is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
 
@@ -2226,7 +2228,7 @@ var fill = (function fillPrivateScope() {
   /**
    * @private
    * @param {!(Object|function)} obj
-   * @param {string} keys
+   * @param {!Array} keys
    * @param {*} val
    * @return {!(Object|function)}
    */
@@ -2237,7 +2239,6 @@ var fill = (function fillPrivateScope() {
     /** @type {number} */
     var i;
 
-    keys = _splitKeys(keys);
     len = keys.length;
     i = -1;
     while (++i < len) {
