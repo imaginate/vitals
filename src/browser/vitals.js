@@ -3129,9 +3129,13 @@ var has = (function hasPrivateScope() {
   // PUBLIC METHODS
   // - has
   // - has.key
-  // - has.value     (has.val)
+  // - has.value      (has.val)
   // - has.pattern
-  // - has.substring (has.substr)
+  // - has.substring  (has.substr)
+  // - has.enumerable (has.enum)
+  //
+  // * Note that has.enum may fail in older browser
+  //   environments.
   //////////////////////////////////////////////////////////
 
   /**
@@ -3229,6 +3233,29 @@ var has = (function hasPrivateScope() {
   };
   // define shorthand
   has.substr = has.substring;
+
+  /**
+   * A shortcut for Object.prototype.propertyIsEnumerable that accepts null.
+   * @public
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  has.enumerable = function hasEnumerable(source, key) {
+
+    if (arguments.length < 2) throw _error('No key defined', 'enumerable');
+
+    if ( is.nil(source) ) return false;
+
+    if ( !is._obj(source) ) throw _error.type('source', 'enumerable');
+
+    return _ownEnum(source, key);
+  };
+  // define shorthand
+  try {
+    has.enum = has.enumerable;
+  }
+  catch (e) {}
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
