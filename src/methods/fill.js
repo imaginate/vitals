@@ -49,7 +49,7 @@ var fill = (function fillPrivateScope() {
    *   the string (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {*} val - The value to fill the array, object, or string with.
    * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= arr.length] Only for fill.array.
+   * @param {number=} end - [default= source.length] Only for fill.array.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
@@ -138,7 +138,7 @@ var fill = (function fillPrivateScope() {
    * Fills a new string with specified values.
    * @public
    * @param {number} count
-   * @param {*} val - Value converted to string via String(val).
+   * @param {*} val - All val types are converted to string via String(val).
    * @return {string}
    */
   fill.string = function fillString(count, val) {
