@@ -1,8 +1,8 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CLONE
+ * TEST - VITALS - JS METHOD - COPY
  * -----------------------------------------------------------------------------
- * @see [vitals.clone]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.clone (sections:js,base)', function() {
+describe('vitals.copy (sections:js,base)', function() {
   var title;
 
   title = titleStr('basic', 'should return same value as input');
@@ -25,18 +25,18 @@ describe('vitals.clone (sections:js,base)', function() {
     it(title, function() {
       var vals = [ null, undefined, true, false, 'string', 5 ];
       each(vals, function(val) {
-        assert(vitals.clone(val) === val);
+        assert(vitals.copy(val) === val);
       });
-      assert( is.nan( vitals.clone(NaN) ) );
+      assert( is.nan( vitals.copy(NaN) ) );
     });
 
     title = callStr('<primitive>', true);
     it(title, function() {
       var vals = [ null, undefined, true, false, 'string', 5 ];
       each(vals, function(val) {
-        assert(vitals.clone(val) === val);
+        assert(vitals.copy(val) === val);
       });
-      assert( is.nan( vitals.clone(NaN) ) );
+      assert( is.nan( vitals.copy(NaN) ) );
     });
 
   });
@@ -48,7 +48,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr( newObj() );
     it(title, function() {
       var obj = newObj();
-      var copy = vitals.clone(obj);
+      var copy = vitals.copy(obj);
       assert(obj !== copy);
       each(obj, function(val, key) {
         assert( obj[key] === copy[key] );
@@ -58,7 +58,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr(newObj(), true);
     it(title, function() {
       var obj = newObj();
-      var copy = vitals.clone(obj, true);
+      var copy = vitals.copy(obj, true);
       assert(obj !== copy);
       assert(obj.a === copy.a);
       assert(obj.b !== copy.b);
@@ -74,7 +74,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr( newRegex() );
     it(title, function() {
       var regex = newRegex();
-      var copy = vitals.clone(regex);
+      var copy = vitals.copy(regex);
       assert(regex !== copy);
       assert(regex.source === copy.source);
       assert(regex.global === copy.global);
@@ -84,7 +84,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr(newRegex(), true);
     it(title, function() {
       var regex = newRegex();
-      var copy = vitals.clone(regex, true);
+      var copy = vitals.copy(regex, true);
       assert(regex !== copy);
       assert(regex.source === copy.source);
       assert(regex.global === copy.global);
@@ -100,7 +100,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr( newArr() );
     it(title, function() {
       var arr = newArr();
-      var copy = vitals.clone(arr);
+      var copy = vitals.copy(arr);
       assert(arr !== copy);
       each(arr, function(val, i) {
         assert( arr[i] === copy[i] );
@@ -110,7 +110,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr(newArr(), true);
     it(title, function() {
       var arr = newArr();
-      var copy = vitals.clone(arr, true);
+      var copy = vitals.copy(arr, true);
       assert(arr !== copy);
       assert(arr[0] === copy[0]);
       assert(arr[1] !== copy[1]);
@@ -127,7 +127,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr( newFunc() );
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.clone(func);
+      var copy = vitals.copy(func);
       assert(func !== copy);
       assert(func.a === copy.a);
       assert(func.b === copy.b);
@@ -137,7 +137,7 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr(newFunc(), true);
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.clone(func, true);
+      var copy = vitals.copy(func, true);
       assert(func !== copy);
       assert(func.a === copy.a);
       assert(func.b !== copy.b);
@@ -152,14 +152,14 @@ describe('vitals.clone (sections:js,base)', function() {
     title = callStr({}, 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.clone({}, 'fail');
+        vitals.copy({}, 'fail');
       });
     });
 
     title = callStr(true, 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.clone(true, 'fail');
+        vitals.copy(true, 'fail');
       });
     });
 
@@ -187,7 +187,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('clone', arguments, 4, true);
+  return testCall('copy', arguments, 4, true);
 }
 
 /**

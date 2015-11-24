@@ -48,7 +48,7 @@
 // SECTION: BASE JS METHODS
 // *****************************************************************************
 
-// INSERT methods/clone.js
+// INSERT methods/copy.js
 // INSERT methods/cut.js
 // INSERT methods/each.js
 // INSERT methods/fill.js
@@ -76,7 +76,7 @@
 
   return {
     amend:  amend,
-    clone:  clone,
+    copy:   copy,
     create: create,
     cut:    cut,
     each:   each,

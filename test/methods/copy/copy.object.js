@@ -1,8 +1,8 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CLONE.OBJECT
+ * TEST - VITALS - JS METHOD - COPY.OBJECT
  * -----------------------------------------------------------------------------
- * @see [vitals.clone]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.clone.object (sections:js,base)', function() {
+describe('vitals.copy.object (sections:js,base)', function() {
   var title;
 
   title = 'should return new object with same key => value pairs as input';
@@ -25,7 +25,7 @@ describe('vitals.clone.object (sections:js,base)', function() {
     title = callStr( newObj() );
     it(title, function() {
       var obj = newObj();
-      var copy = vitals.clone.obj(obj);
+      var copy = vitals.copy.obj(obj);
       assert(obj !== copy);
       each(obj, function(val, key) {
         assert( obj[key] === copy[key] );
@@ -35,7 +35,7 @@ describe('vitals.clone.object (sections:js,base)', function() {
     title = callStr(newObj(), true);
     it(title, function() {
       var obj = newObj();
-      var copy = vitals.clone.obj(obj, true);
+      var copy = vitals.copy.obj(obj, true);
       assert(obj !== copy);
       assert(obj.a === copy.a);
       assert(obj.b !== copy.b);
@@ -45,7 +45,7 @@ describe('vitals.clone.object (sections:js,base)', function() {
     title = callStr(newObj(), false);
     it(title, function() {
       var obj = newObj();
-      var copy = vitals.clone.obj(obj, false);
+      var copy = vitals.copy.obj(obj, false);
       assert(obj !== copy);
       each(obj, function(val, key) {
         assert( obj[key] === copy[key] );
@@ -60,14 +60,14 @@ describe('vitals.clone.object (sections:js,base)', function() {
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.obj(null);
+        vitals.copy.obj(null);
       });
     });
 
     title = callStr({}, 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.obj({}, 'fail');
+        vitals.copy.obj({}, 'fail');
       });
     });
 
@@ -95,7 +95,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('clone.obj', arguments, 4, true);
+  return testCall('copy.obj', arguments, 4, true);
 }
 
 /**

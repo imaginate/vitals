@@ -1,8 +1,8 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CLONE.ARRAY
+ * TEST - VITALS - JS METHOD - COPY.FUNCTION
  * -----------------------------------------------------------------------------
- * @see [vitals.clone]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,41 +15,42 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.clone.array (sections:js,base)', function() {
+describe('vitals.copy.function (sections:js,base)', function() {
   var title;
 
-  title = 'should return new array with same values as input';
+  title = 'should return new function with same body ';
+  title += 'and key => value pairs as input';
   title = titleStr('basic', title);
   describe(title, function() {
 
-    title = callStr( newArr() );
+    title = callStr( newFunc() );
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.clone.arr(arr);
-      assert(arr !== copy);
-      each(arr, function(val, i) {
-        assert( arr[i] === copy[i] );
-      });
+      var func = newFunc();
+      var copy = vitals.copy.func(func);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b === copy.b);
+      assert( func() === copy() );
     });
 
-    title = callStr(newArr(), true);
+    title = callStr(newFunc(), true);
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.clone.arr(arr, true);
-      assert(arr !== copy);
-      assert(arr[0] === copy[0]);
-      assert(arr[1] !== copy[1]);
-      assert(arr[2] === copy[2]);
+      var func = newFunc();
+      var copy = vitals.copy.func(func, true);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b !== copy.b);
+      assert( func() === copy() );
     });
 
-    title = callStr(newArr(), false);
+    title = callStr(newFunc(), false);
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.clone.arr(arr, false);
-      assert(arr !== copy);
-      each(arr, function(val, i) {
-        assert( arr[i] === copy[i] );
-      });
+      var func = newFunc();
+      var copy = vitals.copy.func(func, false);
+      assert(func !== copy);
+      assert(func.a === copy.a);
+      assert(func.b === copy.b);
+      assert( func() === copy() );
     });
 
   });
@@ -60,21 +61,21 @@ describe('vitals.clone.array (sections:js,base)', function() {
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.arr(null);
+        vitals.copy.func(null);
       });
     });
 
     title = callStr({});
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.arr({});
+        vitals.copy.func({});
       });
     });
 
-    title = callStr([], 'fail');
+    title = callStr(newFunc(true), 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.arr([], 'fail');
+        vitals.copy.func(newFunc(true), 'fail');
       });
     });
 
@@ -102,13 +103,23 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('clone.arr', arguments, 4, true);
+  return testCall('copy.func', arguments, 4, true);
 }
 
 /**
  * @private
- * @return {!Array}
+ * @param {boolean=} noProps
+ * @return {function}
  */
-function newArr() {
-  return freeze([ 1, { b: 2 }, 3 ], true);
+function newFunc(noProps) {
+
+  /** @type {function} */
+  var func;
+
+  func = function testFunc() { return 5; };
+  if (!noProps) {
+    func.a = 1
+    func.b = { b: 2 };
+  }
+  return freeze(func, true);
 }

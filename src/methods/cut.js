@@ -24,7 +24,7 @@ var _escape = require('./_helpers/escape.js');
 var _match = require('./_helpers/match.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
+var copy = require('./copy.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -837,7 +837,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    obj = filter.length > 2 ? clone(source) : source;
+    obj = filter.length > 2 ? copy(source) : source;
     switch (filter.length) {
       case 0:
       for (key in obj) {
@@ -877,7 +877,7 @@ var cut = (function cutPrivateScope() {
     var i;
 
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    arr = filter.length > 2 ? clone.arr(source) : source;
+    arr = filter.length > 2 ? copy.arr(source) : source;
     i = arr.length;
     switch (filter.length) {
       case 0:  while (i--) filter() || source.splice(i, 1);              break;

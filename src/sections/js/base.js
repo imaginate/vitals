@@ -446,44 +446,44 @@ function _splitKeys(keys) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// CLONE
+// COPY
 ////////////////////////////////////////////////////////////////////////////////
 
-var clone = (function clonePrivateScope() {
+var copy = (function copyPrivateScope() {
 
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
-  // - clone
-  // - clone.object (clone.obj)
-  // - clone.array  (clone.arr|clone.args)
-  // - clone.regexp (clone.re|clone.regex)
-  // - clone.func   (clone.fn|clone.function*)
+  // - copy
+  // - copy.object (copy.obj)
+  // - copy.array  (copy.arr|copy.args)
+  // - copy.regexp (copy.re|copy.regex)
+  // - copy.func   (copy.fn|copy.function*)
   //
-  // * Note that clone.function will fail in all ES3 browser
-  //   environments and even some ES5. Use clone.func for
+  // * Note that copy.function will fail in all ES3 browser
+  //   environments and even some ES5. Use copy.func for
   //   compatibility with older browser environments.
   //////////////////////////////////////////////////////////
 
   /**
-   * Returns a clone of the given value.
+   * Returns a copy of the given value.
    * @public
    * @param {*} val
    * @param {boolean=} deep
    * @return {*}
    */
-  function clone(val, deep) {
+  function copy(val, deep) {
 
     if ( !is('bool=', deep) ) throw _error.type('deep');
 
     return !is._obj(val)
       ? val
       : is.func(val)
-        ? _cloneFunc(val, deep)
+        ? _copyFunc(val, deep)
         : is._arr(val)
-          ? _cloneArr(val, deep)
+          ? _copyArr(val, deep)
           : is.regex(val)
-            ? _cloneRegex(val)
-            : _cloneObj(val, deep);  
+            ? _copyRegex(val)
+            : _copyObj(val, deep);  
   }
 
   /**
@@ -493,15 +493,15 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} deep
    * @return {!Object}
    */
-  clone.object = function cloneObject(obj, deep) {
+  copy.object = function copyObject(obj, deep) {
 
     if ( !is.obj(obj)       ) throw _error.type('obj',  'object');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
 
-    return _cloneObj(obj, deep);
+    return _copyObj(obj, deep);
   };
   // define shorthand
-  clone.obj = clone.object;
+  copy.obj = copy.object;
 
   /**
    * Creates a new array with the properties of the given object.
@@ -510,17 +510,17 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} deep
    * @return {!Array}
    */
-  clone.array = function cloneArray(obj, deep) {
+  copy.array = function copyArray(obj, deep) {
 
     if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
     if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
     if ( !is('bool=', deep)  ) throw _error.type('deep',       'array');
 
-    return _cloneArr(obj, deep);
+    return _copyArr(obj, deep);
   };
   // define shorthand
-  clone.arr = clone.array;
-  clone.args = clone.array;
+  copy.arr = copy.array;
+  copy.args = copy.array;
 
   /**
    * Creates a new RegExp from a given RegExp.
@@ -529,37 +529,37 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} forceGlobal
    * @return {!RegExp}
    */
-  clone.regexp = function cloneRegexp(regex, forceGlobal) {
+  copy.regexp = function copyRegexp(regex, forceGlobal) {
 
     if ( !is.regex(regex)          ) throw _error.type('regex',       'regexp');
     if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
-    return _cloneRegex(regex, forceGlobal);
+    return _copyRegex(regex, forceGlobal);
   };
   // define shorthand
-  clone.re = clone.regexp;
-  clone.regex = clone.regexp;
+  copy.re = copy.regexp;
+  copy.regex = copy.regexp;
 
   /**
    * Creates a new function with the properties of the given function. Use
-   *   clone.func instead of clone.function in browser environments for
+   *   copy.func instead of copy.function in browser environments for
    *   compatibility.
    * @public
    * @param {function} func
    * @param {boolean=} deep
    * @return {function}
    */
-  clone.func = function cloneFunction(func, deep) {
+  copy.func = function copyFunction(func, deep) {
 
     if ( !is.func(func)     ) throw _error.type('func', 'function');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
 
-    return _cloneFunc(func, deep);
+    return _copyFunc(func, deep);
   };
   // define shorthand
   try {
-    clone.fn = clone.func;
-    clone.function = clone.func;
+    copy.fn = copy.func;
+    copy.function = copy.func;
   }
   catch (e) {}
 
@@ -573,7 +573,7 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} deep
    * @return {!Object}
    */
-  function _cloneObj(obj, deep) {
+  function _copyObj(obj, deep) {
     return deep ? _mergeDeep({}, obj) : _merge({}, obj);
   }
 
@@ -583,7 +583,7 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} deep
    * @return {!Array}
    */
-  function _cloneArr(obj, deep) {
+  function _copyArr(obj, deep) {
 
     /** @type {!Array} */
     var arr;
@@ -598,7 +598,7 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} forceGlobal
    * @return {!RegExp}
    */
-  function _cloneRegex(regex, forceGlobal) {
+  function _copyRegex(regex, forceGlobal) {
 
     /** @type {string} */
     var source;
@@ -617,19 +617,19 @@ var clone = (function clonePrivateScope() {
    * @param {boolean=} deep
    * @return {function}
    */
-  function _cloneFunc(func, deep) {
+  function _copyFunc(func, deep) {
 
     /** @type {function} */
-    var clonedFunc;
+    var copiedFunc;
 
-    clonedFunc = function clonedFunc() {
+    copiedFunc = function copiedFunction() {
       return func.apply(null, arguments);
     };
-    return deep ? _mergeDeep(clonedFunc, func) : _merge(clonedFunc, func);
+    return deep ? _mergeDeep(copiedFunc, func) : _merge(copiedFunc, func);
   }
 
   //////////////////////////////////////////////////////////
-  // PRIVATE PROPERTIES - CLONE.REGEXP
+  // PRIVATE PROPERTIES - COPY.REGEXP
   //////////////////////////////////////////////////////////
 
   /**
@@ -707,7 +707,7 @@ var clone = (function clonePrivateScope() {
 
     for (key in source) {
       if ( _own(source, key) ) {
-        dest[key] = clone(source[key], true);
+        dest[key] = copy(source[key], true);
       }
     }
     return dest;
@@ -717,11 +717,11 @@ var clone = (function clonePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('clone');
+  var _error = newErrorAid('copy');
 
   //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR CLONE
-  return clone;
+  // END OF PRIVATE SCOPE FOR COPY
+  return copy;
 })();
 
 
@@ -1535,7 +1535,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    obj = filter.length > 2 ? clone(source) : source;
+    obj = filter.length > 2 ? copy(source) : source;
     switch (filter.length) {
       case 0:
       for (key in obj) {
@@ -1575,7 +1575,7 @@ var cut = (function cutPrivateScope() {
     var i;
 
     filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    arr = filter.length > 2 ? clone.arr(source) : source;
+    arr = filter.length > 2 ? copy.arr(source) : source;
     i = arr.length;
     switch (filter.length) {
       case 0:  while (i--) filter() || source.splice(i, 1);              break;
@@ -1994,7 +1994,7 @@ var each = (function eachPrivateScope() {
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? clone(obj) : obj;
+    obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: for (key in obj) _own(obj, key) && iteratee();              break;
@@ -2019,7 +2019,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? clone.arr(obj) : obj;
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
@@ -2941,7 +2941,7 @@ var get = (function getPrivateScope() {
     /** @type {Object} */
     var obj;
 
-    pattern = clone.regex(pattern, true);
+    pattern = copy.regex(pattern, true);
     arr = [];
     obj = pattern.exec(str);
     while (obj) {
@@ -2987,7 +2987,7 @@ var get = (function getPrivateScope() {
     /** @type {Object} */
     var obj;
 
-    pattern = clone.regex(pattern, true);
+    pattern = copy.regex(pattern, true);
     arr = [];
     obj = pattern.exec(str);
     while (obj) {
@@ -3350,7 +3350,7 @@ var remap = (function remapPrivateScope() {
     var key;
 
     obj = {};
-    source = iteratee.length > 2 ? clone(source) : source;
+    source = iteratee.length > 2 ? copy(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
@@ -3392,7 +3392,7 @@ var remap = (function remapPrivateScope() {
     /** @type {number} */
     var i;
 
-    source = iteratee.length > 2 ? clone.arr(source) : source;
+    source = iteratee.length > 2 ? copy.arr(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
@@ -3691,7 +3691,7 @@ var until = (function untilPrivateScope() {
    * @param {!(Object|function)} obj
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js})
+   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
    *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
@@ -3767,7 +3767,7 @@ var until = (function untilPrivateScope() {
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? clone(obj) : obj;
+    obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
@@ -3816,7 +3816,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? clone.arr(obj) : obj;
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
@@ -3902,7 +3902,7 @@ var until = (function untilPrivateScope() {
 // *****************************************************************************
 
 module.exports = {
-  clone:  clone,
+  copy:   copy,
   cut:    cut,
   each:   each,
   fill:   fill,

@@ -103,7 +103,7 @@ var SECTIONS = {
  */
 var METHODS = {
   'amend':  true,
-  'clone':  true,
+  'copy':   true,
   'create': true,
   'cut':    true,
   'each':   true,

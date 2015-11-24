@@ -21,7 +21,7 @@
 var newErrorAid = require('./_helpers/errorAid.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
+var copy = require('./copy.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -184,7 +184,7 @@ var remap = (function remapPrivateScope() {
     var key;
 
     obj = {};
-    source = iteratee.length > 2 ? clone(source) : source;
+    source = iteratee.length > 2 ? copy(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
@@ -226,7 +226,7 @@ var remap = (function remapPrivateScope() {
     /** @type {number} */
     var i;
 
-    source = iteratee.length > 2 ? clone.arr(source) : source;
+    source = iteratee.length > 2 ? copy.arr(source) : source;
     iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);

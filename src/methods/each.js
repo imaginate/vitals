@@ -21,7 +21,7 @@
 var newErrorAid = require('./_helpers/errorAid.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
+var copy = require('./copy.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ var each = (function eachPrivateScope() {
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? clone(obj) : obj;
+    obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: for (key in obj) _own(obj, key) && iteratee();              break;
@@ -177,7 +177,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? clone.arr(obj) : obj;
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;

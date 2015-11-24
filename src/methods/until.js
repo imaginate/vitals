@@ -21,7 +21,7 @@
 var newErrorAid = require('./_helpers/errorAid.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
+var copy = require('./copy.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ var until = (function untilPrivateScope() {
    * @param {!(Object|function)} obj
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.clone.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js})
+   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
    *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
@@ -203,7 +203,7 @@ var until = (function untilPrivateScope() {
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? clone(obj) : obj;
+    obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
@@ -252,7 +252,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? clone.arr(obj) : obj;
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;

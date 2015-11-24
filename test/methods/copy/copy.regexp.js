@@ -1,8 +1,8 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CLONE.REGEXP
+ * TEST - VITALS - JS METHOD - COPY.REGEXP
  * -----------------------------------------------------------------------------
- * @see [vitals.clone]{@link https://github.com/imaginate/vitals/blob/master/src/methods/clone.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.clone.regexp (sections:js,base)', function() {
+describe('vitals.copy.regexp (sections:js,base)', function() {
   var title;
 
   title = 'should return new regex with same source and flags as input ';
@@ -26,7 +26,7 @@ describe('vitals.clone.regexp (sections:js,base)', function() {
     title = callStr( newRegex() );
     it(title, function() {
       var regex = newRegex();
-      var copy = vitals.clone.regex(regex);
+      var copy = vitals.copy.regex(regex);
       assert(regex !== copy);
       assert(regex.source === copy.source);
       assert(regex.global === copy.global);
@@ -36,7 +36,7 @@ describe('vitals.clone.regexp (sections:js,base)', function() {
     title = callStr(newRegex(), true);
     it(title, function() {
       var regex = newRegex();
-      var copy = vitals.clone.regex(regex, true);
+      var copy = vitals.copy.regex(regex, true);
       assert(regex !== copy);
       assert(regex.source === copy.source);
       assert(regex.global !== copy.global);
@@ -46,7 +46,7 @@ describe('vitals.clone.regexp (sections:js,base)', function() {
     title = callStr(newRegex(true), false);
     it(title, function() {
       var regex = newRegex(true);
-      var copy = vitals.clone.regex(regex, false);
+      var copy = vitals.copy.regex(regex, false);
       assert(regex !== copy);
       assert(regex.source === copy.source);
       assert(regex.global !== copy.global);
@@ -61,21 +61,21 @@ describe('vitals.clone.regexp (sections:js,base)', function() {
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.regex(null);
+        vitals.copy.regex(null);
       });
     });
 
     title = callStr({});
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.regex({});
+        vitals.copy.regex({});
       });
     });
 
     title = callStr(newRegex(), 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.clone.regex(newRegex(), 'fail');
+        vitals.copy.regex(newRegex(), 'fail');
       });
     });
 
@@ -103,7 +103,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('clone.regex', arguments, 4, true);
+  return testCall('copy.regex', arguments, 4, true);
 }
 
 /**

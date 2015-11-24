@@ -26,7 +26,7 @@ var newErrorAid = require('./_helpers/errorAid.js');
 var _match = require('./_helpers/match.js');
 var _own = require('./_helpers/own.js');
 var is = require('node-are').is;
-var clone = require('./clone.js');
+var copy = require('./copy.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -392,7 +392,7 @@ var get = (function getPrivateScope() {
     /** @type {Object} */
     var obj;
 
-    pattern = clone.regex(pattern, true);
+    pattern = copy.regex(pattern, true);
     arr = [];
     obj = pattern.exec(str);
     while (obj) {
@@ -438,7 +438,7 @@ var get = (function getPrivateScope() {
     /** @type {Object} */
     var obj;
 
-    pattern = clone.regex(pattern, true);
+    pattern = copy.regex(pattern, true);
     arr = [];
     obj = pattern.exec(str);
     while (obj) {
