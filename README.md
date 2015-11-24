@@ -1,6 +1,6 @@
 # vitals
 ### Give Your JS Life
-A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#base-methods) give you all of the basic JavaScript functionality (100+ methods) with only 12 methods. It also contains [strict methods](#strict-methods) that give you more control over easily handling object states (such as [setting static type properties](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L60-L72)), and [node methods](#node-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
+A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#base-methods) give you all of the basic JavaScript functionality (100+ methods) with only 12 methods. It also contains [strict methods](#strict-methods) that give you more control over object states (such as [setting static type properties](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L60-L72)), and a combination of [file system](#file-system-methods) and [shell methods](#shell-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
 
 
 ## Example
@@ -37,35 +37,35 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 - ``` vitals.<method> ``` (appended to [window](https://developer.mozilla.org/en-US/docs/Web/API/Window))
 
 <br>
-## Methods
-[Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [Node Methods*](#node-methods)
-:----------:                  | :------------:                    | :----------:
-[clone](#vitals-clone)        | [amend](#vitals-amend)            | 
-[cut](#vitals-cut)            | [create](#vitals-create)          | 
-[each](#vitals-each)          | [freeze](#vitals-freeze)          | 
-[fill](#vitals-fill)          | [seal](#vitals-seal)              | 
-[fuse](#vitals-fuse)          |                                   | 
-[get](#vitals-get)            |                                   | 
-[has](#vitals-has)            |                                   | 
-[remap](#vitals-remap)        |                                   | 
-[slice](#vitals-slice)        |                                   | 
-to*                           |                                   | 
-trim*                         |                                   | 
-[until](#vitals-until)        |                                   | 
+## All Methods
+[Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods)
+:----------:                  | :------------:                    | :------------------:                | :-----------:
+[copy](#vitals-copy)          | [amend](#vitals-amend)            | copy*                               | exec*
+[cut](#vitals-cut)            | [create](#vitals-create)          | get*                                | 
+[each](#vitals-each)          | [freeze](#vitals-freeze)          | to*                                 | 
+[fill](#vitals-fill)          | [seal](#vitals-seal)              |                                     | 
+[fuse](#vitals-fuse)          |                                   |                                     | 
+[get](#vitals-get)            |                                   |                                     | 
+[has](#vitals-has)            |                                   |                                     | 
+[remap](#vitals-remap)        |                                   |                                     | 
+[slice](#vitals-slice)        |                                   |                                     | 
+to*                           |                                   |                                     | 
+trim*                         |                                   |                                     | 
+[until](#vitals-until)        |                                   |                                     | 
 \* Scheduled for future release.
 
 
 ## Base Methods
 All base methods give you the maximum possible coverage within their main method by executing a type check on each argument and reacting accordingly. Two possible downsides to this approach are some developers may find using the same methods for different data types confusing and some projects may need a stricter type check (i.e. throw an error if any different data type is used). Additionally not all circumstances can be covered within the main method. As a result every method includes a list of sub methods that accomplish further clarity, strictness, and functionality.
 
-#### vitals.clone
+#### vitals.copy
 Documentation | Examples | Alias
 :-----------: | :------: | :---:
-[clone](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/clone.js#L47-L53) | [clone](https://github.com/imaginate/vitals/blob/master/test/methods/clone/clone.js) | 
-[clone.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/clone.js#L69-L74) | [clone.object](https://github.com/imaginate/vitals/blob/master/test/methods/clone/clone.object.js) | clone.obj
-[clone.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/clone.js#L86-L92) | [clone.array](https://github.com/imaginate/vitals/blob/master/test/methods/clone/clone.array.js) | clone.arr/args
-[clone.regexp](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/clone.js#L105-L111) | [clone.regexp](https://github.com/imaginate/vitals/blob/master/test/methods/clone/clone.regexp.js) | clone.re/regex
-[clone.function](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/clone.js#L123-L131) | [clone.function](https://github.com/imaginate/vitals/blob/master/test/methods/clone/clone.function.js) | clone.fn/func
+[copy](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L47-L53) | [copy](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.js) | 
+[copy.object](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L69-L74) | [copy.object](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.object.js) | copy.obj
+[copy.array](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L86-L92) | [copy.array](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.array.js) | copy.arr/args
+[copy.regexp](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L105-L111) | [copy.regexp](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.regexp.js) | copy.re/regex
+[copy.function](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L123-L131) | [copy.function](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.function.js) | copy.fn/func
 
 #### vitals.cut
 Documentation | Examples | Alias
@@ -152,7 +152,6 @@ Documentation | Examples | Alias
 
 
 ## Strict Methods
-Overview coming soon.
 
 #### vitals.amend
 Documentation | Examples | Alias
@@ -180,8 +179,11 @@ Documentation | Examples | Alias
 [seal.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/seal.js#L55-L61) | [seal.object](https://github.com/imaginate/vitals/blob/master/test/methods/seal/seal.object.js) | seal.obj
 
 
-## Node Methods
-Coming soon.
+## File System Methods
+
+
+## Shell Methods
+
 
 <br>
 ## Other Details
