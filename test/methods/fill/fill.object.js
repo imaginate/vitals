@@ -56,9 +56,9 @@ describe('vitals.fill.object (sections:js,base)', function() {
         });
       });
 
-      title = callStr('<object>', 'x,y,z', 5);
+      title = callStr('<object>', [ 'x', 'y', 'z' ], 5);
       it(title, function() {
-        var obj = vitals.fill.obj(newObj(), 'x,y,z', 5);
+        var obj = vitals.fill.obj(newObj(), [ 'x', 'y', 'z' ], 5);
         assert( obj.x === 5 );
         assert( obj.y === 5 );
         assert( obj.z === 5 );
