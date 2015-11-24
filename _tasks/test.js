@@ -105,12 +105,11 @@ module.exports = newTask('test', 'method', {
     runTests(options, tests, 'section');
     logFinish(title);
 
-    options += '--grep sections:(?:[a-z,]+,)?';
+    options += '--grep section:';
     setups = retrieve.filepaths('test/_setup/', { validNames: 'section-*' });
     each(setups, function(setup) {
       section = getSection(setup);
       title = '`vitals ' + section + '`';
-      section += '[,\)]';
       logStart(title);
       runTests(options + section, tests, setup);
       logFinish(title);
@@ -133,7 +132,7 @@ module.exports = newTask('test', 'method', {
     /** @type {string} */
     var setup;
 
-    if ( !isSection(section) ) log.error(
+    if ( !is.file('src/sections/' + section + '.js') ) log.error(
       'Invalid `test.section` Task Call',
       'invalid `section` was provided',
       { argMap: true, section: section }
@@ -145,7 +144,7 @@ module.exports = newTask('test', 'method', {
     setup = 'section';
 
     if (section !== 'all') {
-      options += '--grep sections:(?:[a-z,]+,)?' + section + '[,\)]';
+      options += '--grep section:' + section;
       setup += '-' + section;
     }
 
@@ -185,11 +184,11 @@ module.exports = newTask('test', 'method', {
       logFinish(title);
     });
 
-    options += '--grep sections:(?:[a-z,]+,)?'
+    options += '--grep section:';
     setups = retrieve.filepaths('test/_setup/', { validNames: 'browser-*' });
     each(setups, function(setup) {
       title = '`src/browser/' + setup.replace('browser', 'vitals') + '`';
-      section = getSection(setup) + '[,\)]';
+      section = getSection(setup);
       logStart(title);
       runTests(options + section, tests, setup);
       logFinish(title);
@@ -212,15 +211,6 @@ var MOCHA_DEFAULTS = {
   reporter: 'dot',
   slow:     50,
   timeout:  5000
-};
-
-/**
- * @type {!Object}
- * @const
- */
-var TERMINAL_SYMBOLS = {
-  pass: process.platform === 'win32' ? '\u221A' : '\u2714',
-  fail: process.platform === 'win32' ? 'X'      : '\u2716'
 };
 
 /**
@@ -273,20 +263,7 @@ function runTests(options, tests, setup) {
   setup = setup && '--require ./test/_setup/' + setup + ' ';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
   result = exec(cmd, { catchExit: false, eol: null });
-  //result = parseResults(result);
   console.log(result);
-}
-
-/**
- * @param {string} results
- * @return {string}
- */
-function parseResults(results) {
-
-  if ( !has(results, /^\s*\{\s*"stats":\s*\{/) ) return results;
-
-  // ...
-  return results;
 }
 
 /**
@@ -344,33 +321,6 @@ function hyphenate(str) {
  */
 function getSection(str) {
   return /-([a-z-_]+)\./i.exec(str)[1];
-}
-
-/**
- * @return {!Array}
- */
-function getSections() {
-
-  /** @type {!Array} */
-  var sections;
-
-  sections = retrieve.filepaths('src/sections', true, { invalidDirs: '_*' });
-  return remap(sections, function(section) {
-    section = stripExt(section);
-    return has(section, '/')
-      ? has(section, /\/all$/)
-        ? /^[a-z]+/.exec(section)[0]
-        : /[a-z]+$/.exec(section)[0]
-      : section;
-  });
-}
-
-/**
- * @param {string} section
- * @return {boolean}
- */
-function isSection(section) {
-  return getSections().indexOf(section) !== -1;
 }
 
 /**
