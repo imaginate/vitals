@@ -14,6 +14,9 @@
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
+ *
+ * @todo Add get.<oneValue> for all existing methods.
+ * @todo Add get.prototypeOf (get.proto).
  */
 
 'use strict';
@@ -38,7 +41,7 @@ var get = (function getPrivateScope() {
   // - get.keys.byKey
   // - get.keys.byValue (get.keys.byVal)
   // - get.indexes      (get.ii)
-  // - get.values
+  // - get.values       (get.vals)
   //////////////////////////////////////////////////////////
 
   /**

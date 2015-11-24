@@ -2674,7 +2674,7 @@ var get = (function getPrivateScope() {
   // - get.keys.byKey
   // - get.keys.byValue (get.keys.byVal)
   // - get.indexes      (get.ii)
-  // - get.values
+  // - get.values       (get.vals)
   //////////////////////////////////////////////////////////
 
   /**
