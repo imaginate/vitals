@@ -50,7 +50,7 @@ describe('vitals.has (sections:js,base)', function() {
     title = titleStr('should return false (key not owned by obj)');
     describe(title, function() {
 
-      title = callStr(null);
+      title = callStr(null, 'key');
       it(title, function() {
         assert( !vitals.has(null, 'key') );
       });
