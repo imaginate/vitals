@@ -17,6 +17,7 @@
  *
  * @todo Add get.<oneValue> for all existing methods.
  * @todo Add get.prototypeOf (get.proto).
+ * @todo Add get.<method>.byType.
  */
 
 'use strict';
