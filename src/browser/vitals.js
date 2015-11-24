@@ -2727,7 +2727,7 @@ var get = (function getPrivateScope() {
    *   will return an array of all an object's own keys.
    * @param {*=} val - This method will return an array of source keys where the
    *   key matches the val if the val is a RegExp. Otherwise this method will
-   *   return an array of source keys where the value === val.
+   *   return an array of source keys where the value == val.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
@@ -2735,7 +2735,7 @@ var get = (function getPrivateScope() {
     if ( !is._obj(source) ) throw _error.type('source', 'keys');
 
     return arguments.length < 2
-      ? allKeys(source)
+      ? _allKeys(source)
       : is.regex(val)
         ? _byKeyKeys(source, val)
         : _byValKeys(source, val);
