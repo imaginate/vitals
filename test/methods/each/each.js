@@ -159,6 +159,15 @@ describe('vitals.each (sections:js,base)', function() {
         assert( times === 8 );
       });
 
+      title = callStr(15, '<iteratee>');
+      it(title, function() {
+        var times = 0;
+        vitals.each(15, function(time) {
+          assert( times++ === time );
+        });
+        assert( times === 15 );
+      });
+
     });
 
     title = titleStr('should bind the iteratee correctly');
