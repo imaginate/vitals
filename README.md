@@ -40,18 +40,18 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 ## All Methods
 [Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods)
 :----------:                  | :------------:                    | :------------------:                | :-----------:
-[copy](#vitals-copy)          | [amend](#vitals-amend)            | copy*                               | exec*
-[cut](#vitals-cut)            | [create](#vitals-create)          | get*                                | 
-[each](#vitals-each)          | [freeze](#vitals-freeze)          | to*                                 | 
-[fill](#vitals-fill)          | [seal](#vitals-seal)              |                                     | 
-[fuse](#vitals-fuse)          |                                   |                                     | 
-[get](#vitals-get)            |                                   |                                     | 
-[has](#vitals-has)            |                                   |                                     | 
-[remap](#vitals-remap)        |                                   |                                     | 
-[slice](#vitals-slice)        |                                   |                                     | 
+[copy](#vitalscopy)           | [amend](#vitalsamend)             | copy*                               | exec*
+[cut](#vitalscut)             | [create](#vitalscreate)           | get*                                | 
+[each](#vitalseach)           | [freeze](#vitalsfreeze)           | to*                                 | 
+[fill](#vitalsfill)           | [seal](#vitalsseal)               |                                     | 
+[fuse](#vitalsfuse)           |                                   |                                     | 
+[get](#vitalsget)             |                                   |                                     | 
+[has](#vitalshas)             |                                   |                                     | 
+[remap](#vitalsremap)         |                                   |                                     | 
+[slice](#vitalsslice)         |                                   |                                     | 
 to*                           |                                   |                                     | 
 trim*                         |                                   |                                     | 
-[until](#vitals-until)        |                                   |                                     | 
+[until](#vitalsuntil)         |                                   |                                     | 
 \* Scheduled for future release.
 
 
