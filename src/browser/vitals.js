@@ -3861,8 +3861,18 @@ var until = (function untilPrivateScope() {
    * @return {boolean}
    */
   function _untilEnd(end, action, thisArg) {
+
+    /** @type {number} */
+    var i;
+
     action = is.undefined(thisArg) ? action : _bind(action, thisArg);
-    while (action() !== end) {}
+    if (action.length) {
+      i = 0;
+      while(action(i++) !== end) {}
+    }
+    else {
+      while(action() !== end) {}
+    }
     return true;
   }
 
