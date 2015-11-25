@@ -60,7 +60,7 @@ All base methods give you the maximum possible coverage within their main method
 
 #### vitals.copy
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [copy](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L47-L53) | [copy](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.js) | 
 [copy.object](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L69-L74) | [copy.object](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.object.js) | copy.obj
 [copy.array](https://github.com/imaginate/vitals/blob/bce79cdd22/src/methods/copy.js#L86-L92) | [copy.array](https://github.com/imaginate/vitals/blob/master/test/methods/copy/copy.array.js) | copy.arr/args
@@ -69,7 +69,7 @@ Documentation | Examples | Alias
 
 #### vitals.cut
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [cut](https://github.com/imaginate/vitals/blob/41a3bb3479/src/methods/cut.js#L52-L91) | [cut](https://github.com/imaginate/vitals/blob/master/test/methods/cut/cut.js) | 
 [cut.property](https://github.com/imaginate/vitals/blob/41a3bb3479/src/methods/cut.js#L118-L151) | [cut.property](https://github.com/imaginate/vitals/blob/master/test/methods/cut/cut.property.js) | cut.prop
 [cut.key](https://github.com/imaginate/vitals/blob/41a3bb3479/src/methods/cut.js#L171-L178) | [cut.key](https://github.com/imaginate/vitals/blob/master/test/methods/cut/cut.key.js) | 
@@ -85,7 +85,7 @@ Documentation | Examples | Alias
 
 #### vitals.each
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [each](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L41-L53) | [each](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.js) | 
 [each.object](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L71-L84) | [each.object](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.object.js) | each.obj
 [each.array](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L96-L108) | [each.array](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.array.js) | each.arr
@@ -93,7 +93,7 @@ Documentation | Examples | Alias
 
 #### vitals.fill
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [fill](https://github.com/imaginate/vitals/blob/f621c1cb56/src/methods/fill.js#L41-L54) | [fill](https://github.com/imaginate/vitals/blob/master/test/methods/fill/fill.js) | 
 [fill.object](https://github.com/imaginate/vitals/blob/f621c1cb56/src/methods/fill.js#L87-L97) | [fill.object](https://github.com/imaginate/vitals/blob/master/test/methods/fill/fill.object.js) | fill.obj
 [fill.array](https://github.com/imaginate/vitals/blob/f621c1cb56/src/methods/fill.js#L115-L123) | [fill.array](https://github.com/imaginate/vitals/blob/master/test/methods/fill/fill.array.js) | fill.arr
@@ -101,7 +101,7 @@ Documentation | Examples | Alias
 
 #### vitals.fuse
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [fuse](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L42-L60) | [fuse](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.js) | 
 [fuse.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L86-L98) | [fuse.object](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.object.js) | fuse.obj
 [fuse.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L110-L118) | [fuse.array](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.array.js) | fuse.arr
@@ -109,7 +109,7 @@ Documentation | Examples | Alias
 
 #### vitals.get
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [get](https://github.com/imaginate/vitals/blob/46496fb1c1/src/methods/get.js#L48-L67) | [get](https://github.com/imaginate/vitals/blob/master/test/methods/get/get.js) | 
 [get.keys](https://github.com/imaginate/vitals/blob/46496fb1c1/src/methods/get.js#L90-L100) | [get.keys](https://github.com/imaginate/vitals/blob/master/test/methods/get/get.keys.js) | 
 [get.keys.byKey](https://github.com/imaginate/vitals/blob/46496fb1c1/src/methods/get.js#L112-L120) | [get.keys.byKey](https://github.com/imaginate/vitals/blob/master/test/methods/get/get.keys.byKey.js) | 
@@ -119,7 +119,7 @@ Documentation | Examples | Alias
 
 #### vitals.has
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [has](https://github.com/imaginate/vitals/blob/af3eba39d1/src/methods/has.js#L50-L62) | [has](https://github.com/imaginate/vitals/blob/master/test/methods/has/has.js) | 
 [has.key](https://github.com/imaginate/vitals/blob/af3eba39d1/src/methods/has.js#L76-L82) | [has.key](https://github.com/imaginate/vitals/blob/master/test/methods/has/has.key.js) | 
 [has.value](https://github.com/imaginate/vitals/blob/af3eba39d1/src/methods/has.js#L94-L100) | [has.value](https://github.com/imaginate/vitals/blob/master/test/methods/has/has.value.js) | has.val
@@ -129,7 +129,7 @@ Documentation | Examples | Alias
 
 #### vitals.remap
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [remap](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/remap.js#L41-L69) | [remap](https://github.com/imaginate/vitals/blob/master/test/methods/remap/remap.js) | 
 [remap.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/remap.js#L90-L105) | [remap.object](https://github.com/imaginate/vitals/blob/master/test/methods/remap/remap.object.js) | remap.obj
 [remap.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/remap.js#L117-L131) | [remap.array](https://github.com/imaginate/vitals/blob/master/test/methods/remap/remap.array.js) | remap.arr
@@ -137,14 +137,14 @@ Documentation | Examples | Alias
 
 #### vitals.slice
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [slice](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/slice.js#L40-L48) | [slice](https://github.com/imaginate/vitals/blob/master/test/methods/slice/slice.js) | 
 [slice.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/slice.js#L64-L71) | [slice.array](https://github.com/imaginate/vitals/blob/master/test/methods/slice/slice.array.js) | slice.arr
 [slice.string](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/slice.js#L84-L91) | [slice.string](https://github.com/imaginate/vitals/blob/master/test/methods/slice/slice.string.js) | slice.str
 
 #### vitals.until
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [until](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L41-L62) | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js) | 
 [until.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L91-L109) | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj
 [until.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L121-L139) | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js) | until.arr
@@ -155,26 +155,26 @@ Documentation | Examples | Alias
 
 #### vitals.amend
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [amend](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#42-L81) | [amend](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.js) | 
 [amend.property](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L133-L162) | [amend.property](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.property.js) | amend.prop
 [amend.properties](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L203-L242) | [amend.properties](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.properties.js) | amend.props
 
 #### vitals.create
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [create](https://github.com/imaginate/vitals/blob/c246fabb29/src/methods/create.js#L39-L53) | [create](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.js) | 
 [create.object](https://github.com/imaginate/vitals/blob/c246fabb29/src/methods/create.js#L70-L84) | [create.object](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.object.js) | create.obj
 
 #### vitals.freeze
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [freeze](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/freeze.js#L38-L44) | [freeze](https://github.com/imaginate/vitals/blob/master/test/methods/freeze/freeze.js) | 
 [freeze.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/freeze.js#L55-L61) | [freeze.object](https://github.com/imaginate/vitals/blob/master/test/methods/freeze/freeze.object.js) | freeze.obj
 
 #### vitals.seal
 Documentation | Examples | Alias
-:-----------: | :------: | :---:
+:------------ | :------- | :----
 [seal](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/seal.js#L38-L44) | [seal](https://github.com/imaginate/vitals/blob/master/test/methods/seal/seal.js) | 
 [seal.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/seal.js#L55-L61) | [seal.object](https://github.com/imaginate/vitals/blob/master/test/methods/seal/seal.object.js) | seal.obj
 
