@@ -145,10 +145,10 @@ Documentation | Examples | Alias
 #### vitals.until
 Documentation | Examples | Alias
 :------------ | :------- | :----
-[until](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L41-L62) | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js) | 
-[until.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L91-L109) | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj
-[until.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L121-L139) | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js) | until.arr
-[until.string](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/until.js#L152-L164) | [until.string](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.string.js) | until.str
+[until](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L41-L61) | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js) | 
+[until.object](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L90-L108) | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj
+[until.array](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L120-L138) | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js) | until.arr
+[until.string](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L151-L163) | [until.string](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.string.js) | until.str
 
 
 ## Strict Methods
