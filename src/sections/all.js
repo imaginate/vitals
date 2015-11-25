@@ -3454,14 +3454,14 @@ var remap = (function remapPrivateScope() {
   function _bindI(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function iteratee() { func.call(thisArg); };
+      return function iteratee() { return func.call(thisArg); };
       case 1:
-      return function iteratee(val) { func.call(thisArg, val); };
+      return function iteratee(val) { return func.call(thisArg, val); };
       case 2:
-      return function iteratee(val, key) { func.call(thisArg, val, key); };
+      return function iteratee(val, key) { return func.call(thisArg,val,key); };
     }
     return function iteratee(val, key, obj) {
-      func.call(thisArg, val, key, obj);
+      return func.call(thisArg, val, key, obj);
     };
   }
 
@@ -3474,26 +3474,26 @@ var remap = (function remapPrivateScope() {
   function _bindR(func, thisArg) {
     switch (func.length) {
       case 0: return function replacement() {
-        func.call(thisArg);
+        return func.call(thisArg);
       };
       case 1: return function replacement(match) {
-        func.call(thisArg, match);
+        return func.call(thisArg, match);
       };
       case 2: return function replacement(match, p1) {
-        func.call(thisArg, match, p1);
+        return func.call(thisArg, match, p1);
       };
       case 3: return function replacement(match, p1, p2) {
-        func.call(thisArg, match, p1, p2);
+        return func.call(thisArg, match, p1, p2);
       };
       case 4: return function replacement(match, p1, p2, p3) {
-        func.call(thisArg, match, p1, p2, p3);
+        return func.call(thisArg, match, p1, p2, p3);
       };
       case 5: return function replacement(match, p1, p2, p3, p4) {
-        func.call(thisArg, match, p1, p2, p3, p4);
+        return func.call(thisArg, match, p1, p2, p3, p4);
       };
     }
     return function replacement() {
-      func.apply(thisArg, arguments);
+      return func.apply(thisArg, arguments);
     };
   }
 
