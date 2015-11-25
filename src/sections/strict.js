@@ -240,8 +240,8 @@ function _sliceArr(source, start, end) {
   end = is.undefined(end) || end > len
     ? len
     : end < 0
-        ? len + end
-        : end;
+      ? len + end
+      : end;
 
   if (start >= end) return [];
 

@@ -386,8 +386,8 @@ function _sliceArr(source, start, end) {
   end = is.undefined(end) || end > len
     ? len
     : end < 0
-        ? len + end
-        : end;
+      ? len + end
+      : end;
 
   if (start >= end) return [];
 
@@ -418,14 +418,15 @@ function _sliceStr(str, start, end) {
   len = str.length;
   start = start
     ? start < 0
-      ? len + start : start
+      ? len + start
+      : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = end
-    ? end > len
-      ? len : end < 0
-        ? len + end : end
-    : 0;
+  end = is.undefined(end) || end > len
+    ? len
+    : end < 0
+      ? len + end
+      : end;
 
   return start >= end ? '' : str.substring(start, end);
 }
