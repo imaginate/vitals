@@ -1,7 +1,7 @@
 {
   "name": "node-vitals",
-  "version": "2.0.0-alpha",
-  "description": "Less = More |> A JavaScript library of utility methods designed for elegance, performance, and reliability;",
+  "version": "2.0.0-beta",
+  "description": "A JavaScript utility library designed for elegance, performance, & reliability. Get more functionality with fewer methods!",
   "main": "node-vitals.js",
   "repository": {
     "type": "git",
@@ -45,6 +45,9 @@
     "node utilities",
     "node utility",
     "js utilities",
-    "js utility"
+    "js utility",
+    "js utility library",
+    "utility library",
+    "js library"
   ]
 }
