@@ -103,9 +103,6 @@ describe('vitals.until.array (section:base)', function() {
 
     });
 
-  });
-
-  describe('error tests', function() {
     describe('should throw an error', function() {
 
       title = callStr();
@@ -144,6 +141,7 @@ describe('vitals.until.array (section:base)', function() {
       });
 
     });
+
   });
 
 });
