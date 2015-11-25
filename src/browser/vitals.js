@@ -3715,26 +3715,25 @@ var until = (function untilPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for iterating over object maps and arrays or for invoking an
-   *   action until an end value is returned. If iterating over an object note
-   *   that this method lazily clones the object based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param to avoid accidental results).
+   * A shortcut for iterating over object maps, arrays, or cycles until an end
+   *   value is returned.
    * @public
-   * @param {*} end - A value that ends the iteration/action if returned by the
+   * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {!(Object|function|Array|number)=} source - If the source is defined
    *   the iteration will also stop as follows (per source type):
    *     object source: Ends after all properties are visited.
    *     array source:  Ends after all indexes are visited.
    *     number source: Ends after the count of cycles equals the source.
-   * @param {function(*=, (string|number)=, !(Object|function|Array)=)} iteratee
-   * @param {Object=} thisArg
-   * @return {boolean} - If the end value is returned to terminate the iteration
-   *   this method will return true. Otherwise (e.g. if all source properties
-   *   are visited or the count of cycles is reached) this method will return
-   *   false.
+   * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
+   *   has the optional params - value, key/index, source. Note this method
+   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   (i.e. if you alter the source object within the iteratee ensure to define
+   *   the iteratee's third param so you can safely assume all references to the
+   *   source are its original values).
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
+   * @return {boolean} - This method will return true if the iteratee returns
+   *   the end value or false if the iteratee does not.
    */
   function until(end, source, iteratee, thisArg) {
 
