@@ -105,13 +105,14 @@ describe('vitals.until.object (section:base)', function() {
       it(title, function() {
         var obj = newObj();
         var thisArg = {};
-        vitals.until.obj(true, obj, function(val, key) {
+        var fail = vitals.until.obj(true, obj, function(val, key) {
           this[key] = val;
         }, thisArg);
         each(obj, function(val, key) {
           assert( has(thisArg, key)    );
           assert( thisArg[key] === val );
         });
+        assert( fail === false );
       });
 
     });

@@ -105,13 +105,14 @@ describe('vitals.until (section:base)', function() {
       it(title, function() {
         var obj = newObj();
         var thisArg = {};
-        vitals.until(true, obj, function(val, key) {
+        var fail = vitals.until(true, obj, function(val, key) {
           this[key] = val;
         }, thisArg);
         each(obj, function(val, key) {
           assert( has(thisArg, key)    );
           assert( thisArg[key] === val );
         });
+        assert( fail === false );
       });
 
     });
@@ -194,10 +195,11 @@ describe('vitals.until (section:base)', function() {
       it(title, function() {
         var arr = newArr();
         var thisArg = new Array(9);
-        vitals.until(true, arr, function(val, i) {
+        var fail = vitals.until(true, arr, function(val, i) {
           this[i] = val;
         }, thisArg);
         assert( arr.join() === thisArg.join() );
+        assert( fail === false );
       });
 
     });
@@ -257,11 +259,12 @@ describe('vitals.until (section:base)', function() {
       it(title, function() {
         var times = 0;
         var thisArg = {};
-        vitals.until(true, 5, function() {
+        var fail = vitals.until(true, 5, function() {
           this.times = ++times;
         }, thisArg);
         assert( times === 5 );
         assert( thisArg.times === 5 );
+        assert( fail === false );
       });
 
     });
@@ -299,12 +302,13 @@ describe('vitals.until (section:base)', function() {
       it(title, function() {
         var times = 0;
         var thisArg = {};
-        vitals.until(true, function(time) {
+        var pass = vitals.until(true, function(time) {
           this.times = ++times;
           return time === 5;
         }, thisArg);
         assert( times === 6 );
         assert( thisArg.times === 6 );
+        assert( pass === true );
       });
 
     });
