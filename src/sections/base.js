@@ -3721,7 +3721,7 @@ var until = (function untilPrivateScope() {
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {number} count - The number of cycles.
-   * @param {function} action
+   * @param {function(number=)} action
    * @param {Object=} thisArg
    * @return {boolean} - If the iteration is terminated by the end value this
    *   method will return true. Otherwise if the number of cycles is reached
@@ -3849,14 +3849,22 @@ var until = (function untilPrivateScope() {
    * @private
    * @param {*} end
    * @param {number} count
-   * @param {function} action
+   * @param {function(number=)} action
    * @param {Object=} thisArg
    * @return {boolean}
    */
   function _untilCycle(end, count, action, thisArg) {
+
+    /** @type {number} */
+    var i;
+
     action = is.undefined(thisArg) ? action : _bind(action, thisArg);
-    while(count--) {
-      if (action() === end) return true;
+    if (action.length) {
+      i = 0;
+      while(count--) if (action(i++) === end) return true;
+    }
+    else {
+      while(count--) if (action() === end) return true;
     }
     return false;
   }
@@ -3874,14 +3882,14 @@ var until = (function untilPrivateScope() {
   function _bind(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function iteratee() { func.call(thisArg); };
+      return function iteratee() { return func.call(thisArg); };
       case 1:
-      return function iteratee(val) { func.call(thisArg, val); };
+      return function iteratee(val) { return func.call(thisArg, val); };
       case 2:
-      return function iteratee(val, key) { func.call(thisArg, val, key); };
+      return function iteratee(val, key) { return func.call(thisArg,val,key); };
     }
     return function iteratee(val, key, obj) {
-      func.call(thisArg, val, key, obj);
+      return func.call(thisArg, val, key, obj);
     };
   }
 
