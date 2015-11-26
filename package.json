@@ -21,7 +21,8 @@
   },
   "devDependencies": {
     "mocha": "2.x",
-    "colors": "1.x"
+    "colors": "1.x",
+    "shelljs": "0.5.x"
   },
   "keywords": [
     "imaginate",

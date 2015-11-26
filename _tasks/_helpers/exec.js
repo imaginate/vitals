@@ -134,7 +134,15 @@ module.exports = function exec(cmd, options) {
 
   args = cmd.split(' ');
   cmd  = args.shift();
-  result = cp.spawnSync(cmd, args, options);
+
+  if ( has(cp, 'spawnSync') ) {
+    result = cp.spawnSync(cmd, args, options);
+  }
+  else {
+    result = require('shelljs').exec(cmd, { silent: true });
+    result.stdout = result.output;
+    result.status = result.code;
+  }
 
   if (result.error) log.error('Failed `helpers.exec` Call', result.error, {
     syscall: result.error.syscall,
