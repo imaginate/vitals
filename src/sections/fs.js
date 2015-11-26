@@ -450,7 +450,7 @@ var _normalize = (function _normalizePrivateScope() {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
     options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = eol && eol.toUpperCase();
+    options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
 
@@ -742,7 +742,7 @@ var _normalize = (function _normalizePrivateScope() {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
     options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = eol && eol.toUpperCase();
+    options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
 
