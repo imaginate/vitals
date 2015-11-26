@@ -313,7 +313,7 @@ function appendFs(vitals) {
   fs = requireSection('fs');
   for (key in fs) {
     if ( _own(fs, key) ) {
-      vitals[key] = _merge(vitals[key], fs[key]);
+      vitals[key] = _merge(vitals[key] || {}, fs[key]);
     }
   }
   return vitals;
