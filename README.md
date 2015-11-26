@@ -40,9 +40,9 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 ## All Methods
 | [Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods) |
 | :---------------------------: | :-------------------------------: | :---------------------------------: | :-----------------------------: |
-| [copy](#vitalscopy)           | [amend](#vitalsamend)             | copy*                               | run*                            |
-| [cut](#vitalscut)             | cap*                              | get*                                |                                 |
-| [each](#vitalseach)           | [create](#vitalscreate)           | to*                                 |                                 |
+| [copy](#vitalscopy)           | [amend](#vitalsamend)             | [copy](#fs-vitalscopy)              | run*                            |
+| [cut](#vitalscut)             | cap*                              | [get](#fs-vitalsget)                |                                 |
+| [each](#vitalseach)           | [create](#vitalscreate)           | [to](#fs-vitalsto)                  |                                 |
 | [fill](#vitalsfill)           | [freeze](#vitalsfreeze)           |                                     |                                 |
 | [fuse](#vitalsfuse)           | [seal](#vitalsseal)               |                                     |                                 |
 | [get](#vitalsget)             |                                   |                                     |                                 |
@@ -180,6 +180,24 @@ All base methods give you the maximum possible coverage within their main method
 
 
 ## File System Methods
+
+#### fs vitals.copy
+| Documentation                                                                                        | Alias    |
+| :--------------------------------------------------------------------------------------------------- | :------- |
+| [copy.file](https://github.com/imaginate/vitals/blob/689722b826/src/methods/fs/copy.js#L42-L54)      |          |
+| [copy.directory](https://github.com/imaginate/vitals/blob/689722b826/src/methods/fs/copy.js#L78-L91) | copy.dir |
+
+#### fs vitals.get
+| Documentation                                                                                        |
+| :--------------------------------------------------------------------------------------------------- |
+| [get.file](https://github.com/imaginate/vitals/blob/ce1e24b234/src/methods/fs/get.js#L43-L55)        |
+| [get.dirpaths](https://github.com/imaginate/vitals/blob/ce1e24b234/src/methods/fs/get.js#L82-L91)    |
+| [get.filepaths](https://github.com/imaginate/vitals/blob/ce1e24b234/src/methods/fs/get.js#L114-L129) |
+
+#### fs vitals.to
+| Documentation                                                                               |
+| :------------------------------------------------------------------------------------------ |
+| [to.file](https://github.com/imaginate/vitals/blob/a34e549c11/src/methods/fs/to.js#L39-L46) |
 
 
 ## Shell Methods
