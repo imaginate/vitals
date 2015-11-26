@@ -90,7 +90,7 @@ each(tasks, function(taskStr) {
   if ( !is.file(taskDir + name + '.js') ) {
     log.error('Invalid `make` Command', 'a task\'s file does not exist', {
       argMap: true,
-      invalidTask: `${taskDir}${name}.js`
+      invalidTask: taskDir + name + '.js'
     });
   }
 
