@@ -40,7 +40,7 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 ## All Methods
 | [Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods) |
 | :---------------------------: | :-------------------------------: | :---------------------------------: | :-----------------------------: |
-| [copy](#vitalscopy)           | [amend](#vitalsamend)             | [copy](#fs-vitalscopy)              | run*                            |
+| [copy](#vitalscopy)           | [amend](#vitalsamend)             | [copy](#fs-vitalscopy)              | [run](#vitalsrun)               |
 | [cut](#vitalscut)             | cap*                              | [get](#fs-vitalsget)                |                                 |
 | [each](#vitalseach)           | [create](#vitalscreate)           | [to](#fs-vitalsto)                  |                                 |
 | [fill](#vitalsfill)           | [freeze](#vitalsfreeze)           |                                     |                                 |
@@ -202,6 +202,10 @@ All base methods give you the maximum possible coverage within their main method
 
 ## Shell Methods
 
+#### vitals.run
+| Documentation                                                                         |
+| :------------------------------------------------------------------------------------ |
+| [run](https://github.com/imaginate/vitals/blob/befb7eed84/src/methods/run.js#L52-L76) |
 
 <br>
 ## Other Details
