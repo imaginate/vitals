@@ -274,6 +274,7 @@ function runTests(options, tests, setup, callback) {
     cmd = cmd.split(' ');
     result = cp.spawn(cmd[0], slice(cmd, 1));
     result.stdout.on('data', function(data) {
+      data = data.toString();
       console.log(data);
       callback && callback();
     });
