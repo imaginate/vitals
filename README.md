@@ -1,4 +1,4 @@
-# vitals
+# vitals [![build status](https://travis-ci.org/imaginate/vitals.svg?branch=master)](https://travis-ci.org/imaginate/vitals) [![npm version](https://badge.fury.io/js/node-vitals.svg)](https://badge.fury.io/js/node-vitals)
 ### Give Your JS Life
 A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#base-methods) give you all of the basic JavaScript functionality and more (100+ actions) with only 12 methods. It also contains [strict methods](#strict-methods) that give you more control over object states (such as [setting static type properties](https://github.com/imaginate/vitals/blob/38f306f2ee/src/methods/amend.js#L60-L72)), and a combination of [file system](#file-system-methods) and [shell methods](#shell-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
 
