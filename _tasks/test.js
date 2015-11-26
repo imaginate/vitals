@@ -13,8 +13,6 @@
 
 'use strict';
 
-var cp = require('child_process');
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // DEFINE & EXPORT THE TASK
@@ -43,10 +41,10 @@ module.exports = newTask('test', 'method', {
     configLog();
 
     logStart(title);
-    runTests(options, tests, setup, function() {
-      logFinish(title);
-      resetLog();
-    });
+    runTests(options, tests, setup);
+    logFinish(title);
+
+    resetLog();
   },
 
   /**
@@ -267,23 +265,8 @@ function runTests(options, tests, setup, callback) {
   setup += setup && !has(setup, /\.js$/) ? '.js' : '';
   setup = setup && '--require ./test/_setup/' + setup + ' ';
   cmd = 'node ./node_modules/mocha/bin/mocha ' + options + setup + tests;
-  if ( hasSync() ) {
-    result = exec(cmd, { catchExit: false, eol: null });
-    console.log(result);
-    callback && callback();
-  }
-  else {
-    chunks = '';
-    cmd = cmd.split(' ');
-    result = cp.spawn(cmd[0], slice(cmd, 1));
-    result.stdout.on('data', function(chunk) {
-      chunks += chunk.toString();
-    });
-    result.stdout.on('close', function() {
-      console.log(chunks);
-      callback && callback();
-    });
-  }
+  result = exec(cmd, { catchExit: false, eol: null });
+  console.log(result);
 }
 
 /**
@@ -349,11 +332,4 @@ function getSection(str) {
  */
 function stripExt(filename) {
   return filename.replace(/\.js$/, '');
-}
-
-/**
- * @return {boolean}
- */
-function hasSync() {
-  return 'spawnSync' in cp;
 }
