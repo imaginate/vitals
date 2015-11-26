@@ -21,8 +21,6 @@
 'use strict';
 
 /** @type {function} */
-var _error = requireHelper('errorAid.js')('setup');
-/** @type {function} */
 var _sliceArr = requireHelper('sliceArr.js');
 /** @type {function} */
 var _inStr = requireHelper('inStr.js');
@@ -44,29 +42,34 @@ var is = require('node-are').is;
  *   0= nothing is appended to the global
  *   1= the vitals object is appended to the global
  *   2= each vitals method is appended to the global
- * @param {...string=} methods - [default= "js"] The vitals methods to include.
- *   Methods may be included by section or individually.
+ * @param {(!Array|...string)=} methods - [default= "all"] The vitals methods to
+ *   include. Methods may be included by section or individually.
  * @return {!(Object|function)} If only one method is requested that method is
  *   returned. Otherwise an object with all the requested vitals methods is
  *   returned.
  */
 module.exports = function setupVitals(makeGlobal, methods) {
 
-  /** @type {!Object} */
-  var vitals;
-
   if ( is.num(makeGlobal) ) {
     if (makeGlobal < 0 || makeGlobal > 2) {
-      throw _error.range('makeGlobal', '0, 1, 2');
+      throw new RangeError('Invalid makeGlobal param. Valid options: 0, 1, 2');
     }
-    methods = _sliceArr(arguments, 1);
+    switch (arguments.length) {
+      case 1:  methods = DEFAULT_METHODS;
+      case 2:  break;
+      default: methods = _sliceArr(arguments, 1);
+    }
   }
   else {
-    methods = _sliceArr(arguments);
+    switch (arguments.length) {
+      case 0:  methods = DEFAULT_METHODS; break;
+      case 1:  methods = makeGlobal;      break;
+      default: methods = _sliceArr(arguments);
+    }
     makeGlobal = 0;
   }
 
-  methods = methods.length ? methods : DEFAULT_METHODS;
+  methods = is.arr(methods) ? methods : [ methods ];
   return methods.length > 1
     ? setupMethods(makeGlobal, methods)
     : setupMethod(makeGlobal, methods[0]);
@@ -92,7 +95,9 @@ var DEFAULT_METHODS = [ 'all' ];
 var SECTIONS = {
   'all':    /^all$/i,
   'base':   /^base$/i,
-  'strict': /^strict$/i
+  'strict': /^strict$/i,
+  'fs':     /^fs$|^file-?system$/i,
+  'shell':  /^shell$/i
 };
 
 /**
@@ -112,6 +117,7 @@ var METHODS = {
   'get':    true,
   'has':    true,
   'remap':  true,
+  'run':    true,
   'seal':   true,
   'slice':  true,
   'until':  true
@@ -133,13 +139,17 @@ function setupMethod(makeGlobal, method) {
   /** @type {function} */
   var vitals;
 
-  if ( !is.str(method) ) throw _error.type('method');
+  if ( !is.str(method) ) {
+    throw new TypeError('Invalid type for the method. Should be a string.');
+  }
 
   if ( isSection(method) ) return setupSection(makeGlobal, method);
 
-  if ( !isMethod(method) ) throw _error.range(
-    'method', 'see docs for all vitals sections and methods'
-  );
+  if ( !isMethod(method) ) {
+    throw new RangeError(
+      'The method, "'+ method +'", is not a valid vitals section or method.'
+    );
+  }
 
   vitals = requireMethod(method);
   vitals[method] = vitals;
@@ -159,6 +169,8 @@ function setupMethods(makeGlobal, methods) {
   var vitals;
   /** @type {string} */
   var method;
+  /** @type {boolean} */
+  var hasFs;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -170,20 +182,30 @@ function setupMethods(makeGlobal, methods) {
   while (++i < len) {
     method = methods[i];
 
-    if ( !is.str(method) ) throw _error.type('method');
+    if ( !is.str(method) ) {
+      throw new TypeError('Invalid type for a method. Should be a string.');
+    }
+
+    if ( SECTIONS.fs.test(method) ) {
+      hasFs = true;
+      continue;
+    }
 
     if ( isSection(method) ) {
       vitals = _merge(vitals, requireSection(method));
       continue;
     }
 
-    if ( !isMethod(method) ) throw _error.range(
-      'method', 'see docs for all vitals sections and methods'
-    );
+    if ( !isMethod(method) ) {
+      throw new RangeError(
+        'The method, "'+ method +'", is not a valid vitals section or method.'
+      );
+    }
 
     vitals[method] = requireMethod(method);
   }
 
+  vitals = hasFs ? appendFs(vitals) : vitals;
   setupGlobal(makeGlobal, vitals);
   return vitals;
 }
@@ -269,6 +291,32 @@ function requireSection(section) {
       return require('./src/sections/' + key);
     }
   }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPERS - APPEND
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {!Object} vitals
+ * @return {!Object}
+ */
+function appendFs(vitals) {
+
+  /** @type {!Object} */
+  var fs;
+  /** @type {string} */
+  var key;
+
+  fs = requireSection('fs');
+  for (key in fs) {
+    if ( _own(fs, key) ) {
+      vitals[key] = _merge(vitals[key], fs[key]);
+    }
+  }
+  return vitals;
 }
 
 
