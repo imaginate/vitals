@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - ALL METHODS
+ * VITALS JS - NODE VERSION - FILE SYSTEM METHODS
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
@@ -23,6 +23,8 @@
 var is = require('node-are').is;
 var fs = require('fs');
 
+var copy = {};
+var get = {};
 var to = {};
 
 
@@ -30,47 +32,9 @@ var to = {};
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT methods/_helpers/cloneObj.js
 // INSERT methods/_helpers/errorAid.js
-// INSERT methods/_helpers/escape.js
-// INSERT methods/_helpers/inArr.js
-// INSERT methods/_helpers/inObj.js
-// INSERT methods/_helpers/inStr.js
 // INSERT methods/_helpers/isEol.js
-// INSERT methods/_helpers/match.js
-// INSERT methods/_helpers/merge.js
 // INSERT methods/_helpers/normalize.js
-// INSERT methods/_helpers/own.js
-// INSERT methods/_helpers/ownEnum.js
-// INSERT methods/_helpers/sliceArr.js
-// INSERT methods/_helpers/sliceStr.js
-// INSERT methods/_helpers/splitKeys.js
-
-
-// *****************************************************************************
-// SECTION: BASE METHODS
-// *****************************************************************************
-
-// INSERT methods/copy.js
-// INSERT methods/cut.js
-// INSERT methods/each.js
-// INSERT methods/fill.js
-// INSERT methods/fuse.js
-// INSERT methods/get.js
-// INSERT methods/has.js
-// INSERT methods/remap.js
-// INSERT methods/slice.js
-// INSERT methods/until.js
-
-
-// *****************************************************************************
-// SECTION: STRICT METHODS
-// *****************************************************************************
-
-// INSERT methods/amend.js
-// INSERT methods/create.js
-// INSERT methods/freeze.js
-// INSERT methods/seal.js
 
 
 // *****************************************************************************
@@ -87,19 +51,7 @@ var to = {};
 // *****************************************************************************
 
 module.exports = {
-  amend:  amend,
   copy:   copy,
-  create: create,
-  cut:    cut,
-  each:   each,
-  fill:   fill,
-  freeze: freeze,
-  fuse:   fuse,
   get:    get,
-  has:    has,
-  remap:  remap,
-  seal:   seal,
-  slice:  slice,
-  to:     to,
-  until:  until
+  to:     to
 };
