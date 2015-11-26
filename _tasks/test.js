@@ -258,6 +258,8 @@ function runTests(options, tests, setup, callback) {
   /** @type {string} */
   var result;
   /** @type {string} */
+  var chunks;
+  /** @type {string} */
   var cmd;
 
   options = options.replace(/[^ ]$/, '$& ');
@@ -271,11 +273,14 @@ function runTests(options, tests, setup, callback) {
     callback && callback();
   }
   else {
+    chunks = '';
     cmd = cmd.split(' ');
     result = cp.spawn(cmd[0], slice(cmd, 1));
-    result.stdout.on('data', function(data) {
-      data = data.toString();
-      console.log(data);
+    result.stdout.on('data', function(chunk) {
+      chunks += chunk.toString();
+    });
+    result.stdout.on('close', function() {
+      console.log(chunks);
       callback && callback();
     });
   }
