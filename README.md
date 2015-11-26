@@ -152,6 +152,7 @@ All base methods give you the maximum possible coverage within their main method
 
 
 ## Strict Methods
+The strict methods make constructing secure JavaScript programs easier. Combined with [Symbols](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol) there is no excuse for accidental or invalid object mutations with quiet failures (i.e. errors not thrown).
 
 #### vitals.amend
 | Documentation                                                                                          | Examples                                                                                                   | Alias       |
@@ -180,6 +181,7 @@ All base methods give you the maximum possible coverage within their main method
 
 
 ## File System Methods
+When ``` "fs" ``` or ``` "file-system" ``` is included in a node-vitals setup these sub methods are appended to each main method. They are synchronously designed for easy use in build environments. Note that while these methods do receive regular use from our team, a thorough set of unit tests still need to be designed to ensure robust stability. If you encounter any bugs please [open an issue](https://github.com/imaginate/vitals/issues).
 
 #### fs vitals.copy
 | Documentation                                                                                        | Alias    |
@@ -201,6 +203,7 @@ All base methods give you the maximum possible coverage within their main method
 
 
 ## Shell Methods
+The shell methods are synchronously designed for easy use in build environments. Note that while these methods do receive regular use from our team, a thorough set of unit tests still need to be designed to ensure robust stability. If you encounter any bugs please [open an issue](https://github.com/imaginate/vitals/issues).
 
 #### vitals.run
 | Documentation                                                                         |
