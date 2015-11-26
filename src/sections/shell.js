@@ -261,7 +261,7 @@ var run = (function runPrivateScope() {
    */
   function run(cmd, options) {
 
-    /** @type {(SpawnResult|string|!Buffer)} */
+    /** @type {SpawnResult} */
     var result;
 
     if ( !is.str(cmd)         ) throw _error.type('cmd');
