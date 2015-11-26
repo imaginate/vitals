@@ -47,7 +47,7 @@ shortcuts = {
 
 tasks = process.argv;
 tasks = tasks.length > 2 ? slice(tasks, 2) : shortcuts.dev.split(' ');
-tasks = remap(tasks, task => {
+tasks = remap(tasks, function(task){
   task = task.replace(/^--/, '');
   return has(shortcuts, task) ? shortcuts[task] : task;
 });
@@ -70,7 +70,7 @@ is.dir(taskDir) || log.error(
 // RUN THE TASKS
 ////////////////////////////////////////////////////////////////////////////////
 
-each(tasks, taskStr => {
+each(tasks, function(taskStr) {
 
   /** @type {string} */
   var val;
@@ -87,7 +87,7 @@ each(tasks, taskStr => {
   methods = taskStr.split('-');
   defaultVal = getVal( methods.shift() );
 
-  if ( !is.file(`${taskDir}${name}.js`) ) {
+  if ( !is.file(taskDir + name + '.js') ) {
     log.error('Invalid `make` Command', 'a task\'s file does not exist', {
       argMap: true,
       invalidTask: `${taskDir}${name}.js`
@@ -98,11 +98,11 @@ each(tasks, taskStr => {
   task.name = name;
 
   methods = methods.length ? methods : task.defaultMethods;
-  methods = defaultVal ? remap(methods, method => {
+  methods = defaultVal ? remap(methods, function(method) {
     return has(method, '=') ? method : method + defaultVal;
   }) : methods;
 
-  each(methods, method => {
+  each(methods, function(method) {
     val = getVal(method);
     val = val && slice(val, 1); // trim "=" from string start
     method = getName(method);
