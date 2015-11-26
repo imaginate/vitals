@@ -40,7 +40,7 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 ## All Methods
 | [Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods) |
 | :---------------------------: | :-------------------------------: | :---------------------------------: | :-----------------------------: |
-| [copy](#vitalscopy)           | [amend](#vitalsamend)             | copy*                               | exec*                           |
+| [copy](#vitalscopy)           | [amend](#vitalsamend)             | copy*                               | run*                            |
 | [cut](#vitalscut)             | cap*                              | get*                                |                                 |
 | [each](#vitalseach)           | [create](#vitalscreate)           | to*                                 |                                 |
 | [fill](#vitalsfill)           | [freeze](#vitalsfreeze)           |                                     |                                 |
