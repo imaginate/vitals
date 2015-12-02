@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * INIT VITALS TESTS
+ * INIT NPM TESTS FOR VITALS
  * -----------------------------------------------------------------------------
  * @file Use `$ npm test` to access this file. This file is maintained
  *   separately to ensure cross-compatibility with all node versions.
@@ -26,34 +26,36 @@ var cp = require('child_process');
 var colors = require('colors/safe');
 
 
-////////////////////////////////////////////////////////////////////////////////
-// RUN THE TESTS
-////////////////////////////////////////////////////////////////////////////////
+runTests();
 
-setupColors();
-log('');
-allMethods().forEach(function(method) {
-  runTest(method);
-});
-
-
-////////////////////////////////////////////////////////////////////////////////
-// DEFINE PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
  * @type {function}
  */
-function setupColors() {
-  colors.setTheme({
-    start:  [ 'white',   'bold', 'bgGreen' ],
-    end:    [ 'white',   'bold', 'bgBlue'  ],
-    astart: [ 'yellow',  'bold', 'bgGreen' ],
-    aend:   [ 'magenta', 'bold', 'bgBlue'  ]
+function runTests() {
+  setupColors();
+  log('');
+  getMethods().forEach(function(method) {
+    runTest(method);
   });
 }
 
 /**
+ * @private
+ * @type {function}
+ */
+function setupColors() {
+  colors.setTheme({
+    start:  [ 'white',   'bold', 'bgBlue'  ],
+    end:    [ 'white',   'bold', 'bgGreen' ],
+    astart: [ 'magenta', 'bold', 'bgBlue'  ],
+    aend:   [ 'yellow',  'bold', 'bgGreen' ]
+  });
+}
+
+/**
+ * @private
  * @param {string} method
  * @param {boolean=} end
  */
@@ -79,6 +81,7 @@ function logTitle(method, end) {
 }
 
 /**
+ * @private
  * @param {string} method
  * @return {!Array}
  */
@@ -95,6 +98,7 @@ function getCmd(method) {
 }
 
 /**
+ * @private
  * @param {string} method
  * @return {string}
  */
@@ -124,7 +128,7 @@ function runTest(method) {
  * @private
  * @return {!Array}
  */
-function allMethods() {
+function getMethods() {
 
   /** @type {!Array} */
   var methods;
