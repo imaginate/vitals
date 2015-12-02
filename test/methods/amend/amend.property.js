@@ -68,7 +68,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 2);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 2);
     });
 
@@ -81,7 +81,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( !has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 2);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 2);
     });
 
@@ -94,7 +94,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( !has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 2);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 2);
     });
 
@@ -143,7 +143,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 3);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 3);
     });
 
@@ -156,7 +156,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( !has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 3);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 3);
     });
 
@@ -172,7 +172,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert( !has.enum(obj, 'a') );
       obj.a = 2;
       assert(obj.a === 3);
-      obj.a = 'string';
+      assert.throws(function() { obj.a = 'string'; });
       assert(obj.a === 3);
     });
 
