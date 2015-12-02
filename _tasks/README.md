@@ -44,7 +44,7 @@ $ node make --task=defaultValue-method-method-method=value
 | version | all                                     | all              |
 
 
-## Task Values
+## Values
 | Task    | Method                           | Value            | Example                                      |
 | :------ | :------------------------------- | :--------------- | :------------------------------------------- |
 | test    | method                           | Vitals Method    | ```$ node make --test-method=each ```        |
