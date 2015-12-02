@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - HAS
  * -----------------------------------------------------------------------------
- * @version 2.0.0
+ * @version 2.0.1
  * @see [vitals.has]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
