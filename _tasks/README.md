@@ -1,5 +1,5 @@
 # The Makefile & Its Tasks
-This directory consists of tasks called by a custom [makefile](https://github.com/imaginate/vitals/blob/master/make.js). Each script in this directory must export one [Task object](https://github.com/imaginate/vitals/blob/master/tasks/helpers/task.js) with at least one method. Below are instructions for using the makefile and its tasks.
+This directory consists of tasks called by a custom [makefile](https://github.com/imaginate/vitals/blob/master/make.js). Each script in this directory must export one [Task object](https://github.com/imaginate/vitals/blob/master/_tasks/_helpers/task.js) with at least one method. Below are instructions for using the makefile and its tasks.
 - [Overview](#overview)
 - [Examples](#examples)
 - [Shortcuts](#shortcuts)
