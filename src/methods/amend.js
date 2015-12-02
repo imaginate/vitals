@@ -572,6 +572,13 @@ var amend = (function amendPrivateScope() {
 
   /**
    * @private
+   * @type {string}
+   * @const
+   */
+  var INVALID_STATIC_TYPE = 'Invalid type for object property.';
+
+  /**
+   * @private
    * @param {*} val
    * @param {!Object} descriptor
    * @return {!Object}
@@ -610,9 +617,15 @@ var amend = (function amendPrivateScope() {
 
     prop.get = function() { return val; };
     prop.set = staticType && setter
-      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      ? function(newVal) {
+          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          val = setter(newVal, val);
+        }
       : staticType
-        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        ? function(newVal) {
+            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            val = newVal;
+          }
         : function(newVal) { val = setter(newVal, val); };
     return prop;
   }
@@ -649,9 +662,15 @@ var amend = (function amendPrivateScope() {
     prop = _cloneObj(descriptor);
     prop.get = function() { return val; };
     prop.set = staticType && setter
-      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      ? function(newVal) {
+          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          val = setter(newVal, val);
+        }
       : staticType
-        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        ? function(newVal) {
+            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            val = newVal;
+          }
         : function(newVal) { val = setter(newVal, val); };
     return prop;
   }
