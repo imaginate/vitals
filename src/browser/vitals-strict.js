@@ -414,14 +414,15 @@ var amend = (function amendPrivateScope() {
    * @param {string=} staticType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that only sets the property if the new value passes an
+   *   param) that throws an error if the new property value fails an
    *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( is(staticType, newVal) ) {
-   *         value = newVal;
+   *       if ( !is(staticType, newVal) ) {
+   *         throw new TypeError("Invalid type for object property value.");
    *       }
+   *       value = newVal;
    *     };
    *     ```
    * @param {function(*, *): *=} setter - If defined all new properties are
@@ -496,14 +497,15 @@ var amend = (function amendPrivateScope() {
    *     configurable: true
    *   }]
    * @param {string=} staticType - If defined the new property is assigned
-   *   an accessor descriptor that includes a setter that only sets the property
-   *   if the new value passes an [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   an accessor descriptor that includes a setter that throws an error if the
+   *   new property value fails an [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( is(staticType, newVal) ) {
-   *         value = newVal;
+   *       if ( !is(staticType, newVal) ) {
+   *         throw new TypeError("Invalid type for object property value.");
    *       }
+   *       value = newVal;
    *     };
    *     ```
    * @param {function(*, *): *=} setter - If defined the new property is
@@ -575,14 +577,15 @@ var amend = (function amendPrivateScope() {
    * @param {string=} staticType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that only sets the property if the new value passes an
+   *   param) that throws an error if the new property value fails an
    *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( is(staticType, newVal) ) {
-   *         value = newVal;
+   *       if ( !is(staticType, newVal) ) {
+   *         throw new TypeError("Invalid type for object property value.");
    *       }
+   *       value = newVal;
    *     };
    *     ```
    * @param {function(*, *): *=} setter - If defined all new properties are
@@ -926,6 +929,13 @@ var amend = (function amendPrivateScope() {
 
   /**
    * @private
+   * @type {string}
+   * @const
+   */
+  var INVALID_STATIC_TYPE = 'Invalid type for object property value.';
+
+  /**
+   * @private
    * @param {*} val
    * @param {!Object} descriptor
    * @return {!Object}
@@ -964,9 +974,15 @@ var amend = (function amendPrivateScope() {
 
     prop.get = function() { return val; };
     prop.set = staticType && setter
-      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      ? function(newVal) {
+          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          val = setter(newVal, val);
+        }
       : staticType
-        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        ? function(newVal) {
+            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            val = newVal;
+          }
         : function(newVal) { val = setter(newVal, val); };
     return prop;
   }
@@ -1003,9 +1019,15 @@ var amend = (function amendPrivateScope() {
     prop = _cloneObj(descriptor);
     prop.get = function() { return val; };
     prop.set = staticType && setter
-      ? function(newVal) { if ( staticType(newVal) ) val = setter(newVal,val); }
+      ? function(newVal) {
+          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          val = setter(newVal, val);
+        }
       : staticType
-        ? function(newVal) { if ( staticType(newVal) ) val = newVal; }
+        ? function(newVal) {
+            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            val = newVal;
+          }
         : function(newVal) { val = setter(newVal, val); };
     return prop;
   }
