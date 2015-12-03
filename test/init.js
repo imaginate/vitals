@@ -27,7 +27,6 @@ var colors = require('colors/safe');
 
 
 setupColors();
-logSpace(1);
 logTitle();
 runTests();
 
@@ -69,17 +68,10 @@ function runTests() {
     chunks += chunk.toString();
   });
   result.stdout.on('close', function() {
+    chunks = chunks.replace(/^\n/, '');
     log(chunks);
     logTitle(true);
   });
-}
-
-/**
- * @private
- * @param {number} spaces
- */
-function logSpace(spaces) {
-  while (spaces--) log('');
 }
 
 /**
@@ -99,5 +91,5 @@ function logTitle(end) {
         colors.astart(' vitals ') +
         colors.start('Tests    ') );
   log(msg);
-  end && logSpace(3);
+  end && log('');
 }
