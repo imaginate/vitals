@@ -26,47 +26,11 @@ var cp = require('child_process');
 var colors = require('colors/safe');
 
 
+setupColors();
+logSpace(1);
+logTitle();
 runTests();
 
-
-/**
- * @private
- * @type {function}
- */
-function runTests() {
-  setupColors();
-  logSpace(1);
-  getMethods().forEach(function(method) {
-    runTest(method);
-  });
-}
-
-/**
- * @private
- * @param {string} method
- * @return {string}
- */
-function runTest(method) {
-
-  /** @type {string} */
-  var result;
-  /** @type {string} */
-  var chunks;
-  /** @type {!Array} */
-  var cmd;
-
-  cmd = getCmd(method);
-  result = cp.spawn(cmd[0], cmd.slice(1));
-  chunks = '';
-  result.stdout.on('data', function(chunk) {
-    chunks += chunk.toString();
-  });
-  result.stdout.on('close', function() {
-    logTitle(method);
-    log(chunks);
-    logTitle(method, true);
-  });
-}
 
 /**
  * @private
@@ -83,6 +47,35 @@ function setupColors() {
 
 /**
  * @private
+ * @type {function}
+ */
+function runTests() {
+
+  /** @type {string} */
+  var result;
+  /** @type {string} */
+  var chunks;
+
+  result = cp.spawn('node', [
+    './node_modules/mocha/bin/mocha',
+    '--colors',
+    '--recursive',
+    '--require',
+    './test/_setup/methods.js',
+    './test/methods'
+  ]);
+  chunks = '';
+  result.stdout.on('data', function(chunk) {
+    chunks += chunk.toString();
+  });
+  result.stdout.on('close', function() {
+    log(chunks);
+    logTitle(true);
+  });
+}
+
+/**
+ * @private
  * @param {number} spaces
  */
 function logSpace(spaces) {
@@ -91,60 +84,20 @@ function logSpace(spaces) {
 
 /**
  * @private
- * @param {string} method
  * @param {boolean=} end
  */
-function logTitle(method, end) {
+function logTitle(end) {
 
   /** @type {string} */
   var msg;
 
-  method = 'vitals.' + method;
   msg = end
-    ? ( colors.end(' Finished ') +
-        colors.aend(method)      +
-        colors.end(' Tests    ') )
-    : ( colors.start(' Starting ') +
-        colors.astart(method)      +
-        colors.start(' Tests    ') );
+    ? ( colors.end(' Finished') +
+        colors.aend(' vitals ') +
+        colors.end('Tests    ') )
+    : ( colors.start(' Starting') +
+        colors.astart(' vitals ') +
+        colors.start('Tests    ') );
   log(msg);
   end && logSpace(3);
-}
-
-/**
- * @private
- * @param {string} method
- * @return {!Array}
- */
-function getCmd(method) {
-  return [
-    'node',
-    './node_modules/mocha/bin/mocha',
-    '--colors',
-    '--recursive',
-    '--require',
-    './test/_setup/methods.js',
-    './test/methods/' + method
-  ];
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function getMethods() {
-
-  /** @type {!Array} */
-  var methods;
-  /** @type {string} */
-  var base;
-
-  base = 'src/methods/';
-  methods = fs.readdirSync(base);
-  methods = methods.filter(function(method) {
-    return is.file(base + method);
-  });
-  return methods.map(function(method) {
-    return method.replace(/\.js$/, '');
-  });
 }
