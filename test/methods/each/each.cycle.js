@@ -59,9 +59,6 @@ describe('vitals.each.cycle (section:base)', function() {
 
     });
 
-  });
-
-  describe('error tests', function() {
     describe('should throw an error', function() {
 
       title = callStr();
@@ -93,6 +90,7 @@ describe('vitals.each.cycle (section:base)', function() {
       });
 
     });
+
   });
 
 });

@@ -108,6 +108,21 @@ describe('vitals.each (section:base)', function() {
 
     });
 
+    title = titleStr('should convert string to array & correctly iterate');
+    describe(title, function() {
+
+      title = callStr('a,b,c,1,2,3,a1,b2,c3', '<iteratee>');
+      it(title, function() {
+        var arr = newArr();
+        var ii = 0;
+        vitals.each('a,b,c,1,2,3,a1,b2,c3', function(val, i) {
+          assert( arr[i] == val );
+          assert( ii++ === i );
+        });
+      });
+
+    });
+
     title = titleStr('should return the valid array');
     describe(title, function() {
 
@@ -122,6 +137,14 @@ describe('vitals.each (section:base)', function() {
       it(title, function() {
         var arr1 = newArr();
         var arr2 = vitals.each(arr1, function(val, i, arr) {});
+        assert( arr1 !== arr2 );
+        assert( arr1.join() === arr2.join() );
+      });
+
+      title = callStr('a,b,c,1,2,3,a1,b2,c3', '<iteratee>');
+      it(title, function() {
+        var arr1 = newArr();
+        var arr2 = vitals.each('a,b,c,1,2,3,a1,b2,c3', function(val, i) {});
         assert( arr1 !== arr2 );
         assert( arr1.join() === arr2.join() );
       });
