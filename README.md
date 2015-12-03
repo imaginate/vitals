@@ -157,7 +157,7 @@ The strict methods make constructing secure JavaScript programs easier. Combined
 #### vitals.amend
 | Documentation                                                                                          | Examples                                                                                                   | Alias       |
 | :----------------------------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------- | :---------- |
-| [amend](https://github.com/imaginate/vitals/blob/4584e86d96/src/methods/amend.js#42-L82)               | [amend](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.js)                       |             |
+| [amend](https://github.com/imaginate/vitals/blob/4584e86d96/src/methods/amend.js#L42-L82)              | [amend](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.js)                       |             |
 | [amend.property](https://github.com/imaginate/vitals/blob/4584e86d96/src/methods/amend.js#L134-L164)   | [amend.property](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.property.js)     | amend.prop  |
 | [amend.properties](https://github.com/imaginate/vitals/blob/4584e86d96/src/methods/amend.js#L205-L245) | [amend.properties](https://github.com/imaginate/vitals/blob/master/test/methods/amend/amend.properties.js) | amend.props |
 
