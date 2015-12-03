@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - GET
  * -----------------------------------------------------------------------------
- * @version 2.0.1
+ * @version 2.1.0
  * @see [vitals.get]{@link https://github.com/imaginate/vitals/blob/master/src/methods/get.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
