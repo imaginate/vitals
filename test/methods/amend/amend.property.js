@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - AMEND.PROPERTY
+ * TEST - VITALS METHOD - AMEND.PROPERTY
  * -----------------------------------------------------------------------------
  * @see [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
  *
@@ -32,7 +32,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 2);
     });
 
-    title = callStr({}, 'a', { value: 1, enumerable: false });
+    title = callStr({}, 'a', '<descriptor>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc);
@@ -43,7 +43,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 2);
     });
 
-    title = callStr({}, 'a', 1, { enumerable: false });
+    title = callStr({}, 'a', 1, '<descriptor>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc);
@@ -72,7 +72,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 2);
     });
 
-    title = callStr({}, 'a', 1, { enumerable: false }, 'number');
+    title = callStr({}, 'a', 1, '<descriptor>', 'number');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc, 'number');
@@ -85,7 +85,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 2);
     });
 
-    title = callStr({}, 'a', { value: 1, enumerable: false }, 'number');
+    title = callStr({}, 'a', '<descriptor>', 'number');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc, 'number');
@@ -103,7 +103,7 @@ describe('vitals.amend.property (section:strict)', function() {
   title = titleStr('setter', 'should amend prop to obj with correct setter');
   describe(title, function() {
 
-    title = callStr({}, 'a', 1, getSetter());
+    title = callStr({}, 'a', 1, '<setter>');
     it(title, function() {
       var obj = vitals.amend.prop({}, 'a', 1, getSetter());
       assert(obj.a === 1);
@@ -113,7 +113,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 3);
     });
 
-    title = callStr({}, 'a', 1, { enumerable: false }, getSetter());
+    title = callStr({}, 'a', 1, '<descriptor>', '<setter>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc, getSetter());
@@ -124,7 +124,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 3);
     });
 
-    title = callStr({}, 'a', { value: 1, enumerable: false }, getSetter());
+    title = callStr({}, 'a', '<descriptor>', '<setter>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc, getSetter());
@@ -135,7 +135,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 3);
     });
 
-    title = callStr({}, 'a', 1, 'number', getSetter());
+    title = callStr({}, 'a', 1, 'number', '<setter>');
     it(title, function() {
       var obj = vitals.amend.prop({}, 'a', 1, 'number', getSetter());
       assert(obj.a === 1);
@@ -147,7 +147,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 3);
     });
 
-    title = callStr({}, 'a', 1, { enumerable: false }, 'number', getSetter());
+    title = callStr({}, 'a', 1, '<descriptor>', 'number', '<setter>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc, 'number', getSetter());
@@ -160,10 +160,7 @@ describe('vitals.amend.property (section:strict)', function() {
       assert(obj.a === 3);
     });
 
-    title = callStr({}, 'a', {
-      enumerable: false,
-      value: 1
-    }, 'number', getSetter());
+    title = callStr({}, 'a', '<descriptor>', 'number', '<setter>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc, 'number', getSetter());
