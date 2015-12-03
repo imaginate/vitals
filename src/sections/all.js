@@ -4019,23 +4019,25 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
   // - amend
-  // - amend.property   (amend.prop)
-  // - amend.properties (amend.props)
+  // - amend.config
+  // - amend.property          (amend.prop)
+  // - amend.property.config   (amend.prop.config)
+  // - amend.properties        (amend.props)
+  // - amend.properties.config (amend.props.config)
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.defineProperty and Object.defineProperties that
-   *   includes easier property assignment, static type assignment, and more
-   *   flexible default descriptor options.
+   * A shortcut for Object.defineProperties that includes easier property
+   *   assignment, static type assignment, and more flexible default descriptor
+   *   options.
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
-   *   array:  An array of key names to define.
-   *   string: Converted to an array of key names to define. Use the following
-   *     list of chars for the separator (chars listed in order of rank):
-   *     ", "  ","  "|"  " "
+   *   - object: Must be "propName => propVal" or "propName => propDescriptor".
+   *   - array:  An array of key names to define.
+   *   - string: Converted to an array of key names. Use this list of chars for
+   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
@@ -4116,6 +4118,41 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
+   * A shortcut for Object.defineProperties that only updates the descriptors of
+   *   existing properties.
+   * @public
+   * @param {!Object} obj
+   * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
+   *   for the props param are as follows (per props type):
+   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - array:  An array of key names to update.
+   *   - string: Converted to an array of key names. Use this list of chars for
+   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   * @param {!Object=} descriptor - Only use (and required) if an array or
+   *   string of keys is given for the props param.
+   * @return {!Object}
+   */
+  amend.config = function amendConfig(obj, props, descriptor) {
+
+    if ( !is.obj(obj) ) throw _error.type('obj', 'config');
+
+    if ( is.str(props) ) props = _splitKeys(props);
+
+    if ( !is.obj(props) ) throw _error.type('props', 'config');
+
+    if ( is.arr(props) ) {
+      if ( !is.obj(descriptor) ) throw _error.type('descriptor', 'config');
+      props = _setupConfigs(props, descriptor);
+    }
+
+    if ( !_hasKeys(obj, props) ) {
+      throw _error('A given prop was not defined in the obj', 'config');
+    }
+
+    return _amendConfigs(obj, props);
+  };
+
+  /**
    * A shortcut for Object.defineProperty.
    * @public
    * @param {!Object} obj
@@ -4185,6 +4222,30 @@ var amend = (function amendPrivateScope() {
   };
   // define shorthand
   amend.prop = amend.property;
+
+  /**
+   * A shortcut for Object.defineProperty that only updates the descriptor of an
+   *   existing property.
+   * @public
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  amend.property.config = function amendPropertyConfig(obj, key, descriptor) {
+
+    if ( !is.obj(obj)       ) throw _error.type('obj',       'property.config');
+    if ( !is.str(key)       ) throw _error.type('key',       'property.config');
+    if ( !is.obj(descriptor)) throw _error.type('descriptor','property.config');
+
+    if ( !_own(obj, key) ) {
+      throw _error('The key was not defined in the obj', 'property.config');
+    }
+
+    return _amendConfig(obj, key, descriptor);
+  };
+  // define shorthand
+  amend.prop.config = amend.property.config;
 
   /**
    * A shortcut for Object.defineProperties that includes easier property
@@ -4279,6 +4340,47 @@ var amend = (function amendPrivateScope() {
   };
   // define shorthand
   amend.props = amend.properties;
+
+  /**
+   * A shortcut for Object.defineProperties that only updates the descriptors of
+   *   existing properties.
+   * @public
+   * @param {!Object} obj
+   * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
+   *   for the props param are as follows (per props type):
+   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - array:  An array of key names to update.
+   *   - string: Converted to an array of key names. Use this list of chars for
+   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   * @param {!Object=} descriptor - Only use (and required) if an array or
+   *   string of keys is given for the props param.
+   * @return {!Object}
+   */
+  amend.properties.config = function amendPropertiesConfig(obj, props, descriptor) {
+
+    if ( !is.obj(obj) ) throw _error.type('obj', 'properties.config');
+
+    if ( is.str(props) ) props = _splitKeys(props);
+
+    if ( !is.obj(props) ) throw _error.type('props', 'properties.config');
+
+    if ( is.arr(props) ) {
+      if ( !is.obj(descriptor) ) {
+        throw _error.type('descriptor', 'properties.config');
+      }
+      props = _setupConfigs(props, descriptor);
+    }
+
+    if ( !_hasKeys(obj, props) ) {
+      throw _error(
+        'A given prop was not defined in the obj', 'properties.config'
+      );
+    }
+
+    return _amendConfigs(obj, props);
+  };
+  // define shorthand
+  amend.props.config = amend.properties.config;
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - MAIN ARG PARSING
@@ -4442,6 +4544,27 @@ var amend = (function amendPrivateScope() {
     return _ObjectDefineProperties(obj, props);
   }
 
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _amendConfig(obj, key, descriptor) {
+    return _ObjectDefineProperty(obj, key, descriptor);
+  }
+
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {!Object} props
+   * @return {!Object}
+   */
+  function _amendConfigs(obj, props) {
+    return _ObjectDefineProperties(obj, props);
+  }
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - PROPERTIES SETUP
   //////////////////////////////////////////////////////////
@@ -4549,6 +4672,30 @@ var amend = (function amendPrivateScope() {
       props[ keys[i] ] = _setupDescriptorByKeyWithSetter(
         val, descriptor, staticType, setter
       );
+    }
+    return props;
+  }
+
+  /**
+   * @private
+   * @param {!Array} keys
+   * @param {!Object} desc
+   * @return {!Object}
+   */
+  function _setupConfigs(keys, desc) {
+
+    /** @type {!Object} */
+    var props;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    props = {};
+    len = keys.length;
+    i = -1;
+    while (++i < len) {
+      props[ keys[i] ] = desc;
     }
     return props;
   }
@@ -4877,6 +5024,23 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Object} source
+   * @param {!Object} obj
+   * @return {boolean}
+   */
+  function _hasKeys(source, obj) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in obj) {
+      if ( _own(obj, key) && !_own(source, key) ) return false;
+    }
+    return true;
+  }
 
   /**
    * @private
