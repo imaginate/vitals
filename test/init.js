@@ -35,66 +35,10 @@ runTests();
  */
 function runTests() {
   setupColors();
-  log('');
+  logSpace(1);
   getMethods().forEach(function(method) {
     runTest(method);
   });
-}
-
-/**
- * @private
- * @type {function}
- */
-function setupColors() {
-  colors.setTheme({
-    start:  [ 'white',   'bold', 'bgBlue'  ],
-    end:    [ 'white',   'bold', 'bgGreen' ],
-    astart: [ 'magenta', 'bold', 'bgBlue'  ],
-    aend:   [ 'yellow',  'bold', 'bgGreen' ]
-  });
-}
-
-/**
- * @private
- * @param {string} method
- * @param {boolean=} end
- */
-function logTitle(method, end) {
-  method = 'vitals.' + method;
-  if (end) {
-    log(
-      colors.end(' Finished ') +
-      colors.aend(method)      +
-      colors.end(' Tests    ')
-    );
-    log('');
-    log('');
-    log('');
-  }
-  else {
-    log(
-      colors.start(' Starting ') +
-      colors.astart(method)      +
-      colors.start(' Tests    ')
-    );
-  }
-}
-
-/**
- * @private
- * @param {string} method
- * @return {!Array}
- */
-function getCmd(method) {
-  return [
-    'node',
-    './node_modules/mocha/bin/mocha',
-    '--colors',
-    '--recursive',
-    '--require',
-    './test/_setup/methods.js',
-    './test/methods/' + method
-  ];
 }
 
 /**
@@ -126,6 +70,66 @@ function runTest(method) {
 
 /**
  * @private
+ * @type {function}
+ */
+function setupColors() {
+  colors.setTheme({
+    start:  [ 'white',   'bold', 'bgBlue'  ],
+    end:    [ 'white',   'bold', 'bgGreen' ],
+    astart: [ 'magenta', 'bold', 'bgBlue'  ],
+    aend:   [ 'yellow',  'bold', 'bgGreen' ]
+  });
+}
+
+/**
+ * @private
+ * @param {number} spaces
+ */
+function logSpace(spaces) {
+  while (spaces--) log('');
+}
+
+/**
+ * @private
+ * @param {string} method
+ * @param {boolean=} end
+ */
+function logTitle(method, end) {
+
+  /** @type {string} */
+  var msg;
+
+  method = 'vitals.' + method;
+  msg = end
+    ? ( colors.end(' Finished ') +
+        colors.aend(method)      +
+        colors.end(' Tests    ') )
+    : ( colors.start(' Starting ') +
+        colors.astart(method)      +
+        colors.start(' Tests    ') );
+  log(msg);
+  end && logSpace(3);
+}
+
+/**
+ * @private
+ * @param {string} method
+ * @return {!Array}
+ */
+function getCmd(method) {
+  return [
+    'node',
+    './node_modules/mocha/bin/mocha',
+    '--colors',
+    '--recursive',
+    '--require',
+    './test/_setup/methods.js',
+    './test/methods/' + method
+  ];
+}
+
+/**
+ * @private
  * @return {!Array}
  */
 function getMethods() {
@@ -141,15 +145,6 @@ function getMethods() {
     return is.file(base + method);
   });
   return methods.map(function(method) {
-    return stripExt(method);
+    return method.replace(/\.js$/, '');
   });
-}
-
-/**
- * @private
- * @param {string} filename
- * @return {string}
- */
-function stripExt(filename) {
-  return filename.replace(/\.js$/, '');
 }
