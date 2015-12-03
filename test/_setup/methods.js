@@ -15,16 +15,16 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-/** @type {function} */
-var retrieve = require('../_helpers/retrieve');
+'use strict';
+
+var fs = require('fs');
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // SETUP GLOBAL HELPERS
 ////////////////////////////////////////////////////////////////////////////////
 
-if (!global.__basics) require('../_helpers/basics');
-
+require('../_helpers/basics');
 require('../_helpers/display');
 
 /**
@@ -42,13 +42,13 @@ global.assert = require('assert');
  * @global
  * @type {!Object}
  */
-global.vitals = buildVitals();
+global.vitals = getVitals();
 
 /**
  * @private
  * @return {!Object}
  */
-function buildVitals() {
+function getVitals() {
 
   /** @type {!Object} */
   var vitals;
@@ -56,9 +56,9 @@ function buildVitals() {
   var methods;
 
   vitals = {};
-  methods = allMethods();
+  methods = getMethods();
   each(methods, function(method) {
-    vitals[method] = require('../../src/methods/' + method);
+    vitals[method] = require('../../src/methods/' + method + '.js');
   });
   return vitals;
 }
@@ -67,22 +67,19 @@ function buildVitals() {
  * @private
  * @return {!Array}
  */
-function allMethods() {
+function getMethods() {
 
   /** @type {!Array} */
   var methods;
+  /** @type {string} */
+  var base;
 
-  methods = retrieve.filepaths('src/methods');
-  return remap(methods, function(method) {
-    return stripExt(method);
+  base = 'src/methods/';
+  methods = fs.readdirSync(base);
+  methods = methods.filter(function(method) {
+    return is.file(base + method);
   });
-}
-
-/**
- * @private
- * @param {string} filename
- * @return {string}
- */
-function stripExt(filename) {
-  return filename.replace(/\.js$/, '');
+  return methods.map(function(method) {
+    return method.replace(/\.js$/, '');
+  });
 }
