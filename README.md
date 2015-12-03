@@ -86,10 +86,10 @@ All base methods give you the maximum possible coverage within their main method
 #### vitals.each
 | Documentation                                                                                   | Examples                                                                                        | Alias     |
 | :---------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------- | :-------- |
-| [each](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L41-L53)         | [each](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.js)               |           |
-| [each.object](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L71-L84)  | [each.object](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.object.js) | each.obj  |
-| [each.array](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L96-L108)  | [each.array](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.array.js)   | each.arr  |
-| [each.cycle](https://github.com/imaginate/vitals/blob/e9001ac60c/src/methods/each.js#L121-L127) | [each.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.cycle.js)   | each.time |
+| [each](https://github.com/imaginate/vitals/blob/f9ce75180c/src/methods/each.js#L42-L59)         | [each](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.js)               |           |
+| [each.object](https://github.com/imaginate/vitals/blob/f9ce75180c/src/methods/each.js#L76-L89)  | [each.object](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.object.js) | each.obj  |
+| [each.array](https://github.com/imaginate/vitals/blob/f9ce75180c/src/methods/each.js#L101-L115) | [each.array](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.array.js)   | each.arr  |
+| [each.cycle](https://github.com/imaginate/vitals/blob/f9ce75180c/src/methods/each.js#L130-L136) | [each.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/each/each.cycle.js)   | each.time |
 
 #### vitals.fill
 | Documentation                                                                                    | Examples                                                                                        | Alias    |
