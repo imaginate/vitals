@@ -1981,39 +1981,43 @@ var each = (function eachPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for iterating over object maps and arrays or for invoking an
-   *   action a set number of times. If iterating over an object note that this
-   *   method lazily clones the object based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param to avoid accidental results).
+   * A shortcut for iterating over object maps, arrays, or cycles.
    * @public
-   * @param {!(Object|function|Array|number)} val
-   * @param {function(*=, (string|number)=, !(Object|function|Array)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {!(Object|function|Array|number|string)} source - Details per type:
+   *   - object source: Iterates over all properties in random order.
+   *   - array source:  Iterates over all indexed properties from 0 to length.
+   *   - number source: Iterates over all cycles.
+   *   - string source: Converted to an array source. Use this list of chars for
+   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
+   *   has the optional params - value, key/index, source. Note this method
+   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   (i.e. if you alter the source object within the iteratee ensure to define
+   *   the iteratee's third param so you can safely assume all references to the
+   *   source are its original values).
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
    * @return {(Object|function|Array|undefined)}
    */
-  function each(val, iteratee, thisArg) {
+  function each(source, iteratee, thisArg) {
 
     if ( !is.func(iteratee)   ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(val) ) {
-      _eachCycle(val, iteratee, thisArg);
-      return;
-    }
+    if ( is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    if ( !is._obj(val) ) throw _error.type('val');
+    source = is.str(source) ? _splitKeys(source) : source;
 
-    return is._arr(val)
-      ? _eachArr(val, iteratee, thisArg)
-      : _eachObj(val, iteratee, thisArg);
+    if ( !is._obj(source) ) throw _error.type('source');
+
+    return is._arr(source)
+      ? _eachArr(source, iteratee, thisArg)
+      : _eachObj(source, iteratee, thisArg);
   }
 
   /**
    * A shortcut for iterating over object maps.
    * @public
-   * @param {!(Object|function)} obj
+   * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
@@ -2021,16 +2025,16 @@ var each = (function eachPrivateScope() {
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
-   * @param {Object=} thisArg
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
    * @return {!(Object|function)}
    */
-  each.object = function eachObject(obj, iteratee, thisArg) {
+  each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
+    if ( !is._obj(source)     ) throw _error.type('source',   'object');
     if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
-    return _eachObj(obj, iteratee, thisArg);
+    return _eachObj(source, iteratee, thisArg);
   };
   // define shorthand
   each.obj = each.object;
@@ -2038,42 +2042,46 @@ var each = (function eachPrivateScope() {
   /**
    * A shortcut for iterating over array-like objects.
    * @public
-   * @param {!(Object|function)} obj
+   * @param {!(Object|function|string)} source - If source is a string it is
+   *   converted to an array. Use the following list of chars for the separator
+   *   (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
-   * @param {Object=} thisArg
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
    * @return {!(Object|function|Array)}
    */
-  each.array = function eachArray(obj, iteratee, thisArg) {
+  each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !is.num(obj.length)  ) throw _error.type('obj.length', 'array');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee',   'array');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',    'array');
+    source = is.str(source) ? _splitKeys(source) : source;
 
-    return _eachArr(obj, iteratee, thisArg);
+    if ( !is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+
+    return _eachArr(source, iteratee, thisArg);
   };
   // define shorthand
   each.arr = each.array;
 
   /**
-   * A shortcut for invoking an action a set number of times.
+   * A shortcut for iterating over a set number of cycles.
    * @public
    * @param {number} count
-   * @param {function(number=)} action
-   * @param {Object=} thisArg
+   * @param {function(number=)} iteratee
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
    */
-  each.cycle = function eachCycle(count, action, thisArg) {
+  each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
-    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
+    if ( !is.num(count)       ) throw _error.type('count',    'cycle');
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'cycle');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'cycle');
 
-    _eachCycle(count, action, thisArg);
+    return _eachCycle(count, iteratee, thisArg);
   };
   // define shorthand
   each.time = each.cycle;
@@ -2124,9 +2132,9 @@ var each = (function eachPrivateScope() {
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) iteratee();             break;
-      case 1:  while (++i < len) iteratee(obj[i]);       break;
-      case 2:  while (++i < len) iteratee(obj[i], i);    break;
+      case 0:  while (++i < len) iteratee();              break;
+      case 1:  while (++i < len) iteratee(obj[i]);        break;
+      case 2:  while (++i < len) iteratee(obj[i], i);     break;
       default: while (++i < len) iteratee(obj[i], i, obj);
     }
     return obj;
@@ -2135,21 +2143,21 @@ var each = (function eachPrivateScope() {
   /**
    * @private
    * @param {number} count
-   * @param {function} action
+   * @param {function} iteratee
    * @param {Object=} thisArg
    */
-  function _eachCycle(count, action, thisArg) {
+  function _eachCycle(count, iteratee, thisArg) {
 
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
-    if (action.length) {
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length) {
       i = 0;
-      while(count--) action(i++);
+      while(count--) iteratee(i++);
     }
     else {
-      while(count--) action();
+      while(count--) iteratee();
     }
   }
 
