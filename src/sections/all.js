@@ -1988,7 +1988,7 @@ var each = (function eachPrivateScope() {
 
     if ( is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    source = is.str(source) ? _splitKeys(source) : source;
+    if ( is.str(source) ) source = _splitKeys(source);
 
     if ( !is._obj(source) ) throw _error.type('source');
 
@@ -2039,7 +2039,7 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    source = is.str(source) ? _splitKeys(source) : source;
+    if ( is.str(source) ) source = _splitKeys(source);
 
     if ( !is._obj(source)       ) throw _error.type('source',        'array');
     if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
