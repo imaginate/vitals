@@ -1,6 +1,6 @@
 {
   "name": "node-vitals",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "A JavaScript utility library designed for elegance, performance, & reliability. Get more functionality with fewer methods!",
   "main": "node-vitals.js",
   "repository": {
