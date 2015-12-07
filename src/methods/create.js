@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - CREATE
  * -----------------------------------------------------------------------------
- * @version 2.1.1
+ * @version 2.1.2
  * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/methods/create.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
