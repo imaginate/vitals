@@ -738,7 +738,7 @@ var cut = (function cutPrivateScope() {
 
     if (!source.length || !keys.length) return source;
 
-    if (keys.length < 2) return _spliceKey(source, keys);
+    if (keys.length < 2) return _spliceKey(source, keys[0]);
 
     sorted = _sortIndexes(keys, source.length);
     i = sorted.first.length;
