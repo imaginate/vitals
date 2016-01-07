@@ -305,6 +305,38 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function)} dest
+   * @param {*} val
+   * @return {!(Object|function)}
+   */
+  function _fuseObjValTop(dest, val) {
+    if ( !_own(dest, val) ) dest[val] = undefined;
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!Array<*>} vals
+   * @return {!(Object|function)}
+   */
+  function _fuseObjsValTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest = _fuseObjValTop(dest, vals[i]);
+    }
+    return dest;
+  }
+
+  /**
+   * @private
    * @param {!Array} dest
    * @param {*} val
    * @return {!Array}
@@ -370,6 +402,38 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
+   * @param {!Array} dest
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _fuseArrValTop(dest, val) {
+    dest.unshift(val);
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {!Array<*>} vals
+   * @return {!Array}
+   */
+  function _fuseArrsValTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest.unshift( vals[i] );
+    }
+    return dest;
+  }
+
+  /**
+   * @private
    * @param {string} dest
    * @param {*} val
    * @return {string}
@@ -395,6 +459,37 @@ var fuse = (function fusePrivateScope() {
     i = -1;
     while (++i < len) {
       dest += vals[i];
+    }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {string} dest
+   * @param {*} val
+   * @return {string}
+   */
+  function _fuseStrTop(dest, val) {
+    return val + dest;
+  }
+
+  /**
+   * @private
+   * @param {string} dest
+   * @param {!Array<*>} vals
+   * @return {string}
+   */
+  function _fuseStrsTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest = vals[i] + dest;
     }
     return dest;
   }
