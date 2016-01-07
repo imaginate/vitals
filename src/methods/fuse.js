@@ -227,6 +227,41 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function)} dest
+   * @param {*} val
+   * @return {!(Object|function)}
+   */
+  function _fuseObjVal(dest, val) {
+    dest[val] = undefined;
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!Array<*>} vals
+   * @return {!(Object|function)}
+   */
+  function _fuseObjsVal(dest, vals) {
+
+    /** @type {*} */
+    var val;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      val = vals[i];
+      dest[val] = undefined;
+    }
+    return dest;
+  }
+
+  /**
+   * @private
    * @param {!Array} dest
    * @param {*} val
    * @return {!Array}
@@ -254,6 +289,38 @@ var fuse = (function fusePrivateScope() {
     i = -1;
     while (++i < len) {
       dest = _fuseArr(dest, vals[i]);
+    }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _fuseArrVal(dest, val) {
+    dest.push(val);
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {!Array<*>} vals
+   * @return {!Array}
+   */
+  function _fuseArrsVal(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest.push( vals[i] );
     }
     return dest;
   }
