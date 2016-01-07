@@ -34,10 +34,11 @@ var fuse = (function fusePrivateScope() {
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
   // - fuse
-  // - fuse.value  (fuse.val)
-  // - fuse.object (fuse.obj)
-  // - fuse.array  (fuse.arr)
-  // - fuse.string (fuse.str)
+  // - fuse.value       (fuse.val)
+  // - fuse.value.start (fuse.value.top)
+  // - fuse.object      (fuse.obj)
+  // - fuse.array       (fuse.arr)
+  // - fuse.string      (fuse.str)
   //////////////////////////////////////////////////////////
 
   /**
@@ -118,6 +119,48 @@ var fuse = (function fusePrivateScope() {
   };
   // define shorthand
   fuse.val = fuse.value;
+
+  /**
+   * Appends properties and combines strings to the start of their destination.
+   * @public
+   * @param {!(Object|function|Array|string)} dest
+   * @param {...*} vals - Details per dest type:
+   *   - object: All vals are converted to strings and appended as new keys (if
+   *     the key exists on the dest the property's value remains unchanged).
+   *   - array: All vals are unshifted to the dest.
+   *   - string: All vals are converted to strings and appended to the beginning
+   *     of the dest.
+   * @return {!(Object|function|Array|string)}
+   */
+  fuse.value.start = function fuseValueStart(dest, vals) {
+
+    if (arguments.length < 2) throw _error('No val defined', 'value.start');
+
+    if ( is.str(dest) ) {
+      if (arguments.length < 3) return _fuseStrTop(dest, vals);
+      vals = _sliceArr(arguments, 1);
+      return _fuseStrsTop(dest, vals);
+    }
+
+    if ( !is._obj(dest) ) throw _error.type('dest', 'value.start');
+
+    dest = is.args(dest) ? _sliceArr(dest) : dest;
+
+    if (arguments.length < 3) {
+      return is.arr(dest)
+        ? _fuseArrValTop(dest, vals)
+        : _fuseObjValTop(dest, vals);
+    }
+
+    vals = _sliceArr(arguments, 1);
+    return is.arr(dest)
+      ? _fuseArrsValTop(dest, vals)
+      : _fuseObjsValTop(dest, vals);
+  };
+  // define shorthand
+  fuse.val.start = fuse.value.start;
+  fuse.value.top = fuse.value.start;
+  fuse.val.top = fuse.value.start;
 
   /**
    * Appends properties/keys to an object.
