@@ -41,9 +41,9 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 | [Base Methods](#base-methods) | [Strict Methods](#strict-methods) | [File System](#file-system-methods) | [Shell Methods](#shell-methods) |
 | :---------------------------: | :-------------------------------: | :---------------------------------: | :-----------------------------: |
 | [copy](#vitalscopy)           | [amend](#vitalsamend)             | [copy](#fs-vitalscopy)              | [run](#vitalsrun)               |
-| [cut](#vitalscut)             | cap*                              | [get](#fs-vitalsget)                |                                 |
-| [each](#vitalseach)           | [create](#vitalscreate)           | [to](#fs-vitalsto)                  |                                 |
-| [fill](#vitalsfill)           | [freeze](#vitalsfreeze)           |                                     |                                 |
+| [cut](#vitalscut)             | cap*                              | cut*                                |                                 |
+| [each](#vitalseach)           | [create](#vitalscreate)           | [get](#fs-vitalsget)                |                                 |
+| [fill](#vitalsfill)           | [freeze](#vitalsfreeze)           | [to](#fs-vitalsto)                  |                                 |
 | [fuse](#vitalsfuse)           | [seal](#vitalsseal)               |                                     |                                 |
 | [get](#vitalsget)             |                                   |                                     |                                 |
 | [has](#vitalshas)             |                                   |                                     |                                 |
@@ -100,12 +100,14 @@ All base methods give you the maximum possible coverage within their main method
 | [fill.string](https://github.com/imaginate/vitals/blob/f621c1cb56/src/methods/fill.js#L139-L145) | [fill.string](https://github.com/imaginate/vitals/blob/master/test/methods/fill/fill.string.js) | fill.str |
 
 #### vitals.fuse
-| Documentation                                                                                    | Examples                                                                                        | Alias    |
-| :----------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------- | :------- |
-| [fuse](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L42-L60)          | [fuse](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.js)               |          |
-| [fuse.object](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L86-L98)   | [fuse.object](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.object.js) | fuse.obj |
-| [fuse.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L110-L118)  | [fuse.array](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.array.js)   | fuse.arr |
-| [fuse.string](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/fuse.js#L136-L142) | [fuse.string](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.string.js) | fuse.str |
+| Documentation                                                                                         | Examples                                                                                                  | Alias          |
+| :---------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------- | :------------- |
+| [fuse](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L44-L61)               | [fuse](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.js)                         |                |
+| [fuse.value](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L87-L98)         | [fuse.value](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.value.js)             | fuse.val       |
+| [fuse.value.start](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L123-L134) | [fuse.value.start](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.value.start.js) | fuse.value.top |
+| [fuse.object](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L165-L177)      | [fuse.object](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.object.js)           | fuse.obj       |
+| [fuse.array](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L189-L198)       | [fuse.array](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.array.js)             | fuse.arr       |
+| [fuse.string](https://github.com/imaginate/vitals/blob/9178f622b8/src/methods/fuse.js#L216-L222)      | [fuse.string](https://github.com/imaginate/vitals/blob/master/test/methods/fuse/fuse.string.js)           | fuse.str       |
 
 #### vitals.get
 | Documentation                                                                                        | Examples                                                                                                 | Alias          |
