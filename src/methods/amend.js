@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - AMEND
  * -----------------------------------------------------------------------------
- * @version 2.2.0
+ * @version 2.2.1
  * @see [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
