@@ -45,17 +45,16 @@ var fuse = (function fusePrivateScope() {
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types null does not throw an exception (it is simply skipped).
-   *   Remaining details per dest type:
-   *     object: If only one val is provided and it is an array it is considered
-   *       an array of vals. Object vals are merged with the dest. All other
-   *       values are converted to strings and appended as new keys (if key
-   *       exists on the dest the property's value is replaced with undefined).
-   *     array: Array vals are concatenated to the dest. All other values are
-   *       pushed to the dest.
-   *     string: If only one val is provided and it is an array it is considered
-   *       an array of vals. All non-string vals are converted to strings and
-   *       appended to the dest.
+   *   array dest types null is simply skipped. Remaining details per dest type:
+   *   - object: If only one val is provided and it is an array it is considered
+   *     an array of vals. Object vals are merged with the dest. All other
+   *     values are converted to strings and appended as new keys (if key exists
+   *     on the dest the property's value is replaced with undefined).
+   *   - array: Array vals are concatenated to the dest. All other values are
+   *     pushed to the dest.
+   *   - string: If only one val is provided and it is an array it is considered
+   *     an array of vals. All non-string vals are converted to strings and
+   *     appended to the dest.
    * @return {!(Object|function|Array|string)}
    */
   function fuse(dest, vals) {
@@ -87,13 +86,13 @@ var fuse = (function fusePrivateScope() {
    * Appends properties/keys to an object.
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions (they
-   *   are simply skipped). All other vals that are not objects are converted to
-   *   a string and appended as new keys (if key exists on the dest the key's
-   *   value is replaced with undefined). If only one val is provided and it is
-   *   an array then it is considered an array of vals. All object vals are
-   *   merged with the dest (if the key exists on the dest the key's value is
-   *   with replaced with the value from the vals object).
+   * @param {...*} vals - Any vals that are null are skipped. All other vals
+   *   that are not objects are converted to a string and appended as new keys
+   *   (if the key exists on the dest the key's value is replaced with
+   *   undefined). If only one val is provided and it is an array then it is
+   *   considered an array of vals. All object vals are merged with the dest
+   *   (if the key exists on the dest the key's value is with replaced with the
+   *   value from the merged object).
    * @return {!(Object|function)}
    */
   fuse.object = function fuseObject(dest, vals) {
@@ -111,9 +110,10 @@ var fuse = (function fusePrivateScope() {
    * Appends values to an array and concatenates arrays.
    * @public
    * @param {!Array} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions (they
-   *   are simply skipped). All other non-array vals are pushed to the dest
-   *   array. All array vals are concatenated to the dest.
+   * @param {...*} vals - Details per val type:
+   *   - null:  All null vals are skipped.
+   *   - array: All array vals are concatenated to the dest.
+   *   - other: All other vals are pushed to the dest array.
    * @return {!Array}
    */
   fuse.array = function fuseArray(dest, vals) {
