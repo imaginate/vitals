@@ -169,8 +169,8 @@ The strict methods make constructing secure JavaScript programs easier. Combined
 #### vitals.create
 | Documentation                                                                                      | Examples                                                                                              | Alias      |
 | :------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------- | :--------- |
-| [create](https://github.com/imaginate/vitals/blob/c246fabb29/src/methods/create.js#L39-L53)        | [create](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.js)               |            |
-| [create.object](https://github.com/imaginate/vitals/blob/c246fabb29/src/methods/create.js#L70-L84) | [create.object](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.object.js) | create.obj |
+| [create](https://github.com/imaginate/vitals/blob/2787335c1b/src/methods/create.js#L39-L53)        | [create](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.js)               |            |
+| [create.object](https://github.com/imaginate/vitals/blob/2787335c1b/src/methods/create.js#L70-L84) | [create.object](https://github.com/imaginate/vitals/blob/master/test/methods/create/create.object.js) | create.obj |
 
 #### vitals.freeze
 | Documentation                                                                                      | Examples                                                                                              | Alias      |
