@@ -1355,7 +1355,7 @@ var create = (function createPrivateScope() {
 
   /**
    * A shortcut for Object.create that includes easier property assignment,
-   *   static type assignment, and more flexible default descriptor options.
+   *   strong type assignment, and more flexible default descriptor options.
    *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
    *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
    *   for documentation about the property params.
@@ -1364,11 +1364,11 @@ var create = (function createPrivateScope() {
    * @param {!(Object<string, *>|Array<string>|string)} props
    * @param {*=} val
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function(*, *): *=} setter
    * @return {!Object}
    */
-  function create(proto, props, val, descriptor, staticType, setter) {
+  function create(proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
@@ -1386,7 +1386,7 @@ var create = (function createPrivateScope() {
 
   /**
    * A shortcut for Object.create that includes easier property assignment,
-   *   static type assignment, and more flexible default descriptor options.
+   *   strong type assignment, and more flexible default descriptor options.
    *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
    *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
    *   for documentation about the property params.
@@ -1395,11 +1395,11 @@ var create = (function createPrivateScope() {
    * @param {!(Object<string, *>|Array<string>|string)} props
    * @param {*=} val
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function(*, *): *=} setter
    * @return {!Object}
    */
-  create.object = function createObject(proto, props, val, descriptor, staticType, setter) {
+  create.object = function createObject(proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
