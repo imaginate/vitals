@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - TO
  * -----------------------------------------------------------------------------
- * @version 2.1.2
+ * @version 2.2.0
  * @see [vitals.to]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/to.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

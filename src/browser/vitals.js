@@ -27,7 +27,7 @@ all:/[^a-z\|]/g}}(/\|/,/\!/,/\?/,/\=/,/\*|any/);return{is:a,Is:a,are:b,Are:b}});
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.1.2
+ * @version 2.2.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
