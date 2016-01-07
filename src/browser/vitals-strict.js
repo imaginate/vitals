@@ -402,7 +402,7 @@ var amend = (function amendPrivateScope() {
 
   /**
    * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, static type assignment, and more flexible default descriptor
+   *   assignment, strong type assignment, and more flexible default descriptor
    *   options.
    * @public
    * @param {!Object} obj
@@ -417,7 +417,7 @@ var amend = (function amendPrivateScope() {
    *   keys regardless of descriptor type.
    * @param {!Object=} descriptor - The default descriptor values for each prop.
    *   [default= { writable: true, enumerable: true, configurable: true }]
-   * @param {string=} staticType - If defined all new properties are assigned
+   * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
    *   param) that throws an error if the new property value fails an
@@ -425,7 +425,7 @@ var amend = (function amendPrivateScope() {
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(staticType, newVal) ) {
+   *       if ( !is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -436,11 +436,11 @@ var amend = (function amendPrivateScope() {
    *   props param) that includes a setter (unless assigned a setter in the
    *   props param) that sets the property to the value returned by this setter.
    *   Note that this setter function will receive two params, the new value and
-   *   the current value. Also note that if the staticType param is defined this
+   *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
    * @return {!Object}
    */
-  function amend(obj, props, val, descriptor, staticType, setter) {
+  function amend(obj, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
     var isArr;
@@ -461,34 +461,34 @@ var amend = (function amendPrivateScope() {
     if (isArr && len < 3) throw _error('No val defined');
 
     if (!isArr && len > 2) {
-      setter = staticType;
-      staticType = descriptor;
+      setter = strongType;
+      strongType = descriptor;
       descriptor = val;
       val = undefined;
       ++len; // increase len for a valid _parseProps call
     }
 
     if (len === 4 || len === 5) {
-      args = _parseProps(len, descriptor, staticType, setter);
+      args = _parseProps(len, descriptor, strongType, setter);
       descriptor = args[0];
-      staticType = args[1];
+      strongType = args[1];
       setter = args[2];
     }
 
     if ( !is('!obj=', descriptor) ) throw _error.type('descriptor');
-    if ( !is('str=',  staticType) ) throw _error.type('staticType');
+    if ( !is('str=',  strongType) ) throw _error.type('strongType');
     if ( !is('func=', setter)     ) throw _error.type('setter');
 
-    if (staticType) {
-      if ( isArr && !is(staticType + '=', val) ) {
-        throw _error('The val param is not a valid staticType');
+    if (strongType) {
+      if ( isArr && !is(strongType + '=', val) ) {
+        throw _error('The val param is not a valid strongType');
       }
-      if ( !isArr && !_staticTypeCheckProps(staticType, props) ) {
-        throw _error('A props value was not a valid staticType');
+      if ( !isArr && !_strongTypeCheckProps(strongType, props) ) {
+        throw _error('A props value was not a valid strongType');
       }
     }
 
-    return _amendProps(obj, props, val, descriptor, staticType, setter);
+    return _amendProps(obj, props, val, descriptor, strongType, setter);
   }
 
   /**
@@ -537,13 +537,13 @@ var amend = (function amendPrivateScope() {
    *     enumerable: true,
    *     configurable: true
    *   }]
-   * @param {string=} staticType - If defined the new property is assigned
+   * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
    *   new property value fails an [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(staticType, newVal) ) {
+   *       if ( !is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -553,11 +553,11 @@ var amend = (function amendPrivateScope() {
    *   assigned an accessor descriptor that includes a setter that sets the
    *   property to the value returned by this setter method. The setter method
    *   will receive two params, the new value and the current value. If a
-   *   staticType is defined this setter will not get called until the new value
+   *   strongType is defined this setter will not get called until the new value
    *   passes the type test.
    * @return {!Object}
    */
-  amend.property = function amendProperty(obj, key, val, descriptor, staticType, setter) {
+  amend.property = function amendProperty(obj, key, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
@@ -572,27 +572,27 @@ var amend = (function amendPrivateScope() {
     if (len < 3) throw _error('No val or descriptor defined', 'property');
 
     if (len > 2 && len < 6) {
-      args = _parseProp(len, val, descriptor, staticType, setter);
+      args = _parseProp(len, val, descriptor, strongType, setter);
       val = args[0];
       descriptor = args[1];
-      staticType = args[2];
+      strongType = args[2];
       setter = args[3];
     }
 
     if ( !is('!obj=', descriptor) ) throw _error.type('descriptor', 'property');
-    if ( !is('str=',  staticType) ) throw _error.type('staticType', 'property');
+    if ( !is('str=',  strongType) ) throw _error.type('strongType', 'property');
     if ( !is('func=', setter)     ) throw _error.type('setter',     'property');
 
-    if ( staticType && !is(staticType + '=', val) ) {
-      throw _error('The val param is not a valid staticType', 'property');
+    if ( strongType && !is(strongType + '=', val) ) {
+      throw _error('The val param is not a valid strongType', 'property');
     }
-    if ( descriptor && (staticType || setter) && _own(descriptor, 'writable') ){
+    if ( descriptor && (strongType || setter) && _own(descriptor, 'writable') ){
       throw _error(
-        'A data descriptor may not be used with a staticType/setter', 'property'
+        'A data descriptor may not be used with a strongType/setter', 'property'
       );
     }
 
-    return _amendProp(obj, key, val, descriptor, staticType, setter);
+    return _amendProp(obj, key, val, descriptor, strongType, setter);
   };
   // define shorthand
   amend.prop = amend.property;
@@ -623,7 +623,7 @@ var amend = (function amendPrivateScope() {
 
   /**
    * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, static type assignment, and more flexible default descriptor
+   *   assignment, strong type assignment, and more flexible default descriptor
    *   options.
    * @public
    * @param {!Object} obj
@@ -639,7 +639,7 @@ var amend = (function amendPrivateScope() {
    *   keys regardless of descriptor type.
    * @param {!Object=} descriptor - The default descriptor values for each prop.
    *   [default= { writable: true, enumerable: true, configurable: true }]
-   * @param {string=} staticType - If defined all new properties are assigned
+   * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
    *   param) that throws an error if the new property value fails an
@@ -647,7 +647,7 @@ var amend = (function amendPrivateScope() {
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(staticType, newVal) ) {
+   *       if ( !is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -658,11 +658,11 @@ var amend = (function amendPrivateScope() {
    *   props param) that includes a setter (unless assigned a setter in the
    *   props param) that sets the property to the value returned by this setter.
    *   Note that this setter function will receive two params, the new value and
-   *   the current value. Also note that if the staticType param is defined this
+   *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
    * @return {!Object}
    */
-  amend.properties = function amendProperties(obj, props, val, descriptor, staticType, setter) {
+  amend.properties = function amendProperties(obj, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
     var isArr;
@@ -683,34 +683,34 @@ var amend = (function amendPrivateScope() {
     if (isArr && len < 3) throw _error('No val defined', 'properties');
 
     if (!isArr && len > 2) {
-      setter = staticType;
-      staticType = descriptor;
+      setter = strongType;
+      strongType = descriptor;
       descriptor = val;
       val = undefined;
       ++len; // increase len for a valid _parseProps call
     }
 
     if (len === 4 || len === 5) {
-      args = _parseProps(len, descriptor, staticType, setter);
+      args = _parseProps(len, descriptor, strongType, setter);
       descriptor = args[0];
-      staticType = args[1];
+      strongType = args[1];
       setter = args[2];
     }
 
     if ( !is('!obj=', descriptor)) throw _error.type('descriptor','properties');
-    if ( !is('str=',  staticType)) throw _error.type('staticType','properties');
+    if ( !is('str=',  strongType)) throw _error.type('strongType','properties');
     if ( !is('func=', setter)    ) throw _error.type('setter',    'properties');
 
-    if (staticType) {
-      if ( isArr && !is(staticType + '=', val) ) {
-        throw _error('The val param is not a valid staticType', 'properties');
+    if (strongType) {
+      if ( isArr && !is(strongType + '=', val) ) {
+        throw _error('The val param is not a valid strongType', 'properties');
       }
-      if ( !isArr && !_staticTypeCheckProps(staticType, props) ) {
-        throw _error('A props value was not a valid staticType', 'properties');
+      if ( !isArr && !_strongTypeCheckProps(strongType, props) ) {
+        throw _error('A props value was not a valid strongType', 'properties');
       }
     }
 
-    return _amendProps(obj, props, val, descriptor, staticType, setter);
+    return _amendProps(obj, props, val, descriptor, strongType, setter);
   };
   // define shorthand
   amend.props = amend.properties;
@@ -765,16 +765,16 @@ var amend = (function amendPrivateScope() {
    * @param {number} len
    * @param {*=} val
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function(*, *): *=} setter
    * @return {!Array}
    */
-  function _parseProp(len, val, descriptor, staticType, setter) {
+  function _parseProp(len, val, descriptor, strongType, setter) {
 
     switch (len) {
       case 4:
       if ( is.str(descriptor) ) {
-        staticType = descriptor;
+        strongType = descriptor;
         descriptor = undefined;
       }
       else if ( is.func(descriptor) ) {
@@ -783,11 +783,11 @@ var amend = (function amendPrivateScope() {
       }
       break;
       case 5:
-      if ( is.func(staticType) ) {
-        setter = staticType;
-        staticType = undefined;
+      if ( is.func(strongType) ) {
+        setter = strongType;
+        strongType = undefined;
         if ( is.str(descriptor) ) {
-          staticType = descriptor;
+          strongType = descriptor;
           descriptor = undefined;
         }
       }
@@ -798,23 +798,23 @@ var amend = (function amendPrivateScope() {
       val = descriptor.value;
     }
 
-    return [ val, descriptor, staticType, setter ];
+    return [ val, descriptor, strongType, setter ];
   }
 
   /**
    * @private
    * @param {number} len
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function(*, *): *=} setter
    * @return {!Array}
    */
-  function _parseProps(len, descriptor, staticType, setter) {
+  function _parseProps(len, descriptor, strongType, setter) {
 
     switch (len) {
       case 4:
       if ( is.str(descriptor) ) {
-        staticType = descriptor;
+        strongType = descriptor;
         descriptor = undefined;
       }
       else if ( is.func(descriptor) ) {
@@ -823,33 +823,33 @@ var amend = (function amendPrivateScope() {
       }
       break;
       case 5:
-      if ( is.func(staticType) ) {
-        setter = staticType;
-        staticType = undefined;
+      if ( is.func(strongType) ) {
+        setter = strongType;
+        strongType = undefined;
         if ( is.str(descriptor) ) {
-          staticType = descriptor;
+          strongType = descriptor;
           descriptor = undefined;
         }
       }
     }
 
-    return [ descriptor, staticType, setter ];
+    return [ descriptor, strongType, setter ];
   }
 
   /**
    * @private
-   * @param {string} staticType
+   * @param {string} strongType
    * @param {!Object} props
    * @return {boolean}
    */
-  function _staticTypeCheckProps(staticType, props) {
+  function _strongTypeCheckProps(strongType, props) {
 
     /** @type {string} */
     var key;
     /** @type {*} */
     var val;
 
-    staticType += '=';
+    strongType += '=';
     for (key in props) {
       if ( _own(props, key) ) {
         val = props[key];
@@ -857,7 +857,7 @@ var amend = (function amendPrivateScope() {
           if ( _own(val, 'writable') ) continue;
           val = val.value;
         }
-        if ( !is(staticType, val) ) return false;
+        if ( !is(strongType, val) ) return false;
       }
     }
     return true;
@@ -873,18 +873,18 @@ var amend = (function amendPrivateScope() {
    * @param {string} key
    * @param {*=} val
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function=} setter
    * @return {!Object}
    */
-  function _amendProp(obj, key, val, descriptor, staticType, setter) {
+  function _amendProp(obj, key, val, descriptor, strongType, setter) {
 
     descriptor = descriptor || null;
-    descriptor = _getDescriptor(descriptor, !!staticType || !!setter);
-    staticType = _getStaticType(staticType);
+    descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
+    strongType = _getStrongType(strongType);
 
-    descriptor = staticType || setter
-      ? _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter)
+    descriptor = strongType || setter
+      ? _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter)
       : _isAccessor(descriptor)
         ? _cloneObj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
@@ -898,21 +898,21 @@ var amend = (function amendPrivateScope() {
    * @param {!Object} props
    * @param {*} val
    * @param {!Object=} descriptor
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @param {function=} setter
    * @return {!Object}
    */
-  function _amendProps(obj, props, val, descriptor, staticType, setter) {
+  function _amendProps(obj, props, val, descriptor, strongType, setter) {
 
     descriptor = descriptor || null;
-    descriptor = _getDescriptor(descriptor, !!staticType || !!setter);
-    staticType = _getStaticType(staticType);
+    descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
+    strongType = _getStrongType(strongType);
     props = is.arr(props)
-      ? staticType || setter
-        ? _setupPropsByKeyWithSetter(props, val, descriptor, staticType, setter)
+      ? strongType || setter
+        ? _setupPropsByKeyWithSetter(props, val, descriptor, strongType, setter)
         : _setupPropsByKey(props, val, descriptor)
-      : staticType || setter
-        ? _setupPropsWithSetter(props, descriptor, staticType, setter)
+      : strongType || setter
+        ? _setupPropsWithSetter(props, descriptor, strongType, setter)
         : _setupProps(props, descriptor);
 
     return _ObjectDefineProperties(obj, props);
@@ -969,11 +969,11 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {!Object} props
    * @param {!Object} descriptor
-   * @param {function} staticType
+   * @param {function} strongType
    * @param {function} setter
    * @return {!Object}
    */
-  function _setupPropsWithSetter(props, descriptor, staticType, setter) {
+  function _setupPropsWithSetter(props, descriptor, strongType, setter) {
 
     /** @type {!Object} */
     var newProps;
@@ -984,7 +984,7 @@ var amend = (function amendPrivateScope() {
     for (key in props) {
       if ( _own(props, key) ) {
         newProps[key] = _setupDescriptorWithSetter(
-          props[key], descriptor, staticType, setter
+          props[key], descriptor, strongType, setter
         );
       }
     }
@@ -1026,11 +1026,11 @@ var amend = (function amendPrivateScope() {
    * @param {!Array<string>} keys
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} staticType
+   * @param {function} strongType
    * @param {function} setter
    * @return {!Object}
    */
-  function _setupPropsByKeyWithSetter(keys, val, descriptor, staticType, setter) {
+  function _setupPropsByKeyWithSetter(keys, val, descriptor, strongType, setter) {
 
     /** @type {!Object} */
     var props;
@@ -1044,7 +1044,7 @@ var amend = (function amendPrivateScope() {
     i = -1;
     while (++i < len) {
       props[ keys[i] ] = _setupDescriptorByKeyWithSetter(
-        val, descriptor, staticType, setter
+        val, descriptor, strongType, setter
       );
     }
     return props;
@@ -1083,7 +1083,7 @@ var amend = (function amendPrivateScope() {
    * @type {string}
    * @const
    */
-  var INVALID_STATIC_TYPE = 'Invalid type for object property value.';
+  var INVALID_STRONG_TYPE = 'Invalid type for object property value.';
 
   /**
    * @private
@@ -1105,11 +1105,11 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} staticType
-   * @param {function} setter
+   * @param {function=} strongType
+   * @param {function=} setter
    * @return {!Object}
    */
-  function _setupDescriptorWithSetter(val, descriptor, staticType, setter) {
+  function _setupDescriptorWithSetter(val, descriptor, strongType, setter) {
 
     /** @type {!Object} */
     var prop;
@@ -1123,18 +1123,7 @@ var amend = (function amendPrivateScope() {
       prop = _cloneAccessor(prop);
     }
 
-    prop.get = function() { return val; };
-    prop.set = staticType && setter
-      ? function(newVal) {
-          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
-          val = setter(newVal, val);
-        }
-      : staticType
-        ? function(newVal) {
-            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
-            val = newVal;
-          }
-        : function(newVal) { val = setter(newVal, val); };
+    prop = _setupGetSet(val, prop, strongType, setter);
     return prop;
   }
 
@@ -1158,29 +1147,56 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} staticType
-   * @param {function} setter
+   * @param {function=} strongType
+   * @param {function=} setter
    * @return {!Object}
    */
-  function _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter) {
+  function _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter) {
 
     /** @type {!Object} */
     var prop;
 
     prop = _cloneObj(descriptor);
-    prop.get = function() { return val; };
-    prop.set = staticType && setter
+    prop = _setupGetSet(val, prop, strongType, setter);
+    return prop;
+  }
+
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {function=} strongType
+   * @param {function=} setter
+   * @return {!Object}
+   */
+  function _setupGetSet(val, descriptor, strongType, setter) {
+
+    /** @type {!Error} */
+    var error;
+
+    descriptor.get = function() { return val; };
+    descriptor.set = strongType && setter
       ? function(newVal) {
-          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          if ( !strongType(newVal) ) {
+            error = new TypeError(INVALID_STRONG_TYPE);
+            error.__setter = true;
+            error.__type = true;
+            throw error;
+          }
           val = setter(newVal, val);
         }
-      : staticType
+      : strongType
         ? function(newVal) {
-            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            if ( !strongType(newVal) ) {
+              error = new TypeError(INVALID_STRONG_TYPE);
+              error.__setter = true;
+              error.__type = true;
+              throw error;
+            }
             val = newVal;
           }
         : function(newVal) { val = setter(newVal, val); };
-    return prop;
+    return descriptor;
   }
 
   //////////////////////////////////////////////////////////
@@ -1311,12 +1327,12 @@ var amend = (function amendPrivateScope() {
 
   /**
    * @private
-   * @param {string=} staticType
+   * @param {string=} strongType
    * @return {(function|undefined)}
    */
-  function _getStaticType(staticType) {
-    return staticType && function staticTypeCheck(newVal) {
-      return is(staticType, newVal);
+  function _getStrongType(strongType) {
+    return strongType && function strongTypeCheck(newVal) {
+      return is(strongType, newVal);
     };
   }
 
