@@ -149,9 +149,9 @@ describe('vitals.amend.properties (section:strict)', function() {
 
   });
 
-  describe('static type tests', function() {
+  describe('strong type tests', function() {
 
-    title = titleStr('should amend props to obj with correct static type setter');
+    title = titleStr('should amend props to obj with correct strong type setter');
     describe(title, function() {
 
       title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
