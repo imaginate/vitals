@@ -2353,9 +2353,11 @@ var fuse = (function fusePrivateScope() {
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
   // - fuse
-  // - fuse.object (fuse.obj)
-  // - fuse.array  (fuse.arr)
-  // - fuse.string (fuse.str)
+  // - fuse.value       (fuse.val)
+  // - fuse.value.start (fuse.value.top)
+  // - fuse.object      (fuse.obj)
+  // - fuse.array       (fuse.arr)
+  // - fuse.string      (fuse.str)
   //////////////////////////////////////////////////////////
 
   /**
@@ -2364,17 +2366,16 @@ var fuse = (function fusePrivateScope() {
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types null does not throw an exception (it is simply skipped).
-   *   Remaining details per dest type:
-   *     object: If only one val is provided and it is an array it is considered
-   *       an array of vals. Object vals are merged with the dest. All other
-   *       values are converted to strings and appended as new keys (if key
-   *       exists on the dest the property's value is replaced with undefined).
-   *     array: Array vals are concatenated to the dest. All other values are
-   *       pushed to the dest.
-   *     string: If only one val is provided and it is an array it is considered
-   *       an array of vals. All non-string vals are converted to strings and
-   *       appended to the dest.
+   *   array dest types null is simply skipped. Remaining details per dest type:
+   *   - object: If only one val is provided and it is an array it is considered
+   *     an array of vals. Object vals are merged with the dest. All other
+   *     values are converted to strings and appended as new keys (if the key
+   *     exists on the dest the property's value is replaced with undefined).
+   *   - array: Array vals are concatenated to the dest. All other values are
+   *     pushed to the dest.
+   *   - string: If only one val is provided and it is an array it is considered
+   *     an array of vals. All non-string vals are converted to strings and
+   *     appended to the dest.
    * @return {!(Object|function|Array|string)}
    */
   function fuse(dest, vals) {
@@ -2403,16 +2404,94 @@ var fuse = (function fusePrivateScope() {
   }
 
   /**
+   * Appends properties and combines strings.
+   * @public
+   * @param {!(Object|function|Array|string)} dest
+   * @param {...*} vals - Details per dest type:
+   *   - object: All vals are converted to strings and appended as new keys (if
+   *     the key exists on the dest the property's value is replaced with
+   *     undefined).
+   *   - array: All vals are pushed to the dest.
+   *   - string: All vals are converted to strings and appended to the dest.
+   * @return {!(Object|function|Array|string)}
+   */
+  fuse.value = function fuseValue(dest, vals) {
+
+    if (arguments.length < 2) throw _error('No val defined', 'value');
+
+    if ( is.str(dest) ) {
+      if (arguments.length < 3) return _fuseStr(dest, vals);
+      vals = _sliceArr(arguments, 1);
+      return _fuseStrs(dest, vals);
+    }
+
+    if ( !is._obj(dest) ) throw _error.type('dest', 'value');
+
+    dest = is.args(dest) ? _sliceArr(dest) : dest;
+
+    if (arguments.length < 3) {
+      return is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
+    }
+
+    vals = _sliceArr(arguments, 1);
+    return is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
+  };
+  // define shorthand
+  fuse.val = fuse.value;
+
+  /**
+   * Appends properties and combines strings to the start of their destination.
+   * @public
+   * @param {!(Object|function|Array|string)} dest
+   * @param {...*} vals - Details per dest type:
+   *   - object: All vals are converted to strings and appended as new keys (if
+   *     the key exists on the dest the property's value remains unchanged).
+   *   - array: All vals are unshifted to the dest.
+   *   - string: All vals are converted to strings and appended to the beginning
+   *     of the dest.
+   * @return {!(Object|function|Array|string)}
+   */
+  fuse.value.start = function fuseValueStart(dest, vals) {
+
+    if (arguments.length < 2) throw _error('No val defined', 'value.start');
+
+    if ( is.str(dest) ) {
+      if (arguments.length < 3) return _fuseStrTop(dest, vals);
+      vals = _sliceArr(arguments, 1);
+      return _fuseStrsTop(dest, vals);
+    }
+
+    if ( !is._obj(dest) ) throw _error.type('dest', 'value.start');
+
+    dest = is.args(dest) ? _sliceArr(dest) : dest;
+
+    if (arguments.length < 3) {
+      return is.arr(dest)
+        ? _fuseArrValTop(dest, vals)
+        : _fuseObjValTop(dest, vals);
+    }
+
+    vals = _sliceArr(arguments, 1);
+    return is.arr(dest)
+      ? _fuseArrsValTop(dest, vals)
+      : _fuseObjsValTop(dest, vals);
+  };
+  // define shorthand
+  fuse.val.start = fuse.value.start;
+  fuse.value.top = fuse.value.start;
+  fuse.val.top = fuse.value.start;
+
+  /**
    * Appends properties/keys to an object.
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions (they
-   *   are simply skipped). All other vals that are not objects are converted to
-   *   a string and appended as new keys (if key exists on the dest the key's
-   *   value is replaced with undefined). If only one val is provided and it is
-   *   an array then it is considered an array of vals. All object vals are
-   *   merged with the dest (if the key exists on the dest the key's value is
-   *   with replaced with the value from the vals object).
+   * @param {...*} vals - Any vals that are null are skipped. All other vals
+   *   that are not objects are converted to a string and appended as new keys
+   *   (if the key exists on the dest the key's value is replaced with
+   *   undefined). If only one val is provided and it is an array then it is
+   *   considered an array of vals. All object vals are merged with the dest
+   *   (if the key exists on the dest the key's value is with replaced with the
+   *   value from the merged object).
    * @return {!(Object|function)}
    */
   fuse.object = function fuseObject(dest, vals) {
@@ -2430,9 +2509,10 @@ var fuse = (function fusePrivateScope() {
    * Appends values to an array and concatenates arrays.
    * @public
    * @param {!Array} dest
-   * @param {...*} vals - Any vals that are null do not throw exceptions (they
-   *   are simply skipped). All other non-array vals are pushed to the dest
-   *   array. All array vals are concatenated to the dest.
+   * @param {...*} vals - Details per val type:
+   *   - null:  All null vals are skipped.
+   *   - array: All array vals are concatenated to the dest.
+   *   - other: All other vals are pushed to the dest array.
    * @return {!Array}
    */
   fuse.array = function fuseArray(dest, vals) {
@@ -2509,6 +2589,73 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
+   * @param {!(Object|function)} dest
+   * @param {*} val
+   * @return {!(Object|function)}
+   */
+  function _fuseObjVal(dest, val) {
+    dest[val] = undefined;
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!Array<*>} vals
+   * @return {!(Object|function)}
+   */
+  function _fuseObjsVal(dest, vals) {
+
+    /** @type {*} */
+    var val;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      val = vals[i];
+      dest[val] = undefined;
+    }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {*} val
+   * @return {!(Object|function)}
+   */
+  function _fuseObjValTop(dest, val) {
+    if ( !_own(dest, val) ) dest[val] = undefined;
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} dest
+   * @param {!Array<*>} vals
+   * @return {!(Object|function)}
+   */
+  function _fuseObjsValTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest = _fuseObjValTop(dest, vals[i]);
+    }
+    return dest;
+  }
+
+  /**
+   * @private
    * @param {!Array} dest
    * @param {*} val
    * @return {!Array}
@@ -2542,6 +2689,70 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * @private
+   * @param {!Array} dest
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _fuseArrVal(dest, val) {
+    dest.push(val);
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {!Array<*>} vals
+   * @return {!Array}
+   */
+  function _fuseArrsVal(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest.push( vals[i] );
+    }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _fuseArrValTop(dest, val) {
+    dest.unshift(val);
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {!Array} dest
+   * @param {!Array<*>} vals
+   * @return {!Array}
+   */
+  function _fuseArrsValTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest.unshift( vals[i] );
+    }
+    return dest;
+  }
+
+  /**
+   * @private
    * @param {string} dest
    * @param {*} val
    * @return {string}
@@ -2567,6 +2778,37 @@ var fuse = (function fusePrivateScope() {
     i = -1;
     while (++i < len) {
       dest += vals[i];
+    }
+    return dest;
+  }
+
+  /**
+   * @private
+   * @param {string} dest
+   * @param {*} val
+   * @return {string}
+   */
+  function _fuseStrTop(dest, val) {
+    return val + dest;
+  }
+
+  /**
+   * @private
+   * @param {string} dest
+   * @param {!Array<*>} vals
+   * @return {string}
+   */
+  function _fuseStrsTop(dest, vals) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals.length;
+    i = -1;
+    while (++i < len) {
+      dest = vals[i] + dest;
     }
     return dest;
   }
