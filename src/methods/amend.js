@@ -747,8 +747,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} staticType
-   * @param {function} setter
+   * @param {function=} staticType
+   * @param {function=} setter
    * @return {!Object}
    */
   function _setupDescriptorWithSetter(val, descriptor, staticType, setter) {
@@ -765,18 +765,7 @@ var amend = (function amendPrivateScope() {
       prop = _cloneAccessor(prop);
     }
 
-    prop.get = function() { return val; };
-    prop.set = staticType && setter
-      ? function(newVal) {
-          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
-          val = setter(newVal, val);
-        }
-      : staticType
-        ? function(newVal) {
-            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
-            val = newVal;
-          }
-        : function(newVal) { val = setter(newVal, val); };
+    prop = _setupGetSet(val, prop, staticType, setter);
     return prop;
   }
 
@@ -800,8 +789,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} staticType
-   * @param {function} setter
+   * @param {function=} staticType
+   * @param {function=} setter
    * @return {!Object}
    */
   function _setupDescriptorByKeyWithSetter(val, descriptor, staticType, setter) {
@@ -810,19 +799,46 @@ var amend = (function amendPrivateScope() {
     var prop;
 
     prop = _cloneObj(descriptor);
-    prop.get = function() { return val; };
-    prop.set = staticType && setter
+    prop = _setupGetSet(val, prop, staticType, setter);
+    return prop;
+  }
+
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {function=} staticType
+   * @param {function=} setter
+   * @return {!Object}
+   */
+  function _setupGetSet(val, descriptor, staticType, setter) {
+
+    /** @type {!Error} */
+    var error;
+
+    descriptor.get = function() { return val; };
+    descriptor.set = staticType && setter
       ? function(newVal) {
-          if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+          if ( !staticType(newVal) ) {
+            error = new TypeError(INVALID_STATIC_TYPE);
+            error.__setter = true;
+            error.__type = true;
+            throw error;
+          }
           val = setter(newVal, val);
         }
       : staticType
         ? function(newVal) {
-            if ( !staticType(newVal) ) throw new TypeError(INVALID_STATIC_TYPE);
+            if ( !staticType(newVal) ) {
+              error = new TypeError(INVALID_STATIC_TYPE);
+              error.__setter = true;
+              error.__type = true;
+              throw error;
+            }
             val = newVal;
           }
         : function(newVal) { val = setter(newVal, val); };
-    return prop;
+    return descriptor;
   }
 
   //////////////////////////////////////////////////////////
