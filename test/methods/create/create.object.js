@@ -187,8 +187,8 @@ describe('vitals.create.object (section:strict)', function() {
   });
 
   title = 'should create new obj with given prototype and amend ';
-  title += 'given props with correct static type setter';
-  title = titleStr('static type', title);
+  title += 'given props with correct strong type setter';
+  title = titleStr('strong type', title);
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
