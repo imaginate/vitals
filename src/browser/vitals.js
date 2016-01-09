@@ -3974,11 +3974,14 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function|Array|number)=} source - If the source is defined
-   *   the iteration will also stop as follows (per source type):
-   *     object source: Ends after all properties are visited.
-   *     array source:  Ends after all indexes are visited.
-   *     number source: Ends after the count of cycles equals the source.
+   * @param {!(Object|function|Array|number|string)=} source - If the source is
+   *   defined the iteration will also stop as follows (per source type):
+   *   - object source: Ends after all properties are visited.
+   *   - array source:  Ends after all indexes are visited.
+   *   - number source: Ends after the count of cycles equals the source.
+   *   - string source: Converted to an array source and ends after all indexes
+   *     are visited. Use this list of chars for the separator (chars listed in
+   *     order of rank):  ", "  ","  "|"  " "
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
    *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
@@ -4009,6 +4012,8 @@ var until = (function untilPrivateScope() {
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
     if ( is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+
+    if ( is.str(source) ) source = _splitKeys(source);
 
     if ( !is._obj(source) ) throw _error.type('source');
 
@@ -4053,7 +4058,9 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function)} obj
+   * @param {!(Object|function|string)} source - If source is a string it is
+   *   converted to an array. Use the following list of chars for the separator
+   *   (chars listed in order of rank):  ", "  ","  "|"  " "
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
@@ -4066,14 +4073,16 @@ var until = (function untilPrivateScope() {
    *   method will return true. Otherwise if all the indexed values are visited
    *   this method will return false.
    */
-  until.array = function untilArray(end, obj, iteratee, thisArg) {
+  until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !is.num(obj.length)  ) throw _error.type('obj.length', 'array');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee',   'array');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',    'array');
+    if ( is.str(source) ) source = _splitKeys(source);
 
-    return _untilArr(end, obj, iteratee, thisArg);
+    if ( !is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+
+    return _untilArr(end, source, iteratee, thisArg);
   };
   // define shorthand
   until.arr = until.array;
