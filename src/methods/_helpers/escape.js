@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD HELPER - ESCAPE STRING FOR REGEX
  * -----------------------------------------------------------------------------
- * @version 2.2.1
+ * @version 2.2.2
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

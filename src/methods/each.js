@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - EACH
  * -----------------------------------------------------------------------------
- * @version 2.2.1
+ * @version 2.2.2
  * @see [vitals.each]{@link https://github.com/imaginate/vitals/blob/master/src/methods/each.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
