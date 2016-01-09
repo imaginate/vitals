@@ -47,9 +47,15 @@ function newErrorAid(vitalsMethod) {
    * @return {!Error} 
    */
   errorAid = function error(msg, method) {
+
+    /** @type {!Error} */
+    var error;
+
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
-    return new Error(msg + ' for ' + method + ' call.');
+    error = new Error(msg + ' for ' + method + ' call.');
+    error.__vitals = true;
+    return true;
   };
 
   /**
@@ -58,10 +64,16 @@ function newErrorAid(vitalsMethod) {
    * @return {!TypeError} 
    */
   errorAid.type = function typeError(param, method) {
+
+    /** @type {!TypeError} */
+    var error;
+
     param += ' param';
     method = method || '';
     method = vitalsMethod + ( method && '.' ) + method;
-    return new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+    error = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+    error.__vitals = true;
+    return error;
   };
 
   /**
@@ -72,6 +84,8 @@ function newErrorAid(vitalsMethod) {
    */
   errorAid.range = function rangeError(param, valid, method) {
 
+    /** @type {!RangeError} */
+    var error;
     /** @type {string} */
     var msg;
 
@@ -80,7 +94,9 @@ function newErrorAid(vitalsMethod) {
     method = vitalsMethod + ( method && '.' ) + method;
     msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
     msg += valid ? ' The valid options are: ' + valid : '';
-    return new RangeError(msg);
+    error = new RangeError(msg);
+    error.__vitals = true;
+    return error;
   };
 
   return errorAid;
