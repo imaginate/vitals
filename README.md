@@ -147,10 +147,10 @@ All base methods give you the maximum possible coverage within their main method
 #### vitals.until
 | Documentation                                                                                      | Examples                                                                                           | Alias     |
 | :------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- | :-------- |
-| [until](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L41-L61)          | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js)               |           |
-| [until.object](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L90-L108)  | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj |
-| [until.array](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L120-L138)  | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js)   | until.arr |
-| [until.cycle](https://github.com/imaginate/vitals/blob/ea6f627be4/src/methods/until.js#L151-L163) | [until.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.cycle.js) | until.time |
+| [until](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L42-L65)          | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js)               |           |
+| [until.object](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L96-L114)  | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj |
+| [until.array](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L126-L146)  | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js)   | until.arr |
+| [until.cycle](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L161-L173) | [until.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.cycle.js) | until.time |
 
 
 ## Strict Methods
