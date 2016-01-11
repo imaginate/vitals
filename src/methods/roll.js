@@ -151,8 +151,222 @@ var roll = (function rollPrivateScope() {
   };
 
   //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  // PRIVATE METHODS - ROLL OBJ
   //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollObj(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {string} */
+    var key;
+    /** @type {boolean} */
+    var z;
+
+    obj = iteratee.length > 3 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result = iteratee(result);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result = iteratee(result, obj[key]);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result = iteratee(result, obj[key], key);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result = iteratee(result, obj[key], key, obj);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseObj(result, obj, iteratee, thisArg) {
+
+    /** @type {string} */
+    var key;
+
+    obj = iteratee.length > 3 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) result = iteratee(result);
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) result = iteratee(result, obj[key]);
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) result = iteratee(result, obj[key], key);
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) result = iteratee(result, obj[key], key, obj);
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollObjUp(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {string} */
+    var key;
+    /** @type {boolean} */
+    var z;
+
+    obj = iteratee.length > 2 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result += iteratee(result);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result += iteratee(result, obj[key]);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result += iteratee(result, obj[key], key);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result += iteratee(result, obj[key], key, obj);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseObjUp(result, obj, iteratee, thisArg) {
+
+    /** @type {string} */
+    var key;
+
+    obj = iteratee.length > 2 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) result += iteratee(result);
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) result += iteratee(result, obj[key]);
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) result += iteratee(result, obj[key], key);
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) result += iteratee(result, obj[key], key, obj);
+      }
+    }
+    return result;
+  }
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
