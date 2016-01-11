@@ -166,15 +166,17 @@ var roll = (function rollPrivateScope() {
    */
   function _bind(func, thisArg) {
     switch (func.length) {
-      case 0:
-      return function iteratee() { func.call(thisArg); };
-      case 1:
-      return function iteratee(val) { func.call(thisArg, val); };
-      case 2:
-      return function iteratee(val, key) { func.call(thisArg, val, key); };
+      case 0: return function iteratee() { return func.call(thisArg); };
+      case 1: return function iteratee(val) { return func.call(thisArg, val); };
+      case 2: return function iteratee(val1, val2) {
+        return func.call(thisArg, val1, val2);
+      };
+      case 3: return function iteratee(val1, val2, val3) {
+        return func.call(thisArg, val1, val2, val3);
+      };
     }
-    return function iteratee(val, key, obj) {
-      func.call(thisArg, val, key, obj);
+    return function iteratee(prev, curr, key, obj) {
+      return func.call(thisArg, prev, curr, key, obj);
     };
   }
 
