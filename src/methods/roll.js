@@ -41,7 +41,8 @@ var roll = (function rollPrivateScope() {
    * A shortcut for deriving a result by iterating over object maps, arrays, or
    *   cycles.
    * @public
-   * @param {*=} base - If defined it is the base value.
+   * @param {*=} base - If defined it is the base value. Note that for number
+   *   sources (i.e. cycles) a base is required.
    * @param {!(Object|function|Array|number)} source - Details per type:
    *   - object source: Iterates over all properties in random order.
    *   - array source:  Iterates over all indexed properties from 0 to length.
@@ -51,43 +52,46 @@ var roll = (function rollPrivateScope() {
    *   source. Note this method lazily clones the source based on the iteratee's
    *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
    *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
+   *   the iteratee's fourth param so you can safely assume all references to
+   *   the source are its original values).
    * @param {Object=} thisArg - If defined the iteratee is bound to this value.
    * @return {*}
    */
   function roll(base, source, iteratee, thisArg) {
 
-    switch (arguments.length) {
-      case 0:
-      case 1:
-        throw _error('No source or iteratee defined');
-      break;
-      case 2:
-        iteratee = source;
-        source = base;
-        base = undefined;
-      break;
-      case 3:
-        if ( !is.func(iteratee) ) {
-          thisArg = iteratee;
-          iteratee = source;
-          source = base;
-          base = undefined;
-        }
-      break;
+    /** @type {boolean} */
+    var hasBase;
+
+    if (arguments.length < 2) throw _error('No source or iteratee defined');
+  
+    if (arguments.length === 2) {
+      iteratee = source;
+      source = base;
     }
+    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+      thisArg = iteratee;
+      iteratee = source;
+      source = base;
+    }
+    else hasBase = true;
 
     if ( !is.func(iteratee)   ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _rollCycle(source, iteratee, thisArg);
+    if ( is.num(source) ) {
+      if (!hasBase) throw _error('No base defined');
+      return _rollCycle(base, source, iteratee, thisArg);
+    }
 
     if ( !is._obj(source) ) throw _error.type('source');
 
     return is._arr(source)
-      ? _rollArr(source, iteratee, thisArg)
-      : _rollObj(source, iteratee, thisArg);
+      ? hasBase
+        ? _rollBaseArr(base, source, iteratee, thisArg)
+        : _rollArr(source, iteratee, thisArg)
+      : hasBase
+        ? _rollBaseObj(base, source, iteratee, thisArg)
+        : _rollObj(source, iteratee, thisArg);
   }
 
   //////////////////////////////////////////////////////////
