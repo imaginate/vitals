@@ -157,7 +157,7 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {function(*, *, string=, !(Object|function)=)} iteratee
    * @param {Object=} thisArg
    * @return {*}
    */
@@ -225,7 +225,7 @@ var roll = (function rollPrivateScope() {
    * @private
    * @param {*} result
    * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {function(*, *, string=, !(Object|function)=)} iteratee
    * @param {Object=} thisArg
    * @return {*}
    */
@@ -364,6 +364,130 @@ var roll = (function rollPrivateScope() {
       for (key in obj) {
         if ( _own(obj, key) ) result += iteratee(result, obj[key], key, obj);
       }
+    }
+    return result;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ROLL ARR
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, *, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollArr(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 3 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    result = obj[0];
+    len = obj.length;
+    i = 0;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result = iteratee(result);               break;
+      case 2:  while (++i < len) result = iteratee(result, obj[i]);       break;
+      case 3:  while (++i < len) result = iteratee(result, obj[i], i);    break;
+      default: while (++i < len) result = iteratee(result, obj[i], i, obj);
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseArr(result, obj, iteratee, thisArg) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 3 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    len = obj.length;
+    i = -1;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result = iteratee(result);               break;
+      case 2:  while (++i < len) result = iteratee(result, obj[i]);       break;
+      case 3:  while (++i < len) result = iteratee(result, obj[i], i);    break;
+      default: while (++i < len) result = iteratee(result, obj[i], i, obj);
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, *, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollArrUp(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    result = obj[0];
+    len = obj.length;
+    i = 0;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result += iteratee(result);              break;
+      case 2:  while (++i < len) result += iteratee(result, obj[i]);      break;
+      case 3:  while (++i < len) result += iteratee(result, obj[i], i);   break;
+      default: while (++i < len) result += iteratee(result, obj[i], i, obj);
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseArrUp(result, obj, iteratee, thisArg) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    len = obj.length;
+    i = -1;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result += iteratee(result);              break;
+      case 2:  while (++i < len) result += iteratee(result, obj[i]);      break;
+      case 3:  while (++i < len) result += iteratee(result, obj[i], i);   break;
+      default: while (++i < len) result += iteratee(result, obj[i], i, obj);
     }
     return result;
   }
