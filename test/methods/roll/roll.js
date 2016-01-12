@@ -151,7 +151,7 @@ describe('vitals.roll (section:base)', function() {
         var arr = newArr();
         var thisArg = new Array(3);
         vitals.roll(0, arr, function(prevVal, currVal, i) {
-          this[i] = val;
+          this[i] = currVal;
         }, thisArg);
         assert( arr.join() === thisArg.join() );
       });
