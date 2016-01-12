@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS JS - EXPORT FOR ALL ENVIRONMENTS
  * -----------------------------------------------------------------------------
- * @version 2.2.2
+ * @version 2.3.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
