@@ -493,6 +493,54 @@ var roll = (function rollPrivateScope() {
   }
 
   //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ROLL CYCLE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {number} count
+   * @param {function} iteratee
+   * @param {Object=} thisArg
+   */
+  function _rollCycle(result, count, iteratee, thisArg) {
+
+    /** @type {number} */
+    var i;
+
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 1) {
+      i = 0;
+      while(count--) result = iteratee(result, i++);
+    }
+    else {
+      while(count--) result = iteratee(result);
+    }
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {number} count
+   * @param {function} iteratee
+   * @param {Object=} thisArg
+   */
+  function _rollCycleUp(result, count, iteratee, thisArg) {
+
+    /** @type {number} */
+    var i;
+
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 1) {
+      i = 0;
+      while(count--) result += iteratee(result, i++);
+    }
+    else {
+      while(count--) result += iteratee(result);
+    }
+  }
+
+  //////////////////////////////////////////////////////////
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
 
