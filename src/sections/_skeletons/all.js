@@ -60,6 +60,7 @@ var to = {};
 // INSERT methods/get.js
 // INSERT methods/has.js
 // INSERT methods/remap.js
+// INSERT methods/roll.js
 // INSERT methods/slice.js
 // INSERT methods/until.js
 
@@ -106,6 +107,7 @@ module.exports = {
   get:    get,
   has:    has,
   remap:  remap,
+  roll:   roll,
   run:    run,
   seal:   seal,
   slice:  slice,
