@@ -4559,6 +4559,7 @@ var roll = (function rollPrivateScope() {
    * @param {number} count
    * @param {function} iteratee
    * @param {Object=} thisArg
+   * @return {*}
    */
   function _rollCycle(result, count, iteratee, thisArg) {
 
@@ -4573,6 +4574,7 @@ var roll = (function rollPrivateScope() {
     else {
       while(count--) result = iteratee(result);
     }
+    return result;
   }
 
   /**
@@ -4581,6 +4583,7 @@ var roll = (function rollPrivateScope() {
    * @param {number} count
    * @param {function} iteratee
    * @param {Object=} thisArg
+   * @return {*}
    */
   function _rollCycleUp(result, count, iteratee, thisArg) {
 
@@ -4595,6 +4598,7 @@ var roll = (function rollPrivateScope() {
     else {
       while(count--) result += iteratee();
     }
+    return result;
   }
 
   /**
@@ -4603,6 +4607,7 @@ var roll = (function rollPrivateScope() {
    * @param {number} count
    * @param {function} iteratee
    * @param {Object=} thisArg
+   * @return {*}
    */
   function _rollCycleDown(result, count, iteratee, thisArg) {
 
@@ -4617,6 +4622,7 @@ var roll = (function rollPrivateScope() {
     else {
       while(count--) result -= iteratee();
     }
+    return result;
   }
 
   //////////////////////////////////////////////////////////
