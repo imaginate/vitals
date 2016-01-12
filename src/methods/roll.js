@@ -424,6 +424,113 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollObjDown(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {string} */
+    var key;
+    /** @type {boolean} */
+    var z;
+
+    obj = iteratee.length > 2 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result -= iteratee(result);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result -= iteratee(result, obj[key]);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result -= iteratee(result, obj[key], key);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result -= iteratee(result, obj[key], key, obj);
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, string=, !(Object|function)=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseObjDown(result, obj, iteratee, thisArg) {
+
+    /** @type {string} */
+    var key;
+
+    obj = iteratee.length > 2 ? copy(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee.length) {
+      case 0:
+      case 1: 
+      for (key in obj) {
+        if ( _own(obj, key) ) result -= iteratee(result);
+      }
+      break;
+      case 2:
+      for (key in obj) {
+        if ( _own(obj, key) ) result -= iteratee(result, obj[key]);
+      }
+      break;
+      case 3:
+      for (key in obj) {
+        if ( _own(obj, key) ) result -= iteratee(result, obj[key], key);
+      }
+      break;
+      default:
+      for (key in obj) {
+        if ( _own(obj, key) ) result -= iteratee(result, obj[key], key, obj);
+      }
+    }
+    return result;
+  }
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ROLL ARR
   //////////////////////////////////////////////////////////
@@ -548,6 +655,66 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
+  /**
+   * @private
+   * @param {!(Object|function)} obj
+   * @param {function(*, *, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollArrDown(obj, iteratee, thisArg) {
+
+    /** @type {*} */
+    var result;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    result = obj[0];
+    len = obj.length;
+    i = 0;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result -= iteratee(result);              break;
+      case 2:  while (++i < len) result -= iteratee(result, obj[i]);      break;
+      case 3:  while (++i < len) result -= iteratee(result, obj[i], i);   break;
+      default: while (++i < len) result -= iteratee(result, obj[i], i, obj);
+    }
+    return result;
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {!(Object|function)} obj
+   * @param {function(*, number=, !Array=)} iteratee
+   * @param {Object=} thisArg
+   * @return {*}
+   */
+  function _rollBaseArrDown(result, obj, iteratee, thisArg) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    len = obj.length;
+    i = -1;
+    switch (iteratee.length) {
+      case 0:
+      case 1:  while (++i < len) result -= iteratee(result);              break;
+      case 2:  while (++i < len) result -= iteratee(result, obj[i]);      break;
+      case 3:  while (++i < len) result -= iteratee(result, obj[i], i);   break;
+      default: while (++i < len) result -= iteratee(result, obj[i], i, obj);
+    }
+    return result;
+  }
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ROLL CYCLE
   //////////////////////////////////////////////////////////
@@ -593,6 +760,28 @@ var roll = (function rollPrivateScope() {
     }
     else {
       while(count--) result += iteratee(result);
+    }
+  }
+
+  /**
+   * @private
+   * @param {*} result
+   * @param {number} count
+   * @param {function} iteratee
+   * @param {Object=} thisArg
+   */
+  function _rollCycleDown(result, count, iteratee, thisArg) {
+
+    /** @type {number} */
+    var i;
+
+    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 1) {
+      i = 0;
+      while(count--) result -= iteratee(result, i++);
+    }
+    else {
+      while(count--) result -= iteratee(result);
     }
   }
 
