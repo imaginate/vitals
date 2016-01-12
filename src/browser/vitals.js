@@ -4191,10 +4191,20 @@ var roll = (function rollPrivateScope() {
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
-      case 1: 
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result += iteratee(result);
+          if (z) result += iteratee();
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 1:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result += iteratee(obj[key]);
           else {
             result = obj[key];
             z = true;
@@ -4205,18 +4215,7 @@ var roll = (function rollPrivateScope() {
       case 2:
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result += iteratee(result, obj[key]);
-          else {
-            result = obj[key];
-            z = true;
-          }
-        }
-      }
-      break;
-      case 3:
-      for (key in obj) {
-        if ( _own(obj, key) ) {
-          if (z) result += iteratee(result, obj[key], key);
+          if (z) result += iteratee(obj[key], key);
           else {
             result = obj[key];
             z = true;
@@ -4227,7 +4226,7 @@ var roll = (function rollPrivateScope() {
       default:
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result += iteratee(result, obj[key], key, obj);
+          if (z) result += iteratee(obj[key], key, obj);
           else {
             result = obj[key];
             z = true;
@@ -4255,24 +4254,23 @@ var roll = (function rollPrivateScope() {
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
-      case 1: 
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(result);
+        if ( _own(obj, key) ) result += iteratee();
+      }
+      break;
+      case 1:
+      for (key in obj) {
+        if ( _own(obj, key) ) result += iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(result, obj[key]);
-      }
-      break;
-      case 3:
-      for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(result, obj[key], key);
+        if ( _own(obj, key) ) result += iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(result, obj[key], key, obj);
+        if ( _own(obj, key) ) result += iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -4298,10 +4296,20 @@ var roll = (function rollPrivateScope() {
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
-      case 1: 
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result -= iteratee(result);
+          if (z) result -= iteratee();
+          else {
+            result = obj[key];
+            z = true;
+          }
+        }
+      }
+      break;
+      case 1:
+      for (key in obj) {
+        if ( _own(obj, key) ) {
+          if (z) result -= iteratee(obj[key]);
           else {
             result = obj[key];
             z = true;
@@ -4312,18 +4320,7 @@ var roll = (function rollPrivateScope() {
       case 2:
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result -= iteratee(result, obj[key]);
-          else {
-            result = obj[key];
-            z = true;
-          }
-        }
-      }
-      break;
-      case 3:
-      for (key in obj) {
-        if ( _own(obj, key) ) {
-          if (z) result -= iteratee(result, obj[key], key);
+          if (z) result -= iteratee(obj[key], key);
           else {
             result = obj[key];
             z = true;
@@ -4334,7 +4331,7 @@ var roll = (function rollPrivateScope() {
       default:
       for (key in obj) {
         if ( _own(obj, key) ) {
-          if (z) result -= iteratee(result, obj[key], key, obj);
+          if (z) result -= iteratee(obj[key], key, obj);
           else {
             result = obj[key];
             z = true;
@@ -4361,25 +4358,24 @@ var roll = (function rollPrivateScope() {
     obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
-      case 0:
-      case 1: 
+      case 0: 
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(result);
+        if ( _own(obj, key) ) result -= iteratee();
+      }
+      break;
+      case 1:
+      for (key in obj) {
+        if ( _own(obj, key) ) result -= iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(result, obj[key]);
-      }
-      break;
-      case 3:
-      for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(result, obj[key], key);
+        if ( _own(obj, key) ) result -= iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(result, obj[key], key, obj);
+        if ( _own(obj, key) ) result -= iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -4471,11 +4467,10 @@ var roll = (function rollPrivateScope() {
     len = obj.length;
     i = 0;
     switch (iteratee.length) {
-      case 0:
-      case 1:  while (++i < len) result += iteratee(result);              break;
-      case 2:  while (++i < len) result += iteratee(result, obj[i]);      break;
-      case 3:  while (++i < len) result += iteratee(result, obj[i], i);   break;
-      default: while (++i < len) result += iteratee(result, obj[i], i, obj);
+      case 0:  while (++i < len) result += iteratee();              break;
+      case 1:  while (++i < len) result += iteratee(obj[i]);        break;
+      case 2:  while (++i < len) result += iteratee(obj[i], i);     break;
+      default: while (++i < len) result += iteratee(obj[i], i, obj);
     }
     return result;
   }
@@ -4500,11 +4495,10 @@ var roll = (function rollPrivateScope() {
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:
-      case 1:  while (++i < len) result += iteratee(result);              break;
-      case 2:  while (++i < len) result += iteratee(result, obj[i]);      break;
-      case 3:  while (++i < len) result += iteratee(result, obj[i], i);   break;
-      default: while (++i < len) result += iteratee(result, obj[i], i, obj);
+      case 0:  while (++i < len) result += iteratee();              break;
+      case 1:  while (++i < len) result += iteratee(obj[i]);        break;
+      case 2:  while (++i < len) result += iteratee(obj[i], i);     break;
+      default: while (++i < len) result += iteratee(obj[i], i, obj);
     }
     return result;
   }
@@ -4531,11 +4525,10 @@ var roll = (function rollPrivateScope() {
     len = obj.length;
     i = 0;
     switch (iteratee.length) {
-      case 0:
-      case 1:  while (++i < len) result -= iteratee(result);              break;
-      case 2:  while (++i < len) result -= iteratee(result, obj[i]);      break;
-      case 3:  while (++i < len) result -= iteratee(result, obj[i], i);   break;
-      default: while (++i < len) result -= iteratee(result, obj[i], i, obj);
+      case 0:  while (++i < len) result -= iteratee();              break;
+      case 1:  while (++i < len) result -= iteratee(obj[i]);        break;
+      case 2:  while (++i < len) result -= iteratee(obj[i], i);     break;
+      default: while (++i < len) result -= iteratee(obj[i], i, obj);
     }
     return result;
   }
@@ -4560,11 +4553,10 @@ var roll = (function rollPrivateScope() {
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:
-      case 1:  while (++i < len) result -= iteratee(result);              break;
-      case 2:  while (++i < len) result -= iteratee(result, obj[i]);      break;
-      case 3:  while (++i < len) result -= iteratee(result, obj[i], i);   break;
-      default: while (++i < len) result -= iteratee(result, obj[i], i, obj);
+      case 0:  while (++i < len) result -= iteratee();              break;
+      case 1:  while (++i < len) result -= iteratee(obj[i]);        break;
+      case 2:  while (++i < len) result -= iteratee(obj[i], i);     break;
+      default: while (++i < len) result -= iteratee(obj[i], i, obj);
     }
     return result;
   }
@@ -4608,12 +4600,12 @@ var roll = (function rollPrivateScope() {
     var i;
 
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    if (iteratee.length > 1) {
+    if (iteratee.length) {
       i = 0;
-      while(count--) result += iteratee(result, i++);
+      while(count--) result += iteratee(i++);
     }
     else {
-      while(count--) result += iteratee(result);
+      while(count--) result += iteratee();
     }
   }
 
@@ -4630,12 +4622,12 @@ var roll = (function rollPrivateScope() {
     var i;
 
     iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    if (iteratee.length > 1) {
+    if (iteratee.length) {
       i = 0;
-      while(count--) result -= iteratee(result, i++);
+      while(count--) result -= iteratee(i++);
     }
     else {
-      while(count--) result -= iteratee(result);
+      while(count--) result -= iteratee();
     }
   }
 
