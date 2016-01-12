@@ -150,6 +150,62 @@ var roll = (function rollPrivateScope() {
         : _rollObjUp(source, iteratee, thisArg);
   };
 
+  /**
+   * A shortcut for deriving a difference by iterating over object maps, arrays,
+   *   or cycles.
+   * @public
+   * @param {*=} base - If defined it is the base value. Note that for number
+   *   sources (i.e. cycles) a base is required.
+   * @param {!(Object|function|Array|number)} source - Details per type:
+   *   - object source: Iterates over all properties in random order.
+   *   - array source:  Iterates over all indexed properties from 0 to length.
+   *   - number source: Iterates over all cycles.
+   * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
+   *   has the optional params - value, key/index, source. Note this method
+   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   (i.e. if you alter the source object within the iteratee ensure to define
+   *   the iteratee's third param so you can safely assume all references to the
+   *   source are its original values).
+   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
+   * @return {*}
+   */
+  roll.down = function rollDown(base, source, iteratee, thisArg) {
+
+    /** @type {boolean} */
+    var hasBase;
+
+    if (arguments.length < 2) throw _error('No source or iteratee defined','down');
+  
+    if (arguments.length === 2) {
+      iteratee = source;
+      source = base;
+    }
+    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+      thisArg = iteratee;
+      iteratee = source;
+      source = base;
+    }
+    else hasBase = true;
+
+    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'down');
+    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
+
+    if ( is.num(source) ) {
+      if (!hasBase) throw _error('No base defined', 'down');
+      return _rollCycleDown(base, source, iteratee, thisArg);
+    }
+
+    if ( !is._obj(source) ) throw _error.type('source', 'down');
+
+    return is._arr(source)
+      ? hasBase
+        ? _rollBaseArrDown(base, source, iteratee, thisArg)
+        : _rollArrDown(source, iteratee, thisArg)
+      : hasBase
+        ? _rollBaseObjDown(base, source, iteratee, thisArg)
+        : _rollObjDown(source, iteratee, thisArg);
+  };
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ROLL OBJ
   //////////////////////////////////////////////////////////
