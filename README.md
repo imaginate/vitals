@@ -1,6 +1,6 @@
 # vitals [![build status](https://travis-ci.org/imaginate/vitals.svg?branch=master)](https://travis-ci.org/imaginate/vitals) [![npm version](https://badge.fury.io/js/node-vitals.svg)](https://badge.fury.io/js/node-vitals)
 ### Give Your JS Life
-A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#base-methods) give you all of the basic JavaScript functionality and more (100+ actions) with only 12 methods. It also contains [strict methods](#strict-methods) that give you more control over object states (e.g. [strongly typed properties](https://github.com/imaginate/vitals/blob/3e3d208aca/src/methods/amend.js#L62-L75)), and a combination of [file system](#file-system-methods) and [shell methods](#shell-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
+A JavaScript utility library designed for **elegance**, **performance**, and **reliability**. Its [base methods](#base-methods) give you all of the basic JavaScript functionality and more (100+ actions) with only 13 methods. It also contains [strict methods](#strict-methods) that give you more control over object states (e.g. [strongly typed properties](https://github.com/imaginate/vitals/blob/3e3d208aca/src/methods/amend.js#L62-L75)), and a combination of [file system](#file-system-methods) and [shell methods](#shell-methods) that make it easy for you to write powerful [node.js](https://nodejs.org) build scripts. It works with all JavaScript engines and in all browsers. It simply makes JavaScript better!
 
 
 ## Example
@@ -48,6 +48,7 @@ s = get(life, /[A-Z]/).join('~'); // "X~Y~Z"
 | [get](#vitalsget)             |                                   |                                     |                                 |
 | [has](#vitalshas)             |                                   |                                     |                                 |
 | [remap](#vitalsremap)         |                                   |                                     |                                 |
+| [roll](#vitalsroll)           |                                   |                                     |                                 |
 | [slice](#vitalsslice)         |                                   |                                     |                                 |
 | to*                           |                                   |                                     |                                 |
 | trim*                         |                                   |                                     |                                 |
@@ -137,6 +138,13 @@ All base methods give you the maximum possible coverage within their main method
 | [remap.array](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/remap.js#L117-L131)  | [remap.array](https://github.com/imaginate/vitals/blob/master/test/methods/remap/remap.array.js)   | remap.arr |
 | [remap.string](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/remap.js#L144-L155) | [remap.string](https://github.com/imaginate/vitals/blob/master/test/methods/remap/remap.string.js) | remap.str |
 
+#### vitals.roll
+| Documentation                                                                                  | Examples                                                                                    |
+| :--------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------ |
+| [roll](https://github.com/imaginate/vitals/blob/7d625f39bf/src/methods/roll.js#L40-L59)        | [roll](https://github.com/imaginate/vitals/blob/master/test/methods/roll/roll.js)           |
+| [roll.up](https://github.com/imaginate/vitals/blob/7d625f39bf/src/methods/roll.js#L97-L115)    | [roll.up](https://github.com/imaginate/vitals/blob/master/test/methods/roll/roll.up.js)     |
+| [roll.down](https://github.com/imaginate/vitals/blob/7d625f39bf/src/methods/roll.js#L153-L171) | [roll.down](https://github.com/imaginate/vitals/blob/master/test/methods/roll/roll.down.js) |
+
 #### vitals.slice
 | Documentation                                                                                    | Examples                                                                                           | Alias     |
 | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- | :-------- |
@@ -145,12 +153,12 @@ All base methods give you the maximum possible coverage within their main method
 | [slice.string](https://github.com/imaginate/vitals/blob/bdf858bbf0/src/methods/slice.js#L84-L91) | [slice.string](https://github.com/imaginate/vitals/blob/master/test/methods/slice/slice.string.js) | slice.str |
 
 #### vitals.until
-| Documentation                                                                                      | Examples                                                                                           | Alias     |
-| :------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------- | :-------- |
-| [until](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L42-L65)          | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js)               |           |
-| [until.object](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L96-L114)  | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj |
-| [until.array](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L126-L146)  | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js)   | until.arr |
-| [until.cycle](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L161-L173) | [until.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.cycle.js) | until.time |
+| Documentation                                                                                     | Examples                                                                                           | Alias      |
+| :------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------------------------- | :--------- |
+| [until](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L42-L65)         | [until](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.js)               |            |
+| [until.object](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L96-L114) | [until.object](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.object.js) | until.obj  |
+| [until.array](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L126-L146) | [until.array](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.array.js)   | until.arr  |
+| [until.cycle](https://github.com/imaginate/vitals/blob/9d8ff6f80c/src/methods/until.js#L161-L173) | [until.cycle](https://github.com/imaginate/vitals/blob/master/test/methods/until/until.cycle.js)   | until.time |
 
 
 ## Strict Methods
