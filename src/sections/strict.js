@@ -1530,19 +1530,24 @@ var freeze = (function freezePrivateScope() {
   /**
    * @private
    * @param {!(Object|function)} obj
+   * @param {boolean=} noFreeze
    * @return {!(Object|function)}
    */
-  function _deepFreeze(obj) {
+  function _deepFreeze(obj, noFreeze) {
 
+    /** @type {boolean} */
+    var frozen;
     /** @type {string} */
     var key;
 
+    frozen = is.frozen(obj);
+
     for (key in obj) {
       if ( _own(obj, key) && is._obj( obj[key] ) ) {
-        obj[key] = _deepFreeze( obj[key] );
+        obj[key] = _deepFreeze(obj[key], frozen);
       }
     }
-    return _ObjectFreeze(obj);
+    return noFreeze ? obj : _ObjectFreeze(obj);
   }
 
   //////////////////////////////////////////////////////////
