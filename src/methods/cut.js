@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS SHORTCUTS - CUT
  * -----------------------------------------------------------------------------
- * @version 2.3.0
+ * @version 2.3.1
  * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
