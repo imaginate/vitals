@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - SHELL METHOD - RUN
  * -----------------------------------------------------------------------------
- * @version 2.3.1
+ * @version 2.3.2
  * @see [vitals.run]{@link https://github.com/imaginate/vitals/blob/master/src/methods/run.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
