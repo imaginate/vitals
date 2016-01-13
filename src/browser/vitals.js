@@ -6355,7 +6355,7 @@ var freeze = (function freezePrivateScope() {
 
     for (key in obj) {
       if ( _own(obj, key) && is._obj( obj[key] ) ) {
-        obj[key] = _deepFreeze(obj[key], frozen);
+        _deepFreeze(obj[key], frozen);
       }
     }
     return noFreeze ? obj : _ObjectFreeze(obj);
