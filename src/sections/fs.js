@@ -627,14 +627,14 @@ var _normalize = (function _normalizePrivateScope() {
    * @private
    * @param {string} source
    * @param {!Object} options
-   * @return {string}
+   * @return {(string|Buffer)}
    */
   function _getFile(source, options) {
 
     /** @type {string} */
     var contents;
 
-    if (options.buffer) return fs.readFileSync(filepath);
+    if (options.buffer) return fs.readFileSync(source);
 
     contents = fs.readFileSync(source, options.encoding);
     return options.eol ? _normalize(contents, options.eol) : contents;
