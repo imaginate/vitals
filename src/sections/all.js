@@ -6959,11 +6959,11 @@ var seal = (function sealPrivateScope() {
     /** @type {number} */
     var i;
 
-    dirpaths = getDirpaths(basepath, isValid);
+    dirpaths = _getDirpaths(basepath, isValid);
     i = -1;
     while (++i < dirpaths.length) {
       dirpath = _prepDir(dirpaths[i]);
-      newpaths = getDirpaths(basepath + dirpath, isValid);
+      newpaths = _getDirpaths(basepath + dirpath, isValid);
       newpaths = newpaths.map(function(newpath) {
         return dirpath + newpath;
       });
@@ -7007,11 +7007,11 @@ var seal = (function sealPrivateScope() {
     /** @type {number} */
     var i;
 
-    filepaths = getFilepaths(basepath, isValid);
-    dirpaths = getDirpathsDeep(basepath, isValidDir);
+    filepaths = _getFilepaths(basepath, isValid);
+    dirpaths = _getDirpathsDeep(basepath, isValidDir);
     dirpaths.forEach(function(dirpath) {
       dirpath = _prepDir(dirpath);
-      newpaths = getFilepaths(basepath + dirpath, isValid);
+      newpaths = _getFilepaths(basepath + dirpath, isValid);
       newpaths = newpaths.map(function(newpath) {
         return dirpath + newpath;
       });
