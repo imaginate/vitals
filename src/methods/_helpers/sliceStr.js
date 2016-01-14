@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD HELPER - SLICE STRING
  * -----------------------------------------------------------------------------
- * @version 2.3.6
+ * @version 2.3.7
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

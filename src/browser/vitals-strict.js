@@ -28,7 +28,7 @@ _elems:"elements",_docs:"documents",_nilmap:"nullmap",_strmap:"stringmap",_numma
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.6
+ * @version 2.3.7
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

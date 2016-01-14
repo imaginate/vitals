@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS SHORTCUTS - FUSE
  * -----------------------------------------------------------------------------
- * @version 2.3.6
+ * @version 2.3.7
  * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fuse.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
