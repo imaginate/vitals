@@ -21,6 +21,7 @@
 var newErrorAid = require('./_helpers/errorAid.js');
 var _normalize = require('../_helpers/normalize.js');
 var _isEol = require('../_helpers/isEol.js');
+var _own = require('../_helpers/own.js');
 var is = require('node-are').is;
 var fs = require('fs');
 
@@ -329,15 +330,22 @@ var get = {};
    */
   function _parseOptions(options) {
 
+    /** @type {!Object} */
+    var opts;
+    /** @type {string} */
+    var key;
+
     if (!options) return {};
 
-    return options.map(function(val, key) {
-
-      if ( !VALID.test(key) ) return val;
-
-      key = key.replace(VALID, '$1');
-      return _parseOption(val, key);
-    });
+    opts = {};
+    for (key in options) {
+      if ( _own(options, key) ) {
+        opts[key] = VALID.test(key)
+          ? _parseOption(options[key], key.replace(VALID, '$1'))
+          : options[key];
+      }
+    }
+    return opts;
   }
 
   /**
