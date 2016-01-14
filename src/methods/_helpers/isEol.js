@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - METHOD HELPER - IS STRING AN END-OF-LINE CHARACTER
  * -----------------------------------------------------------------------------
- * @version 2.3.3
+ * @version 2.3.4
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
