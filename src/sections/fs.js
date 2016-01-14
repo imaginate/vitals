@@ -626,11 +626,10 @@ var _normalize = (function _normalizePrivateScope() {
   /**
    * @private
    * @param {string} source
-   * @param {string} dest
    * @param {!Object} options
    * @return {string}
    */
-  function _getFile(source, dest, options) {
+  function _getFile(source, options) {
 
     /** @type {string} */
     var contents;
