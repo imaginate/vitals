@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.7
+ * @version 2.3.8
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -177,6 +177,34 @@ var _normalize = (function _normalizePrivateScope() {
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR NORMALIZE
   return _normalize;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
 })();
 
 

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - REMAP
  * -----------------------------------------------------------------------------
- * @version 2.3.7
+ * @version 2.3.8
  * @see [vitals.remap]{@link https://github.com/imaginate/vitals/blob/master/src/methods/remap.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
