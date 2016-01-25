@@ -22,7 +22,8 @@
   "devDependencies": {
     "mocha": "2.x",
     "log-ocd": ">1.0.0-beta",
-    "node-act": "1.x"
+    "node-act": "1.x",
+    "node-vitals": "2.x"
   },
   "keywords": [
     "imaginate",
