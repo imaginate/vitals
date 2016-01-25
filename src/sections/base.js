@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.7
+ * @version 2.3.8
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - COPY
  * -----------------------------------------------------------------------------
- * @version 2.3.7
+ * @version 2.3.8
  * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/copy.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
