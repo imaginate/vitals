@@ -1,7 +1,7 @@
 {
   "name": "node-vitals",
-  "version": "2.3.7",
-  "description": "A JavaScript utility library designed for elegance, performance, & reliability. Get more functionality with fewer methods!",
+  "version": "3.0.0",
+  "description": "Foundational JS utility library; Do more with less; Elegance, performance, & reliability;",
   "main": "node-vitals.js",
   "repository": {
     "type": "git",
@@ -10,7 +10,7 @@
   "author": "Adam Smith <adam@imaginate.life> (https://github.com/imaginate)",
   "license": "Apache-2.0",
   "scripts": {
-    "test": "node ./test/init.js"
+    "test": "node ./node_modules/node-act/bin/act test -npm"
   },
   "bugs": {
     "url": "https://github.com/imaginate/vitals/issues"
@@ -21,7 +21,8 @@
   },
   "devDependencies": {
     "mocha": "2.x",
-    "colors": "1.x"
+    "log-ocd": ">1.0.0-beta",
+    "node-act": "1.x"
   },
   "keywords": [
     "imaginate",
