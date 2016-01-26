@@ -18,7 +18,7 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
+var newErrorAid = require('../helpers/errorAid.js');
 var is = require('node-are').is;
 var fs = require('fs');
 

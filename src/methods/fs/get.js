@@ -18,10 +18,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _normalize = require('../_helpers/normalize.js');
-var _isEol = require('../_helpers/isEol.js');
-var _own = require('../_helpers/own.js');
+var newErrorAid = require('../helpers/errorAid.js');
+var _normalize = require('../helpers/normalize.js');
+var _isEol = require('../helpers/isEol.js');
+var _own = require('../helpers/own.js');
 var is = require('node-are').is;
 var fs = require('fs');
 

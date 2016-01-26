@@ -18,10 +18,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _normalize = require('./_helpers/normalize.js');
-var _sliceArr = require('./_helpers/sliceArr.js');
-var _isEol = require('./_helpers/isEol.js');
+var newErrorAid = require('./helpers/errorAid.js');
+var _normalize = require('./helpers/normalize.js');
+var _sliceArr = require('./helpers/sliceArr.js');
+var _isEol = require('./helpers/isEol.js');
 var is = require('node-are').is;
 var cp = require('child_process');
 

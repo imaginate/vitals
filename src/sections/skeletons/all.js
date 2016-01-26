@@ -31,21 +31,21 @@ var to = {};
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT methods/_helpers/cloneObj.js
-// INSERT methods/_helpers/errorAid.js
-// INSERT methods/_helpers/escape.js
-// INSERT methods/_helpers/inArr.js
-// INSERT methods/_helpers/inObj.js
-// INSERT methods/_helpers/inStr.js
-// INSERT methods/_helpers/isEol.js
-// INSERT methods/_helpers/match.js
-// INSERT methods/_helpers/merge.js
-// INSERT methods/_helpers/normalize.js
-// INSERT methods/_helpers/own.js
-// INSERT methods/_helpers/ownEnum.js
-// INSERT methods/_helpers/sliceArr.js
-// INSERT methods/_helpers/sliceStr.js
-// INSERT methods/_helpers/splitKeys.js
+// INSERT methods/helpers/cloneObj.js
+// INSERT methods/helpers/errorAid.js
+// INSERT methods/helpers/escape.js
+// INSERT methods/helpers/inArr.js
+// INSERT methods/helpers/inObj.js
+// INSERT methods/helpers/inStr.js
+// INSERT methods/helpers/isEol.js
+// INSERT methods/helpers/match.js
+// INSERT methods/helpers/merge.js
+// INSERT methods/helpers/normalize.js
+// INSERT methods/helpers/own.js
+// INSERT methods/helpers/ownEnum.js
+// INSERT methods/helpers/sliceArr.js
+// INSERT methods/helpers/sliceStr.js
+// INSERT methods/helpers/splitKeys.js
 
 
 // *****************************************************************************

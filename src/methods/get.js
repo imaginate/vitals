@@ -22,9 +22,9 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _match = require('./_helpers/match.js');
-var _own = require('./_helpers/own.js');
+var newErrorAid = require('./helpers/errorAid.js');
+var _match = require('./helpers/match.js');
+var _own = require('./helpers/own.js');
 var is = require('node-are').is;
 var copy = require('./copy.js');
 

@@ -18,8 +18,8 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _sliceArr = require('./_helpers/sliceArr.js');
+var newErrorAid = require('./helpers/errorAid.js');
+var _sliceArr = require('./helpers/sliceArr.js');
 var is = require('node-are').is;
 var amend = require('./amend.js');
 
