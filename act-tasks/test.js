@@ -156,8 +156,9 @@ function methodsTests() {
 /**
  * @public
  * @param {string} section
+ * @param {?function=} callback
  */
-function sectionTests(section) {
+function sectionTests(section, callback) {
 
   /** @type {!ChildProcess} */
   var child;
@@ -196,5 +197,26 @@ function sectionTests(section) {
   child.on('close', function() {
     msg = fuse('Finished `vitals ', section, '` tests');
     log.pass(msg);
+    callback && callback();
+  });
+}
+
+/**
+ * @public
+ * @type {function}
+ */
+function sectionsTests() {
+
+  /** @type {!Array} */
+  var sections;
+  /** @type {function} */
+  var init;
+
+  sections = get.filepaths('test/setup', { validNames: 'section-*' });
+  sections = remap(sections, function(section) {
+    return remap(section, /section-([a-z]+)\.js$/, '$1');
+  });
+  init = roll(null, sections, function(callback, section) {
+
   });
 }
