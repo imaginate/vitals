@@ -21,7 +21,7 @@ global.assert = require('assert');
 // appends global helpers
 require('node-are')();
 require('log-ocd')('log');
-require('node-vitals')(2, 'base', 'strict');
+require('node-vitals')(2, 'base', 'strict', 'fs');
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP LOG-OCD
@@ -47,9 +47,6 @@ log.fail.setStyle({
     'color': 'red',
     'bg':    ''
   }
-});
-log.toString.setFormat({
-  'lineLimit': 50
 });
 
 /**
