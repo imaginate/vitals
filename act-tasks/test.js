@@ -337,11 +337,17 @@ function newCmdMethod(start, name, callback) {
   /** @type {string} */
   var msg;
 
+  if ( is.func(name) ) {
+    callback = name;
+    name = undefined;
+  }
+
   if (name) {
     logger = start ? log.debug : log.pass;
     msg = start ? 'Starting' : 'Finished';
     msg = fuse(msg, ' `', name, '` tests');
   }
+
   return function cmdMethod() {
     msg && logger(msg);
     callback && callback();
