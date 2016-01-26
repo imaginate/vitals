@@ -57,3 +57,43 @@ exports['methods'] = {
   }
 };
 exports['done'] = false; // turn auto complete logs off
+
+/**
+ * @public
+ * @type {function}
+ */
+function methodsTests() {
+
+  /** @type {!ChildProcess} */
+  var child;
+  /** @type {!Array<string>} */
+  var args;
+  /** @type {!Object} */
+  var opts;
+
+  log.debug('Starting `vitals` tests');
+
+  args = [
+    './node_modules/mocha/bin/_mocha',
+    '--colors',
+    '--reporter',
+    'test/setup/mocha-reporter.js',
+    '--recursive',
+    '--require',
+    './test/setup/methods.js',
+    './test/methods'
+  ];
+  opts = { 'stdio': 'inherit' };
+
+  try {
+    child = cp.spawn('node', args, opts);
+  }
+  catch (error) {
+    error.name = fuse('Internal ', error.name || 'Error');
+    log.error(error);
+  }
+
+  child.on('close', function() {
+    log.pass('Finished `vitals` tests');
+  });
+}
