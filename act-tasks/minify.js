@@ -27,6 +27,7 @@
 var is = require('node-are').is;
 
 var vitals = require('node-vitals')('all');
+var cut    = vitals.cut;
 var each   = vitals.each;
 var fuse   = vitals.fuse;
 var get    = vitals.get;
@@ -42,7 +43,8 @@ var MINIFIER = 'vendor/closure-compiler.jar';
 var ARE_SRC  = 'vendor/are.min.js';
 var INTRO    = /^\/\*[\s\S]*?\*\//;
 var FIND_ARE = /^\/\* are\.js[\s\S]*?(\/\*\*\n)/;
-var VERSION  = /"version": "([0-9]+\.[0-9]+\.[0-9]+)(-[a-z]+.?[0-9]*)?/;
+var SEMANTIC = /"version": "[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?/;
+var VERSION  = /^"version": "/;
 
 exports['desc'] = 'minifies the browser versions';
 exports['method'] = minifyVitals;
@@ -66,14 +68,13 @@ function minifyVitals() {
   are = fuse(are, '\n');
   filenames = get.filepaths(FRAMES);
   each(filenames, function(filename) {
-    filepath = fuse(FRAMES, '/', filename);
+    filepath = fuse(BROWSER, '/', filename);
     content = get.file(filepath);
     content = remap(content, FIND_ARE, '$1');
     content = minify(content);
     content = addCopyright(content, filename);
     content = fuse(are, content);
-    filename = remap(filename, /js$/, 'min.js');
-    filepath = fuse(BROWSER, '/', filename);
+    filepath = remap(filepath, /js$/, 'min.js');
     to.file(content, filepath);
   });
 }
@@ -128,6 +129,8 @@ function addCopyright(content, name) {
  */
 function getVersion(pre) {
 
+  /** @type {!Array<string>} */
+  var matches;
   /** @type {string} */
   var content;
   /** @type {string} */
@@ -135,6 +138,8 @@ function getVersion(pre) {
 
   pre = pre || '';
   content = get.file('./package.json');
-  version = get(content, VERSION)[0];
+  matches = get(content, SEMANTIC);
+  version = fuse(matches[0], matches[1] || '');
+  version = cut(version, VERSION);
   return fuse(pre, version);
 }
