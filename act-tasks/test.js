@@ -147,7 +147,7 @@ function sectionTests(section, callback) {
   runCmd({
     'reporter': 'dot',
     'grep':     is.same(section, 'all') ? null : fuse('section:', section),
-    'setup':    fuse('section-', section),
+    'setup':    fuse('section/', section),
     'start':    newCmdMethod(true,  name),
     'close':    newCmdMethod(false, name, callback)
   });
@@ -240,9 +240,9 @@ function getSections() {
   /** @type {!Array<string>} */
   var sections;
 
-  sections = get.filepaths('test/setup', { validNames: 'section-*' });
+  sections = get.filepaths('test/setup/sections');
   return remap(sections, function(section) {
-    return remap(section, /section-([a-z]+)\.js$/, '$1');
+    return cut(section, /js$/);
   });
 }
 
