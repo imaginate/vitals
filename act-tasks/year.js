@@ -48,7 +48,7 @@ function updateYear(year) {
 
   filepaths = get.filepaths('.', {
     deep:        true,
-    validExts:   /^js|md$/,
+    validExts:   /js|md$/,
     invalidDirs: /^node_modules|vendor$/
   });
   insertYears(filepaths, year);
