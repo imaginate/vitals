@@ -32,7 +32,7 @@ _elems:"elements",_docs:"documents",_nilmap:"nullmap",_strmap:"stringmap",_numma
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
  * @see [are]{@link https://github.com/imaginate/are}
