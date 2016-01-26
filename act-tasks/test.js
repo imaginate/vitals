@@ -196,7 +196,7 @@ function newBrowserTest(callback, section) {
   }
 
   file = fuse('src/browser/', file);
-  setup = fuse('./test/setup/browser-', section, '.js');
+  setup = fuse('./test/setup/browser/', section, '.js');
   callback = newMinBrowserTest(file, setup, grep, callback);
   return function browserTest() {
     runCmd({
