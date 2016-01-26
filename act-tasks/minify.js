@@ -61,7 +61,7 @@ function minifyVitals() {
   /** @type {string} */
   var are;
 
-  are = get.file(ARE);
+  are = get.file(ARE_SRC);
   are = fuse(are, '\n');
   files = get.filepaths(BASE_DIR);
   each(files, function(filename) {
