@@ -29,6 +29,9 @@ log.error.setConfig({
   'exit':  true
 });
 
+var MOCHA = './node_modules/mocha/bin/_mocha';
+var CUSTOM_REPORT = 'test/setup/mocha-reporter.js';
+
 exports['desc'] = 'run vitals unit tests';
 exports['value'] = 'vitals-method';
 exports['default'] = '-method';
@@ -60,6 +63,58 @@ exports['done'] = false; // turn auto complete logs off
 
 /**
  * @public
+ * @param {string} method
+ */
+function methodTests(method) {
+
+  /** @type {!ChildProcess} */
+  var child;
+  /** @type {!Array<string>} */
+  var args;
+  /** @type {!Object} */
+  var opts;
+  /** @type {string} */
+  var file;
+  /** @type {string} */
+  var msg;
+
+  file = fuse('src/methods/', method, '.js');
+
+  if ( !is.file(file) ) {
+    throw Error('invalid value (must be a valid vitals method)');
+  }
+
+  msg = fuse('Starting `vitals.', method, '` tests');
+  log.debug(msg);
+
+  args = [
+    MOCHA,
+    '--colors',
+    '--reporter',
+    CUSTOM_REPORT,
+    '--recursive',
+    '--require',
+    './test/setup/methods.js',
+    fuse('./test/methods/', method)
+  ];
+  opts = { 'stdio': 'inherit' };
+
+  try {
+    child = cp.spawn('node', args, opts);
+  }
+  catch (error) {
+    error.name = fuse('Internal ', error.name || 'Error');
+    log.error(error);
+  }
+
+  child.on('close', function() {
+    msg = fuse('Finished `vitals.', method, '` tests');
+    log.pass(msg);
+  });
+}
+
+/**
+ * @public
  * @type {function}
  */
 function methodsTests() {
@@ -74,10 +129,10 @@ function methodsTests() {
   log.debug('Starting `vitals` tests');
 
   args = [
-    './node_modules/mocha/bin/_mocha',
+    MOCHA,
     '--colors',
     '--reporter',
-    'test/setup/mocha-reporter.js',
+    CUSTOM_REPORT,
     '--recursive',
     '--require',
     './test/setup/methods.js',
