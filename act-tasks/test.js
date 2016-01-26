@@ -8,6 +8,7 @@
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
+ * @see [act]{@link https://github.com/imaginate/act}
  * @see [are]{@link https://github.com/imaginate/are}
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
