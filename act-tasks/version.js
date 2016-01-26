@@ -89,7 +89,7 @@ function updateNPMVersion(version) {
  * @param {string} version
  * @return {boolean}
  */
-function isSemVersion(version, includePre) {
+function isSemVersion(version) {
   return !!version && has(version, SEMANTIC);
 }
 
@@ -119,7 +119,7 @@ function insertJSVersion(filepath, version) {
   var content;
 
   content = get.file(filepath);
-  content = remap(content, BASE_VERSION, version);
+  content = remap(content, ALL_VERSION, version);
   to.file(content, filepath);
 }
 
