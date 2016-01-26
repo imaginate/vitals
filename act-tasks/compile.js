@@ -21,6 +21,7 @@
 'use strict';
 
 var vitals = require('node-vitals')('base', 'fs');
+var cut    = vitals.cut;
 var each   = vitals.each;
 var fuse   = vitals.fuse;
 var get    = vitals.get;
