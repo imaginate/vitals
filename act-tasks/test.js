@@ -152,3 +152,49 @@ function methodsTests() {
     log.pass('Finished `vitals` tests');
   });
 }
+
+/**
+ * @public
+ * @param {string} section
+ */
+function sectionTests(section) {
+
+  /** @type {!ChildProcess} */
+  var child;
+  /** @type {!Array<string>} */
+  var args;
+  /** @type {?Object} */
+  var opts;
+  /** @type {string} */
+  var file;
+  /** @type {string} */
+  var msg;
+
+  file = fuse('src/sections/', section, '.js');
+
+  if ( !is.file(file) ) {
+    throw Error('invalid value (must be a valid vitals section)');
+  }
+
+  msg = fuse('Starting `vitals ', section, '` tests');
+  log.debug(msg);
+
+  args = [ MOCHA, '--colors', '--reporter', CUSTOM_REPORT, '--recursive' ];
+  opts = is.same(section, 'all') ? null : [ '--grep', fuse('section:', section) ];
+  file = fuse('./test/setup/section-', section, '.js');
+  args = fuse(args, opts, [ '--require', file, './test/methods' ]);
+  opts = { 'stdio': 'inherit' };
+
+  try {
+    child = cp.spawn('node', args, opts);
+  }
+  catch (error) {
+    error.name = fuse('Internal ', error.name || 'Error');
+    log.error(error);
+  }
+
+  child.on('close', function() {
+    msg = fuse('Finished `vitals ', section, '` tests');
+    log.pass(msg);
+  });
+}
