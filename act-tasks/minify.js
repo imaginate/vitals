@@ -63,8 +63,8 @@ function minifyVitals() {
 
   are = get.file(ARE_SRC);
   are = fuse(are, '\n');
-  files = get.filepaths(BASE_DIR);
-  each(files, function(filename) {
+  filenames = get.filepaths(BASE_DIR);
+  each(filenames, function(filename) {
     filepath = fuse(BASE_DIR, '/', filename);
     content = get.file(filepath);
     content = remap(content, FIND_ARE, '$1');
