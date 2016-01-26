@@ -93,7 +93,10 @@ function minify(content) {
   }
 
   cmd = fuse('java -jar ', MINIFIER);
-  return run(cmd, { input: content });
+  return run(cmd, {
+    catchExit: false,
+    input:     content
+  });
 }
 
 /**
