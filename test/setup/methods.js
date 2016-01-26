@@ -18,6 +18,9 @@
 
 'use strict';
 
+// append global display helpers
+require('./display');
+
 global.vitals = loadVitalsMethods();
 
 /**
@@ -38,18 +41,9 @@ function loadVitalsMethods() {
   vitals = {};
   filenames = get.filepaths('src/methods');
   each(filenames, function(filename) {
-    method = stripJSExt(filename);
+    method = cut(filename, /\.js$/);
     filepath = fuse('../../src/methods/', filename);
     vitals[method] = require(filepath);
   });
   return vitals;
-}
-
-/**
- * @private
- * @param {string} filename
- * @return {string}
- */
-function stripJSExt(filename) {
-  return cut(filename, /\.js$/);
 }
