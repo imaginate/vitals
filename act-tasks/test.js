@@ -209,14 +209,79 @@ function sectionsTests() {
 
   /** @type {!Array} */
   var sections;
-  /** @type {function} */
-  var init;
 
   sections = get.filepaths('test/setup', { validNames: 'section-*' });
   sections = remap(sections, function(section) {
     return remap(section, /section-([a-z]+)\.js$/, '$1');
   });
-  init = roll(null, sections, function(callback, section) {
+  roll(null, sections, function(callback, section) {
+    return sectionTests.bind(null, section, callback);
+  })();
+}
 
+/**
+ * @public
+ * @type {function}
+ */
+function browserTests() {
+
+  /** @type {!Array} */
+  var sections;
+
+  sections = get.filepaths('test/setup', { validNames: 'section-*' });
+  sections = remap(sections, function(section) {
+    return remap(section, /section-([a-z]+)\.js$/, '$1');
+  });
+  roll(null, sections, function(callback, section) {
+    return browserTest.bind(null, section, false, callback);
+  })();
+}
+
+/**
+ * @private
+ * @param {string} section
+ * @param {boolean} min
+ * @param {?function=} callback
+ */
+function browserTest(section, min, callback) {
+
+  /** @type {!ChildProcess} */
+  var child;
+  /** @type {!Array<string>} */
+  var args;
+  /** @type {?Object} */
+  var opts;
+  /** @type {string} */
+  var file;
+  /** @type {string} */
+  var msg;
+
+  min = min ? '.min' : '';
+  file = is.same(section, 'all') ? 'vitals' : fuse('vitals-', section);
+  file = fuse('src/browser/', file, min, '.js');
+  msg = fuse('Starting `', file, '` tests');
+  log.debug(msg);
+
+  args = [ MOCHA, '--colors', '--reporter', CUSTOM_REPORT, '--recursive' ];
+  opts = is.same(section, 'all') ? null : [ '--grep', fuse('section:', section) ];
+  file = fuse('./test/setup/browser-', section, min, '.js');
+  args = fuse(args, opts, [ '--require', file, './test/methods' ]);
+  opts = { 'stdio': 'inherit' };
+
+  try {
+    child = cp.spawn('node', args, opts);
+  }
+  catch (error) {
+    error.name = fuse('Internal ', error.name || 'Error');
+    log.error(error);
+  }
+
+  child.on('close', function() {
+    file = is.same(section, 'all') ? 'vitals' : fuse('vitals-', section);
+    file = fuse('src/browser/', file, min, '.js');
+    msg = fuse('Finished `', file, '` tests');
+    log.pass(msg);
+    if (min) callback && callback();
+    else browserTest(section, true, callback);
   });
 }
