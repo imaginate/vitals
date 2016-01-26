@@ -19,18 +19,45 @@
 
 'use strict';
 
+/**
+ * @typedef {function} CmdMethod
+ *
+ * @typedef {{
+ *   __CMD:      boolean,
+ *   start:     !CmdMethod,
+ *   close:     !CmdMethod,
+ *   colors:    ?string,
+ *   recursive: ?string,
+ *   reporter:   string,
+ *   grep:      ?string,
+ *   setup:      string,
+ *   method:    ?string
+ * }} Cmd
+ */
+
 var cp = require('child_process');
 var is = require('node-are').is;
 var log = require('log-ocd')();
-var fuse = require('node-vitals')('fuse');
 
 log.error.setConfig({
   'throw': false,
   'exit':  true
 });
 
-var MOCHA = './node_modules/mocha/bin/_mocha';
-var CUSTOM_REPORT = 'test/setup/mocha-reporter.js';
+var vitals = require('node-vitals')('base', 'fs');
+var cut    = vitals.cut;
+var fuse   = vitals.fuse;
+var get    = vitals.get;
+var remap  = vitals.remap;
+var roll   = vitals.roll;
+
+var MOCHA_CMD = './node_modules/mocha/bin/_mocha';
+var SETUP_DIR = './test/setup';
+var TESTS_DIR = './test/methods';
+var DEFAULTS = {
+  reporter: 'test/setup/mocha-reporter.js',
+  setup:    'methods.js'
+};
 
 exports['desc'] = 'run vitals unit tests';
 exports['value'] = 'vitals-method';
@@ -67,49 +94,22 @@ exports['done'] = false; // turn auto complete logs off
  */
 function methodTests(method) {
 
-  /** @type {!ChildProcess} */
-  var child;
-  /** @type {!Array<string>} */
-  var args;
-  /** @type {!Object} */
-  var opts;
   /** @type {string} */
   var file;
   /** @type {string} */
-  var msg;
+  var name;
 
   file = fuse('src/methods/', method, '.js');
 
   if ( !is.file(file) ) {
-    throw Error('invalid value (must be a valid vitals method)');
+    throw new Error('invalid value (must be a valid vitals method)');
   }
 
-  msg = fuse('Starting `vitals.', method, '` tests');
-  log.debug(msg);
-
-  args = [
-    MOCHA,
-    '--colors',
-    '--reporter',
-    CUSTOM_REPORT,
-    '--recursive',
-    '--require',
-    './test/setup/methods.js',
-    fuse('./test/methods/', method)
-  ];
-  opts = { 'stdio': 'inherit' };
-
-  try {
-    child = cp.spawn('node', args, opts);
-  }
-  catch (error) {
-    error.name = fuse('Internal ', error.name || 'Error');
-    log.error(error);
-  }
-
-  child.on('close', function() {
-    msg = fuse('Finished `vitals.', method, '` tests');
-    log.pass(msg);
+  name = fuse('vitals.', method);
+  runCmd({
+    'method': method,
+    'start':  newCmdMethod(true,  name),
+    'close':  newCmdMethod(false, name)
   });
 }
 
@@ -118,38 +118,9 @@ function methodTests(method) {
  * @type {function}
  */
 function methodsTests() {
-
-  /** @type {!ChildProcess} */
-  var child;
-  /** @type {!Array<string>} */
-  var args;
-  /** @type {!Object} */
-  var opts;
-
-  log.debug('Starting `vitals` tests');
-
-  args = [
-    MOCHA,
-    '--colors',
-    '--reporter',
-    CUSTOM_REPORT,
-    '--recursive',
-    '--require',
-    './test/setup/methods.js',
-    './test/methods'
-  ];
-  opts = { 'stdio': 'inherit' };
-
-  try {
-    child = cp.spawn('node', args, opts);
-  }
-  catch (error) {
-    error.name = fuse('Internal ', error.name || 'Error');
-    log.error(error);
-  }
-
-  child.on('close', function() {
-    log.pass('Finished `vitals` tests');
+  runCmd({
+    'start': newCmdMethod(true,  'vitals'),
+    'close': newCmdMethod(false, 'vitals')
   });
 }
 
@@ -160,44 +131,24 @@ function methodsTests() {
  */
 function sectionTests(section, callback) {
 
-  /** @type {!ChildProcess} */
-  var child;
-  /** @type {!Array<string>} */
-  var args;
-  /** @type {?Object} */
-  var opts;
   /** @type {string} */
   var file;
   /** @type {string} */
-  var msg;
+  var name;
 
   file = fuse('src/sections/', section, '.js');
 
   if ( !is.file(file) ) {
-    throw Error('invalid value (must be a valid vitals section)');
+    throw new Error('invalid value (must be a valid vitals section)');
   }
 
-  msg = fuse('Starting `vitals ', section, '` tests');
-  log.debug(msg);
-
-  args = [ MOCHA, '--colors', '--reporter', CUSTOM_REPORT, '--recursive' ];
-  opts = is.same(section, 'all') ? null : [ '--grep', fuse('section:', section) ];
-  file = fuse('./test/setup/section-', section, '.js');
-  args = fuse(args, opts, [ '--require', file, './test/methods' ]);
-  opts = { 'stdio': 'inherit' };
-
-  try {
-    child = cp.spawn('node', args, opts);
-  }
-  catch (error) {
-    error.name = fuse('Internal ', error.name || 'Error');
-    log.error(error);
-  }
-
-  child.on('close', function() {
-    msg = fuse('Finished `vitals ', section, '` tests');
-    log.pass(msg);
-    callback && callback();
+  name = fuse('vitals ', section);
+  runCmd({
+    'reporter': 'dot',
+    'grep':     is.same(section, 'all') ? null : fuse('section:', section),
+    'setup':    fuse('section-', section),
+    'start':    newCmdMethod(true,  name),
+    'close':    newCmdMethod(false, name, callback)
   });
 }
 
@@ -206,15 +157,7 @@ function sectionTests(section, callback) {
  * @type {function}
  */
 function sectionsTests() {
-
-  /** @type {!Array} */
-  var sections;
-
-  sections = get.filepaths('test/setup', { validNames: 'section-*' });
-  sections = remap(sections, function(section) {
-    return remap(section, /section-([a-z]+)\.js$/, '$1');
-  });
-  roll(null, sections, function(callback, section) {
+  roll(null, getSections(), function(callback, section) {
     return sectionTests.bind(null, section, callback);
   })();
 }
@@ -224,64 +167,183 @@ function sectionsTests() {
  * @type {function}
  */
 function browserTests() {
-
-  /** @type {!Array} */
-  var sections;
-
-  sections = get.filepaths('test/setup', { validNames: 'section-*' });
-  sections = remap(sections, function(section) {
-    return remap(section, /section-([a-z]+)\.js$/, '$1');
-  });
-  roll(null, sections, function(callback, section) {
-    return browserTest.bind(null, section, false, callback);
-  })();
+  roll(null, getSections(), newBrowserTest)();
 }
 
 /**
  * @private
+ * @param {?function} callback
  * @param {string} section
- * @param {boolean} min
- * @param {?function=} callback
+ * @return {function}
  */
-function browserTest(section, min, callback) {
+function newBrowserTest(callback, section) {
+
+  /** @type {string} */
+  var setup;
+  /** @type {string} */
+  var file;
+  /** @type {string} */
+  var grep;
+
+  if ( is.same(section, 'all') ) {
+    file = 'vitals.js';
+    grep = null;
+  }
+  else {
+    file = fuse('vitals-', section, '.js');
+    grep = fuse('section:', section);
+  }
+
+  file = fuse('src/browser/', file);
+  setup = fuse('./test/setup/browser-', section, '.js');
+  callback = newMinBrowserTest(file, setup, grep, callback);
+  return function browserTest() {
+    runCmd({
+      'reporter': 'dot',
+      'grep':     grep,
+      'setup':    setup,
+      'start':    newCmdMethod(true,  file),
+      'close':    newCmdMethod(false, file, callback)
+    });
+  };
+}
+
+/**
+ * @private
+ * @param {string} file
+ * @param {string} setup
+ * @param {?string} grep
+ * @param {?function} callback
+ * @return {function}
+ */
+function newMinBrowserTest(file, setup, grep, callback) {
+  setup = remap(setup, /js$/, 'min.js');
+  file = remap(file, /js$/, 'min.js');
+  return function minBrowserTest() {
+    return runCmd({
+      'reporter': 'dot',
+      'grep':     grep,
+      'setup':    setup,
+      'start':    newCmdMethod(true,  file),
+      'close':    newCmdMethod(false, file, callback)
+    });
+  };
+}
+
+/**
+ * @private
+ * @return {!Array<string>}
+ */
+function getSections() {
+
+  /** @type {!Array<string>} */
+  var sections;
+
+  sections = get.filepaths('test/setup', { validNames: 'section-*' });
+  return remap(sections, function(section) {
+    return remap(section, /section-([a-z]+)\.js$/, '$1');
+  });
+}
+
+/**
+ * @private
+ * @param {(?Object|Cmd)} vals
+ * @param {?CmdMethod=} vals.start  - [default= null]
+ * @param {?CmdMethod=} vals.close  - [default= null]
+ * @param {boolean=} vals.colors    - [default= true]
+ * @param {boolean=} vals.recursive - [default= true]
+ * @param {string=} vals.reporter   - [default= DEFAULTS.reporter]
+ * @param {string=} vals.grep       - [default= ""]
+ * @param {string=} vals.setup      - [default= DEFAULTS.setup]
+ * @param {string=} vals.method     - [default= ""] Test only a specific method.
+ */
+function runCmd(vals) {
 
   /** @type {!ChildProcess} */
   var child;
   /** @type {!Array<string>} */
   var args;
-  /** @type {?Object} */
+  /** @type {!Object} */
   var opts;
-  /** @type {string} */
-  var file;
-  /** @type {string} */
-  var msg;
+  /** @type {!Cmd} */
+  var cmd;
 
-  min = min ? '.min' : '';
-  file = is.same(section, 'all') ? 'vitals' : fuse('vitals-', section);
-  file = fuse('src/browser/', file, min, '.js');
-  msg = fuse('Starting `', file, '` tests');
-  log.debug(msg);
-
-  args = [ MOCHA, '--colors', '--reporter', CUSTOM_REPORT, '--recursive' ];
-  opts = is.same(section, 'all') ? null : [ '--grep', fuse('section:', section) ];
-  file = fuse('./test/setup/browser-', section, min, '.js');
-  args = fuse(args, opts, [ '--require', file, './test/methods' ]);
+  cmd = newCmd(vals);
+  args = fuse([], MOCHA_CMD, cmd.colors, cmd.reporter, cmd.recursive);
+  args = fuse(args, cmd.grep, cmd.setup, cmd.test);
   opts = { 'stdio': 'inherit' };
+
+  cmd.start();
 
   try {
     child = cp.spawn('node', args, opts);
+    child.on('close', cmd.close);
   }
   catch (error) {
-    error.name = fuse('Internal ', error.name || 'Error');
+    error.name = fuse('Internal `test` ', error.name || 'Error');
     log.error(error);
   }
+}
 
-  child.on('close', function() {
-    file = is.same(section, 'all') ? 'vitals' : fuse('vitals-', section);
-    file = fuse('src/browser/', file, min, '.js');
-    msg = fuse('Finished `', file, '` tests');
-    log.pass(msg);
-    if (min) callback && callback();
-    else browserTest(section, true, callback);
-  });
+/**
+ * @private
+ * @param {(?Object|Cmd)} opts
+ * @param {?CmdMethod=} opts.start  - [default= null]
+ * @param {?CmdMethod=} opts.close  - [default= null]
+ * @param {boolean=} opts.colors    - [default= true]
+ * @param {boolean=} opts.recursive - [default= true]
+ * @param {string=} opts.reporter   - [default= DEFAULTS.reporter]
+ * @param {string=} opts.grep       - [default= ""]
+ * @param {string=} opts.setup      - [default= DEFAULTS.setup]
+ * @param {string=} opts.method     - [default= ""] Test only a specific method.
+ * @return {!Cmd}
+ */
+function newCmd(opts) {
+
+  if (opts && opts.__CMD) return opts;
+
+  opts = opts || {};
+  opts = {
+    'start':     is.func(opts.start) ? opts.start : function(){},
+    'close':     is.func(opts.close) ? opts.close : function(){},
+    'colors':    is.same(opts.colors, false)    ? null  : '--colors',
+    'recursive': is.same(opts.recursive, false) ? null  : '--recursive',
+    'reporter':  is._str(opts.reporter) ? opts.reporter : DEFAULTS.reporter,
+    'grep':      is._str(opts.grep)     ? opts.grep     : null,
+    'setup':     is._str(opts.setup)    ? opts.setup    : DEFAULTS.setup,
+    'method':    is._str(opts.method)   ? opts.method   : null
+  };
+  opts.reporter = [ '--reporter', opts.reporter ];
+  opts.grep = opts.grep && [ '--grep', opts.grep ];
+  opts.setup = cut(opts.setup, /\.js$/);
+  opts.setup = fuse(SETUP_DIR, '/', opts.setup, '.js');
+  opts.setup = [ '--require', opts.setup ];
+  opts.test = opts.method ? fuse(TESTS_DIR, '/', opts.method) : TESTS_DIR;
+  opts.__CMD = true;
+  return opts;
+}
+
+/**
+ * @private
+ * @param {boolean} start - start or close
+ * @param {string=} name - the name to log
+ * @param {?function=} callback
+ * @return {!CmdMethod}
+ */
+function newCmdMethod(start, name, callback) {
+
+  /** @type {function} */
+  var logger;
+  /** @type {string} */
+  var msg;
+
+  if (name) {
+    logger = start ? log.debug : log.pass;
+    msg = start ? 'Starting' : 'Finished';
+    msg = fuse(msg, ' `', name, '` tests');
+  }
+  return function cmdMethod() {
+    msg && logger(msg);
+    callback && callback();
+  };
 }
