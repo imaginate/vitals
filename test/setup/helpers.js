@@ -22,6 +22,7 @@ global.assert = require('assert');
 require('node-are')();
 require('log-ocd')('log');
 require('node-vitals')(2, 'base', 'strict', 'fs');
+require('./display');
 
 //////////////////////////////////////////////////////////////////////////////
 // SETUP LOG-OCD

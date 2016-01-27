@@ -39,8 +39,8 @@ var MAX_LENGTH = 50;
  * @return {string}
  */
 function toStr(val, indent, noLeadIndent) {
-  indent = is.num(indent) && indent > 0 ? indent : 0;
   val = log.toString(val);
+  indent = is.num(indent) && indent > 0 ? indent : 0;
   return indentStr(val, indent, noLeadIndent);
 }
 
@@ -60,8 +60,7 @@ function indentStr(str, times, noLeadIndent) {
   if ( !is.num(times) ) throw new TypeError('invalid type for `times` param');
 
   times = times < 0 ? 0 : times;
-  indent = '';
-  while (times--) indent += '  ';
+  indent = fill(times, '  ');
   str = indent ? remap(str, /\n/g, fuse('\n', indent)) : str;
   return noLeadIndent ? str : fuse(indent, str);
 }
@@ -81,22 +80,20 @@ function testCall(method, args, indent, noLeadIndent) {
   /** @type {number} */
   var last;
 
+  args = slice(args);
+
   if ( !is.str(method) ) throw new TypeError('invalid type for `method` param');
-
-  args = is.args(args) ? slice(args) : args;
-
   if ( !is('arr=', args) ) throw new TypeError('invalid type for `args` param');
 
   if (!args || !args.length) return fuse(method, '()');
 
-  indent = is.num(indent) && indent > 0 ? indent : 0;
-  result = fuse(method, '(');
   last = args.length - 1;
-  result = roll.up(result, args, function(arg, i) {
-    arg = toStr(arg);
+  result = roll.up('', args, function(arg, i) {
+    arg = log.toString(arg);
     return i < last ? fuse(arg, ', ') : arg;
   });
-  result = fuse(result, ');');
+  result = fuse(method, '(', result, ');');
+  indent = is.num(indent) && indent > 0 ? indent : 0;
   return indentStr(result, indent, noLeadIndent);
 }
 

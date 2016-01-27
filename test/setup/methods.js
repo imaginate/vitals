@@ -18,9 +18,6 @@
 
 'use strict';
 
-// append global display helpers
-require('./display');
-
 global.vitals = loadVitalsMethods();
 
 /**
