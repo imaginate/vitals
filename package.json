@@ -20,6 +20,7 @@
     "node-are": "0.x"
   },
   "devDependencies": {
+    "chalk": "1.x",
     "mocha": "2.x",
     "log-ocd": ">1.0.0-beta",
     "node-act": "1.x",
