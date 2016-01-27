@@ -29,9 +29,10 @@ var remap  = vitals.remap;
 var to     = vitals.to;
 
 var ERROR_MSG = 'invalid value (must be a semantic version)';
-var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?$/;
-var ALL_VERSION = /\b(v?)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?\b/g;
-var NPM_VERSION = /("version": ")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?/;
+var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
+var NPM_BADGE = /(badge\/npm-)[0-9]+\.[0-9]+\.[0-9]+(?:--[a-z]+\.?[0-9]*)?/;
+var ALL_VERSION = /\b(v?)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?\b/g;
+var NPM_VERSION = /("version": ")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?/;
 
 exports['desc'] = 'updates version for the repo';
 exports['value'] = 'x.x.x-pre.x';
@@ -136,4 +137,9 @@ function insertNPMVersion(version) {
   version = fuse('$1', version);
   content = remap(content, NPM_VERSION, version);
   to.file(content, './package.json');
+
+  content = get.file('./README.md');
+  version = remap(version, /-/, '--');
+  content = remap(content, NPM_BADGE, version);
+  to.file(content, './README.md');
 }
