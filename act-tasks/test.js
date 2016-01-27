@@ -24,15 +24,16 @@
  * @typedef {function} CmdMethod
  *
  * @typedef {{
- *   __CMD:      boolean,
+ *   __CMD:     boolean,
  *   start:     !CmdMethod,
  *   close:     !CmdMethod,
+ *   slow:      ?Array,
  *   colors:    ?string,
  *   recursive: ?string,
- *   reporter:   string,
- *   grep:      ?string,
- *   setup:      string,
- *   method:    ?string
+ *   reporter:  !Array,
+ *   grep:      ?Array,
+ *   setup:     !Array,
+ *   method:    string
  * }} Cmd
  */
 
@@ -61,6 +62,7 @@ var MOCHA_CMD = './node_modules/mocha/bin/mocha';
 var REPORTER  = 'test/setup/reporters';
 var SETUP_DIR = './test/setup';
 var TESTS_DIR = './test/methods';
+var SLOW_TEST = 5; // ms
 
 exports['desc'] = 'run vitals unit tests';
 exports['value'] = 'vitals-method';
@@ -199,7 +201,7 @@ function newBrowserTest(callback, section) {
     grep = fuse('section:', section);
   }
 
-  file = fuse('src/browser/', file);
+  file = fuse('browser/', file);
   setup = fuse('browser/', section, '.js');
   callback = newMinBrowserTest(file, setup, grep, callback);
   return function browserTest() {
@@ -274,8 +276,8 @@ function runCmd(vals) {
   var cmd;
 
   cmd = newCmd(vals);
-  args = fuse([], MOCHA_CMD, cmd.colors, cmd.reporter, cmd.recursive);
-  args = fuse(args, cmd.grep, cmd.setup, cmd.test);
+  args = fuse([], MOCHA_CMD, cmd.colors, cmd.slow, cmd.reporter);
+  args = fuse(args, cmd.recursive, cmd.grep, cmd.setup, cmd.test);
   opts = { 'stdio': 'inherit' };
 
   cmd.start();
@@ -297,9 +299,10 @@ function runCmd(vals) {
  * @param {?CmdMethod=} opts.close  - [default= null]
  * @param {boolean=} opts.colors    - [default= true]
  * @param {boolean=} opts.recursive - [default= true]
- * @param {string=} opts.reporter   - [default= DEFAULTS.reporter]
+ * @param {string=} opts.reporter   - [default= "index"]
  * @param {string=} opts.grep       - [default= ""]
- * @param {string=} opts.setup      - [default= DEFAULTS.setup]
+ * @param {number=} opts.slow       - [default= SLOW_TEST]
+ * @param {string=} opts.setup      - [default= "methods"]
  * @param {string=} opts.method     - [default= ""] Test only a specific method.
  * @return {!Cmd}
  */
@@ -315,12 +318,16 @@ function newCmd(opts) {
     'recursive': is.same(opts.recursive, false) ? null  : '--recursive',
     'reporter':  is._str(opts.reporter) ? opts.reporter : 'index',
     'grep':      is._str(opts.grep)     ? opts.grep     : null,
-    'setup':     is._str(opts.setup)    ? opts.setup    : 'methods.js',
+    'slow':      is.num(opts.slow)      ? opts.slow     : SLOW_TEST,
+    'setup':     is._str(opts.setup)    ? opts.setup    : 'methods',
     'method':    is._str(opts.method)   ? opts.method   : null
   };
+  opts.reporter = cut(opts.reporter, /\.js$/);
   opts.reporter = fuse(REPORTER, '/', opts.reporter, '.js');
   opts.reporter = [ '--reporter', opts.reporter ];
   opts.grep = opts.grep && [ '--grep', opts.grep ];
+  opts.slow = opts.slow > 0 ? opts.slow : null;
+  opts.slow = opts.slow && [ '--slow', String(opts.slow) ];
   opts.setup = cut(opts.setup, /\.js$/);
   opts.setup = fuse(SETUP_DIR, '/', opts.setup, '.js');
   opts.setup = [ '--require', opts.setup ];
