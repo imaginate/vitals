@@ -45,6 +45,11 @@ log.error.setConfig({
   'exit':  true
 });
 
+log.debug.setFormat({
+  'linesBefore': 2,
+  'linesAfter':  0
+});
+
 var vitals = require('node-vitals')('base', 'fs');
 var cut    = vitals.cut;
 var fuse   = vitals.fuse;
@@ -52,13 +57,10 @@ var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
 
-var MOCHA_CMD = './node_modules/mocha/bin/_mocha';
+var MOCHA_CMD = './node_modules/mocha/bin/mocha';
+var REPORTER  = 'test/setup/reporters';
 var SETUP_DIR = './test/setup';
 var TESTS_DIR = './test/methods';
-var DEFAULTS = {
-  reporter: 'test/setup/mocha-reporter.js',
-  setup:    'methods.js'
-};
 
 exports['desc'] = 'run vitals unit tests';
 exports['value'] = 'vitals-method';
@@ -109,6 +111,7 @@ function methodTests(method) {
   name = fuse('vitals.', method);
   runCmd({
     'method': method,
+    'setup':  'methods.js',
     'start':  newCmdMethod(true,  name),
     'close':  newCmdMethod(false, name)
   });
@@ -120,6 +123,7 @@ function methodTests(method) {
  */
 function methodsTests() {
   runCmd({
+    'setup': 'methods.js',
     'start': newCmdMethod(true,  'vitals'),
     'close': newCmdMethod(false, 'vitals')
   });
@@ -147,7 +151,7 @@ function sectionTests(section, callback) {
   runCmd({
     'reporter': 'dot',
     'grep':     is.same(section, 'all') ? null : fuse('section:', section),
-    'setup':    fuse('section/', section),
+    'setup':    fuse('sections/', section),
     'start':    newCmdMethod(true,  name),
     'close':    newCmdMethod(false, name, callback)
   });
@@ -196,7 +200,7 @@ function newBrowserTest(callback, section) {
   }
 
   file = fuse('src/browser/', file);
-  setup = fuse('./test/setup/browser/', section, '.js');
+  setup = fuse('browser/', section, '.js');
   callback = newMinBrowserTest(file, setup, grep, callback);
   return function browserTest() {
     runCmd({
@@ -242,7 +246,7 @@ function getSections() {
 
   sections = get.filepaths('test/setup/sections');
   return remap(sections, function(section) {
-    return cut(section, /js$/);
+    return cut(section, /\.js$/);
   });
 }
 
@@ -309,11 +313,12 @@ function newCmd(opts) {
     'close':     is.func(opts.close) ? opts.close : function(){},
     'colors':    is.same(opts.colors, false)    ? null  : '--colors',
     'recursive': is.same(opts.recursive, false) ? null  : '--recursive',
-    'reporter':  is._str(opts.reporter) ? opts.reporter : DEFAULTS.reporter,
+    'reporter':  is._str(opts.reporter) ? opts.reporter : 'index',
     'grep':      is._str(opts.grep)     ? opts.grep     : null,
-    'setup':     is._str(opts.setup)    ? opts.setup    : DEFAULTS.setup,
+    'setup':     is._str(opts.setup)    ? opts.setup    : 'methods.js',
     'method':    is._str(opts.method)   ? opts.method   : null
   };
+  opts.reporter = fuse(REPORTER, '/', opts.reporter, '.js');
   opts.reporter = [ '--reporter', opts.reporter ];
   opts.grep = opts.grep && [ '--grep', opts.grep ];
   opts.setup = cut(opts.setup, /\.js$/);
