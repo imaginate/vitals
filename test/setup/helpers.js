@@ -32,9 +32,11 @@ log.error.setConfig({
   'throw':  false,
   'exit':   false
 });
+
 log.error.setFormat({
   'linesAfter': 2
 });
+
 log.fail.setFormat({
   'linesAfter': 0,
   'header': {
@@ -43,6 +45,7 @@ log.fail.setFormat({
     'accentMark': ''
   }
 });
+
 log.fail.setStyle({
   'header': {
     'color': 'red',
