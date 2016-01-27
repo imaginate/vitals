@@ -263,7 +263,7 @@ function setupGlobal(makeGlobal, vitals, key) {
  * @return {function}
  */
 function requireHelper(method) {
-  return require('./src/methods/_helpers/' + method);
+  return require('./src/methods/helpers/' + method);
 }
 
 /**
