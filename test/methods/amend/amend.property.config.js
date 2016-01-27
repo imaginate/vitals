@@ -97,7 +97,7 @@ describe('vitals.amend.property.config (section:strict)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 4, true);
+  return breakStr(shouldMsg, 3);
 }
 
 /**
@@ -106,7 +106,7 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('amend.prop.config', arguments, 5, true);
+  return testCall('amend.prop.config', arguments, 4);
 }
 
 /**

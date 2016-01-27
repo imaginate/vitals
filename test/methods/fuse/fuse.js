@@ -206,7 +206,7 @@ describe('vitals.fuse (section:base)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 4, true);
+  return breakStr(shouldMsg, 3);
 }
 
 /**
@@ -215,5 +215,5 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('fuse', arguments, 5, true);
+  return testCall('fuse', arguments, 4);
 }

@@ -118,7 +118,7 @@ describe('vitals.get.keys.byKey (section:base)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 4, true);
+  return breakStr(shouldMsg, 3);
 }
 
 /**

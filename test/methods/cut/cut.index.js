@@ -126,7 +126,7 @@ describe('vitals.cut.index (section:base)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -135,7 +135,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('cut.i', arguments, 4, true);
+  return testCall('cut.i', arguments, 3);
 }
 
 /**

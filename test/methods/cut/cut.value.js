@@ -152,7 +152,7 @@ describe('vitals.cut.value (section:base)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -161,7 +161,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('cut.val', arguments, 4, true);
+  return testCall('cut.val', arguments, 3);
 }
 
 /**

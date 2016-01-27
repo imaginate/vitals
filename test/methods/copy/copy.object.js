@@ -86,7 +86,7 @@ describe('vitals.copy.object (section:base)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -95,7 +95,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('copy.obj', arguments, 4, true);
+  return testCall('copy.obj', arguments, 3);
 }
 
 /**

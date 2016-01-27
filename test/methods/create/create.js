@@ -466,7 +466,7 @@ describe('vitals.create (section:strict)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -475,7 +475,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('create', arguments, 4, true);
+  return testCall('create', arguments, 3);
 }
 
 /**

@@ -107,7 +107,7 @@ describe('vitals.cut.patterns (section:base)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -116,7 +116,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('cut.patterns', arguments, 4, true);
+  return testCall('cut.patterns', arguments, 3);
 }
 
 /**

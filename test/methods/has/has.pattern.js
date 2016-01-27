@@ -101,7 +101,7 @@ describe('vitals.has.pattern (section:base)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 4, true);
+  return breakStr(shouldMsg, 3);
 }
 
 /**
@@ -110,5 +110,5 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('has.pattern', arguments, 5, true);
+  return testCall('has.pattern', arguments, 4);
 }
