@@ -17,6 +17,8 @@
 
 'use strict';
 
+var chalk = require('chalk');
+
 // globally append all helpers
 require('../helpers.js');
 
@@ -34,15 +36,6 @@ Runnable.prototype.fullTitle = function() {
 // get the reporter base
 var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
 var ms = require('../../../node_modules/mocha/lib/ms.js');
-
-/**
- * Replace the Base color method.
- * @param {number} key
- * @param {string} str
- * @param {boolean=} bold
- * @return {string}
- */
-Base.color = color;
 
 /**
  * Replace the Base reporter list method.
@@ -103,41 +96,26 @@ Base.prototype.epilogue = function() {
 
   time = ms(stats.duration);
   time = fuse(' (', time, ')');
-  time = color(7, time, true);
+  time = chalk.white.bold(time);
   msg = fuse(' ', stats.passes || 0, ' passing');
-  msg = color(2, msg, true);
+  msg = chalk.green.bold(msg);
   msg = fuse(' ', msg, time);
   console.log(msg);
 
   if (stats.pending) {
     msg = fuse('  ', stats.pending, ' pending');
-    msg = color(3, msg);
+    msg = chalk.yellow.bold(msg);
     console.log(msg);
   }
 
   if (stats.failures) {
     msg = fuse('  ', stats.failures, ' failing');
-    msg = color(1, msg, true);
+    msg = chalk.red.bold(msg);
     console.log(msg);
     Base.list(this.failures);
   }
 
   console.log();
 };
-
-/**
- * @private
- * @param {number} key
- * @param {string} str
- * @param {boolean=} bold
- * @return {string}
- */
-function color(key, str, bold) {
-  return Base.useColors
-    ? bold
-      ? fuse('\u001b[3', key, ';1m', str, '\u001b[39;0m')
-      : fuse('\u001b[3', key, 'm', str, '\u001b[39m')
-    : str;
-}
 
 module.exports = Base;

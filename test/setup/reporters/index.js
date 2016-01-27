@@ -22,12 +22,10 @@
 'use strict';
 
 var Base = require('./base.js');
+var chalk = require('chalk');
 var inherits = require('util').inherits;
 var cursor = Base.cursor;
-var color = Base.color;
-var ok = Base.symbols.ok;
-ok = fuse(' ', ok);
-ok = color(2, ok);
+var OK = chalk.green(Base.symbols.ok);
 
 module.exports = Spec;
 
@@ -62,8 +60,7 @@ function Spec(runner) {
     var title;
 
     indent = fill(++indents, '  ');
-    title = color(7, suite.title);
-    title = fuse(indent, title);
+    title = fuse(indent, suite.title);
     console.log(title);
   });
 
@@ -81,7 +78,7 @@ function Spec(runner) {
 
     indent = fill(indents, '  ');
     msg = fuse('  - ', test.title);
-    msg = color(6, msg, true);
+    msg = chalk.yellow(msg);
     msg = fuse(indent, msg);
     console.log(msg);
   });
@@ -96,10 +93,12 @@ function Spec(runner) {
     var msg;
 
     indent = fill(indents, '  ');
-    title = color(7, test.title);
-    msg = is.same(test.speed, 'fast') ? '' : fuse(' (', test.duration, 'ms)');
-    msg = msg && color(is.same(test.speed, 'slow') ? 1 : 3, msg);
-    msg = fuse(indent, ok, ' ', title, msg);
+    title = chalk.white(test.title);
+    if ( !is.same(test.speed, 'fast') ) {
+      msg = fuse(' (', test.duration, 'ms)');
+      msg = is.same(test.speed, 'slow') ? chalk.red(msg) : chalk.yellow(msg);
+    }
+    msg = fuse(indent, ' ', OK, ' ', title, msg || '');
     cursor.CR();
     console.log(msg);
   });
@@ -113,7 +112,7 @@ function Spec(runner) {
 
     indent = fill(indents, '  ');
     msg = fuse('  ', ++fails, ') ', test.title);
-    msg = color(1, msg);
+    msg = chalk.red(msg);
     msg = fuse(indent, msg);
     cursor.CR();
     console.log(msg);

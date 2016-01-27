@@ -22,14 +22,14 @@
 'use strict';
 
 var inherits = require('util').inherits;
+var chalk = require('chalk');
 var Base = require('./base.js');
-var color = Base.color;
-var dot = Base.symbols.dot;
+var DOT = Base.symbols.dot;
 
-var speeds = {
-  'slow':   1,
-  'medium': 3,
-  'fast':   7
+var SPEED = {
+  'slow':   'cyan',
+  'medium': 'cyan',
+  'fast':   'white'
 };
 
 module.exports = Dot;
@@ -50,22 +50,30 @@ function Dot(runner) {
   Base.call(this, runner);
 
   self = this;
-  width = Base.window.width * .75 | 0;
+  width = Base.window.width * 0.75;
+  width = width | 0;
+  width = width > 50 ? 50 : width;
   dots = -1;
 
+  /**
+   * @private
+   * @param {string} color
+   */
+  function writeDot(color) {
+    if ( is.same(++dots % width, 0) ) process.stdout.write('\n  ');
+    process.stdout.write( chalk[color](DOT) );
+  }
+
   runner.on('pending', function() {
-    if (++dots % width === 0) process.stdout.write('\n  ');
-    process.stdout.write(color(3, dot));
+    writeDot('yellow');
   });
 
   runner.on('pass', function(test) {
-    if (++dots % width === 0) process.stdout.write('\n  ');
-    process.stdout.write( color(speeds[test.speed], dot) );
+    writeDot( SPEED[test.speed] );
   });
 
   runner.on('fail', function() {
-    if (++dots % width === 0) process.stdout.write('\n  ');
-    process.stdout.write( color(1, dot) );
+    writeDot('red');
   });
 
   runner.on('end', function() {
