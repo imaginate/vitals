@@ -15,65 +15,26 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-global.toStr     = toStr;
-global.indentStr = indentStr;
+var chalk = require('chalk');
+
+var MAX_LENGTH = 50;
+
 global.testCall  = testCall;
 global.testTitle = testTitle;
 global.breakStr  = breakStr;
 
-//////////////////////////////////////////////////////////////////////////////
-// DEFINE CUSTOM HELPERS
-
-/**
- * @private
- * @type {number}
- * @const
- */
-var MAX_LENGTH = 50;
-
-/**
- * @global
- * @param {*} val
- * @param {number=} indent
- * @param {boolean=} noLeadIndent
- * @return {string}
- */
-function toStr(val, indent, noLeadIndent) {
-  val = log.toString(val);
-  indent = is.num(indent) && indent > 0 ? indent : 0;
-  return indentStr(val, indent, noLeadIndent);
-}
-
-/**
- * @global
- * @param {string} str
- * @param {number} times
- * @param {boolean=} noLeadIndent
- * @return {string}
- */
-function indentStr(str, times, noLeadIndent) {
-
-  /** @type {string} */
-  var indent;
-
-  if ( !is.str(str)   ) throw new TypeError('invalid type for `str` param');
-  if ( !is.num(times) ) throw new TypeError('invalid type for `times` param');
-
-  times = times < 0 ? 0 : times;
-  indent = fill(times, '  ');
-  str = indent ? remap(str, /\n/g, fuse('\n', indent)) : str;
-  return noLeadIndent ? str : fuse(indent, str);
-}
+log.toString.setFormat({
+  'lineLimit': MAX_LENGTH
+});
 
 /**
  * @global
  * @param {string} method
- * @param {Array=} args
- * @param {number=} indent
- * @param {boolean=} noLeadIndent
+ * @param {!Array} args
+ * @param {number} indent
  * @return {string}
  */
-function testCall(method, args, indent, noLeadIndent) {
+function testCall(method, args, indent) {
 
   /** @type {string} */
   var result;
@@ -83,9 +44,12 @@ function testCall(method, args, indent, noLeadIndent) {
   args = slice(args);
 
   if ( !is.str(method) ) throw new TypeError('invalid type for `method` param');
-  if ( !is('arr=', args) ) throw new TypeError('invalid type for `args` param');
+  if ( !is.arr(args)   ) throw new TypeError('invalid type for `args` param');
 
-  if (!args || !args.length) return fuse(method, '()');
+  if (!args || !args.length) {
+    result = fuse(method, '()');
+    return chalk.white(result);
+  }
 
   last = args.length - 1;
   result = roll.up('', args, function(arg, i) {
@@ -93,15 +57,14 @@ function testCall(method, args, indent, noLeadIndent) {
     return i < last ? fuse(arg, ', ') : arg;
   });
   result = fuse(method, '(', result, ');');
-  indent = is.num(indent) && indent > 0 ? indent : 0;
-  return indentStr(result, indent, noLeadIndent);
+  return indentStr(result, indent);
 }
 
 /**
  * @global
  * @param {string} section
  * @param {string} details
- * @param {number=} indent
+ * @param {number} indent
  * @return {string}
  */
 function testTitle(section, details, indent) {
@@ -111,25 +74,24 @@ function testTitle(section, details, indent) {
 
   if ( !is.str(section) ) throw new TypeError('invalid type for `section` param');
   if ( !is.str(details) ) throw new TypeError('invalid type for `details` param');
+  if ( !is.num(indent)  ) throw new TypeError('invalid type for `indent` param');
 
-  indent = is.num(indent) && indent > 0 ? indent : 0;
-  result = section + ' tests: ' + details;
-  return breakStr(result, ++indent, true);
+  result = fuse(section, ' tests: ', details);
+  return breakStr(result, ++indent);
 }
 
 /**
  * @global
  * @param {string} str
- * @param {number=} indent
- * @param {boolean=} noLeadIndent
+ * @param {number} indent
  * @return {string}
  */
-function breakStr(str, indent, noLeadIndent) {
+function breakStr(str, indent) {
 
   /** @type {string} */
   var result;
   /** @type {string} */
-  var part;
+  var substr;
   /** @type {number} */
   var max;
   /** @type {number} */
@@ -137,35 +99,65 @@ function breakStr(str, indent, noLeadIndent) {
 
   if ( !is.str(str) ) throw new TypeError('invalid type for `str` param');
 
-  indent = is.num(indent) && indent > 0 ? indent : 0;
+  max = MAX_LENGTH;
 
-  if (str.length <= MAX_LENGTH) return str;
+  if (str.length <= max) return str;
 
-  i = getLastSpace(str, MAX_LENGTH) || str.length;
+  i = lastSpace(str, max);
   result = slice(str, 0, i);
   str = slice(str, i);
-  max = MAX_LENGTH - 5;
-  while (str.length > max) {
-    i = getLastSpace(str, max) || str.length;
-    part = slice(str, 0, i);
-    result = fuse(result, '\n', part);
+  max = max - 3;
+  until(0, 10, function() {
+    i = lastSpace(str, max);
+    substr = slice(str, 0, i);
+    result = fuse(result, '\n', substr);
     str = slice(str, i);
-  }
-  result = str ? fuse(result, '\n', str) : result;
-  return indentStr(result, indent, noLeadIndent);
+    return str.length;
+  });
+  result = indentStr(result, indent);
+  return chalk.white(result);
 }
 
 /**
  * @private
  * @param {string} str
- * @param {number=} limit
+ * @param {number} indents
+ * @return {string}
+ */
+function indentStr(str, indents) {
+
+  /** @type {string} */
+  var indent;
+
+  indents = indents || 0;
+
+  if ( !is.str(str)     ) throw new TypeError('invalid type for `str` param');
+  if ( !is.num(indents) ) throw new TypeError('invalid type for `indents` param');
+
+  if (!indents) return str;
+
+  indent = fill(indents, '  ');
+  indent = fuse('\n', indent);
+  return remap(str, /\n/g, indent);
+}
+
+/**
+ * @private
+ * @param {string} str
+ * @param {number} limit
  * @return {number}
  */
-function getLastSpace(str, limit) {
+function lastSpace(str, limit) {
 
   /** @type {string} */
   var temp;
+  /** @type {number} */
+  var i;
 
-  temp = limit ? slice(str, 0, limit) : str;
-  return ( temp.lastIndexOf(' ') || str.indexOf(' ') ) + 1;
+  if (str.length < limit) return str.length;
+
+  temp = slice(str, 0, limit);
+  i = temp.lastIndexOf(' ');
+  i = is.same(i, -1) ? str.indexOf(' ') : i;
+  return is.same(i, -1) ? str.length : ++i;
 }
