@@ -18,10 +18,10 @@
 'use strict';
 
 // globally append all helpers
-require('./helpers.js');
+require('../helpers.js');
 
 // get the Runnable constructor
-var Runnable = require('../../node_modules/mocha/lib/runnable.js');
+var Runnable = require('../../../node_modules/mocha/lib/runnable.js');
 
 /**
  * Replace the fullTitle method with a different separator.
@@ -32,8 +32,17 @@ Runnable.prototype.fullTitle = function() {
 };
 
 // get the reporter base
-var Base = require('../../node_modules/mocha/lib/reporters/base.js');
-var ms = require('../../node_modules/mocha/lib/ms.js');
+var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
+var ms = require('../../../node_modules/mocha/lib/ms.js');
+
+/**
+ * Replace the Base color method.
+ * @param {number} key
+ * @param {string} str
+ * @param {boolean=} bold
+ * @return {string}
+ */
+Base.color = color;
 
 /**
  * Replace the Base reporter list method.
@@ -124,117 +133,11 @@ Base.prototype.epilogue = function() {
  * @return {string}
  */
 function color(key, str, bold) {
-  return colors
+  return Base.useColors
     ? bold
       ? fuse('\u001b[3', key, ';1m', str, '\u001b[39;0m')
       : fuse('\u001b[3', key, 'm', str, '\u001b[39m')
     : str;
 }
 
-/**
- * -----------------------------------------------------------------------------
- * COPYRIGHT NOTICE
- * -----------------------------------------------------------------------------
- * The below code is a modified version of the Mocha spec reporter located at
- *   mocha/lib/reporters/spec.js.
- * @see [Mocha]{@link https://github.com/mochajs/mocha}
- * @copyright 2016 TJ Holowaychuk <tj@vision-media.ca>
- */
-
-var inherits = require('util').inherits;
-var colors = Base.useColors;
-var cursor = Base.cursor;
-var ok = Base.symbols.ok;
-ok = fuse(' ', ok);
-ok = color(2, ok);
-
-exports = module.exports = Spec;
-
-/**
- * Initialize a new `Spec` test reporter.
- * @param {Runner} runner
- */
-function Spec(runner) {
-
-  /** @type {number} */
-  var indents;
-  /** @type {number} */
-  var fails;
-  /** @type {!Object} */
-  var self;
-
-  Base.call(this, runner);
-
-  self = this;
-  indents = -1;
-  fails = 0;
-
-  runner.on('suite', function(suite) {
-
-    /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var title;
-
-    indent = fill(++indents, '  ');
-    title = color(7, suite.title);
-    title = fuse(indent, title);
-    console.log(title);
-  });
-
-  runner.on('suite end', function() {
-    --indents;
-    if (!indents) console.log();
-  });
-
-  runner.on('pending', function(test) {
-
-    /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var msg;
-
-    indent = fill(indents, '  ');
-    msg = fuse('  - ', test.title);
-    msg = color(6, msg, true);
-    msg = fuse(indent, msg);
-    console.log(msg);
-  });
-
-  runner.on('pass', function(test) {
-
-    /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var title;
-    /** @type {string} */
-    var msg;
-
-    indent = fill(indents, '  ');
-    title = color(7, test.title);
-    msg = is.same(test.speed, 'fast') ? '' : fuse(' (', test.duration, 'ms)');
-    msg = msg && color(is.same(test.speed, 'slow') ? 1 : 3, msg);
-    msg = fuse(indent, ok, ' ', title, msg);
-    cursor.CR();
-    console.log(msg);
-  });
-
-  runner.on('fail', function(test) {
-
-    /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var msg;
-
-    indent = fill(indents, '  ');
-    msg = fuse('  ', ++fails, ') ', test.title);
-    msg = color(1, msg);
-    msg = fuse(indent, msg);
-    cursor.CR();
-    console.log(msg);
-  });
-
-  runner.on('end', self.epilogue.bind(self));
-}
-
-inherits(Spec, Base);
+module.exports = Base;
