@@ -77,9 +77,10 @@ function newMakeGlobal(vitals, method) {
     global.vitals = vitals;
 
     if (method) global[method] = vitals;
-
-    for (key in vitals) {
-      if ( _own(vitals, key) ) global[key] = vitals[key];
+    else {
+      for (key in vitals) {
+        if ( _own(vitals, key) && isMethod(key) ) global[key] = vitals[key];
+      }
     }
   };
 }
