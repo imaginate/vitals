@@ -3655,7 +3655,9 @@ var remap = (function remapPrivateScope() {
    * A shortcut for making a new array by invoking an action over the values of
    *   an existing array-like object.
    * @public
-   * @param {!(Object|function)} source
+   * @param {(!Object|function|string)} source - If source is a string it is
+   *   converted to an array using this list of chars as the separator (chars
+   *   listed in order of rank):  ", "  ","  "|"  " "
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
@@ -3668,6 +3670,8 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
+    if ( is.str(source) ) source = _splitKeys(source);
+
     if ( !is._obj(source)       ) throw _error.type('source',        'array');
     if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
     if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
@@ -3679,7 +3683,8 @@ var remap = (function remapPrivateScope() {
   remap.arr = remap.array;
 
   /**
-   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}.
+   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}
+   *   that defaults to global replacements instead of only the first.
    * @public
    * @param {string} source
    * @param {*} pattern - If not a RegExp the pattern is converted to a string.
@@ -3789,7 +3794,12 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    if ( !is.regex(pattern) ) {
+      pattern = String(pattern);
+      pattern = _escape(pattern, true);
+      pattern = new RegExp(pattern, 'g');
+    }
+
     replacement = is.func(replacement)
       ? is.undefined(thisArg)
         ? replacement
