@@ -19,5 +19,4 @@
 // append global helpers
 require('../helpers');
 
-// append vitals to global
-require('../../../node-vitals.js')(1, 'all');
+global.vitals = require('../../../node-vitals.js')('all');
