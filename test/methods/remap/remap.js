@@ -168,20 +168,20 @@ describe('vitals.remap (section:base)', function() {
 
   describe('string tests', function() {
 
-    title = 'should work same as String.prototype.replace with flexible params';
+    title = 'should replace all patterns in source';
     title = titleStr(title);
     describe(title, function() {
 
       title = callStr('abc123a1b2c3', 3, 5);
       it(title, function() {
         var str = vitals.remap('abc123a1b2c3', 3, 5);
-        assert( str === 'abc123a1b2c3'.replace('3', '5') );
+        assert( str === 'abc125a1b2c5' );
       });
 
       title = callStr('abc123a1b2c3', /[a-z]/, 'z');
       it(title, function() {
         var str = vitals.remap('abc123a1b2c3', /[a-z]/, 'z');
-        assert( str === 'abc123a1b2c3'.replace(/[a-z]/, 'z') );
+        assert( str === 'zbc123a1b2c3' );
       });
 
     });
