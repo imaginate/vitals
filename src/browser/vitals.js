@@ -1,4 +1,4 @@
-/* are.js v3.0.0 (https://github.com/imaginate/are)
+/* are.js v0.3.1 (https://github.com/imaginate/are)
  * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>
  * The Apache License (github.com/imaginate/are/blob/master/LICENSE.md) */
 (function(h,r){function k(a,b){return"object"===a||!b&&"function"===a}function c(a,b){return(a=a&&b&&a.nodeType?!1:a)&&!b&&a.Object!==Object?!1:!!a}function g(a){a.is=f.is;a.Is=f.Is;a.are=f.are;a.Are=f.Are;return!0}var f=r(),t=k(typeof exports)&&c(exports,!0),u=k(typeof module)&&c(module,!0),v=k(typeof global,!0)&&c(global),a=k(typeof window)&&c(window),b=k(typeof self)&&c(self),p=k(typeof h)&&c(h);h=t&&u&&v?global:a&&window!==(h&&h.window)?window:b?self:p?h:Function("return this")();a&&g(window);
@@ -4687,6 +4687,64 @@ var roll = (function rollPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// SAME
+////////////////////////////////////////////////////////////////////////////////
+
+var same = (function samePrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - same
+  // - same.loose (same.ish)
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A functional representation of strict equality.
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  function same(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val');
+
+    return val1 === val2;
+  }
+
+  /**
+   * A functional representation of loose equality.
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  same.loose = function sameLoose(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val', 'loose');
+
+    return val1 == val2;
+  };
+  // define shorthand
+  same.ish = same.loose;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('same');
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR SAME
+  return same;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // SLICE
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -6527,6 +6585,7 @@ var seal = (function sealPrivateScope() {
     has:    has,
     remap:  remap,
     roll:   roll,
+    same:   same,
     seal:   seal,
     slice:  slice,
     until:  until

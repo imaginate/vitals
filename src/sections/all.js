@@ -4653,6 +4653,64 @@ var roll = (function rollPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// SAME
+////////////////////////////////////////////////////////////////////////////////
+
+var same = (function samePrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - same
+  // - same.loose (same.ish)
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A functional representation of strict equality.
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  function same(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val');
+
+    return val1 === val2;
+  }
+
+  /**
+   * A functional representation of loose equality.
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  same.loose = function sameLoose(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val', 'loose');
+
+    return val1 == val2;
+  };
+  // define shorthand
+  same.ish = same.loose;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('same');
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR SAME
+  return same;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // SLICE
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -7453,6 +7511,7 @@ module.exports = {
   remap:  remap,
   roll:   roll,
   run:    run,
+  same:   same,
   seal:   seal,
   slice:  slice,
   to:     to,
