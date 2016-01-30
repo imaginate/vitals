@@ -19,6 +19,7 @@
 'use strict';
 
 var newErrorAid = require('./helpers/errorAid.js');
+var _escape = require('./helpers/escape.js');
 var _own = require('./helpers/own.js');
 var is = require('node-are').is;
 var copy = require('./copy.js');
@@ -142,7 +143,8 @@ var remap = (function remapPrivateScope() {
   remap.arr = remap.array;
 
   /**
-   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}.
+   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}
+   *   that defaults to global replacements instead of only the first.
    * @public
    * @param {string} source
    * @param {*} pattern - If not a RegExp the pattern is converted to a string.
@@ -252,7 +254,12 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    if ( !is.regex(pattern) ) {
+      pattern = String(pattern);
+      pattern = _escape(pattern, true);
+      pattern = new RegExp(pattern, 'g');
+    }
+
     replacement = is.func(replacement)
       ? is.undefined(thisArg)
         ? replacement
