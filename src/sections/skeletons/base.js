@@ -54,6 +54,7 @@ var is = require('node-are').is;
 // INSERT methods/has.js
 // INSERT methods/remap.js
 // INSERT methods/roll.js
+// INSERT methods/same.js
 // INSERT methods/slice.js
 // INSERT methods/until.js
 
@@ -72,6 +73,7 @@ module.exports = {
   has:    has,
   remap:  remap,
   roll:   roll,
+  same:   same,
   slice:  slice,
   until:  until
 };

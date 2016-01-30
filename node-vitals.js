@@ -117,6 +117,7 @@ var METHODS = {
   'remap':  true,
   'roll':   true,
   'run':    true,
+  'same':   true,
   'seal':   true,
   'slice':  true,
   'until':  true
