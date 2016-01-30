@@ -57,10 +57,12 @@ module.exports = function newVitals(methods) {
 /**
  * @private
  * @param {(!Object|function)} vitals
- * @param {string=} method
+ * @param {(?string|Object)} method
  * @return {function}
  */
 function newMakeGlobal(vitals, method) {
+
+  if ( !is.func(vitals) ) method = null;
 
   /**
    * @public
