@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - GET
  * -----------------------------------------------------------------------------
- * @version 2.3.8
+ * @version 3.0.0
  * @see [vitals.get]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/get.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

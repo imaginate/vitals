@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.8
+ * @version 3.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -50,7 +50,7 @@ module.exports = function newVitals(methods) {
   vitals = is.str(methods) ? setupMethod(methods) : setupMethods(methods);
   vitals.makeGlobal = newMakeGlobal(vitals, methods);
   vitals.construct = newVitals;
-  vitals.version = '2.3.8';
+  vitals.version = '3.0.0';
   return vitals;
 };
 

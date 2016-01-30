@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - SEAL
  * -----------------------------------------------------------------------------
- * @version 2.3.8
+ * @version 3.0.0
  * @see [vitals.seal]{@link https://github.com/imaginate/vitals/blob/master/src/methods/seal.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

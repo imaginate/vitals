@@ -1,4 +1,4 @@
-/* are.js v0.3.1 (https://github.com/imaginate/are)
+/* are.js v3.0.0 (https://github.com/imaginate/are)
  * Copyright (c) 2015 Adam A Smith <adam@imaginate.life>
  * The Apache License (github.com/imaginate/are/blob/master/LICENSE.md) */
 (function(h,r){function k(a,b){return"object"===a||!b&&"function"===a}function c(a,b){return(a=a&&b&&a.nodeType?!1:a)&&!b&&a.Object!==Object?!1:!!a}function g(a){a.is=f.is;a.Is=f.Is;a.are=f.are;a.Are=f.Are;return!0}var f=r(),t=k(typeof exports)&&c(exports,!0),u=k(typeof module)&&c(module,!0),v=k(typeof global,!0)&&c(global),a=k(typeof window)&&c(window),b=k(typeof self)&&c(self),p=k(typeof h)&&c(h);h=t&&u&&v?global:a&&window!==(h&&h.window)?window:b?self:p?h:Function("return this")();a&&g(window);
@@ -28,7 +28,7 @@ _elems:"elements",_docs:"documents",_nilmap:"nullmap",_strmap:"stringmap",_numma
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.8
+ * @version 3.0.0
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
