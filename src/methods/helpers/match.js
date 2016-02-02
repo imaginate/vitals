@@ -16,7 +16,7 @@
 'use strict';
 
 var _inStr = require('./inStr.js');
-var is = require('node-are').is;
+var _is = require('./is.js');
 
 module.exports = _match;
 
@@ -32,5 +32,5 @@ module.exports = _match;
  * @return {boolean}
  */
 function _match(source, pattern) {
-  return is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
 }

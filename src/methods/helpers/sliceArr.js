@@ -15,7 +15,7 @@
 
 'use strict';
 
-var is = require('node-are').is;
+var _is = require('./is.js');
 
 module.exports = _sliceArr;
 
@@ -48,7 +48,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
