@@ -18,7 +18,8 @@
 var newErrorAid = require('../helpers/errorAid.js');
 var _normalize = require('../helpers/normalize.js');
 var _isEol = require('../helpers/isEol.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('../is.js');
 var fs = require('fs');
 
 var copy = {};
@@ -51,8 +52,8 @@ var copy = {};
    */
   copy.file = function copyFile(source, dest, options) {
 
-    if ( !is.file(source)     ) throw _error.type('source',  'file');
-    if ( !is.str(dest)        ) throw _error.type('dest',    'file');
+    if ( !_is.file(source)    ) throw _error.type('source',  'file');
+    if ( !_is.str(dest)       ) throw _error.type('dest',    'file');
     if ( !is('obj=', options) ) throw _error.type('options', 'file');
 
     if (options) {
@@ -67,7 +68,7 @@ var copy = {};
       }
     }
 
-    dest = is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
+    dest = _is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
     options = _prepOptions(options);
     return _copyFile(source, dest, options);
   };
@@ -88,10 +89,10 @@ var copy = {};
    */
   copy.directory = function copyDirectory(source, dest, options) {
 
-    options = is.bool(options) ? { deep: options } : options;
+    options = _is.bool(options) ? { deep: options } : options;
 
-    if ( !is.dir(source)      ) throw _error.type('source',  'directory');
-    if ( !is.dir(dest)        ) throw _error.type('dest',    'directory');
+    if ( !_is.dir(source)     ) throw _error.type('source',  'directory');
+    if ( !_is.dir(dest)       ) throw _error.type('dest',    'directory');
     if ( !is('obj=', options) ) throw _error.type('options', 'directory');
 
     if (options) {
@@ -187,7 +188,7 @@ var copy = {};
 
     filepaths = fs.readdirSync(basepath);
     return filepaths.filter(function(filepath) {
-      return is.file(basepath + filepath);
+      return _is.file(basepath + filepath);
     });
   }
 
@@ -232,7 +233,7 @@ var copy = {};
 
     dirpaths = fs.readdirSync(basepath);
     return dirpaths.filter(function(dirpath) {
-      return is.dir(basepath + dirpath);
+      return _is.dir(basepath + dirpath);
     });
   }
 
@@ -291,7 +292,7 @@ var copy = {};
     dirpaths = _getDirpathsDeep(source);
     dirpaths.forEach(function(dirpath) {
       dirpath = dest + dirpath;
-      if ( !is.dir(dirpath) ) fs.mkdirSync(dirpath);
+      if ( !_is.dir(dirpath) ) fs.mkdirSync(dirpath);
     });
   }
 
@@ -303,7 +304,7 @@ var copy = {};
   function _prepOptions(options) {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
