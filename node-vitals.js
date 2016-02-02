@@ -114,6 +114,7 @@ var METHODS = {
   'fuse':   true,
   'get':    true,
   'has':    true,
+  'is':     true,
   'remap':  true,
   'roll':   true,
   'run':    true,
