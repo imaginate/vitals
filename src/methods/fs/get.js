@@ -19,7 +19,8 @@ var newErrorAid = require('../helpers/errorAid.js');
 var _normalize = require('../helpers/normalize.js');
 var _isEol = require('../helpers/isEol.js');
 var _own = require('../helpers/own.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('../is.js');
 var fs = require('fs');
 
 var get = {};
@@ -53,9 +54,9 @@ var get = {};
    */
   get.file = function getFile(filepath, options) {
 
-    options = is.bool(options) ? { buffer: options } : options;
+    options = _is.bool(options) ? { buffer: options } : options;
 
-    if ( !is.file(filepath)   ) throw _error.type('filepath', 'file');
+    if ( !_is.file(filepath)  ) throw _error.type('filepath', 'file');
     if ( !is('obj=', options) ) throw _error.type('options',  'file');
 
     if (options) {
@@ -92,9 +93,9 @@ var get = {};
     /** @type {function(string): boolean} */
     var isValid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    options = _is.bool(options) ? { deep: options } : options;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'dirpaths');
+    if ( !_is.dir(dirpath)    ) throw _error.type('dirpath', 'dirpaths');
     if ( !is('obj=', options) ) throw _error.type('options', 'dirpaths');
 
     if ( options && !is('bool=', options.deep) ) {
@@ -136,9 +137,9 @@ var get = {};
     /** @type {!Array} */
     var valid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    options = _is.bool(options) ? { deep: options } : options;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'filepaths');
+    if ( !_is.dir(dirpath)    ) throw _error.type('dirpath', 'filepaths');
     if ( !is('obj=', options) ) throw _error.type('options', 'filepaths');
 
     if ( options && !is('bool=', options.deep) ) {
@@ -193,7 +194,7 @@ var get = {};
 
     dirpaths = fs.readdirSync(basepath);
     return dirpaths.filter(function(dirpath) {
-      return isValid(dirpath) && is.dir(basepath + dirpath);
+      return isValid(dirpath) && _is.dir(basepath + dirpath);
     });
   }
 
@@ -240,7 +241,7 @@ var get = {};
 
     filepaths = fs.readdirSync(basepath);
     return filepaths.filter(function(filepath) {
-      return isValid(filepath) && is.file(basepath + filepath);
+      return isValid(filepath) && _is.file(basepath + filepath);
     });
   }
 
@@ -296,7 +297,7 @@ var get = {};
   function _prepOptions(options) {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
@@ -359,8 +360,8 @@ var get = {};
     }
 
     type = type.toLowerCase();
-    option = is.arr(option) ? option.join('|') : option;
-    return is.str(option) ? _parseOptStr(option) : option;
+    option = _is.arr(option) ? option.join('|') : option;
+    return _is.str(option) ? _parseOptStr(option) : option;
   }
 
   /**
@@ -417,7 +418,7 @@ var get = {};
     /** @type {?RegExp} */
     var regex;
 
-    if ( is.arr(regexs) ) {
+    if ( _is.arr(regexs) ) {
       regexs = regexs.filter( function(re) { return !!re; } );
       regex = regexs.length === 1 ? regexs.pop() : null;
     }
