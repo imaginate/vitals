@@ -18,7 +18,8 @@
 var newErrorAid = require('./helpers/errorAid.js');
 var _sliceArr = require('./helpers/sliceArr.js');
 var _sliceStr = require('./helpers/sliceStr.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,12 +49,12 @@ var slice = (function slicePrivateScope() {
     if ( !is('num=', start) ) throw _error.type('start');
     if ( !is('num=', end)   ) throw _error.type('end');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return _sliceStr(source, start, end);
 
-    if ( !is._obj(source)       ) throw _error.type('source');
-    if ( !is.num(source.length) ) throw _error.type('source.length');
+    if ( !_is._obj(source)       ) throw _error.type('source');
+    if ( !_is.num(source.length) ) throw _error.type('source.length');
 
     return _sliceArr(source, start, end);
   }
@@ -68,10 +69,10 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is('num=', start)     ) throw _error.type('start',         'array');
-    if ( !is('num=', end)       ) throw _error.type('end',           'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is('num=', start)      ) throw _error.type('start',         'array');
+    if ( !is('num=', end)        ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -88,7 +89,7 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !is.str(str)       ) throw _error.type('str',   'string');
+    if ( !_is.str(str)      ) throw _error.type('str',   'string');
     if ( !is('num=', start) ) throw _error.type('start', 'string');
     if ( !is('num=', end)   ) throw _error.type('end',   'string');
 
