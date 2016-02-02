@@ -18,8 +18,9 @@
 var newErrorAid = require('./helpers/errorAid.js');
 var _splitKeys = require('./helpers/splitKeys.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,26 +67,26 @@ var until = (function untilPrivateScope() {
 
     if (arguments.length === 2) {
       iteratee = source;
-      if ( !is.func(iteratee) ) throw _error.type('iteratee');
+      if ( !_is.func(iteratee) ) throw _error.type('iteratee');
       return _untilEnd(end, iteratee);
     }
 
-    if ( arguments.length === 3 && is.func(source) && is('?obj', iteratee) ) {
+    if ( arguments.length === 3 && _is.func(source) && is('?obj', iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       return _untilEnd(end, iteratee, thisArg);
     }
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+    if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
@@ -111,8 +112,8 @@ var until = (function untilPrivateScope() {
    */
   until.object = function untilObject(end, obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(obj)       ) throw _error.type('obj',      'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _untilObj(end, obj, iteratee, thisArg);
@@ -143,12 +144,12 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _untilArr(end, source, iteratee, thisArg);
   };
@@ -170,8 +171,8 @@ var until = (function untilPrivateScope() {
    */
   until.cycle = function untilCycle(end, count, action, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
-    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
+    if ( !_is.num(count)      ) throw _error.type('count',   'cycle');
+    if ( !_is.func(action)    ) throw _error.type('action',  'cycle');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
 
     return _untilCycle(end, count, action, thisArg);
@@ -195,7 +196,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(action(i++) !== end) {}
@@ -220,7 +221,7 @@ var until = (function untilPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -269,7 +270,7 @@ var until = (function untilPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -309,7 +310,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(count--) if (action(i++) === end) return true;
