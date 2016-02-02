@@ -22,8 +22,8 @@
 var newErrorAid = require('./helpers/errorAid.js');
 var _match = require('./helpers/match.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,22 +64,22 @@ var get = (function getPrivateScope() {
    */
   function get(source, val) {
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined');
-      return is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
+      return _is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
     return arguments.length < 2
-      ? is._arr(source)
+      ? _is._arr(source)
         ? _allIndexes(source)
         : _allKeys(source)
-      : is._arr(source)
+      : _is._arr(source)
         ? _byValIndexes(source, val)
-        : is.regex(val)
+        : _is.regex(val)
           ? _byKeyObjVals(source, val)
           : _byValKeys(source, val);
   }
@@ -97,11 +97,11 @@ var get = (function getPrivateScope() {
    */
   get.keys = function getKeys(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
 
     return arguments.length < 2
       ? _allKeys(source)
-      : is.regex(val)
+      : _is.regex(val)
         ? _byKeyKeys(source, val)
         : _byValKeys(source, val);
   };
@@ -117,7 +117,7 @@ var get = (function getPrivateScope() {
    */
   get.keys.byKey = function getKeysByKey(source, pattern) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byKey');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byKey');
     if (arguments.length < 2) throw _error('No pattern defined', 'keys.byKey');
 
     return _byKeyKeys(source, pattern);
@@ -132,7 +132,7 @@ var get = (function getPrivateScope() {
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byValue');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byValue');
     if (arguments.length < 2) throw _error('No val defined', 'keys.byValue');
 
     return _byValKeys(source, val);
@@ -156,13 +156,13 @@ var get = (function getPrivateScope() {
    */
   get.indexes = function getIndexes(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'indexes');
       return _strIndexes(source, val);
     }
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
 
     return arguments.length < 2
       ? _allIndexes(source)
@@ -187,12 +187,12 @@ var get = (function getPrivateScope() {
    */
   get.values = function getValues(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'values');
       return _strVals(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'values');
+    if ( !_is._obj(source) ) throw _error.type('source', 'values');
 
     return arguments.length < 2
       ? _allObjVals(source)
@@ -235,7 +235,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) _own(obj, key) && _match(key, pattern) && arr.push(key);
     return arr;
@@ -289,7 +289,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) {
       _own(obj, key) && _match(key, pattern) && arr.push( obj[key] );
@@ -356,7 +356,7 @@ var get = (function getPrivateScope() {
    */
   function _strIndexes(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrKeys(str, pattern)
         : _byStrStrKeys(str, pattern)
       : [];
@@ -370,7 +370,7 @@ var get = (function getPrivateScope() {
    */
   function _strVals(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrVals(str, pattern)
         : _byStrStrVals(str, pattern)
       : [];
