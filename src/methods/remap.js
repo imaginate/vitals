@@ -19,8 +19,9 @@ var newErrorAid = require('./helpers/errorAid.js');
 var _splitKeys = require('./helpers/splitKeys.js');
 var _escape = require('./helpers/escape.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -68,7 +69,7 @@ var remap = (function remapPrivateScope() {
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
       if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
@@ -77,11 +78,11 @@ var remap = (function remapPrivateScope() {
 
     thisArg = replacement;
 
-    if ( !is._obj(source)     ) throw _error.type('source');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is._obj(source)    ) throw _error.type('source');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
@@ -104,8 +105,8 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
@@ -132,12 +133,12 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -161,7 +162,7 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !is.str(source)      ) throw _error.type('source',  'string');
+    if ( !_is.str(source)     ) throw _error.type('source',  'string');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
@@ -189,7 +190,7 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
     source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in source) {
@@ -231,7 +232,7 @@ var remap = (function remapPrivateScope() {
     var i;
 
     source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -256,14 +257,14 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    if ( !is.regex(pattern) ) {
+    if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
       pattern = _escape(pattern, true);
       pattern = new RegExp(pattern, 'g');
     }
 
-    replacement = is.func(replacement)
-      ? is.undefined(thisArg)
+    replacement = _is.func(replacement)
+      ? _is.undefined(thisArg)
         ? replacement
         : _bindR(replacement, thisArg)
       : String(replacement);
