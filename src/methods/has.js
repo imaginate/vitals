@@ -22,7 +22,7 @@ var _inArr = require('./helpers/inArr.js');
 var _inStr = require('./helpers/inStr.js');
 var _match = require('./helpers/match.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -61,13 +61,13 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined');
     
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( is.str(source) ) return _match(source, key);
+    if ( _is.str(source) ) return _match(source, key);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _inArr(source, key) : _own(source, key);
+    return _is._arr(source) ? _inArr(source, key) : _own(source, key);
   }
 
   /**
@@ -81,9 +81,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
     return _own(source, key);
   };
@@ -99,11 +99,11 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -117,7 +117,7 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _match(source, pattern);
@@ -132,7 +132,7 @@ var has = (function hasPrivateScope() {
    */
   has.substring = function hasSubstring(source, str) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'substring');
+    if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No str defined', 'substring');
 
     return _inStr(source, str);
@@ -151,9 +151,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'enumerable');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'enumerable');
+    if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
     return _ownEnum(source, key);
   };
