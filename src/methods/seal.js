@@ -17,7 +17,8 @@
 
 var newErrorAid = require('./helpers/errorAid.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,9 +42,9 @@ var seal = (function sealPrivateScope() {
    */
   function seal(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj');
+    if ( !_is._obj(obj)     ) throw _error.type('obj');
     if ( !is('bool=', deep) ) throw _error.type('deep');
 
     return deep ? _deepSeal(obj) : _seal(obj);
@@ -58,9 +59,9 @@ var seal = (function sealPrivateScope() {
    */
   seal.object = function sealObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
+    if ( !_is._obj(obj)     ) throw _error.type('obj',  'seal');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
 
     return deep ? _deepSeal(obj) : _seal(obj);
@@ -92,16 +93,9 @@ var seal = (function sealPrivateScope() {
 
       /** @type {string} */
       var key;
-      /** @type {*} */
-      var val;
 
       for (key in obj) {
-        if ( _own(obj, key) ) {
-          val = obj[key];
-          if ( is._obj(val) ) {
-            obj[key] = _deepSeal(val);
-          }
-        }
+        if ( _own(obj, key) && _is._obj(obj[key]) ) _deepSeal(obj[key]);
       }
       return _seal(obj);
     };
