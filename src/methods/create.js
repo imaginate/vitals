@@ -17,8 +17,8 @@
 
 var newErrorAid = require('./helpers/errorAid.js');
 var _sliceArr = require('./helpers/sliceArr.js');
-var is = require('node-are').is;
 var amend = require('./amend.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
