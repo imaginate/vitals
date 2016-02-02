@@ -19,7 +19,8 @@ var newErrorAid = require('./helpers/errorAid.js');
 var _normalize = require('./helpers/normalize.js');
 var _sliceArr = require('./helpers/sliceArr.js');
 var _isEol = require('./helpers/isEol.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 var cp = require('child_process');
 
 
@@ -76,7 +77,7 @@ var run = (function runPrivateScope() {
     /** @type {SpawnResult} */
     var result;
 
-    if ( !is.str(cmd)         ) throw _error.type('cmd');
+    if ( !_is.str(cmd)        ) throw _error.type('cmd');
     if ( !is('obj=', options) ) throw _error.type('options');
 
     if (options) {
@@ -107,7 +108,7 @@ var run = (function runPrivateScope() {
     }
 
     if (options.buffer) {
-      return is.str(result.stdout) && options.eol
+      return _is.str(result.stdout) && options.eol
         ? _normalize(result.stdout, options.eol)
         : result.stdout;
     }
@@ -129,7 +130,7 @@ var run = (function runPrivateScope() {
     options = options || {};
     if (options.buffer) options.eol = options.eol || null;
     else options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
