@@ -167,7 +167,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.error = function(val) {
+  _is.err = function(val) {
     return _is.obj(val) && toStr.call(val) === '[object Error]';
   };
 
