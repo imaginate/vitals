@@ -17,8 +17,9 @@
 
 var newErrorAid = require('./helpers/errorAid.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,24 +66,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined');
       return _rollCycle(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArr(base, source, iteratee, thisArg)
         : _rollArr(source, iteratee, thisArg)
@@ -121,24 +122,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'up');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'up');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'up');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'up');
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'up');
+    if ( !_is._obj(source) ) throw _error.type('source', 'up');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrUp(base, source, iteratee, thisArg)
         : _rollArrUp(source, iteratee, thisArg)
@@ -177,24 +178,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'down');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'down');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'down');
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'down');
+    if ( !_is._obj(source) ) throw _error.type('source', 'down');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrDown(base, source, iteratee, thisArg)
         : _rollArrDown(source, iteratee, thisArg)
@@ -224,7 +225,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -288,7 +289,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -331,7 +332,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -394,7 +395,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -436,7 +437,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -499,7 +500,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
@@ -545,7 +546,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -575,7 +576,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -605,7 +606,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -634,7 +635,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -663,7 +664,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -692,7 +693,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -721,7 +722,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length > 1) {
       i = 0;
       while(count--) result = iteratee(result, i++);
@@ -745,7 +746,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result += iteratee(i++);
@@ -769,7 +770,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result -= iteratee(i++);
