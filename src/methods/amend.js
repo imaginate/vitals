@@ -21,6 +21,8 @@ var _cloneObj = require('./helpers/cloneObj.js');
 var _match = require('./helpers/match.js');
 var _merge = require('./helpers/merge.js');
 var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,11 +62,11 @@ var amend = (function amendPrivateScope() {
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
    *   param) that throws an error if the new property value fails an
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
+   *       if ( !vitals.is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -88,13 +90,13 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj');
+    if ( !_is.obj(obj) ) throw _error.type('obj');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props');
+    if ( !_is.obj(props) ) throw _error.type('props');
 
-    isArr = is.arr(props);
+    isArr = _is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3) throw _error('No val defined');
@@ -147,14 +149,14 @@ var amend = (function amendPrivateScope() {
    */
   amend.config = function amendConfig(obj, props, descriptor) {
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'config');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'config');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'config');
+    if ( !_is.obj(props) ) throw _error.type('props', 'config');
 
-    if ( is.arr(props) ) {
-      if ( !is.obj(descriptor) ) throw _error.type('descriptor', 'config');
+    if ( _is.arr(props) ) {
+      if ( !_is.obj(descriptor) ) throw _error.type('descriptor', 'config');
       props = _setupConfigs(props, descriptor);
     }
 
@@ -178,11 +180,11 @@ var amend = (function amendPrivateScope() {
    *   }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails an [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   new property value fails an [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
+   *       if ( !vitals.is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -203,8 +205,8 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'property');
-    if ( !is.str(key) ) throw _error.type('key', 'property');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'property');
+    if ( !_is.str(key) ) throw _error.type('key', 'property');
 
     len = arguments.length;
 
@@ -247,9 +249,9 @@ var amend = (function amendPrivateScope() {
    */
   amend.property.config = function amendPropertyConfig(obj, key, descriptor) {
 
-    if ( !is.obj(obj)       ) throw _error.type('obj',       'property.config');
-    if ( !is.str(key)       ) throw _error.type('key',       'property.config');
-    if ( !is.obj(descriptor)) throw _error.type('descriptor','property.config');
+    if ( !_is.obj(obj)       ) throw _error.type('obj',       'property.config');
+    if ( !_is.str(key)       ) throw _error.type('key',       'property.config');
+    if ( !_is.obj(descriptor)) throw _error.type('descriptor','property.config');
 
     if ( !_own(obj, key) ) {
       throw _error('The key was not defined in the obj', 'property.config');
@@ -282,11 +284,11 @@ var amend = (function amendPrivateScope() {
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
    *   param) that throws an error if the new property value fails an
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
    *   type test. The setter is as follows:
    *     ```
    *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
+   *       if ( !vitals.is(strongType, newVal) ) {
    *         throw new TypeError("Invalid type for object property value.");
    *       }
    *       value = newVal;
@@ -310,13 +312,13 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'properties');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'properties');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'properties');
+    if ( !_is.obj(props) ) throw _error.type('props', 'properties');
 
-    isArr = is.arr(props);
+    isArr = _is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3) throw _error('No val defined', 'properties');
@@ -371,14 +373,14 @@ var amend = (function amendPrivateScope() {
    */
   amend.properties.config = function amendPropertiesConfig(obj, props, descriptor) {
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'properties.config');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'properties.config');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'properties.config');
+    if ( !_is.obj(props) ) throw _error.type('props', 'properties.config');
 
-    if ( is.arr(props) ) {
-      if ( !is.obj(descriptor) ) {
+    if ( _is.arr(props) ) {
+      if ( !_is.obj(descriptor) ) {
         throw _error.type('descriptor', 'properties.config');
       }
       props = _setupConfigs(props, descriptor);
@@ -412,27 +414,27 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 4:
-      if ( is.str(descriptor) ) {
+      if ( _is.str(descriptor) ) {
         strongType = descriptor;
         descriptor = undefined;
       }
-      else if ( is.func(descriptor) ) {
+      else if ( _is.func(descriptor) ) {
         setter = descriptor;
         descriptor = undefined;
       }
       break;
       case 5:
-      if ( is.func(strongType) ) {
+      if ( _is.func(strongType) ) {
         setter = strongType;
         strongType = undefined;
-        if ( is.str(descriptor) ) {
+        if ( _is.str(descriptor) ) {
           strongType = descriptor;
           descriptor = undefined;
         }
       }
     }
 
-    if ( is.obj(val) && _isDescriptor(val) ) {
+    if ( _is.obj(val) && _isDescriptor(val) ) {
       descriptor = val;
       val = descriptor.value;
     }
@@ -452,20 +454,20 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 4:
-      if ( is.str(descriptor) ) {
+      if ( _is.str(descriptor) ) {
         strongType = descriptor;
         descriptor = undefined;
       }
-      else if ( is.func(descriptor) ) {
+      else if ( _is.func(descriptor) ) {
         setter = descriptor;
         descriptor = undefined;
       }
       break;
       case 5:
-      if ( is.func(strongType) ) {
+      if ( _is.func(strongType) ) {
         setter = strongType;
         strongType = undefined;
-        if ( is.str(descriptor) ) {
+        if ( _is.str(descriptor) ) {
           strongType = descriptor;
           descriptor = undefined;
         }
@@ -492,7 +494,7 @@ var amend = (function amendPrivateScope() {
     for (key in props) {
       if ( _own(props, key) ) {
         val = props[key];
-        if ( is.obj(val) && _isDescriptor(val) ) {
+        if ( _is.obj(val) && _isDescriptor(val) ) {
           if ( _own(val, 'writable') ) continue;
           val = val.value;
         }
@@ -546,7 +548,7 @@ var amend = (function amendPrivateScope() {
     descriptor = descriptor || null;
     descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
     strongType = _getStrongType(strongType);
-    props = is.arr(props)
+    props = _is.arr(props)
       ? strongType || setter
         ? _setupPropsByKeyWithSetter(props, val, descriptor, strongType, setter)
         : _setupPropsByKey(props, val, descriptor)
@@ -887,7 +889,7 @@ var amend = (function amendPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !is.obj(obj) ) return false;
+    if ( !_is.obj(obj) ) return false;
 
     for (key in obj) {
       if ( _own(obj, key) && !_own(DESCRIPTOR_PROPS, key) ) return false;
@@ -926,10 +928,10 @@ var amend = (function amendPrivateScope() {
 
     if ( hasSetter && _isData(descriptor) ) {
       defaultDescriptor = {};
-      if ( is.bool( descriptor.enumerable ) ) {
+      if ( _is.bool( descriptor.enumerable ) ) {
         defaultDescriptor.enumerable = descriptor.enumerable;
       }
-      if ( is.bool( descriptor.configurable ) ) {
+      if ( _is.bool( descriptor.configurable ) ) {
         defaultDescriptor.configurable = descriptor.configurable;
       }
       descriptor = defaultDescriptor;
