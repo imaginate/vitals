@@ -46,6 +46,8 @@ var is = (function isPrivateScope() {
   // - is.date
   // - is.error     (is.err)
   // - is.args
+  // - is.document  (is.doc)
+  // - is.element   (is.elem)
   //////////////////////////////////////////////////////////
 
   /**
@@ -333,6 +335,36 @@ var is = (function isPrivateScope() {
       default: return _are(arguments, _is.args);
     }
   };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.document = function isDocument(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'document');
+      case 1:  return _is.doc(val);
+      default: return _are(arguments, _is.doc);
+    }
+  };
+  // define shorthand
+  is.doc = is.document;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.element = function isElement(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'element');
+      case 1:  return _is.elem(val);
+      default: return _are(arguments, _is.elem);
+    }
+  };
+  // define shorthand
+  is.elem = is.element;
 
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ARE
