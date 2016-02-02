@@ -18,8 +18,9 @@
 var newErrorAid = require('./helpers/errorAid.js');
 var _splitKeys = require('./helpers/splitKeys.js');
 var _own = require('./helpers/own.js');
-var is = require('node-are').is;
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,16 +57,16 @@ var each = (function eachPrivateScope() {
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _eachCycle(source, iteratee, thisArg);
+    if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
@@ -86,8 +87,8 @@ var each = (function eachPrivateScope() {
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _eachObj(source, iteratee, thisArg);
@@ -112,12 +113,12 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
@@ -133,8 +134,8 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',    'cycle');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'cycle');
+    if ( !_is.num(count)      ) throw _error.type('count',    'cycle');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'cycle');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
@@ -159,7 +160,7 @@ var each = (function eachPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: for (key in obj) _own(obj, key) && iteratee();              break;
       case 1: for (key in obj) _own(obj, key) && iteratee(obj[key]);      break;
@@ -184,7 +185,7 @@ var each = (function eachPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -207,7 +208,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) iteratee(i++);
