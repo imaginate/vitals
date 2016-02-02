@@ -17,11 +17,11 @@
 
 'use strict';
 
-var is = require('node-are').is;
 var fs = require('fs');
 
 var copy = {};
 var get = {};
+var is = {};
 var to = {};
 
 
@@ -33,6 +33,8 @@ var to = {};
 // INSERT methods/helpers/isEol.js
 // INSERT methods/helpers/normalize.js
 // INSERT methods/helpers/own.js
+// INSERT methods/helpers/is.js
+// INSERT methods/fs/helpers/is.js
 
 
 // *****************************************************************************
@@ -41,6 +43,7 @@ var to = {};
 
 // INSERT methods/fs/copy.js
 // INSERT methods/fs/get.js
+// INSERT methods/fs/is.js
 // INSERT methods/fs/to.js
 
 
@@ -51,5 +54,6 @@ var to = {};
 module.exports = {
   copy:   copy,
   get:    get,
+  is:     is,
   to:     to
 };

@@ -17,8 +17,6 @@
 
 'use strict';
 
-var is = require('node-are').is;
-
 
 // *****************************************************************************
 // PRIVATE HELPERS
@@ -27,11 +25,13 @@ var is = require('node-are').is;
 // INSERT methods/helpers/cloneObj.js
 // INSERT methods/helpers/errorAid.js
 // INSERT methods/helpers/inStr.js
-// INSERT methods/helpers/match.js
 // INSERT methods/helpers/merge.js
 // INSERT methods/helpers/own.js
+// INSERT methods/helpers/is.js
+// INSERT methods/helpers/match.js
 // INSERT methods/helpers/sliceArr.js
 // INSERT methods/helpers/splitKeys.js
+// INSERT methods/is.js
 
 
 // *****************************************************************************

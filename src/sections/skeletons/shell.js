@@ -17,7 +17,6 @@
 
 'use strict';
 
-var is = require('node-are').is;
 var cp = require('child_process');
 
 
@@ -28,7 +27,10 @@ var cp = require('child_process');
 // INSERT methods/helpers/errorAid.js
 // INSERT methods/helpers/isEol.js
 // INSERT methods/helpers/normalize.js
+// INSERT methods/helpers/own.js
+// INSERT methods/helpers/is.js
 // INSERT methods/helpers/sliceArr.js
+// INSERT methods/is.js
 
 
 // *****************************************************************************
