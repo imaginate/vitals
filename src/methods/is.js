@@ -48,6 +48,11 @@ var is = (function isPrivateScope() {
   // - is.args
   // - is.document  (is.doc)
   // - is.element   (is.elem)
+  // - is.empty
+  // - is.frozen
+  // - is.whole
+  // - is.odd
+  // - is.even
   //////////////////////////////////////////////////////////
 
   /**
@@ -366,6 +371,75 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.elem = is.element;
 
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.empty = function isEmpty(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'empty');
+      case 1:  return _is.empty(val);
+      default: return _are(arguments, _is.empty);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...(Object|?function)} val
+   * @return {boolean}
+   */
+  is.frozen = function isFrozen(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'frozen');
+      case 1:  return _isFrozen(val);
+      default: return _are(arguments, _isFrozen);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val
+   * @return {boolean}
+   */
+  is.whole = function isWholeNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'whole');
+      case 1:  return _isWhole(val);
+      default: return _are(arguments, _isWhole);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.odd = function isOddNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'odd');
+      case 1:  return _isOdd(val);
+      default: return _are(arguments, _isOdd);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.even = function isEvenNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'even');
+      case 1:  return _isEven(val);
+      default: return _are(arguments, _isEven);
+    }
+  };
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - ARE
   //////////////////////////////////////////////////////////
@@ -386,6 +460,62 @@ var is = (function isPrivateScope() {
       if ( !check(vals[i]) ) return false;
     }
     return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - IS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {(Object|?function)} val
+   * @return {boolean}
+   */
+  function _isFrozen(val) {
+
+    if ( _is.nil(val) ) return false;
+
+    if ( !_is._obj(val) ) throw _error.type('val', 'frozen');
+
+    return _is.frozen(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isWhole(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'whole');
+
+    return _is.whole(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isOdd(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'odd');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'odd');
+
+    return _is.odd(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isEven(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'even');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'even');
+
+    return _is.even(val);
   }
 
   //////////////////////////////////////////////////////////
