@@ -37,6 +37,15 @@ var is = (function isPrivateScope() {
   // - is.number    (is.num)
   // - is._number   (is._num)
   // - is.nan
+  // - is.object    (is.obj)
+  // - is._object   (is._obj)
+  // - is.function  (is.func|is.fn)
+  // - is.array     (is.arr)
+  // - is._array    (is._arr)
+  // - is.regexp    (is.regex|is.re)
+  // - is.date
+  // - is.error     (is.err)
+  // - is.args
   //////////////////////////////////////////////////////////
 
   /**
@@ -184,6 +193,144 @@ var is = (function isPrivateScope() {
       case 0:  throw _error('Missing a val', 'nan');
       case 1:  return _is.nan(val);
       default: return _are(arguments, _is.nan);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.object = function isObject(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'object');
+      case 1:  return _is.obj(val);
+      default: return _are(arguments, _is.obj);
+    }
+  };
+  // define shorthand
+  is.obj = is.object;
+
+  /**
+   * Functions return true in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._object = function isObjectOrFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_object');
+      case 1:  return _is._obj(val);
+      default: return _are(arguments, _is._obj);
+    }
+  };
+  // define shorthand
+  is._obj = is._object;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.func = function isFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'function');
+      case 1:  return _is.func(val);
+      default: return _are(arguments, _is.func);
+    }
+  };
+  // define shorthand
+  is.fn = is.func;
+  try {
+    is['function'] = is.func;
+  }
+  catch (error) {}
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.array = function isArray(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'array');
+      case 1:  return _is.arr(val);
+      default: return _are(arguments, _is.arr);
+    }
+  };
+  // define shorthand
+  is.arr = is.array;
+
+  /**
+   * Arguments return true in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._array = function isArrayOrArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_array');
+      case 1:  return _is._arr(val);
+      default: return _are(arguments, _is._arr);
+    }
+  };
+  // define shorthand
+  is._arr = is._array;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.regexp = function isRegExp(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'regexp');
+      case 1:  return _is.regex(val);
+      default: return _are(arguments, _is.regex);
+    }
+  };
+  // define shorthand
+  is.regex = is.regexp;
+  is.re = is.regexp;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.date = function isDate(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'date');
+      case 1:  return _is.date(val);
+      default: return _are(arguments, _is.date);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.error = function isError(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'error');
+      case 1:  return _is.err(val);
+      default: return _are(arguments, _is.err);
+    }
+  };
+  // define shorthand
+  is.err = is.error;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.args = function isArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'args');
+      case 1:  return _is.args(val);
+      default: return _are(arguments, _is.args);
     }
   };
 
