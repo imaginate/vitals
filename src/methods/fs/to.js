@@ -16,7 +16,8 @@
 'use strict';
 
 var newErrorAid = require('../helpers/errorAid.js');
-var is = require('node-are').is;
+var _is = require('./helpers/is.js');
+var is = require('../is.js');
 var fs = require('fs');
 
 var to = {};
@@ -43,17 +44,17 @@ var to = {};
    */
   to.file = function toFile(contents, filepath, encoding) {
 
-    if ( !is.str(filepath) ) throw _error.type('filepath', 'file');
+    if ( !_is.str(filepath) ) throw _error.type('filepath', 'file');
 
-    if ( is.buffer(contents) ) {
+    if ( _is.buffer(contents) ) {
       fs.writeFileSync(filepath, contents);
       return contents;
     }
 
-    if ( !is.str(contents)      ) throw _error.type('contents', 'file');
+    if ( !_is.str(contents)     ) throw _error.type('contents', 'file');
     if ( !is('?str=', encoding) ) throw _error.type('encoding', 'file');
 
-    encoding = is.undefined(encoding) ? 'utf8' : encoding;
+    encoding = _is.undefined(encoding) ? 'utf8' : encoding;
     return encoding
       ? fs.writeFileSync(filepath, contents, encoding)
       : fs.writeFileSync(filepath, contents);
