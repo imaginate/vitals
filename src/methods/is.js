@@ -29,7 +29,14 @@ var is = (function isPrivateScope() {
   //////////////////////////////////////////////////////////
   // PUBLIC METHODS
   // - is
-  // - is.loose (is.ish)
+  // - is.null      (is.nil)
+  // - is.undefined
+  // - is.boolean   (is.bool)
+  // - is.string    (is.str)
+  // - is._string   (is._str)
+  // - is.number    (is.num)
+  // - is._number   (is._num)
+  // - is.nan
   //////////////////////////////////////////////////////////
 
   /**
@@ -60,6 +67,146 @@ var is = (function isPrivateScope() {
     return arguments.length > 2
       ? _checkVals(checks, arguments, nullable)
       : _checkVal(checks, val, nullable);
+  }
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['null'] = function isNull(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'null');
+      case 1:  return _is.nil(val);
+      default: return _are(arguments, _is.nil);
+    }
+  };
+  // define shorthand
+  is.nil = is['null'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.undefined = function isUndefined(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'undefined');
+      case 1:  return _is.undefined(val);
+      default: return _are(arguments, _is.undefined);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['boolean'] = function isBoolean(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'boolean');
+      case 1:  return _is.bool(val);
+      default: return _are(arguments, _is.bool);
+    }
+  };
+  // define shorthand
+  is.bool = is['boolean'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.string = function isString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'string');
+      case 1:  return _is.str(val);
+      default: return _are(arguments, _is.str);
+    }
+  };
+  // define shorthand
+  is.str = is.string;
+
+  /**
+   * Empty strings return false in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._string = function isNonEmptyString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_string');
+      case 1:  return _is._str(val);
+      default: return _are(arguments, _is._str);
+    }
+  };
+  // define shorthand
+  is._str = is._string;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.number = function isNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'number');
+      case 1:  return _is.num(val);
+      default: return _are(arguments, _is.num);
+    }
+  };
+  // define shorthand
+  is.num = is.number;
+
+  /**
+   * Zeros return false in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._number = function isNonZeroNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_number');
+      case 1:  return _is._num(val);
+      default: return _are(arguments, _is._num);
+    }
+  };
+  // define shorthand
+  is._num = is._number;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.nan = function isNan(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'nan');
+      case 1:  return _is.nan(val);
+      default: return _are(arguments, _is.nan);
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Arguments} vals
+   * @param {function} check
+   * @return {boolean}
+   */
+  function _are(vals, check) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) {
+      if ( !check(vals[i]) ) return false;
+    }
+    return true;
   }
 
   //////////////////////////////////////////////////////////
