@@ -17,7 +17,6 @@
 
 var newErrorAid = require('../helpers/errorAid.js');
 var _is = require('./helpers/is.js');
-var fs = require('fs');
 
 var is = {};
 
