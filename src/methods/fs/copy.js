@@ -19,7 +19,6 @@ var newErrorAid = require('../helpers/errorAid.js');
 var _normalize = require('../helpers/normalize.js');
 var _isEol = require('../helpers/isEol.js');
 var _is = require('./helpers/is.js');
-var is = require('../is.js');
 var fs = require('fs');
 
 var copy = {};
@@ -43,34 +42,28 @@ var copy = {};
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file
    *   or a valid dirpath to an existing directory.
-   * @param {Object=} options
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
+   * @param {Object=} opts
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
    * @return {string} The contents of the source.
    */
-  copy.file = function copyFile(source, dest, options) {
+  copy.file = function copyFile(source, dest, opts) {
 
-    if ( !_is.file(source)    ) throw _error.type('source',  'file');
-    if ( !_is.str(dest)       ) throw _error.type('dest',    'file');
-    if ( !is('obj=', options) ) throw _error.type('options', 'file');
+    if ( !_is.file(source)     ) throw _error.type('source', 'file');
+    if ( !_is.str(dest)        ) throw _error.type('dest',   'file');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'file');
 
-    if (options) {
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'file');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'file');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'file');
-      }
+    if (opts) {
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
     dest = _is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
-    options = _prepOptions(options);
-    return _copyFile(source, dest, options);
+    opts = _prepOptions(opts);
+    return _copyFile(source, dest, opts);
   };
 
   /**
@@ -78,40 +71,32 @@ var copy = {};
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - [default= false] Whether to include sub
+   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
    * @return {!Array} The filepaths copied to the dest.
    */
-  copy.directory = function copyDirectory(source, dest, options) {
+  copy.directory = function copyDirectory(source, dest, opts) {
 
-    options = _is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !_is.dir(source)     ) throw _error.type('source',  'directory');
-    if ( !_is.dir(dest)       ) throw _error.type('dest',    'directory');
-    if ( !is('obj=', options) ) throw _error.type('options', 'directory');
+    if ( !_is.dir(source)      ) throw _error.type('source', 'directory');
+    if ( !_is.dir(dest)        ) throw _error.type('dest',   'directory');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'directory');
 
-    if (options) {
-      if ( !is('bool=', options.deep) ) {
-        throw _error.type('options.deep', 'directory');
-      }
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'directory');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'directory');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'directory');
-      }
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)    ) throw _error.type('opts.deep',     'directory');
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'directory');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'directory');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
     }
 
-    options = _prepOptions(options);
-    return _copyDir(source, dest, options);
+    opts = _prepOptions(opts);
+    return _copyDir(source, dest, opts);
   };
   // define shorthand
   copy.dir = copy.directory;
