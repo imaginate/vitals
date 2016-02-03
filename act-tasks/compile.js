@@ -31,11 +31,10 @@ var to     = vitals.to;
 
 var BROWSER  = 'src/browser';
 var SECTIONS = 'src/sections';
-var ARE_SRC  = 'vendor/are.min.js';
 var INSERTS  = / *\/\/ INSERT ([a-zA-Z-_\/]+\.js)\n/g;
 var INTRO    = /^[\s\S]*?(\n\/{80}\n)/;
 var EXPORTS  = /\n *module\.exports = [a-zA-Z_]+;\n$/;
-var IS_NULL  = /is\.null\(/g;
+var XBROWSER = /\n *\/\/ BROWSER ONLY *\n[\s\S]*?\n *\/\/ BROWSER ONLY END *\n/g;
 
 exports['desc'] = 'compiles the src';
 exports['default'] = '-browser -sections';
@@ -64,19 +63,13 @@ function compileBrowser() {
   var content;
   /** @type {string} */
   var base;
-  /** @type {string} */
-  var are;
 
-  are = get.file(ARE_SRC);
-  are = fuse(are, '\n');
   base = fuse(BROWSER, '/skeletons');
   filenames = get.filepaths(base);
   each(filenames, function(filename) {
     filepath = fuse(base, '/', filename);
     content = get.file(filepath);
     content = insertFiles(content);
-    content = remap(content, IS_NULL, 'is.nil(');
-    content = fuse(are, content);
     filepath = fuse(BROWSER, '/', filename);
     to.file(content, filepath);
   });
@@ -98,11 +91,12 @@ function compileSections() {
   var base;
 
   base = fuse(SECTIONS, '/skeletons');
-  filenames = get.filepaths(base, true);
+  filenames = get.filepaths(base);
   each(filenames, function(filename) {
     filepath = fuse(base, '/', filename);
     content = get.file(filepath);
     content = insertFiles(content);
+    content = cut(content, XBROWSER);
     filepath = fuse(SECTIONS, '/', filename);
     to.file(content, filepath);
   });
