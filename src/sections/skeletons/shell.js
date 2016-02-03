@@ -30,7 +30,6 @@ var cp = require('child_process');
 // INSERT methods/helpers/own.js
 // INSERT methods/helpers/is.js
 // INSERT methods/helpers/sliceArr.js
-// INSERT methods/is.js
 
 
 // *****************************************************************************

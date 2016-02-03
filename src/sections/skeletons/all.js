@@ -80,6 +80,7 @@ var to = {};
 
 // INSERT methods/fs/copy.js
 // INSERT methods/fs/get.js
+// INSERT methods/fs/is.js
 // INSERT methods/fs/to.js
 
 
