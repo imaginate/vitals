@@ -107,7 +107,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.obj = function(val) {
-    return !!val && val === 'object';
+    return !!val && typeof val === 'object';
   };
 
   /**
@@ -305,6 +305,187 @@ var _is = (function _isPrivateScope() {
    */
   _is.even = function(val) {
     return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val ? typeof val === 'object' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val ? typeof val === 'function' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val ? typeof val === 'object' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val ? typeof val === 'function' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    if (val === null) return true;
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val
+      ? typeof val === 'object'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val
+      ? typeof val === 'function'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null || typeof val === 'undefined';
   };
 
   //////////////////////////////////////////////////////////
