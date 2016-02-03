@@ -134,6 +134,26 @@ var TESTS = {
         falsy:  [ [ null, [] ] ]
       }
     }
+  },
+  'dom objects': {
+    'document': {
+      shortcut: 'doc',
+      truthy: [ null, { nodeType: 9 } ],
+      falsy:  [ {}, [], { nodeType: 3 }, undefined ],
+      plural: {
+        truthy: [ [ null, { nodeType: 9 } ] ],
+        falsy:  [ [ null, { nodeType: 7 } ] ]
+      }
+    },
+    'element': {
+      shortcut: 'elem',
+      truthy: [ null, { nodeType: 1 } ],
+      falsy:  [ {}, [], { nodeType: 3 }, undefined ],
+      plural: {
+        truthy: [ [ null, { nodeType: 1 } ] ],
+        falsy:  [ [ null, { nodeType: 7 } ] ]
+      }
+    }
   }
 };
 
