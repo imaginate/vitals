@@ -31,6 +31,7 @@
 // INSERT methods/helpers/match.js
 // INSERT methods/helpers/sliceArr.js
 // INSERT methods/helpers/splitKeys.js
+// INSERT methods/is.js
 
 
 // *****************************************************************************

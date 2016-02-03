@@ -39,6 +39,7 @@ var to = {};
 // INSERT methods/helpers/own.js
 // INSERT methods/helpers/ownEnum.js
 // INSERT methods/helpers/is.js
+// INSERT methods/fs/helpers/is.js
 // INSERT methods/helpers/match.js
 // INSERT methods/helpers/sliceArr.js
 // INSERT methods/helpers/sliceStr.js
