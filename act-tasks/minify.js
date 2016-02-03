@@ -40,9 +40,7 @@ var WEBSITE  = 'https://github.com/imaginate/vitals';
 var BROWSER  = 'src/browser';
 var FRAMES   = 'src/browser/skeletons';
 var MINIFIER = 'vendor/closure-compiler.jar';
-var ARE_SRC  = 'vendor/are.min.js';
 var INTRO    = /^\/\*[\s\S]*?\*\//;
-var FIND_ARE = /^\/\* are\.js[\s\S]*?(\/\*\*\n)/;
 var SEMANTIC = /"version": "[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?/;
 var VERSION  = /^"version": "/;
 
@@ -61,19 +59,13 @@ function minifyVitals() {
   var filepath;
   /** @type {string} */
   var content;
-  /** @type {string} */
-  var are;
 
-  are = get.file(ARE_SRC);
-  are = fuse(are, '\n');
   filenames = get.filepaths(FRAMES);
   each(filenames, function(filename) {
     filepath = fuse(BROWSER, '/', filename);
     content = get.file(filepath);
-    content = remap(content, FIND_ARE, '$1');
     content = minify(content);
     content = addCopyright(content, filename);
-    content = fuse(are, content);
     filepath = remap(filepath, /js$/, 'min.js');
     to.file(content, filepath);
   });
