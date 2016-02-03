@@ -24,7 +24,6 @@
 var Base = require('./base.js');
 var chalk = require('chalk');
 var inherits = require('util').inherits;
-var cursor = Base.cursor;
 var OK = chalk.green(Base.symbols.ok);
 
 module.exports = Spec;
@@ -99,7 +98,6 @@ function Spec(runner) {
       msg = is.same(test.speed, 'slow') ? chalk.red(msg) : chalk.yellow(msg);
     }
     msg = fuse(indent, ' ', OK, ' ', title, msg || '');
-    cursor.CR();
     console.log(msg);
   });
 
@@ -114,7 +112,6 @@ function Spec(runner) {
     msg = fuse('  ', ++fails, ') ', test.title);
     msg = chalk.red(msg);
     msg = fuse(indent, msg);
-    cursor.CR();
     console.log(msg);
   });
 
