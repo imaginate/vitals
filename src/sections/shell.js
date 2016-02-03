@@ -17,7 +17,6 @@
 
 'use strict';
 
-var is = require('node-are').is;
 var cp = require('child_process');
 
 
@@ -174,6 +173,481 @@ var _normalize = (function _normalizePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+var _is = (function _isPrivateScope() {
+
+  /** @type {!Object} */
+  var _is = {};
+
+  /** @type {function} */
+  var toStr = Object.prototype.toString;
+
+  //////////////////////////////////////////////////////////
+  // PRIMITIVES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil = function(val) {
+    return val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.undefined = function(val) {
+    return typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.bool = function(val) {
+    return typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.str = function(val) {
+    return typeof val === 'string';
+  };
+
+  /**
+   * Empty strings return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._str = function(val) {
+    return !!val && typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.num = function(val) {
+    return typeof val === 'number' && val === val;
+  };
+
+  /**
+   * Zeros return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._num = function(val) {
+    return !!val && typeof val === 'number' && val === val;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nan = function(val) {
+    return val !== val;
+  };
+
+  //////////////////////////////////////////////////////////
+  // JS OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.obj = function(val) {
+    return !!val && typeof val === 'object';
+  };
+
+  /**
+   * Functions return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._obj = function(val) {
+    val = !!val && typeof val;
+    return val && (val === 'object' || val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.func = function(val) {
+    return !!val && typeof val === 'function';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.arr = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Array]';
+  };
+
+  /**
+   * Arguments return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._arr = function(val) {
+      if ( !_is.obj(val) ) return false;
+      val = toStr.call(val);
+      return val === '[object Array]' || val === '[object Arguments]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.regex = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object RegExp]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.date = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Date]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.err = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Error]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.args = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Arguments]';
+  };
+
+  //////////////////////////////////////////////////////////
+  // DOM OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.doc = function(val) {
+    return _is.obj(val) && val.nodeType === 9;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.elem = function(val) {
+    return _is.obj(val) && val.nodeType === 1;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OTHERS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.empty = function(val) {
+
+    /** @type {string} */
+    var prop;
+
+    // return empty primitives - 0, "", null, undefined, false, NaN
+    if ( !_is._obj(val) ) return !val;
+
+    // return empty arrays and functions - [], function(){}
+    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+
+    // return empty object - {}
+    for (prop in val) {
+      if ( _own(val, prop) ) return false;
+    }
+    return true;
+  };
+
+  /**
+   * @param {(Object|?function)} obj
+   * @return {boolean}
+   */
+  _is.frozen = (function() {
+
+    if (!Object.isFrozen) return function isFrozen(obj) { return false; };
+
+    try {
+      Object.isFrozen(function(){});
+      return Object.isFrozen;
+    }
+    catch (e) {
+      return function isFrozen(obj) {
+        return _is.obj(obj) && Object.isFrozen(obj);
+      };
+    }
+  })();
+
+  //////////////////////////////////////////////////////////
+  // NUMBER STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.whole = function(val) {
+    return !(val % 1);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.odd = function(val) {
+    return !!(val % 2);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.even = function(val) {
+    return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val ? typeof val === 'object' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val ? typeof val === 'function' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val ? typeof val === 'object' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val ? typeof val === 'function' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    if (val === null) return true;
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val
+      ? typeof val === 'object'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val
+      ? typeof val === 'function'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null || typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - SLICE-ARR
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -201,7 +675,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -277,7 +751,7 @@ var run = (function runPrivateScope() {
     /** @type {SpawnResult} */
     var result;
 
-    if ( !is.str(cmd)         ) throw _error.type('cmd');
+    if ( !_is.str(cmd)        ) throw _error.type('cmd');
     if ( !is('obj=', options) ) throw _error.type('options');
 
     if (options) {
@@ -308,7 +782,7 @@ var run = (function runPrivateScope() {
     }
 
     if (options.buffer) {
-      return is.str(result.stdout) && options.eol
+      return _is.str(result.stdout) && options.eol
         ? _normalize(result.stdout, options.eol)
         : result.stdout;
     }
@@ -330,7 +804,7 @@ var run = (function runPrivateScope() {
     options = options || {};
     if (options.buffer) options.eol = options.eol || null;
     else options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }

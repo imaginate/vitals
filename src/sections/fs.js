@@ -17,11 +17,11 @@
 
 'use strict';
 
-var is = require('node-are').is;
 var fs = require('fs');
 
 var copy = {};
 var get = {};
+var is = {};
 var to = {};
 
 
@@ -205,6 +205,496 @@ var _own = (function _ownPrivateScope() {
 })();
 
 
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+var _is = (function _isPrivateScope() {
+
+  /** @type {!Object} */
+  var _is = {};
+
+  /** @type {function} */
+  var toStr = Object.prototype.toString;
+
+  //////////////////////////////////////////////////////////
+  // PRIMITIVES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil = function(val) {
+    return val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.undefined = function(val) {
+    return typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.bool = function(val) {
+    return typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.str = function(val) {
+    return typeof val === 'string';
+  };
+
+  /**
+   * Empty strings return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._str = function(val) {
+    return !!val && typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.num = function(val) {
+    return typeof val === 'number' && val === val;
+  };
+
+  /**
+   * Zeros return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._num = function(val) {
+    return !!val && typeof val === 'number' && val === val;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nan = function(val) {
+    return val !== val;
+  };
+
+  //////////////////////////////////////////////////////////
+  // JS OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.obj = function(val) {
+    return !!val && typeof val === 'object';
+  };
+
+  /**
+   * Functions return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._obj = function(val) {
+    val = !!val && typeof val;
+    return val && (val === 'object' || val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.func = function(val) {
+    return !!val && typeof val === 'function';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.arr = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Array]';
+  };
+
+  /**
+   * Arguments return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._arr = function(val) {
+      if ( !_is.obj(val) ) return false;
+      val = toStr.call(val);
+      return val === '[object Array]' || val === '[object Arguments]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.regex = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object RegExp]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.date = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Date]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.err = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Error]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.args = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Arguments]';
+  };
+
+  //////////////////////////////////////////////////////////
+  // DOM OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.doc = function(val) {
+    return _is.obj(val) && val.nodeType === 9;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.elem = function(val) {
+    return _is.obj(val) && val.nodeType === 1;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OTHERS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.empty = function(val) {
+
+    /** @type {string} */
+    var prop;
+
+    // return empty primitives - 0, "", null, undefined, false, NaN
+    if ( !_is._obj(val) ) return !val;
+
+    // return empty arrays and functions - [], function(){}
+    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+
+    // return empty object - {}
+    for (prop in val) {
+      if ( _own(val, prop) ) return false;
+    }
+    return true;
+  };
+
+  /**
+   * @param {(Object|?function)} obj
+   * @return {boolean}
+   */
+  _is.frozen = (function() {
+
+    if (!Object.isFrozen) return function isFrozen(obj) { return false; };
+
+    try {
+      Object.isFrozen(function(){});
+      return Object.isFrozen;
+    }
+    catch (e) {
+      return function isFrozen(obj) {
+        return _is.obj(obj) && Object.isFrozen(obj);
+      };
+    }
+  })();
+
+  //////////////////////////////////////////////////////////
+  // NUMBER STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.whole = function(val) {
+    return !(val % 1);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.odd = function(val) {
+    return !!(val % 2);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.even = function(val) {
+    return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val ? typeof val === 'object' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val ? typeof val === 'function' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val ? typeof val === 'object' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val ? typeof val === 'function' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    if (val === null) return true;
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val
+      ? typeof val === 'object'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val
+      ? typeof val === 'function'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null || typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {*} val
+ * @return {boolean}
+ */
+_is.buffer = Buffer.isBuffer;
+
+/**
+ * @param {string} dirpath
+ * @return {boolean}
+ */
+_is.dir = function(dirpath) {
+
+  if ( !_is._str(dirpath) ) return false;
+
+  try {
+    return fs.statSync(dirpath).isDirectory();
+  }
+  catch (e) {
+    return false;
+  }
+};
+
+/**
+ * @param {string} filepath
+ * @return {boolean}
+ */
+_is.file = function(filepath) {
+
+  if ( !_is._str(filepath) ) return false;
+
+  try {
+    return fs.statSync(filepath).isFile();
+  }
+  catch (e) {
+    return false;
+  }
+};
+
+
 
 // *****************************************************************************
 // SECTION: FILE SYSTEM METHODS
@@ -229,34 +719,28 @@ var _own = (function _ownPrivateScope() {
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file
    *   or a valid dirpath to an existing directory.
-   * @param {Object=} options
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
+   * @param {Object=} opts
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
    * @return {string} The contents of the source.
    */
-  copy.file = function copyFile(source, dest, options) {
+  copy.file = function copyFile(source, dest, opts) {
 
-    if ( !is.file(source)     ) throw _error.type('source',  'file');
-    if ( !is.str(dest)        ) throw _error.type('dest',    'file');
-    if ( !is('obj=', options) ) throw _error.type('options', 'file');
+    if ( !_is.file(source)     ) throw _error.type('source', 'file');
+    if ( !_is.str(dest)        ) throw _error.type('dest',   'file');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'file');
 
-    if (options) {
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'file');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'file');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'file');
-      }
+    if (opts) {
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    dest = is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
-    options = _prepOptions(options);
-    return _copyFile(source, dest, options);
+    dest = _is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
+    opts = _prepOptions(opts);
+    return _copyFile(source, dest, opts);
   };
 
   /**
@@ -264,40 +748,32 @@ var _own = (function _ownPrivateScope() {
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - [default= false] Whether to include sub
+   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
    * @return {!Array} The filepaths copied to the dest.
    */
-  copy.directory = function copyDirectory(source, dest, options) {
+  copy.directory = function copyDirectory(source, dest, opts) {
 
-    options = is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !is.dir(source)      ) throw _error.type('source',  'directory');
-    if ( !is.dir(dest)        ) throw _error.type('dest',    'directory');
-    if ( !is('obj=', options) ) throw _error.type('options', 'directory');
+    if ( !_is.dir(source)      ) throw _error.type('source', 'directory');
+    if ( !_is.dir(dest)        ) throw _error.type('dest',   'directory');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'directory');
 
-    if (options) {
-      if ( !is('bool=', options.deep) ) {
-        throw _error.type('options.deep', 'directory');
-      }
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'directory');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'directory');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'directory');
-      }
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)    ) throw _error.type('opts.deep',     'directory');
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'directory');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'directory');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
     }
 
-    options = _prepOptions(options);
-    return _copyDir(source, dest, options);
+    opts = _prepOptions(opts);
+    return _copyDir(source, dest, opts);
   };
   // define shorthand
   copy.dir = copy.directory;
@@ -374,7 +850,7 @@ var _own = (function _ownPrivateScope() {
 
     filepaths = fs.readdirSync(basepath);
     return filepaths.filter(function(filepath) {
-      return is.file(basepath + filepath);
+      return _is.file(basepath + filepath);
     });
   }
 
@@ -419,7 +895,7 @@ var _own = (function _ownPrivateScope() {
 
     dirpaths = fs.readdirSync(basepath);
     return dirpaths.filter(function(dirpath) {
-      return is.dir(basepath + dirpath);
+      return _is.dir(basepath + dirpath);
     });
   }
 
@@ -478,7 +954,7 @@ var _own = (function _ownPrivateScope() {
     dirpaths = _getDirpathsDeep(source);
     dirpaths.forEach(function(dirpath) {
       dirpath = dest + dirpath;
-      if ( !is.dir(dirpath) ) fs.mkdirSync(dirpath);
+      if ( !_is.dir(dirpath) ) fs.mkdirSync(dirpath);
     });
   }
 
@@ -490,7 +966,7 @@ var _own = (function _ownPrivateScope() {
   function _prepOptions(options) {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
@@ -527,69 +1003,63 @@ var _own = (function _ownPrivateScope() {
    * Gets the contents of a file.
    * @public
    * @param {string} filepath
-   * @param {(boolean|Object)=} options - Boolean values set options.buffer.
-   * @param {boolean=} options.buffer - [default= false] If true a buffer is
+   * @param {(boolean|Object)=} opts - Boolean values set opts.buffer.
+   * @param {boolean=} opts.buffer - [default= false] If true a buffer is
    *   returned.
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
    * @return {(string|!Buffer)}
    */
-  get.file = function getFile(filepath, options) {
+  get.file = function getFile(filepath, opts) {
 
-    options = is.bool(options) ? { buffer: options } : options;
+    opts = _is.bool(opts) ? { buffer: opts } : opts;
 
-    if ( !is.file(filepath)   ) throw _error.type('filepath', 'file');
-    if ( !is('obj=', options) ) throw _error.type('options',  'file');
+    if ( !_is.file(filepath)   ) throw _error.type('filepath', 'file');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',     'file');
 
-    if (options) {
-      if ( !is('bool=', options.buffer) ) {
-        throw _error.type('options.buffer', 'file');
-      }
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'file');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'file');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'file');
-      }
+    if (opts) {
+      if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    options = _prepOptions(options);
-    return _getFile(filepath, options);
+    opts = _prepOptions(opts);
+    return _getFile(filepath, opts);
   };
 
   /**
    * Gets all of the directory paths in a directory.
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - Get all of the sub-directories.
-   * @param {?(RegExp|Array<string>|string)=} options.validDirs
-   * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
+   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
+   * @param {boolean=} opts.deep - Get all of the sub-directories.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs
    * @return {!Array<string>}
    */
-  get.dirpaths = function getDirpaths(dirpath, options) {
+  get.dirpaths = function getDirpaths(dirpath, opts) {
 
     /** @type {function(string): boolean} */
     var isValid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'dirpaths');
-    if ( !is('obj=', options) ) throw _error.type('options', 'dirpaths');
+    if ( !_is.dir(dirpath)     ) throw _error.type('dirpath', 'dirpaths');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',    'dirpaths');
 
-    if ( options && !is('bool=', options.deep) ) {
-      throw _error.type('options.deep', 'dirpaths');
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)     ) throw _error.type('opts.deep',        'dirpaths');
+      if ( !_isValid(opts.validDirs)   ) throw _error.type('opts.validDirs',   'dirpaths');
+      if ( !_isValid(opts.invalidDirs) ) throw _error.type('opts.invalidDirs', 'dirpaths');
     }
 
     dirpath = _prepDir(dirpath);
-    options = _parseOptions(options);
-    isValid = _makeTest(options.validDirs, options.invalidDirs);
-    return options.deep
+    opts = _parseOptions(opts);
+    isValid = _makeTest(opts.validDirs, opts.invalidDirs);
+    return opts.deep
       ? _getDirpathsDeep(dirpath, isValid)
       : _getDirpaths(dirpath, isValid);
   };
@@ -598,19 +1068,19 @@ var _own = (function _ownPrivateScope() {
    * Gets all of the file paths in a directory.
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - Get all of the sub-directory files.
-   * @param {?(RegExp|Array<string>|string)=} options.validDirs
-   * @param {?(RegExp|Array<string>|string)=} options.validExts - [.]ext
-   * @param {?(RegExp|Array<string>|string)=} options.validNames - filename
-   * @param {?(RegExp|Array<string>|string)=} options.validFiles - filename.ext
-   * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
-   * @param {?(RegExp|Array<string>|string)=} options.invalidExts - [.]ext
-   * @param {?(RegExp|Array<string>|string)=} options.invalidNames - filename
-   * @param {?(RegExp|Array<string>|string)=} options.invalidFiles - filename.ext
+   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
+   * @param {boolean=} opts.deep - Get all of the sub-directory files.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs
+   * @param {(RegExp|Array<string>|?string)=} opts.validExts - [.]ext
+   * @param {(RegExp|Array<string>|?string)=} opts.validNames - filename
+   * @param {(RegExp|Array<string>|?string)=} opts.validFiles - filename.ext
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidExts - [.]ext
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidNames - filename
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidFiles - filename.ext
    * @return {!Array<string>}
    */
-  get.filepaths = function getFilepaths(dirpath, options) {
+  get.filepaths = function getFilepaths(dirpath, opts) {
 
     /** @type {function(string): boolean} */
     var isValidDir;
@@ -621,23 +1091,31 @@ var _own = (function _ownPrivateScope() {
     /** @type {!Array} */
     var valid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'filepaths');
-    if ( !is('obj=', options) ) throw _error.type('options', 'filepaths');
+    if ( !_is.dir(dirpath)     ) throw _error.type('dirpath', 'filepaths');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',    'filepaths');
 
-    if ( options && !is('bool=', options.deep) ) {
-      throw _error.type('options.deep', 'filepaths');
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',         'filepaths');
+      if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',    'filepaths');
+      if ( !_isValid(opts.validExts)    ) throw _error.type('opts.validExts',    'filepaths');
+      if ( !_isValid(opts.validNames)   ) throw _error.type('opts.validNames',   'filepaths');
+      if ( !_isValid(opts.validFiles)   ) throw _error.type('opts.validFiles',   'filepaths');
+      if ( !_isValid(opts.invalidDirs)  ) throw _error.type('opts.invalidDirs',  'filepaths');
+      if ( !_isValid(opts.invalidExts)  ) throw _error.type('opts.invalidExts',  'filepaths');
+      if ( !_isValid(opts.invalidNames) ) throw _error.type('opts.invalidNames', 'filepaths');
+      if ( !_isValid(opts.invalidFiles) ) throw _error.type('opts.invalidFiles', 'filepaths');
     }
 
     dirpath = _prepDir(dirpath);
-    options = _parseOptions(options);
-    valid   = [ options.validExts,  options.validNames,  options.validFiles   ];
-    invalid = [ options.invalidExts,options.invalidNames,options.invalidFiles ];
+    opts = _parseOptions(opts);
+    valid   = [ opts.validExts,   opts.validNames,   opts.validFiles   ];
+    invalid = [ opts.invalidExts, opts.invalidNames, opts.invalidFiles ];
     isValid = _makeTest(valid, invalid);
 
-    if (options.deep) {
-      isValidDir = _makeTest(options.validDirs, options.invalidDirs);
+    if (opts.deep) {
+      isValidDir = _makeTest(opts.validDirs, opts.invalidDirs);
       return _getFilepathsDeep(dirpath, isValid, isValidDir);
     }
 
@@ -678,7 +1156,7 @@ var _own = (function _ownPrivateScope() {
 
     dirpaths = fs.readdirSync(basepath);
     return dirpaths.filter(function(dirpath) {
-      return isValid(dirpath) && is.dir(basepath + dirpath);
+      return isValid(dirpath) && _is.dir(basepath + dirpath);
     });
   }
 
@@ -725,7 +1203,7 @@ var _own = (function _ownPrivateScope() {
 
     filepaths = fs.readdirSync(basepath);
     return filepaths.filter(function(filepath) {
-      return isValid(filepath) && is.file(basepath + filepath);
+      return isValid(filepath) && _is.file(basepath + filepath);
     });
   }
 
@@ -781,7 +1259,7 @@ var _own = (function _ownPrivateScope() {
   function _prepOptions(options) {
     options = options || {};
     options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }
@@ -795,14 +1273,14 @@ var _own = (function _ownPrivateScope() {
    * @type {!RegExp}
    * @const
    */
-  var ESCAPE_CHARS = /[\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!]/g;
+  var ESCAPE_CHARS = /[\\^$.+?(){}[\]]/g;
 
   /**
    * @private
    * @type {!RegExp}
    * @const
    */
-  var VALID = /^(?:in)?valid([a-z]*)s$/i;
+  var VALID = /^(?:in)?valid([A-Z][a-z]+)s$/;
 
   /**
    * @private
@@ -831,21 +1309,17 @@ var _own = (function _ownPrivateScope() {
 
   /**
    * @private
-   * @param {?(RegExp|Array<string>|string|undefined)} option
+   * @param {(RegExp|Array<string>|?string|undefined)} option
    * @param {string} type
    * @return {?RegExp}
    */
   function _parseOption(option, type) {
 
-    if ( is('null=', option) ) return null;
-
-    if ( !is('!arr|str|regex', option) ) {
-      throw _error.type('options.(in)valid' + type, '(dir|file)paths');
-    }
+    if (!option) return null;
 
     type = type.toLowerCase();
-    option = is.arr(option) ? option.join('|') : option;
-    return is.str(option) ? _parseOptStr(option) : option;
+    option = _is.arr(option) ? option.join('|') : option;
+    return _is.str(option) ? _parseOptStr(option) : option;
   }
 
   /**
@@ -855,14 +1329,16 @@ var _own = (function _ownPrivateScope() {
    * @return {!RegExp}
    */
   function _parseOptStr(option, type) {
-
+    if (type === 'ext') option = option.replace(/\B\.\b/g, '');
     option = option.replace(ESCAPE_CHARS, '\\$&');
-    option = option.replace(/\\?\*/g, '.*');
+    option = option.replace(/(\\)?\*/g, function(org, match) {
+      return match === '\\' ? org : '.*';
+    });
     switch (type) {
-      case 'dir':  option = '^(?:' + option + ')$';             break;
-      case 'name': option = '^(?:' + option + ')\\.[a-z]{2,}$'; break;
-      case 'file': option = '^(?:' + option + ')$';             break;
-      case 'ext':  option = '^.*\\.(?:' + option.replace(/\\?\./g, '') + ')$';
+      case 'dir' :
+      case 'file': option = '^' + option + '$';          break;
+      case 'ext' : option = '^.*\\.(?:' + option + ')$'; break;
+      case 'name': option = '^(?:' + option + ')\\.[a-z]{2,}$';
     }
     return new RegExp(option, 'i');
   }
@@ -902,7 +1378,7 @@ var _own = (function _ownPrivateScope() {
     /** @type {?RegExp} */
     var regex;
 
-    if ( is.arr(regexs) ) {
+    if ( _is.arr(regexs) ) {
       regexs = regexs.filter( function(re) { return !!re; } );
       regex = regexs.length === 1 ? regexs.pop() : null;
     }
@@ -940,8 +1416,111 @@ var _own = (function _ownPrivateScope() {
    */
   var _error = newErrorAid('get');
 
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _isValid(val) {
+    return val
+      ? _is.regex(val) || _is.str(val) || _is.arr(val)
+      : _is.nil.un.str(val);
+  }
+
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR GET
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// IS
+////////////////////////////////////////////////////////////////////////////////
+
+(function fsIsPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - is.buffer    (is.buf)
+  // - is.directory (is.dir)
+  // - is.file
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @public
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.buffer = function isBuffer(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'buffer');
+      case 1:  return _is.buffer(val);
+      default: return _are(arguments, _is.buffer);
+    }
+  };
+  // define shorthand
+  is.buf = is.buffer;
+
+  /**
+   * @public
+   * @param {*} dirpath
+   * @return {boolean}
+   */
+  is.directory = function isDirectory(dirpath) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a dirpath', 'directory');
+      case 1:  return _is.dir(dirpath);
+      default: return _are(arguments, _is.dir);
+    }
+  };
+  // define shorthand
+  is.dir = is.directory;
+
+  /**
+   * @public
+   * @param {*} filepath
+   * @return {boolean}
+   */
+  is.file = function isFile(filepath) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a filepath', 'file');
+      case 1:  return _is.file(filepath);
+      default: return _are(arguments, _is.file);
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Arguments} vals
+   * @param {function} check
+   * @return {boolean}
+   */
+  function _are(vals, check) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) {
+      if ( !check(vals[i]) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('is');
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
 })();
 
 
@@ -966,17 +1545,17 @@ var _own = (function _ownPrivateScope() {
    */
   to.file = function toFile(contents, filepath, encoding) {
 
-    if ( !is.str(filepath) ) throw _error.type('filepath', 'file');
+    if ( !_is.str(filepath) ) throw _error.type('filepath', 'file');
 
-    if ( is.buffer(contents) ) {
+    if ( _is.buffer(contents) ) {
       fs.writeFileSync(filepath, contents);
       return contents;
     }
 
-    if ( !is.str(contents)      ) throw _error.type('contents', 'file');
-    if ( !is('?str=', encoding) ) throw _error.type('encoding', 'file');
+    if ( !_is.str(contents)        ) throw _error.type('contents', 'file');
+    if ( !_is.nil.un.str(encoding) ) throw _error.type('encoding', 'file');
 
-    encoding = is.undefined(encoding) ? 'utf8' : encoding;
+    encoding = _is.undefined(encoding) ? 'utf8' : encoding;
     return encoding
       ? fs.writeFileSync(filepath, contents, encoding)
       : fs.writeFileSync(filepath, contents);
@@ -1005,5 +1584,6 @@ var _own = (function _ownPrivateScope() {
 module.exports = {
   copy:   copy,
   get:    get,
+  is:     is,
   to:     to
 };

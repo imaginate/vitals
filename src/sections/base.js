@@ -17,8 +17,6 @@
 
 'use strict';
 
-var is = require('node-are').is;
-
 
 // *****************************************************************************
 // PRIVATE HELPERS
@@ -264,20 +262,6 @@ var _inStr = (function _inStrPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MATCH
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * A shortcut for String.prototype.includes and RegExp.prototype.test.
- * @param {string} source
- * @param {*} pattern
- * @return {boolean}
- */
-function _match(source, pattern) {
-  return is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - MERGE
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -357,6 +341,467 @@ var _ownEnum = (function _ownEnumPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+var _is = (function _isPrivateScope() {
+
+  /** @type {!Object} */
+  var _is = {};
+
+  /** @type {function} */
+  var toStr = Object.prototype.toString;
+
+  //////////////////////////////////////////////////////////
+  // PRIMITIVES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil = function(val) {
+    return val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.undefined = function(val) {
+    return typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.bool = function(val) {
+    return typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.str = function(val) {
+    return typeof val === 'string';
+  };
+
+  /**
+   * Empty strings return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._str = function(val) {
+    return !!val && typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.num = function(val) {
+    return typeof val === 'number' && val === val;
+  };
+
+  /**
+   * Zeros return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._num = function(val) {
+    return !!val && typeof val === 'number' && val === val;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nan = function(val) {
+    return val !== val;
+  };
+
+  //////////////////////////////////////////////////////////
+  // JS OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.obj = function(val) {
+    return !!val && typeof val === 'object';
+  };
+
+  /**
+   * Functions return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._obj = function(val) {
+    val = !!val && typeof val;
+    return val && (val === 'object' || val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.func = function(val) {
+    return !!val && typeof val === 'function';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.arr = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Array]';
+  };
+
+  /**
+   * Arguments return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._arr = function(val) {
+      if ( !_is.obj(val) ) return false;
+      val = toStr.call(val);
+      return val === '[object Array]' || val === '[object Arguments]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.regex = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object RegExp]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.date = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Date]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.err = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Error]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.args = function(val) {
+    return _is.obj(val) && toStr.call(val) === '[object Arguments]';
+  };
+
+  //////////////////////////////////////////////////////////
+  // DOM OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.doc = function(val) {
+    return _is.obj(val) && val.nodeType === 9;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.elem = function(val) {
+    return _is.obj(val) && val.nodeType === 1;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OTHERS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.empty = function(val) {
+
+    /** @type {string} */
+    var prop;
+
+    // return empty primitives - 0, "", null, undefined, false, NaN
+    if ( !_is._obj(val) ) return !val;
+
+    // return empty arrays and functions - [], function(){}
+    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+
+    // return empty object - {}
+    for (prop in val) {
+      if ( _own(val, prop) ) return false;
+    }
+    return true;
+  };
+
+  /**
+   * @param {(Object|?function)} obj
+   * @return {boolean}
+   */
+  _is.frozen = (function() {
+
+    if (!Object.isFrozen) return function isFrozen(obj) { return false; };
+
+    try {
+      Object.isFrozen(function(){});
+      return Object.isFrozen;
+    }
+    catch (e) {
+      return function isFrozen(obj) {
+        return _is.obj(obj) && Object.isFrozen(obj);
+      };
+    }
+  })();
+
+  //////////////////////////////////////////////////////////
+  // NUMBER STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.whole = function(val) {
+    return !(val % 1);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.odd = function(val) {
+    return !!(val % 2);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.even = function(val) {
+    return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val ? typeof val === 'object' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val ? typeof val === 'function' : typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val ? typeof val === 'object' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val ? typeof val === 'function' : val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    if (val === null) return true;
+    val = typeof val;
+    return val === 'undefined' || val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    if (val === null) return true;
+    val = val === val && typeof val;
+    return val && (val === 'undefined' || val === 'number');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val
+      ? typeof val === 'object'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val
+      ? typeof val === 'function'
+      : val === null || typeof val === 'undefined';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val
+      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
+      : val === null || typeof val === 'undefined';
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - MATCH
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * A shortcut for String.prototype.includes and RegExp.prototype.test.
+ * @param {string} source
+ * @param {*} pattern
+ * @return {boolean}
+ */
+function _match(source, pattern) {
+  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - SLICE-ARR
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -384,7 +829,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -423,7 +868,7 @@ function _sliceStr(str, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -460,6 +905,896 @@ function _splitKeys(keys) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// IS
+////////////////////////////////////////////////////////////////////////////////
+
+var is = (function isPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - is
+  // - is.null      (is.nil)
+  // - is.undefined
+  // - is.boolean   (is.bool)
+  // - is.string    (is.str)
+  // - is._string   (is._str)
+  // - is.number    (is.num)
+  // - is._number   (is._num)
+  // - is.nan
+  // - is.object    (is.obj)
+  // - is._object   (is._obj)
+  // - is.function  (is.func|is.fn)
+  // - is.array     (is.arr)
+  // - is._array    (is._arr)
+  // - is.regexp    (is.regex|is.re)
+  // - is.date
+  // - is.error     (is.err)
+  // - is.args
+  // - is.document  (is.doc)
+  // - is.element   (is.elem)
+  // - is.empty
+  // - is.frozen
+  // - is.whole
+  // - is.odd
+  // - is.even
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A shortcut for type checking values.
+   * @public
+   * @param {string} types - The valid data types.
+   * @param {...*} val - The value to evaluate. If multiple values are
+   *   provided all must pass the type check to return true.
+   * @return {boolean} The evaluation result.
+   */
+  function is(types, val) {
+
+    /** @type {string} */
+    var nullable;
+    /** @type {Array<function>} */
+    var checks;
+
+    if (arguments.length < 2) throw _error('No type or val');
+    if ( !_is._str(types) ) throw _error.type('types');
+
+    if ( _hasSpecial('*', types) ) return true;
+
+    checks = _getChecks(types);
+
+    if (!checks) throw _error.range('types', DOCS);
+
+    nullable = _getNullable(types);
+    return arguments.length > 2
+      ? _checkVals(checks, arguments, nullable)
+      : _checkVal(checks, val, nullable);
+  }
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['null'] = function isNull(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'null');
+      case 1:  return _is.nil(val);
+      default: return _are(arguments, _is.nil);
+    }
+  };
+  // define shorthand
+  is.nil = is['null'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.undefined = function isUndefined(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'undefined');
+      case 1:  return _is.undefined(val);
+      default: return _are(arguments, _is.undefined);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['boolean'] = function isBoolean(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'boolean');
+      case 1:  return _is.bool(val);
+      default: return _are(arguments, _is.bool);
+    }
+  };
+  // define shorthand
+  is.bool = is['boolean'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.string = function isString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'string');
+      case 1:  return _is.str(val);
+      default: return _are(arguments, _is.str);
+    }
+  };
+  // define shorthand
+  is.str = is.string;
+
+  /**
+   * Empty strings return false in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._string = function isNonEmptyString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_string');
+      case 1:  return _is._str(val);
+      default: return _are(arguments, _is._str);
+    }
+  };
+  // define shorthand
+  is._str = is._string;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.number = function isNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'number');
+      case 1:  return _is.num(val);
+      default: return _are(arguments, _is.num);
+    }
+  };
+  // define shorthand
+  is.num = is.number;
+
+  /**
+   * Zeros return false in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._number = function isNonZeroNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_number');
+      case 1:  return _is._num(val);
+      default: return _are(arguments, _is._num);
+    }
+  };
+  // define shorthand
+  is._num = is._number;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.nan = function isNan(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'nan');
+      case 1:  return _is.nan(val);
+      default: return _are(arguments, _is.nan);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.object = function isObject(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'object');
+      case 1:  return _is.obj(val);
+      default: return _are(arguments, _is.obj);
+    }
+  };
+  // define shorthand
+  is.obj = is.object;
+
+  /**
+   * Functions return true in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._object = function isObjectOrFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_object');
+      case 1:  return _is._obj(val);
+      default: return _are(arguments, _is._obj);
+    }
+  };
+  // define shorthand
+  is._obj = is._object;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.func = function isFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'function');
+      case 1:  return _is.func(val);
+      default: return _are(arguments, _is.func);
+    }
+  };
+  // define shorthand
+  is.fn = is.func;
+  try {
+    is['function'] = is.func;
+  }
+  catch (error) {}
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.array = function isArray(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'array');
+      case 1:  return _is.arr(val);
+      default: return _are(arguments, _is.arr);
+    }
+  };
+  // define shorthand
+  is.arr = is.array;
+
+  /**
+   * Arguments return true in this method.
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._array = function isArrayOrArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_array');
+      case 1:  return _is._arr(val);
+      default: return _are(arguments, _is._arr);
+    }
+  };
+  // define shorthand
+  is._arr = is._array;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.regexp = function isRegExp(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'regexp');
+      case 1:  return _is.regex(val);
+      default: return _are(arguments, _is.regex);
+    }
+  };
+  // define shorthand
+  is.regex = is.regexp;
+  is.re = is.regexp;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.date = function isDate(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'date');
+      case 1:  return _is.date(val);
+      default: return _are(arguments, _is.date);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.error = function isError(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'error');
+      case 1:  return _is.err(val);
+      default: return _are(arguments, _is.err);
+    }
+  };
+  // define shorthand
+  is.err = is.error;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.args = function isArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'args');
+      case 1:  return _is.args(val);
+      default: return _are(arguments, _is.args);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.document = function isDocument(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'document');
+      case 1:  return _is.doc(val);
+      default: return _are(arguments, _is.doc);
+    }
+  };
+  // define shorthand
+  is.doc = is.document;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.element = function isElement(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'element');
+      case 1:  return _is.elem(val);
+      default: return _are(arguments, _is.elem);
+    }
+  };
+  // define shorthand
+  is.elem = is.element;
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.empty = function isEmpty(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'empty');
+      case 1:  return _is.empty(val);
+      default: return _are(arguments, _is.empty);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...(Object|?function)} val
+   * @return {boolean}
+   */
+  is.frozen = function isFrozen(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'frozen');
+      case 1:  return _isFrozen(val);
+      default: return _are(arguments, _isFrozen);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val
+   * @return {boolean}
+   */
+  is.whole = function isWholeNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'whole');
+      case 1:  return _isWhole(val);
+      default: return _are(arguments, _isWhole);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.odd = function isOddNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'odd');
+      case 1:  return _isOdd(val);
+      default: return _are(arguments, _isOdd);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.even = function isEvenNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'even');
+      case 1:  return _isEven(val);
+      default: return _are(arguments, _isEven);
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Arguments} vals
+   * @param {function} check
+   * @return {boolean}
+   */
+  function _are(vals, check) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) {
+      if ( !check(vals[i]) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - IS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {(Object|?function)} val
+   * @return {boolean}
+   */
+  function _isFrozen(val) {
+
+    if ( _is.nil(val) ) return false;
+
+    if ( !_is._obj(val) ) throw _error.type('val', 'frozen');
+
+    return _is.frozen(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isWhole(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'whole');
+
+    return _is.whole(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isOdd(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'odd');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'odd');
+
+    return _is.odd(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isEven(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'even');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'even');
+
+    return _is.even(val);
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - CHECKS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {*} val
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVal(checks, val, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = checks.length;
+    while (i--) {
+      if ( checks[i](val, nullable) ) return true;
+    }
+    return false;
+  }
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {!Arguments} vals
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVals(checks, vals, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (--i) {
+      if ( !_checkVal(checks, vals[i], nullable) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - TYPES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @typedef {!Object<string, function(*, boolean=): boolean>} DataTypes
+   */
+
+  /**
+   * @private
+   * @type {DataTypes}
+   */
+  var TYPES = (function() {
+
+    /**
+     * @type {DataTypes}
+     */
+    var _types = {};
+
+    /**
+     * Adds types to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes their type section's method.
+     * @private
+     * @param {string} section - The category for the types.
+     * @param {!Object<string, function(*): boolean>} types - Each type's
+     *   "key => value" pair should be expressed as "typeName => checkMethod".
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addTypes(section, types, nullable) {
+
+      /** @type {string} */
+      var type;
+
+      for (type in types) {
+        if( _own(types, type) ) addType(section, type, types[type], nullable);
+      }
+      return _types;
+    }
+
+    /**
+     * Adds type to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes its type section's method.
+     * @private
+     * @param {string} section - The type's category.
+     * @param {string} type - The type's name.
+     * @param {function(*): boolean} check - The type's check method.
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addType(section, type, check, nullable) {
+      check = _own(addType, section) ? addType[section](check) : check;
+      nullable = nullable !== false;
+      _types['_' + type] = function(val, _nullable) {
+        _nullable = _is.bool(_nullable) ? _nullable : nullable;
+        return _is.nil(val) ? _nullable : check(val);
+      };
+      return _types;
+    }
+
+    /**
+     * Adds the type shortcuts to the _types hash map.
+     * @private
+     * @param {!Object<string, string>} shortcuts
+     * @return {DataTypes}
+     */
+    function addShortcuts(shortcuts) {
+
+      /** @type {string} */
+      var shortcut;
+      /** @type {string} */
+      var type;
+
+      for (shortcut in shortcuts) {
+        if( _own(shortcuts, shortcut) ) {
+          type = '_' + shortcuts[shortcut];
+          shortcut = '_' + shortcut;
+          _types[shortcut] = _types[type];
+        }
+      }
+      return _types;
+    }
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the array's values.
+     * @return {function(*): boolean} The array type's check method.
+     */
+    addType.arrays = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(arr) {
+
+        /** @type {number} */
+        var i;
+
+        if ( !_is.arr(arr) ) return false;
+
+        i = arr.length;
+        while (i--) {
+          if ( !eachCheck(arr[i]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the hash map's properties.
+     * @return {function(*): boolean} The hash map type's check method.
+     */
+    addType.maps = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(obj) {
+
+        /** @type {string} */
+        var prop;
+
+        if ( !_is.obj(obj) ) return false;
+
+        for (prop in obj) {
+          if( _own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    _types = addTypes('primitives', {
+      'undefined': _is.undefined,
+      'boolean':   _is.bool,
+      'string':    _is.str,
+      'number':    _is.num,
+      'nan':       _is.nan
+    }, false);
+    _types = addType('primitives', 'null', _is.nil);
+
+    _types = addTypes('js_objects', {
+      'object': _is.obj,
+      'regexp': _is.regex,
+      'array':  _is.arr,
+      'date':   _is.date,
+      'error':  _is.err
+    });
+    _types = addType('js_objects', 'arguments', _is.args);
+    _types = addType('js_objects', 'function', _is.func, false);
+
+    _types = addTypes('dom_objects', {
+      'element':  _is.elem,
+      'document': _is.doc
+    });
+
+    _types = addType('others', 'empty', _is.empty);
+
+    _types = addTypes('arrays', {
+      'nulls':     _is.nil,
+      'booleans':  _is.bool,
+      'strings':   _is.str,
+      'numbers':   _is.num,
+      'nans':      _is.nan,
+      'objects':   _is.obj,
+      'functions': _is.func,
+      'regexps':   _is.regex,
+      'arrays':    _is.arr,
+      'dates':     _is.date,
+      'errors':    _is.err,
+      'elements':  _is.elem,
+      'documents': _is.doc
+    });
+
+    _types = addTypes('maps', {
+      'nullmap':     _is.nil,
+      'booleanmap':  _is.bool,
+      'stringmap':   _is.str,
+      'numbermap':   _is.num,
+      'nanmap':      _is.nan,
+      'objectmap':   _is.obj,
+      'functionmap': _is.func,
+      'regexpmap':   _is.regex,
+      'arraymap':    _is.arr,
+      'datemap':     _is.date,
+      'errormap':    _is.err,
+      'elementmap':  _is.elem,
+      'documentmap': _is.doc
+    });
+
+    _types = addShortcuts({
+      // primitives
+      nil:  'null',
+      bool: 'boolean',
+      str:  'string',
+      num:  'number',
+
+      // js objects
+      obj:   'object',
+      func:  'function',
+      fn:    'function',
+      regex: 'regexp',
+      re:    'regexp',
+      arr:   'array',
+      err:   'error',
+      args:  'arguments',
+
+      // dom objects
+      elem: 'element',
+      doc:  'document',
+
+      // arrays
+      nils:   'nulls',
+      strs:   'strings',
+      nums:   'numbers',
+      bools:  'booleans',
+      objs:   'objects',
+      funcs:  'functions',
+      fns:    'functions',
+      regexs: 'regexps',
+      arrs:   'arrays',
+      errs:   'errors',
+      elems:  'elements',
+      docs:   'documents',
+
+      // maps
+      nilmap:   'nullmap',
+      strmap:   'stringmap',
+      nummap:   'numbermap',
+      boolmap:  'booleanmap',
+      objmap:   'objectmap',
+      funcmap:  'functionmap',
+      fnmap:    'functionmap',
+      regexmap: 'regexpmap',
+      arrmap:   'arraymap',
+      errmap:   'errormap',
+      elemmap:  'elementmap',
+      docmap:   'documentmap'
+    });
+
+    return _types;
+  })();
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - PARSING
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!RegExp}
+   */
+  var ALL_SPECIALS = /[^a-z\|]/g;
+
+  /**
+   * @private
+   * @type {!Object<string, function(string): boolean>}
+   */
+  var SPECIALS = (function(pipe, exPoint, quesMark, equals, asterisk) {
+    return {
+      '|': function(str) { return pipe.test(str);     },
+      '!': function(str) { return exPoint.test(str);  },
+      '?': function(str) { return quesMark.test(str); },
+      '=': function(str) { return equals.test(str);   },
+      '*': function(str) { return asterisk.test(str); }
+    };
+  })(/\|/, /\!/, /\?/, /\=/, /\*|any/);
+
+  /**
+   * @private
+   * @param {string} special
+   * @param {string} types
+   * @return {boolean}
+   */
+  function _hasSpecial(special, types) {
+    return SPECIALS[special](types);
+  }
+
+  /**
+   * @private
+   * @param {string} types
+   * @return {Array<function>}
+   */
+  function _getChecks(types) {
+
+    /** @type {Array<function>} */
+    var checks;
+    /** @type {string} */
+    var type;
+    /** @type {number} */
+    var i;
+
+    if ( _hasSpecial('=', types) ) types += '|undefined';
+
+    types = types.toLowerCase();
+    types = types.replace(ALL_SPECIALS, '');
+    checks = types.split('|');
+
+    i = checks.length;
+    while (i--) {
+      type = '_' + checks[i];
+      if ( !_own(TYPES, type) ) return null;
+      checks[i] = TYPES[type];
+    }
+
+    return checks.length ? checks : null;
+  }
+
+  /**
+   * Method checks whether "!" or "?" exists in the types.
+   * @private
+   * @param {string} types
+   * @return {(undefined|boolean)} If undefined no override exists.
+   */
+  function _getNullable(types) {
+
+    /** @type {boolean} */
+    var override;
+    /** @type {boolean} */
+    var ensure;
+    /** @type {boolean} */
+    var negate;
+
+    ensure = _hasSpecial('?', types);
+    negate = _hasSpecial('!', types);
+    override = ensure && negate ? false : ensure || negate;
+    return override ? !negate && ensure : undefined;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('is');
+
+  /**
+   * @private
+   * @type {string}
+   */
+  var DOCS = 'https://github.com/imaginate/vitals/blob/master/docs/is.js';
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // COPY
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -489,13 +1824,13 @@ var copy = (function copyPrivateScope() {
 
     if ( !is('bool=', deep) ) throw _error.type('deep');
 
-    return !is._obj(val)
+    return !_is._obj(val)
       ? val
-      : is.func(val)
+      : _is.func(val)
         ? _copyFunc(val, deep)
-        : is._arr(val)
+        : _is._arr(val)
           ? _copyArr(val, deep)
-          : is.regex(val)
+          : _is.regex(val)
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
@@ -509,7 +1844,7 @@ var copy = (function copyPrivateScope() {
    */
   copy.object = function copyObject(obj, deep) {
 
-    if ( !is.obj(obj)       ) throw _error.type('obj',  'object');
+    if ( !_is.obj(obj)      ) throw _error.type('obj',  'object');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
 
     return _copyObj(obj, deep);
@@ -526,9 +1861,9 @@ var copy = (function copyPrivateScope() {
    */
   copy.array = function copyArray(obj, deep) {
 
-    if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
-    if ( !is('bool=', deep)  ) throw _error.type('deep',       'array');
+    if ( !_is.obj(obj)        ) throw _error.type('obj',        'array');
+    if ( !_is.num(obj.length) ) throw _error.type('obj.length', 'array');
+    if ( !is('bool=', deep)   ) throw _error.type('deep',       'array');
 
     return _copyArr(obj, deep);
   };
@@ -545,7 +1880,7 @@ var copy = (function copyPrivateScope() {
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
-    if ( !is.regex(regex)          ) throw _error.type('regex',       'regexp');
+    if ( !_is.regex(regex)         ) throw _error.type('regex',       'regexp');
     if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
@@ -565,7 +1900,7 @@ var copy = (function copyPrivateScope() {
    */
   copy.func = function copyFunction(func, deep) {
 
-    if ( !is.func(func)     ) throw _error.type('func', 'function');
+    if ( !_is.func(func)    ) throw _error.type('func', 'function');
     if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
 
     return _copyFunc(func, deep);
@@ -693,7 +2028,7 @@ var copy = (function copyPrivateScope() {
       }
     }
 
-    if ( is.undefined(forceGlobal) ) return flags;
+    if ( _is.undefined(forceGlobal) ) return flags;
 
     return _inStr(flags, 'g')
       ? forceGlobal
@@ -805,26 +2140,26 @@ var cut = (function cutPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-      return is.arr(vals)
+      return _is.arr(vals)
         ? _cutPatterns(source, vals)
         : _cutPattern(source, vals);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
 
-    if ( is.func(vals) ) {
+    if ( _is.func(vals) ) {
       if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
-      return is.arr(source)
+      return _is.arr(source)
         ? _filterArr(source, vals, thisArg)
         : _filterObj(source, vals, thisArg);
     }
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+    return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
   /**
@@ -863,14 +2198,14 @@ var cut = (function cutPrivateScope() {
    */
   cut.property = function cutProperty(source, val, thisArg) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'property');
+    if ( !_is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
 
-    if ( is.func(val) ) {
+    if ( _is.func(val) ) {
       if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'property');
-      return is.arr(source)
+      return _is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
     }
@@ -890,7 +2225,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
     return _cutKey(source, key);
@@ -908,12 +2243,12 @@ var cut = (function cutPrivateScope() {
    */
   cut.index = function cutIndex(source, index, toIndex) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'index');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'index');
-    if ( !is.num(index)         ) throw _error.type('index',         'index');
-    if ( !is('num=', toIndex)   ) throw _error.type('toIndex',       'index');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'index');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'index');
+    if ( !_is.num(index)         ) throw _error.type('index',         'index');
+    if ( !is('num=', toIndex)    ) throw _error.type('toIndex',       'index');
 
-    source = is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : _sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
@@ -921,21 +2256,18 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses the
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
-   *   from [are]{@link https://github.com/imaginate/are} to complete type
-   *   checks.
+   *   given type and returns the object. This method uses the [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   to complete type checks.
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to the
-   *   [is main function docs]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   * @param {string} type - The type to check for. Refer to [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
    *   for acceptable options.
    * @return {!(Object|function|Array)}
    */
   cut.type = function cutType(source, type) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'type');
-    if ( !is.str(type)    ) throw _error.type('type',   'type');
+    if ( !_is._obj(source) ) throw _error.type('source', 'type');
+    if ( !_is.str(type)    ) throw _error.type('type',   'type');
 
     try {
       is(type, '_');
@@ -947,7 +2279,7 @@ var cut = (function cutPrivateScope() {
       );
     }
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     return _cutType(source, type);
   };
 
@@ -961,10 +2293,10 @@ var cut = (function cutPrivateScope() {
    */
   cut.value = function cutValue(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     return _cutVal(source, val);
   };
   // define shorthand
@@ -980,7 +2312,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.pattern = function cutPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _cutPattern(source, pattern);
@@ -1011,12 +2343,12 @@ var cut = (function cutPrivateScope() {
    */
   cut.properties = function cutProperties(source, vals) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'properties');
+    if ( !_is._obj(source) ) throw _error.type('source', 'properties');
     if (arguments.length < 2) throw _error('No val defined', 'properties');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+    return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   };
   // define shorthand
   cut.props = cut.properties;
@@ -1032,11 +2364,11 @@ var cut = (function cutPrivateScope() {
    */
   cut.keys = function cutKeys(source, keys) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
     if (arguments.length < 2) throw _error('No key defined', 'keys');
 
     keys = arguments.length > 2 ? _sliceArr(arguments, 1) : keys;
-    return is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
+    return _is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
   };
 
   /**
@@ -1050,15 +2382,15 @@ var cut = (function cutPrivateScope() {
    */
   cut.indexes = function cutIndexes(source, indexes) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
     if (arguments.length < 2) throw _error('No index defined', 'indexes');
 
-    source = is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : _sliceArr(source);
     indexes = arguments.length > 2 ? _sliceArr(arguments, 1) : indexes;
 
-    if ( !is.arr(indexes) ) {
-      if ( !is.num(indexes) ) throw _error.type('index', 'indexes');
+    if ( !_is.arr(indexes) ) {
+      if ( !_is.num(indexes) ) throw _error.type('index', 'indexes');
       return _cutIndex(source, indexes);
     }
 
@@ -1080,12 +2412,12 @@ var cut = (function cutPrivateScope() {
    */
   cut.values = function cutValues(source, vals) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
+    return _is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
   };
   // define shorthand
   cut.vals = cut.values;
@@ -1101,11 +2433,11 @@ var cut = (function cutPrivateScope() {
    */
   cut.patterns = function cutPatterns(source, patterns) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'patterns');
+    if ( !_is.str(source) ) throw _error.type('source', 'patterns');
     if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
 
     patterns = arguments.length > 2 ? _sliceArr(arguments, 1) : patterns;
-    return is.arr(patterns)
+    return _is.arr(patterns)
       ? _cutPatterns(source, patterns)
       : _cutPattern(source, patterns);
   };
@@ -1121,8 +2453,8 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutProp(source, val) {
-    return is.arr(source)
-      ? is.num(val)
+    return _is.arr(source)
+      ? _is.num(val)
         ? _spliceKey(source, val)
         : _spliceVal(source, val)
       : is('!str|regex', val)
@@ -1137,7 +2469,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutProps(source, vals) {
-    return is.arr(source)
+    return _is.arr(source)
       ? is('nums', vals)
         ? _spliceKeys(source, vals)
         : _spliceVals(source, vals)
@@ -1193,7 +2525,7 @@ var cut = (function cutPrivateScope() {
 
     if (key >= len) return source;
 
-    if ( is.undefined(toKey) ) {
+    if ( _is.undefined(toKey) ) {
       if (key < 0) return source;
       source.splice(key, 1);
       return source;
@@ -1229,7 +2561,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutType(source, type) {
-    return is.arr(source)
+    return _is.arr(source)
       ? _spliceValByType(source, type)
       : _deleteValByType(source, type);
   }
@@ -1241,7 +2573,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutVal(source, val) {
-    return is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
+    return _is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
   }
 
   /**
@@ -1251,7 +2583,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutVals(source, vals) {
-    return is.arr(source)
+    return _is.arr(source)
       ? _spliceVals(source, vals)
       : _deleteVals(source, vals);
   }
@@ -1263,7 +2595,7 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    if ( !is.regex(pattern) ) {
+    if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
       pattern = _escape(pattern, true);
       pattern = new RegExp(pattern, 'g');
@@ -1308,7 +2640,7 @@ var cut = (function cutPrivateScope() {
     /** @type {!RegExp} */
     var pattern;
 
-    match = is.undefined(match) ? is.regex(key) : match;
+    match = _is.undefined(match) ? _is.regex(key) : match;
 
     if (!match) {
       if ( _own(source, key) ) delete source[key];
@@ -1339,7 +2671,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    match = is.regex( keys[0] );
+    match = _is.regex( keys[0] );
     len = keys.length;
     i = -1;
     while (++i < len) {
@@ -1548,7 +2880,7 @@ var cut = (function cutPrivateScope() {
     /** @type {string} */
     var key;
 
-    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
     obj = filter.length > 2 ? copy(source) : source;
     switch (filter.length) {
       case 0:
@@ -1588,7 +2920,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
     arr = filter.length > 2 ? copy.arr(source) : source;
     i = arr.length;
     switch (filter.length) {
@@ -1914,16 +3246,16 @@ var each = (function eachPrivateScope() {
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _eachCycle(source, iteratee, thisArg);
+    if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
@@ -1944,8 +3276,8 @@ var each = (function eachPrivateScope() {
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _eachObj(source, iteratee, thisArg);
@@ -1970,12 +3302,12 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
@@ -1991,8 +3323,8 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',    'cycle');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'cycle');
+    if ( !_is.num(count)      ) throw _error.type('count',    'cycle');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'cycle');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
@@ -2017,7 +3349,7 @@ var each = (function eachPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: for (key in obj) _own(obj, key) && iteratee();              break;
       case 1: for (key in obj) _own(obj, key) && iteratee(obj[key]);      break;
@@ -2042,7 +3374,7 @@ var each = (function eachPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -2065,7 +3397,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) iteratee(i++);
@@ -2143,16 +3475,16 @@ var fill = (function fillPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       val = keys;
       return _fillStr(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    if ( is.arr(source) ) {
+    if ( _is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
@@ -2162,8 +3494,8 @@ var fill = (function fillPrivateScope() {
     }
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
 
@@ -2184,12 +3516,12 @@ var fill = (function fillPrivateScope() {
    */
   fill.object = function fillObject(obj, keys, val) {
 
-    if ( !is._obj(obj) ) throw _error.type('obj', 'object');
+    if ( !_is._obj(obj) ) throw _error.type('obj', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys', 'object');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
 
@@ -2210,11 +3542,11 @@ var fill = (function fillPrivateScope() {
    */
   fill.array = function fillArray(arr, val, start, end) {
 
-    arr = is.num(arr) ? new Array(arr) : arr;
+    arr = _is.num(arr) ? new Array(arr) : arr;
 
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
+    if ( !_is.arr(arr)      ) throw _error.type('arr',   'array');
     if ( !is('num=', start) ) throw _error.type('start', 'array');
     if ( !is('num=', end)   ) throw _error.type('end',   'array');
 
@@ -2232,7 +3564,7 @@ var fill = (function fillPrivateScope() {
    */
   fill.string = function fillString(count, val) {
 
-    if ( !is.num(count) ) throw _error.type('count', 'string');
+    if ( !_is.num(count) ) throw _error.type('count', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     return _fillStr(count, val);
@@ -2395,16 +3727,16 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-      return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+      return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest');
+    if ( !_is._obj(dest) ) throw _error.type('dest');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
-    if ( is.arr(dest) ) {
+    if ( _is.arr(dest) ) {
       if (arguments.length > 2) {
         vals = _sliceArr(arguments, 1);
         return _fuseArrs(dest, vals);
@@ -2413,7 +3745,7 @@ var fuse = (function fusePrivateScope() {
     }
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   }
 
   /**
@@ -2432,22 +3764,22 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStr(dest, vals);
       vals = _sliceArr(arguments, 1);
       return _fuseStrs(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'value');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'value');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
-      return is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
+      return _is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
     }
 
     vals = _sliceArr(arguments, 1);
-    return is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
+    return _is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
   };
   // define shorthand
   fuse.val = fuse.value;
@@ -2468,24 +3800,24 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value.start');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStrTop(dest, vals);
       vals = _sliceArr(arguments, 1);
       return _fuseStrsTop(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'value.start');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'value.start');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
-      return is.arr(dest)
+      return _is.arr(dest)
         ? _fuseArrValTop(dest, vals)
         : _fuseObjValTop(dest, vals);
     }
 
     vals = _sliceArr(arguments, 1);
-    return is.arr(dest)
+    return _is.arr(dest)
       ? _fuseArrsValTop(dest, vals)
       : _fuseObjsValTop(dest, vals);
   };
@@ -2509,11 +3841,11 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.object = function fuseObject(dest, vals) {
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'object');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   };
   // define shorthand
   fuse.obj = fuse.object;
@@ -2530,10 +3862,10 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.array = function fuseArray(dest, vals) {
 
-    if ( !is._arr(dest) ) throw _error.type('dest', 'array');
+    if ( !_is._arr(dest) ) throw _error.type('dest', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length > 2) {
       vals = _sliceArr(arguments, 1);
@@ -2554,11 +3886,11 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.string = function fuseString(dest, vals) {
 
-    if ( !is.str(dest) ) throw _error.type('dest', 'string');
+    if ( !_is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+    return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
   };
   // define shorthand
   fuse.str = fuse.string;
@@ -2574,8 +3906,8 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObj(dest, val) {
-    if ( is._obj(val) ) return _merge(dest, val);
-    if ( !is.null(val) ) dest[val] = undefined;
+    if ( _is._obj(val) ) return _merge(dest, val);
+    if ( !_is.nil(val) ) dest[val] = undefined;
     return dest;
   }
 
@@ -2674,8 +4006,8 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArr(dest, val) {
-    if ( is.arr(val) ) return dest.concat(val);
-    if ( !is.null(val) ) dest.push(val);
+    if ( _is.arr(val) ) return dest.concat(val);
+    if ( !_is.nil(val) ) dest.push(val);
     return dest;
   }
 
@@ -2880,22 +4212,22 @@ var get = (function getPrivateScope() {
    */
   function get(source, val) {
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined');
-      return is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
+      return _is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
     return arguments.length < 2
-      ? is._arr(source)
+      ? _is._arr(source)
         ? _allIndexes(source)
         : _allKeys(source)
-      : is._arr(source)
+      : _is._arr(source)
         ? _byValIndexes(source, val)
-        : is.regex(val)
+        : _is.regex(val)
           ? _byKeyObjVals(source, val)
           : _byValKeys(source, val);
   }
@@ -2913,11 +4245,11 @@ var get = (function getPrivateScope() {
    */
   get.keys = function getKeys(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
 
     return arguments.length < 2
       ? _allKeys(source)
-      : is.regex(val)
+      : _is.regex(val)
         ? _byKeyKeys(source, val)
         : _byValKeys(source, val);
   };
@@ -2933,7 +4265,7 @@ var get = (function getPrivateScope() {
    */
   get.keys.byKey = function getKeysByKey(source, pattern) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byKey');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byKey');
     if (arguments.length < 2) throw _error('No pattern defined', 'keys.byKey');
 
     return _byKeyKeys(source, pattern);
@@ -2948,7 +4280,7 @@ var get = (function getPrivateScope() {
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byValue');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byValue');
     if (arguments.length < 2) throw _error('No val defined', 'keys.byValue');
 
     return _byValKeys(source, val);
@@ -2972,13 +4304,13 @@ var get = (function getPrivateScope() {
    */
   get.indexes = function getIndexes(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'indexes');
       return _strIndexes(source, val);
     }
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
 
     return arguments.length < 2
       ? _allIndexes(source)
@@ -3003,12 +4335,12 @@ var get = (function getPrivateScope() {
    */
   get.values = function getValues(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'values');
       return _strVals(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'values');
+    if ( !_is._obj(source) ) throw _error.type('source', 'values');
 
     return arguments.length < 2
       ? _allObjVals(source)
@@ -3051,7 +4383,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) _own(obj, key) && _match(key, pattern) && arr.push(key);
     return arr;
@@ -3105,7 +4437,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) {
       _own(obj, key) && _match(key, pattern) && arr.push( obj[key] );
@@ -3172,7 +4504,7 @@ var get = (function getPrivateScope() {
    */
   function _strIndexes(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrKeys(str, pattern)
         : _byStrStrKeys(str, pattern)
       : [];
@@ -3186,7 +4518,7 @@ var get = (function getPrivateScope() {
    */
   function _strVals(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrVals(str, pattern)
         : _byStrStrVals(str, pattern)
       : [];
@@ -3336,13 +4668,13 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined');
     
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( is.str(source) ) return _match(source, key);
+    if ( _is.str(source) ) return _match(source, key);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _inArr(source, key) : _own(source, key);
+    return _is._arr(source) ? _inArr(source, key) : _own(source, key);
   }
 
   /**
@@ -3356,9 +4688,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
     return _own(source, key);
   };
@@ -3374,11 +4706,11 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -3392,7 +4724,7 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _match(source, pattern);
@@ -3407,7 +4739,7 @@ var has = (function hasPrivateScope() {
    */
   has.substring = function hasSubstring(source, str) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'substring');
+    if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No str defined', 'substring');
 
     return _inStr(source, str);
@@ -3426,9 +4758,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'enumerable');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'enumerable');
+    if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
     return _ownEnum(source, key);
   };
@@ -3499,7 +4831,7 @@ var remap = (function remapPrivateScope() {
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
       if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
@@ -3508,11 +4840,11 @@ var remap = (function remapPrivateScope() {
 
     thisArg = replacement;
 
-    if ( !is._obj(source)     ) throw _error.type('source');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is._obj(source)    ) throw _error.type('source');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
@@ -3535,8 +4867,8 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
@@ -3563,12 +4895,12 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -3592,7 +4924,7 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !is.str(source)      ) throw _error.type('source',  'string');
+    if ( !_is.str(source)     ) throw _error.type('source',  'string');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
@@ -3620,7 +4952,7 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
     source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in source) {
@@ -3662,7 +4994,7 @@ var remap = (function remapPrivateScope() {
     var i;
 
     source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -3687,14 +5019,14 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    if ( !is.regex(pattern) ) {
+    if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
       pattern = _escape(pattern, true);
       pattern = new RegExp(pattern, 'g');
     }
 
-    replacement = is.func(replacement)
-      ? is.undefined(thisArg)
+    replacement = _is.func(replacement)
+      ? _is.undefined(thisArg)
         ? replacement
         : _bindR(replacement, thisArg)
       : String(replacement);
@@ -3814,24 +5146,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined');
       return _rollCycle(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArr(base, source, iteratee, thisArg)
         : _rollArr(source, iteratee, thisArg)
@@ -3870,24 +5202,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'up');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'up');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'up');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'up');
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'up');
+    if ( !_is._obj(source) ) throw _error.type('source', 'up');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrUp(base, source, iteratee, thisArg)
         : _rollArrUp(source, iteratee, thisArg)
@@ -3926,24 +5258,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'down');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'down');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'down');
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'down');
+    if ( !_is._obj(source) ) throw _error.type('source', 'down');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrDown(base, source, iteratee, thisArg)
         : _rollArrDown(source, iteratee, thisArg)
@@ -3973,7 +5305,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -4037,7 +5369,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -4080,7 +5412,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4143,7 +5475,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4185,7 +5517,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4248,7 +5580,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
@@ -4294,7 +5626,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4324,7 +5656,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4354,7 +5686,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4383,7 +5715,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4412,7 +5744,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4441,7 +5773,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4470,7 +5802,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length > 1) {
       i = 0;
       while(count--) result = iteratee(result, i++);
@@ -4494,7 +5826,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result += iteratee(i++);
@@ -4518,7 +5850,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result -= iteratee(i++);
@@ -4652,12 +5984,12 @@ var slice = (function slicePrivateScope() {
     if ( !is('num=', start) ) throw _error.type('start');
     if ( !is('num=', end)   ) throw _error.type('end');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return _sliceStr(source, start, end);
 
-    if ( !is._obj(source)       ) throw _error.type('source');
-    if ( !is.num(source.length) ) throw _error.type('source.length');
+    if ( !_is._obj(source)       ) throw _error.type('source');
+    if ( !_is.num(source.length) ) throw _error.type('source.length');
 
     return _sliceArr(source, start, end);
   }
@@ -4672,10 +6004,10 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is('num=', start)     ) throw _error.type('start',         'array');
-    if ( !is('num=', end)       ) throw _error.type('end',           'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !is('num=', start)      ) throw _error.type('start',         'array');
+    if ( !is('num=', end)        ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -4692,7 +6024,7 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !is.str(str)       ) throw _error.type('str',   'string');
+    if ( !_is.str(str)      ) throw _error.type('str',   'string');
     if ( !is('num=', start) ) throw _error.type('start', 'string');
     if ( !is('num=', end)   ) throw _error.type('end',   'string');
 
@@ -4761,26 +6093,26 @@ var until = (function untilPrivateScope() {
 
     if (arguments.length === 2) {
       iteratee = source;
-      if ( !is.func(iteratee) ) throw _error.type('iteratee');
+      if ( !_is.func(iteratee) ) throw _error.type('iteratee');
       return _untilEnd(end, iteratee);
     }
 
-    if ( arguments.length === 3 && is.func(source) && is('?obj', iteratee) ) {
+    if ( arguments.length === 3 && _is.func(source) && is('?obj', iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       return _untilEnd(end, iteratee, thisArg);
     }
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+    if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
@@ -4806,8 +6138,8 @@ var until = (function untilPrivateScope() {
    */
   until.object = function untilObject(end, obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
+    if ( !_is._obj(obj)       ) throw _error.type('obj',      'object');
+    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
 
     return _untilObj(end, obj, iteratee, thisArg);
@@ -4838,12 +6170,12 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
+    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
 
     return _untilArr(end, source, iteratee, thisArg);
   };
@@ -4865,8 +6197,8 @@ var until = (function untilPrivateScope() {
    */
   until.cycle = function untilCycle(end, count, action, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
-    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
+    if ( !_is.num(count)      ) throw _error.type('count',   'cycle');
+    if ( !_is.func(action)    ) throw _error.type('action',  'cycle');
     if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
 
     return _untilCycle(end, count, action, thisArg);
@@ -4890,7 +6222,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(action(i++) !== end) {}
@@ -4915,7 +6247,7 @@ var until = (function untilPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4964,7 +6296,7 @@ var until = (function untilPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -5004,7 +6336,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(count--) if (action(i++) === end) return true;
@@ -5064,6 +6396,7 @@ module.exports = {
   fuse:   fuse,
   get:    get,
   has:    has,
+  is:     is,
   remap:  remap,
   roll:   roll,
   same:   same,
