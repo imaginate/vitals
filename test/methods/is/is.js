@@ -271,6 +271,123 @@ var TESTS = {
         falsy:  [ [ [ null, { nodeType: 1 } ], [ { nodeType: 1 } ] ] ]
       }
     }
+  },
+  'maps': {
+    'nullMap': {
+      shortcut: 'nilMap',
+      truthy: [ null, {}, { a: null, b: null } ],
+      falsy:  [ 5, { a: null , b: false } ],
+      plural: {
+        truthy: [ [ null, {}, { a: null, b: null } ] ],
+        falsy:  [ [ { a: 0, b: null }, { c: null } ] ]
+      }
+    },
+    'booleanMap': {
+      shortcut: 'boolMap',
+      truthy: [ null, {}, { a: true, b: false } ],
+      falsy:  [ 5, { a: null, b: false } ],
+      plural: {
+        truthy: [ [ null, {}, { a: true, b: false } ] ],
+        falsy:  [ [ { a: null, b: true }, { c: false } ] ]
+      }
+    },
+    'stringMap': {
+      shortcut: 'strMap',
+      truthy: [ null, {}, { a: 'a', b: 'b' } ],
+      falsy:  [ 5, { a: 1, b: 'b' } ],
+      plural: {
+        truthy: [ [ null, {}, { a: 'a', b: 'b' } ] ],
+        falsy:  [ [ { a: 1, b: 'b' }, { c: 'c' } ] ]
+      }
+    },
+    'numberMap': {
+      shortcut: 'numMap',
+      truthy: [ null, {}, { a: 0, b: 1 } ],
+      falsy:  [ 5, { a: 0, b: '1' } ],
+      plural: {
+        truthy: [ [ null, {}, { a: 0, b: 1 } ] ],
+        falsy:  [ [ { a: 0, b: 1 }, { c: '2' } ] ]
+      }
+    },
+    'nanMap': {
+      truthy: [ null, {}, { a: NaN, b: NaN } ],
+      falsy:  [ 5, { a: null, b: NaN } ],
+      plural: {
+        truthy: [ [ null, {}, { a: NaN, b: NaN } ] ],
+        falsy:  [ [ { a: 0, b: NaN }, { c: NaN } ] ]
+      }
+    },
+    'objectMap': {
+      shortcut: 'objMap',
+      truthy: [ null, {}, { a: {}, b: {} } ],
+      falsy:  [ 5, { a: 10, b: {} } ],
+      plural: {
+        truthy: [ [ null, {}, { a: {}, b: {} } ] ],
+        falsy:  [ [ { a: {}, b: function(){} }, { c: {} } ] ]
+      }
+    },
+    'functionMap': {
+      shortcut: 'fnMap|funcMap',
+      truthy: [ null, {}, { a: function(){}, b: function(){} } ],
+      falsy:  [ 5, { a: {}, b: function(){} } ],
+      plural: {
+        truthy: [ [ null, {}, { a: function(){}, b: function(){} } ] ],
+        falsy:  [ [ { a: null, b: function(){} }, { c: function(){} } ] ]
+      }
+    },
+    'arrayMap': {
+      shortcut: 'arrMap',
+      truthy: [ null, {}, { a: [], b: [] } ],
+      falsy:  [ 5, { a: {}, b: [] } ],
+      plural: {
+        truthy: [ [ null, {}, { a: [], b: [] } ] ],
+        falsy:  [ [ { a: null, b: [] }, { c: [] } ] ]
+      }
+    },
+    'regexpMap': {
+      shortcut: 'regexMap',
+      truthy: [ null, {}, { a: /re/, b: /re/ } ],
+      falsy:  [ 5, { a: {}, b: /re/ } ],
+      plural: {
+        truthy: [ [ null, {}, { a: /re/, b: /re/ } ] ],
+        falsy:  [ [ { a: null, b: /re/ }, { c: /re/ } ] ]
+      }
+    },
+    'dateMap': {
+      truthy: [ null, {}, { a: new Date(), b: new Date() } ],
+      falsy:  [ 5, { a: null, b: new Date() } ],
+      plural: {
+        truthy: [ [ null, {}, { a: new Date(), b: new Date() } ] ],
+        falsy:  [ [ { a: {}, b: new Date() }, { c: new Date() } ] ]
+      }
+    },
+    'errorMap': {
+      shortcut: 'errMap',
+      truthy: [ null, {}, { a: new Error(), b: new TypeError() } ],
+      falsy:  [ 5, { a: {}, b: new Error() } ],
+      plural: {
+        truthy: [ [ null, {}, { a: new Error(), b: new TypeError() } ] ],
+        falsy:  [ [ { a: null, b: new Error() }, { c: new TypeError() } ] ]
+      }
+    },
+    'documentMap': {
+      shortcut: 'docMap',
+      truthy: [ null, {}, { a: { nodeType: 9 }, b: { nodeType: 9 } } ],
+      falsy:  [ 5, { a: { nodeType: 1 }, b: { nodeType: 9 } } ],
+      plural: {
+        truthy: [ [ null, {}, { a: { nodeType: 9 }, b: { nodeType: 9 } } ] ],
+        falsy:  [ [ { a: null, b: { nodeType: 9 } }, { c: { nodeType: 9 } } ] ]
+      }
+    },
+    'elementMap': {
+      shortcut: 'elemMap',
+      truthy: [ null, {}, { a: { nodeType: 1 }, b: { nodeType: 1 } } ],
+      falsy:  [ 5, { a: { nodeType: 9 }, b: { nodeType: 1 } } ],
+      plural: {
+        truthy: [ [ null, {}, { a: { nodeType: 1 }, b: { nodeType: 1 } } ] ],
+        falsy:  [ [ { a: null, b: { nodeType: 1 } }, { c: { nodeType: 1 } } ] ]
+      }
+    }
   }
 };
 
