@@ -179,6 +179,7 @@ var _is = (function _isPrivateScope() {
     return _is.obj(val) && toStr.call(val) === '[object Arguments]';
   };
 
+  // BROWSER ONLY
   (function() {
     // check JS engine for accuracy
     if ( _is.args(arguments) ) return;
@@ -209,6 +210,7 @@ var _is = (function _isPrivateScope() {
       _is.args = function(){ return false; };
     }
   })();
+  // BROWSER ONLY END
 
   //////////////////////////////////////////////////////////
   // DOM OBJECTS
