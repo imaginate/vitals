@@ -17,7 +17,6 @@
 
 var newErrorAid = require('../helpers/errorAid.js');
 var _is = require('./helpers/is.js');
-var is = require('../is.js');
 var fs = require('fs');
 
 var to = {};
@@ -51,8 +50,8 @@ var to = {};
       return contents;
     }
 
-    if ( !_is.str(contents)     ) throw _error.type('contents', 'file');
-    if ( !is('?str=', encoding) ) throw _error.type('encoding', 'file');
+    if ( !_is.str(contents)        ) throw _error.type('contents', 'file');
+    if ( !_is.nil.un.str(encoding) ) throw _error.type('encoding', 'file');
 
     encoding = _is.undefined(encoding) ? 'utf8' : encoding;
     return encoding
