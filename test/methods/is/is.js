@@ -388,6 +388,16 @@ var TESTS = {
         falsy:  [ [ { a: null, b: { nodeType: 1 } }, { c: { nodeType: 1 } } ] ]
       }
     }
+  },
+  'others': {
+    'empty': {
+      truthy: [ null, undefined, false, '', 0, {}, [], function(){}, NaN ],
+      falsy:  [ true, 'a', 1, { a: null }, [ 'a' ], function(a){} ],
+      plural: {
+        truthy: [ [ null, undefined, false, '', 0, {}, [], function(){}, NaN ] ],
+        falsy:  [ [ null, undefined, false, '', 1, {}, [], function(){}, NaN ] ]
+      }
+    }
   }
 };
 
