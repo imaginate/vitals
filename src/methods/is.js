@@ -534,7 +534,7 @@ var is = (function isPrivateScope() {
     /** @type {number} */
     var i;
 
-    i = types.length;
+    i = checks.length;
     while (i--) {
       if ( checks[i](val, nullable) ) return true;
     }
