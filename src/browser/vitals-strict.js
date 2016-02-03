@@ -315,7 +315,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.undefined = function(val) {
-    return typeof val === 'undefined';
+    return val === undefined;
   };
 
   /**
@@ -403,7 +403,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.arr = function(val) {
-    return _is.obj(val) && toStr.call(val) === '[object Array]';
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
   };
 
   /**
@@ -422,7 +422,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.regex = function(val) {
-    return _is.obj(val) && toStr.call(val) === '[object RegExp]';
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
   };
 
   /**
@@ -430,7 +430,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.date = function(val) {
-    return _is.obj(val) && toStr.call(val) === '[object Date]';
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
   };
 
   /**
@@ -438,7 +438,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.err = function(val) {
-    return _is.obj(val) && toStr.call(val) === '[object Error]';
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
   };
 
   /**
@@ -446,7 +446,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.args = function(val) {
-    return _is.obj(val) && toStr.call(val) === '[object Arguments]';
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Arguments]';
   };
 
   // BROWSER ONLY
@@ -459,7 +459,7 @@ var _is = (function _isPrivateScope() {
      * @return {boolean}
      */
     _is._arr = function(val) {
-      return _is.obj(val) && (
+      return !!val && typeof val === 'object' && (
         toStr.call(val) === '[object Array]' || 'callee' in val
       );
     };
@@ -469,7 +469,7 @@ var _is = (function _isPrivateScope() {
      * @return {boolean}
      */
     _is.args = function(val) {
-      return _is.obj(val) && 'callee' in val;
+      return !!val && typeof val === 'object' && 'callee' in val;
     };
 
     try {
@@ -491,7 +491,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.doc = function(val) {
-    return _is.obj(val) && val.nodeType === 9;
+    return !!val && typeof val === 'object' && val.nodeType === 9;
   };
 
   /**
@@ -499,7 +499,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.elem = function(val) {
-    return _is.obj(val) && val.nodeType === 1;
+    return !!val && typeof val === 'object' && val.nodeType === 1;
   };
 
   //////////////////////////////////////////////////////////
@@ -591,8 +591,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.bool = function(val) {
-    val = typeof val;
-    return val === 'undefined' || val === 'boolean';
+    return val === undefined || typeof val === 'boolean';
   };
 
   /**
@@ -600,8 +599,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.str = function(val) {
-    val = typeof val;
-    return val === 'undefined' || val === 'string';
+    return val === undefined || typeof val === 'string';
   };
 
   /**
@@ -609,8 +607,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.num = function(val) {
-    val = val === val && typeof val;
-    return val && (val === 'undefined' || val === 'number');
+    return val === undefined || (typeof val === 'number' && val === val);
   };
 
   /**
@@ -618,7 +615,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.obj = function(val) {
-    return val ? typeof val === 'object' : typeof val === 'undefined';
+    return val === undefined || (!!val && typeof val === 'object');
   };
 
   /**
@@ -626,7 +623,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.func = function(val) {
-    return val ? typeof val === 'function' : typeof val === 'undefined';
+    return val === undefined || (!!val && typeof val === 'function');
   };
 
   /**
@@ -634,9 +631,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.un.arr = function(val) {
-    return val
-      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
-      : typeof val === 'undefined';
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
   };
 
   //////////////////////////////////////////////////////////
@@ -672,7 +669,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.obj = function(val) {
-    return val ? typeof val === 'object' : val === null;
+    return val === null || (!!val && typeof val === 'object');
   };
 
   /**
@@ -680,7 +677,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.func = function(val) {
-    return val ? typeof val === 'function' : val === null;
+    return val === null || (!!val && typeof val === 'function');
   };
 
   /**
@@ -688,9 +685,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.arr = function(val) {
-    return val
-      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
-      : val === null;
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
   };
 
   //////////////////////////////////////////////////////////
@@ -705,9 +702,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.bool = function(val) {
-    if (val === null) return true;
-    val = typeof val;
-    return val === 'undefined' || val === 'boolean';
+    return val === null || val === undefined || typeof val === 'boolean';
   };
 
   /**
@@ -715,9 +710,7 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.str = function(val) {
-    if (val === null) return true;
-    val = typeof val;
-    return val === 'undefined' || val === 'string';
+    return val === null || val === undefined || typeof  val === 'string';
   };
 
   /**
@@ -725,9 +718,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.num = function(val) {
-    if (val === null) return true;
-    val = val === val && typeof val;
-    return val && (val === 'undefined' || val === 'number');
+    return val === null || val === undefined || (
+      typeof val === 'number' && val === val
+    );
   };
 
   /**
@@ -735,9 +728,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.obj = function(val) {
-    return val
-      ? typeof val === 'object'
-      : val === null || typeof val === 'undefined';
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object'
+    );
   };
 
   /**
@@ -745,9 +738,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.func = function(val) {
-    return val
-      ? typeof val === 'function'
-      : val === null || typeof val === 'undefined';
+    return val === null || val === undefined || (
+      !!val && typeof val === 'undefined'
+    );
   };
 
   /**
@@ -755,9 +748,9 @@ var _is = (function _isPrivateScope() {
    * @return {boolean}
    */
   _is.nil.un.arr = function(val) {
-    return val
-      ? typeof val === 'object' && toStr.call(val) === '[object Array]'
-      : val === null || typeof val === 'undefined';
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
   };
 
   //////////////////////////////////////////////////////////
