@@ -228,7 +228,7 @@ var TESTS = {
       }
     },
     'regexps': {
-      shortcut: 'regexs',
+      shortcut: 'res|regexs',
       truthy: [ null, [], [ /re/, /re/ ] ],
       falsy:  [ 5, {}, [ null, /re/ ] ],
       plural: {
@@ -345,7 +345,7 @@ var TESTS = {
       }
     },
     'regexpMap': {
-      shortcut: 'regexMap',
+      shortcut: 'reMap|regexMap',
       truthy: [ null, {}, { a: /re/, b: /re/ } ],
       falsy:  [ 5, { a: {}, b: /re/ } ],
       plural: {
