@@ -154,6 +154,123 @@ var TESTS = {
         falsy:  [ [ null, { nodeType: 7 } ] ]
       }
     }
+  },
+  'arrays': {
+    'nulls': {
+      shortcut: 'nils',
+      truthy: [ null, [], [ null, null ] ],
+      falsy:  [ 5, {}, [ null, {} ], [ null, undefined ] ],
+      plural: {
+        truthy: [ [ null, [], [ null, null ] ] ],
+        falsy:  [ [ [ null, null ], [ null, undefined ] ] ]
+      }
+    },
+    'booleans': {
+      shortcut: 'bools',
+      truthy: [ null, [], [ true, false ] ],
+      falsy:  [ 5, {}, [ null, true ] ],
+      plural: {
+        truthy: [ [ null, [], [ true, false ] ] ],
+        falsy:  [ [ [ null, true ], [ true, false ] ] ]
+      }
+    },
+    'strings': {
+      shortcut: 'strs',
+      truthy: [ null, [], [ 'a', 'b' ] ],
+      falsy:  [ 5, {}, [ null, 'a', 'b' ] ],
+      plural: {
+        truthy: [ [ null, [], [ 'a', 'b' ] ] ],
+        falsy:  [ [ [ null, 'a' ], [ 'a', 'b' ] ] ]
+      }
+    },
+    'numbers': {
+      shortcut: 'nums',
+      truthy: [ null, [], [ -1, 0, 1, 1.5 ] ],
+      falsy:  [ 5, {}, [ -1, NaN, 1, 1.5 ] ],
+      plural: {
+        truthy: [ [ null, [], [ -1, 0, 1, 1.5 ] ] ],
+        falsy:  [ [ [ -1, NaN, 1, 1.5 ], [ -1, 0, 1, 1.5 ] ] ]
+      }
+    },
+    'nans': {
+      truthy: [ null, [], [ NaN, NaN ] ],
+      falsy:  [ 5, {}, [ null, NaN ] ],
+      plural: {
+        truthy: [ [ null, [], [ NaN, NaN ] ] ],
+        falsy:  [ [ [ null, NaN ], [ NaN, NaN ] ] ]
+      }
+    },
+    'objects': {
+      shortcut: 'objs',
+      truthy: [ null, [], [ {}, {} ] ],
+      falsy:  [ 5, {}, [ null, {} ], [ null, undefined ] ],
+      plural: {
+        truthy: [ [ null, [], [ {}, {} ] ] ],
+        falsy:  [ [ [ null, {} ], [ {}, {} ] ] ]
+      }
+    },
+    'functions': {
+      shortcut: 'fns|funcs',
+      truthy: [ null, [], [ function(){}, function(){} ] ],
+      falsy:  [ 5, {}, [ null, function(){} ] ],
+      plural: {
+        truthy: [ [ null, [], [ function(){}, function(){} ] ] ],
+        falsy:  [ [ [ null, function(){} ], [ function(){}, function(){} ] ] ]
+      }
+    },
+    'arrays': {
+      shortcut: 'arrs',
+      truthy: [ null, [], [ [], [] ] ],
+      falsy:  [ 5, {}, [ null, [] ] ],
+      plural: {
+        truthy: [ [ null, [], [ [], [] ] ] ],
+        falsy:  [ [ [ null, [] ], [ [], [] ] ] ]
+      }
+    },
+    'regexps': {
+      shortcut: 'regexs',
+      truthy: [ null, [], [ /re/, /re/ ] ],
+      falsy:  [ 5, {}, [ null, /re/ ] ],
+      plural: {
+        truthy: [ [ null, [], [ /re/, /re/ ] ] ],
+        falsy:  [ [ [ null, /re/ ], [ /re/, /re/ ] ] ]
+      }
+    },
+    'dates': {
+      truthy: [ null, [], [ new Date(), new Date() ] ],
+      falsy:  [ 5, {}, [ null, new Date() ] ],
+      plural: {
+        truthy: [ [ null, [], [ new Date(), new Date() ] ] ],
+        falsy:  [ [ [ null, new Date() ], [ new Date(), new Date() ] ] ]
+      }
+    },
+    'errors': {
+      shortcut: 'errs',
+      truthy: [ null, [], [ new Error(), new TypeError() ] ],
+      falsy:  [ 5, {}, [ null, new Error() ], [ null, undefined ] ],
+      plural: {
+        truthy: [ [ null, [], [ new Error(), new TypeError() ] ] ],
+        falsy:  [ [ [ null, new Error() ], [ new Error(), new TypeError() ] ] ]
+      }
+    },
+    'documents': {
+      shortcut: 'docs',
+      truthy: [ null, [], [ { nodeType: 9 }, { nodeType: 9 } ] ],
+      falsy:  [ 5, {}, [ null, { nodeType: 9 } ], [ null, undefined ] ],
+      plural: {
+        truthy: [ [ null, [], [ { nodeType: 9 }, { nodeType: 9 } ] ] ],
+        falsy:  [ [ [ null, { nodeType: 9 } ], [ { nodeType: 9 } ] ] ]
+      }
+    },
+    'elements': {
+      shortcut: 'elems',
+      truthy: [ null, [], [ { nodeType: 1 }, { nodeType: 1 } ] ],
+      falsy:  [ 5, {}, [ null, { nodeType: 1 } ], [ null, undefined ] ],
+      plural: {
+        truthy: [ [ null, [], [ { nodeType: 1 }, { nodeType: 1 } ] ] ],
+        falsy:  [ [ [ null, { nodeType: 1 } ], [ { nodeType: 1 } ] ] ]
+      }
+    }
   }
 };
 
