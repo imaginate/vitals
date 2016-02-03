@@ -19,7 +19,7 @@
 
 var _merge = require('./src/methods/helpers/merge.js');
 var _own = require('./src/methods/helpers/own.js');
-var is = require('node-are').is;
+var _is = require('./src/methods/helpers/is.js');
 
 /**
  * @public
@@ -40,14 +40,14 @@ module.exports = function newVitals(methods) {
     default: methods = arguments;
   }
 
-  if ( is.arr(methods) ) {
+  if ( _is.arr(methods) ) {
     switch (methods.length) {
       case 0: methods = 'all'; break;
       case 1: methods = methods[0];
     }
   }
 
-  vitals = is.str(methods) ? setupMethod(methods) : setupMethods(methods);
+  vitals = _is.str(methods) ? setupMethod(methods) : setupMethods(methods);
   vitals.makeGlobal = newMakeGlobal(vitals, methods);
   vitals.construct = newVitals;
   vitals.version = '3.0.0';
@@ -62,7 +62,7 @@ module.exports = function newVitals(methods) {
  */
 function newMakeGlobal(vitals, method) {
 
-  if ( !is.func(vitals) ) method = null;
+  if ( !_is.func(vitals) ) method = null;
 
   /**
    * @public
@@ -163,7 +163,7 @@ function setupMethods(methods) {
   /** @type {number} */
   var i;
 
-  if ( !is._arr(methods) ) throw new TypeError( errMsg(methods) );
+  if ( !_is._arr(methods) ) throw new TypeError( errMsg(methods) );
 
   vitals = {};
   len = methods.length;
@@ -171,7 +171,7 @@ function setupMethods(methods) {
   while (++i < len) {
     method = methods[i];
 
-    if ( !is.str(method) ) throw new TypeError( errMsg(method, i) );
+    if ( !_is.str(method) ) throw new TypeError( errMsg(method, i) );
 
     if ( isSection(method) ) {
       section = requireSection(method);
@@ -284,7 +284,7 @@ function errMsg(method, i) {
 
   msg = 'invalid method - ';
 
-  if ( is.str(method) ) {
+  if ( _is.str(method) ) {
     msg += 'must be vitals section or method - ';
     msg += 'method= ' + method;
   }
@@ -292,7 +292,7 @@ function errMsg(method, i) {
     msg += 'must be a string - ';
     msg += 'typeof= ' + typeof method;
   }
-  return is.num(i)
+  return _is.num(i)
     ? msg + ' index= ' + i
     : msg;
 }
