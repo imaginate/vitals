@@ -103,7 +103,7 @@ var cut = (function cutPrivateScope() {
     source = _is.args(source) ? _sliceArr(source) : source;
 
     if ( _is.func(vals) ) {
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
       return _is.arr(source)
         ? _filterArr(source, vals, thisArg)
         : _filterObj(source, vals, thisArg);
@@ -155,7 +155,7 @@ var cut = (function cutPrivateScope() {
     source = _is.args(source) ? _sliceArr(source) : source;
 
     if ( _is.func(val) ) {
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'property');
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'property');
       return _is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
@@ -197,7 +197,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source)       ) throw _error.type('source',        'index');
     if ( !_is.num(source.length) ) throw _error.type('source.length', 'index');
     if ( !_is.num(index)         ) throw _error.type('index',         'index');
-    if ( !is('num=', toIndex)    ) throw _error.type('toIndex',       'index');
+    if ( !_is.un.num(toIndex)    ) throw _error.type('toIndex',       'index');
 
     source = _is.arr(source) ? source : _sliceArr(source);
     return _cutIndex(source, index, toIndex);
