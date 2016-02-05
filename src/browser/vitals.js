@@ -3608,8 +3608,8 @@ var fill = (function fillPrivateScope() {
       end = start;
       start = val;
       val = keys;
-      if ( !is('num=', start) ) throw _error.type('start');
-      if ( !is('num=', end)   ) throw _error.type('end');
+      if ( !_is.un.num(start) ) throw _error.type('start');
+      if ( !_is.un.num(end)   ) throw _error.type('end');
       return _fillArr(source, val, start, end);
     }
 
@@ -3667,8 +3667,8 @@ var fill = (function fillPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
     if ( !_is.arr(arr)      ) throw _error.type('arr',   'array');
-    if ( !is('num=', start) ) throw _error.type('start', 'array');
-    if ( !is('num=', end)   ) throw _error.type('end',   'array');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'array');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'array');
 
     return _fillArr(arr, val, start, end);
   };
