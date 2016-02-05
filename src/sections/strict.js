@@ -2716,7 +2716,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);
@@ -2747,7 +2747,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);
