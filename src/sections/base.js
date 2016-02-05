@@ -1817,7 +1817,7 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return !_is._obj(val)
       ? val
@@ -1840,7 +1840,7 @@ var copy = (function copyPrivateScope() {
   copy.object = function copyObject(obj, deep) {
 
     if ( !_is.obj(obj)      ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return _copyObj(obj, deep);
   };
@@ -1858,7 +1858,7 @@ var copy = (function copyPrivateScope() {
 
     if ( !_is.obj(obj)        ) throw _error.type('obj',        'array');
     if ( !_is.num(obj.length) ) throw _error.type('obj.length', 'array');
-    if ( !is('bool=', deep)   ) throw _error.type('deep',       'array');
+    if ( !_is.un.bool(deep)   ) throw _error.type('deep',       'array');
 
     return _copyArr(obj, deep);
   };
@@ -1876,7 +1876,7 @@ var copy = (function copyPrivateScope() {
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
     if ( !_is.regex(regex)         ) throw _error.type('regex',       'regexp');
-    if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
+    if ( !_is.un.bool(forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
@@ -1896,7 +1896,7 @@ var copy = (function copyPrivateScope() {
   copy.func = function copyFunction(func, deep) {
 
     if ( !_is.func(func)    ) throw _error.type('func', 'function');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'function');
 
     return _copyFunc(func, deep);
   };
