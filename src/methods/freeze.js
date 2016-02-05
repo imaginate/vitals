@@ -45,7 +45,7 @@ var freeze = (function freezePrivateScope() {
     if ( _is.nil(obj) ) return null;
 
     if ( !_is._obj(obj)     ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   }
@@ -62,7 +62,7 @@ var freeze = (function freezePrivateScope() {
     if ( _is.nil(obj) ) return null;
 
     if ( !_is._obj(obj)     ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   };
