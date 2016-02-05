@@ -20,7 +20,6 @@ var _splitKeys = require('./helpers/splitKeys.js');
 var _own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
-var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,8 +56,8 @@ var each = (function eachPrivateScope() {
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
     if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
@@ -87,9 +86,9 @@ var each = (function eachPrivateScope() {
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _eachObj(source, iteratee, thisArg);
   };
@@ -115,10 +114,10 @@ var each = (function eachPrivateScope() {
 
     if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
@@ -134,9 +133,9 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !_is.num(count)      ) throw _error.type('count',    'cycle');
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'cycle');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'cycle');
+    if ( !_is.num(count)          ) throw _error.type('count',    'cycle');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'cycle');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
   };
