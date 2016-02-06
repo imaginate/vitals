@@ -46,15 +46,13 @@ function loadVitalsMethods() {
     vitals[method] = require(filepath);
   });
 
-  if (VERSION.syncFs) {
-    filenames = get.filepaths('src/methods/fs');
-    each(filenames, function(filename) {
-      method = cut(filename, /\.js$/);
-      filepath = fuse('../../src/methods/fs/', filename);
-      methods = require(filepath);
-      vitals[method] = fuse(vitals[method] || {}, methods);
-    });
-  }
+  filenames = get.filepaths('src/methods/fs');
+  each(filenames, function(filename) {
+    method = cut(filename, /\.js$/);
+    filepath = fuse('../../src/methods/fs/', filename);
+    methods = require(filepath);
+    vitals[method] = fuse(vitals[method] || {}, methods);
+  });
 
   return vitals;
 }
