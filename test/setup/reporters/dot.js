@@ -27,9 +27,9 @@ var Base = require('./base.js');
 var DOT = Base.symbols.dot;
 
 var SPEED = {
-  'slow':   'cyan',
-  'medium': 'cyan',
-  'fast':   'white'
+  'slow':   chalk.red.bold,
+  'medium': chalk.yellow.bold,
+  'fast':   chalk.white
 };
 
 module.exports = Dot;
@@ -57,11 +57,12 @@ function Dot(runner) {
 
   /**
    * @private
-   * @param {string} color
+   * @param {(string|function)} color
    */
   function writeDot(color) {
     if ( is.same(++dots % width, 0) ) process.stdout.write('\n  ');
-    process.stdout.write( chalk[color](DOT) );
+    if ( is.str(color) ) color = chalk[color];
+    process.stdout.write( color(DOT) );
   }
 
   runner.on('pending', function() {
