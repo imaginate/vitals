@@ -174,7 +174,7 @@ function sectionsTests() {
  * @type {function}
  */
 function browserTests() {
-  roll(null, getSections(), newBrowserTest)();
+  roll(null, getSections({ invalidFiles: /^fs\.js$/ }), newBrowserTest)();
 }
 
 /**
@@ -239,14 +239,15 @@ function newMinBrowserTest(file, setup, grep, callback) {
 
 /**
  * @private
+ * @param {!Object=} opts
  * @return {!Array<string>}
  */
-function getSections() {
+function getSections(opts) {
 
   /** @type {!Array<string>} */
   var sections;
 
-  sections = get.filepaths('test/setup/sections');
+  sections = get.filepaths('test/setup/sections', opts);
   return remap(sections, function(section) {
     return cut(section, /\.js$/);
   });
