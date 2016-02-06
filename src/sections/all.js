@@ -7915,8 +7915,9 @@ var seal = (function sealPrivateScope() {
    * Copy the contents of a file to a new or existing file.
    * @public
    * @param {string} source - Must be a valid filepath to an existing file.
-   * @param {string} dest - Must be a valid filepath to a new or existing file
-   *   or a valid dirpath to an existing directory.
+   * @param {string} dest - Must be a valid filepath to a new or existing file,
+   *   a valid dirpath to an existing directory, or a valid dirpath to a new
+   *   directory noted by ending with a slash.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
    * @param {boolean=} opts.buffer - [default= true] Use and return a buffer.
    * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
@@ -7942,7 +7943,10 @@ var seal = (function sealPrivateScope() {
       if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    dest = _is.dir(dest) ? _prepDir(dest) + _getFilename(source) : dest;
+    if ( _match(dest, /\/$/) ) _makeDir(dest);
+
+    if ( _is.dir(dest) ) dest = _prepDir(dest) + _getFilename(source);
+
     opts = _prepOptions(opts);
     return _copyFile(source, dest, opts);
   };
@@ -8202,6 +8206,14 @@ var seal = (function sealPrivateScope() {
    */
   function _prepDir(dirpath) {
     return dirpath.replace(/[^\/]$/, '$&/');
+  }
+
+  /**
+   * @private
+   * @param {string} dirpath
+   */
+  function _makeDir(dirpath) {
+    if ( !_is.dir(dirpath) ) fs.mkdirSync(dirpath);
   }
 
   /**

@@ -34,6 +34,7 @@ var to = {};
 // INSERT methods/helpers/isEol.js
 // INSERT methods/helpers/is.js
 // INSERT methods/fs/helpers/is.js
+// INSERT methods/helpers/match.js
 // INSERT methods/helpers/normalize.js
 
 
