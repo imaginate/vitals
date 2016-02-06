@@ -24,6 +24,33 @@ require('log-ocd')('log');
 require('node-vitals')(2, 'base', 'strict', 'fs');
 require('./display');
 
+/**
+ * @typedef {!{
+ *   major:  number,
+ *   minor:  number,
+ *   syncFs: boolean
+ * }} Version
+ */
+
+global.VERSION = getVersion(process.version);
+
+/**
+ * @private
+ * @param {string} version
+ * @return {Version}
+ */
+function getVersion(version) {
+  version = {
+    major: remap(version, /^v?([0-9]+)\.[0-9\.]+$/, '$1'),
+    minor: remap(version, /^v?[0-9]+\.([0-9]+)\.[0-9]+$/, '$1')
+  };
+  version = remap(version, function(val) {
+    return Number(val);
+  });
+  version.syncFs = version.major > 0 || version.minor > 7;
+  return version;
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // SETUP LOG-OCD
 
