@@ -5976,8 +5976,8 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    if ( !is('num=', start) ) throw _error.type('start');
-    if ( !is('num=', end)   ) throw _error.type('end');
+    if ( !_is.un.num(start) ) throw _error.type('start');
+    if ( !_is.un.num(end)   ) throw _error.type('end');
 
     if ( _is.nil(source) ) return null;
 
@@ -6001,8 +6001,8 @@ var slice = (function slicePrivateScope() {
 
     if ( !_is._obj(source)       ) throw _error.type('source',        'array');
     if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is('num=', start)      ) throw _error.type('start',         'array');
-    if ( !is('num=', end)        ) throw _error.type('end',           'array');
+    if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
+    if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -6020,8 +6020,8 @@ var slice = (function slicePrivateScope() {
   slice.string = function sliceString(str, start, end) {
 
     if ( !_is.str(str)      ) throw _error.type('str',   'string');
-    if ( !is('num=', start) ) throw _error.type('start', 'string');
-    if ( !is('num=', end)   ) throw _error.type('end',   'string');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'string');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
 
     return _sliceStr(str, start, end);
   };
