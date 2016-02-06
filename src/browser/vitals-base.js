@@ -5261,8 +5261,8 @@ var roll = (function rollPrivateScope() {
     }
     else hasBase = true;
 
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
     if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined');
@@ -5317,8 +5317,8 @@ var roll = (function rollPrivateScope() {
     }
     else hasBase = true;
 
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'up');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'up');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'up');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'up');
 
     if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'up');
@@ -5373,8 +5373,8 @@ var roll = (function rollPrivateScope() {
     }
     else hasBase = true;
 
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'down');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'down');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'down');
 
     if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'down');
