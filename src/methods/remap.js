@@ -21,7 +21,6 @@ var _escape = require('./helpers/escape.js');
 var _own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
-var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
