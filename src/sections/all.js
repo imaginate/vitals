@@ -4955,15 +4955,15 @@ var remap = (function remapPrivateScope() {
     if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !_is._obj(source)    ) throw _error.type('source');
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is._obj(source)        ) throw _error.type('source');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
     return _is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
@@ -4988,9 +4988,9 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !_is._obj(source)    ) throw _error.type('source',   'object');
-    if ( !_is.func(iteratee)  ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
@@ -5018,10 +5018,10 @@ var remap = (function remapPrivateScope() {
 
     if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)    ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -5045,8 +5045,8 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !_is.str(source)     ) throw _error.type('source',  'string');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
+    if ( !_is.str(source)         ) throw _error.type('source',  'string');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
