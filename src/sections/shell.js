@@ -26,6 +26,34 @@ var cp = require('child_process');
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - ERROR-AID
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -130,73 +158,6 @@ var _isEol = (function _isEolPrivateScope() {
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS-EOL
   return _isEol;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - NORMALIZE
-////////////////////////////////////////////////////////////////////////////////
-
-var _normalize = (function _normalizePrivateScope() {
-
-  /**
-   * @param {string} str
-   * @param {string} eol
-   * @return {string}
-   */
-  function _normalize(str, eol) {
-    return str.replace(EOL.find[eol], EOL.replace[eol]);
-  }
-
-  /**
-   * @private
-   * @type {!Object}
-   * @const
-   */
-  var EOL = {
-    'replace': {
-      'CRLF': '\r\n',
-      'CR':   '\r',
-      'LF':   '\n'
-    },
-    'find': {
-      'CRLF': /\r?\n|\r\n?/g,
-      'CR':   /\r?\n/g,
-      'LF':   /\r\n?/g
-    }
-  };
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR NORMALIZE
-  return _normalize;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
 })();
 
 
@@ -637,6 +598,45 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS
   return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - NORMALIZE
+////////////////////////////////////////////////////////////////////////////////
+
+var _normalize = (function _normalizePrivateScope() {
+
+  /**
+   * @param {string} str
+   * @param {string} eol
+   * @return {string}
+   */
+  function _normalize(str, eol) {
+    return str.replace(EOL.find[eol], EOL.replace[eol]);
+  }
+
+  /**
+   * @private
+   * @type {!Object}
+   * @const
+   */
+  var EOL = {
+    'replace': {
+      'CRLF': '\r\n',
+      'CR':   '\r',
+      'LF':   '\n'
+    },
+    'find': {
+      'CRLF': /\r?\n|\r\n?/g,
+      'CR':   /\r?\n/g,
+      'LF':   /\r\n?/g
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR NORMALIZE
+  return _normalize;
 })();
 
 

@@ -27,6 +27,7 @@ var to = {};
 // PRIVATE HELPERS
 // *****************************************************************************
 
+// INSERT methods/helpers/own.js
 // INSERT methods/helpers/cloneObj.js
 // INSERT methods/helpers/errorAid.js
 // INSERT methods/helpers/escape.js
@@ -34,13 +35,12 @@ var to = {};
 // INSERT methods/helpers/inObj.js
 // INSERT methods/helpers/inStr.js
 // INSERT methods/helpers/isEol.js
-// INSERT methods/helpers/merge.js
-// INSERT methods/helpers/normalize.js
-// INSERT methods/helpers/own.js
-// INSERT methods/helpers/ownEnum.js
 // INSERT methods/helpers/is.js
 // INSERT methods/fs/helpers/is.js
 // INSERT methods/helpers/match.js
+// INSERT methods/helpers/merge.js
+// INSERT methods/helpers/normalize.js
+// INSERT methods/helpers/ownEnum.js
 // INSERT methods/helpers/sliceArr.js
 // INSERT methods/helpers/sliceStr.js
 // INSERT methods/helpers/splitKeys.js

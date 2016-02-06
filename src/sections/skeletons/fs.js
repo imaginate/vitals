@@ -29,12 +29,12 @@ var to = {};
 // PRIVATE HELPERS
 // *****************************************************************************
 
+// INSERT methods/helpers/own.js
 // INSERT methods/helpers/errorAid.js
 // INSERT methods/helpers/isEol.js
-// INSERT methods/helpers/normalize.js
-// INSERT methods/helpers/own.js
 // INSERT methods/helpers/is.js
 // INSERT methods/fs/helpers/is.js
+// INSERT methods/helpers/normalize.js
 
 
 // *****************************************************************************

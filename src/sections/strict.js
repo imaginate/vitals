@@ -24,6 +24,34 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - CLONE-OBJ
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -152,57 +180,6 @@ var _inStr = (function _inStrPrivateScope() {
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IN-STR
   return _inStr;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MERGE
-////////////////////////////////////////////////////////////////////////////////
-
-
-/**
- * @param {!(Object|function)} dest
- * @param {!(Object|function)} source
- * @return {!(Object|function)}
- */
-function _merge(dest, source, deep) {
-
-  /** @type {string} */
-  var key;
-
-  for (key in source) {
-    if ( _own(source, key) ) {
-      dest[key] = source[key];
-    }
-  }
-  return dest;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
 })();
 
 
@@ -658,6 +635,29 @@ var _is = (function _isPrivateScope() {
  */
 function _match(source, pattern) {
   return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - MERGE
+////////////////////////////////////////////////////////////////////////////////
+
+
+/**
+ * @param {!(Object|function)} dest
+ * @param {!(Object|function)} source
+ * @return {!(Object|function)}
+ */
+function _merge(dest, source, deep) {
+
+  /** @type {string} */
+  var key;
+
+  for (key in source) {
+    if ( _own(source, key) ) {
+      dest[key] = source[key];
+    }
+  }
+  return dest;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

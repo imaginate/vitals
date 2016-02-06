@@ -104,6 +104,34 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - ERROR-AID
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -363,62 +391,6 @@ function _merge(dest, source, deep) {
   }
   return dest;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN-ENUM
-////////////////////////////////////////////////////////////////////////////////
-
-var _ownEnum = (function _ownEnumPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _ownEnum(source, key) {
-    return !!source && _propertyIsEnumerable.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN-ENUM
-  return _ownEnum;
-})();
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - IS
@@ -906,6 +878,34 @@ var _is = (function _isPrivateScope() {
 function _match(source, pattern) {
   return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN-ENUM
+////////////////////////////////////////////////////////////////////////////////
+
+var _ownEnum = (function _ownEnumPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _ownEnum(source, key) {
+    return !!source && _propertyIsEnumerable.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN-ENUM
+  return _ownEnum;
+})();
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - SLICE-ARR
