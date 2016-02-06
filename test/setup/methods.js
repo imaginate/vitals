@@ -30,17 +30,31 @@ function loadVitalsMethods() {
   var filenames;
   /** @type {string} */
   var filepath;
+  /** @type {!Object} */
+  var methods;
   /** @type {string} */
   var method;
   /** @type {!Object} */
   var vitals;
 
   vitals = {};
+
   filenames = get.filepaths('src/methods');
   each(filenames, function(filename) {
     method = cut(filename, /\.js$/);
     filepath = fuse('../../src/methods/', filename);
     vitals[method] = require(filepath);
   });
+
+  if (VERSION.syncFs) {
+    filenames = get.filepaths('src/methods/fs');
+    each(filenames, function(filename) {
+      method = cut(filename, /\.js$/);
+      filepath = fuse('../../src/methods/fs/', filename);
+      methods = require(filepath);
+      vitals[method] = fuse(vitals[method], methods);
+    });
+  }
+
   return vitals;
 }
