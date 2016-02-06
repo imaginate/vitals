@@ -15,7 +15,7 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-if ( !VERSION.syncFs || !has(vitals.copy, 'file') ) return;
+if (BROWSER_TESTS) return;
 
 var fs = require('fs');
 

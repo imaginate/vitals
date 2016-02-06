@@ -24,6 +24,8 @@ require('log-ocd')('log');
 require('node-vitals')(2, 'base', 'strict', 'fs');
 require('./display');
 
+global.BROWSER_TESTS = false;
+
 /**
  * @typedef {!{
  *   major:  number,
