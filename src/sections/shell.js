@@ -744,25 +744,15 @@ var run = (function runPrivateScope() {
     /** @type {SpawnResult} */
     var result;
 
-    if ( !_is.str(cmd)     ) throw _error.type('cmd');
-    if ( !is('obj=', opts) ) throw _error.type('opts');
+    if ( !_is.str(cmd)         ) throw _error.type('cmd');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts');
 
     if (opts) {
-      if ( !is('bool=', opts.buffer) ) {
-        throw _error.type('opts.buffer');
-      }
-      if ( !is('bool=', opts.catchExit) ) {
-        throw _error.type('opts.catchExit');
-      }
-      if ( !is('?str=', opts.encoding) ) {
-        throw _error.type('opts.encoding');
-      }
-      if ( !is('?str=', opts.eol) ) {
-        throw _error.type('opts.eol');
-      }
-      if ( opts.eol && !_isEol(opts.eol) ) {
-        throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
-      }
+      if ( !_is.un.bool(opts.buffer)      ) throw _error.type('opts.buffer');
+      if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
+      if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
+      if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
+      if ( opts.eol && !_isEol(opts.eol)  ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
     }
 
     cmd = cmd.split(' ');
