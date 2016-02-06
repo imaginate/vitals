@@ -19,7 +19,7 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
+var newErrorAid = require('./helpers/error-aid.js');
 var _match = require('./helpers/match.js');
 var _own = require('./helpers/own.js');
 var copy = require('./copy.js');

@@ -25,11 +25,11 @@ var cp = require('child_process');
 // *****************************************************************************
 
 // INSERT methods/helpers/own.js
-// INSERT methods/helpers/errorAid.js
-// INSERT methods/helpers/isEol.js
+// INSERT methods/helpers/error-aid.js
+// INSERT methods/helpers/is-eol.js
 // INSERT methods/helpers/is.js
 // INSERT methods/helpers/normalize.js
-// INSERT methods/helpers/sliceArr.js
+// INSERT methods/helpers/slice-arr.js
 
 
 // *****************************************************************************

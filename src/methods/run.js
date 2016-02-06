@@ -15,10 +15,10 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
+var newErrorAid = require('./helpers/error-aid.js');
 var _normalize = require('./helpers/normalize.js');
-var _sliceArr = require('./helpers/sliceArr.js');
-var _isEol = require('./helpers/isEol.js');
+var _sliceArr = require('./helpers/slice-arr.js');
+var _isEol = require('./helpers/is-eol.js');
 var _is = require('./helpers/is.js');
 var cp = require('child_process');
 

@@ -15,8 +15,8 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
-var _splitKeys = require('./helpers/splitKeys.js');
+var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
 var _own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 

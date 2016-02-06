@@ -15,8 +15,8 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
-var _inStr = require('./helpers/inStr.js');
+var newErrorAid = require('./helpers/error-aid.js');
+var _inStr = require('./helpers/in-str.js');
 var _merge = require('./helpers/merge.js');
 var _own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');

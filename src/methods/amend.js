@@ -15,9 +15,9 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
-var _splitKeys = require('./helpers/splitKeys.js');
-var _cloneObj = require('./helpers/cloneObj.js');
+var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
+var _cloneObj = require('./helpers/clone-obj.js');
 var _match = require('./helpers/match.js');
 var _merge = require('./helpers/merge.js');
 var _own = require('./helpers/own.js');

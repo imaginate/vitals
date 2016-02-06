@@ -15,7 +15,7 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
+var newErrorAid = require('./helpers/error-aid.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////

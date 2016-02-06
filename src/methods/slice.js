@@ -15,9 +15,9 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
-var _sliceArr = require('./helpers/sliceArr.js');
-var _sliceStr = require('./helpers/sliceStr.js');
+var newErrorAid = require('./helpers/error-aid.js');
+var _sliceArr = require('./helpers/slice-arr.js');
+var _sliceStr = require('./helpers/slice-str.js');
 var _is = require('./helpers/is.js');
 
 

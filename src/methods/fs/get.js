@@ -15,9 +15,9 @@
 
 'use strict';
 
-var newErrorAid = require('../helpers/errorAid.js');
+var newErrorAid = require('../helpers/error-aid.js');
 var _normalize = require('../helpers/normalize.js');
-var _isEol = require('../helpers/isEol.js');
+var _isEol = require('../helpers/is-eol.js');
 var _own = require('../helpers/own.js');
 var _is = require('./helpers/is.js');
 var fs = require('fs');
@@ -42,7 +42,7 @@ var get = {};
    * Gets the contents of a file.
    * @public
    * @param {string} filepath
-   * @param {(boolean|Object)=} opts - Boolean values set opts.buffer.
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
    * @param {boolean=} opts.buffer - [default= false] If true a buffer is
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]

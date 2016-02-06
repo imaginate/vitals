@@ -15,11 +15,11 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/errorAid.js');
-var _ownEnum = require('./helpers/ownEnum.js');
-var _inObj = require('./helpers/inObj.js');
-var _inArr = require('./helpers/inArr.js');
-var _inStr = require('./helpers/inStr.js');
+var newErrorAid = require('./helpers/error-aid.js');
+var _ownEnum = require('./helpers/own-enum.js');
+var _inObj = require('./helpers/in-obj.js');
+var _inArr = require('./helpers/in-arr.js');
+var _inStr = require('./helpers/in-str.js');
 var _match = require('./helpers/match.js');
 var _own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');

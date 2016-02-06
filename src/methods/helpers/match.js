@@ -15,7 +15,7 @@
 
 'use strict';
 
-var _inStr = require('./inStr.js');
+var _inStr = require('./in-str.js');
 var _is = require('./is.js');
 
 module.exports = _match;
