@@ -69,13 +69,14 @@ describe('vitals.copy.file (section:fs)', function() {
 
     after(function() {
       var base = './test/dummy/';
-      var files = get.filepaths(base, true);
+      var opts = { deep: true, invalidFiles: /^fake\.js$/ };
+      var files = get.filepaths(base, opts);
       each(files, function(file) {
         file = fuse(base, file);
         fs.unlinkSync(file);
       });
       var dir = fuse(base, 'subdir');
-      fs.rmdirSync(dir);
+      is.dir(dir) && fs.rmdirSync(dir);
     });
 
   });
