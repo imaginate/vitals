@@ -53,30 +53,42 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( result === dest );
     });
 
-    title = callStr('./test/dummy/fake.js', './test/dummy/subdir');
+    title = callStr('./test/dummy/fake.js', './test/dummy/subdir/');
     it(title, function() {
       var src = './test/dummy/fake.js';
-      var dest = './test/dummy/subdir';
+      var dest = './test/dummy/subdir/';
       var result = vitals.copy.file(src, dest);
       assert( is.buffer(result) );
       result = result.toString();
       src = fs.readFileSync(src).toString();
-      dest = fuse(dest, '/fake.js');
+      dest = fuse(dest, 'fake.js');
       dest = fs.readFileSync(dest).toString();
       assert( result === src );
       assert( result === dest );
     });
 
-    after(function() {
+    after('clean up root dummy files', function() {
       var base = './test/dummy/';
-      var opts = { deep: true, invalidFiles: /^fake\.js$/ };
-      var files = get.filepaths(base, opts);
+      var files = get.filepaths(base, { invalidFiles: /^fake\.js$/ });
       each(files, function(file) {
         file = fuse(base, file);
         fs.unlinkSync(file);
       });
-      var dir = fuse(base, 'subdir');
-      is.dir(dir) && fs.rmdirSync(dir);
+    });
+
+    after('clean up dummy sub-dirs', function() {
+      var base = './test/dummy';
+      var dirs = get.dirpaths(base);
+      each(dirs, function(dir) {
+        var files;
+        dir = fuse(base, '/', dir);
+        files = get.filepaths(dir);
+        each(files, function(file) {
+          file = fuse(dir, '/', file);
+          fs.unlinkSync(file);
+        });
+        fs.rmdirSync(dir);
+      });
     });
 
   });
