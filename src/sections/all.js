@@ -7822,7 +7822,7 @@ var seal = (function sealPrivateScope() {
     if ( _is.nil(obj) ) return null;
 
     if ( !_is._obj(obj)     ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   }
@@ -7839,7 +7839,7 @@ var seal = (function sealPrivateScope() {
     if ( _is.nil(obj) ) return null;
 
     if ( !_is._obj(obj)     ) throw _error.type('obj',  'seal');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'seal');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   };
