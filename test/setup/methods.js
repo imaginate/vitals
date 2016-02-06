@@ -52,7 +52,7 @@ function loadVitalsMethods() {
       method = cut(filename, /\.js$/);
       filepath = fuse('../../src/methods/fs/', filename);
       methods = require(filepath);
-      vitals[method] = fuse(vitals[method], methods);
+      vitals[method] = fuse(vitals[method] || {}, methods);
     });
   }
 
