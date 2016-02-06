@@ -14,7 +14,7 @@
  */
 
 var fs = require('fs');
-var _is = require('../helpers/is.js');
+var _is = require('../../helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
