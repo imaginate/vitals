@@ -51,70 +51,70 @@ var run = (function runPrivateScope() {
    * A shortcut for child_process.spawnSync that returns the stdout.
    * @public
    * @param {string} cmd
-   * @param {Object=} options
-   * @param {?string=} options.eol - [default= "LF"] The end of line character to
-   *   use when normalizing the result. If options.eol is null or options.buffer
-   *   is true and options.eol is undefined no normalization is completed.
+   * @param {Object=} opts
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character to
+   *   use when normalizing the result. If opts.eol is null or opts.buffer
+   *   is true and opts.eol is undefined no normalization is completed.
    *   Optional values: "LF", "CR", "CRLF"
-   * @param {boolean=} options.buffer - [default= false] If true and stdout is a
+   * @param {boolean=} opts.buffer - [default= false] If true and stdout is a
    *   buffer the buffer is returned. Otherwise a string of stdout is returned.
-   * @param {boolean=} options.catchExit - [default= true] If process is exited
+   * @param {boolean=} opts.catchExit - [default= true] If process is exited
    *   with an error code an error is logged.
-   * @param {string=} options.encoding - [default= "utf8"] If options.buffer is
-   *   true and options.encoding is undefined no encoding is set.
-   * @param {string=} options.cwd
-   * @param {(string|!Buffer)=} options.input
-   * @param {!Object=} options.env
-   * @param {number=} options.uid
-   * @param {number=} options.gid
-   * @param {number=} options.timeout
-   * @param {string=} options.killSignal
-   * @param {number=} options.maxBuffer
+   * @param {string=} opts.encoding - [default= "utf8"] If opts.buffer is
+   *   true and opts.encoding is undefined no encoding is set.
+   * @param {string=} opts.cwd
+   * @param {(string|!Buffer)=} opts.input
+   * @param {!Object=} opts.env
+   * @param {number=} opts.uid
+   * @param {number=} opts.gid
+   * @param {number=} opts.timeout
+   * @param {string=} opts.killSignal
+   * @param {number=} opts.maxBuffer
    * @return {(string|!Buffer)}
    */
-  function run(cmd, options) {
+  function run(cmd, opts) {
 
     /** @type {SpawnResult} */
     var result;
 
-    if ( !_is.str(cmd)        ) throw _error.type('cmd');
-    if ( !is('obj=', options) ) throw _error.type('options');
+    if ( !_is.str(cmd)     ) throw _error.type('cmd');
+    if ( !is('obj=', opts) ) throw _error.type('opts');
 
-    if (options) {
-      if ( !is('bool=', options.buffer) ) {
-        throw _error.type('options.buffer');
+    if (opts) {
+      if ( !is('bool=', opts.buffer) ) {
+        throw _error.type('opts.buffer');
       }
-      if ( !is('bool=', options.catchExit) ) {
-        throw _error.type('options.catchExit');
+      if ( !is('bool=', opts.catchExit) ) {
+        throw _error.type('opts.catchExit');
       }
-      if ( !is('?str=', options.encoding) ) {
-        throw _error.type('options.encoding');
+      if ( !is('?str=', opts.encoding) ) {
+        throw _error.type('opts.encoding');
       }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol');
+      if ( !is('?str=', opts.eol) ) {
+        throw _error.type('opts.eol');
       }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"');
+      if ( opts.eol && !_isEol(opts.eol) ) {
+        throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
       }
     }
 
     cmd = cmd.split(' ');
-    options = _prepOptions(options);
-    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), options);
+    opts = _prepOptions(opts);
+    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), opts);
 
     if (result.error) throw _error('"' + result.error.toString() + '"');
-    if (options.catchExit !== false && result.status) {
+    if (opts.catchExit !== false && result.status) {
       throw _error('Failed exit code: ' + _getExitCode(result.status) + ' - ');
     }
 
-    if (options.buffer) {
-      return _is.str(result.stdout) && options.eol
-        ? _normalize(result.stdout, options.eol)
+    if (opts.buffer) {
+      return _is.str(result.stdout) && opts.eol
+        ? _normalize(result.stdout, opts.eol)
         : result.stdout;
     }
 
     result.stdout = result.stdout.toString();
-    return options.eol ? _normalize(result.stdout, options.eol) : result.stdout;
+    return opts.eol ? _normalize(result.stdout, opts.eol) : result.stdout;
   }
 
   //////////////////////////////////////////////////////////
