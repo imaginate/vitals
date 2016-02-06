@@ -7917,20 +7917,26 @@ var seal = (function sealPrivateScope() {
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file
    *   or a valid dirpath to an existing directory.
-   * @param {Object=} opts
-   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
+   * @param {boolean=} opts.buffer - [default= true] Use and return a buffer.
+   * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
+   *   opts.buffer is false.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is null no
-   *   normalization is completed. Optional values: "LF", "CR", "CRLF"
-   * @return {string} The contents of the source.
+   *   to use when normalizing a string result. If opts.buffer is true or
+   *   opts.eol is null no normalization is completed.
+   *   Optional values: "LF", "CR", "CRLF"
+   * @return {(!Buffer|string)} The contents of the source.
    */
   copy.file = function copyFile(source, dest, opts) {
+
+    opts = _is.bool(opts) ? { buffer: opts } : opts;
 
     if ( !_is.file(source)     ) throw _error.type('source', 'file');
     if ( !_is.str(dest)        ) throw _error.type('dest',   'file');
     if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'file');
 
     if (opts) {
+      if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
       if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
       if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
       if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
@@ -7946,13 +7952,17 @@ var seal = (function sealPrivateScope() {
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory.
-   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
    * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
-   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {boolean=} opts.buffer - [default= true] Use a buffer.
+   * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
+   *   opts.buffer is false.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is null no
-   *   normalization is completed. Optional values: "LF", "CR", "CRLF"
+   *   to use when normalizing a string result. If opts.buffer is true or
+   *   opts.eol is null no normalization is completed.
+   *   Optional values: "LF", "CR", "CRLF"
    * @return {!Array} The filepaths copied to the dest.
    */
   copy.directory = function copyDirectory(source, dest, opts) {
@@ -7964,9 +7974,11 @@ var seal = (function sealPrivateScope() {
     if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'directory');
 
     if (opts) {
-      if ( !_is.un.bool(opts.deep)    ) throw _error.type('opts.deep',     'directory');
-      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'directory');
-      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'directory');
+      if ( !_is.un.bool(opts.deep)       ) throw _error.type('opts.deep',      'directory');
+      if ( !_is.un.bool(opts.recursive)  ) throw _error.type('opts.recursive', 'directory');
+      if ( !_is.un.bool(opts.buffer)     ) throw _error.type('opts.buffer',    'directory');
+      if ( !_is.un.str(opts.encoding)    ) throw _error.type('opts.encoding',  'directory');
+      if ( !_is.nil.un.str(opts.eol)     ) throw _error.type('opts.eol',       'directory');
       if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
     }
 
@@ -7984,17 +7996,23 @@ var seal = (function sealPrivateScope() {
    * @private
    * @param {string} source
    * @param {string} dest
-   * @param {!Object} options
-   * @return {string}
+   * @param {!Object} opts
+   * @return {(!Buffer|string)}
    */
-  function _copyFile(source, dest, options) {
+  function _copyFile(source, dest, opts) {
 
     /** @type {string} */
     var contents;
 
-    contents = fs.readFileSync(source, options.encoding);
-    contents = options.eol ? _normalize(contents, options.eol) : contents;
-    fs.writeFileSync(dest, contents, options.encoding);
+    if (opts.buffer) {
+      contents = fs.readFileSync(source);
+      fs.writeFileSync(dest, contents);
+    }
+    else {
+      contents = fs.readFileSync(source, opts.encoding);
+      contents = opts.eol ? _normalize(contents, opts.eol) : contents;
+      fs.writeFileSync(dest, contents, opts.encoding);
+    }
     return contents;
   }
 
@@ -8002,21 +8020,30 @@ var seal = (function sealPrivateScope() {
    * @private
    * @param {string} source
    * @param {string} dest
-   * @param {!Object} options
+   * @param {!Object} opts
    * @return {string}
    */
-  function _copyDir(source, dest, options) {
+  function _copyDir(source, dest, opts) {
 
     /** @type {!Array<string>} */
     var filepaths;
+    /** @type {string} */
+    var filepath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     dest = _prepDir(dest);
     source = _prepDir(source);
-    if (options.deep) _prepDirs(source, dest);
-    filepaths = _getFilepaths(source, options.deep);
-    filepaths.forEach(function(filepath) {
-      _copyFile(source + filepath, dest + filepath, options);
-    });
+    if (opts.deep) _prepDirs(source, dest);
+    filepaths = _getFilepaths(source, opts.deep);
+    len = filepaths.length;
+    i = -1;
+    while (++i < len) {
+      filepath = filepaths[i];
+      _copyFile(source + filepath, dest + filepath, opts);
+    }
     return filepaths;
   }
 
@@ -8043,13 +8070,26 @@ var seal = (function sealPrivateScope() {
 
     /** @type {!Array<string>} */
     var filepaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var filepath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     if (deep) return _getFilepathsDeep(basepath);
 
     filepaths = fs.readdirSync(basepath);
-    return filepaths.filter(function(filepath) {
-      return _is.file(basepath + filepath);
-    });
+    newpaths = [];
+    len = filepaths.length;
+    i = -1;
+    while (++i < len) {
+      filepath = filepaths[i];
+      if ( _is.file(basepath + filepath) ) newpaths.push(filepath);
+    }
+    return newpaths;
   }
 
   /**
@@ -8065,19 +8105,28 @@ var seal = (function sealPrivateScope() {
     var dirpaths;
     /** @type {!Array<string>} */
     var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var _len;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var _i;
     /** @type {number} */
     var i;
 
     filepaths = _getFilepaths(basepath);
     dirpaths = _getDirpathsDeep(basepath);
-    dirpaths.forEach(function(dirpath) {
-      dirpath = _prepDir(dirpath);
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = _prepDir(dirpaths[i]);
       newpaths = _getFilepaths(basepath + dirpath);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      filepaths = filepaths.concat(newpaths);
-    });
+      _len = newpaths.length;
+      _i = -1;
+      while (++_i < _len) filepaths.push(dirpath + newpaths[_i]);
+    }
     return filepaths;
   }
 
@@ -8090,11 +8139,24 @@ var seal = (function sealPrivateScope() {
 
     /** @type {!Array<string>} */
     var dirpaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     dirpaths = fs.readdirSync(basepath);
-    return dirpaths.filter(function(dirpath) {
-      return _is.dir(basepath + dirpath);
-    });
+    newpaths = [];
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = dirpaths[i];
+      if ( _is.dir(basepath + dirpath) ) newpaths.push(dirpath);
+    }
+    return newpaths;
   }
 
   /**
@@ -8111,6 +8173,10 @@ var seal = (function sealPrivateScope() {
     /** @type {string} */
     var dirpath;
     /** @type {number} */
+    var len;
+    /** @type {number} */
+    var ii;
+    /** @type {number} */
     var i;
 
     dirpaths = _getDirpaths(basepath);
@@ -8118,10 +8184,9 @@ var seal = (function sealPrivateScope() {
     while (++i < dirpaths.length) {
       dirpath = _prepDir(dirpaths[i]);
       newpaths = _getDirpaths(basepath + dirpath);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      dirpaths = dirpaths.concat(newpaths);
+      len = newpaths.length;
+      ii = -1;
+      while (++ii < len) dirpaths.push(dirpath + newpaths[ii]);
     }
     return dirpaths;
   }
@@ -8148,25 +8213,35 @@ var seal = (function sealPrivateScope() {
 
     /** @type {!Array<string>} */
     var dirpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var ii;
 
     dirpaths = _getDirpathsDeep(source);
-    dirpaths.forEach(function(dirpath) {
-      dirpath = dest + dirpath;
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = dest + dirpaths[i];
       if ( !_is.dir(dirpath) ) fs.mkdirSync(dirpath);
-    });
+    }
   }
 
   /**
    * @private
-   * @param {Object} options
+   * @param {Object} opts
    * @return {!Object}
    */
-  function _prepOptions(options) {
-    options = options || {};
-    options.encoding = options.encoding || 'utf8';
-    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = options.eol && options.eol.toUpperCase();
-    return options;
+  function _prepOptions(opts) {
+    opts = opts || {};
+    opts.deep = _is.bool(opts.deep) ? opts.deep : opts.recursive;
+    opts.buffer = _is.undefined(opts.buffer) ? true : opts.buffer;
+    opts.encoding = opts.encoding || 'utf8';
+    opts.eol = _is.undefined(opts.eol) ? 'LF' : opts.eol;
+    opts.eol = opts.eol && opts.eol.toUpperCase();
+    return opts;
   }
 
   //////////////////////////////////////////////////////////
@@ -8201,7 +8276,7 @@ var seal = (function sealPrivateScope() {
    * Gets the contents of a file.
    * @public
    * @param {string} filepath
-   * @param {(boolean|Object)=} opts - Boolean values set opts.buffer.
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
    * @param {boolean=} opts.buffer - [default= false] If true a buffer is
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]
