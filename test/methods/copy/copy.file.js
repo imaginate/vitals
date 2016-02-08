@@ -122,12 +122,11 @@ function titleStr(section, shouldMsg) {
  * @param {...*} args
  * @return {string}
  */
-function callStr() {
-  until(1, arguments, function(val, i) {
-    arguments[i] = addBase(val);
-    return i;
+function callStr(args) {
+  args = remap(arguments, function(val, i) {
+    return i < 2 ? addBase(val) : val;
   });
-  return testCall('copy.file', arguments, 3);
+  return testCall('copy.file', args, 3);
 }
 
 /**
