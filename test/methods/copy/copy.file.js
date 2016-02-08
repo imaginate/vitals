@@ -30,10 +30,10 @@ describe('vitals.copy.file (section:fs)', function() {
       mkDummy('fake.js');
     });
 
-    title = callStr('./test/dummy/fake.js', './test/dummy/fake1.js');
+    title = callStr('fake.js', 'fake1.js');
     it(title, function() {
-      var src = './test/dummy/fake.js';
-      var dest = './test/dummy/fake1.js';
+      var src = addBase('fake.js');
+      var dest = addBase('fake1.js');
       var result = vitals.copy.file(src, dest);
       assert( is.buffer(result) );
       result = result.toString();
@@ -43,10 +43,10 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( result === dest );
     });
 
-    title = callStr('./test/dummy/fake.js', './test/dummy/fake2.js', false);
+    title = callStr('fake.js', 'fake2.js', false);
     it(title, function() {
-      var src = './test/dummy/fake.js';
-      var dest = './test/dummy/fake2.js';
+      var src = addBase('fake.js');
+      var dest = addBase('fake2.js');
       var result = vitals.copy.file(src, dest, false);
       assert( is.str(result) );
       src = fs.readFileSync(src, 'utf8');
@@ -57,10 +57,10 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( result === dest );
     });
 
-    title = callStr('./test/dummy/fake.js', './test/dummy/subdir/');
+    title = callStr('fake.js', 'subdir/');
     it(title, function() {
-      var src = './test/dummy/fake.js';
-      var dest = './test/dummy/subdir/';
+      var src = addBase('fake.js');
+      var dest = addBase('subdir/');
       var result = vitals.copy.file(src, dest);
       assert( is.buffer(result) );
       result = result.toString();
@@ -123,7 +123,23 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
+  until(1, arguments, function(val, i) {
+    arguments[i] = addBase(val);
+    return i;
+  });
   return testCall('copy.file', arguments, 3);
+}
+
+/**
+ * @private
+ * @param {string} file
+ * @param {string=} base
+ * @return {string}
+ */
+function addBase(file, base) {
+  base = base || '';
+  base = remap(base, /[^\/]$/, '$&/');
+  return fuse(DUMMY.base, base, file);
 }
 
 /**
