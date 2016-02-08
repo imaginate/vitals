@@ -49,7 +49,7 @@ var get = {};
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
    *   to use when normalizing the result. If opts.eol is null no
    *   normalization is completed. Optional values: "LF", "CR", "CRLF"
-   * @return {(string|!Buffer)}
+   * @return {(!Buffer|string)}
    */
   get.file = function getFile(filepath, opts) {
 
@@ -73,10 +73,14 @@ var get = {};
    * Gets all of the directory paths in a directory.
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
-   * @param {boolean=} opts.deep - Get all of the sub-directories.
-   * @param {(RegExp|Array<string>|?string)=} opts.validDirs
-   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include sub
+   *   directories.
+   * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use "|"
+   *   to separate valid directory names.
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs - If string use
+   *   "|" to separate invalid directory names.
    * @return {!Array<string>}
    */
   get.dirpaths = function getDirpaths(dirpath, opts) {
@@ -90,9 +94,10 @@ var get = {};
     if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',    'dirpaths');
 
     if (opts) {
-      if ( !_is.un.bool(opts.deep)     ) throw _error.type('opts.deep',        'dirpaths');
-      if ( !_isValid(opts.validDirs)   ) throw _error.type('opts.validDirs',   'dirpaths');
-      if ( !_isValid(opts.invalidDirs) ) throw _error.type('opts.invalidDirs', 'dirpaths');
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',        'dirpaths');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',   'dirpaths');
+      if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',   'dirpaths');
+      if ( !_isValid(opts.invalidDirs)  ) throw _error.type('opts.invalidDirs', 'dirpaths');
     }
 
     dirpath = _prepDir(dirpath);
@@ -107,8 +112,10 @@ var get = {};
    * Gets all of the file paths in a directory.
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} opts - Boolean values set opts.deep.
-   * @param {boolean=} opts.deep - Get all of the sub-directory files.
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include
+   *   sub-directory files.
+   * @param {boolean=} opts.recursive - Alias for opts.deep.
    * @param {(RegExp|Array<string>|?string)=} opts.validDirs
    * @param {(RegExp|Array<string>|?string)=} opts.validExts - [.]ext
    * @param {(RegExp|Array<string>|?string)=} opts.validNames - filename
@@ -137,6 +144,7 @@ var get = {};
 
     if (opts) {
       if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',         'filepaths');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',    'filepaths');
       if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',    'filepaths');
       if ( !_isValid(opts.validExts)    ) throw _error.type('opts.validExts',    'filepaths');
       if ( !_isValid(opts.validNames)   ) throw _error.type('opts.validNames',   'filepaths');
@@ -292,15 +300,16 @@ var get = {};
 
   /**
    * @private
-   * @param {Object} options
+   * @param {Object} opts
    * @return {!Object}
    */
-  function _prepOptions(options) {
-    options = options || {};
-    options.encoding = options.encoding || 'utf8';
-    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = options.eol && options.eol.toUpperCase();
-    return options;
+  function _prepOptions(opts) {
+    opts = opts || {};
+    opts.deep = _is.bool(opts.deep) ? opts.deep : opts.recursive;
+    opts.encoding = opts.encoding || 'utf8';
+    opts.eol = _is.undefined(opts.eol) ? 'LF' : opts.eol;
+    opts.eol = opts.eol && opts.eol.toUpperCase();
+    return opts;
   }
 
   //////////////////////////////////////////////////////////
