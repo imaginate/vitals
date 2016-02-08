@@ -26,6 +26,13 @@ describe('vitals.copy.file (section:fs)', function() {
   title = titleStr('basic', title);
   describe(title, function() {
 
+    before('setup dummy dirs and files', function() {
+      var dir = './test/dummy';
+      var file = fuse(dir, '/fake.js');
+      fs.mkdirSync(dir);
+      fs.writeFileSync(file, '// test\n');
+    });
+
     title = callStr('./test/dummy/fake.js', './test/dummy/fake1.js');
     it(title, function() {
       var src = './test/dummy/fake.js';
@@ -67,28 +74,19 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( result === dest );
     });
 
-    after('clean up root dummy files', function() {
+    after('clean up dummy dirs and files', function() {
       var base = './test/dummy/';
-      var files = get.filepaths(base, { invalidFiles: /^fake\.js$/ });
+      var dirs = get.dirpaths(base, true);
+      var files = get.filepaths(base, true);
       each(files, function(file) {
         file = fuse(base, file);
         fs.unlinkSync(file);
       });
-    });
-
-    after('clean up dummy sub-dirs', function() {
-      var base = './test/dummy';
-      var dirs = get.dirpaths(base);
       each(dirs, function(dir) {
-        var files;
-        dir = fuse(base, '/', dir);
-        files = get.filepaths(dir);
-        each(files, function(file) {
-          file = fuse(dir, '/', file);
-          fs.unlinkSync(file);
-        });
+        dir = fuse(base, dir);
         fs.rmdirSync(dir);
       });
+      fs.rmdirSync(base);
     });
 
   });
