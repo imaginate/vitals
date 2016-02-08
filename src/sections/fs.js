@@ -1258,11 +1258,24 @@ var _normalize = (function _normalizePrivateScope() {
 
     /** @type {!Array<string>} */
     var dirpaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     dirpaths = fs.readdirSync(basepath);
-    return dirpaths.filter(function(dirpath) {
-      return isValid(dirpath) && _is.dir(basepath + dirpath);
-    });
+    newpaths = [];
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = dirpaths[i];
+      isValid(dirpath) && _is.dir(basepath + dirpath) && newpaths.push(dirpath);
+    }
+    return newpaths;
   }
 
   /**
@@ -1280,6 +1293,10 @@ var _normalize = (function _normalizePrivateScope() {
     /** @type {string} */
     var dirpath;
     /** @type {number} */
+    var len;
+    /** @type {number} */
+    var ii;
+    /** @type {number} */
     var i;
 
     dirpaths = _getDirpaths(basepath, isValid);
@@ -1287,10 +1304,9 @@ var _normalize = (function _normalizePrivateScope() {
     while (++i < dirpaths.length) {
       dirpath = _prepDir(dirpaths[i]);
       newpaths = _getDirpaths(basepath + dirpath, isValid);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      dirpaths = dirpaths.concat(newpaths);
+      len = newpaths.length;
+      ii = -1;
+      while (++ii < len) dirpaths.push(dirpath + newpaths[ii]);
     }
     return dirpaths;
   }
@@ -1305,11 +1321,24 @@ var _normalize = (function _normalizePrivateScope() {
 
     /** @type {!Array<string>} */
     var filepaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var filepath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     filepaths = fs.readdirSync(basepath);
-    return filepaths.filter(function(filepath) {
-      return isValid(filepath) && _is.file(basepath + filepath);
-    });
+    newpaths = [];
+    len = filepaths.length;
+    i = -1;
+    while (++i < len) {
+      filepath = filepaths[i];
+      isValid(filepath) && _is.file(basepath + filepath) && newpaths.push(filepath);
+    }
+    return newpaths;
   }
 
   /**
@@ -1327,19 +1356,28 @@ var _normalize = (function _normalizePrivateScope() {
     var dirpaths;
     /** @type {!Array<string>} */
     var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var _len;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var _i;
     /** @type {number} */
     var i;
 
     filepaths = _getFilepaths(basepath, isValid);
     dirpaths = _getDirpathsDeep(basepath, isValidDir);
-    dirpaths.forEach(function(dirpath) {
-      dirpath = _prepDir(dirpath);
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = _prepDir(dirpaths[i]);
       newpaths = _getFilepaths(basepath + dirpath, isValid);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      filepaths = filepaths.concat(newpaths);
-    });
+      _len = newpaths.length;
+      _i = -1;
+      while (++_i < _len) filepaths.push(dirpath + newpaths[_i]);
+    }
     return filepaths;
   }
 
@@ -1363,7 +1401,6 @@ var _normalize = (function _normalizePrivateScope() {
    */
   function _prepOptions(opts) {
     opts = opts || {};
-    opts.deep = _is.bool(opts.deep) ? opts.deep : opts.recursive;
     opts.encoding = opts.encoding || 'utf8';
     opts.eol = _is.undefined(opts.eol) ? 'LF' : opts.eol;
     opts.eol = opts.eol && opts.eol.toUpperCase();
@@ -1401,6 +1438,8 @@ var _normalize = (function _normalizePrivateScope() {
     var key;
 
     if (!options) return {};
+
+    options.deep = _is.bool(options.deep) ? options.deep : options.recursive;
 
     opts = {};
     for (key in options) {
@@ -1476,40 +1515,90 @@ var _normalize = (function _normalizePrivateScope() {
   /**
    * @private
    * @param {boolean} valid
-   * @param {(Array|RegExp)} regexs
+   * @param {(Array|RegExp)} regexps
    * @return {function}
    */
-  function _makeCheck(valid, regexs) {
+  function _makeCheck(valid, regexps) {
 
-    /** @type {?RegExp} */
-    var regex;
+    /** @type {number} */
+    var i;
 
-    if ( _is.arr(regexs) ) {
-      regexs = regexs.filter( function(re) { return !!re; } );
-      regex = regexs.length === 1 ? regexs.pop() : null;
-    }
-    else {
-      regex = regexs;
-      regexs = [];
-    }
+    if ( !_is.arr(regexps) ) return _makeOneCheck(valid, regexps);
 
-    if (!regexs.length) {
-      return regex
-        ? valid
-          ? function isValid(str) { return regex.test(str); }
-          : function isInvalid(str) { return regex.test(str); }
-        : valid
-          ? function isValid() { return true; }
-          : function isInvalid() { return false; };
-    }
+    i = regexps.length;
+    while (--i) regexps[i] || regexps.splice(i, 1);
 
+    return regexps.length > 1
+      ? valid
+        ? _makeValidCheck(regexps)
+        : _makeInvalidCheck(regexps)
+      : _makeOneCheck(valid, regexps[0]);
+  }
+
+  /**
+   * @private
+   * @param {boolean} valid
+   * @param {?RegExp=} regex
+   * @return {function}
+   */
+  function _makeOneCheck(valid, regex) {
     return valid
-      ? function isValid(str) {
-          return regexs.every( function(re) { return re.test(str); } );
-        }
-      : function isInvalid(str) {
-          return regexs.some( function(re) { return re.test(str); } );
-        };
+      ? regex
+        ? function isValid(str) { return regex.test(str); }
+        : function isValid() { return true; }
+      : regex
+        ? function isInvalid(str) { return regex.test(str); }
+        : function isInvalid() { return false; };
+  }
+
+  /**
+   * @private
+   * @param {!Array<!RegExp>} regexps
+   * @return {function}
+   */
+  function _makeValidCheck(regexps) {
+
+    /** @type {number} */
+    var len;
+
+    len = regexps.length;
+
+    return function isValid(str) {
+
+      /** @type {number} */
+      var i;
+
+      i = -1;
+      while (++i < len) {
+        if ( !regexps[i].test(str) ) return false;
+      }
+      return true;
+    };
+  }
+
+  /**
+   * @private
+   * @param {!Array<!RegExp>} regexps
+   * @return {function}
+   */
+  function _makeInvalidCheck(regexps) {
+
+    /** @type {number} */
+    var len;
+
+    len = regexps.length;
+
+    return function isInvalid(str) {
+
+      /** @type {number} */
+      var i;
+
+      i = -1;
+      while (++i < len) {
+        if ( regexps[i].test(str) ) return true;
+      }
+      return false;
+    };
   }
 
   //////////////////////////////////////////////////////////
