@@ -1042,7 +1042,7 @@ var _normalize = (function _normalizePrivateScope() {
     /** @type {number} */
     var len;
     /** @type {number} */
-    var ii;
+    var i;
 
     dirpaths = _getDirpathsDeep(source);
     len = dirpaths.length;

@@ -359,7 +359,7 @@ var copy = {};
     /** @type {number} */
     var len;
     /** @type {number} */
-    var ii;
+    var i;
 
     dirpaths = _getDirpathsDeep(source);
     len = dirpaths.length;
