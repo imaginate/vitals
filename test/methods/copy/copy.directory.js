@@ -21,7 +21,7 @@ var fs = require('fs');
 
 describe('vitals.copy.directory (section:fs)', function() {
   var title;
-  var content = '// test\n';
+  var content = DUMMY.content;
   var fakes = [ 'fake1.js', 'fake2.js', 'fake3.js' ];
 
   title = 'should copy files from dir to dir';
@@ -29,14 +29,7 @@ describe('vitals.copy.directory (section:fs)', function() {
   describe(title, function() {
 
     before('setup dummy dirs and files', function() {
-      var base = './test/dummy/';
-      fs.mkdirSync(base);
-      each(fakes, function(fake) {
-        fake = fuse(base, fake);
-        fs.writeFileSync(fake, content);
-      });
-      base = fuse(base, 'subdir1');
-      fs.mkdirSync(base);
+      mkDummy({ 'root': fakes, 'subdir1': null });
     });
 
     title = callStr('./test/dummy', './test/dummy/subdir1');

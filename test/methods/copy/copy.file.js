@@ -27,10 +27,7 @@ describe('vitals.copy.file (section:fs)', function() {
   describe(title, function() {
 
     before('setup dummy dirs and files', function() {
-      var dir = './test/dummy';
-      var file = fuse(dir, '/fake.js');
-      fs.mkdirSync(dir);
-      fs.writeFileSync(file, '// test\n');
+      mkDummy('fake.js');
     });
 
     title = callStr('./test/dummy/fake.js', './test/dummy/fake1.js');
