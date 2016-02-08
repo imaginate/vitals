@@ -73,7 +73,7 @@ describe('vitals.copy.directory (section:fs)', function() {
     it(title, function() {
       var src = './test/dummy';
       var dest = './test/dummy/subdir3/';
-      var dirs = [ '', 'subdir1', 'subdir2' ];
+      var dirs = [ '', 'subdir1/', 'subdir2/' ];
       var files = vitals.copy.dir(src, dest, true);
       assert( is.arr(files) );
       each(dirs, function(dir) {
