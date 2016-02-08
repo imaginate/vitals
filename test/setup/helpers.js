@@ -16,6 +16,8 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
+var fs = require('fs');
+
 global.assert = require('assert');
 
 // appends global helpers
@@ -24,7 +26,40 @@ require('log-ocd')('log');
 require('node-vitals')(2, 'base', 'strict', 'fs');
 require('./display');
 
+global.rmDummy = rmDummy;
+
+/**
+ * @global
+ * @type {function}
+ */
+function rmDummy() {
+
+  /** @type {!Array<string>} */
+  var files;
+  /** @type {!Array<string>} */
+  var dirs;
+  /** @type {string} */
+  var base;
+
+  base = './test/dummy/';
+
+  files = get.filepaths(base, true);
+  each(files, function(file) {
+    file = fuse(base, file);
+    fs.unlinkSync(file);
+  });
+
+  dirs = get.dirpaths(base, true);
+  dirs = dirs.reverse();
+  each(dirs, function(dir) {
+    dir = fuse(base, dir);
+    fs.rmdirSync(dir);
+  });
+  fs.rmdirSync(base);
+}
+
 global.BROWSER_TESTS = false;
+global.VERSION = getVersion(process.version);
 
 /**
  * @typedef {!{
@@ -33,8 +68,6 @@ global.BROWSER_TESTS = false;
  *   syncFs: boolean
  * }} Version
  */
-
-global.VERSION = getVersion(process.version);
 
 /**
  * @private

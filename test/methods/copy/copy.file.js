@@ -74,20 +74,7 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( result === dest );
     });
 
-    after('clean up dummy dirs and files', function() {
-      var base = './test/dummy/';
-      var dirs = get.dirpaths(base, true);
-      var files = get.filepaths(base, true);
-      each(files, function(file) {
-        file = fuse(base, file);
-        fs.unlinkSync(file);
-      });
-      each(dirs, function(dir) {
-        dir = fuse(base, dir);
-        fs.rmdirSync(dir);
-      });
-      fs.rmdirSync(base);
-    });
+    after('clean up dummy dirs and files', rmDummy);
 
   });
 
