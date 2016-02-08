@@ -37,10 +37,13 @@ describe('vitals.copy.file (section:fs)', function() {
       var result = vitals.copy.file(src, dest);
       assert( is.buffer(result) );
       result = result.toString();
-      src = fs.readFileSync(src).toString();
-      dest = fs.readFileSync(dest).toString();
-      assert( result === src );
-      assert( result === dest );
+      assert( result === DUMMY.content );
+      src = fs.readFileSync(src);
+      src = src.toString();
+      assert( src === DUMMY.content );
+      dest = fs.readFileSync(dest);
+      dest = dest.toString();
+      assert( dest === DUMMY.content );
     });
 
     title = callStr('fake.js', 'fake2.js', false);
@@ -48,13 +51,13 @@ describe('vitals.copy.file (section:fs)', function() {
       var src = addBase('fake.js');
       var dest = addBase('fake2.js');
       var result = vitals.copy.file(src, dest, false);
-      assert( is.str(result) );
+      assert( result === DUMMY.content );
       src = fs.readFileSync(src, 'utf8');
       src = normalize(src);
+      assert( src === DUMMY.content );
       dest = fs.readFileSync(dest, 'utf8');
       dest = normalize(dest);
-      assert( result === src );
-      assert( result === dest );
+      assert( dest === DUMMY.content );
     });
 
     title = callStr('fake.js', 'subdir/');
@@ -64,11 +67,14 @@ describe('vitals.copy.file (section:fs)', function() {
       var result = vitals.copy.file(src, dest);
       assert( is.buffer(result) );
       result = result.toString();
-      src = fs.readFileSync(src).toString();
+      assert( result === DUMMY.content );
+      src = fs.readFileSync(src);
+      src = src.toString();
+      assert( src === DUMMY.content );
       dest = fuse(dest, 'fake.js');
-      dest = fs.readFileSync(dest).toString();
-      assert( result === src );
-      assert( result === dest );
+      dest = fs.readFileSync(dest);
+      dest = dest.toString();
+      assert( dest === DUMMY.content );
     });
 
     after('clean up dummy dirs and files', rmDummy);
