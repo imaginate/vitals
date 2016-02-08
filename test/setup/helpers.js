@@ -29,7 +29,7 @@ global.rmDummy = rmDummy;
 global.VERSION = getVersion(process.version);
 global.BROWSER_TESTS = false;
 
-var DUMMY_BASE = './test/dummy/';
+var DUMMY_BASE = './test/dummy';
 var DUMMY_CONTENT = '// test\n';
 
 global.DUMMY = {
@@ -110,42 +110,44 @@ function mkDummyFile(file, base) {
  * @type {function}
  */
 function rmDummy() {
-  rmDummyFiles();
-  rmDummyDirs();
+  rmDummyFiles(DUMMY_BASE);
+  rmDummyDirs(DUMMY_BASE);
 }
 
 /**
  * @private
- * @type {function}
+ * @param {string} base
  */
-function rmDummyFiles() {
+function rmDummyFiles(base) {
 
   /** @type {!Array<string>} */
   var files;
 
-  files = get.filepaths(DUMMY_BASE, true);
+  files = get.filepaths(base, true);
+  base = remap(base, /[^\/]$/, '$&/');
   each(files, function(file) {
-    file = fuse(DUMMY_BASE, file);
+    file = fuse(base, file);
     fs.unlinkSync(file);
   });
 }
 
 /**
  * @private
- * @type {function}
+ * @param {string} base
  */
-function rmDummyDirs() {
+function rmDummyDirs(base) {
 
   /** @type {!Array<string>} */
   var dirs;
 
-  dirs = get.dirpaths(DUMMY_BASE, true);
+  dirs = get.dirpaths(base, true);
   dirs = dirs.reverse();
+  base = remap(base, /[^\/]$/, '$&/');
   each(dirs, function(dir) {
-    dir = fuse(DUMMY_BASE, dir);
+    dir = fuse(base, dir);
     fs.rmdirSync(dir);
   });
-  fs.rmdirSync(DUMMY_BASE);
+  fs.rmdirSync(base);
 }
 
 /**

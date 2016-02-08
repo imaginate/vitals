@@ -141,7 +141,7 @@ function callStr(args) {
 
 /**
  * @private
- * @param {string} dir
+ * @param {string=} dir
  * @return {string}
  */
 function addBase(dir) {
@@ -149,9 +149,8 @@ function addBase(dir) {
   /** @type {string} */
   var base;
 
-  dir = dir ? fuse('/', dir) : '';
   base = cut(DUMMY.base, /\/$/);
-  return fuse(base, dir);
+  return dir ? fuse(base, '/', dir) : base;
 }
 
 /**

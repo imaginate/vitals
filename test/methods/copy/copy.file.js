@@ -132,13 +132,15 @@ function callStr(args) {
 /**
  * @private
  * @param {string} file
- * @param {string=} base
  * @return {string}
  */
-function addBase(file, base) {
-  base = base || '';
-  base = remap(base, /[^\/]$/, '$&/');
-  return fuse(DUMMY.base, base, file);
+function addBase(file) {
+
+  /** @type {string} */
+  var base;
+
+  base = cut(DUMMY.base, /\/$/);
+  return fuse(base, '/', file);
 }
 
 /**
