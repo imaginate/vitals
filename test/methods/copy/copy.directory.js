@@ -32,10 +32,10 @@ describe('vitals.copy.directory (section:fs)', function() {
       mkDummy({ 'root': fakes, 'subdir1': null });
     });
 
-    title = callStr('./test/dummy', './test/dummy/subdir1');
+    title = callStr('', 'subdir1');
     it(title, function() {
-      var src = './test/dummy';
-      var dest = './test/dummy/subdir1';
+      var src = addBase('');
+      var dest = addBase('subdir1');
       var files = vitals.copy.dir(src, dest);
       assert( is.arr(files) );
       each(fakes, function(fake) {
@@ -47,10 +47,10 @@ describe('vitals.copy.directory (section:fs)', function() {
       });
     });
 
-    title = callStr('./test/dummy', './test/dummy/subdir2/');
+    title = callStr('', 'subdir2/');
     it(title, function() {
-      var src = './test/dummy';
-      var dest = './test/dummy/subdir2/';
+      var src = addBase('');
+      var dest = addBase('subdir2/');
       var files = vitals.copy.dir(src, dest);
       assert( is.arr(files) );
       each(fakes, function(fake) {
@@ -62,10 +62,10 @@ describe('vitals.copy.directory (section:fs)', function() {
       });
     });
 
-    title = callStr('./test/dummy', './test/dummy/subdir3/', true);
+    title = callStr('', 'subdir3/', true);
     it(title, function() {
-      var src = './test/dummy';
-      var dest = './test/dummy/subdir3/';
+      var src = addBase('');
+      var dest = addBase('subdir3/');
       var dirs = [ '', 'subdir1/', 'subdir2/' ];
       var files = vitals.copy.dir(src, dest, true);
       assert( is.arr(files) );
@@ -132,8 +132,26 @@ function titleStr(section, shouldMsg) {
  * @param {...*} args
  * @return {string}
  */
-function callStr() {
-  return testCall('copy.dir', arguments, 3);
+function callStr(args) {
+  args = remap(arguments, function(val, i) {
+    return i < 2 ? addBase(val) : val;
+  });
+  return testCall('copy.dir', args, 3);
+}
+
+/**
+ * @private
+ * @param {string} dir
+ * @return {string}
+ */
+function addBase(dir) {
+
+  /** @type {string} */
+  var base;
+
+  dir = dir ? fuse('/', dir) : '';
+  base = cut(DUMMY.base, /\/$/);
+  return fuse(base, dir);
 }
 
 /**
