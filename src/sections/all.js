@@ -7955,7 +7955,8 @@ var seal = (function sealPrivateScope() {
    * Copy all of the files in a directory to another directory.
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
-   * @param {string} dest - Must be a valid dirpath to an existing directory.
+   * @param {string} dest - Must be a valid dirpath to an existing directory or
+   *   a valid dirpath to a new directory noted by ending with a slash.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
    * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
@@ -7972,6 +7973,8 @@ var seal = (function sealPrivateScope() {
   copy.directory = function copyDirectory(source, dest, opts) {
 
     opts = _is.bool(opts) ? { deep: opts } : opts;
+
+    if ( _is._str(dest) && _match(dest, /\/$/) ) _makeDir(dest);
 
     if ( !_is.dir(source)      ) throw _error.type('source', 'directory');
     if ( !_is.dir(dest)        ) throw _error.type('dest',   'directory');
