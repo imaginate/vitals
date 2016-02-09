@@ -17,8 +17,6 @@
 
 if (BROWSER_TESTS) return;
 
-var fs = require('fs');
-
 describe('vitals.get.dirpaths (section:fs)', function() {
   var title;
 
