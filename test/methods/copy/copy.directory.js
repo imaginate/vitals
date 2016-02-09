@@ -21,7 +21,6 @@ var fs = require('fs');
 
 describe('vitals.copy.directory (section:fs)', function() {
   var title;
-  var content = DUMMY.content;
   var fakes = [ 'fake1.js', 'fake2.js', 'fake3.js' ];
 
   title = 'should copy files from dir to dir';
@@ -43,7 +42,7 @@ describe('vitals.copy.directory (section:fs)', function() {
         fake = fuse(dest, '/', fake);
         assert( is.file(fake) );
         fake = fs.readFileSync(fake, 'utf8');
-        assert( fake === content );
+        assert( fake === DUMMY.content );
       });
     });
 
@@ -58,7 +57,7 @@ describe('vitals.copy.directory (section:fs)', function() {
         fake = fuse(dest, fake);
         assert( is.file(fake) );
         fake = fs.readFileSync(fake, 'utf8');
-        assert( fake === content );
+        assert( fake === DUMMY.content );
       });
     });
 
@@ -76,7 +75,7 @@ describe('vitals.copy.directory (section:fs)', function() {
           fake = fuse(dest, fake);
           assert( is.file(fake) );
           fake = fs.readFileSync(fake, 'utf8');
-          assert( fake === content );
+          assert( fake === DUMMY.content );
         });
       });
     });
@@ -88,6 +87,10 @@ describe('vitals.copy.directory (section:fs)', function() {
   title = titleStr('error', 'should throw an error');
   describe(title, function() {
 
+    before('setup dummy dirs and files', function() {
+      mkDummy({ 'root': fakes, 'subdir1': null });
+    });
+
     title = callStr();
     it(title, function() {
       assert.throws(function() {
@@ -95,19 +98,33 @@ describe('vitals.copy.directory (section:fs)', function() {
       });
     });
 
-    title = callStr('dir1');
+    title = callStr('');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.dir('dir1');
+        var src = addBase('');
+        vitals.copy.dir(src);
       });
     });
 
-    title = callStr('invalid', 'dest');
+    title = callStr('', 'invalid');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.dir('invalid', 'dest');
+        var src = addBase('');
+        var dest = addBase('invalid');
+        vitals.copy.dir(src, dest);
       });
     });
+
+    title = callStr('invalid', 'subdir1');
+    it(title, function() {
+      assert.throws(function() {
+        var src = addBase('invalid');
+        var dest = addBase('subdir1');
+        vitals.copy.dir(src, dest);
+      });
+    });
+
+    after('clean up dummy dirs and files', rmDummy);
 
   });
 
