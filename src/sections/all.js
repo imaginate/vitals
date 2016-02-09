@@ -8717,7 +8717,7 @@ var seal = (function sealPrivateScope() {
     if ( !_is.arr(regexps) ) return _makeOneCheck(valid, regexps);
 
     i = regexps.length;
-    while (--i) regexps[i] || regexps.splice(i, 1);
+    while (i--) regexps[i] || regexps.splice(i, 1);
 
     return regexps.length > 1
       ? valid
