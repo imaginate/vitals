@@ -37,6 +37,7 @@ describe('vitals.copy.directory (section:fs)', function() {
       var dest = addBase('subdir1');
       var files = vitals.copy.dir(src, dest);
       assert( is.arr(files) );
+      assert( files.length === 3 );
       each(fakes, function(fake) {
         assert( has(files, fake) );
         fake = fuse(dest, '/', fake);
@@ -52,6 +53,7 @@ describe('vitals.copy.directory (section:fs)', function() {
       var dest = addBase('subdir2/');
       var files = vitals.copy.dir(src, dest);
       assert( is.arr(files) );
+      assert( files.length === 3 );
       each(fakes, function(fake) {
         assert( has(files, fake) );
         fake = fuse(dest, fake);
@@ -68,6 +70,7 @@ describe('vitals.copy.directory (section:fs)', function() {
       var dirs = [ '', 'subdir1/', 'subdir2/' ];
       var files = vitals.copy.dir(src, dest, true);
       assert( is.arr(files) );
+      assert( files.length === 9 );
       each(dirs, function(dir) {
         each(fakes, function(fake) {
           fake = fuse(dir, fake);
