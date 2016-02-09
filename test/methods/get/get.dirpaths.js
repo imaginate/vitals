@@ -109,6 +109,40 @@ describe('vitals.get.dirpaths (section:fs)', function() {
 
     });
 
+    title = titleStr('should return all of the dirs with the base dirpath');
+    describe(title, function() {
+
+      title = callStr('', { base: true });
+      it(title, function() {
+        var base = addBase('');
+        var opts = { base: true };
+        var dirs = vitals.get.dirpaths(base, opts);
+        assert( is.arr(dirs) );
+        assert( dirs.length === 4 );
+        assert( has(dirs, addBase('subdir')) );
+        assert( has(dirs, addBase('subdir1')) );
+        assert( has(dirs, addBase('subdir2')) );
+        assert( has(dirs, addBase('subdir3')) );
+      });
+
+      title = callStr('', { deep: true, basepath: true });
+      it(title, function() {
+        var base = addBase('');
+        var opts = { deep: true, basepath: true };
+        var dirs = vitals.get.dirpaths(base, opts);
+        assert( is.arr(dirs) );
+        assert( dirs.length === 7 );
+        assert( has(dirs, addBase('subdir')) );
+        assert( has(dirs, addBase('subdir1')) );
+        assert( has(dirs, addBase('subdir2')) );
+        assert( has(dirs, addBase('subdir3')) );
+        assert( has(dirs, addBase('subdir/subdir1')) );
+        assert( has(dirs, addBase('subdir/subdir2')) );
+        assert( has(dirs, addBase('subdir/subdir3')) );
+      });
+
+    });
+
     title = titleStr('should only return the valid dirs');
     describe(title, function() {
 

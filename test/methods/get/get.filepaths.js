@@ -62,6 +62,32 @@ describe('vitals.get.filepaths (section:fs)', function() {
 
     });
 
+    title = titleStr('should return all of the files with the base dirpath');
+    describe(title, function() {
+
+      title = callStr('', { base: true });
+      it(title, function() {
+        var base = addBase('');
+        var opts = { base: true };
+        var files = vitals.get.filepaths(base, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( has(files, addBase('_file.js')) );
+        assert( has(files, addBase('file1.js')) );
+        assert( has(files, addBase('file2.js')) );
+        assert( has(files, addBase('_.min.js')) );
+        assert( has(files, addBase('1.min.js')) );
+        assert( has(files, addBase('2.min.js')) );
+        assert( has(files, addBase('_file.md')) );
+        assert( has(files, addBase('file1.md')) );
+        assert( has(files, addBase('file2.md')) );
+        assert( has(files, addBase('_AZ.json')) );
+        assert( has(files, addBase('AZ1.json')) );
+        assert( has(files, addBase('AZ2.json')) );
+      });
+
+    });
+
     title = titleStr('should only return the files with valid exts');
     describe(title, function() {
 
@@ -522,6 +548,32 @@ describe('vitals.get.filepaths (section:fs)', function() {
         assert( has(files, 'subdir/subdir1/file2.js') );
         assert( has(files, 'subdir/subdir2/file1.js') );
         assert( has(files, 'subdir/subdir2/file2.js') );
+      });
+
+    });
+
+    title = titleStr('should return all of the files with the base dirpath');
+    describe(title, function() {
+
+      title = callStr('', { deep: true, basepath: true });
+      it(title, function() {
+        var base = addBase('');
+        var opts = { deep: true, basepath: true };
+        var files = vitals.get.filepaths(base, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( has(files, addBase('file1.js')) );
+        assert( has(files, addBase('file2.js')) );
+        assert( has(files, addBase('subdir/file1.js')) );
+        assert( has(files, addBase('subdir/file2.js')) );
+        assert( has(files, addBase('subdir1/file1.js')) );
+        assert( has(files, addBase('subdir1/file2.js')) );
+        assert( has(files, addBase('subdir2/file1.js')) );
+        assert( has(files, addBase('subdir2/file2.js')) );
+        assert( has(files, addBase('subdir/subdir1/file1.js')) );
+        assert( has(files, addBase('subdir/subdir1/file2.js')) );
+        assert( has(files, addBase('subdir/subdir2/file1.js')) );
+        assert( has(files, addBase('subdir/subdir2/file2.js')) );
       });
 
     });
