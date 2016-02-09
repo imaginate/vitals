@@ -406,7 +406,7 @@ var get = {};
 
     type = type.toLowerCase();
     option = _is.arr(option) ? option.join('|') : option;
-    return _is.str(option) ? _parseOptStr(option) : option;
+    return _is.str(option) ? _parseOptStr(option, type) : option;
   }
 
   /**
