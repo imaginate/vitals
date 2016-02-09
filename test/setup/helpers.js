@@ -82,8 +82,7 @@ function mkDummy(paths) {
  */
 function mkDummyDirs(dirs, base) {
   each(dirs, function(paths, dir) {
-    if (dir === '.' || dir === 'root') dir = '';
-    dir = fuse(base, dir);
+    dir = dir === 'root' ? base : fuse(base, dir);
     mkDummyDir(dir, paths);
   });
 }
