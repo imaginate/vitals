@@ -423,8 +423,8 @@ var get = {};
     });
     switch (type) {
       case 'dir' :
-      case 'file': option = '^' + option + '$';          break;
-      case 'ext' : option = '^.*\\.(?:' + option + ')$'; break;
+      case 'file': option = '^(?:' + option + ')$';        break;
+      case 'ext' : option = '^.*\\.(?:' + option + ')$';   break;
       case 'name': option = '^(?:' + option + ')(?:\\.[a-z]+)+$';
     }
     return new RegExp(option, 'i');
