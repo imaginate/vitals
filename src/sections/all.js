@@ -8326,6 +8326,9 @@ var seal = (function sealPrivateScope() {
    * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {boolean=} opts.base - [default= false] Whether to append the base
+   *   dirpath to the results.
+   * @param {boolean=} opts.basepath - Alias for opts.base.
    * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use "|"
    *   to separate valid directory names.
    * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs - If string use
@@ -8334,6 +8337,8 @@ var seal = (function sealPrivateScope() {
    */
   get.dirpaths = function getDirpaths(dirpath, opts) {
 
+    /** @type {!Array<string>} */
+    var dirpaths;
     /** @type {function(string): boolean} */
     var isValid;
 
@@ -8345,6 +8350,8 @@ var seal = (function sealPrivateScope() {
     if (opts) {
       if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',        'dirpaths');
       if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',   'dirpaths');
+      if ( !_is.un.bool(opts.base)      ) throw _error.type('opts.base',        'dirpaths');
+      if ( !_is.un.bool(opts.basepath)  ) throw _error.type('opts.basepath',    'dirpaths');
       if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',   'dirpaths');
       if ( !_isValid(opts.invalidDirs)  ) throw _error.type('opts.invalidDirs', 'dirpaths');
     }
@@ -8352,9 +8359,10 @@ var seal = (function sealPrivateScope() {
     dirpath = _prepDir(dirpath);
     opts = _parseOptions(opts);
     isValid = _makeTest(opts.validDirs, opts.invalidDirs);
-    return opts.deep
+    dirpaths = opts.deep
       ? _getDirpathsDeep(dirpath, isValid)
       : _getDirpaths(dirpath, isValid);
+    return opts.base ? _addBasepath(dirpaths, dirpath) : dirpaths;
   };
 
   /**
@@ -8365,6 +8373,9 @@ var seal = (function sealPrivateScope() {
    * @param {boolean=} opts.deep - [default= false] Whether to include
    *   sub-directory files.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {boolean=} opts.base - [default= false] Whether to append the base
+   *   dirpath to the results.
+   * @param {boolean=} opts.basepath - Alias for opts.base.
    * @param {(RegExp|Array<string>|?string)=} opts.validDirs
    * @param {(RegExp|Array<string>|?string)=} opts.validExts - [.]ext
    * @param {(RegExp|Array<string>|?string)=} opts.validNames - filename
@@ -8379,6 +8390,8 @@ var seal = (function sealPrivateScope() {
 
     /** @type {function(string): boolean} */
     var isValidDir;
+    /** @type {!Array<string>} */
+    var filepaths;
     /** @type {function(string): boolean} */
     var isValid;
     /** @type {!Array} */
@@ -8394,6 +8407,8 @@ var seal = (function sealPrivateScope() {
     if (opts) {
       if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',         'filepaths');
       if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',    'filepaths');
+      if ( !_is.un.bool(opts.base)      ) throw _error.type('opts.base',         'filepaths');
+      if ( !_is.un.bool(opts.basepath)  ) throw _error.type('opts.basepath',     'filepaths');
       if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',    'filepaths');
       if ( !_isValid(opts.validExts)    ) throw _error.type('opts.validExts',    'filepaths');
       if ( !_isValid(opts.validNames)   ) throw _error.type('opts.validNames',   'filepaths');
@@ -8412,10 +8427,11 @@ var seal = (function sealPrivateScope() {
 
     if (opts.deep) {
       isValidDir = _makeTest(opts.validDirs, opts.invalidDirs);
-      return _getFilepathsDeep(dirpath, isValid, isValidDir);
+      filepaths = _getFilepathsDeep(dirpath, isValid, isValidDir);
     }
+    else filepaths = _getFilepaths(dirpath, isValid);
 
-    return _getFilepaths(dirpath, isValid);
+    return opts.base ? _addBasepath(filepaths, dirpath) : filepaths;
   };
 
   //////////////////////////////////////////////////////////
@@ -8598,6 +8614,25 @@ var seal = (function sealPrivateScope() {
     return opts;
   }
 
+  /**
+   * @private
+   * @param {!Array<string>} paths
+   * @param {string} basepath
+   * @return {!Array<string>}
+   */
+  function _addBasepath(paths, basepath) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = paths.length;
+    i = -1;
+    while (++i < len) paths[i] = basepath + paths[i];
+    return paths;
+  }
+
   //////////////////////////////////////////////////////////
   // PRIVATE METHODS - OPTION PARSING
   //////////////////////////////////////////////////////////
@@ -8631,6 +8666,7 @@ var seal = (function sealPrivateScope() {
     if (!options) return {};
 
     options.deep = _is.bool(options.deep) ? options.deep : options.recursive;
+    options.base = _is.bool(options.base) ? options.base : options.basepath;
 
     opts = {};
     for (key in options) {
