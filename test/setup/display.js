@@ -17,7 +17,7 @@
 
 var chalk = require('chalk');
 
-var MAX_LENGTH = 50;
+var MAX_LENGTH = 60;
 
 global.testCall  = testCall;
 global.testTitle = testTitle;
