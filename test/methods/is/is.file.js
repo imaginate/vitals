@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - IS.BUFFER
+ * TEST - VITALS - JS METHOD - IS.FILE
  * -----------------------------------------------------------------------------
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/is.js}
  *
