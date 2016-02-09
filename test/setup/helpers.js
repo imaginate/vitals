@@ -23,6 +23,7 @@ require('node-vitals')(2, 'base', 'strict', 'fs');
 require('./display');
 
 global.assert = require('assert');
+global.setEol = setEol;
 global.mkDummy = mkDummy;
 global.rmDummy = rmDummy;
 
@@ -36,6 +37,27 @@ global.DUMMY = {
   base:    DUMMY_BASE,
   content: DUMMY_CONTENT
 };
+
+var EOL = {
+  'CR':   '\r',
+  'LF':   '\n',
+  'CRLF': '\r\n'
+};
+var FIND_EOL = {
+  'CR':   /\r?\n/g,
+  'LF':   /\r\n?/g,
+  'CRLF': /\r?\n|\r\n?/g
+};
+
+/**
+ * @global
+ * @param {string} str
+ * @param {string} eol
+ * @return {string}
+ */
+function setEol(str, eol) {
+  return remap(str, FIND_EOL[eol], EOL[eol]);
+}
 
 /**
  * @typedef {(string|Array<string>)} Files

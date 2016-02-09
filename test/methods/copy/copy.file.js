@@ -53,10 +53,10 @@ describe('vitals.copy.file (section:fs)', function() {
       var result = vitals.copy.file(src, dest, false);
       assert( result === DUMMY.content );
       src = fs.readFileSync(src, 'utf8');
-      src = normalize(src);
+      src = setEol(src, 'LF');
       assert( src === DUMMY.content );
       dest = fs.readFileSync(dest, 'utf8');
-      dest = normalize(dest);
+      dest = setEol(dest, 'LF');
       assert( dest === DUMMY.content );
     });
 
@@ -147,13 +147,4 @@ function addBase(file) {
 
   base = cut(DUMMY.base, /\/$/);
   return fuse(base, '/', file);
-}
-
-/**
- * @private
- * @param {string} str
- * @return {string}
- */
-function normalize(str) {
-  return remap(str, /\r\n?/g, '\n');
 }

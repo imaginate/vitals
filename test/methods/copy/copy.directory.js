@@ -152,12 +152,3 @@ function addBase(dir) {
   base = cut(DUMMY.base, /\/$/);
   return dir ? fuse(base, '/', dir) : base;
 }
-
-/**
- * @private
- * @param {string} str
- * @return {string}
- */
-function normalize(str) {
-  return remap(str, /\r\n?/g, '\n');
-}
