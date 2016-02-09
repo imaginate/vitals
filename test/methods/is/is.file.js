@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - IS.FILE
+ * TEST - VITALS - JS METHOD - IS.BUFFER
  * -----------------------------------------------------------------------------
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/is.js}
  *
@@ -16,8 +16,6 @@
  */
 
 if (BROWSER_TESTS) return;
-
-var fs = require('fs');
 
 describe('vitals.is.file (section:fs)', function() {
   var title;
