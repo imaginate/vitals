@@ -36,7 +36,7 @@ var is = {};
 
   /**
    * @public
-   * @param {*} val
+   * @param {...*} val
    * @return {boolean}
    */
   is.buffer = function isBuffer(val) {
@@ -51,7 +51,7 @@ var is = {};
 
   /**
    * @public
-   * @param {*} dirpath
+   * @param {...*} dirpath
    * @return {boolean}
    */
   is.directory = function isDirectory(dirpath) {
@@ -66,7 +66,7 @@ var is = {};
 
   /**
    * @public
-   * @param {*} filepath
+   * @param {...*} filepath
    * @return {boolean}
    */
   is.file = function isFile(filepath) {

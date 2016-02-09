@@ -8868,7 +8868,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * @public
-   * @param {*} val
+   * @param {...*} val
    * @return {boolean}
    */
   is.buffer = function isBuffer(val) {
@@ -8883,7 +8883,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * @public
-   * @param {*} dirpath
+   * @param {...*} dirpath
    * @return {boolean}
    */
   is.directory = function isDirectory(dirpath) {
@@ -8898,7 +8898,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * @public
-   * @param {*} filepath
+   * @param {...*} filepath
    * @return {boolean}
    */
   is.file = function isFile(filepath) {
