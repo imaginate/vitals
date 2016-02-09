@@ -36,27 +36,25 @@ var to = {};
   /**
    * Move the contents of a file to a new or existing file.
    * @public
-   * @param {(string|!Buffer)} contents
+   * @param {(!Buffer|string)} contents
    * @param {string} filepath
    * @param {?string=} encoding - [default= 'utf8'] If null no encoding is set.
-   * @return {string} The contents.
+   * @return {(!Buffer|string)} The contents.
    */
   to.file = function toFile(contents, filepath, encoding) {
 
-    if ( !_is.str(filepath) ) throw _error.type('filepath', 'file');
-
-    if ( _is.buffer(contents) ) {
-      fs.writeFileSync(filepath, contents);
-      return contents;
-    }
-
-    if ( !_is.str(contents)        ) throw _error.type('contents', 'file');
+    if ( !_is.str(filepath)        ) throw _error.type('filepath', 'file');
     if ( !_is.nil.un.str(encoding) ) throw _error.type('encoding', 'file');
 
+    if ( _is.buffer(contents) ) {
+      encoding = encoding || null;
+    }
+    else if ( !_is.str(contents) ) throw _error.type('contents', 'file');
+
     encoding = _is.undefined(encoding) ? 'utf8' : encoding;
-    return encoding
-      ? fs.writeFileSync(filepath, contents, encoding)
-      : fs.writeFileSync(filepath, contents);
+    if (encoding) fs.writeFileSync(filepath, contents, encoding);
+    else fs.writeFileSync(filepath, contents);
+    return contents;
   };
 
   //////////////////////////////////////////////////////////
