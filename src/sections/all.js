@@ -8674,7 +8674,7 @@ var seal = (function sealPrivateScope() {
       case 'dir' :
       case 'file': option = '^' + option + '$';          break;
       case 'ext' : option = '^.*\\.(?:' + option + ')$'; break;
-      case 'name': option = '^(?:' + option + ')\\.[a-z]{2,}$';
+      case 'name': option = '^(?:' + option + ')(?:\\.[a-z]+)+$';
     }
     return new RegExp(option, 'i');
   }
