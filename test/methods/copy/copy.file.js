@@ -84,6 +84,10 @@ describe('vitals.copy.file (section:fs)', function() {
   title = titleStr('error', 'should throw an error');
   describe(title, function() {
 
+    before('setup dummy dirs and files', function() {
+      mkDummy('fake.js');
+    });
+
     title = callStr();
     it(title, function() {
       assert.throws(function() {
@@ -91,19 +95,24 @@ describe('vitals.copy.file (section:fs)', function() {
       });
     });
 
-    title = callStr('file1');
+    title = callStr('fake.js');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.file('file1');
+        var src = addBase('fake.js');
+        vitals.copy.file(src);
       });
     });
 
-    title = callStr('invalid.fail', 'dest');
+    title = callStr('invalid.js', 'fake1.js');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.file('invalid.fail', 'dest');
+        var src = addBase('invalid.js');
+        var dest = addBase('fake1.js');
+        vitals.copy.file(src, dest);
       });
     });
+
+    after('clean up dummy dirs and files', rmDummy);
 
   });
 
