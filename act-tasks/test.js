@@ -107,7 +107,10 @@ function methodTests(method) {
   file = fuse('src/methods/', method, '.js');
 
   if ( !is.file(file) ) {
-    throw new Error('invalid value (must be a valid vitals method)');
+    file = fuse('src/methods/fs/', method, '.js');
+    if ( !is.file(file) ) {
+      throw new Error('invalid value (must be a valid vitals method)');
+    }
   }
 
   name = fuse('vitals.', method);
