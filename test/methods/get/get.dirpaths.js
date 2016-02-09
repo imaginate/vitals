@@ -207,7 +207,7 @@ describe('vitals.get.dirpaths (section:fs)', function() {
 
     });
 
-    after('clean up dummy dirs and dirpathss', rmDummy);
+    after('clean up dummy dirs and files', rmDummy);
 
   });
 
@@ -251,7 +251,7 @@ describe('vitals.get.dirpaths (section:fs)', function() {
         });
       });
 
-      after('clean up dummy dirs and dirpathss', rmDummy);
+      after('clean up dummy dirs and files', rmDummy);
 
     });
   });
