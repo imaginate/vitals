@@ -21,6 +21,8 @@ var _merge = require('./src/methods/helpers/merge.js');
 var _own = require('./src/methods/helpers/own.js');
 var _is = require('./src/methods/helpers/is.js');
 
+var VERSION = '3.0.0';
+
 /**
  * @public
  * @param {(!Array|...string)=} methods - [default= "all"] The vitals methods to
@@ -29,7 +31,7 @@ var _is = require('./src/methods/helpers/is.js');
  *   returned. Otherwise an object with all the requested vitals methods is
  *   returned.
  */
-module.exports = function newVitals(methods) {
+exports = module.exports = function newVitals(methods) {
 
   /** @type {(!Object|function)} */
   var vitals;
@@ -48,11 +50,17 @@ module.exports = function newVitals(methods) {
   }
 
   vitals = _is.str(methods) ? setupMethod(methods) : setupMethods(methods);
-  vitals.makeGlobal = newMakeGlobal(vitals, methods);
+  vitals.version = VERSION;
+  vitals.mkGlobal = newMakeGlobal(vitals, methods);
   vitals.construct = newVitals;
-  vitals.version = '3.0.0';
   return vitals;
 };
+
+/**
+ * @public
+ * @type {string}
+ */
+exports.version = VERSION;
 
 /**
  * @private
