@@ -44,6 +44,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Returns a copy of the given value.
+   *
    * @public
    * @param {*} val
    * @param {boolean=} deep
@@ -66,6 +67,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new object with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -83,6 +85,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new array with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -102,6 +105,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new RegExp from a given RegExp.
+   *
    * @public
    * @param {!RegExp} regex
    * @param {boolean=} forceGlobal
@@ -120,8 +124,9 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in browser environments for
+   *   copy.func instead of copy.function in ES3 browser environments for
    *   compatibility.
+   *
    * @public
    * @param {function} func
    * @param {boolean=} deep
