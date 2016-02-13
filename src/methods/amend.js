@@ -43,36 +43,34 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   - object: Must be "propName => propVal" or "propName => propDescriptor".
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
    *   - array:  An array of key names to define.
    *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/blob/master/src/methods/is.js)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -80,6 +78,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   function amend(obj, props, val, descriptor, strongType, setter) {
@@ -134,16 +138,17 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
    *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -169,34 +174,35 @@ var amend = (function amendPrivateScope() {
   };
 
   /**
-   * A shortcut for Object.defineProperty.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
    * @param {*=} val - A val is required if a descriptor is not supplied.
-   * @param {!Object=} descriptor - [default= {
-   *     writable: true,
-   *     enumerable: true,
-   *     configurable: true
-   *   }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails an [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/blob/master/src/methods/is.js)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined the new property is
    *   assigned an accessor descriptor that includes a setter that sets the
    *   property to the value returned by this setter method. The setter method
    *   will receive two params, the new value and the current value. If a
    *   strongType is defined this setter will not get called until the new value
    *   passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.property = function amendProperty(obj, key, val, descriptor, strongType, setter) {
@@ -240,8 +246,9 @@ var amend = (function amendPrivateScope() {
   amend.prop = amend.property;
 
   /**
-   * A shortcut for Object.defineProperty that only updates the descriptor of an
-   *   existing property.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+   *   that only updates the descriptor of an existing property.
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
@@ -264,37 +271,34 @@ var amend = (function amendPrivateScope() {
   amend.prop.config = amend.property.config;
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
-   *   array:  An array of key names to define.
-   *   string: Converted to an array of key names to define. Use the following
-   *     list of chars for the separator (chars listed in order of rank):
-   *     ", "  ","  "|"  " "
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
+   *   - array:  An array of key names to define.
+   *   - string: Converted to an array of key names. Use this list of chars for
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/blob/master/src/methods/is.js)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -302,6 +306,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.properties = function amendProperties(obj, props, val, descriptor, strongType, setter) {
@@ -358,16 +368,17 @@ var amend = (function amendPrivateScope() {
   amend.props = amend.properties;
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
    *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
