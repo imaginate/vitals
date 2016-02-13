@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.roll]{@link https://github.com/imaginate/vitals/blob/master/src/methods/roll.js}
+ * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/method-roll}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -38,6 +38,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a result by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -46,9 +47,9 @@ var roll = (function rollPrivateScope() {
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    * @param {function(*=, *=, (string|number)=, !(Object|function)=)} iteratee -
-   *   It has the optional params - previousValue, currentValue, key/index,
+   *   It has the optional params - previousValue, currentValue, key/index, and
    *   source. Note this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's fourth param so you can safely assume all references to
    *   the source are its original values).
@@ -95,6 +96,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a sum by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -104,7 +106,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -151,6 +153,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a difference by iterating over object maps, arrays,
    *   or cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -160,7 +163,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
