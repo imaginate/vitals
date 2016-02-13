@@ -2,5 +2,5 @@
 
 | Method | Section | Alias |
 | :----: | :-----: | :---: |
-{{ outline }}
+{{ methods }}
 
