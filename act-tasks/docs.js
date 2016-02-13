@@ -20,6 +20,8 @@
 
 'use strict';
 
+var is = require('node-are').is;
+
 var vitals = require('node-vitals')('base', 'fs');
 var cut    = vitals.cut;
 var each   = vitals.each;
