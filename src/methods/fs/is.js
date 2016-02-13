@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 3.0.0
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/is.js}
+ * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/method-is}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
