@@ -5,5 +5,5 @@
 {{ params }}
 
 ### Returns
-{{ return }}
+{{ returns }}
 
