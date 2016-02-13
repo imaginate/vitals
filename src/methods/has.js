@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.has]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}
+ * @see [vitals.has]{@link https://github.com/imaginate/vitals/wiki/method-has}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -46,16 +46,18 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty (that accepts null),
-   *   String.prototype.includes, RegExp.prototype.test, and
-   *   Array.prototype.includes.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   (that accepts `null`), [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes),
+   *   [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test),
+   *   and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+   *
    * @public
    * @param {?(Object|function|string|Array)} source
-   * @param {*} key - If source is a string the following two statements apply:
-   *   For a RegExp key the source is tested for the RegExp pattern. Otherwise
-   *   the source is searched for a substring of the string-converted key.
-   *   If source is an array or arguments object the key is searched for in the
-   *   object's indexed values.
+   * @param {*} key - Details (per source type):
+   *   - string: For a RegExp key the source is tested for the RegExp pattern.
+   *     Otherwise the source is searched for a substring of the
+   *     string-converted key.
+   *   - array/arguments: The key is searched for in the source's indexed values.
    * @return {boolean}
    */
   function has(source, key) {
@@ -72,7 +74,9 @@ var has = (function hasPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty that accepts null.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -91,6 +95,7 @@ var has = (function hasPrivateScope() {
 
   /**
    * A shortcut that checks for a value in an object.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} val
@@ -110,7 +115,9 @@ var has = (function hasPrivateScope() {
   has.val = has.value;
 
   /**
-   * A shortcut for String.prototype.includes and RegExp.prototype.test.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *   and [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *
    * @public
    * @param {string} source
    * @param {*} pattern
@@ -125,7 +132,8 @@ var has = (function hasPrivateScope() {
   };
 
   /**
-   * A shortcut for String.prototype.includes.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes).
+   *
    * @public
    * @param {string} source
    * @param {*} str
@@ -142,7 +150,9 @@ var has = (function hasPrivateScope() {
   has.substr = has.substring;
 
   /**
-   * A shortcut for Object.prototype.propertyIsEnumerable that accepts null.
+   * A shortcut for [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
