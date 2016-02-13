@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
+ * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/method-cut}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -49,40 +49,42 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * Removes properties from an object/array or patterns from a string
+   * Removes properties from an object/array or substring patterns from a string
    *   and returns the amended source.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - leading val is function: The val is considered a filter function
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is deleted). It has the
    *       optional params - value, key, source. Note this method lazily clones
-   *       the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - leading val is function: The val is considered a filter function
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is spliced from the source).
    *       It has the optional params - value, index, source. Note this method
-   *       lazily clones the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       lazily clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
-   *     string source: All vals that are not a RegExp or string are converted
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
+   *   - string source: All vals that are not a RegExp or string are converted
    *       to a string. Each matching substring is removed from the source.
    * @param {Object=} thisArg - If source is an object/array, val is a filter
    *   function, and thisArg is defined the filter is bound to its value.
@@ -116,34 +118,36 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a property from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
-   *   object source:
-   *     - val is RegExp: This method will delete all properties with a key that
-   *     matches the val.
-   *     - val is string: This method will delete all properties where
-   *     key === val.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is deleted). It has the optional params -
-   *     value, key, source. Note this method lazily clones the source based on
-   *     the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will delete all properties where
-   *     value === val.
-   *   array source:
-   *     - val is number: This method will splice the index from the source.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is spliced from the source). It has the
-   *     optional params - value, index, source. Note this method lazily clones
-   *     the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will splice from the source all
-   *     properties where value === val.
+   *   - object source:
+   *     -- val is RegExp: This method will delete all properties with a key
+   *       that [matches](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       the val.
+   *     -- val is string: This method will delete all properties where
+   *       `key === val`.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is deleted). It has the optional params -
+   *       value, key, source. Note this method lazily clones the source based
+   *       on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- val is number: This method will splice the index from the source.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is spliced from the source). It has the
+   *       optional params - value, index, source. Note this method lazily
+   *       clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @param {Object=} thisArg - If val is a filter function and thisArg is
    *   defined the filter is bound to its value.
    * @return {!(Object|function|Array)}
@@ -169,6 +173,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a property by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} key - If the key is not a string it is converted to a string.
@@ -186,6 +191,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes a property by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before removing the property.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {number} index - The index to remove.
@@ -208,11 +214,12 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses the [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
    *   to complete type checks.
+   *
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
    *   for acceptable options.
    * @return {!(Object|function|Array)}
    */
@@ -238,6 +245,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val
@@ -256,6 +264,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a pattern from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If pattern is not a string or RegExp it is converted
@@ -271,26 +280,26 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes properties from an object/array and returns the object. Note that
-   *   the use of the word, "match", within vitals.cut.properties refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Removes properties from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`. 
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @return {!(Object|function|Array)}
    */
   cut.properties = function cutProperties(source, vals) {
@@ -307,6 +316,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes properties by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {...*} keys - If only one key is provided and it is an array it is
@@ -326,6 +336,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before completing the cut.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...number} indexes - If only one index is provided and it is an
@@ -356,6 +367,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -376,6 +388,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes patterns from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {...*} patterns - If only one pattern is provided and it is an array
