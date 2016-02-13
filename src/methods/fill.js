@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fill.js}
+ * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/method-fill}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -38,16 +38,18 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an array, object, or string with specified values.
+   *
    * @public
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
    * @param {(!Array|string)=} keys - Only use with an object/function source.
    *   If provided it is converted to an array of keys to limit the object fill
    *   to. The chars in the following list can be used as the separator for keys
-   *   in a keys string (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   in a keys string (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*} val - The value to fill the array, object, or string with.
-   * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= source.length] Only for fill.array.
+   * @param {number=} start - [default= 0] Only for use with source arrays.
+   * @param {number=} end - [default= source.length] Only for use with source
+   *   arrays.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
@@ -84,12 +86,13 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing object/function with specified keys and values.
+   *
    * @public
    * @param {!(Object|function)} obj
    * @param {(!Array|string)=} keys - If provided it is converted to an array of
    *   keys to limit the object fill to. The chars in the following list can be
    *   used as the separator for keys in a keys string (chars listed in order of
-   *   rank):  ", "  ","  "|"  " "
+   *   rank): ` ", "  ","  "|"  " " `
    * @param {*} val
    * @return {!(Object|function)}
    */
@@ -112,6 +115,7 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing or new array with specified values.
+   *
    * @public
    * @param {!(Array|number)} arr - If number makes new array with arr length.
    * @param {*} val
@@ -136,9 +140,10 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills a new string with specified values.
+   *
    * @public
    * @param {number} count
-   * @param {*} val - All val types are converted to string via String(val).
+   * @param {*} val - All val types are converted to string via `String(val)`.
    * @return {string}
    */
   fill.string = function fillString(count, val) {
