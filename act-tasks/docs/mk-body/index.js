@@ -24,7 +24,7 @@ var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
 
-var GET = /\/\*\*[^@]+@public.+?\*\/\n[a-zA-Z .]+/g;
+var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .]+/g;
 var TRIM = /\/\*\*\n +\* /;
 var SPLIT = / *\n +\*(?: +|\/\n)?/g;
 
