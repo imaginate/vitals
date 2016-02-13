@@ -1,10 +1,10 @@
 ## {{ method }}
-[see unit tests for examples]({{ tests }})
+[see unit tests for examples]({{ tests }})<br>
 {{ intro }}
 
-### Params
+#### Params
 {{ params }}
 
-### Returns
+#### Returns
 {{ returns }}
 
