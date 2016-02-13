@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 3.0.0
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/get.js}
+ * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/method-get}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -41,15 +41,16 @@ var get = {};
 
   /**
    * Gets the contents of a file.
+   *
    * @public
    * @param {string} filepath
    * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
-   * @param {boolean=} opts.buffer - [default= false] If true a buffer is
+   * @param {boolean=} opts.buffer - [default= false] If `true` a buffer is
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is null no
-   *   normalization is completed. Optional values: "LF", "CR", "CRLF"
+   *   to use when normalizing the result. If opts.eol is `null` no
+   *   normalization is completed. Optional values: ` "LF", "CR", "CRLF" `
    * @return {(!Buffer|string)}
    */
   get.file = function getFile(filepath, opts) {
@@ -72,6 +73,7 @@ var get = {};
 
   /**
    * Gets all of the directory paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
@@ -81,10 +83,10 @@ var get = {};
    * @param {boolean=} opts.base - [default= false] Whether to append the base
    *   dirpath to the results.
    * @param {boolean=} opts.basepath - Alias for opts.base.
-   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use "|"
-   *   to separate valid directory names.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use
+   *   `"|"` to separate valid directory names.
    * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs - If string use
-   *   "|" to separate invalid directory names.
+   *   `"|"` to separate invalid directory names.
    * @return {!Array<string>}
    */
   get.dirpaths = function getDirpaths(dirpath, opts) {
@@ -119,6 +121,7 @@ var get = {};
 
   /**
    * Gets all of the file paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
