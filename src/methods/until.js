@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.until]{@link https://github.com/imaginate/vitals/blob/master/src/methods/until.js}
+ * @see [vitals.until]{@link https://github.com/imaginate/vitals/wiki/method-until}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -40,6 +40,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps, arrays, or cycles until an end
    *   value is returned.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -50,10 +51,10 @@ var until = (function untilPrivateScope() {
    *   - number source: Ends after the count of cycles equals the source.
    *   - string source: Converted to an array source and ends after all indexes
    *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank):  ", "  ","  "|"  " "
+   *     order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -94,6 +95,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps until an end value is returned or
    *   all properties are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -101,7 +103,7 @@ var until = (function untilPrivateScope() {
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -124,16 +126,17 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over array-like objects until an end value is
    *   returned or all indexed values are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
-   *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/method-copy#copyarray))
+   *   the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -159,6 +162,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for invoking an action until an end value is returned or the
    *   number of cycles is reached.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
