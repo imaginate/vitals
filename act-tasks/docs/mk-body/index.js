@@ -31,6 +31,7 @@ var SPLIT = / *\n +\*(?: +|\/\n)?/g;
 var TEMPLATE = get.file('act-tasks/docs/body.md');
 
 var getMethod  = require('./get-method');
+var getTests   = require('./get-tests');
 var getIntro   = require('./get-intro');
 var getParams  = require('./get-params');
 var getReturns = require('./get-returns');
@@ -75,6 +76,8 @@ function mkDetails(details) {
   /** @type {string} */
   var params;
   /** @type {string} */
+  var tests;
+  /** @type {string} */
   var intro;
   /** @type {!Array<string>} */
   var lines;
@@ -84,12 +87,14 @@ function mkDetails(details) {
     detail  = cut(detail, TRIM);
     lines   = detail.split(SPLIT);
     method  = getMethod(lines);
+    tests   = getTests(method);
     intro   = getIntro(lines);
     params  = getParams(lines);
     returns = getReturns(lines);
 
     detail = TEMPLATE;
     detail = remap(detail, '{{ method }}',  method);
+    detail = remap(detail, '{{ tests }}',   tests);
     detail = remap(detail, '{{ intro }}',   intro);
     detail = remap(detail, '{{ params }}',  params);
     detail = remap(detail, '{{ returns }}', returns);
