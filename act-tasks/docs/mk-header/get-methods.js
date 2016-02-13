@@ -25,7 +25,7 @@ var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
 
-var METHOD = /[a-z]+(?:\.[a-zA-Z.]+)?(?= |\n)/;
+var METHOD = /[a-z]+(?:\.[a-zA-Z.]+)?/;
 var ALIAS  = /\([a-zA-Z.*|]+\)/;
 
 /**
@@ -52,7 +52,7 @@ module.exports = function getMethods(section, content) {
 
     alias = get(line, ALIAS)[0] || '';
     alias = remap(alias, '|', '\\|');
-    alias = cut(alias, '*');
+    alias = cut(alias, /\*/g);
 
     return fuse('| ', method, ' | ', section, ' | ', alias, ' |\n');
   });
