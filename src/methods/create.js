@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - CREATE
  * -----------------------------------------------------------------------------
+ * @section strict
  * @version 3.0.0
  * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/methods/create.js}
  *

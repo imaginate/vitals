@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - HAS
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.has]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}
  *

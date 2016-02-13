@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - GET
  * -----------------------------------------------------------------------------
+ * @section fs
  * @version 3.0.0
  * @see [vitals.get]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/get.js}
  *

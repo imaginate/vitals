@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - IS
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
  *

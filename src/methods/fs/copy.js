@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - COPY
  * -----------------------------------------------------------------------------
+ * @section fs
  * @version 3.0.0
  * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/copy.js}
  *

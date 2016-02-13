@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - FREEZE
  * -----------------------------------------------------------------------------
+ * @section strict
  * @version 3.0.0
  * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/methods/freeze.js}
  *

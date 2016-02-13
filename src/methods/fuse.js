@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS SHORTCUTS - FUSE
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fuse.js}
  *

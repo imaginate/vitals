@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - AMEND
  * -----------------------------------------------------------------------------
+ * @section strict
  * @version 3.0.0
  * @see [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
  *

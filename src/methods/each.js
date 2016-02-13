@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - EACH
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.each]{@link https://github.com/imaginate/vitals/blob/master/src/methods/each.js}
  *

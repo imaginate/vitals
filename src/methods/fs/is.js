@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - IS
  * -----------------------------------------------------------------------------
+ * @section fs
  * @version 3.0.0
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/is.js}
  *

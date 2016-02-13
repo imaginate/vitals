@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - TO
  * -----------------------------------------------------------------------------
+ * @section fs
  * @version 3.0.0
  * @see [vitals.to]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/to.js}
  *

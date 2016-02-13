@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS SHORTCUTS - CUT
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
  *

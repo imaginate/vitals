@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - SHELL METHOD - RUN
  * -----------------------------------------------------------------------------
+ * @section shell
  * @version 3.0.0
  * @see [vitals.run]{@link https://github.com/imaginate/vitals/blob/master/src/methods/run.js}
  *

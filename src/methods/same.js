@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - SAME
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.same]{@link https://github.com/imaginate/vitals/blob/master/src/methods/same.js}
  *

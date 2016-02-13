@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - ROLL
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.roll]{@link https://github.com/imaginate/vitals/blob/master/src/methods/roll.js}
  *

@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - SLICE
  * -----------------------------------------------------------------------------
+ * @section base
  * @version 3.0.0
  * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/methods/slice.js}
  *

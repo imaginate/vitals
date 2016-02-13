@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - SEAL
  * -----------------------------------------------------------------------------
+ * @section strict
  * @version 3.0.0
  * @see [vitals.seal]{@link https://github.com/imaginate/vitals/blob/master/src/methods/seal.js}
  *
