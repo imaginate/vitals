@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 3.0.0
- * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/methods/create.js}
+ * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/method-create}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -35,11 +35,13 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -66,11 +68,13 @@ var create = (function createPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
