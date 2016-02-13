@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 3.0.0
- * @see [vitals.to]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/to.js}
+ * @see [vitals.to]{@link https://github.com/imaginate/vitals/wiki/method-to}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -36,10 +36,11 @@ var to = {};
 
   /**
    * Move the contents of a file to a new or existing file.
+   *
    * @public
    * @param {(!Buffer|string)} contents
    * @param {string} filepath
-   * @param {?string=} encoding - [default= 'utf8'] If null no encoding is set.
+   * @param {?string=} encoding - [default= 'utf8'] If `null` no encoding is set.
    * @return {(!Buffer|string)} The contents.
    */
   to.file = function toFile(contents, filepath, encoding) {
