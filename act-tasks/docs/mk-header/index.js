@@ -26,6 +26,7 @@ var remap  = vitals.remap;
 
 var GET  = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z.]+)?(?: +\([a-zA-Z.*|]+\))? *\n)+/;
 var TRIM = /\n *\/\/ PUBLIC METHODS *\n/;
+var SLIM = /\n$/;
 var BASE = /[a-z]+(?= |\n|\.)/;
 
 var TEMPLATE = get.file('act-tasks/docs/header.md');
@@ -50,17 +51,19 @@ module.exports = function mkHeader(content, fscontent) {
   var base;
 
   section = getSection(content);
-  content = get(content, GET);
+  content = get(content, GET)[0];
 
   if (!content) throw new Error('no public methods found');
 
   content = cut(content, TRIM);
+  content = cut(content, SLIM);
   base = get(content, BASE)[0];
   methods = getMethods(section, content);
 
   if (fscontent) {
     fscontent = get(fscontent, GET)[0];
     fscontent = cut(fscontent, TRIM);
+    fscontent = cut(fscontent, SLIM);
     methods = fuse(methods, getMethods('fs', fscontent));
   }
 
