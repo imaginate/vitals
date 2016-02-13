@@ -26,7 +26,7 @@ var remap  = vitals.remap;
 
 var GET  = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z.]+)?(?: +\([a-zA-Z.*|]+\))? *\n)+/;
 var TRIM = /\n *\/\/ PUBLIC METHODS *\n/;
-var BASE = /[a-z]+(?= |\n)/;
+var BASE = /[a-z]+(?= |\n|\.)/;
 
 var TEMPLATE = get.file('act-tasks/docs/header.md');
 
