@@ -21,6 +21,7 @@
 var vitals = require('node-vitals')('base');
 var cut    = vitals.cut;
 var each   = vitals.each;
+var fill   = vitals.fill;
 var fuse   = vitals.fuse;
 var has    = vitals.has;
 var remap  = vitals.remap;
@@ -133,7 +134,7 @@ function getDefault(lines, indents) {
 
   indent = getIndent(indents);
   def = remap(lines[0], DEF, '$1');
-  return fuse(indent, 'default: ', def, '\n');
+  return fuse(indent, 'default: ` ', def, ' `\n');
 }
 
 /**
