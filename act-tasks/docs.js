@@ -77,6 +77,20 @@ function buildDocs(method) {
 }
 
 /**
+ * @public
+ * @type {function}
+ */
+function versionDocs() {
+
+  /** @type {!Array<string>} */
+  var files;
+  /** @type {string} */
+  var file;
+
+  throw new Error('task not finished yet');
+}
+
+/**
  * @private
  * @param {string} method
  */
