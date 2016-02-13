@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section shell
  * @version 3.0.0
- * @see [vitals.run]{@link https://github.com/imaginate/vitals/blob/master/src/methods/run.js}
+ * @see [vitals.run]{@link https://github.com/imaginate/vitals/wiki/method-run}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -48,14 +48,16 @@ var run = (function runPrivateScope() {
    */
 
   /**
-   * A shortcut for child_process.spawnSync that returns the stdout.
+   * A shortcut for [child_process.spawnSync](https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
+   *   that returns the stdout.
+   *
    * @public
    * @param {string} cmd
    * @param {Object=} opts
    * @param {?string=} opts.eol - [default= "LF"] The end of line character to
    *   use when normalizing the result. If opts.eol is null or opts.buffer
    *   is true and opts.eol is undefined no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
+   *   Optional values: ` "LF", "CR", "CRLF" `
    * @param {boolean=} opts.buffer - [default= false] If true and stdout is a
    *   buffer the buffer is returned. Otherwise a string of stdout is returned.
    * @param {boolean=} opts.catchExit - [default= true] If process is exited
