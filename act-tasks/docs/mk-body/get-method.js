@@ -38,23 +38,3 @@ module.exports = function getMethod(lines) {
   method = cut(method, TRIM);
   return method;
 };
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-function getIntro(lines) {
-
-  /** @type {number} */
-  var end;
-
-  until(false, lines, function(line, i) {
-    if ( has(line, /^@public/) ) end = i;
-    return end === undefined;
-  });
-  lines = slice(lines, 0, end);
-  return roll.up('', lines, function(line, i) {
-    return i && line ? fuse(' ', line) : line;
-  });
-}
