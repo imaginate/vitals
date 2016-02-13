@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 3.0.0
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/methods/freeze.js}
+ * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/method-freeze}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -36,6 +36,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
@@ -53,6 +54,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
