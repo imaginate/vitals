@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fuse.js}
+ * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/method-fuse}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -42,10 +42,11 @@ var fuse = (function fusePrivateScope() {
   /**
    * Merges objects, concatenates arrays, appends properties, and combines
    *   strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types null is simply skipped. Remaining details per dest type:
+   *   array dest types `null` is skipped. Remaining details per dest type:
    *   - object: If only one val is provided and it is an array it is considered
    *     an array of vals. Object vals are merged with the dest. All other
    *     values are converted to strings and appended as new keys (if the key
@@ -84,6 +85,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties and combines strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -120,6 +122,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties and combines strings to the start of their destination.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -162,9 +165,10 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties/keys to an object.
+   *
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null are skipped. All other vals
+   * @param {...*} vals - Any vals that are `null` are skipped. All other vals
    *   that are not objects are converted to a string and appended as new keys
    *   (if the key exists on the dest the key's value is replaced with
    *   undefined). If only one val is provided and it is an array then it is
@@ -186,6 +190,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends values to an array and concatenates arrays.
+   *
    * @public
    * @param {!Array} dest
    * @param {...*} vals - Details per val type:
@@ -213,6 +218,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends strings to a string.
+   *
    * @public
    * @param {string} dest
    * @param {...*} vals - All non-string vals are converted to strings.
