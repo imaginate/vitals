@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 3.0.0
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/copy.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/method-copy}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -40,6 +40,7 @@ var copy = {};
 
   /**
    * Copy the contents of a file to a new or existing file.
+   *
    * @public
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file,
@@ -52,7 +53,7 @@ var copy = {};
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
    *   to use when normalizing a string result. If opts.buffer is true or
    *   opts.eol is null no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
+   *   Optional values: ` "LF", "CR", "CRLF" `
    * @return {(!Buffer|string)} The contents of the source.
    */
   copy.file = function copyFile(source, dest, opts) {
@@ -80,6 +81,7 @@ var copy = {};
 
   /**
    * Copy all of the files in a directory to another directory.
+   *
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory or
@@ -89,12 +91,12 @@ var copy = {};
    *   directories.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
    * @param {boolean=} opts.buffer - [default= true] Use a buffer.
-   * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
+   * @param {string=} opts.encoding - [default= "utf8"] Only applies if
    *   opts.buffer is false.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
    *   to use when normalizing a string result. If opts.buffer is true or
    *   opts.eol is null no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
+   *   Optional values: ` "LF", "CR", "CRLF" `
    * @return {!Array} The filepaths copied to the dest.
    */
   copy.directory = function copyDirectory(source, dest, opts) {
