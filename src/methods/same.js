@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.same]{@link https://github.com/imaginate/vitals/blob/master/src/methods/same.js}
+ * @see [vitals.same]{@link https://github.com/imaginate/vitals/wiki/method-same}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -33,6 +33,7 @@ var same = (function samePrivateScope() {
 
   /**
    * A functional representation of strict equality.
+   *
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -47,6 +48,7 @@ var same = (function samePrivateScope() {
 
   /**
    * A functional representation of loose equality.
+   *
    * @public
    * @param {*} val1
    * @param {*} val2
