@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+ * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/method-is}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -40,7 +40,7 @@ var is = (function isPrivateScope() {
   // - is.nan
   // - is.object    (is.obj)
   // - is._object   (is._obj)
-  // - is.function  (is.func|is.fn)
+  // - is.func      (is.function|is.fn)
   // - is.array     (is.arr)
   // - is._array    (is._arr)
   // - is.regexp    (is.regex|is.re)
@@ -58,8 +58,9 @@ var is = (function isPrivateScope() {
 
   /**
    * A shortcut for type checking values.
+   *
    * @public
-   * @param {string} types - The valid data types.
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
    * @param {...*} val - The value to evaluate. If multiple values are
    *   provided all must pass the type check to return true.
    * @return {boolean} The evaluation result.
@@ -146,6 +147,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Empty strings return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -177,6 +179,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Zeros return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -221,6 +224,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Functions return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -271,6 +275,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Arguments return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -373,10 +378,11 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
+   * Checks if a value is considered empty. Empty values:
+   *   ` 0, "", {}, [], null, undefined, false, NaN, function(){...} `.
+   *   Note that for functions this method checks whether it has any defined
+   *   params: ` function(){} => true; function(param){} => false; `.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
