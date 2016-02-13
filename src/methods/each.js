@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.each]{@link https://github.com/imaginate/vitals/blob/master/src/methods/each.js}
+ * @see [vitals.each]{@link https://github.com/imaginate/vitals/wiki/method-each}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -39,16 +39,17 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps, arrays, or cycles.
+   *
    * @public
    * @param {!(Object|function|Array|number|string)} source - Details per type:
    *   - object source: Iterates over all properties in random order.
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    *   - string source: Converted to an array source. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -73,12 +74,13 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -98,13 +100,14 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over array-like objects.
+   *
    * @public
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -127,6 +130,7 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over a set number of cycles.
+   *
    * @public
    * @param {number} count
    * @param {function(number=)} iteratee
