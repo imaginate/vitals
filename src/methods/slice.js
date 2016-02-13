@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/methods/slice.js}
+ * @see [vitals.slice]{@link https://github.com/imaginate/vitals/wiki/method-slice}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -36,8 +36,9 @@ var slice = (function slicePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end) and
-   *   String.prototype.slice(start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   *   and [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {?(Object|Array|function|string)} source
    * @param {number=} start - [default= 0]
@@ -60,7 +61,8 @@ var slice = (function slicePrivateScope() {
   }
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
+   *
    * @public
    * @param {?(Object|Array|function)} source
    * @param {number=} start - [default= 0]
@@ -80,7 +82,8 @@ var slice = (function slicePrivateScope() {
   slice.arr = slice.array;
 
   /**
-   * A shortcut for String.prototype.slice(start, end).
+   * A shortcut for [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {string} str
    * @param {number=} start - [default= 0]
