@@ -50,7 +50,7 @@ var to     = vitals.to;
 var WIKI = '../vitals.wiki';
 var BASE = './src/methods';
 
-var mkDoc = require('./docs/mk-doc');
+var mkDoc = require('./mk-doc');
 
 /**
  * @public
