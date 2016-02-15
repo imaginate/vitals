@@ -136,7 +136,7 @@ function getDefault(lines, indents) {
 
   indent = getIndent(indents);
   def = remap(lines[0], DEF, '$1');
-  return fuse('\n', indent, 'default: ` ', def, ' `\n');
+  return fuse('\n', indent, 'default value: ` ', def, ' `\n');
 }
 
 /**
