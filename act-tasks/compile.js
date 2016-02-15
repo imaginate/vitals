@@ -20,22 +20,6 @@
 
 'use strict';
 
-var vitals = require('node-vitals')('base', 'fs');
-var cut    = vitals.cut;
-var each   = vitals.each;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var to     = vitals.to;
-
-var BROWSER  = 'src/browser';
-var SECTIONS = 'src/sections';
-var INSERTS  = / *\/\/ INSERT ([a-zA-Z-_\/]+\.js)\n/g;
-var INTRO    = /^[\s\S]*?(\n\/{80}\n)/;
-var EXPORTS  = /\n *module\.exports = [a-zA-Z_]+;\n$/;
-var XBROWSER = /\n *\/\/ BROWSER ONLY *\n[\s\S]*?\n *\/\/ BROWSER ONLY END *\n/g;
-
 exports['desc'] = 'compiles the src';
 exports['default'] = '-browser -sections';
 exports['methods'] = {
@@ -48,6 +32,23 @@ exports['methods'] = {
     'method': compileSections
   }
 };
+
+var vitals = require('node-vitals')('base', 'fs');
+var cut    = vitals.cut;
+var each   = vitals.each;
+var fuse   = vitals.fuse;
+var get    = vitals.get;
+var has    = vitals.has;
+var remap  = vitals.remap;
+var to     = vitals.to;
+
+var BROWSER  = './src/browser';
+var SECTIONS = './src/sections';
+
+var INSERTS  = / *\/\/ INSERT ([a-zA-Z-_\/]+\.js)\n/g;
+var INTRO    = /^[\s\S]*?(\n\/{80}\n)/;
+var EXPORTS  = /\n *module\.exports = [a-zA-Z_]+;\n$/;
+var XBROWSER = /\n *\/\/ BROWSER ONLY *\n[\s\S]*?\n *\/\/ BROWSER ONLY END *\n/g;
 
 /**
  * @public
