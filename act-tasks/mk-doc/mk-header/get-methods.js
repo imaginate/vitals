@@ -52,7 +52,7 @@ module.exports = function getMethods(section, content) {
 
     alias = get(line, ALIAS)[0] || '';
     alias = remap(alias, '|', '\\|');
-    alias = cut(alias, /\*/g);
+    alias = cut(alias, /[*()]/g);
 
     return fuse('| ', method, ' | ', section, ' | ', alias, ' |\n');
   });
