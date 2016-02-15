@@ -28,7 +28,7 @@ var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .]+/g;
 var TRIM = /\/\*\*\n +\* /;
 var SPLIT = / *\n +\*(?: +|\/\n)?/g;
 
-var TEMPLATE = get.file('act-tasks/docs/body.md');
+var TEMPLATE = get.file('act-tasks/mk-doc/templates/body.md');
 
 var getMethod  = require('./get-method');
 var getTests   = require('./get-tests');

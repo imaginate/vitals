@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: mkFooter
+ * ACT TASK HELPER: mkDoc
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -18,15 +18,28 @@
 
 'use strict';
 
-var get = require('node-vitals')('fs').get;
+var fuse = require('node-vitals')('fuse');
 
-var TEMPLATE = get.file('act-tasks/docs/footer.md');
+var mkHeader = require('./mk-header');
+var mkBody   = require('./mk-body');
+var mkFooter = require('./mk-footer');
 
 /**
  * @param {string} content
  * @param {string=} fscontent
  * @return {string}
  */
-module.exports = function mkFooter(content, fscontent) {
-  return TEMPLATE;
+module.exports = function mkDoc(content, fscontent) {
+
+  /** @type {string} */
+  var header;
+  /** @type {string} */
+  var footer;
+  /** @type {string} */
+  var body;
+
+  header = mkHeader(content, fscontent);
+  body   = mkBody(content, fscontent);
+  footer = mkFooter(content, fscontent);
+  return fuse(header, body, footer);
 };
