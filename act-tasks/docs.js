@@ -20,6 +20,24 @@
 
 'use strict';
 
+exports['desc'] = 'builds the wiki docs';
+exports['default'] = '-methods';
+exports['methods'] = {
+  'methods': {
+    'desc': 'builds the docs for all methods',
+    'method': buildDocs
+  },
+  'method': {
+    'desc': 'builds the docs for one method',
+    'value': 'vitals-method',
+    'method': buildDoc
+  },
+  'version': {
+    'desc': 'updates the wiki docs version',
+    'method': versionDocs
+  }
+};
+
 var is = require('node-are').is;
 
 var vitals = require('node-vitals')('base', 'fs');
@@ -29,51 +47,57 @@ var fuse   = vitals.fuse;
 var get    = vitals.get;
 var to     = vitals.to;
 
-exports['desc'] = 'builds the wiki docs';
-exports['value'] = 'vitals-method';
-exports['default'] = '-methods';
-exports['methods'] = {
-  'methods': {
-    'desc': 'builds the wiki docs from JSDoc',
-    'value': 'method',
-    'method': buildDocs
-  },
-  'version': {
-    'desc': 'updates the wiki docs version',
-    'method': versionDocs
-  }
-};
-
 var WIKI = '../vitals.wiki';
 var BASE = './src/methods';
 
-var mkHeader = require('./docs/mk-header');
-var mkBody   = require('./docs/mk-body');
-var mkFooter = require('./docs/mk-footer');
+var mkDoc = require('./docs/mk-doc');
 
 /**
  * @public
- * @param {string=} method - [default= "all"]
+ * @type {function}
  */
-function buildDocs(method) {
+function buildDocs() {
 
+  /** @type {string} */
+  var method;
   /** @type {!Array<string>} */
   var files;
+
+  files = get.filepaths(BASE);
+  each(files, function(file) {
+    method = cut(file, /\.js$/);
+    buildDoc(method);
+  });
+}
+
+/**
+ * @public
+ * @param {string} method
+ */
+function buildDoc(method) {
+
+  /** @type {string} */
+  var fscontent;
+  /** @type {string} */
+  var content;
+  /** @type {string} */
+  var fsfile;
   /** @type {string} */
   var file;
 
-  if (!method || method === 'all') {
-    files = get.filepaths(BASE);
-    each(files, function(file) {
-      method = cut(file, /\.js$/);
-      buildDoc(method);
-    });
-  }
-  else {
-    file = fuse(BASE, '/', method, '.js');
-    if ( !is.file(file) ) throw new RangeError('invalid vitals method');
-    buildDoc(method);
-  }
+  file = fuse(BASE, '/', method, '.js');
+  fsfile = fuse(BASE, '/fs/', method, '.js');
+
+  if ( !is.file(file) ) throw new RangeError('invalid vitals method');
+
+  content = get.file(file); 
+  fscontent = is.file(fsfile)
+    ? get.file(fsfile)
+    : undefined;
+
+  content = mkDoc(content, fscontent);
+  file = fuse(WIKI, '/method-', method, '.md');
+  to.file(content, file);
 }
 
 /**
@@ -88,53 +112,4 @@ function versionDocs() {
   var file;
 
   throw new Error('task not finished yet');
-}
-
-/**
- * @private
- * @param {string} method
- */
-function buildDoc(method) {
-
-  /** @type {string} */
-  var fscontent;
-  /** @type {string} */
-  var content;
-  /** @type {string} */
-  var fsfile;
-  /** @type {string} */
-  var file;
-
-  fsfile = fuse(BASE, '/fs/', method, '.js');
-  fscontent = is.file(fsfile)
-    ? get.file(fsfile)
-    : undefined;
-
-  file = fuse(BASE, '/', method, '.js');
-  content = get.file(file);
-
-  content = mkDoc(content, fscontent);
-  file = fuse(WIKI, '/method-', method, '.md');
-  to.file(content, file);
-}
-
-/**
- * @private
- * @param {string} content
- * @param {string=} fscontent
- * @return {string}
- */
-function mkDoc(content, fscontent) {
-
-  /** @type {string} */
-  var header;
-  /** @type {string} */
-  var footer;
-  /** @type {string} */
-  var body;
-
-  header = mkHeader(content, fscontent);
-  body   = mkBody(content, fscontent);
-  footer = mkFooter(content, fscontent);
-  return fuse(header, body, footer);
 }
