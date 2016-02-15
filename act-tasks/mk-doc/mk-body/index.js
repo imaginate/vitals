@@ -20,6 +20,7 @@
 
 var vitals = require('node-vitals')('base', 'fs');
 var cut    = vitals.cut;
+var fuse   = vitals.fuse;
 var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
@@ -56,7 +57,7 @@ module.exports = function mkBody(content, fscontent) {
 
   if (fscontent) {
     methods = get(fscontent, GET);
-    body = mkDetails(methods);
+    body = fuse(body, mkDetails(methods));
   }
 
   return body;
