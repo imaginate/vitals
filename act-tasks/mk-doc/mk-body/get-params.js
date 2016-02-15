@@ -64,10 +64,10 @@ module.exports = function getParams(lines) {
     param = remap(lines[0], PARAM, '$1');
     type  = remap(lines[0], TYPE,  '$1');
     prop  = has(param, '.');
-    def   = getDefault(lines, prop ? 2 : 1);
-    desc  = getDescrip(lines, prop ? 2 : 1);
-    intro = prop ? '  - ' : fuse('', ++index, ') ');
-    return fuse(intro, '**', param, '** <i>', type, '</i>\n', def, desc);
+    def   = getDefault(lines, prop ? 3 : 2);
+    desc  = getDescrip(lines, prop ? 3 : 2);
+    intro = prop ? '    - ' : fuse('  ', ++index, '. ');
+    return fuse(intro, '**', param, '**  <i>` ', type, ' `</i>\n', def, desc);
   });
 };
 
@@ -83,7 +83,7 @@ function pruneLines(lines) {
   /** @type {number} */
   var end;
 
-  lines = slice(lines, -1);
+  lines = slice(lines, 0, -1);
   until(false, lines, function(line, i) {
     if ( has(line, /^@public/) ) start = ++i;
     if ( has(line, /^@return/) ) end = i;
@@ -114,6 +114,8 @@ function buildParams(lines) {
     params = fuse.val(params, param);
     start = i;
   });
+  param = slice(lines, start);
+  params = fuse.val(params, param);
   return params;
 }
 
@@ -134,7 +136,7 @@ function getDefault(lines, indents) {
 
   indent = getIndent(indents);
   def = remap(lines[0], DEF, '$1');
-  return fuse(indent, 'default: ` ', def, ' `\n');
+  return fuse('\n', indent, 'default: ` ', def, ' `\n');
 }
 
 /**
@@ -145,33 +147,58 @@ function getDefault(lines, indents) {
  */
 function getDescrip(lines, indents) {
 
+  /** @type {string} */
+  var indent;
+  /** @type {string} */
+  var begin;
+  /** @type {string} */
+  var desc;
+
+  begin = cut(lines[0], TRIM);
+  lines = slice(lines, 1);
+  desc = parseLines(lines, indents);
+  desc = fuse(begin, desc);
+
+  if (!desc) return '';
+
+  indent = getIndent(indents);
+  return fuse('\n', indent, desc, '\n');
+}
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {number} indents
+ * @return {string}
+ */
+function parseLines(lines, indents) {
+
   /** @type {boolean} */
   var sublist;
   /** @type {string} */
   var indent;
-  /** @type {string} */
-  var desc;
   /** @type {boolean} */
   var code;
   /** @type {boolean} */
   var list;
 
-  desc  = cut(lines[0], TRIM);
-  lines = slice(lines, 1);
-  desc  = roll.up(desc, lines, function(line) {
+  indent = getIndent(indents);
+  return roll.up('', lines, function(line) {
 
+    // </code>
     if (code) {
       code = !has(line, /^```$/);
-      return fuse(indent, line, '\n');
+      return fuse(indent, line, '\n\n');
     }
 
+    // <code>
     if ( has(line, /^```/) ) {
       line = line.length > 3 ? line : '```javascript';
       code = true;
-      indent = getIndent(4);
-      return fuse('\n', indent, line, '\n');
+      return fuse('\n\n', indent, line, '\n');
     }
 
+    // <li>
     if ( has(line, /^- /) ) {
       if (!list) {
         list = true;
@@ -181,6 +208,7 @@ function getDescrip(lines, indents) {
       return fuse('\n', indent, line);
     }
 
+    // nested <li>
     if ( has(line, /^-- /) ) {
       if (list) {
         list = false;
@@ -193,8 +221,6 @@ function getDescrip(lines, indents) {
 
     return fuse(' ', line);
   });
-
-  return desc && fuse(desc, '\n');
 }
 
 /**
