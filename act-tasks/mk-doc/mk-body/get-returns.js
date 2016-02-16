@@ -22,6 +22,7 @@ var vitals = require('node-vitals')('base');
 var cut    = vitals.cut;
 var fill   = vitals.fill;
 var fuse   = vitals.fuse;
+var get    = vitals.get;
 var has    = vitals.has;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
@@ -44,7 +45,7 @@ module.exports = function getReturns(lines) {
 
   lines = pruneLines(lines);
   type  = remap(lines[0], TYPE, '$1');
-  desc  = getDescrip(lines);
+  desc  = getDescrip(lines, 0);
   return fuse('<i>', type, '</i>\n', desc);
 };
 
@@ -68,40 +69,73 @@ function pruneLines(lines) {
 /**
  * @private
  * @param {!Array<string>} lines
+ * @param {number} indents
  * @return {string}
  */
 function getDescrip(lines, indents) {
 
-  /** @type {boolean} */
-  var sublist;
-  /** @type {number} */
-  var indents;
   /** @type {string} */
   var indent;
   /** @type {string} */
+  var begin;
+  /** @type {string} */
   var desc;
+
+  begin = cut(lines[0], TRIM);
+  lines = slice(lines, 1);
+  desc = parseLines(lines, indents);
+  desc = fuse(begin, desc);
+
+  if (!desc) return '';
+
+  indent = getIndent(indents);
+  return fuse('\n', indent, desc, '\n');
+}
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {number} indents
+ * @return {string}
+ */
+function parseLines(lines, indents) {
+
+  /** @type {boolean} */
+  var sublist;
+  /** @type {string} */
+  var indent;
+  /** @type {number} */
+  var spaces;
+  /** @type {string} */
+  var space;
   /** @type {boolean} */
   var code;
   /** @type {boolean} */
   var list;
 
-  desc = cut(lines[0], TRIM);
-  lines = slice(lines, 1);
-  indents = 0;
-  return roll.up(desc, lines, function(line) {
+  indent = getIndent(indents);
+  return roll.up('', lines, function(line) {
 
+    // </code>
     if (code) {
+      line = slice(line, spaces);
       code = !has(line, /^```$/);
       return fuse(indent, line, '\n');
     }
 
-    if ( has(line, /^```/) ) {
+    // <code>
+    if ( has(line, /^ *```/) ) {
+      space = get(line, /^ +/)[0] || '';
+      spaces = space.length;
+      line = slice(line, spaces);
       line = line.length > 3 ? line : '```javascript';
       code = true;
-      indent = getIndent(4);
-      return fuse('\n', indent, line, '\n');
+      return fuse('\n\n', indent, line, '\n');
     }
 
+    line = cut(line, /^ +/);
+
+    // <li>
     if ( has(line, /^- /) ) {
       if (!list) {
         list = true;
@@ -111,6 +145,7 @@ function getDescrip(lines, indents) {
       return fuse('\n', indent, line);
     }
 
+    // nested <li>
     if ( has(line, /^-- /) ) {
       if (list) {
         list = false;
