@@ -5207,7 +5207,7 @@ var remap = (function remapPrivateScope() {
 
     if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern, true);
+      pattern = _escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
 
