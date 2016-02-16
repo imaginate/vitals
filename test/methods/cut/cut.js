@@ -443,6 +443,13 @@ describe('vitals.cut (section:base)', function() {
         assert(str === be);
       });
 
+      title = callStr(newStr(), '*');
+      it(title, function() {
+        var str = vitals.cut.pattern(newStr(), '*');
+        var be = 'abc123a1b2c3';
+        assert(str === be);
+      });
+
     });
 
     title = titleStr('should remove all substring patterns from string');
