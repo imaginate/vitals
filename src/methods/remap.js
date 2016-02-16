@@ -122,8 +122,12 @@ var remap = (function remapPrivateScope() {
    *
    * @public
    * @param {(!Object|function|string)} source - If source is a string it is
-   *   converted to an array using this list of chars as the separator (chars
-   *   listed in order of rank): ` ", "  ","  "|"  " " `
+   *   converted to an array using one of the following values as the separator
+   *   (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
