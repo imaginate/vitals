@@ -27,7 +27,7 @@ var roll   = vitals.roll;
 
 var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .]+/g;
 var TRIM = /\/\*\*\n +\* /;
-var SPLIT = / *\n +\*(?: +|\/\n)?/g;
+var SPLIT = / *\n +\*(?: {1,3}|\/\n)?/g;
 
 var TEMPLATE = get.file('act-tasks/mk-doc/templates/body.md');
 

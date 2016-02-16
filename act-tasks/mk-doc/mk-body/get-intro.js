@@ -19,6 +19,7 @@
 'use strict';
 
 var vitals = require('node-vitals')('base');
+var cut    = vitals.cut;
 var fuse   = vitals.fuse;
 var has    = vitals.has;
 var roll   = vitals.roll;
@@ -42,6 +43,7 @@ module.exports = function getIntro(lines) {
   });
   lines = slice(lines, 0, end);
   return roll.up('', lines, function(line, i) {
+    line = cut(line, /^ +/);
     return i && line ? fuse(' ', line) : line;
   });
 };

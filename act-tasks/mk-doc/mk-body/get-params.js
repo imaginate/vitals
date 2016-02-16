@@ -23,6 +23,7 @@ var cut    = vitals.cut;
 var each   = vitals.each;
 var fill   = vitals.fill;
 var fuse   = vitals.fuse;
+var get    = vitals.get;
 var has    = vitals.has;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
@@ -177,6 +178,10 @@ function parseLines(lines, indents) {
   var sublist;
   /** @type {string} */
   var indent;
+  /** @type {number} */
+  var spaces;
+  /** @type {string} */
+  var space;
   /** @type {boolean} */
   var code;
   /** @type {boolean} */
@@ -187,16 +192,22 @@ function parseLines(lines, indents) {
 
     // </code>
     if (code) {
+      line = slice(line, spaces);
       code = !has(line, /^```$/);
-      return fuse(indent, line, '\n\n');
+      return fuse(indent, line, '\n');
     }
 
     // <code>
-    if ( has(line, /^```/) ) {
+    if ( has(line, /^ *```/) ) {
+      space = get(line, /^ +/)[0] || '';
+      spaces = space.length;
+      line = slice(line, spaces);
       line = line.length > 3 ? line : '```javascript';
       code = true;
       return fuse('\n\n', indent, line, '\n');
     }
+
+    line = cut(line, /^ +/);
 
     // <li>
     if ( has(line, /^- /) ) {
