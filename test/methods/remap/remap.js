@@ -178,6 +178,12 @@ describe('vitals.remap (section:base)', function() {
         assert( str === 'abc125a1b2c5' );
       });
 
+      title = callStr('abc123a1b2c3', '*', '$&');
+      it(title, function() {
+        var str = vitals.remap.str('abc123a1b2c3', '*', '$&');
+        assert( str === 'abc123a1b2c3' );
+      });
+
       title = callStr('abc123a1b2c3', /[a-z]/, 'z');
       it(title, function() {
         var str = vitals.remap('abc123a1b2c3', /[a-z]/, 'z');
