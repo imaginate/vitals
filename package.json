@@ -1,7 +1,7 @@
 {
   "name": "node-vitals",
   "version": "3.0.0-beta",
-  "description": "Foundational JS utility library; Do more with less; Elegance, performance, & reliability;",
+  "description": "Do more with less. Simple, high-performing, functional JavaScript library.",
   "main": "node-vitals.js",
   "repository": {
     "type": "git",
