@@ -5,7 +5,7 @@
  * @see [vitals.cut]{@link https://github.com/imaginate/vitals/blob/master/src/methods/cut.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
  * @see [are]{@link https://github.com/imaginate/are}
@@ -52,6 +52,13 @@ describe('vitals.cut.pattern (section:base)', function() {
       assert(str === be);
     });
 
+    title = callStr(newStr(), '*');
+    it(title, function() {
+      var str = vitals.cut.pattern(newStr(), '*');
+      var be = 'abc123a1b2c3';
+      assert(str === be);
+    });
+
   });
 
   title = titleStr('error', 'should throw an error');
@@ -93,7 +100,7 @@ describe('vitals.cut.pattern (section:base)', function() {
  * @return {string}
  */
 function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 2, true);
+  return testTitle(section, shouldMsg, 1);
 }
 
 /**
@@ -102,7 +109,7 @@ function titleStr(section, shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('cut.pattern', arguments, 4, true);
+  return testCall('cut.pattern', arguments, 3);
 }
 
 /**

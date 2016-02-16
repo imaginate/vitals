@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - TO
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.to]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/to.js}
+ * @section fs
+ * @version 3.0.0-beta
+ * @see [vitals.to]{@link https://github.com/imaginate/vitals/wiki/vitals.to}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,8 +16,8 @@
 
 'use strict';
 
-var newErrorAid = require('../_helpers/errorAid.js');
-var is = require('node-are').is;
+var newErrorAid = require('../helpers/error-aid.js');
+var _is = require('./helpers/is.js');
 var fs = require('fs');
 
 var to = {};
@@ -38,28 +36,27 @@ var to = {};
 
   /**
    * Move the contents of a file to a new or existing file.
+   *
    * @public
-   * @param {(string|!Buffer)} contents
+   * @param {(!Buffer|string)} contents
    * @param {string} filepath
-   * @param {?string=} encoding - [default= 'utf8'] If null no encoding is set.
-   * @return {string} The contents.
+   * @param {?string=} encoding - [default= 'utf8'] If `null` no encoding is set.
+   * @return {(!Buffer|string)} The contents.
    */
   to.file = function toFile(contents, filepath, encoding) {
 
-    if ( !is.str(filepath) ) throw _error.type('filepath', 'file');
+    if ( !_is.str(filepath)        ) throw _error.type('filepath', 'file');
+    if ( !_is.nil.un.str(encoding) ) throw _error.type('encoding', 'file');
 
-    if ( is.buffer(contents) ) {
-      fs.writeFileSync(filepath, contents);
-      return contents;
+    if ( _is.buffer(contents) ) {
+      encoding = encoding || null;
     }
+    else if ( !_is.str(contents) ) throw _error.type('contents', 'file');
 
-    if ( !is.str(contents)      ) throw _error.type('contents', 'file');
-    if ( !is('?str=', encoding) ) throw _error.type('encoding', 'file');
-
-    encoding = is.undefined(encoding) ? 'utf8' : encoding;
-    return encoding
-      ? fs.writeFileSync(filepath, contents, encoding)
-      : fs.writeFileSync(filepath, contents);
+    encoding = _is.undefined(encoding) ? 'utf8' : encoding;
+    if (encoding) fs.writeFileSync(filepath, contents, encoding);
+    else fs.writeFileSync(filepath, contents);
+    return contents;
   };
 
   //////////////////////////////////////////////////////////

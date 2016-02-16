@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - FILE SYSTEM METHODS - GET
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/get.js}
+ * @section fs
+ * @version 3.0.0-beta
+ * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,11 +16,11 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _normalize = require('../_helpers/normalize.js');
-var _isEol = require('../_helpers/isEol.js');
-var _own = require('../_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('../helpers/error-aid.js');
+var _normalize = require('../helpers/normalize.js');
+var _isEol = require('../helpers/is-eol.js');
+var _own = require('../helpers/own.js');
+var _is = require('./helpers/is.js');
 var fs = require('fs');
 
 var get = {};
@@ -43,95 +41,112 @@ var get = {};
 
   /**
    * Gets the contents of a file.
+   *
    * @public
    * @param {string} filepath
-   * @param {(boolean|Object)=} options - Boolean values set options.buffer.
-   * @param {boolean=} options.buffer - [default= false] If true a buffer is
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
+   * @param {boolean=} opts.buffer - [default= false] If `true` a buffer is
    *   returned.
-   * @param {string=} options.encoding - [default= "utf8"]
-   * @param {?string=} options.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If options.eol is null no
-   *   normalization is completed. Optional values: "LF", "CR", "CRLF"
-   * @return {(string|!Buffer)}
+   * @param {string=} opts.encoding - [default= "utf8"]
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character
+   *   to use when normalizing the result. If opts.eol is `null` no
+   *   normalization is completed. Optional values: ` "LF", "CR", "CRLF" `
+   * @return {(!Buffer|string)}
    */
-  get.file = function getFile(filepath, options) {
+  get.file = function getFile(filepath, opts) {
 
-    options = is.bool(options) ? { buffer: options } : options;
+    opts = _is.bool(opts) ? { buffer: opts } : opts;
 
-    if ( !is.file(filepath)   ) throw _error.type('filepath', 'file');
-    if ( !is('obj=', options) ) throw _error.type('options',  'file');
+    if ( !_is.file(filepath)   ) throw _error.type('filepath', 'file');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',     'file');
 
-    if (options) {
-      if ( !is('bool=', options.buffer) ) {
-        throw _error.type('options.buffer', 'file');
-      }
-      if ( !is('str=', options.encoding) ) {
-        throw _error.type('options.encoding', 'file');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol', 'file');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"', 'file');
-      }
+    if (opts) {
+      if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
+      if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
+      if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
+      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    options = _prepOptions(options);
-    return _getFile(filepath, options);
+    opts = _prepOptions(opts);
+    return _getFile(filepath, opts);
   };
 
   /**
    * Gets all of the directory paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - Get all of the sub-directories.
-   * @param {?(RegExp|Array<string>|string)=} options.validDirs
-   * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include sub
+   *   directories.
+   * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {boolean=} opts.base - [default= false] Whether to append the base
+   *   dirpath to the results.
+   * @param {boolean=} opts.basepath - Alias for opts.base.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use
+   *   `"|"` to separate valid directory names.
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs - If string use
+   *   `"|"` to separate invalid directory names.
    * @return {!Array<string>}
    */
-  get.dirpaths = function getDirpaths(dirpath, options) {
+  get.dirpaths = function getDirpaths(dirpath, opts) {
 
+    /** @type {!Array<string>} */
+    var dirpaths;
     /** @type {function(string): boolean} */
     var isValid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'dirpaths');
-    if ( !is('obj=', options) ) throw _error.type('options', 'dirpaths');
+    if ( !_is.dir(dirpath)     ) throw _error.type('dirpath', 'dirpaths');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',    'dirpaths');
 
-    if ( options && !is('bool=', options.deep) ) {
-      throw _error.type('options.deep', 'dirpaths');
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',        'dirpaths');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',   'dirpaths');
+      if ( !_is.un.bool(opts.base)      ) throw _error.type('opts.base',        'dirpaths');
+      if ( !_is.un.bool(opts.basepath)  ) throw _error.type('opts.basepath',    'dirpaths');
+      if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',   'dirpaths');
+      if ( !_isValid(opts.invalidDirs)  ) throw _error.type('opts.invalidDirs', 'dirpaths');
     }
 
     dirpath = _prepDir(dirpath);
-    options = _parseOptions(options);
-    isValid = _makeTest(options.validDirs, options.invalidDirs);
-    return options.deep
+    opts = _parseOptions(opts);
+    isValid = _makeTest(opts.validDirs, opts.invalidDirs);
+    dirpaths = opts.deep
       ? _getDirpathsDeep(dirpath, isValid)
       : _getDirpaths(dirpath, isValid);
+    return opts.base ? _addBasepath(dirpaths, dirpath) : dirpaths;
   };
 
   /**
    * Gets all of the file paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
-   * @param {(boolean|Object)=} options - Boolean values set options.deep.
-   * @param {boolean=} options.deep - Get all of the sub-directory files.
-   * @param {?(RegExp|Array<string>|string)=} options.validDirs
-   * @param {?(RegExp|Array<string>|string)=} options.validExts - [.]ext
-   * @param {?(RegExp|Array<string>|string)=} options.validNames - filename
-   * @param {?(RegExp|Array<string>|string)=} options.validFiles - filename.ext
-   * @param {?(RegExp|Array<string>|string)=} options.invalidDirs
-   * @param {?(RegExp|Array<string>|string)=} options.invalidExts - [.]ext
-   * @param {?(RegExp|Array<string>|string)=} options.invalidNames - filename
-   * @param {?(RegExp|Array<string>|string)=} options.invalidFiles - filename.ext
+   * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
+   * @param {boolean=} opts.deep - [default= false] Whether to include
+   *   sub-directory files.
+   * @param {boolean=} opts.recursive - Alias for opts.deep.
+   * @param {boolean=} opts.base - [default= false] Whether to append the base
+   *   dirpath to the results.
+   * @param {boolean=} opts.basepath - Alias for opts.base.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs
+   * @param {(RegExp|Array<string>|?string)=} opts.validExts - [.]ext
+   * @param {(RegExp|Array<string>|?string)=} opts.validNames - filename
+   * @param {(RegExp|Array<string>|?string)=} opts.validFiles - filename.ext
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidExts - [.]ext
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidNames - filename
+   * @param {(RegExp|Array<string>|?string)=} opts.invalidFiles - filename.ext
    * @return {!Array<string>}
    */
-  get.filepaths = function getFilepaths(dirpath, options) {
+  get.filepaths = function getFilepaths(dirpath, opts) {
 
     /** @type {function(string): boolean} */
     var isValidDir;
+    /** @type {!Array<string>} */
+    var filepaths;
     /** @type {function(string): boolean} */
     var isValid;
     /** @type {!Array} */
@@ -139,27 +154,39 @@ var get = {};
     /** @type {!Array} */
     var valid;
 
-    options = is.bool(options) ? { deep: options } : options;
+    opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( !is.dir(dirpath)     ) throw _error.type('dirpath', 'filepaths');
-    if ( !is('obj=', options) ) throw _error.type('options', 'filepaths');
+    if ( !_is.dir(dirpath)     ) throw _error.type('dirpath', 'filepaths');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',    'filepaths');
 
-    if ( options && !is('bool=', options.deep) ) {
-      throw _error.type('options.deep', 'filepaths');
+    if (opts) {
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',         'filepaths');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive',    'filepaths');
+      if ( !_is.un.bool(opts.base)      ) throw _error.type('opts.base',         'filepaths');
+      if ( !_is.un.bool(opts.basepath)  ) throw _error.type('opts.basepath',     'filepaths');
+      if ( !_isValid(opts.validDirs)    ) throw _error.type('opts.validDirs',    'filepaths');
+      if ( !_isValid(opts.validExts)    ) throw _error.type('opts.validExts',    'filepaths');
+      if ( !_isValid(opts.validNames)   ) throw _error.type('opts.validNames',   'filepaths');
+      if ( !_isValid(opts.validFiles)   ) throw _error.type('opts.validFiles',   'filepaths');
+      if ( !_isValid(opts.invalidDirs)  ) throw _error.type('opts.invalidDirs',  'filepaths');
+      if ( !_isValid(opts.invalidExts)  ) throw _error.type('opts.invalidExts',  'filepaths');
+      if ( !_isValid(opts.invalidNames) ) throw _error.type('opts.invalidNames', 'filepaths');
+      if ( !_isValid(opts.invalidFiles) ) throw _error.type('opts.invalidFiles', 'filepaths');
     }
 
     dirpath = _prepDir(dirpath);
-    options = _parseOptions(options);
-    valid   = [ options.validExts,  options.validNames,  options.validFiles   ];
-    invalid = [ options.invalidExts,options.invalidNames,options.invalidFiles ];
+    opts = _parseOptions(opts);
+    valid   = [ opts.validExts,   opts.validNames,   opts.validFiles   ];
+    invalid = [ opts.invalidExts, opts.invalidNames, opts.invalidFiles ];
     isValid = _makeTest(valid, invalid);
 
-    if (options.deep) {
-      isValidDir = _makeTest(options.validDirs, options.invalidDirs);
-      return _getFilepathsDeep(dirpath, isValid, isValidDir);
+    if (opts.deep) {
+      isValidDir = _makeTest(opts.validDirs, opts.invalidDirs);
+      filepaths = _getFilepathsDeep(dirpath, isValid, isValidDir);
     }
+    else filepaths = _getFilepaths(dirpath, isValid);
 
-    return _getFilepaths(dirpath, isValid);
+    return opts.base ? _addBasepath(filepaths, dirpath) : filepaths;
   };
 
   //////////////////////////////////////////////////////////
@@ -193,11 +220,24 @@ var get = {};
 
     /** @type {!Array<string>} */
     var dirpaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     dirpaths = fs.readdirSync(basepath);
-    return dirpaths.filter(function(dirpath) {
-      return isValid(dirpath) && is.dir(basepath + dirpath);
-    });
+    newpaths = [];
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = dirpaths[i];
+      isValid(dirpath) && _is.dir(basepath + dirpath) && newpaths.push(dirpath);
+    }
+    return newpaths;
   }
 
   /**
@@ -215,6 +255,10 @@ var get = {};
     /** @type {string} */
     var dirpath;
     /** @type {number} */
+    var len;
+    /** @type {number} */
+    var ii;
+    /** @type {number} */
     var i;
 
     dirpaths = _getDirpaths(basepath, isValid);
@@ -222,10 +266,9 @@ var get = {};
     while (++i < dirpaths.length) {
       dirpath = _prepDir(dirpaths[i]);
       newpaths = _getDirpaths(basepath + dirpath, isValid);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      dirpaths = dirpaths.concat(newpaths);
+      len = newpaths.length;
+      ii = -1;
+      while (++ii < len) dirpaths.push(dirpath + newpaths[ii]);
     }
     return dirpaths;
   }
@@ -240,11 +283,24 @@ var get = {};
 
     /** @type {!Array<string>} */
     var filepaths;
+    /** @type {!Array<string>} */
+    var newpaths;
+    /** @type {string} */
+    var filepath;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     filepaths = fs.readdirSync(basepath);
-    return filepaths.filter(function(filepath) {
-      return isValid(filepath) && is.file(basepath + filepath);
-    });
+    newpaths = [];
+    len = filepaths.length;
+    i = -1;
+    while (++i < len) {
+      filepath = filepaths[i];
+      isValid(filepath) && _is.file(basepath + filepath) && newpaths.push(filepath);
+    }
+    return newpaths;
   }
 
   /**
@@ -262,19 +318,28 @@ var get = {};
     var dirpaths;
     /** @type {!Array<string>} */
     var newpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {number} */
+    var _len;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var _i;
     /** @type {number} */
     var i;
 
     filepaths = _getFilepaths(basepath, isValid);
     dirpaths = _getDirpathsDeep(basepath, isValidDir);
-    dirpaths.forEach(function(dirpath) {
-      dirpath = _prepDir(dirpath);
+    len = dirpaths.length;
+    i = -1;
+    while (++i < len) {
+      dirpath = _prepDir(dirpaths[i]);
       newpaths = _getFilepaths(basepath + dirpath, isValid);
-      newpaths = newpaths.map(function(newpath) {
-        return dirpath + newpath;
-      });
-      filepaths = filepaths.concat(newpaths);
-    });
+      _len = newpaths.length;
+      _i = -1;
+      while (++_i < _len) filepaths.push(dirpath + newpaths[_i]);
+    }
     return filepaths;
   }
 
@@ -293,15 +358,34 @@ var get = {};
 
   /**
    * @private
-   * @param {Object} options
+   * @param {Object} opts
    * @return {!Object}
    */
-  function _prepOptions(options) {
-    options = options || {};
-    options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = options.eol && options.eol.toUpperCase();
-    return options;
+  function _prepOptions(opts) {
+    opts = opts || {};
+    opts.encoding = opts.encoding || 'utf8';
+    opts.eol = _is.undefined(opts.eol) ? 'LF' : opts.eol;
+    opts.eol = opts.eol && opts.eol.toUpperCase();
+    return opts;
+  }
+
+  /**
+   * @private
+   * @param {!Array<string>} paths
+   * @param {string} basepath
+   * @return {!Array<string>}
+   */
+  function _addBasepath(paths, basepath) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = paths.length;
+    i = -1;
+    while (++i < len) paths[i] = basepath + paths[i];
+    return paths;
   }
 
   //////////////////////////////////////////////////////////
@@ -313,14 +397,14 @@ var get = {};
    * @type {!RegExp}
    * @const
    */
-  var ESCAPE_CHARS = /[\+\?\.\-\:\{\}\[\]\(\)\/\,\\\^\$\=\!]/g;
+  var ESCAPE_CHARS = /[\\^$.+?(){}[\]]/g;
 
   /**
    * @private
    * @type {!RegExp}
    * @const
    */
-  var VALID = /^(?:in)?valid([a-z]*)s$/i;
+  var VALID = /^(?:in)?valid([A-Z][a-z]+)s$/;
 
   /**
    * @private
@@ -336,6 +420,9 @@ var get = {};
 
     if (!options) return {};
 
+    options.deep = _is.bool(options.deep) ? options.deep : options.recursive;
+    options.base = _is.bool(options.base) ? options.base : options.basepath;
+
     opts = {};
     for (key in options) {
       if ( _own(options, key) ) {
@@ -349,21 +436,17 @@ var get = {};
 
   /**
    * @private
-   * @param {?(RegExp|Array<string>|string|undefined)} option
+   * @param {(RegExp|Array<string>|?string|undefined)} option
    * @param {string} type
    * @return {?RegExp}
    */
   function _parseOption(option, type) {
 
-    if ( is('null=', option) ) return null;
-
-    if ( !is('!arr|str|regex', option) ) {
-      throw _error.type('options.(in)valid' + type, '(dir|file)paths');
-    }
+    if (!option) return null;
 
     type = type.toLowerCase();
-    option = is.arr(option) ? option.join('|') : option;
-    return is.str(option) ? _parseOptStr(option) : option;
+    option = _is.arr(option) ? option.join('|') : option;
+    return _is.str(option) ? _parseOptStr(option, type) : option;
   }
 
   /**
@@ -373,14 +456,16 @@ var get = {};
    * @return {!RegExp}
    */
   function _parseOptStr(option, type) {
-
+    if (type === 'ext') option = option.replace(/\B\.\b/g, '');
     option = option.replace(ESCAPE_CHARS, '\\$&');
-    option = option.replace(/\\?\*/g, '.*');
+    option = option.replace(/(\\)?\*/g, function(org, match) {
+      return match === '\\' ? org : '.*';
+    });
     switch (type) {
-      case 'dir':  option = '^(?:' + option + ')$';             break;
-      case 'name': option = '^(?:' + option + ')\\.[a-z]{2,}$'; break;
-      case 'file': option = '^(?:' + option + ')$';             break;
-      case 'ext':  option = '^.*\\.(?:' + option.replace(/\\?\./g, '') + ')$';
+      case 'dir' :
+      case 'file': option = '^(?:' + option + ')$';        break;
+      case 'ext' : option = '^.*\\.(?:' + option + ')$';   break;
+      case 'name': option = '^(?:' + option + ')(?:\\.[a-z]+)+$';
     }
     return new RegExp(option, 'i');
   }
@@ -412,40 +497,90 @@ var get = {};
   /**
    * @private
    * @param {boolean} valid
-   * @param {(Array|RegExp)} regexs
+   * @param {(Array|RegExp)} regexps
    * @return {function}
    */
-  function _makeCheck(valid, regexs) {
+  function _makeCheck(valid, regexps) {
 
-    /** @type {?RegExp} */
-    var regex;
+    /** @type {number} */
+    var i;
 
-    if ( is.arr(regexs) ) {
-      regexs = regexs.filter( function(re) { return !!re; } );
-      regex = regexs.length === 1 ? regexs.pop() : null;
-    }
-    else {
-      regex = regexs;
-      regexs = [];
-    }
+    if ( !_is.arr(regexps) ) return _makeOneCheck(valid, regexps);
 
-    if (!regexs.length) {
-      return regex
-        ? valid
-          ? function isValid(str) { return regex.test(str); }
-          : function isInvalid(str) { return regex.test(str); }
-        : valid
-          ? function isValid() { return true; }
-          : function isInvalid() { return false; };
-    }
+    i = regexps.length;
+    while (i--) regexps[i] || regexps.splice(i, 1);
 
+    return regexps.length > 1
+      ? valid
+        ? _makeValidCheck(regexps)
+        : _makeInvalidCheck(regexps)
+      : _makeOneCheck(valid, regexps[0]);
+  }
+
+  /**
+   * @private
+   * @param {boolean} valid
+   * @param {?RegExp=} regex
+   * @return {function}
+   */
+  function _makeOneCheck(valid, regex) {
     return valid
-      ? function isValid(str) {
-          return regexs.every( function(re) { return re.test(str); } );
-        }
-      : function isInvalid(str) {
-          return regexs.some( function(re) { return re.test(str); } );
-        };
+      ? regex
+        ? function isValid(str) { return regex.test(str); }
+        : function isValid() { return true; }
+      : regex
+        ? function isInvalid(str) { return regex.test(str); }
+        : function isInvalid() { return false; };
+  }
+
+  /**
+   * @private
+   * @param {!Array<!RegExp>} regexps
+   * @return {function}
+   */
+  function _makeValidCheck(regexps) {
+
+    /** @type {number} */
+    var len;
+
+    len = regexps.length;
+
+    return function isValid(str) {
+
+      /** @type {number} */
+      var i;
+
+      i = -1;
+      while (++i < len) {
+        if ( !regexps[i].test(str) ) return false;
+      }
+      return true;
+    };
+  }
+
+  /**
+   * @private
+   * @param {!Array<!RegExp>} regexps
+   * @return {function}
+   */
+  function _makeInvalidCheck(regexps) {
+
+    /** @type {number} */
+    var len;
+
+    len = regexps.length;
+
+    return function isInvalid(str) {
+
+      /** @type {number} */
+      var i;
+
+      i = -1;
+      while (++i < len) {
+        if ( regexps[i].test(str) ) return true;
+      }
+      return false;
+    };
   }
 
   //////////////////////////////////////////////////////////
@@ -457,6 +592,16 @@ var get = {};
    * @type {!ErrorAid}
    */
   var _error = newErrorAid('get');
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _isValid(val) {
+    return val
+      ? _is.regex(val) || _is.str(val) || _is.arr(val)
+      : _is.nil.un.str(val);
+  }
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR GET

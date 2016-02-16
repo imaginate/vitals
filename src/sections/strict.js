@@ -4,14 +4,11 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.8
+ * @version 3.0.0-beta
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -20,12 +17,38 @@
 
 'use strict';
 
-var is = require('node-are').is;
-
 
 // *****************************************************************************
 // PRIVATE HELPERS
 // *****************************************************************************
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -161,6 +184,446 @@ var _inStr = (function _inStrPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+var _is = (function _isPrivateScope() {
+
+  /** @type {!Object} */
+  var _is = {};
+
+  /** @type {function} */
+  var toStr = Object.prototype.toString;
+
+  //////////////////////////////////////////////////////////
+  // PRIMITIVES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil = function(val) {
+    return val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.undefined = function(val) {
+    return val === undefined;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.bool = function(val) {
+    return typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.str = function(val) {
+    return typeof val === 'string';
+  };
+
+  /**
+   * Empty strings return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._str = function(val) {
+    return !!val && typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.num = function(val) {
+    return typeof val === 'number' && val === val;
+  };
+
+  /**
+   * Zeros return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._num = function(val) {
+    return !!val && typeof val === 'number' && val === val;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nan = function(val) {
+    return val !== val;
+  };
+
+  //////////////////////////////////////////////////////////
+  // JS OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.obj = function(val) {
+    return !!val && typeof val === 'object';
+  };
+
+  /**
+   * Functions return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._obj = function(val) {
+    val = !!val && typeof val;
+    return val && (val === 'object' || val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.func = function(val) {
+    return !!val && typeof val === 'function';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.arr = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
+  };
+
+  /**
+   * Arguments return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._arr = function(val) {
+      if ( !_is.obj(val) ) return false;
+      val = toStr.call(val);
+      return val === '[object Array]' || val === '[object Arguments]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.regex = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.date = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.err = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.args = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Arguments]';
+  };
+
+  //////////////////////////////////////////////////////////
+  // DOM OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.doc = function(val) {
+    return !!val && typeof val === 'object' && val.nodeType === 9;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.elem = function(val) {
+    return !!val && typeof val === 'object' && val.nodeType === 1;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OTHERS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.empty = function(val) {
+
+    /** @type {string} */
+    var prop;
+
+    // return empty primitives - 0, "", null, undefined, false, NaN
+    if ( !_is._obj(val) ) return !val;
+
+    // return empty arrays and functions - [], function(){}
+    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+
+    // return empty object - {}
+    for (prop in val) {
+      if ( _own(val, prop) ) return false;
+    }
+    return true;
+  };
+
+  /**
+   * @param {(Object|?function)} obj
+   * @return {boolean}
+   */
+  _is.frozen = (function() {
+
+    if (!Object.isFrozen) return function isFrozen(obj) { return false; };
+
+    try {
+      Object.isFrozen(function(){});
+      return Object.isFrozen;
+    }
+    catch (e) {
+      return function isFrozen(obj) {
+        return _is.obj(obj) && Object.isFrozen(obj);
+      };
+    }
+  })();
+
+  //////////////////////////////////////////////////////////
+  // NUMBER STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.whole = function(val) {
+    return !(val % 1);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.odd = function(val) {
+    return !!(val % 2);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.even = function(val) {
+    return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    return val === undefined || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    return val === undefined || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    return val === undefined || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val === undefined || (!!val && typeof val === 'object');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val === undefined || (!!val && typeof val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val === null || (!!val && typeof val === 'object');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val === null || (!!val && typeof val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    return val === null || val === undefined || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    return val === null || val === undefined || typeof  val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    return val === null || val === undefined || (
+      typeof val === 'number' && val === val
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'undefined'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - MATCH
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -171,7 +634,7 @@ var _inStr = (function _inStrPrivateScope() {
  * @return {boolean}
  */
 function _match(source, pattern) {
-  return is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,34 +659,6 @@ function _merge(dest, source, deep) {
   }
   return dest;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
-})();
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - SLICE-ARR
@@ -253,7 +688,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -291,6 +726,910 @@ function _splitKeys(keys) {
   return keys.split(separator);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// IS
+////////////////////////////////////////////////////////////////////////////////
+
+var is = (function isPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - is
+  // - is.null      (is.nil)
+  // - is.undefined
+  // - is.boolean   (is.bool)
+  // - is.string    (is.str)
+  // - is._string   (is._str)
+  // - is.number    (is.num)
+  // - is._number   (is._num)
+  // - is.nan
+  // - is.object    (is.obj)
+  // - is._object   (is._obj)
+  // - is.func      (is.function|is.fn)
+  // - is.array     (is.arr)
+  // - is._array    (is._arr)
+  // - is.regexp    (is.regex|is.re)
+  // - is.date
+  // - is.error     (is.err)
+  // - is.args
+  // - is.document  (is.doc)
+  // - is.element   (is.elem)
+  // - is.empty
+  // - is.frozen
+  // - is.whole
+  // - is.odd
+  // - is.even
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A shortcut for type checking values.
+   *
+   * @public
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
+   * @param {...*} val - The value to evaluate. If multiple values are
+   *   provided all must pass the type check to return true.
+   * @return {boolean} The evaluation result.
+   */
+  function is(types, val) {
+
+    /** @type {string} */
+    var nullable;
+    /** @type {Array<function>} */
+    var checks;
+
+    if (arguments.length < 2) throw _error('No type or val');
+    if ( !_is._str(types) ) throw _error.type('types');
+
+    if ( _hasSpecial('*', types) ) return true;
+
+    checks = _getChecks(types);
+
+    if (!checks) throw _error.range('types', DOCS);
+
+    nullable = _getNullable(types);
+    return arguments.length > 2
+      ? _checkVals(checks, arguments, nullable)
+      : _checkVal(checks, val, nullable);
+  }
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['null'] = function isNull(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'null');
+      case 1:  return _is.nil(val);
+      default: return _are(arguments, _is.nil);
+    }
+  };
+  // define shorthand
+  is.nil = is['null'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.undefined = function isUndefined(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'undefined');
+      case 1:  return _is.undefined(val);
+      default: return _are(arguments, _is.undefined);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['boolean'] = function isBoolean(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'boolean');
+      case 1:  return _is.bool(val);
+      default: return _are(arguments, _is.bool);
+    }
+  };
+  // define shorthand
+  is.bool = is['boolean'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.string = function isString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'string');
+      case 1:  return _is.str(val);
+      default: return _are(arguments, _is.str);
+    }
+  };
+  // define shorthand
+  is.str = is.string;
+
+  /**
+   * Empty strings return false in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._string = function isNonEmptyString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_string');
+      case 1:  return _is._str(val);
+      default: return _are(arguments, _is._str);
+    }
+  };
+  // define shorthand
+  is._str = is._string;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.number = function isNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'number');
+      case 1:  return _is.num(val);
+      default: return _are(arguments, _is.num);
+    }
+  };
+  // define shorthand
+  is.num = is.number;
+
+  /**
+   * Zeros return false in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._number = function isNonZeroNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_number');
+      case 1:  return _is._num(val);
+      default: return _are(arguments, _is._num);
+    }
+  };
+  // define shorthand
+  is._num = is._number;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.nan = function isNan(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'nan');
+      case 1:  return _is.nan(val);
+      default: return _are(arguments, _is.nan);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.object = function isObject(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'object');
+      case 1:  return _is.obj(val);
+      default: return _are(arguments, _is.obj);
+    }
+  };
+  // define shorthand
+  is.obj = is.object;
+
+  /**
+   * Functions return true in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._object = function isObjectOrFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_object');
+      case 1:  return _is._obj(val);
+      default: return _are(arguments, _is._obj);
+    }
+  };
+  // define shorthand
+  is._obj = is._object;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.func = function isFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'function');
+      case 1:  return _is.func(val);
+      default: return _are(arguments, _is.func);
+    }
+  };
+  // define shorthand
+  is.fn = is.func;
+  try {
+    is['function'] = is.func;
+  }
+  catch (error) {}
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.array = function isArray(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'array');
+      case 1:  return _is.arr(val);
+      default: return _are(arguments, _is.arr);
+    }
+  };
+  // define shorthand
+  is.arr = is.array;
+
+  /**
+   * Arguments return true in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._array = function isArrayOrArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_array');
+      case 1:  return _is._arr(val);
+      default: return _are(arguments, _is._arr);
+    }
+  };
+  // define shorthand
+  is._arr = is._array;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.regexp = function isRegExp(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'regexp');
+      case 1:  return _is.regex(val);
+      default: return _are(arguments, _is.regex);
+    }
+  };
+  // define shorthand
+  is.regex = is.regexp;
+  is.re = is.regexp;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.date = function isDate(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'date');
+      case 1:  return _is.date(val);
+      default: return _are(arguments, _is.date);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.error = function isError(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'error');
+      case 1:  return _is.err(val);
+      default: return _are(arguments, _is.err);
+    }
+  };
+  // define shorthand
+  is.err = is.error;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.args = function isArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'args');
+      case 1:  return _is.args(val);
+      default: return _are(arguments, _is.args);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.document = function isDocument(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'document');
+      case 1:  return _is.doc(val);
+      default: return _are(arguments, _is.doc);
+    }
+  };
+  // define shorthand
+  is.doc = is.document;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.element = function isElement(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'element');
+      case 1:  return _is.elem(val);
+      default: return _are(arguments, _is.elem);
+    }
+  };
+  // define shorthand
+  is.elem = is.element;
+
+  /**
+   * Checks if a value is considered empty.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ```
+   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   ```
+   *   Note that for functions this method checks whether it has any defined
+   *   params:
+   *   ```
+   *   function empty(){}
+   *   function notEmpty(param){}
+   *   ```
+   */
+  is.empty = function isEmpty(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'empty');
+      case 1:  return _is.empty(val);
+      default: return _are(arguments, _is.empty);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...(Object|?function)} val
+   * @return {boolean}
+   */
+  is.frozen = function isFrozen(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'frozen');
+      case 1:  return _isFrozen(val);
+      default: return _are(arguments, _isFrozen);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val
+   * @return {boolean}
+   */
+  is.whole = function isWholeNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'whole');
+      case 1:  return _isWhole(val);
+      default: return _are(arguments, _isWhole);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.odd = function isOddNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'odd');
+      case 1:  return _isOdd(val);
+      default: return _are(arguments, _isOdd);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.even = function isEvenNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'even');
+      case 1:  return _isEven(val);
+      default: return _are(arguments, _isEven);
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Arguments} vals
+   * @param {function} check
+   * @return {boolean}
+   */
+  function _are(vals, check) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) {
+      if ( !check(vals[i]) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - IS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {(Object|?function)} val
+   * @return {boolean}
+   */
+  function _isFrozen(val) {
+
+    if ( _is.nil(val) ) return false;
+
+    if ( !_is._obj(val) ) throw _error.type('val', 'frozen');
+
+    return _is.frozen(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isWhole(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'whole');
+
+    return _is.whole(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isOdd(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'odd');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'odd');
+
+    return _is.odd(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isEven(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'even');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'even');
+
+    return _is.even(val);
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - CHECKS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {*} val
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVal(checks, val, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = checks.length;
+    while (i--) {
+      if ( checks[i](val, nullable) ) return true;
+    }
+    return false;
+  }
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {!Arguments} vals
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVals(checks, vals, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (--i) {
+      if ( !_checkVal(checks, vals[i], nullable) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - TYPES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @typedef {!Object<string, function(*, boolean=): boolean>} DataTypes
+   */
+
+  /**
+   * @private
+   * @type {DataTypes}
+   */
+  var TYPES = (function() {
+
+    /**
+     * @type {DataTypes}
+     */
+    var _types = {};
+
+    /**
+     * Adds types to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes their type section's method.
+     * @private
+     * @param {string} section - The category for the types.
+     * @param {!Object<string, function(*): boolean>} types - Each type's
+     *   "key => value" pair should be expressed as "typeName => checkMethod".
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addTypes(section, types, nullable) {
+
+      /** @type {string} */
+      var type;
+
+      for (type in types) {
+        if( _own(types, type) ) addType(section, type, types[type], nullable);
+      }
+      return _types;
+    }
+
+    /**
+     * Adds type to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes its type section's method.
+     * @private
+     * @param {string} section - The type's category.
+     * @param {string} type - The type's name.
+     * @param {function(*): boolean} check - The type's check method.
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addType(section, type, check, nullable) {
+      check = _own(addType, section) ? addType[section](check) : check;
+      nullable = nullable !== false;
+      _types['_' + type] = function(val, _nullable) {
+        _nullable = _is.bool(_nullable) ? _nullable : nullable;
+        return _is.nil(val) ? _nullable : check(val);
+      };
+      return _types;
+    }
+
+    /**
+     * Adds the type shortcuts to the _types hash map.
+     * @private
+     * @param {!Object<string, string>} shortcuts
+     * @return {DataTypes}
+     */
+    function addShortcuts(shortcuts) {
+
+      /** @type {string} */
+      var shortcut;
+      /** @type {string} */
+      var type;
+
+      for (shortcut in shortcuts) {
+        if( _own(shortcuts, shortcut) ) {
+          type = '_' + shortcuts[shortcut];
+          shortcut = '_' + shortcut;
+          _types[shortcut] = _types[type];
+        }
+      }
+      return _types;
+    }
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the array's values.
+     * @return {function(*): boolean} The array type's check method.
+     */
+    addType.arrays = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(arr) {
+
+        /** @type {number} */
+        var i;
+
+        if ( !_is.arr(arr) ) return false;
+
+        i = arr.length;
+        while (i--) {
+          if ( !eachCheck(arr[i]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the hash map's properties.
+     * @return {function(*): boolean} The hash map type's check method.
+     */
+    addType.maps = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(obj) {
+
+        /** @type {string} */
+        var prop;
+
+        if ( !_is.obj(obj) ) return false;
+
+        for (prop in obj) {
+          if( _own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    _types = addTypes('primitives', {
+      'undefined': _is.undefined,
+      'boolean':   _is.bool,
+      'string':    _is.str,
+      'number':    _is.num,
+      'nan':       _is.nan
+    }, false);
+    _types = addType('primitives', 'null', _is.nil);
+
+    _types = addTypes('js_objects', {
+      'object': _is.obj,
+      'regexp': _is.regex,
+      'array':  _is.arr,
+      'date':   _is.date,
+      'error':  _is.err
+    });
+    _types = addType('js_objects', 'arguments', _is.args);
+    _types = addType('js_objects', 'function', _is.func, false);
+
+    _types = addTypes('dom_objects', {
+      'element':  _is.elem,
+      'document': _is.doc
+    });
+
+    _types = addType('others', 'empty', _is.empty);
+
+    _types = addTypes('arrays', {
+      'nulls':     _is.nil,
+      'booleans':  _is.bool,
+      'strings':   _is.str,
+      'numbers':   _is.num,
+      'nans':      _is.nan,
+      'objects':   _is.obj,
+      'functions': _is.func,
+      'regexps':   _is.regex,
+      'arrays':    _is.arr,
+      'dates':     _is.date,
+      'errors':    _is.err,
+      'elements':  _is.elem,
+      'documents': _is.doc
+    });
+
+    _types = addTypes('maps', {
+      'nullmap':     _is.nil,
+      'booleanmap':  _is.bool,
+      'stringmap':   _is.str,
+      'numbermap':   _is.num,
+      'nanmap':      _is.nan,
+      'objectmap':   _is.obj,
+      'functionmap': _is.func,
+      'regexpmap':   _is.regex,
+      'arraymap':    _is.arr,
+      'datemap':     _is.date,
+      'errormap':    _is.err,
+      'elementmap':  _is.elem,
+      'documentmap': _is.doc
+    });
+
+    _types = addShortcuts({
+      // primitives
+      nil:  'null',
+      bool: 'boolean',
+      str:  'string',
+      num:  'number',
+
+      // js objects
+      obj:   'object',
+      func:  'function',
+      fn:    'function',
+      regex: 'regexp',
+      re:    'regexp',
+      arr:   'array',
+      err:   'error',
+      args:  'arguments',
+
+      // dom objects
+      elem: 'element',
+      doc:  'document',
+
+      // arrays
+      nils:   'nulls',
+      strs:   'strings',
+      nums:   'numbers',
+      bools:  'booleans',
+      objs:   'objects',
+      funcs:  'functions',
+      fns:    'functions',
+      regexs: 'regexps',
+      res:    'regexps',
+      arrs:   'arrays',
+      errs:   'errors',
+      elems:  'elements',
+      docs:   'documents',
+
+      // maps
+      nilmap:   'nullmap',
+      strmap:   'stringmap',
+      nummap:   'numbermap',
+      boolmap:  'booleanmap',
+      objmap:   'objectmap',
+      funcmap:  'functionmap',
+      fnmap:    'functionmap',
+      regexmap: 'regexpmap',
+      remap:    'regexpmap',
+      arrmap:   'arraymap',
+      errmap:   'errormap',
+      elemmap:  'elementmap',
+      docmap:   'documentmap'
+    });
+
+    return _types;
+  })();
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - PARSING
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!RegExp}
+   */
+  var ALL_SPECIALS = /[^a-z\|]/g;
+
+  /**
+   * @private
+   * @type {!Object<string, function(string): boolean>}
+   */
+  var SPECIALS = (function(pipe, exPoint, quesMark, equals, asterisk) {
+    return {
+      '|': function(str) { return pipe.test(str);     },
+      '!': function(str) { return exPoint.test(str);  },
+      '?': function(str) { return quesMark.test(str); },
+      '=': function(str) { return equals.test(str);   },
+      '*': function(str) { return asterisk.test(str); }
+    };
+  })(/\|/, /\!/, /\?/, /\=/, /\*|any/);
+
+  /**
+   * @private
+   * @param {string} special
+   * @param {string} types
+   * @return {boolean}
+   */
+  function _hasSpecial(special, types) {
+    return SPECIALS[special](types);
+  }
+
+  /**
+   * @private
+   * @param {string} types
+   * @return {Array<function>}
+   */
+  function _getChecks(types) {
+
+    /** @type {Array<function>} */
+    var checks;
+    /** @type {string} */
+    var type;
+    /** @type {number} */
+    var i;
+
+    if ( _hasSpecial('=', types) ) types += '|undefined';
+
+    types = types.toLowerCase();
+    types = types.replace(ALL_SPECIALS, '');
+    checks = types.split('|');
+
+    i = checks.length;
+    while (i--) {
+      type = '_' + checks[i];
+      if ( !_own(TYPES, type) ) return null;
+      checks[i] = TYPES[type];
+    }
+
+    return checks.length ? checks : null;
+  }
+
+  /**
+   * Method checks whether "!" or "?" exists in the types.
+   * @private
+   * @param {string} types
+   * @return {(undefined|boolean)} If undefined no override exists.
+   */
+  function _getNullable(types) {
+
+    /** @type {boolean} */
+    var override;
+    /** @type {boolean} */
+    var ensure;
+    /** @type {boolean} */
+    var negate;
+
+    ensure = _hasSpecial('?', types);
+    negate = _hasSpecial('!', types);
+    override = ensure && negate ? false : ensure || negate;
+    return override ? !negate && ensure : undefined;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('is');
+
+  /**
+   * @private
+   * @type {string}
+   */
+  var DOCS = 'https://github.com/imaginate/vitals/blob/master/docs/is.js';
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return is;
+})();
+
+
 
 // *****************************************************************************
 // SECTION: STRICT METHODS
@@ -314,36 +1653,35 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   - object: Must be "propName => propVal" or "propName => propDescriptor".
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
    *   - array:  An array of key names to define.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -351,6 +1689,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   function amend(obj, props, val, descriptor, strongType, setter) {
@@ -362,13 +1706,13 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj');
+    if ( !_is.obj(obj) ) throw _error.type('obj');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props');
+    if ( !_is.obj(props) ) throw _error.type('props');
 
-    isArr = is.arr(props);
+    isArr = _is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3) throw _error('No val defined');
@@ -405,30 +1749,32 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
    */
   amend.config = function amendConfig(obj, props, descriptor) {
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'config');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'config');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'config');
+    if ( !_is.obj(props) ) throw _error.type('props', 'config');
 
-    if ( is.arr(props) ) {
-      if ( !is.obj(descriptor) ) throw _error.type('descriptor', 'config');
+    if ( _is.arr(props) ) {
+      if ( !_is.obj(descriptor) ) throw _error.type('descriptor', 'config');
       props = _setupConfigs(props, descriptor);
     }
 
@@ -440,34 +1786,35 @@ var amend = (function amendPrivateScope() {
   };
 
   /**
-   * A shortcut for Object.defineProperty.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
    * @param {*=} val - A val is required if a descriptor is not supplied.
-   * @param {!Object=} descriptor - [default= {
-   *     writable: true,
-   *     enumerable: true,
-   *     configurable: true
-   *   }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails an [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined the new property is
    *   assigned an accessor descriptor that includes a setter that sets the
    *   property to the value returned by this setter method. The setter method
    *   will receive two params, the new value and the current value. If a
    *   strongType is defined this setter will not get called until the new value
    *   passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.property = function amendProperty(obj, key, val, descriptor, strongType, setter) {
@@ -477,8 +1824,8 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'property');
-    if ( !is.str(key) ) throw _error.type('key', 'property');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'property');
+    if ( !_is.str(key) ) throw _error.type('key', 'property');
 
     len = arguments.length;
 
@@ -511,8 +1858,9 @@ var amend = (function amendPrivateScope() {
   amend.prop = amend.property;
 
   /**
-   * A shortcut for Object.defineProperty that only updates the descriptor of an
-   *   existing property.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+   *   that only updates the descriptor of an existing property.
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
@@ -521,9 +1869,9 @@ var amend = (function amendPrivateScope() {
    */
   amend.property.config = function amendPropertyConfig(obj, key, descriptor) {
 
-    if ( !is.obj(obj)       ) throw _error.type('obj',       'property.config');
-    if ( !is.str(key)       ) throw _error.type('key',       'property.config');
-    if ( !is.obj(descriptor)) throw _error.type('descriptor','property.config');
+    if ( !_is.obj(obj)       ) throw _error.type('obj',       'property.config');
+    if ( !_is.str(key)       ) throw _error.type('key',       'property.config');
+    if ( !_is.obj(descriptor)) throw _error.type('descriptor','property.config');
 
     if ( !_own(obj, key) ) {
       throw _error('The key was not defined in the obj', 'property.config');
@@ -535,37 +1883,35 @@ var amend = (function amendPrivateScope() {
   amend.prop.config = amend.property.config;
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
-   *   array:  An array of key names to define.
-   *   string: Converted to an array of key names to define. Use the following
-   *     list of chars for the separator (chars listed in order of rank):
-   *     ", "  ","  "|"  " "
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
+   *   - array:  An array of key names to define.
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -573,6 +1919,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.properties = function amendProperties(obj, props, val, descriptor, strongType, setter) {
@@ -584,13 +1936,13 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'properties');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'properties');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'properties');
+    if ( !_is.obj(props) ) throw _error.type('props', 'properties');
 
-    isArr = is.arr(props);
+    isArr = _is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3) throw _error('No val defined', 'properties');
@@ -629,30 +1981,32 @@ var amend = (function amendPrivateScope() {
   amend.props = amend.properties;
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
    */
   amend.properties.config = function amendPropertiesConfig(obj, props, descriptor) {
 
-    if ( !is.obj(obj) ) throw _error.type('obj', 'properties.config');
+    if ( !_is.obj(obj) ) throw _error.type('obj', 'properties.config');
 
-    if ( is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = _splitKeys(props);
 
-    if ( !is.obj(props) ) throw _error.type('props', 'properties.config');
+    if ( !_is.obj(props) ) throw _error.type('props', 'properties.config');
 
-    if ( is.arr(props) ) {
-      if ( !is.obj(descriptor) ) {
+    if ( _is.arr(props) ) {
+      if ( !_is.obj(descriptor) ) {
         throw _error.type('descriptor', 'properties.config');
       }
       props = _setupConfigs(props, descriptor);
@@ -686,27 +2040,27 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 4:
-      if ( is.str(descriptor) ) {
+      if ( _is.str(descriptor) ) {
         strongType = descriptor;
         descriptor = undefined;
       }
-      else if ( is.func(descriptor) ) {
+      else if ( _is.func(descriptor) ) {
         setter = descriptor;
         descriptor = undefined;
       }
       break;
       case 5:
-      if ( is.func(strongType) ) {
+      if ( _is.func(strongType) ) {
         setter = strongType;
         strongType = undefined;
-        if ( is.str(descriptor) ) {
+        if ( _is.str(descriptor) ) {
           strongType = descriptor;
           descriptor = undefined;
         }
       }
     }
 
-    if ( is.obj(val) && _isDescriptor(val) ) {
+    if ( _is.obj(val) && _isDescriptor(val) ) {
       descriptor = val;
       val = descriptor.value;
     }
@@ -726,20 +2080,20 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 4:
-      if ( is.str(descriptor) ) {
+      if ( _is.str(descriptor) ) {
         strongType = descriptor;
         descriptor = undefined;
       }
-      else if ( is.func(descriptor) ) {
+      else if ( _is.func(descriptor) ) {
         setter = descriptor;
         descriptor = undefined;
       }
       break;
       case 5:
-      if ( is.func(strongType) ) {
+      if ( _is.func(strongType) ) {
         setter = strongType;
         strongType = undefined;
-        if ( is.str(descriptor) ) {
+        if ( _is.str(descriptor) ) {
           strongType = descriptor;
           descriptor = undefined;
         }
@@ -766,7 +2120,7 @@ var amend = (function amendPrivateScope() {
     for (key in props) {
       if ( _own(props, key) ) {
         val = props[key];
-        if ( is.obj(val) && _isDescriptor(val) ) {
+        if ( _is.obj(val) && _isDescriptor(val) ) {
           if ( _own(val, 'writable') ) continue;
           val = val.value;
         }
@@ -820,7 +2174,7 @@ var amend = (function amendPrivateScope() {
     descriptor = descriptor || null;
     descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
     strongType = _getStrongType(strongType);
-    props = is.arr(props)
+    props = _is.arr(props)
       ? strongType || setter
         ? _setupPropsByKeyWithSetter(props, val, descriptor, strongType, setter)
         : _setupPropsByKey(props, val, descriptor)
@@ -1161,7 +2515,7 @@ var amend = (function amendPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !is.obj(obj) ) return false;
+    if ( !_is.obj(obj) ) return false;
 
     for (key in obj) {
       if ( _own(obj, key) && !_own(DESCRIPTOR_PROPS, key) ) return false;
@@ -1200,10 +2554,10 @@ var amend = (function amendPrivateScope() {
 
     if ( hasSetter && _isData(descriptor) ) {
       defaultDescriptor = {};
-      if ( is.bool( descriptor.enumerable ) ) {
+      if ( _is.bool( descriptor.enumerable ) ) {
         defaultDescriptor.enumerable = descriptor.enumerable;
       }
-      if ( is.bool( descriptor.configurable ) ) {
+      if ( _is.bool( descriptor.configurable ) ) {
         defaultDescriptor.configurable = descriptor.configurable;
       }
       descriptor = defaultDescriptor;
@@ -1370,11 +2724,13 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -1389,7 +2745,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);
@@ -1401,11 +2757,13 @@ var create = (function createPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -1420,7 +2778,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);
@@ -1489,34 +2847,36 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
-   * @param {?(Object|function)} obj
+   * @param {(Object|?function)} obj
    * @param {boolean=} deep
-   * @return {?(Object|function)}
+   * @return {(Object|?function)}
    */
   function freeze(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is._obj(obj)     ) throw _error.type('obj');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   }
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
-   * @param {?(Object|function)} obj
+   * @param {(Object|?function)} obj
    * @param {boolean=} deep
-   * @return {?(Object|function)}
+   * @return {(Object|?function)}
    */
   freeze.object = function freezeObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is._obj(obj)     ) throw _error.type('obj',  'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   };
@@ -1529,8 +2889,8 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} obj
+   * @return {(!Object|function)}
    */
   function _deepFreeze(obj, noFreeze) {
 
@@ -1538,7 +2898,7 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && is._obj( obj[key] ) ) {
+      if ( _own(obj, key) && _is._obj( obj[key] ) ) {
         _deepFreeze( obj[key] );
       }
     }
@@ -1551,23 +2911,22 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} obj
+   * @return {(!Object|function)}
    */
   var _ObjectFreeze = (function() {
 
-    if (!Object.freeze) return function ObjectFreeze(obj) { return obj; };
+    if (!Object.freeze) return function freeze(obj) { return obj; };
 
     try {
-      Object.freeze( function testObjectFreeze(){} );
+      Object.freeze(function(){});
+      return Object.freeze;
     }
     catch (e) {
-      return function ObjectFreeze(obj) {
-        return is.func(obj) ? obj : Object.freeze(obj);
+      return function freeze(obj) {
+        return _is.func(obj) ? obj : Object.freeze(obj);
       };
     }
-
-    return Object.freeze;
   })();
 
   //////////////////////////////////////////////////////////
@@ -1600,6 +2959,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -1607,16 +2967,17 @@ var seal = (function sealPrivateScope() {
    */
   function seal(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is._obj(obj)     ) throw _error.type('obj');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   }
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -1624,10 +2985,10 @@ var seal = (function sealPrivateScope() {
    */
   seal.object = function sealObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
+    if ( !_is._obj(obj)     ) throw _error.type('obj',  'seal');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'seal');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   };
@@ -1658,16 +3019,9 @@ var seal = (function sealPrivateScope() {
 
       /** @type {string} */
       var key;
-      /** @type {*} */
-      var val;
 
       for (key in obj) {
-        if ( _own(obj, key) ) {
-          val = obj[key];
-          if ( is._obj(val) ) {
-            obj[key] = _deepSeal(val);
-          }
-        }
+        if ( _own(obj, key) && _is._obj(obj[key]) ) _deepSeal(obj[key]);
       }
       return _seal(obj);
     };

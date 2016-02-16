@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - FREEZE
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/methods/freeze.js}
+ * @section strict
+ * @version 3.0.0-beta
+ * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/vitals.freeze}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,9 +16,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
+var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,34 +36,36 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
-   * @param {?(Object|function)} obj
+   * @param {(Object|?function)} obj
    * @param {boolean=} deep
-   * @return {?(Object|function)}
+   * @return {(Object|?function)}
    */
   function freeze(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is._obj(obj)     ) throw _error.type('obj');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   }
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
-   * @param {?(Object|function)} obj
+   * @param {(Object|?function)} obj
    * @param {boolean=} deep
-   * @return {?(Object|function)}
+   * @return {(Object|?function)}
    */
   freeze.object = function freezeObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is._obj(obj)     ) throw _error.type('obj',  'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
   };
@@ -77,8 +78,8 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} obj
+   * @return {(!Object|function)}
    */
   function _deepFreeze(obj, noFreeze) {
 
@@ -86,7 +87,7 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && is._obj( obj[key] ) ) {
+      if ( _own(obj, key) && _is._obj( obj[key] ) ) {
         _deepFreeze( obj[key] );
       }
     }
@@ -99,23 +100,22 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} obj
+   * @return {(!Object|function)}
    */
   var _ObjectFreeze = (function() {
 
-    if (!Object.freeze) return function ObjectFreeze(obj) { return obj; };
+    if (!Object.freeze) return function freeze(obj) { return obj; };
 
     try {
-      Object.freeze( function testObjectFreeze(){} );
+      Object.freeze(function(){});
+      return Object.freeze;
     }
     catch (e) {
-      return function ObjectFreeze(obj) {
-        return is.func(obj) ? obj : Object.freeze(obj);
+      return function freeze(obj) {
+        return _is.func(obj) ? obj : Object.freeze(obj);
       };
     }
-
-    return Object.freeze;
   })();
 
   //////////////////////////////////////////////////////////

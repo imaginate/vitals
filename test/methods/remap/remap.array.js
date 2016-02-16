@@ -5,7 +5,7 @@
  * @see [vitals.remap]{@link https://github.com/imaginate/vitals/blob/master/src/methods/remap.js}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
  * @see [are]{@link https://github.com/imaginate/are}
@@ -139,7 +139,7 @@ describe('vitals.remap.array (section:base)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 4, true);
+  return breakStr(shouldMsg, 3);
 }
 
 /**
@@ -148,7 +148,7 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('remap.arr', arguments, 5, true);
+  return testCall('remap.arr', arguments, 4);
 }
 
 /**

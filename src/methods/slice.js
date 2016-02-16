@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - SLICE
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/methods/slice.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.slice]{@link https://github.com/imaginate/vitals/wiki/vitals.slice}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,10 +16,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _sliceArr = require('./_helpers/sliceArr.js');
-var _sliceStr = require('./_helpers/sliceStr.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _sliceArr = require('./helpers/slice-arr.js');
+var _sliceStr = require('./helpers/slice-str.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -38,8 +36,9 @@ var slice = (function slicePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end) and
-   *   String.prototype.slice(start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   *   and [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {?(Object|Array|function|string)} source
    * @param {number=} start - [default= 0]
@@ -48,21 +47,22 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    if ( !is('num=', start) ) throw _error.type('start');
-    if ( !is('num=', end)   ) throw _error.type('end');
+    if ( !_is.un.num(start) ) throw _error.type('start');
+    if ( !_is.un.num(end)   ) throw _error.type('end');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return _sliceStr(source, start, end);
 
-    if ( !is._obj(source)       ) throw _error.type('source');
-    if ( !is.num(source.length) ) throw _error.type('source.length');
+    if ( !_is._obj(source)       ) throw _error.type('source');
+    if ( !_is.num(source.length) ) throw _error.type('source.length');
 
     return _sliceArr(source, start, end);
   }
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
+   *
    * @public
    * @param {?(Object|Array|function)} source
    * @param {number=} start - [default= 0]
@@ -71,10 +71,10 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is('num=', start)     ) throw _error.type('start',         'array');
-    if ( !is('num=', end)       ) throw _error.type('end',           'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
+    if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -82,7 +82,8 @@ var slice = (function slicePrivateScope() {
   slice.arr = slice.array;
 
   /**
-   * A shortcut for String.prototype.slice(start, end).
+   * A shortcut for [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {string} str
    * @param {number=} start - [default= 0]
@@ -91,9 +92,9 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !is.str(str)       ) throw _error.type('str',   'string');
-    if ( !is('num=', start) ) throw _error.type('start', 'string');
-    if ( !is('num=', end)   ) throw _error.type('end',   'string');
+    if ( !_is.str(str)      ) throw _error.type('str',   'string');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'string');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
 
     return _sliceStr(str, start, end);
   };

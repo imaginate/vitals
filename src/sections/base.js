@@ -4,14 +4,11 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.8
+ * @version 3.0.0-beta
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -20,12 +17,38 @@
 
 'use strict';
 
-var is = require('node-are').is;
-
 
 // *****************************************************************************
 // PRIVATE HELPERS
 // *****************************************************************************
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - OWN
+////////////////////////////////////////////////////////////////////////////////
+
+var _own = (function _ownPrivateScope() {
+
+  /**
+   * @param {?(Object|function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function _own(source, key) {
+    return !!source && _hasOwnProperty.call(source, key);
+  }
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR OWN
+  return _own;
+})();
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -267,6 +290,446 @@ var _inStr = (function _inStrPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// PRIVATE HELPER - IS
+////////////////////////////////////////////////////////////////////////////////
+
+var _is = (function _isPrivateScope() {
+
+  /** @type {!Object} */
+  var _is = {};
+
+  /** @type {function} */
+  var toStr = Object.prototype.toString;
+
+  //////////////////////////////////////////////////////////
+  // PRIMITIVES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil = function(val) {
+    return val === null;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.undefined = function(val) {
+    return val === undefined;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.bool = function(val) {
+    return typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.str = function(val) {
+    return typeof val === 'string';
+  };
+
+  /**
+   * Empty strings return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._str = function(val) {
+    return !!val && typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.num = function(val) {
+    return typeof val === 'number' && val === val;
+  };
+
+  /**
+   * Zeros return false in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._num = function(val) {
+    return !!val && typeof val === 'number' && val === val;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nan = function(val) {
+    return val !== val;
+  };
+
+  //////////////////////////////////////////////////////////
+  // JS OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.obj = function(val) {
+    return !!val && typeof val === 'object';
+  };
+
+  /**
+   * Functions return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._obj = function(val) {
+    val = !!val && typeof val;
+    return val && (val === 'object' || val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.func = function(val) {
+    return !!val && typeof val === 'function';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.arr = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
+  };
+
+  /**
+   * Arguments return true in this method.
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is._arr = function(val) {
+      if ( !_is.obj(val) ) return false;
+      val = toStr.call(val);
+      return val === '[object Array]' || val === '[object Arguments]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.regex = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.date = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.err = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.args = function(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object Arguments]';
+  };
+
+  //////////////////////////////////////////////////////////
+  // DOM OBJECTS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.doc = function(val) {
+    return !!val && typeof val === 'object' && val.nodeType === 9;
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.elem = function(val) {
+    return !!val && typeof val === 'object' && val.nodeType === 1;
+  };
+
+  //////////////////////////////////////////////////////////
+  // OTHERS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * Checks if a value is considered empty. For a list of empty values see below.
+   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   note: for functions this method checks whether it has any defined params:
+   *     function(){} => true | function(param){} => false
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.empty = function(val) {
+
+    /** @type {string} */
+    var prop;
+
+    // return empty primitives - 0, "", null, undefined, false, NaN
+    if ( !_is._obj(val) ) return !val;
+
+    // return empty arrays and functions - [], function(){}
+    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+
+    // return empty object - {}
+    for (prop in val) {
+      if ( _own(val, prop) ) return false;
+    }
+    return true;
+  };
+
+  /**
+   * @param {(Object|?function)} obj
+   * @return {boolean}
+   */
+  _is.frozen = (function() {
+
+    if (!Object.isFrozen) return function isFrozen(obj) { return false; };
+
+    try {
+      Object.isFrozen(function(){});
+      return Object.isFrozen;
+    }
+    catch (e) {
+      return function isFrozen(obj) {
+        return _is.obj(obj) && Object.isFrozen(obj);
+      };
+    }
+  })();
+
+  //////////////////////////////////////////////////////////
+  // NUMBER STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.whole = function(val) {
+    return !(val % 1);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.odd = function(val) {
+    return !!(val % 2);
+  };
+
+  /**
+   * @param {number} val
+   * @return {boolean}
+   */
+  _is.even = function(val) {
+    return !(val % 2);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.bool = function(val) {
+    return val === undefined || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.str = function(val) {
+    return val === undefined || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.num = function(val) {
+    return val === undefined || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.obj = function(val) {
+    return val === undefined || (!!val && typeof val === 'object');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.func = function(val) {
+    return val === undefined || (!!val && typeof val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.un.arr = function(val) {
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.bool = function(val) {
+    return val === null || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.str = function(val) {
+    return val === null || typeof val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.num = function(val) {
+    return val === null || (typeof val === 'number' && val === val);
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.obj = function(val) {
+    return val === null || (!!val && typeof val === 'object');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.func = function(val) {
+    return val === null || (!!val && typeof val === 'function');
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.arr = function(val) {
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // OR NULL OR UNDEFINED
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  _is.nil.un = {};
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.bool = function(val) {
+    return val === null || val === undefined || typeof val === 'boolean';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.str = function(val) {
+    return val === null || val === undefined || typeof  val === 'string';
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.num = function(val) {
+    return val === null || val === undefined || (
+      typeof val === 'number' && val === val
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.obj = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.func = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'undefined'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  _is.nil.un.arr = function(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return _is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - MATCH
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -277,7 +740,7 @@ var _inStr = (function _inStrPrivateScope() {
  * @return {boolean}
  */
 function _match(source, pattern) {
-  return is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
+  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -302,34 +765,6 @@ function _merge(dest, source, deep) {
   }
   return dest;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
-})();
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPER - OWN-ENUM
@@ -387,7 +822,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -426,7 +861,7 @@ function _sliceStr(str, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = is.undefined(end) || end > len
+  end = _is.undefined(end) || end > len
     ? len
     : end < 0
       ? len + end
@@ -463,6 +898,910 @@ function _splitKeys(keys) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// IS
+////////////////////////////////////////////////////////////////////////////////
+
+var is = (function isPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - is
+  // - is.null      (is.nil)
+  // - is.undefined
+  // - is.boolean   (is.bool)
+  // - is.string    (is.str)
+  // - is._string   (is._str)
+  // - is.number    (is.num)
+  // - is._number   (is._num)
+  // - is.nan
+  // - is.object    (is.obj)
+  // - is._object   (is._obj)
+  // - is.func      (is.function|is.fn)
+  // - is.array     (is.arr)
+  // - is._array    (is._arr)
+  // - is.regexp    (is.regex|is.re)
+  // - is.date
+  // - is.error     (is.err)
+  // - is.args
+  // - is.document  (is.doc)
+  // - is.element   (is.elem)
+  // - is.empty
+  // - is.frozen
+  // - is.whole
+  // - is.odd
+  // - is.even
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A shortcut for type checking values.
+   *
+   * @public
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
+   * @param {...*} val - The value to evaluate. If multiple values are
+   *   provided all must pass the type check to return true.
+   * @return {boolean} The evaluation result.
+   */
+  function is(types, val) {
+
+    /** @type {string} */
+    var nullable;
+    /** @type {Array<function>} */
+    var checks;
+
+    if (arguments.length < 2) throw _error('No type or val');
+    if ( !_is._str(types) ) throw _error.type('types');
+
+    if ( _hasSpecial('*', types) ) return true;
+
+    checks = _getChecks(types);
+
+    if (!checks) throw _error.range('types', DOCS);
+
+    nullable = _getNullable(types);
+    return arguments.length > 2
+      ? _checkVals(checks, arguments, nullable)
+      : _checkVal(checks, val, nullable);
+  }
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['null'] = function isNull(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'null');
+      case 1:  return _is.nil(val);
+      default: return _are(arguments, _is.nil);
+    }
+  };
+  // define shorthand
+  is.nil = is['null'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.undefined = function isUndefined(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'undefined');
+      case 1:  return _is.undefined(val);
+      default: return _are(arguments, _is.undefined);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is['boolean'] = function isBoolean(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'boolean');
+      case 1:  return _is.bool(val);
+      default: return _are(arguments, _is.bool);
+    }
+  };
+  // define shorthand
+  is.bool = is['boolean'];
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.string = function isString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'string');
+      case 1:  return _is.str(val);
+      default: return _are(arguments, _is.str);
+    }
+  };
+  // define shorthand
+  is.str = is.string;
+
+  /**
+   * Empty strings return false in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._string = function isNonEmptyString(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_string');
+      case 1:  return _is._str(val);
+      default: return _are(arguments, _is._str);
+    }
+  };
+  // define shorthand
+  is._str = is._string;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.number = function isNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'number');
+      case 1:  return _is.num(val);
+      default: return _are(arguments, _is.num);
+    }
+  };
+  // define shorthand
+  is.num = is.number;
+
+  /**
+   * Zeros return false in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._number = function isNonZeroNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_number');
+      case 1:  return _is._num(val);
+      default: return _are(arguments, _is._num);
+    }
+  };
+  // define shorthand
+  is._num = is._number;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.nan = function isNan(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'nan');
+      case 1:  return _is.nan(val);
+      default: return _are(arguments, _is.nan);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.object = function isObject(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'object');
+      case 1:  return _is.obj(val);
+      default: return _are(arguments, _is.obj);
+    }
+  };
+  // define shorthand
+  is.obj = is.object;
+
+  /**
+   * Functions return true in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._object = function isObjectOrFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_object');
+      case 1:  return _is._obj(val);
+      default: return _are(arguments, _is._obj);
+    }
+  };
+  // define shorthand
+  is._obj = is._object;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.func = function isFunction(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'function');
+      case 1:  return _is.func(val);
+      default: return _are(arguments, _is.func);
+    }
+  };
+  // define shorthand
+  is.fn = is.func;
+  try {
+    is['function'] = is.func;
+  }
+  catch (error) {}
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.array = function isArray(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'array');
+      case 1:  return _is.arr(val);
+      default: return _are(arguments, _is.arr);
+    }
+  };
+  // define shorthand
+  is.arr = is.array;
+
+  /**
+   * Arguments return true in this method.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is._array = function isArrayOrArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', '_array');
+      case 1:  return _is._arr(val);
+      default: return _are(arguments, _is._arr);
+    }
+  };
+  // define shorthand
+  is._arr = is._array;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.regexp = function isRegExp(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'regexp');
+      case 1:  return _is.regex(val);
+      default: return _are(arguments, _is.regex);
+    }
+  };
+  // define shorthand
+  is.regex = is.regexp;
+  is.re = is.regexp;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.date = function isDate(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'date');
+      case 1:  return _is.date(val);
+      default: return _are(arguments, _is.date);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.error = function isError(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'error');
+      case 1:  return _is.err(val);
+      default: return _are(arguments, _is.err);
+    }
+  };
+  // define shorthand
+  is.err = is.error;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.args = function isArguments(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'args');
+      case 1:  return _is.args(val);
+      default: return _are(arguments, _is.args);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.document = function isDocument(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'document');
+      case 1:  return _is.doc(val);
+      default: return _are(arguments, _is.doc);
+    }
+  };
+  // define shorthand
+  is.doc = is.document;
+
+  /**
+   * @public
+   * @param {...*} val
+   * @return {boolean}
+   */
+  is.element = function isElement(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'element');
+      case 1:  return _is.elem(val);
+      default: return _are(arguments, _is.elem);
+    }
+  };
+  // define shorthand
+  is.elem = is.element;
+
+  /**
+   * Checks if a value is considered empty.
+   *
+   * @public
+   * @param {...*} val
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ```
+   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   ```
+   *   Note that for functions this method checks whether it has any defined
+   *   params:
+   *   ```
+   *   function empty(){}
+   *   function notEmpty(param){}
+   *   ```
+   */
+  is.empty = function isEmpty(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'empty');
+      case 1:  return _is.empty(val);
+      default: return _are(arguments, _is.empty);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...(Object|?function)} val
+   * @return {boolean}
+   */
+  is.frozen = function isFrozen(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'frozen');
+      case 1:  return _isFrozen(val);
+      default: return _are(arguments, _isFrozen);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val
+   * @return {boolean}
+   */
+  is.whole = function isWholeNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'whole');
+      case 1:  return _isWhole(val);
+      default: return _are(arguments, _isWhole);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.odd = function isOddNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'odd');
+      case 1:  return _isOdd(val);
+      default: return _are(arguments, _isOdd);
+    }
+  };
+
+  /**
+   * @public
+   * @param {...number} val - Each value must be a whole number.
+   * @return {boolean}
+   */
+  is.even = function isEvenNumber(val) {
+    switch (arguments.length) {
+      case 0:  throw _error('Missing a val', 'even');
+      case 1:  return _isEven(val);
+      default: return _are(arguments, _isEven);
+    }
+  };
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - ARE
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Arguments} vals
+   * @param {function} check
+   * @return {boolean}
+   */
+  function _are(vals, check) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) {
+      if ( !check(vals[i]) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - IS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {(Object|?function)} val
+   * @return {boolean}
+   */
+  function _isFrozen(val) {
+
+    if ( _is.nil(val) ) return false;
+
+    if ( !_is._obj(val) ) throw _error.type('val', 'frozen');
+
+    return _is.frozen(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isWhole(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'whole');
+
+    return _is.whole(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isOdd(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'odd');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'odd');
+
+    return _is.odd(val);
+  }
+
+  /**
+   * @private
+   * @param {number} val
+   * @return {boolean}
+   */
+  function _isEven(val) {
+
+    if ( !_is.num(val) ) throw _error.type('val', 'even');
+    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'even');
+
+    return _is.even(val);
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - CHECKS
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {*} val
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVal(checks, val, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = checks.length;
+    while (i--) {
+      if ( checks[i](val, nullable) ) return true;
+    }
+    return false;
+  }
+
+  /**
+   * @private
+   * @param {!Array<function>} checks
+   * @param {!Arguments} vals
+   * @param {boolean=} nullable
+   * @return {boolean}
+   */
+  function _checkVals(checks, vals, nullable) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (--i) {
+      if ( !_checkVal(checks, vals[i], nullable) ) return false;
+    }
+    return true;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - TYPES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @typedef {!Object<string, function(*, boolean=): boolean>} DataTypes
+   */
+
+  /**
+   * @private
+   * @type {DataTypes}
+   */
+  var TYPES = (function() {
+
+    /**
+     * @type {DataTypes}
+     */
+    var _types = {};
+
+    /**
+     * Adds types to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes their type section's method.
+     * @private
+     * @param {string} section - The category for the types.
+     * @param {!Object<string, function(*): boolean>} types - Each type's
+     *   "key => value" pair should be expressed as "typeName => checkMethod".
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addTypes(section, types, nullable) {
+
+      /** @type {string} */
+      var type;
+
+      for (type in types) {
+        if( _own(types, type) ) addType(section, type, types[type], nullable);
+      }
+      return _types;
+    }
+
+    /**
+     * Adds type to the _types hash map with a check method that evaluates
+     *   nullable properties and invokes its type section's method.
+     * @private
+     * @param {string} section - The type's category.
+     * @param {string} type - The type's name.
+     * @param {function(*): boolean} check - The type's check method.
+     * @param {boolean=} nullable - The type's default nullable value. Defaults
+     *   to true if not set.
+     * @return {DataTypes}
+     */
+    function addType(section, type, check, nullable) {
+      check = _own(addType, section) ? addType[section](check) : check;
+      nullable = nullable !== false;
+      _types['_' + type] = function(val, _nullable) {
+        _nullable = _is.bool(_nullable) ? _nullable : nullable;
+        return _is.nil(val) ? _nullable : check(val);
+      };
+      return _types;
+    }
+
+    /**
+     * Adds the type shortcuts to the _types hash map.
+     * @private
+     * @param {!Object<string, string>} shortcuts
+     * @return {DataTypes}
+     */
+    function addShortcuts(shortcuts) {
+
+      /** @type {string} */
+      var shortcut;
+      /** @type {string} */
+      var type;
+
+      for (shortcut in shortcuts) {
+        if( _own(shortcuts, shortcut) ) {
+          type = '_' + shortcuts[shortcut];
+          shortcut = '_' + shortcut;
+          _types[shortcut] = _types[type];
+        }
+      }
+      return _types;
+    }
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the array's values.
+     * @return {function(*): boolean} The array type's check method.
+     */
+    addType.arrays = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(arr) {
+
+        /** @type {number} */
+        var i;
+
+        if ( !_is.arr(arr) ) return false;
+
+        i = arr.length;
+        while (i--) {
+          if ( !eachCheck(arr[i]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    /**
+     * @private
+     * @param {function(*): boolean} eachCheck - The check method for each of
+     *   the hash map's properties.
+     * @return {function(*): boolean} The hash map type's check method.
+     */
+    addType.maps = function(eachCheck) {
+
+      /** @type {function(*): boolean} */
+      return function check(obj) {
+
+        /** @type {string} */
+        var prop;
+
+        if ( !_is.obj(obj) ) return false;
+
+        for (prop in obj) {
+          if( _own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+        }
+        return true;
+      };
+    };
+
+    _types = addTypes('primitives', {
+      'undefined': _is.undefined,
+      'boolean':   _is.bool,
+      'string':    _is.str,
+      'number':    _is.num,
+      'nan':       _is.nan
+    }, false);
+    _types = addType('primitives', 'null', _is.nil);
+
+    _types = addTypes('js_objects', {
+      'object': _is.obj,
+      'regexp': _is.regex,
+      'array':  _is.arr,
+      'date':   _is.date,
+      'error':  _is.err
+    });
+    _types = addType('js_objects', 'arguments', _is.args);
+    _types = addType('js_objects', 'function', _is.func, false);
+
+    _types = addTypes('dom_objects', {
+      'element':  _is.elem,
+      'document': _is.doc
+    });
+
+    _types = addType('others', 'empty', _is.empty);
+
+    _types = addTypes('arrays', {
+      'nulls':     _is.nil,
+      'booleans':  _is.bool,
+      'strings':   _is.str,
+      'numbers':   _is.num,
+      'nans':      _is.nan,
+      'objects':   _is.obj,
+      'functions': _is.func,
+      'regexps':   _is.regex,
+      'arrays':    _is.arr,
+      'dates':     _is.date,
+      'errors':    _is.err,
+      'elements':  _is.elem,
+      'documents': _is.doc
+    });
+
+    _types = addTypes('maps', {
+      'nullmap':     _is.nil,
+      'booleanmap':  _is.bool,
+      'stringmap':   _is.str,
+      'numbermap':   _is.num,
+      'nanmap':      _is.nan,
+      'objectmap':   _is.obj,
+      'functionmap': _is.func,
+      'regexpmap':   _is.regex,
+      'arraymap':    _is.arr,
+      'datemap':     _is.date,
+      'errormap':    _is.err,
+      'elementmap':  _is.elem,
+      'documentmap': _is.doc
+    });
+
+    _types = addShortcuts({
+      // primitives
+      nil:  'null',
+      bool: 'boolean',
+      str:  'string',
+      num:  'number',
+
+      // js objects
+      obj:   'object',
+      func:  'function',
+      fn:    'function',
+      regex: 'regexp',
+      re:    'regexp',
+      arr:   'array',
+      err:   'error',
+      args:  'arguments',
+
+      // dom objects
+      elem: 'element',
+      doc:  'document',
+
+      // arrays
+      nils:   'nulls',
+      strs:   'strings',
+      nums:   'numbers',
+      bools:  'booleans',
+      objs:   'objects',
+      funcs:  'functions',
+      fns:    'functions',
+      regexs: 'regexps',
+      res:    'regexps',
+      arrs:   'arrays',
+      errs:   'errors',
+      elems:  'elements',
+      docs:   'documents',
+
+      // maps
+      nilmap:   'nullmap',
+      strmap:   'stringmap',
+      nummap:   'numbermap',
+      boolmap:  'booleanmap',
+      objmap:   'objectmap',
+      funcmap:  'functionmap',
+      fnmap:    'functionmap',
+      regexmap: 'regexpmap',
+      remap:    'regexpmap',
+      arrmap:   'arraymap',
+      errmap:   'errormap',
+      elemmap:  'elementmap',
+      docmap:   'documentmap'
+    });
+
+    return _types;
+  })();
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - PARSING
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!RegExp}
+   */
+  var ALL_SPECIALS = /[^a-z\|]/g;
+
+  /**
+   * @private
+   * @type {!Object<string, function(string): boolean>}
+   */
+  var SPECIALS = (function(pipe, exPoint, quesMark, equals, asterisk) {
+    return {
+      '|': function(str) { return pipe.test(str);     },
+      '!': function(str) { return exPoint.test(str);  },
+      '?': function(str) { return quesMark.test(str); },
+      '=': function(str) { return equals.test(str);   },
+      '*': function(str) { return asterisk.test(str); }
+    };
+  })(/\|/, /\!/, /\?/, /\=/, /\*|any/);
+
+  /**
+   * @private
+   * @param {string} special
+   * @param {string} types
+   * @return {boolean}
+   */
+  function _hasSpecial(special, types) {
+    return SPECIALS[special](types);
+  }
+
+  /**
+   * @private
+   * @param {string} types
+   * @return {Array<function>}
+   */
+  function _getChecks(types) {
+
+    /** @type {Array<function>} */
+    var checks;
+    /** @type {string} */
+    var type;
+    /** @type {number} */
+    var i;
+
+    if ( _hasSpecial('=', types) ) types += '|undefined';
+
+    types = types.toLowerCase();
+    types = types.replace(ALL_SPECIALS, '');
+    checks = types.split('|');
+
+    i = checks.length;
+    while (i--) {
+      type = '_' + checks[i];
+      if ( !_own(TYPES, type) ) return null;
+      checks[i] = TYPES[type];
+    }
+
+    return checks.length ? checks : null;
+  }
+
+  /**
+   * Method checks whether "!" or "?" exists in the types.
+   * @private
+   * @param {string} types
+   * @return {(undefined|boolean)} If undefined no override exists.
+   */
+  function _getNullable(types) {
+
+    /** @type {boolean} */
+    var override;
+    /** @type {boolean} */
+    var ensure;
+    /** @type {boolean} */
+    var negate;
+
+    ensure = _hasSpecial('?', types);
+    negate = _hasSpecial('!', types);
+    override = ensure && negate ? false : ensure || negate;
+    return override ? !negate && ensure : undefined;
+  }
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('is');
+
+  /**
+   * @private
+   * @type {string}
+   */
+  var DOCS = 'https://github.com/imaginate/vitals/blob/master/docs/is.js';
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR IS
+  return is;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // COPY
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -483,6 +1822,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Returns a copy of the given value.
+   *
    * @public
    * @param {*} val
    * @param {boolean=} deep
@@ -490,21 +1830,22 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
-    return !is._obj(val)
+    return !_is._obj(val)
       ? val
-      : is.func(val)
+      : _is.func(val)
         ? _copyFunc(val, deep)
-        : is._arr(val)
+        : _is._arr(val)
           ? _copyArr(val, deep)
-          : is.regex(val)
+          : _is.regex(val)
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
 
   /**
    * Creates a new object with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -512,8 +1853,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.object = function copyObject(obj, deep) {
 
-    if ( !is.obj(obj)       ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is.obj(obj)      ) throw _error.type('obj',  'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return _copyObj(obj, deep);
   };
@@ -522,6 +1863,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new array with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -529,9 +1871,9 @@ var copy = (function copyPrivateScope() {
    */
   copy.array = function copyArray(obj, deep) {
 
-    if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
-    if ( !is('bool=', deep)  ) throw _error.type('deep',       'array');
+    if ( !_is.obj(obj)        ) throw _error.type('obj',        'array');
+    if ( !_is.num(obj.length) ) throw _error.type('obj.length', 'array');
+    if ( !_is.un.bool(deep)   ) throw _error.type('deep',       'array');
 
     return _copyArr(obj, deep);
   };
@@ -541,6 +1883,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new RegExp from a given RegExp.
+   *
    * @public
    * @param {!RegExp} regex
    * @param {boolean=} forceGlobal
@@ -548,8 +1891,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
-    if ( !is.regex(regex)          ) throw _error.type('regex',       'regexp');
-    if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
+    if ( !_is.regex(regex)         ) throw _error.type('regex',       'regexp');
+    if ( !_is.un.bool(forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
@@ -559,8 +1902,9 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in browser environments for
+   *   copy.func instead of copy.function in ES3 browser environments for
    *   compatibility.
+   *
    * @public
    * @param {function} func
    * @param {boolean=} deep
@@ -568,8 +1912,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.func = function copyFunction(func, deep) {
 
-    if ( !is.func(func)     ) throw _error.type('func', 'function');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
+    if ( !_is.func(func)    ) throw _error.type('func', 'function');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'function');
 
     return _copyFunc(func, deep);
   };
@@ -696,7 +2040,7 @@ var copy = (function copyPrivateScope() {
       }
     }
 
-    if ( is.undefined(forceGlobal) ) return flags;
+    if ( _is.undefined(forceGlobal) ) return flags;
 
     return _inStr(flags, 'g')
       ? forceGlobal
@@ -765,40 +2109,42 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * Removes properties from an object/array or patterns from a string
+   * Removes properties from an object/array or substring patterns from a string
    *   and returns the amended source.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - leading val is function: The val is considered a filter function
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is deleted). It has the
    *       optional params - value, key, source. Note this method lazily clones
-   *       the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - leading val is function: The val is considered a filter function
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is spliced from the source).
    *       It has the optional params - value, index, source. Note this method
-   *       lazily clones the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       lazily clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
-   *     string source: All vals that are not a RegExp or string are converted
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
+   *   - string source: All vals that are not a RegExp or string are converted
    *       to a string. Each matching substring is removed from the source.
    * @param {Object=} thisArg - If source is an object/array, val is a filter
    *   function, and thisArg is defined the filter is bound to its value.
@@ -808,72 +2154,74 @@ var cut = (function cutPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-      return is.arr(vals)
+      return _is.arr(vals)
         ? _cutPatterns(source, vals)
         : _cutPattern(source, vals);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
 
-    if ( is.func(vals) ) {
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
-      return is.arr(source)
+    if ( _is.func(vals) ) {
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+      return _is.arr(source)
         ? _filterArr(source, vals, thisArg)
         : _filterObj(source, vals, thisArg);
     }
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+    return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
   /**
    * Removes a property from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
-   *   object source:
-   *     - val is RegExp: This method will delete all properties with a key that
-   *     matches the val.
-   *     - val is string: This method will delete all properties where
-   *     key === val.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is deleted). It has the optional params -
-   *     value, key, source. Note this method lazily clones the source based on
-   *     the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will delete all properties where
-   *     value === val.
-   *   array source:
-   *     - val is number: This method will splice the index from the source.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is spliced from the source). It has the
-   *     optional params - value, index, source. Note this method lazily clones
-   *     the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will splice from the source all
-   *     properties where value === val.
+   *   - object source:
+   *     -- val is RegExp: This method will delete all properties with a key
+   *       that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       the val.
+   *     -- val is string: This method will delete all properties where
+   *       `key === val`.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is deleted). It has the optional params -
+   *       value, key, source. Note this method lazily clones the source based
+   *       on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- val is number: This method will splice the index from the source.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is spliced from the source). It has the
+   *       optional params - value, index, source. Note this method lazily
+   *       clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @param {Object=} thisArg - If val is a filter function and thisArg is
    *   defined the filter is bound to its value.
    * @return {!(Object|function|Array)}
    */
   cut.property = function cutProperty(source, val, thisArg) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'property');
+    if ( !_is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
 
-    if ( is.func(val) ) {
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'property');
-      return is.arr(source)
+    if ( _is.func(val) ) {
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'property');
+      return _is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
     }
@@ -885,6 +2233,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a property by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} key - If the key is not a string it is converted to a string.
@@ -893,7 +2242,7 @@ var cut = (function cutPrivateScope() {
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
     return _cutKey(source, key);
@@ -902,6 +2251,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes a property by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before removing the property.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {number} index - The index to remove.
@@ -911,12 +2261,12 @@ var cut = (function cutPrivateScope() {
    */
   cut.index = function cutIndex(source, index, toIndex) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'index');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'index');
-    if ( !is.num(index)         ) throw _error.type('index',         'index');
-    if ( !is('num=', toIndex)   ) throw _error.type('toIndex',       'index');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'index');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'index');
+    if ( !_is.num(index)         ) throw _error.type('index',         'index');
+    if ( !_is.un.num(toIndex)    ) throw _error.type('toIndex',       'index');
 
-    source = is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : _sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
@@ -924,21 +2274,19 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses the
-   *   [is main function]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
-   *   from [are]{@link https://github.com/imaginate/are} to complete type
-   *   checks.
+   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
+   *   to complete type checks.
+   *
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to the
-   *   [is main function docs]{@link https://github.com/imaginate/are/blob/master/docs/is-main-func.md}
+   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   for acceptable options.
    * @return {!(Object|function|Array)}
    */
   cut.type = function cutType(source, type) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'type');
-    if ( !is.str(type)    ) throw _error.type('type',   'type');
+    if ( !_is._obj(source) ) throw _error.type('source', 'type');
+    if ( !_is.str(type)    ) throw _error.type('type',   'type');
 
     try {
       is(type, '_');
@@ -950,13 +2298,14 @@ var cut = (function cutPrivateScope() {
       );
     }
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     return _cutType(source, type);
   };
 
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val
@@ -964,10 +2313,10 @@ var cut = (function cutPrivateScope() {
    */
   cut.value = function cutValue(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     return _cutVal(source, val);
   };
   // define shorthand
@@ -975,6 +2324,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a pattern from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If pattern is not a string or RegExp it is converted
@@ -983,49 +2333,50 @@ var cut = (function cutPrivateScope() {
    */
   cut.pattern = function cutPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _cutPattern(source, pattern);
   };
 
   /**
-   * Removes properties from an object/array and returns the object. Note that
-   *   the use of the word, "match", within vitals.cut.properties refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Removes properties from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`. 
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @return {!(Object|function|Array)}
    */
   cut.properties = function cutProperties(source, vals) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'properties');
+    if ( !_is._obj(source) ) throw _error.type('source', 'properties');
     if (arguments.length < 2) throw _error('No val defined', 'properties');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+    return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   };
   // define shorthand
   cut.props = cut.properties;
 
   /**
    * Removes properties by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {...*} keys - If only one key is provided and it is an array it is
@@ -1035,16 +2386,17 @@ var cut = (function cutPrivateScope() {
    */
   cut.keys = function cutKeys(source, keys) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
     if (arguments.length < 2) throw _error('No key defined', 'keys');
 
     keys = arguments.length > 2 ? _sliceArr(arguments, 1) : keys;
-    return is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
+    return _is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
   };
 
   /**
    * Removes properties by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before completing the cut.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...number} indexes - If only one index is provided and it is an
@@ -1053,15 +2405,15 @@ var cut = (function cutPrivateScope() {
    */
   cut.indexes = function cutIndexes(source, indexes) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
     if (arguments.length < 2) throw _error('No index defined', 'indexes');
 
-    source = is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : _sliceArr(source);
     indexes = arguments.length > 2 ? _sliceArr(arguments, 1) : indexes;
 
-    if ( !is.arr(indexes) ) {
-      if ( !is.num(indexes) ) throw _error.type('index', 'indexes');
+    if ( !_is.arr(indexes) ) {
+      if ( !_is.num(indexes) ) throw _error.type('index', 'indexes');
       return _cutIndex(source, indexes);
     }
 
@@ -1075,6 +2427,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -1083,18 +2436,19 @@ var cut = (function cutPrivateScope() {
    */
   cut.values = function cutValues(source, vals) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? _sliceArr(source) : source;
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
+    return _is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
   };
   // define shorthand
   cut.vals = cut.values;
 
   /**
    * Removes patterns from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {...*} patterns - If only one pattern is provided and it is an array
@@ -1104,11 +2458,11 @@ var cut = (function cutPrivateScope() {
    */
   cut.patterns = function cutPatterns(source, patterns) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'patterns');
+    if ( !_is.str(source) ) throw _error.type('source', 'patterns');
     if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
 
     patterns = arguments.length > 2 ? _sliceArr(arguments, 1) : patterns;
-    return is.arr(patterns)
+    return _is.arr(patterns)
       ? _cutPatterns(source, patterns)
       : _cutPattern(source, patterns);
   };
@@ -1124,8 +2478,8 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutProp(source, val) {
-    return is.arr(source)
-      ? is.num(val)
+    return _is.arr(source)
+      ? _is.num(val)
         ? _spliceKey(source, val)
         : _spliceVal(source, val)
       : is('!str|regex', val)
@@ -1140,7 +2494,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutProps(source, vals) {
-    return is.arr(source)
+    return _is.arr(source)
       ? is('nums', vals)
         ? _spliceKeys(source, vals)
         : _spliceVals(source, vals)
@@ -1196,7 +2550,7 @@ var cut = (function cutPrivateScope() {
 
     if (key >= len) return source;
 
-    if ( is.undefined(toKey) ) {
+    if ( _is.undefined(toKey) ) {
       if (key < 0) return source;
       source.splice(key, 1);
       return source;
@@ -1232,7 +2586,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutType(source, type) {
-    return is.arr(source)
+    return _is.arr(source)
       ? _spliceValByType(source, type)
       : _deleteValByType(source, type);
   }
@@ -1244,7 +2598,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutVal(source, val) {
-    return is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
+    return _is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
   }
 
   /**
@@ -1254,7 +2608,7 @@ var cut = (function cutPrivateScope() {
    * @return {!(Object|function|Array)}
    */
   function _cutVals(source, vals) {
-    return is.arr(source)
+    return _is.arr(source)
       ? _spliceVals(source, vals)
       : _deleteVals(source, vals);
   }
@@ -1266,9 +2620,9 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    if ( !is.regex(pattern) ) {
+    if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern, true);
+      pattern = _escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
     return source.replace(pattern, '');
@@ -1311,7 +2665,7 @@ var cut = (function cutPrivateScope() {
     /** @type {!RegExp} */
     var pattern;
 
-    match = is.undefined(match) ? is.regex(key) : match;
+    match = _is.undefined(match) ? _is.regex(key) : match;
 
     if (!match) {
       if ( _own(source, key) ) delete source[key];
@@ -1342,7 +2696,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    match = is.regex( keys[0] );
+    match = _is.regex( keys[0] );
     len = keys.length;
     i = -1;
     while (++i < len) {
@@ -1551,7 +2905,7 @@ var cut = (function cutPrivateScope() {
     /** @type {string} */
     var key;
 
-    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
     obj = filter.length > 2 ? copy(source) : source;
     switch (filter.length) {
       case 0:
@@ -1591,7 +2945,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    filter = is.undefined(thisArg) ? filter : _bind(filter, thisArg);
+    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
     arr = filter.length > 2 ? copy.arr(source) : source;
     i = arr.length;
     switch (filter.length) {
@@ -1899,16 +3253,17 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps, arrays, or cycles.
+   *
    * @public
    * @param {!(Object|function|Array|number|string)} source - Details per type:
    *   - object source: Iterates over all properties in random order.
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    *   - string source: Converted to an array source. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -1917,28 +3272,29 @@ var each = (function eachPrivateScope() {
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _eachCycle(source, iteratee, thisArg);
+    if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
 
   /**
    * A shortcut for iterating over object maps.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -1947,9 +3303,9 @@ var each = (function eachPrivateScope() {
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _eachObj(source, iteratee, thisArg);
   };
@@ -1958,13 +3314,14 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over array-like objects.
+   *
    * @public
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -1973,12 +3330,12 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
@@ -1987,6 +3344,7 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over a set number of cycles.
+   *
    * @public
    * @param {number} count
    * @param {function(number=)} iteratee
@@ -1994,9 +3352,9 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',    'cycle');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'cycle');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'cycle');
+    if ( !_is.num(count)          ) throw _error.type('count',    'cycle');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'cycle');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
   };
@@ -2020,7 +3378,7 @@ var each = (function eachPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: for (key in obj) _own(obj, key) && iteratee();              break;
       case 1: for (key in obj) _own(obj, key) && iteratee(obj[key]);      break;
@@ -2045,7 +3403,7 @@ var each = (function eachPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -2068,7 +3426,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) iteratee(i++);
@@ -2130,43 +3488,45 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an array, object, or string with specified values.
+   *
    * @public
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
    * @param {(!Array|string)=} keys - Only use with an object/function source.
    *   If provided it is converted to an array of keys to limit the object fill
    *   to. The chars in the following list can be used as the separator for keys
-   *   in a keys string (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   in a keys string (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*} val - The value to fill the array, object, or string with.
-   * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= source.length] Only for fill.array.
+   * @param {number=} start - [default= 0] Only for use with source arrays.
+   * @param {number=} end - [default= source.length] Only for use with source
+   *   arrays.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       val = keys;
       return _fillStr(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    if ( is.arr(source) ) {
+    if ( _is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
-      if ( !is('num=', start) ) throw _error.type('start');
-      if ( !is('num=', end)   ) throw _error.type('end');
+      if ( !_is.un.num(start) ) throw _error.type('start');
+      if ( !_is.un.num(end)   ) throw _error.type('end');
       return _fillArr(source, val, start, end);
     }
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
 
@@ -2176,23 +3536,24 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing object/function with specified keys and values.
+   *
    * @public
    * @param {!(Object|function)} obj
    * @param {(!Array|string)=} keys - If provided it is converted to an array of
    *   keys to limit the object fill to. The chars in the following list can be
    *   used as the separator for keys in a keys string (chars listed in order of
-   *   rank):  ", "  ","  "|"  " "
+   *   rank): ` ", "  ","  "|"  " " `
    * @param {*} val
    * @return {!(Object|function)}
    */
   fill.object = function fillObject(obj, keys, val) {
 
-    if ( !is._obj(obj) ) throw _error.type('obj', 'object');
+    if ( !_is._obj(obj) ) throw _error.type('obj', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys', 'object');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
 
@@ -2204,6 +3565,7 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing or new array with specified values.
+   *
    * @public
    * @param {!(Array|number)} arr - If number makes new array with arr length.
    * @param {*} val
@@ -2213,13 +3575,13 @@ var fill = (function fillPrivateScope() {
    */
   fill.array = function fillArray(arr, val, start, end) {
 
-    arr = is.num(arr) ? new Array(arr) : arr;
+    arr = _is.num(arr) ? new Array(arr) : arr;
 
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
-    if ( !is('num=', start) ) throw _error.type('start', 'array');
-    if ( !is('num=', end)   ) throw _error.type('end',   'array');
+    if ( !_is.arr(arr)      ) throw _error.type('arr',   'array');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'array');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'array');
 
     return _fillArr(arr, val, start, end);
   };
@@ -2228,14 +3590,15 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills a new string with specified values.
+   *
    * @public
    * @param {number} count
-   * @param {*} val - All val types are converted to string via String(val).
+   * @param {*} val - All val types are converted to string via `String(val)`.
    * @return {string}
    */
   fill.string = function fillString(count, val) {
 
-    if ( !is.num(count) ) throw _error.type('count', 'string');
+    if ( !_is.num(count) ) throw _error.type('count', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     return _fillStr(count, val);
@@ -2379,10 +3742,11 @@ var fuse = (function fusePrivateScope() {
   /**
    * Merges objects, concatenates arrays, appends properties, and combines
    *   strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types null is simply skipped. Remaining details per dest type:
+   *   array dest types `null` is skipped. Remaining details per dest type:
    *   - object: If only one val is provided and it is an array it is considered
    *     an array of vals. Object vals are merged with the dest. All other
    *     values are converted to strings and appended as new keys (if the key
@@ -2398,16 +3762,16 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-      return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+      return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest');
+    if ( !_is._obj(dest) ) throw _error.type('dest');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
-    if ( is.arr(dest) ) {
+    if ( _is.arr(dest) ) {
       if (arguments.length > 2) {
         vals = _sliceArr(arguments, 1);
         return _fuseArrs(dest, vals);
@@ -2416,11 +3780,12 @@ var fuse = (function fusePrivateScope() {
     }
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   }
 
   /**
    * Appends properties and combines strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -2435,28 +3800,29 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStr(dest, vals);
       vals = _sliceArr(arguments, 1);
       return _fuseStrs(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'value');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'value');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
-      return is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
+      return _is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
     }
 
     vals = _sliceArr(arguments, 1);
-    return is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
+    return _is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
   };
   // define shorthand
   fuse.val = fuse.value;
 
   /**
    * Appends properties and combines strings to the start of their destination.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -2471,24 +3837,24 @@ var fuse = (function fusePrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value.start');
 
-    if ( is.str(dest) ) {
+    if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStrTop(dest, vals);
       vals = _sliceArr(arguments, 1);
       return _fuseStrsTop(dest, vals);
     }
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'value.start');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'value.start');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
-      return is.arr(dest)
+      return _is.arr(dest)
         ? _fuseArrValTop(dest, vals)
         : _fuseObjValTop(dest, vals);
     }
 
     vals = _sliceArr(arguments, 1);
-    return is.arr(dest)
+    return _is.arr(dest)
       ? _fuseArrsValTop(dest, vals)
       : _fuseObjsValTop(dest, vals);
   };
@@ -2499,9 +3865,10 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties/keys to an object.
+   *
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null are skipped. All other vals
+   * @param {...*} vals - Any vals that are `null` are skipped. All other vals
    *   that are not objects are converted to a string and appended as new keys
    *   (if the key exists on the dest the key's value is replaced with
    *   undefined). If only one val is provided and it is an array then it is
@@ -2512,17 +3879,18 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.object = function fuseObject(dest, vals) {
 
-    if ( !is._obj(dest) ) throw _error.type('dest', 'object');
+    if ( !_is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   };
   // define shorthand
   fuse.obj = fuse.object;
 
   /**
    * Appends values to an array and concatenates arrays.
+   *
    * @public
    * @param {!Array} dest
    * @param {...*} vals - Details per val type:
@@ -2533,10 +3901,10 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.array = function fuseArray(dest, vals) {
 
-    if ( !is._arr(dest) ) throw _error.type('dest', 'array');
+    if ( !_is._arr(dest) ) throw _error.type('dest', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    dest = is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? _sliceArr(dest) : dest;
 
     if (arguments.length > 2) {
       vals = _sliceArr(arguments, 1);
@@ -2550,6 +3918,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends strings to a string.
+   *
    * @public
    * @param {string} dest
    * @param {...*} vals - All non-string vals are converted to strings.
@@ -2557,11 +3926,11 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.string = function fuseString(dest, vals) {
 
-    if ( !is.str(dest) ) throw _error.type('dest', 'string');
+    if ( !_is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
-    return is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+    return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
   };
   // define shorthand
   fuse.str = fuse.string;
@@ -2577,8 +3946,8 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObj(dest, val) {
-    if ( is._obj(val) ) return _merge(dest, val);
-    if ( !is.null(val) ) dest[val] = undefined;
+    if ( _is._obj(val) ) return _merge(dest, val);
+    if ( !_is.nil(val) ) dest[val] = undefined;
     return dest;
   }
 
@@ -2677,8 +4046,8 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArr(dest, val) {
-    if ( is.arr(val) ) return dest.concat(val);
-    if ( !is.null(val) ) dest.push(val);
+    if ( _is.arr(val) ) return dest.concat(val);
+    if ( !_is.nil(val) ) dest.push(val);
     return dest;
   }
 
@@ -2863,71 +4232,74 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets keys, indexes, values, or substrings from an object, array, or string.
-   *   Note that the use of the word, "match", within vitals.get refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   *
    * @public
    * @param {?(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
-   *     object source: array of own keys
-   *     array source:  array of indexes
-   *     string source: an error (i.e. a val is required for string sources)
+   *   - object source: array of own keys
+   *   - array source:  array of indexes
+   *   - string source: an error (i.e. a val is required for string sources)
    * @param {*=} val - For a RegExp val and object/string source this method
    *   will return the following values (per source type):
-   *     object source: an array of source values where the key matches the val
-   *     string source: an array of substrings that match the val
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
    *   Otherwise this method will return the following values (per source type):
-   *     object source: an array of source keys where the value === val
-   *     array source:  an array of source indexes where the value === val
-   *     string source: an array of starting indexes where the substring == val
+   *   - object: an array of source keys where the `value === val`
+   *   - array:  an array of source indexes where the `value === val`
+   *   - string: an array of starting indexes where the `substring == val`
    * @return {Array}
    */
   function get(source, val) {
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined');
-      return is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
+      return _is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
     return arguments.length < 2
-      ? is._arr(source)
+      ? _is._arr(source)
         ? _allIndexes(source)
         : _allKeys(source)
-      : is._arr(source)
+      : _is._arr(source)
         ? _byValIndexes(source, val)
-        : is.regex(val)
+        : _is.regex(val)
           ? _byKeyObjVals(source, val)
           : _byValKeys(source, val);
   }
 
   /**
-   * Gets an array of keys from an object. Note that the use of the word,
-   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of keys from an object.
+   *
    * @public
    * @param {!(Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
    * @param {*=} val - This method will return an array of source keys where the
-   *   key matches the val if the val is a RegExp. Otherwise this method will
-   *   return an array of source keys where the value == val.
+   *   key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *   the val if the val is a RegExp. Otherwise this method will return an
+   *   array of source keys where the `value == val`.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
 
     return arguments.length < 2
       ? _allKeys(source)
-      : is.regex(val)
+      : _is.regex(val)
         ? _byKeyKeys(source, val)
         : _byValKeys(source, val);
   };
 
   /**
-   * Gets an array of keys from an object that match a pattern.
-   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of keys from an object that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *   a pattern.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} pattern - If pattern is not a RegExp or string it is converted
@@ -2936,14 +4308,15 @@ var get = (function getPrivateScope() {
    */
   get.keys.byKey = function getKeysByKey(source, pattern) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byKey');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byKey');
     if (arguments.length < 2) throw _error('No pattern defined', 'keys.byKey');
 
     return _byKeyKeys(source, pattern);
   };
 
   /**
-   * Gets an array of keys from an object where the value === val.
+   * Gets an array of keys from an object where the `value === val`.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} val
@@ -2951,7 +4324,7 @@ var get = (function getPrivateScope() {
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
-    if ( !is._obj(source) ) throw _error.type('source', 'keys.byValue');
+    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byValue');
     if (arguments.length < 2) throw _error('No val defined', 'keys.byValue');
 
     return _byValKeys(source, val);
@@ -2960,28 +4333,29 @@ var get = (function getPrivateScope() {
   get.keys.byVal = get.keys.byValue;
 
   /**
-   * Gets an array of indexes from an array or string by value/pattern. Note
-   *   that the use of the word, "match", within vitals.get.indexes refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of indexes from an array or string by value/pattern.
+   *
    * @public
    * @param {!(Object|string)} source - If no val param is defined this method
    *   will return an array of all an array's indexes or throw an error if the
    *   source is a string.
-   * @param {*=} val - If source is an array this method will return an array of
-   *   indexes where the value === val. Otherwise if the source is a string the
-   *   val is converted to a string if it is not a RegExp or string and an array
-   *   of starting indexes that match the val are returned.
+   * @param {*=} val - This method returns the indexes by one of the following
+   *   (per source type):
+   *   - array:  Return an array of indexes where the `value === val`.
+   *   - string: A non-regex val is converted to a string and then an array of
+   *     starting indexes that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val are returned.
    * @return {!Array}
    */
   get.indexes = function getIndexes(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'indexes');
       return _strIndexes(source, val);
     }
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
 
     return arguments.length < 2
       ? _allIndexes(source)
@@ -2991,27 +4365,28 @@ var get = (function getPrivateScope() {
   get.ii = get.indexes;
 
   /**
-   * Gets an array of values/substrings from an object or string. Note that the
-   *   use of the word, "match", within vitals.get.values refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of values/substrings from an object or string.
+   *
    * @public
    * @param {!(Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the
    *   source is a string.
    * @param {*=} val - If the val is not a RegExp or string it is converted to a
    *   string. This method will return the following values (per source type):
-   *     object source: an array of source values where the key matches the val
-   *     string source: an array of substrings that match the val
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
    * @return {!Array}
    */
   get.values = function getValues(source, val) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined', 'values');
       return _strVals(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'values');
+    if ( !_is._obj(source) ) throw _error.type('source', 'values');
 
     return arguments.length < 2
       ? _allObjVals(source)
@@ -3054,7 +4429,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) _own(obj, key) && _match(key, pattern) && arr.push(key);
     return arr;
@@ -3108,7 +4483,7 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
+    pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) {
       _own(obj, key) && _match(key, pattern) && arr.push( obj[key] );
@@ -3175,7 +4550,7 @@ var get = (function getPrivateScope() {
    */
   function _strIndexes(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrKeys(str, pattern)
         : _byStrStrKeys(str, pattern)
       : [];
@@ -3189,7 +4564,7 @@ var get = (function getPrivateScope() {
    */
   function _strVals(str, pattern) {
     return _match(str, pattern)
-      ? is.regex(pattern)
+      ? _is.regex(pattern)
         ? _byRegexStrVals(str, pattern)
         : _byStrStrVals(str, pattern)
       : [];
@@ -3323,33 +4698,37 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty (that accepts null),
-   *   String.prototype.includes, RegExp.prototype.test, and
-   *   Array.prototype.includes.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   (that accepts `null`), [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes),
+   *   [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test),
+   *   and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+   *
    * @public
    * @param {?(Object|function|string|Array)} source
-   * @param {*} key - If source is a string the following two statements apply:
-   *   For a RegExp key the source is tested for the RegExp pattern. Otherwise
-   *   the source is searched for a substring of the string-converted key.
-   *   If source is an array or arguments object the key is searched for in the
-   *   object's indexed values.
+   * @param {*} key - Details (per source type):
+   *   - string: For a RegExp key the source is tested for the RegExp pattern.
+   *     Otherwise the source is searched for a substring of the
+   *     string-converted key.
+   *   - array/arguments: The key is searched for in the source's indexed values.
    * @return {boolean}
    */
   function has(source, key) {
 
     if (arguments.length < 2) throw _error('No key defined');
     
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( is.str(source) ) return _match(source, key);
+    if ( _is.str(source) ) return _match(source, key);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _inArr(source, key) : _own(source, key);
+    return _is._arr(source) ? _inArr(source, key) : _own(source, key);
   }
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty that accepts null.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -3359,15 +4738,16 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
     return _own(source, key);
   };
 
   /**
    * A shortcut that checks for a value in an object.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} val
@@ -3377,17 +4757,19 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
 
   /**
-   * A shortcut for String.prototype.includes and RegExp.prototype.test.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *   and [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *
    * @public
    * @param {string} source
    * @param {*} pattern
@@ -3395,14 +4777,15 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _match(source, pattern);
   };
 
   /**
-   * A shortcut for String.prototype.includes.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes).
+   *
    * @public
    * @param {string} source
    * @param {*} str
@@ -3410,7 +4793,7 @@ var has = (function hasPrivateScope() {
    */
   has.substring = function hasSubstring(source, str) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'substring');
+    if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No str defined', 'substring');
 
     return _inStr(source, str);
@@ -3419,7 +4802,9 @@ var has = (function hasPrivateScope() {
   has.substr = has.substring;
 
   /**
-   * A shortcut for Object.prototype.propertyIsEnumerable that accepts null.
+   * A shortcut for [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -3429,9 +4814,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'enumerable');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'enumerable');
+    if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
     return _ownEnum(source, key);
   };
@@ -3474,48 +4859,49 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object/array/string by invoking an action over
    *   the values of an existing object/array/string.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {*} iteratee - Details per source type:
-   *   object source: The iteratee must be a function with the optional params
+   *   - object: The iteratee must be a function with the optional params -
    *     value, key, source. Note this method lazily clones the source based on
-   *     the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   array source: The iteratee must be a function with the optional params
+   *   - array: The iteratee must be a function with the optional params -
    *     value, index, source. Note this method lazily slices the source based
-   *     on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   string source: The iteratee must be a pattern to search for within the
+   *   - string: The iteratee must be a pattern to search for within the
    *     source. If the pattern is not a string or RegExp it will be converted
    *     to a string.
    * @param {*=} replacement - Only use (and required) with string sources. If
    *   not a string or function the replacement is converted to a string. For
    *   details about using replacement functions see the
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the iteratee or
    *   replacement function is bound to its value.
    * @return {!(Object|function|Array|string)}
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !is._obj(source)     ) throw _error.type('source');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is._obj(source)        ) throw _error.type('source');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
@@ -3523,12 +4909,13 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object with the same keys and new values by
    *   invoking an action over the values of an existing object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3538,9 +4925,9 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
@@ -3550,11 +4937,14 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new array by invoking an action over the values of
    *   an existing array-like object.
+   *
    * @public
-   * @param {!(Object|function)} source
+   * @param {(!Object|function|string)} source - If source is a string it is
+   *   converted to an array using this list of chars as the separator (chars
+   *   listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3564,10 +4954,12 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( _is.str(source) ) source = _splitKeys(source);
+
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -3575,13 +4967,15 @@ var remap = (function remapPrivateScope() {
   remap.arr = remap.array;
 
   /**
-   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}.
+   * A shortcut for [String.prototype.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+   *   that defaults to global replacements instead of only the first.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If not a RegExp the pattern is converted to a string.
    * @param {*} replacement - If not a string or function the replacement is
    *   converted to a string. For details about using replacement functions see
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the replacement function
    *   is bound to its value.
    * @return {string}
@@ -3590,8 +4984,8 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !is.str(source)      ) throw _error.type('source',  'string');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
+    if ( !_is.str(source)         ) throw _error.type('source',  'string');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
@@ -3618,7 +5012,7 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
     source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in source) {
@@ -3660,7 +5054,7 @@ var remap = (function remapPrivateScope() {
     var i;
 
     source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -3685,9 +5079,14 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
-    replacement = is.func(replacement)
-      ? is.undefined(thisArg)
+    if ( !_is.regex(pattern) ) {
+      pattern = String(pattern);
+      pattern = _escape(pattern);
+      pattern = new RegExp(pattern, 'g');
+    }
+
+    replacement = _is.func(replacement)
+      ? _is.undefined(thisArg)
         ? replacement
         : _bindR(replacement, thisArg)
       : String(replacement);
@@ -3779,6 +5178,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a result by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -3787,9 +5187,9 @@ var roll = (function rollPrivateScope() {
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    * @param {function(*=, *=, (string|number)=, !(Object|function)=)} iteratee -
-   *   It has the optional params - previousValue, currentValue, key/index,
+   *   It has the optional params - previousValue, currentValue, key/index, and
    *   source. Note this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's fourth param so you can safely assume all references to
    *   the source are its original values).
@@ -3807,24 +5207,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined');
       return _rollCycle(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArr(base, source, iteratee, thisArg)
         : _rollArr(source, iteratee, thisArg)
@@ -3836,6 +5236,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a sum by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -3845,7 +5246,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3863,24 +5264,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'up');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'up');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'up');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'up');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'up');
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'up');
+    if ( !_is._obj(source) ) throw _error.type('source', 'up');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrUp(base, source, iteratee, thisArg)
         : _rollArrUp(source, iteratee, thisArg)
@@ -3892,6 +5293,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a difference by iterating over object maps, arrays,
    *   or cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -3901,7 +5303,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3919,24 +5321,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'down');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'down');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'down');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'down');
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'down');
+    if ( !_is._obj(source) ) throw _error.type('source', 'down');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrDown(base, source, iteratee, thisArg)
         : _rollArrDown(source, iteratee, thisArg)
@@ -3966,7 +5368,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -4030,7 +5432,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -4073,7 +5475,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4136,7 +5538,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4178,7 +5580,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4241,7 +5643,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
@@ -4287,7 +5689,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4317,7 +5719,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4347,7 +5749,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4376,7 +5778,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4405,7 +5807,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -4434,7 +5836,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4463,7 +5865,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length > 1) {
       i = 0;
       while(count--) result = iteratee(result, i++);
@@ -4487,7 +5889,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result += iteratee(i++);
@@ -4511,7 +5913,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result -= iteratee(i++);
@@ -4561,6 +5963,66 @@ var roll = (function rollPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// SAME
+////////////////////////////////////////////////////////////////////////////////
+
+var same = (function samePrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - same
+  // - same.loose (same.ish)
+  //////////////////////////////////////////////////////////
+
+  /**
+   * A functional representation of strict equality.
+   *
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  function same(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val');
+
+    return val1 === val2;
+  }
+
+  /**
+   * A functional representation of loose equality.
+   *
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   */
+  same.loose = function sameLoose(val1, val2) {
+
+    if (arguments.length < 2) throw _error('Missing a val', 'loose');
+
+    return val1 == val2;
+  };
+  // define shorthand
+  same.ish = same.loose;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('same');
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR SAME
+  return same;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // SLICE
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -4574,8 +6036,9 @@ var slice = (function slicePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end) and
-   *   String.prototype.slice(start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   *   and [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {?(Object|Array|function|string)} source
    * @param {number=} start - [default= 0]
@@ -4584,21 +6047,22 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    if ( !is('num=', start) ) throw _error.type('start');
-    if ( !is('num=', end)   ) throw _error.type('end');
+    if ( !_is.un.num(start) ) throw _error.type('start');
+    if ( !_is.un.num(end)   ) throw _error.type('end');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return _sliceStr(source, start, end);
 
-    if ( !is._obj(source)       ) throw _error.type('source');
-    if ( !is.num(source.length) ) throw _error.type('source.length');
+    if ( !_is._obj(source)       ) throw _error.type('source');
+    if ( !_is.num(source.length) ) throw _error.type('source.length');
 
     return _sliceArr(source, start, end);
   }
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
+   *
    * @public
    * @param {?(Object|Array|function)} source
    * @param {number=} start - [default= 0]
@@ -4607,10 +6071,10 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is('num=', start)     ) throw _error.type('start',         'array');
-    if ( !is('num=', end)       ) throw _error.type('end',           'array');
+    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
+    if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
+    if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
 
     return _sliceArr(source, start, end);
   };
@@ -4618,7 +6082,8 @@ var slice = (function slicePrivateScope() {
   slice.arr = slice.array;
 
   /**
-   * A shortcut for String.prototype.slice(start, end).
+   * A shortcut for [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {string} str
    * @param {number=} start - [default= 0]
@@ -4627,9 +6092,9 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !is.str(str)       ) throw _error.type('str',   'string');
-    if ( !is('num=', start) ) throw _error.type('start', 'string');
-    if ( !is('num=', end)   ) throw _error.type('end',   'string');
+    if ( !_is.str(str)      ) throw _error.type('str',   'string');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'string');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
 
     return _sliceStr(str, start, end);
   };
@@ -4653,6 +6118,172 @@ var slice = (function slicePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// TO
+////////////////////////////////////////////////////////////////////////////////
+
+var to = (function toPrivateScope() {
+
+  //////////////////////////////////////////////////////////
+  // PUBLIC METHODS
+  // - to.string    (to.str)
+  // - to.number    (to.num)
+  // - to.boolean   (to.bool)
+  // - to.array     (to.arr)
+  // - to.regexp    (to.re|to.regex)
+  // - to.upperCase (to.upper)
+  // - to.lowerCase (to.lower)
+  //////////////////////////////////////////////////////////
+
+  /** @type {!Object} */
+  var to = {};
+
+  /**
+   * Converts a value to a string.
+   *
+   * @public
+   * @param {*} val
+   * @param {string=} joiner - Only valid if an array val is used.
+   * @return {string}
+   */
+  to.string = function toString(val, joiner) {
+
+    if (!arguments.length) throw _error('Missing a val', 'string');
+
+    if ( !_is.un.str(joiner) ) throw _error.type('joiner', 'string');
+
+    return _is.arr(val) && _is.str(joiner) ? val.join(joiner) : String(val);
+  };
+  // define shorthand
+  to.str = to.string;
+
+  /**
+   * Converts a value to a number.
+   *
+   * @public
+   * @param {*} val
+   * @return {number}
+   */
+  to.number = function toNumber(val) {
+
+    if (!arguments.length) throw _error('Missing a val', 'number');
+
+    return Number(val);
+  };
+  // define shorthand
+  to.num = to.number;
+
+  /**
+   * Converts a value to a boolean.
+   *
+   * @public
+   * @param {*} val
+   * @return {boolean}
+   */
+  to.boolean = function toBoolean(val) {
+
+    if (!arguments.length) throw _error('Missing a val', 'boolean');
+
+    return !!val;
+  };
+  // define shorthand
+  to.bool = to.boolean;
+
+  /**
+   * Converts a value to an array.
+   *
+   * @public
+   * @param {(string|number)} val
+   * @param {*=} separator - Only valid if a string val is used.
+   * @return {!Array}
+   */
+  to.array = function toArray(val, separator) {
+
+    if (!arguments.length) throw _error('Missing a val', 'array');
+
+    if ( _is.num(val) ) return new Array(val);
+
+    if ( !_is.str(val) ) throw _error.type('val', 'array');
+
+    if ( _is.undefined(separator) ) return val.split();
+
+    separator = _is.regex(separator) ? separator : String(separator);
+    return val.split(separator);
+  };
+  // define shorthand
+  to.arr = to.array;
+
+  /**
+   * Converts a string to a regex.
+   *
+   * @public
+   * @param {string} source
+   * @param {string=} flags
+   * @return {!RegExp}
+   */
+  to.regexp = function toRegExp(source, flags) {
+
+    if (!arguments.length) throw _error('Missing a source', 'regexp');
+
+    if ( !_is.str(source)   ) throw _error.type('source', 'regexp');
+    if ( !_is.un.str(flags) ) throw _error.type('flags',  'regexp');
+
+    return flags ? new RegExp(source, flags) : new RegExp(source);
+  };
+  // define shorthand
+  to.regex = to.regexp;
+  to.re = to.regexp;
+
+  /**
+   * Converts a string to upper case.
+   *
+   * @public
+   * @param {string} str
+   * @return {string}
+   */
+  to.upperCase = function toUpperCase(str) {
+
+    if (!arguments.length) throw _error('Missing a str', 'upperCase');
+    if ( !_is.str(str) ) throw _error.type('source', 'upperCase');
+
+    return str.toUpperCase();
+  };
+  // define shorthand
+  to.upper = to.upperCase;
+
+  /**
+   * Converts a string to lower case.
+   *
+   * @public
+   * @param {string} str
+   * @return {string}
+   */
+  to.lowerCase = function toLowerCase(str) {
+
+    if (!arguments.length) throw _error('Missing a str', 'lowerCase');
+    if ( !_is.str(str) ) throw _error.type('source', 'lowerCase');
+
+    return str.toLowerCase();
+  };
+  // define shorthand
+  to.lower = to.lowerCase;
+
+  //////////////////////////////////////////////////////////
+  // PRIVATE METHODS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /**
+   * @private
+   * @type {!ErrorAid}
+   */
+  var _error = newErrorAid('to');
+
+  //////////////////////////////////////////////////////////
+  // END OF PRIVATE SCOPE FOR TO
+  return to;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
 // UNTIL
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -4669,6 +6300,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps, arrays, or cycles until an end
    *   value is returned.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -4679,10 +6311,10 @@ var until = (function untilPrivateScope() {
    *   - number source: Ends after the count of cycles equals the source.
    *   - string source: Converted to an array source and ends after all indexes
    *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank):  ", "  ","  "|"  " "
+   *     order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -4696,26 +6328,26 @@ var until = (function untilPrivateScope() {
 
     if (arguments.length === 2) {
       iteratee = source;
-      if ( !is.func(iteratee) ) throw _error.type('iteratee');
+      if ( !_is.func(iteratee) ) throw _error.type('iteratee');
       return _untilEnd(end, iteratee);
     }
 
-    if ( arguments.length === 3 && is.func(source) && is('?obj', iteratee) ) {
+    if ( arguments.length === 3 && _is.func(source) && _is.nil.obj(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       return _untilEnd(end, iteratee, thisArg);
     }
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+    if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
@@ -4723,6 +6355,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps until an end value is returned or
    *   all properties are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -4730,7 +6363,7 @@ var until = (function untilPrivateScope() {
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -4741,9 +6374,9 @@ var until = (function untilPrivateScope() {
    */
   until.object = function untilObject(end, obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(obj)           ) throw _error.type('obj',      'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _untilObj(end, obj, iteratee, thisArg);
   };
@@ -4753,16 +6386,17 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over array-like objects until an end value is
    *   returned or all indexed values are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
-   *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
+   *   the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -4773,12 +6407,12 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _untilArr(end, source, iteratee, thisArg);
   };
@@ -4788,6 +6422,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for invoking an action until an end value is returned or the
    *   number of cycles is reached.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -4800,9 +6435,9 @@ var until = (function untilPrivateScope() {
    */
   until.cycle = function untilCycle(end, count, action, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
-    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
+    if ( !_is.num(count)          ) throw _error.type('count',   'cycle');
+    if ( !_is.func(action)        ) throw _error.type('action',  'cycle');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'cycle');
 
     return _untilCycle(end, count, action, thisArg);
   };
@@ -4825,7 +6460,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(action(i++) !== end) {}
@@ -4850,7 +6485,7 @@ var until = (function untilPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -4899,7 +6534,7 @@ var until = (function untilPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -4939,7 +6574,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(count--) if (action(i++) === end) return true;
@@ -4999,8 +6634,11 @@ module.exports = {
   fuse:   fuse,
   get:    get,
   has:    has,
+  is:     is,
   remap:  remap,
   roll:   roll,
+  same:   same,
   slice:  slice,
+  to:     to,
   until:  until
 };

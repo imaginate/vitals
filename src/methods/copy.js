@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - COPY
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,11 +16,11 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _inStr = require('./_helpers/inStr.js');
-var _merge = require('./_helpers/merge.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _inStr = require('./helpers/in-str.js');
+var _merge = require('./helpers/merge.js');
+var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,6 +44,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Returns a copy of the given value.
+   *
    * @public
    * @param {*} val
    * @param {boolean=} deep
@@ -53,21 +52,22 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
-    return !is._obj(val)
+    return !_is._obj(val)
       ? val
-      : is.func(val)
+      : _is.func(val)
         ? _copyFunc(val, deep)
-        : is._arr(val)
+        : _is._arr(val)
           ? _copyArr(val, deep)
-          : is.regex(val)
+          : _is.regex(val)
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
 
   /**
    * Creates a new object with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -75,8 +75,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.object = function copyObject(obj, deep) {
 
-    if ( !is.obj(obj)       ) throw _error.type('obj',  'object');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'object');
+    if ( !_is.obj(obj)      ) throw _error.type('obj',  'object');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
 
     return _copyObj(obj, deep);
   };
@@ -85,6 +85,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new array with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -92,9 +93,9 @@ var copy = (function copyPrivateScope() {
    */
   copy.array = function copyArray(obj, deep) {
 
-    if ( !is.obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !is.num(obj.length) ) throw _error.type('obj.length', 'array');
-    if ( !is('bool=', deep)  ) throw _error.type('deep',       'array');
+    if ( !_is.obj(obj)        ) throw _error.type('obj',        'array');
+    if ( !_is.num(obj.length) ) throw _error.type('obj.length', 'array');
+    if ( !_is.un.bool(deep)   ) throw _error.type('deep',       'array');
 
     return _copyArr(obj, deep);
   };
@@ -104,6 +105,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new RegExp from a given RegExp.
+   *
    * @public
    * @param {!RegExp} regex
    * @param {boolean=} forceGlobal
@@ -111,8 +113,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
-    if ( !is.regex(regex)          ) throw _error.type('regex',       'regexp');
-    if ( !is('bool=', forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
+    if ( !_is.regex(regex)         ) throw _error.type('regex',       'regexp');
+    if ( !_is.un.bool(forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
@@ -122,8 +124,9 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in browser environments for
+   *   copy.func instead of copy.function in ES3 browser environments for
    *   compatibility.
+   *
    * @public
    * @param {function} func
    * @param {boolean=} deep
@@ -131,8 +134,8 @@ var copy = (function copyPrivateScope() {
    */
   copy.func = function copyFunction(func, deep) {
 
-    if ( !is.func(func)     ) throw _error.type('func', 'function');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'function');
+    if ( !_is.func(func)    ) throw _error.type('func', 'function');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'function');
 
     return _copyFunc(func, deep);
   };
@@ -259,7 +262,7 @@ var copy = (function copyPrivateScope() {
       }
     }
 
-    if ( is.undefined(forceGlobal) ) return flags;
+    if ( _is.undefined(forceGlobal) ) return flags;
 
     return _inStr(flags, 'g')
       ? forceGlobal

@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - UNTIL
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.until]{@link https://github.com/imaginate/vitals/blob/master/src/methods/until.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.until]{@link https://github.com/imaginate/vitals/wiki/vitals.until}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,11 +16,11 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _splitKeys = require('./_helpers/splitKeys.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
+var _own = require('./helpers/own.js');
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -42,6 +40,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps, arrays, or cycles until an end
    *   value is returned.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -52,10 +51,10 @@ var until = (function untilPrivateScope() {
    *   - number source: Ends after the count of cycles equals the source.
    *   - string source: Converted to an array source and ends after all indexes
    *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank):  ", "  ","  "|"  " "
+   *     order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -69,26 +68,26 @@ var until = (function untilPrivateScope() {
 
     if (arguments.length === 2) {
       iteratee = source;
-      if ( !is.func(iteratee) ) throw _error.type('iteratee');
+      if ( !_is.func(iteratee) ) throw _error.type('iteratee');
       return _untilEnd(end, iteratee);
     }
 
-    if ( arguments.length === 3 && is.func(source) && is('?obj', iteratee) ) {
+    if ( arguments.length === 3 && _is.func(source) && _is.nil.obj(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       return _untilEnd(end, iteratee, thisArg);
     }
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+    if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
@@ -96,6 +95,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps until an end value is returned or
    *   all properties are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -103,7 +103,7 @@ var until = (function untilPrivateScope() {
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -114,9 +114,9 @@ var until = (function untilPrivateScope() {
    */
   until.object = function untilObject(end, obj, iteratee, thisArg) {
 
-    if ( !is._obj(obj)        ) throw _error.type('obj',      'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(obj)           ) throw _error.type('obj',      'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _untilObj(end, obj, iteratee, thisArg);
   };
@@ -126,16 +126,17 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over array-like objects until an end value is
    *   returned or all indexed values are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
-   *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
+   *   the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -146,12 +147,12 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = _splitKeys(source);
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _untilArr(end, source, iteratee, thisArg);
   };
@@ -161,6 +162,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for invoking an action until an end value is returned or the
    *   number of cycles is reached.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -173,9 +175,9 @@ var until = (function untilPrivateScope() {
    */
   until.cycle = function untilCycle(end, count, action, thisArg) {
 
-    if ( !is.num(count)       ) throw _error.type('count',   'cycle');
-    if ( !is.func(action)     ) throw _error.type('action',  'cycle');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'cycle');
+    if ( !_is.num(count)          ) throw _error.type('count',   'cycle');
+    if ( !_is.func(action)        ) throw _error.type('action',  'cycle');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'cycle');
 
     return _untilCycle(end, count, action, thisArg);
   };
@@ -198,7 +200,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(action(i++) !== end) {}
@@ -223,7 +225,7 @@ var until = (function untilPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -272,7 +274,7 @@ var until = (function untilPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -312,7 +314,7 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = is.undefined(thisArg) ? action : _bind(action, thisArg);
+    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
     if (action.length) {
       i = 0;
       while(count--) if (action(i++) === end) return true;

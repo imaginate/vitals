@@ -1,17 +1,14 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS JS - NODE VERSION - VITALS SETUP
+ * VITALS - CONSTRUCTOR
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 2.3.8
+ * @version 3.0.0-beta
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -20,72 +17,81 @@
 
 'use strict';
 
-/** @type {function} */
-var _sliceArr = requireHelper('sliceArr.js');
-/** @type {function} */
-var _inStr = requireHelper('inStr.js');
-/** @type {function} */
-var _merge = requireHelper('merge.js');
-/** @type {function} */
-var _own = requireHelper('own.js');
-/** @type {function} */
-var is = require('node-are').is;
+var _merge = require('./src/methods/helpers/merge.js');
+var _own = require('./src/methods/helpers/own.js');
+var _is = require('./src/methods/helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// DEFINE VITALS SETUP
-////////////////////////////////////////////////////////////////////////////////
+var VERSION = '3.0.0-beta';
 
 /**
  * @public
- * @param {number=} makeGlobal - [default= 0] options:
- *   0= nothing is appended to the global
- *   1= the vitals object is appended to the global
- *   2= each vitals method is appended to the global
  * @param {(!Array|...string)=} methods - [default= "all"] The vitals methods to
  *   include. Methods may be included by section or individually.
- * @return {!(Object|function)} If only one method is requested that method is
+ * @return {(!Object|function)} If only one method is requested that method is
  *   returned. Otherwise an object with all the requested vitals methods is
  *   returned.
  */
-module.exports = function setupVitals(makeGlobal, methods) {
+exports = module.exports = function newVitals(methods) {
 
-  if ( is.num(makeGlobal) ) {
-    if (makeGlobal < 0 || makeGlobal > 2) {
-      throw new RangeError('Invalid makeGlobal param. Valid options: 0, 1, 2');
-    }
-    switch (arguments.length) {
-      case 1:  methods = DEFAULT_METHODS;
-      case 2:  break;
-      default: methods = _sliceArr(arguments, 1);
-    }
-  }
-  else {
-    switch (arguments.length) {
-      case 0:  methods = DEFAULT_METHODS; break;
-      case 1:  methods = makeGlobal;      break;
-      default: methods = _sliceArr(arguments);
-    }
-    makeGlobal = 0;
+  /** @type {(!Object|function)} */
+  var vitals;
+
+  switch (arguments.length) {
+    case 0: methods = 'all';
+    case 1: break;
+    default: methods = arguments;
   }
 
-  methods = is.arr(methods) ? methods : [ methods ];
-  return methods.length > 1
-    ? setupMethods(makeGlobal, methods)
-    : setupMethod(makeGlobal, methods[0]);
+  if ( _is.arr(methods) ) {
+    switch (methods.length) {
+      case 0: methods = 'all'; break;
+      case 1: methods = methods[0];
+    }
+  }
+
+  vitals = _is.str(methods) ? setupMethod(methods) : setupMethods(methods);
+  vitals.version = VERSION;
+  vitals.mkGlobal = newMakeGlobal(vitals, methods);
+  vitals.construct = newVitals;
+  return vitals;
 };
 
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - CONST REFS
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @public
+ * @type {string}
+ */
+exports.version = VERSION;
 
 /**
  * @private
- * @type {!Array}
- * @const
+ * @param {(!Object|function)} vitals
+ * @param {(?string|Object)} method
+ * @return {function}
  */
-var DEFAULT_METHODS = [ 'all' ];
+function newMakeGlobal(vitals, method) {
+
+  if ( !_is.func(vitals) ) method = null;
+
+  /**
+   * @public
+   * Globally appends the vitals instance and each of its methods.
+   * @type {function}
+   */
+  return function makeGlobal() {
+
+    /** @type {string} */
+    var key;
+
+    global.vitals = vitals;
+
+    if (method) global[method] = vitals;
+    else {
+      for (key in vitals) {
+        if ( _own(vitals, key) && isMethod(key) ) global[key] = vitals[key];
+      }
+    }
+  };
+}
 
 /**
  * @private
@@ -116,66 +122,57 @@ var METHODS = {
   'fuse':   true,
   'get':    true,
   'has':    true,
+  'is':     true,
   'remap':  true,
   'roll':   true,
   'run':    true,
+  'same':   true,
   'seal':   true,
   'slice':  true,
+  'to':     true,
   'until':  true
 };
 
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - SETUP
-////////////////////////////////////////////////////////////////////////////////
-
 /**
  * @private
- * @param {number} makeGlobal
  * @param {string} method
- * @return {!(Object|function)}
+ * @return {(!Object|function)}
  */
-function setupMethod(makeGlobal, method) {
+function setupMethod(method) {
 
   /** @type {function} */
   var vitals;
 
-  if ( !is.str(method) ) {
-    throw new TypeError('Invalid type for the method. Should be a string.');
-  }
+  if ( isSection(method) ) return requireSection(method);
 
-  if ( isSection(method) ) return setupSection(makeGlobal, method);
-
-  if ( !isMethod(method) ) {
-    throw new RangeError(
-      'The method, "'+ method +'", is not a valid vitals section or method.'
-    );
-  }
+  if ( !isMethod(method) ) throw new RangeError( errMsg(method) );
 
   vitals = requireMethod(method);
   vitals[method] = vitals;
-  setupGlobal(makeGlobal, vitals, method);
   return vitals;
 }
 
 /**
  * @private
- * @param {number} makeGlobal
- * @param {!Array} methods
+ * @param {(!Array|Arguments)} methods
  * @return {!Object}
  */
-function setupMethods(makeGlobal, methods) {
+function setupMethods(methods) {
 
+  /** @type {!Object} */
+  var section;
   /** @type {!Object} */
   var vitals;
   /** @type {string} */
   var method;
-  /** @type {boolean} */
-  var hasFs;
   /** @type {number} */
   var len;
+  /** @type {!Object} */
+  var fs;
   /** @type {number} */
   var i;
+
+  if ( !_is._arr(methods) ) throw new TypeError( errMsg(methods) );
 
   vitals = {};
   len = methods.length;
@@ -183,87 +180,17 @@ function setupMethods(makeGlobal, methods) {
   while (++i < len) {
     method = methods[i];
 
-    if ( !is.str(method) ) {
-      throw new TypeError('Invalid type for a method. Should be a string.');
-    }
-
-    if ( SECTIONS.fs.test(method) ) {
-      hasFs = true;
-      continue;
-    }
+    if ( !_is.str(method) ) throw new TypeError( errMsg(method, i) );
 
     if ( isSection(method) ) {
-      vitals = _merge(vitals, requireSection(method));
-      continue;
+      section = requireSection(method);
+      if ( isFs(method) ) fs = section;
+      else vitals = _merge(vitals, section);
     }
-
-    if ( !isMethod(method) ) {
-      throw new RangeError(
-        'The method, "'+ method +'", is not a valid vitals section or method.'
-      );
-    }
-
-    vitals[method] = requireMethod(method);
+    else if ( !isMethod(method) ) throw new RangeError( errMsg(method, i) );
+    else vitals[method] = requireMethod(method);
   }
-
-  vitals = hasFs ? appendFs(vitals) : vitals;
-  setupGlobal(makeGlobal, vitals);
-  return vitals;
-}
-
-/**
- * @private
- * @param {number} makeGlobal
- * @param {string} section
- * @return {!Object}
- */
-function setupSection(makeGlobal, section) {
-
-  /** @type {!Object} */
-  var vitals;
-
-  vitals = requireSection(section);
-  setupGlobal(makeGlobal, vitals);
-  return vitals;
-}
-
-/**
- * @private
- * @param {number} makeGlobal
- * @param {!(Object|function)} vitals
- * @param {string=} key
- */
-function setupGlobal(makeGlobal, vitals, key) {
-
-  if (!makeGlobal) return;
-
-  global.vitals = vitals;
-
-  if (key) {
-    global[key] = vitals;
-  }
-
-  if (makeGlobal === 2) {
-    for (key in vitals) {
-      if ( _own(vitals, key) ) {
-        global[key] = vitals[key];
-      }
-    }
-  }
-}
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - REQUIRE
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} method
- * @return {function}
- */
-function requireHelper(method) {
-  return require('./src/methods/_helpers/' + method);
+  return appendFs(vitals, fs);
 }
 
 /**
@@ -294,36 +221,28 @@ function requireSection(section) {
   }
 }
 
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - APPEND
-////////////////////////////////////////////////////////////////////////////////
-
 /**
  * @private
  * @param {!Object} vitals
+ * @param {!Object=} fs
  * @return {!Object}
  */
-function appendFs(vitals) {
+function appendFs(vitals, fs) {
 
-  /** @type {!Object} */
-  var fs;
   /** @type {string} */
   var key;
 
-  fs = requireSection('fs');
+  if (!fs) return vitals;
+
   for (key in fs) {
     if ( _own(fs, key) ) {
-      vitals[key] = _merge(vitals[key] || {}, fs[key]);
+      vitals[key] = _own(vitals, key)
+        ? _merge(vitals[key], fs[key])
+        : fs[key];
     }
   }
   return vitals;
 }
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS - TESTS
-////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
@@ -350,4 +269,39 @@ function isSection(section) {
     if ( _own(SECTIONS, key) && SECTIONS[key].test(section) ) return true;
   }
   return false;
+}
+
+/**
+ * @private
+ * @param {string} section
+ * @return {boolean}
+ */
+function isFs(section) {
+  return SECTIONS.fs.test(section);
+}
+
+/**
+ * @private
+ * @param {*} method
+ * @param {number=} i
+ * @return {string}
+ */
+function errMsg(method, i) {
+
+  /** @type {string} */
+  var msg;
+
+  msg = 'invalid method - ';
+
+  if ( _is.str(method) ) {
+    msg += 'must be vitals section or method - ';
+    msg += 'method= ' + method;
+  }
+  else {
+    msg += 'must be a string - ';
+    msg += 'typeof= ' + typeof method;
+  }
+  return _is.num(i)
+    ? msg + ' index= ' + i
+    : msg;
 }

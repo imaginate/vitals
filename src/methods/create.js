@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - CREATE
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.create]{@link https://github.com/imaginate/vitals/blob/master/src/methods/create.js}
+ * @section strict
+ * @version 3.0.0-beta
+ * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/vitals.create}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,10 +16,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _sliceArr = require('./_helpers/sliceArr.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _sliceArr = require('./helpers/slice-arr.js');
 var amend = require('./amend.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,11 +35,13 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -56,7 +56,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);
@@ -68,11 +68,13 @@ var create = (function createPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -87,7 +89,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !is('?obj', proto) ) throw _error.type('proto', 'object');
+    if ( !_is.nil.obj(proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
       args = _sliceArr(arguments);

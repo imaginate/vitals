@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - BASE METHOD - ROLL
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.roll]{@link https://github.com/imaginate/vitals/blob/master/src/methods/roll.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/vitals.roll}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,10 +16,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _own = require('./helpers/own.js');
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +38,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a result by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -48,9 +47,9 @@ var roll = (function rollPrivateScope() {
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    * @param {function(*=, *=, (string|number)=, !(Object|function)=)} iteratee -
-   *   It has the optional params - previousValue, currentValue, key/index,
+   *   It has the optional params - previousValue, currentValue, key/index, and
    *   source. Note this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's fourth param so you can safely assume all references to
    *   the source are its original values).
@@ -68,24 +67,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined');
       return _rollCycle(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArr(base, source, iteratee, thisArg)
         : _rollArr(source, iteratee, thisArg)
@@ -97,6 +96,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a sum by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -106,7 +106,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -124,24 +124,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'up');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'up');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'up');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'up');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'up');
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'up');
+    if ( !_is._obj(source) ) throw _error.type('source', 'up');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrUp(base, source, iteratee, thisArg)
         : _rollArrUp(source, iteratee, thisArg)
@@ -153,6 +153,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a difference by iterating over object maps, arrays,
    *   or cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -162,7 +163,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -180,24 +181,24 @@ var roll = (function rollPrivateScope() {
       iteratee = source;
       source = base;
     }
-    else if ( arguments.length === 3 && !is.func(iteratee) ) {
+    else if ( arguments.length === 3 && !_is.func(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       source = base;
     }
     else hasBase = true;
 
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'down');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'down');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'down');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'down');
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       if (!hasBase) throw _error('No base defined', 'down');
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source', 'down');
+    if ( !_is._obj(source) ) throw _error.type('source', 'down');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? hasBase
         ? _rollBaseArrDown(base, source, iteratee, thisArg)
         : _rollArrDown(source, iteratee, thisArg)
@@ -227,7 +228,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -291,7 +292,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       case 1: 
@@ -334,7 +335,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -397,7 +398,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -439,7 +440,7 @@ var roll = (function rollPrivateScope() {
     var z;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
@@ -502,7 +503,7 @@ var roll = (function rollPrivateScope() {
     var key;
 
     obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
@@ -548,7 +549,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -578,7 +579,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -608,7 +609,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -637,7 +638,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -666,7 +667,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     result = obj[0];
     len = obj.length;
     i = 0;
@@ -695,7 +696,7 @@ var roll = (function rollPrivateScope() {
     var i;
 
     obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
@@ -724,7 +725,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length > 1) {
       i = 0;
       while(count--) result = iteratee(result, i++);
@@ -748,7 +749,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result += iteratee(i++);
@@ -772,7 +773,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    iteratee = is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     if (iteratee.length) {
       i = 0;
       while(count--) result -= iteratee(i++);

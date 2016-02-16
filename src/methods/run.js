@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - SHELL METHOD - RUN
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.run]{@link https://github.com/imaginate/vitals/blob/master/src/methods/run.js}
+ * @section shell
+ * @version 3.0.0-beta
+ * @see [vitals.run]{@link https://github.com/imaginate/vitals/wiki/vitals.run}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,11 +16,11 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _normalize = require('./_helpers/normalize.js');
-var _sliceArr = require('./_helpers/sliceArr.js');
-var _isEol = require('./_helpers/isEol.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _normalize = require('./helpers/normalize.js');
+var _sliceArr = require('./helpers/slice-arr.js');
+var _isEol = require('./helpers/is-eol.js');
+var _is = require('./helpers/is.js');
 var cp = require('child_process');
 
 
@@ -50,73 +48,65 @@ var run = (function runPrivateScope() {
    */
 
   /**
-   * A shortcut for child_process.spawnSync that returns the stdout.
+   * A shortcut for [child_process.spawnSync](https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
+   *   that returns the stdout.
+   *
    * @public
    * @param {string} cmd
-   * @param {Object=} options
-   * @param {?string=} options.eol - [default= "LF"] The end of line character to
-   *   use when normalizing the result. If options.eol is null or options.buffer
-   *   is true and options.eol is undefined no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
-   * @param {boolean=} options.buffer - [default= false] If true and stdout is a
+   * @param {Object=} opts
+   * @param {?string=} opts.eol - [default= "LF"] The end of line character to
+   *   use when normalizing the result. If opts.eol is null or opts.buffer
+   *   is true and opts.eol is undefined no normalization is completed.
+   *   Optional values: ` "LF", "CR", "CRLF" `
+   * @param {boolean=} opts.buffer - [default= false] If true and stdout is a
    *   buffer the buffer is returned. Otherwise a string of stdout is returned.
-   * @param {boolean=} options.catchExit - [default= true] If process is exited
+   * @param {boolean=} opts.catchExit - [default= true] If process is exited
    *   with an error code an error is logged.
-   * @param {string=} options.encoding - [default= "utf8"] If options.buffer is
-   *   true and options.encoding is undefined no encoding is set.
-   * @param {string=} options.cwd
-   * @param {(string|!Buffer)=} options.input
-   * @param {!Object=} options.env
-   * @param {number=} options.uid
-   * @param {number=} options.gid
-   * @param {number=} options.timeout
-   * @param {string=} options.killSignal
-   * @param {number=} options.maxBuffer
+   * @param {string=} opts.encoding - [default= "utf8"] If opts.buffer is
+   *   true and opts.encoding is undefined no encoding is set.
+   * @param {string=} opts.cwd
+   * @param {(string|!Buffer)=} opts.input
+   * @param {!Object=} opts.env
+   * @param {number=} opts.uid
+   * @param {number=} opts.gid
+   * @param {number=} opts.timeout
+   * @param {string=} opts.killSignal
+   * @param {number=} opts.maxBuffer
    * @return {(string|!Buffer)}
    */
-  function run(cmd, options) {
+  function run(cmd, opts) {
 
     /** @type {SpawnResult} */
     var result;
 
-    if ( !is.str(cmd)         ) throw _error.type('cmd');
-    if ( !is('obj=', options) ) throw _error.type('options');
+    if ( !_is.str(cmd)         ) throw _error.type('cmd');
+    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts');
 
-    if (options) {
-      if ( !is('bool=', options.buffer) ) {
-        throw _error.type('options.buffer');
-      }
-      if ( !is('bool=', options.catchExit) ) {
-        throw _error.type('options.catchExit');
-      }
-      if ( !is('?str=', options.encoding) ) {
-        throw _error.type('options.encoding');
-      }
-      if ( !is('?str=', options.eol) ) {
-        throw _error.type('options.eol');
-      }
-      if ( options.eol && !_isEol(options.eol) ) {
-        throw _error.range('options.eol', '"LF", "CR", "CRLF"');
-      }
+    if (opts) {
+      if ( !_is.un.bool(opts.buffer)      ) throw _error.type('opts.buffer');
+      if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
+      if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
+      if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
+      if ( opts.eol && !_isEol(opts.eol)  ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
     }
 
     cmd = cmd.split(' ');
-    options = _prepOptions(options);
-    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), options);
+    opts = _prepOptions(opts);
+    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), opts);
 
     if (result.error) throw _error('"' + result.error.toString() + '"');
-    if (options.catchExit !== false && result.status) {
+    if (opts.catchExit !== false && result.status) {
       throw _error('Failed exit code: ' + _getExitCode(result.status) + ' - ');
     }
 
-    if (options.buffer) {
-      return is.str(result.stdout) && options.eol
-        ? _normalize(result.stdout, options.eol)
+    if (opts.buffer) {
+      return _is.str(result.stdout) && opts.eol
+        ? _normalize(result.stdout, opts.eol)
         : result.stdout;
     }
 
     result.stdout = result.stdout.toString();
-    return options.eol ? _normalize(result.stdout, options.eol) : result.stdout;
+    return opts.eol ? _normalize(result.stdout, opts.eol) : result.stdout;
   }
 
   //////////////////////////////////////////////////////////
@@ -132,7 +122,7 @@ var run = (function runPrivateScope() {
     options = options || {};
     if (options.buffer) options.eol = options.eol || null;
     else options.encoding = options.encoding || 'utf8';
-    options.eol = is.undefined(options.eol) ? 'LF' : options.eol;
+    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
     options.eol = options.eol && options.eol.toUpperCase();
     return options;
   }

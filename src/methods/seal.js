@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - SEAL
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.seal]{@link https://github.com/imaginate/vitals/blob/master/src/methods/seal.js}
+ * @section strict
+ * @version 3.0.0-beta
+ * @see [vitals.seal]{@link https://github.com/imaginate/vitals/wiki/vitals.seal}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,9 +16,9 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +35,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -44,16 +43,17 @@ var seal = (function sealPrivateScope() {
    */
   function seal(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj');
-    if ( !is('bool=', deep) ) throw _error.type('deep');
+    if ( !_is._obj(obj)     ) throw _error.type('obj');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   }
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -61,10 +61,10 @@ var seal = (function sealPrivateScope() {
    */
   seal.object = function sealObject(obj, deep) {
 
-    if ( is.null(obj) ) return null;
+    if ( _is.nil(obj) ) return null;
 
-    if ( !is._obj(obj)      ) throw _error.type('obj',  'seal');
-    if ( !is('bool=', deep) ) throw _error.type('deep', 'seal');
+    if ( !_is._obj(obj)     ) throw _error.type('obj',  'seal');
+    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'seal');
 
     return deep ? _deepSeal(obj) : _seal(obj);
   };
@@ -95,16 +95,9 @@ var seal = (function sealPrivateScope() {
 
       /** @type {string} */
       var key;
-      /** @type {*} */
-      var val;
 
       for (key in obj) {
-        if ( _own(obj, key) ) {
-          val = obj[key];
-          if ( is._obj(val) ) {
-            obj[key] = _deepSeal(val);
-          }
-        }
+        if ( _own(obj, key) && _is._obj(obj[key]) ) _deepSeal(obj[key]);
       }
       return _seal(obj);
     };

@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - REMAP
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.remap]{@link https://github.com/imaginate/vitals/blob/master/src/methods/remap.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.remap]{@link https://github.com/imaginate/vitals/wiki/vitals.remap}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,10 +16,12 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
+var _escape = require('./helpers/escape.js');
+var _own = require('./helpers/own.js');
 var copy = require('./copy.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -41,48 +41,49 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object/array/string by invoking an action over
    *   the values of an existing object/array/string.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {*} iteratee - Details per source type:
-   *   object source: The iteratee must be a function with the optional params
+   *   - object: The iteratee must be a function with the optional params -
    *     value, key, source. Note this method lazily clones the source based on
-   *     the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   array source: The iteratee must be a function with the optional params
+   *   - array: The iteratee must be a function with the optional params -
    *     value, index, source. Note this method lazily slices the source based
-   *     on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   string source: The iteratee must be a pattern to search for within the
+   *   - string: The iteratee must be a pattern to search for within the
    *     source. If the pattern is not a string or RegExp it will be converted
    *     to a string.
    * @param {*=} replacement - Only use (and required) with string sources. If
    *   not a string or function the replacement is converted to a string. For
    *   details about using replacement functions see the
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the iteratee or
    *   replacement function is bound to its value.
    * @return {!(Object|function|Array|string)}
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( is.str(source) ) {
+    if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !is._obj(source)     ) throw _error.type('source');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg');
+    if ( !_is._obj(source)        ) throw _error.type('source');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    return is._arr(source)
+    return _is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
@@ -90,12 +91,13 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object with the same keys and new values by
    *   invoking an action over the values of an existing object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -105,9 +107,9 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)     ) throw _error.type('source',   'object');
-    if ( !is.func(iteratee)   ) throw _error.type('iteratee', 'object');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
@@ -117,11 +119,14 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new array by invoking an action over the values of
    *   an existing array-like object.
+   *
    * @public
-   * @param {!(Object|function)} source
+   * @param {(!Object|function|string)} source - If source is a string it is
+   *   converted to an array using this list of chars as the separator (chars
+   *   listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -131,10 +136,12 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( !is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !is.func(iteratee)     ) throw _error.type('iteratee',      'array');
-    if ( !is('obj=', thisArg)   ) throw _error.type('thisArg',       'array');
+    if ( _is.str(source) ) source = _splitKeys(source);
+
+    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -142,13 +149,15 @@ var remap = (function remapPrivateScope() {
   remap.arr = remap.array;
 
   /**
-   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}.
+   * A shortcut for [String.prototype.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
+   *   that defaults to global replacements instead of only the first.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If not a RegExp the pattern is converted to a string.
    * @param {*} replacement - If not a string or function the replacement is
    *   converted to a string. For details about using replacement functions see
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the replacement function
    *   is bound to its value.
    * @return {string}
@@ -157,8 +166,8 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !is.str(source)      ) throw _error.type('source',  'string');
-    if ( !is('obj=', thisArg) ) throw _error.type('thisArg', 'string');
+    if ( !_is.str(source)         ) throw _error.type('source',  'string');
+    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
@@ -185,7 +194,7 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
     source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in source) {
@@ -227,7 +236,7 @@ var remap = (function remapPrivateScope() {
     var i;
 
     source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -252,9 +261,14 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    pattern = is.regex(pattern) ? pattern : String(pattern);
-    replacement = is.func(replacement)
-      ? is.undefined(thisArg)
+    if ( !_is.regex(pattern) ) {
+      pattern = String(pattern);
+      pattern = _escape(pattern);
+      pattern = new RegExp(pattern, 'g');
+    }
+
+    replacement = _is.func(replacement)
+      ? _is.undefined(thisArg)
         ? replacement
         : _bindR(replacement, thisArg)
       : String(replacement);

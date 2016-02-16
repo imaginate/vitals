@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS SHORTCUTS - FILL
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fill.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,10 +16,10 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _splitKeys = require('./_helpers/splitKeys.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
+var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,43 +38,45 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an array, object, or string with specified values.
+   *
    * @public
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
    * @param {(!Array|string)=} keys - Only use with an object/function source.
    *   If provided it is converted to an array of keys to limit the object fill
    *   to. The chars in the following list can be used as the separator for keys
-   *   in a keys string (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   in a keys string (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*} val - The value to fill the array, object, or string with.
-   * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= source.length] Only for fill.array.
+   * @param {number=} start - [default= 0] Only for use with source arrays.
+   * @param {number=} end - [default= source.length] Only for use with source
+   *   arrays.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
 
     if (arguments.length < 2) throw _error('No val defined');
 
-    if ( is.null(source) ) return null;
+    if ( _is.nil(source) ) return null;
 
-    if ( is.num(source) ) {
+    if ( _is.num(source) ) {
       val = keys;
       return _fillStr(source, val);
     }
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    if ( is.arr(source) ) {
+    if ( _is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
-      if ( !is('num=', start) ) throw _error.type('start');
-      if ( !is('num=', end)   ) throw _error.type('end');
+      if ( !_is.un.num(start) ) throw _error.type('start');
+      if ( !_is.un.num(end)   ) throw _error.type('end');
       return _fillArr(source, val, start, end);
     }
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
 
@@ -86,23 +86,24 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing object/function with specified keys and values.
+   *
    * @public
    * @param {!(Object|function)} obj
    * @param {(!Array|string)=} keys - If provided it is converted to an array of
    *   keys to limit the object fill to. The chars in the following list can be
    *   used as the separator for keys in a keys string (chars listed in order of
-   *   rank):  ", "  ","  "|"  " "
+   *   rank): ` ", "  ","  "|"  " " `
    * @param {*} val
    * @return {!(Object|function)}
    */
   fill.object = function fillObject(obj, keys, val) {
 
-    if ( !is._obj(obj) ) throw _error.type('obj', 'object');
+    if ( !_is._obj(obj) ) throw _error.type('obj', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = is.str(keys) ? _splitKeys(keys) : keys;
-      if ( !is.arr(keys) ) throw _error.type('keys', 'object');
+      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
 
@@ -114,6 +115,7 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing or new array with specified values.
+   *
    * @public
    * @param {!(Array|number)} arr - If number makes new array with arr length.
    * @param {*} val
@@ -123,13 +125,13 @@ var fill = (function fillPrivateScope() {
    */
   fill.array = function fillArray(arr, val, start, end) {
 
-    arr = is.num(arr) ? new Array(arr) : arr;
+    arr = _is.num(arr) ? new Array(arr) : arr;
 
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    if ( !is.arr(arr)       ) throw _error.type('arr',   'array');
-    if ( !is('num=', start) ) throw _error.type('start', 'array');
-    if ( !is('num=', end)   ) throw _error.type('end',   'array');
+    if ( !_is.arr(arr)      ) throw _error.type('arr',   'array');
+    if ( !_is.un.num(start) ) throw _error.type('start', 'array');
+    if ( !_is.un.num(end)   ) throw _error.type('end',   'array');
 
     return _fillArr(arr, val, start, end);
   };
@@ -138,14 +140,15 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills a new string with specified values.
+   *
    * @public
    * @param {number} count
-   * @param {*} val - All val types are converted to string via String(val).
+   * @param {*} val - All val types are converted to string via `String(val)`.
    * @return {string}
    */
   fill.string = function fillString(count, val) {
 
-    if ( !is.num(count) ) throw _error.type('count', 'string');
+    if ( !_is.num(count) ) throw _error.type('count', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
     return _fillStr(count, val);

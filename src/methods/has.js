@@ -2,14 +2,12 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD - HAS
  * -----------------------------------------------------------------------------
- * @version 2.3.8
- * @see [vitals.has]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}
+ * @section base
+ * @version 3.0.0-beta
+ * @see [vitals.has]{@link https://github.com/imaginate/vitals/wiki/vitals.has}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2015 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
+ * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('./_helpers/errorAid.js');
-var _ownEnum = require('./_helpers/ownEnum.js');
-var _inObj = require('./_helpers/inObj.js');
-var _inArr = require('./_helpers/inArr.js');
-var _inStr = require('./_helpers/inStr.js');
-var _match = require('./_helpers/match.js');
-var _own = require('./_helpers/own.js');
-var is = require('node-are').is;
+var newErrorAid = require('./helpers/error-aid.js');
+var _ownEnum = require('./helpers/own-enum.js');
+var _inObj = require('./helpers/in-obj.js');
+var _inArr = require('./helpers/in-arr.js');
+var _inStr = require('./helpers/in-str.js');
+var _match = require('./helpers/match.js');
+var _own = require('./helpers/own.js');
+var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,33 +46,37 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty (that accepts null),
-   *   String.prototype.includes, RegExp.prototype.test, and
-   *   Array.prototype.includes.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   (that accepts `null`), [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes),
+   *   [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test),
+   *   and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+   *
    * @public
    * @param {?(Object|function|string|Array)} source
-   * @param {*} key - If source is a string the following two statements apply:
-   *   For a RegExp key the source is tested for the RegExp pattern. Otherwise
-   *   the source is searched for a substring of the string-converted key.
-   *   If source is an array or arguments object the key is searched for in the
-   *   object's indexed values.
+   * @param {*} key - Details (per source type):
+   *   - string: For a RegExp key the source is tested for the RegExp pattern.
+   *     Otherwise the source is searched for a substring of the
+   *     string-converted key.
+   *   - array/arguments: The key is searched for in the source's indexed values.
    * @return {boolean}
    */
   function has(source, key) {
 
     if (arguments.length < 2) throw _error('No key defined');
     
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( is.str(source) ) return _match(source, key);
+    if ( _is.str(source) ) return _match(source, key);
 
-    if ( !is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) ) throw _error.type('source');
 
-    return is._arr(source) ? _inArr(source, key) : _own(source, key);
+    return _is._arr(source) ? _inArr(source, key) : _own(source, key);
   }
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty that accepts null.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -84,15 +86,16 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'key');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
     return _own(source, key);
   };
 
   /**
    * A shortcut that checks for a value in an object.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} val
@@ -102,17 +105,19 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
 
   /**
-   * A shortcut for String.prototype.includes and RegExp.prototype.test.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *   and [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *
    * @public
    * @param {string} source
    * @param {*} pattern
@@ -120,14 +125,15 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'pattern');
+    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
     return _match(source, pattern);
   };
 
   /**
-   * A shortcut for String.prototype.includes.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes).
+   *
    * @public
    * @param {string} source
    * @param {*} str
@@ -135,7 +141,7 @@ var has = (function hasPrivateScope() {
    */
   has.substring = function hasSubstring(source, str) {
 
-    if ( !is.str(source) ) throw _error.type('source', 'substring');
+    if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No str defined', 'substring');
 
     return _inStr(source, str);
@@ -144,7 +150,9 @@ var has = (function hasPrivateScope() {
   has.substr = has.substring;
 
   /**
-   * A shortcut for Object.prototype.propertyIsEnumerable that accepts null.
+   * A shortcut for [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -154,9 +162,9 @@ var has = (function hasPrivateScope() {
 
     if (arguments.length < 2) throw _error('No key defined', 'enumerable');
 
-    if ( is.null(source) ) return false;
+    if ( _is.nil(source) ) return false;
 
-    if ( !is._obj(source) ) throw _error.type('source', 'enumerable');
+    if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
     return _ownEnum(source, key);
   };
