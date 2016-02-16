@@ -37,11 +37,19 @@ describe('vitals.get (section:base)', function() {
 
       title = callStr('<object>');
       it(title, function() {
-        var keys = vitals.get( newObj() ).sort();
-        assert( keys.length === 9 );
-        each(newObj(true).sort(), function(key, i) {
-          assert( keys[i] === key );
-        });
+        var obj = newObj();
+        var vals = vitals.get(obj);
+        assert( is.arr(vals) );
+        assert( has(vals, 'a') );
+        assert( has(vals, 'b') );
+        assert( has(vals, 'c') );
+        assert( has(vals, '1') );
+        assert( has(vals, '2') );
+        assert( has(vals, '3') );
+        assert( has(vals, 'a1') );
+        assert( has(vals, 'b2') );
+        assert( has(vals, 'c3') );
+        assert( vals.length === 9 );
       });
 
     });
@@ -51,11 +59,13 @@ describe('vitals.get (section:base)', function() {
 
       title = callStr('<object>', /^[a-z]$/);
       it(title, function() {
-        var vals = vitals.get(newObj(), /^[a-z]$/).sort();
+        var obj = newObj();
+        var vals = vitals.get(obj, /^[a-z]$/);
+        assert( is.arr(vals) );
+        assert( has(vals, 'd') );
+        assert( has(vals, 'e') );
+        assert( has(vals, 'f') );
         assert( vals.length === 3 );
-        each([ 'd','e','f' ], function(val, i) {
-          assert( vals[i] === val );
-        });
       });
 
     });
@@ -65,9 +75,11 @@ describe('vitals.get (section:base)', function() {
 
       title = callStr('<object>', 5);
       it(title, function() {
-        var vals = vitals.get(newObj(), 5);
-        assert( vals.length === 1 );
+        var obj = newObj();
+        var vals = vitals.get(obj, 5);
+        assert( is.arr(vals) );
         assert( vals[0] === '2' );
+        assert( vals.length === 1 );
       });
 
     });
@@ -76,18 +88,24 @@ describe('vitals.get (section:base)', function() {
 
   describe('array tests', function() {
 
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
     title = titleStr('should return array of all indexes');
     describe(title, function() {
 
       title = callStr('<array>');
       it(title, function() {
-        var inds = vitals.get( newArr() );
-        assert( inds.length === 9 );
-        each(9, function(i) {
-          assert( inds[i] === i );
-        });
+        var arr = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        var vals = vitals.get(arr);
+        assert( is.arr(vals) );
+        assert( vals[0] === 0 );
+        assert( vals[1] === 1 );
+        assert( vals[2] === 2 );
+        assert( vals[3] === 3 );
+        assert( vals[4] === 4 );
+        assert( vals[5] === 5 );
+        assert( vals[6] === 6 );
+        assert( vals[7] === 7 );
+        assert( vals[8] === 8 );
+        assert( vals.length === 9 );
       });
 
     });
@@ -97,9 +115,11 @@ describe('vitals.get (section:base)', function() {
 
       title = callStr('<array>', 2);
       it(title, function() {
-        var vals = vitals.get(newArr(), 2);
-        assert( vals.length === 1 );
+        var arr = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+        var vals = vitals.get(arr, 2);
+        assert( is.arr(vals) );
         assert( vals[0] === 4 );
+        assert( vals.length === 1 );
       });
 
     });
@@ -114,29 +134,52 @@ describe('vitals.get (section:base)', function() {
       title = callStr('abc123a1b2c3', /[a-z]/);
       it(title, function() {
         var vals = vitals.get('abc123a1b2c3', /[a-z]/);
+        assert( is.arr(vals) );
+        assert( vals[0] === 'a' );
+        assert( vals[1] === 'b' );
+        assert( vals[2] === 'c' );
+        assert( vals[3] === 'a' );
+        assert( vals[4] === 'b' );
+        assert( vals[5] === 'c' );
         assert( vals.length === 6 );
-        each([ 'a','b','c','a','b','c' ], function(val, i) {
-          assert( vals[i] === val );
-        });
       });
 
     });
 
-    title = titleStr('should return an array of indexes where substr == val');
+    title = 'should return an array of indexes where substr === String(val)';
+    title = titleStr(title);
     describe(title, function() {
+
+      title = callStr('abc123a1b2c3', 1);
+      it(title, function() {
+        var vals = vitals.get('abc123a1b2c3', 1);
+        assert( is.arr(vals) );
+        assert( vals[0] === 3 );
+        assert( vals[1] === 7 );
+        assert( vals.length === 2 );
+      });
 
       title = callStr('abc123a1b2c3', 5);
       it(title, function() {
         var vals = vitals.get('abc123a1b2c3', 5);
+        assert( is.arr(vals) );
         assert( vals.length === 0 );
       });
 
       title = callStr('abc123a1b2c3', 'a');
       it(title, function() {
         var vals = vitals.get('abc123a1b2c3', 'a');
-        assert( vals.length === 2 );
+        assert( is.arr(vals) );
         assert( vals[0] === 0 );
         assert( vals[1] === 6 );
+        assert( vals.length === 2 );
+      });
+
+      title = callStr('abc123a1b2c3', '*');
+      it(title, function() {
+        var vals = vitals.get('abc123a1b2c3', '*');
+        assert( is.arr(vals) );
+        assert( vals.length === 0 );
       });
 
     });
@@ -189,29 +232,18 @@ function callStr() {
 
 /**
  * @private
- * @param {boolean=} keys
  * @return {!Object}
  */
-function newObj(keys) {
-  return keys
-    ? [ 'a', 'b', 'c', '1', '2', '3', 'a1', 'b2', 'c3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
+function newObj() {
+  return {
+    'a':  'd',
+    'b':  'e',
+    'c':  'f',
+    '1':   4,
+    '2':   5,
+    '3':   6,
+    'a1': '1',
+    'b2': '2',
+    'c3': '3'
+  };
 }
