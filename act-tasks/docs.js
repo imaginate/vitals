@@ -31,10 +31,6 @@ exports['methods'] = {
     'desc': 'builds the docs for one method',
     'value': 'vitals-method',
     'method': buildDoc
-  },
-  'version': {
-    'desc': 'updates the wiki docs version',
-    'method': versionDocs
   }
 };
 
@@ -98,18 +94,4 @@ function buildDoc(method) {
   content = mkDoc(content, fscontent);
   file = fuse(WIKI, '/vitals.', method, '.md');
   to.file(content, file);
-}
-
-/**
- * @public
- * @type {function}
- */
-function versionDocs() {
-
-  /** @type {!Array<string>} */
-  var files;
-  /** @type {string} */
-  var file;
-
-  throw new Error('task not finished yet');
 }
