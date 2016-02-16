@@ -49,9 +49,12 @@ var until = (function untilPrivateScope() {
    *   - object source: Ends after all properties are visited.
    *   - array source:  Ends after all indexes are visited.
    *   - number source: Ends after the count of cycles equals the source.
-   *   - string source: Converted to an array source and ends after all indexes
-   *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank): ` ", "  ","  "|"  " " `
+   *   - string source: Converted to an array source using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
    *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -99,8 +102,8 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function)} obj
-   * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
+   * @param {(!Object|function)} obj
+   * @param {function(*=, string=, (!Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
    *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -130,9 +133,13 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function|string)} source - If source is a string it is
-   *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
+   * @param {(!Object|function|string)} source - If source is a string it is
+   *   converted to an array source using one of the following values as the
+   *   separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
