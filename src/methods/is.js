@@ -378,14 +378,20 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty. Empty values:
-   *   ` 0, "", {}, [], null, undefined, false, NaN, function(){...} `.
-   *   Note that for functions this method checks whether it has any defined
-   *   params: ` function(){} => true; function(param){} => false; `.
+   * Checks if a value is considered empty.
    *
    * @public
    * @param {...*} val
-   * @return {boolean}
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ```
+   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   ```
+   *   Note that for functions this method checks whether it has any defined
+   *   params:
+   *   ```
+   *   function empty(){}
+   *   function notEmpty(param){}
+   *   ```
    */
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
