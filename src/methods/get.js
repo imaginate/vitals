@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/method-get}
+ * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -54,9 +54,9 @@ var get = (function getPrivateScope() {
    *   - string source: an error (i.e. a val is required for string sources)
    * @param {*=} val - For a RegExp val and object/string source this method
    *   will return the following values (per source type):
-   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
-   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
    *   Otherwise this method will return the following values (per source type):
    *   - object: an array of source keys where the `value === val`
@@ -93,7 +93,7 @@ var get = (function getPrivateScope() {
    * @param {!(Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
    * @param {*=} val - This method will return an array of source keys where the
-   *   key [matches](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *   key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *   the val if the val is a RegExp. Otherwise this method will return an
    *   array of source keys where the `value == val`.
    * @return {!Array}
@@ -110,7 +110,7 @@ var get = (function getPrivateScope() {
   };
 
   /**
-   * Gets an array of keys from an object that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   * Gets an array of keys from an object that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *   a pattern.
    *
    * @public
@@ -156,7 +156,7 @@ var get = (function getPrivateScope() {
    *   (per source type):
    *   - array:  Return an array of indexes where the `value === val`.
    *   - string: A non-regex val is converted to a string and then an array of
-   *     starting indexes that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *     starting indexes that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val are returned.
    * @return {!Array}
    */
@@ -186,9 +186,9 @@ var get = (function getPrivateScope() {
    *   source is a string.
    * @param {*=} val - If the val is not a RegExp or string it is converted to a
    *   string. This method will return the following values (per source type):
-   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
-   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
    * @return {!Array}
    */

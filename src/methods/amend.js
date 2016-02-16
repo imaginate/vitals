@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 3.0.0
- * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/method-amend}
+ * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -64,7 +64,7 @@ var amend = (function amendPrivateScope() {
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
    *   ```
    *   prop.set = function set(newVal) {
@@ -185,7 +185,7 @@ var amend = (function amendPrivateScope() {
    * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
+   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
    *   ```
    *   prop.set = function set(newVal) {
@@ -294,7 +294,7 @@ var amend = (function amendPrivateScope() {
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
    *   ```
    *   prop.set = function set(newVal) {

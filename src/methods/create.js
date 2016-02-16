@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 3.0.0
- * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/method-create}
+ * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/vitals.create}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -38,8 +38,8 @@ var create = (function createPrivateScope() {
    * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
    *   that includes easier value assignment, strong type assignment, and more
    *   flexible default descriptor options. Note that this method uses
-   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend) for
-   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend)
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
    *
    * @public
@@ -71,8 +71,8 @@ var create = (function createPrivateScope() {
    * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
    *   that includes easier value assignment, strong type assignment, and more
    *   flexible default descriptor options. Note that this method uses
-   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend) for
-   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/method-amend)
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
    *
    * @public

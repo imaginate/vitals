@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/method-roll}
+ * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/vitals.roll}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

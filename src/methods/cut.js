@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @section base
  * @version 3.0.0
- * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/method-cut}
+ * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/vitals.cut}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -58,7 +58,7 @@ var cut = (function cutPrivateScope() {
    *   considered an array of vals. Details are as follows (per source type):
    *   - object source:
    *     -- leading val is RegExp: This method will delete all properties with
-   *       keys that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *       each val. If any following vals are not a RegExp they are converted
    *       to a string.
    *     -- leading val is string: This method will delete all properties where
@@ -124,7 +124,7 @@ var cut = (function cutPrivateScope() {
    * @param {*} val - The details are as follows (per source type):
    *   - object source:
    *     -- val is RegExp: This method will delete all properties with a key
-   *       that [matches](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *       the val.
    *     -- val is string: This method will delete all properties where
    *       `key === val`.
@@ -214,12 +214,12 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
+   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   to complete type checks.
    *
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/method-is)
+   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   for acceptable options.
    * @return {!(Object|function|Array)}
    */
@@ -288,7 +288,7 @@ var cut = (function cutPrivateScope() {
    *   considered an array of vals. Details are as follows (per source type):
    *   - object source:
    *     -- leading val is RegExp: This method will delete all properties with
-   *       keys that [match](https://github.com/imaginate/vitals/wiki/method-has#haspattern)
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *       each val. If any following vals are not a RegExp they are converted
    *       to a string.
    *     -- leading val is string: This method will delete all properties where
