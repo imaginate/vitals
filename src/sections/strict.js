@@ -1665,7 +1665,10 @@ var amend = (function amendPrivateScope() {
    *   - array:  An array of key names to define.
    *   - string: Converted to an array of key names using one of the following
    *     values as the separator (values listed in order of rank):
-   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
@@ -1760,7 +1763,10 @@ var amend = (function amendPrivateScope() {
    *   - array:  An array of key names to update.
    *   - string: Converted to an array of key names using one of the following
    *     values as the separator (values listed in order of rank):
-   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -1895,7 +1901,10 @@ var amend = (function amendPrivateScope() {
    *   - array:  An array of key names to define.
    *   - string: Converted to an array of key names using one of the following
    *     values as the separator (values listed in order of rank):
-   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
@@ -1992,7 +2001,10 @@ var amend = (function amendPrivateScope() {
    *   - array:  An array of key names to update.
    *   - string: Converted to an array of key names using one of the following
    *     values as the separator (values listed in order of rank):
-   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
