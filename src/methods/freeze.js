@@ -3,7 +3,7 @@
  * VITALS - JS METHOD - FREEZE
  * -----------------------------------------------------------------------------
  * @section strict
- * @version 3.0.0-beta
+ * @version 3.0.0-beta.1
  * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/vitals.freeze}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
