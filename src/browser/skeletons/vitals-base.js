@@ -55,6 +55,7 @@
 // INSERT methods/roll.js
 // INSERT methods/same.js
 // INSERT methods/slice.js
+// INSERT methods/to.js
 // INSERT methods/until.js
 
 
@@ -75,6 +76,7 @@
     roll:   roll,
     same:   same,
     slice:  slice,
+    to:     to,
     until:  until
   };
 })() // close methods iife (do not add semicolon)

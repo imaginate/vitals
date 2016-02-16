@@ -20,8 +20,6 @@
 var fs = require('fs');
 var cp = require('child_process');
 
-var to = {};
-
 
 // *****************************************************************************
 // PRIVATE HELPERS
@@ -62,6 +60,7 @@ var to = {};
 // INSERT methods/roll.js
 // INSERT methods/same.js
 // INSERT methods/slice.js
+// INSERT methods/to.js
 // INSERT methods/until.js
 
 
