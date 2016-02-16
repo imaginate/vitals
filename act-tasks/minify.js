@@ -24,6 +24,9 @@
 
 'use strict';
 
+exports['desc'] = 'minifies the browser versions';
+exports['method'] = minifyVitals;
+
 var is = require('node-are').is;
 
 var vitals = require('node-vitals')('all');
@@ -40,12 +43,10 @@ var WEBSITE  = 'https://github.com/imaginate/vitals';
 var BROWSER  = 'src/browser';
 var FRAMES   = 'src/browser/skeletons';
 var MINIFIER = 'vendor/closure-compiler.jar';
+
 var INTRO    = /^\/\*[\s\S]*?\*\//;
 var SEMANTIC = /"version": "[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?/;
 var VERSION  = /^"version": "/;
-
-exports['desc'] = 'minifies the browser versions';
-exports['method'] = minifyVitals;
 
 /**
  * @public
@@ -121,8 +122,6 @@ function addCopyright(content, name) {
  */
 function getVersion(pre) {
 
-  /** @type {!Array<string>} */
-  var matches;
   /** @type {string} */
   var content;
   /** @type {string} */
@@ -130,8 +129,7 @@ function getVersion(pre) {
 
   pre = pre || '';
   content = get.file('./package.json');
-  matches = get(content, SEMANTIC);
-  version = fuse(matches[0], matches[1] || '');
+  version = get(content, SEMANTIC)[0];
   version = cut(version, VERSION);
   return fuse(pre, version);
 }
