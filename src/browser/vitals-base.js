@@ -6317,7 +6317,7 @@ var to = (function toPrivateScope() {
 
     if ( !_is.str(val) ) throw _error.type('val', 'array');
 
-    if ( _is.undefined(separator) ) return val.split();
+    if ( _is.undefined(separator) ) return _splitKeys(val);
 
     separator = _is.regex(separator) ? separator : String(separator);
     return val.split(separator);

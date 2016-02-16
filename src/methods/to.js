@@ -17,6 +17,7 @@
 'use strict';
 
 var newErrorAid = require('./helpers/error-aid.js');
+var _splitKeys = require('./helpers/split-keys.js');
 var _is = require('./helpers/is.js');
 
 
@@ -107,7 +108,7 @@ var to = (function toPrivateScope() {
 
     if ( !_is.str(val) ) throw _error.type('val', 'array');
 
-    if ( _is.undefined(separator) ) return val.split();
+    if ( _is.undefined(separator) ) return _splitKeys(val);
 
     separator = _is.regex(separator) ? separator : String(separator);
     return val.split(separator);
