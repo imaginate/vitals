@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS - JS METHOD HELPER - VALUE IN OBJECT
  * -----------------------------------------------------------------------------
- * @version 3.0.0
+ * @version 3.0.0-beta
  * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

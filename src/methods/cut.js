@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - CUT
  * -----------------------------------------------------------------------------
  * @section base
- * @version 3.0.0
+ * @version 3.0.0-beta
  * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/vitals.cut}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
