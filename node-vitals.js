@@ -129,6 +129,7 @@ var METHODS = {
   'same':   true,
   'seal':   true,
   'slice':  true,
+  'to':     true,
   'until':  true
 };
 
