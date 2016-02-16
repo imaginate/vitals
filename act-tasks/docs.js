@@ -96,7 +96,7 @@ function buildDoc(method) {
     : undefined;
 
   content = mkDoc(content, fscontent);
-  file = fuse(WIKI, '/method-', method, '.md');
+  file = fuse(WIKI, '/vitals.', method, '.md');
   to.file(content, file);
 }
 
