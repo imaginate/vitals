@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - SAME.LOOSE
  * -----------------------------------------------------------------------------
- * @see [vitals.same]{@link https://github.com/imaginate/vitals/blob/master/src/methods/same.js}
+ * @see [vitals.same]{@link https://github.com/imaginate/vitals/wiki/vitals.same}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

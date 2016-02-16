@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS METHOD - AMEND.PROPERTY.CONFIG
  * -----------------------------------------------------------------------------
- * @see [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+ * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

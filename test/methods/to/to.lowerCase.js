@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - TO.LOWER-CASE
  * -----------------------------------------------------------------------------
- * @see [vitals.to]{@link https://github.com/imaginate/vitals/blob/master/src/methods/to.js}
+ * @see [vitals.to]{@link https://github.com/imaginate/vitals/wiki/vitals.to}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - FUSE.VALUE
  * -----------------------------------------------------------------------------
- * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fuse.js}
+ * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

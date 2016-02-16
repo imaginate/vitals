@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - SLICE.ARRAY
  * -----------------------------------------------------------------------------
- * @see [vitals.slice]{@link https://github.com/imaginate/vitals/blob/master/src/methods/slice.js}
+ * @see [vitals.slice]{@link https://github.com/imaginate/vitals/wiki/vitals.slice}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

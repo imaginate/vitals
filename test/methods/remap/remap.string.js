@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - REMAP.STRING
  * -----------------------------------------------------------------------------
- * @see [vitals.remap]{@link https://github.com/imaginate/vitals/blob/master/src/methods/remap.js}
+ * @see [vitals.remap]{@link https://github.com/imaginate/vitals/wiki/vitals.remap}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

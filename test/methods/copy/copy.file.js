@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS TESTS - COPY.FILE
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fs/copy.js}
+ * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

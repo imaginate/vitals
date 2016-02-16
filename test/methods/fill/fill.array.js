@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - FILL.ARRAY
  * -----------------------------------------------------------------------------
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/blob/master/src/methods/fill.js}
+ * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)

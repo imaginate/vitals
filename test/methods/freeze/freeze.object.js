@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * TEST - VITALS - JS METHOD - FREEZE.OBJECT
  * -----------------------------------------------------------------------------
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/blob/master/src/methods/freeze.js}
+ * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/vitals.freeze}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
