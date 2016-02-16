@@ -745,7 +745,7 @@ var is = (function isPrivateScope() {
   // - is.nan
   // - is.object    (is.obj)
   // - is._object   (is._obj)
-  // - is.function  (is.func|is.fn)
+  // - is.func      (is.function|is.fn)
   // - is.array     (is.arr)
   // - is._array    (is._arr)
   // - is.regexp    (is.regex|is.re)
@@ -763,8 +763,9 @@ var is = (function isPrivateScope() {
 
   /**
    * A shortcut for type checking values.
+   *
    * @public
-   * @param {string} types - The valid data types.
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
    * @param {...*} val - The value to evaluate. If multiple values are
    *   provided all must pass the type check to return true.
    * @return {boolean} The evaluation result.
@@ -851,6 +852,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Empty strings return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -882,6 +884,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Zeros return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -926,6 +929,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Functions return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -976,6 +980,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Arguments return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1078,13 +1083,20 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
+   * Checks if a value is considered empty.
+   *
    * @public
    * @param {...*} val
-   * @return {boolean}
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ```
+   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   ```
+   *   Note that for functions this method checks whether it has any defined
+   *   params:
+   *   ```
+   *   function empty(){}
+   *   function notEmpty(param){}
+   *   ```
    */
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
@@ -1641,36 +1653,35 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   - object: Must be "propName => propVal" or "propName => propDescriptor".
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
    *   - array:  An array of key names to define.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -1678,6 +1689,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   function amend(obj, props, val, descriptor, strongType, setter) {
@@ -1732,16 +1749,18 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -1767,34 +1786,35 @@ var amend = (function amendPrivateScope() {
   };
 
   /**
-   * A shortcut for Object.defineProperty.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
    * @param {*=} val - A val is required if a descriptor is not supplied.
-   * @param {!Object=} descriptor - [default= {
-   *     writable: true,
-   *     enumerable: true,
-   *     configurable: true
-   *   }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails an [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined the new property is
    *   assigned an accessor descriptor that includes a setter that sets the
    *   property to the value returned by this setter method. The setter method
    *   will receive two params, the new value and the current value. If a
    *   strongType is defined this setter will not get called until the new value
    *   passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.property = function amendProperty(obj, key, val, descriptor, strongType, setter) {
@@ -1838,8 +1858,9 @@ var amend = (function amendPrivateScope() {
   amend.prop = amend.property;
 
   /**
-   * A shortcut for Object.defineProperty that only updates the descriptor of an
-   *   existing property.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+   *   that only updates the descriptor of an existing property.
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
@@ -1862,37 +1883,35 @@ var amend = (function amendPrivateScope() {
   amend.prop.config = amend.property.config;
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
-   *   array:  An array of key names to define.
-   *   string: Converted to an array of key names to define. Use the following
-   *     list of chars for the separator (chars listed in order of rank):
-   *     ", "  ","  "|"  " "
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
+   *   - array:  An array of key names to define.
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -1900,6 +1919,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.properties = function amendProperties(obj, props, val, descriptor, strongType, setter) {
@@ -1956,16 +1981,18 @@ var amend = (function amendPrivateScope() {
   amend.props = amend.properties;
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -2697,11 +2724,13 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -2728,11 +2757,13 @@ var create = (function createPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -2816,6 +2847,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
@@ -2833,6 +2865,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
@@ -2926,6 +2959,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -2943,6 +2977,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep

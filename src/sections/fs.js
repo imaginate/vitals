@@ -722,6 +722,7 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Copy the contents of a file to a new or existing file.
+   *
    * @public
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file,
@@ -734,7 +735,7 @@ var _normalize = (function _normalizePrivateScope() {
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
    *   to use when normalizing a string result. If opts.buffer is true or
    *   opts.eol is null no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
+   *   Optional values: ` "LF", "CR", "CRLF" `
    * @return {(!Buffer|string)} The contents of the source.
    */
   copy.file = function copyFile(source, dest, opts) {
@@ -762,6 +763,7 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Copy all of the files in a directory to another directory.
+   *
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory or
@@ -771,12 +773,12 @@ var _normalize = (function _normalizePrivateScope() {
    *   directories.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
    * @param {boolean=} opts.buffer - [default= true] Use a buffer.
-   * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
+   * @param {string=} opts.encoding - [default= "utf8"] Only applies if
    *   opts.buffer is false.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
    *   to use when normalizing a string result. If opts.buffer is true or
    *   opts.eol is null no normalization is completed.
-   *   Optional values: "LF", "CR", "CRLF"
+   *   Optional values: ` "LF", "CR", "CRLF" `
    * @return {!Array} The filepaths copied to the dest.
    */
   copy.directory = function copyDirectory(source, dest, opts) {
@@ -1098,15 +1100,16 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Gets the contents of a file.
+   *
    * @public
    * @param {string} filepath
    * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
-   * @param {boolean=} opts.buffer - [default= false] If true a buffer is
+   * @param {boolean=} opts.buffer - [default= false] If `true` a buffer is
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is null no
-   *   normalization is completed. Optional values: "LF", "CR", "CRLF"
+   *   to use when normalizing the result. If opts.eol is `null` no
+   *   normalization is completed. Optional values: ` "LF", "CR", "CRLF" `
    * @return {(!Buffer|string)}
    */
   get.file = function getFile(filepath, opts) {
@@ -1129,6 +1132,7 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Gets all of the directory paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
@@ -1138,10 +1142,10 @@ var _normalize = (function _normalizePrivateScope() {
    * @param {boolean=} opts.base - [default= false] Whether to append the base
    *   dirpath to the results.
    * @param {boolean=} opts.basepath - Alias for opts.base.
-   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use "|"
-   *   to separate valid directory names.
+   * @param {(RegExp|Array<string>|?string)=} opts.validDirs - If string use
+   *   `"|"` to separate valid directory names.
    * @param {(RegExp|Array<string>|?string)=} opts.invalidDirs - If string use
-   *   "|" to separate invalid directory names.
+   *   `"|"` to separate invalid directory names.
    * @return {!Array<string>}
    */
   get.dirpaths = function getDirpaths(dirpath, opts) {
@@ -1176,6 +1180,7 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Gets all of the file paths in a directory.
+   *
    * @public
    * @param {string} dirpath - Must be a valid directory.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
@@ -1768,10 +1773,11 @@ var _normalize = (function _normalizePrivateScope() {
 
   /**
    * Move the contents of a file to a new or existing file.
+   *
    * @public
    * @param {(!Buffer|string)} contents
    * @param {string} filepath
-   * @param {?string=} encoding - [default= 'utf8'] If null no encoding is set.
+   * @param {?string=} encoding - [default= 'utf8'] If `null` no encoding is set.
    * @return {(!Buffer|string)} The contents.
    */
   to.file = function toFile(contents, filepath, encoding) {

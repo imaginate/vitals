@@ -1041,7 +1041,7 @@ var is = (function isPrivateScope() {
   // - is.nan
   // - is.object    (is.obj)
   // - is._object   (is._obj)
-  // - is.function  (is.func|is.fn)
+  // - is.func      (is.function|is.fn)
   // - is.array     (is.arr)
   // - is._array    (is._arr)
   // - is.regexp    (is.regex|is.re)
@@ -1059,8 +1059,9 @@ var is = (function isPrivateScope() {
 
   /**
    * A shortcut for type checking values.
+   *
    * @public
-   * @param {string} types - The valid data types.
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
    * @param {...*} val - The value to evaluate. If multiple values are
    *   provided all must pass the type check to return true.
    * @return {boolean} The evaluation result.
@@ -1147,6 +1148,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Empty strings return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1178,6 +1180,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Zeros return false in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1222,6 +1225,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Functions return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1272,6 +1276,7 @@ var is = (function isPrivateScope() {
 
   /**
    * Arguments return true in this method.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1374,13 +1379,20 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
+   * Checks if a value is considered empty.
+   *
    * @public
    * @param {...*} val
-   * @return {boolean}
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ```
+   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
+   *   ```
+   *   Note that for functions this method checks whether it has any defined
+   *   params:
+   *   ```
+   *   function empty(){}
+   *   function notEmpty(param){}
+   *   ```
    */
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
@@ -1935,6 +1947,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Returns a copy of the given value.
+   *
    * @public
    * @param {*} val
    * @param {boolean=} deep
@@ -1957,6 +1970,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new object with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -1974,6 +1988,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new array with the properties of the given object.
+   *
    * @public
    * @param {!Object} obj
    * @param {boolean=} deep
@@ -1993,6 +2008,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new RegExp from a given RegExp.
+   *
    * @public
    * @param {!RegExp} regex
    * @param {boolean=} forceGlobal
@@ -2011,8 +2027,9 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in browser environments for
+   *   copy.func instead of copy.function in ES3 browser environments for
    *   compatibility.
+   *
    * @public
    * @param {function} func
    * @param {boolean=} deep
@@ -2217,40 +2234,42 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * Removes properties from an object/array or patterns from a string
+   * Removes properties from an object/array or substring patterns from a string
    *   and returns the amended source.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - leading val is function: The val is considered a filter function
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is deleted). It has the
    *       optional params - value, key, source. Note this method lazily clones
-   *       the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - leading val is function: The val is considered a filter function
+   *     -- leading val is function: The val is considered a filter function
    *       (i.e. if it returns false the property is spliced from the source).
    *       It has the optional params - value, index, source. Note this method
-   *       lazily clones the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *       lazily clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *       (i.e. if you alter the source object within the filter ensure to
    *       define the filter's third param so you can safely assume all
    *       references to the source are its original values).
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
-   *     string source: All vals that are not a RegExp or string are converted
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
+   *   - string source: All vals that are not a RegExp or string are converted
    *       to a string. Each matching substring is removed from the source.
    * @param {Object=} thisArg - If source is an object/array, val is a filter
    *   function, and thisArg is defined the filter is bound to its value.
@@ -2284,34 +2303,36 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a property from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val - The details are as follows (per source type):
-   *   object source:
-   *     - val is RegExp: This method will delete all properties with a key that
-   *     matches the val.
-   *     - val is string: This method will delete all properties where
-   *     key === val.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is deleted). It has the optional params -
-   *     value, key, source. Note this method lazily clones the source based on
-   *     the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will delete all properties where
-   *     value === val.
-   *   array source:
-   *     - val is number: This method will splice the index from the source.
-   *     - val is function: The val is considered a filter function (i.e. if it
-   *     returns false the property is spliced from the source). It has the
-   *     optional params - value, index, source. Note this method lazily clones
-   *     the source based on the filter's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
-   *     (i.e. if you alter the source object within the filter ensure to define
-   *     the filter's third param so you can safely assume all references to the
-   *     source are its original values).
-   *     - all other cases: This method will splice from the source all
-   *     properties where value === val.
+   *   - object source:
+   *     -- val is RegExp: This method will delete all properties with a key
+   *       that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       the val.
+   *     -- val is string: This method will delete all properties where
+   *       `key === val`.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is deleted). It has the optional params -
+   *       value, key, source. Note this method lazily clones the source based
+   *       on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`.
+   *   - array source:
+   *     -- val is number: This method will splice the index from the source.
+   *     -- val is function: The val is considered a filter function (i.e. if it
+   *       returns false the property is spliced from the source). It has the
+   *       optional params - value, index, source. Note this method lazily
+   *       clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *       (i.e. if you alter the source object within the filter ensure to
+   *       define the filter's third param so you can safely assume all
+   *       references to the source are its original values).
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @param {Object=} thisArg - If val is a filter function and thisArg is
    *   defined the filter is bound to its value.
    * @return {!(Object|function|Array)}
@@ -2337,6 +2358,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a property by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} key - If the key is not a string it is converted to a string.
@@ -2354,6 +2376,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes a property by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before removing the property.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {number} index - The index to remove.
@@ -2376,11 +2399,12 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses the [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   to complete type checks.
+   *
    * @public
    * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to [vitals.is]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   for acceptable options.
    * @return {!(Object|function|Array)}
    */
@@ -2406,6 +2430,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {*} val
@@ -2424,6 +2449,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes a pattern from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If pattern is not a string or RegExp it is converted
@@ -2439,26 +2465,26 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes properties from an object/array and returns the object. Note that
-   *   the use of the word, "match", within vitals.cut.properties refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Removes properties from an object/array and returns the object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
    *   considered an array of vals. Details are as follows (per source type):
-   *     object source:
-   *       - leading val is RegExp: This method will delete all properties with
-   *       keys that match each val. If any following vals are not a RegExp they
-   *       are converted to a string.
-   *       - leading val is string: This method will delete all properties where
-   *       key === val. All vals are converted to a string.
-   *       - all other cases: This method will delete all properties where
-   *       value === val. 
-   *     array source:
-   *       - all vals are numbers: This method will splice from the source each
+   *   - object source:
+   *     -- leading val is RegExp: This method will delete all properties with
+   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *       each val. If any following vals are not a RegExp they are converted
+   *       to a string.
+   *     -- leading val is string: This method will delete all properties where
+   *       `key === val`. All vals are converted to a string.
+   *     -- all other cases: This method will delete all properties where
+   *       `value === val`. 
+   *   - array source:
+   *     -- all vals are numbers: This method will splice from the source each
    *       corresponding index.
-   *       - all other cases: This method will splice from the source all
-   *       properties where value === val.
+   *     -- all other cases: This method will splice from the source all
+   *       properties where `value === val`.
    * @return {!(Object|function|Array)}
    */
   cut.properties = function cutProperties(source, vals) {
@@ -2475,6 +2501,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes properties by key from an object and returns the object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {...*} keys - If only one key is provided and it is an array it is
@@ -2494,6 +2521,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes properties by index from an array and returns the array. If an
    *   array-like object is supplied it is sliced before completing the cut.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...number} indexes - If only one index is provided and it is an
@@ -2524,6 +2552,7 @@ var cut = (function cutPrivateScope() {
   /**
    * Removes all properties from an object/array with a value and returns the
    *   object.
+   *
    * @public
    * @param {!(Object|function|Array)} source
    * @param {...*} vals - If only one val is provided and it is an array it is
@@ -2544,6 +2573,7 @@ var cut = (function cutPrivateScope() {
 
   /**
    * Removes patterns from a string and returns the amended string.
+   *
    * @public
    * @param {string} source
    * @param {...*} patterns - If only one pattern is provided and it is an array
@@ -3348,16 +3378,17 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps, arrays, or cycles.
+   *
    * @public
    * @param {!(Object|function|Array|number|string)} source - Details per type:
    *   - object source: Iterates over all properties in random order.
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    *   - string source: Converted to an array source. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3382,12 +3413,13 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over object maps.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3407,13 +3439,14 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over array-like objects.
+   *
    * @public
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -3436,6 +3469,7 @@ var each = (function eachPrivateScope() {
 
   /**
    * A shortcut for iterating over a set number of cycles.
+   *
    * @public
    * @param {number} count
    * @param {function(number=)} iteratee
@@ -3579,16 +3613,18 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an array, object, or string with specified values.
+   *
    * @public
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
    * @param {(!Array|string)=} keys - Only use with an object/function source.
    *   If provided it is converted to an array of keys to limit the object fill
    *   to. The chars in the following list can be used as the separator for keys
-   *   in a keys string (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   in a keys string (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {*} val - The value to fill the array, object, or string with.
-   * @param {number=} start - [default= 0] Only for fill.array.
-   * @param {number=} end - [default= source.length] Only for fill.array.
+   * @param {number=} start - [default= 0] Only for use with source arrays.
+   * @param {number=} end - [default= source.length] Only for use with source
+   *   arrays.
    * @return {?(Array|Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
@@ -3625,12 +3661,13 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing object/function with specified keys and values.
+   *
    * @public
    * @param {!(Object|function)} obj
    * @param {(!Array|string)=} keys - If provided it is converted to an array of
    *   keys to limit the object fill to. The chars in the following list can be
    *   used as the separator for keys in a keys string (chars listed in order of
-   *   rank):  ", "  ","  "|"  " "
+   *   rank): ` ", "  ","  "|"  " " `
    * @param {*} val
    * @return {!(Object|function)}
    */
@@ -3653,6 +3690,7 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills an existing or new array with specified values.
+   *
    * @public
    * @param {!(Array|number)} arr - If number makes new array with arr length.
    * @param {*} val
@@ -3677,9 +3715,10 @@ var fill = (function fillPrivateScope() {
 
   /**
    * Fills a new string with specified values.
+   *
    * @public
    * @param {number} count
-   * @param {*} val - All val types are converted to string via String(val).
+   * @param {*} val - All val types are converted to string via `String(val)`.
    * @return {string}
    */
   fill.string = function fillString(count, val) {
@@ -3828,10 +3867,11 @@ var fuse = (function fusePrivateScope() {
   /**
    * Merges objects, concatenates arrays, appends properties, and combines
    *   strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types null is simply skipped. Remaining details per dest type:
+   *   array dest types `null` is skipped. Remaining details per dest type:
    *   - object: If only one val is provided and it is an array it is considered
    *     an array of vals. Object vals are merged with the dest. All other
    *     values are converted to strings and appended as new keys (if the key
@@ -3870,6 +3910,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties and combines strings.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -3906,6 +3947,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties and combines strings to the start of their destination.
+   *
    * @public
    * @param {!(Object|function|Array|string)} dest
    * @param {...*} vals - Details per dest type:
@@ -3948,9 +3990,10 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends properties/keys to an object.
+   *
    * @public
    * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are null are skipped. All other vals
+   * @param {...*} vals - Any vals that are `null` are skipped. All other vals
    *   that are not objects are converted to a string and appended as new keys
    *   (if the key exists on the dest the key's value is replaced with
    *   undefined). If only one val is provided and it is an array then it is
@@ -3972,6 +4015,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends values to an array and concatenates arrays.
+   *
    * @public
    * @param {!Array} dest
    * @param {...*} vals - Details per val type:
@@ -3999,6 +4043,7 @@ var fuse = (function fusePrivateScope() {
 
   /**
    * Appends strings to a string.
+   *
    * @public
    * @param {string} dest
    * @param {...*} vals - All non-string vals are converted to strings.
@@ -4312,22 +4357,23 @@ var get = (function getPrivateScope() {
 
   /**
    * Gets keys, indexes, values, or substrings from an object, array, or string.
-   *   Note that the use of the word, "match", within vitals.get refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   *
    * @public
    * @param {?(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
-   *     object source: array of own keys
-   *     array source:  array of indexes
-   *     string source: an error (i.e. a val is required for string sources)
+   *   - object source: array of own keys
+   *   - array source:  array of indexes
+   *   - string source: an error (i.e. a val is required for string sources)
    * @param {*=} val - For a RegExp val and object/string source this method
    *   will return the following values (per source type):
-   *     object source: an array of source values where the key matches the val
-   *     string source: an array of substrings that match the val
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
    *   Otherwise this method will return the following values (per source type):
-   *     object source: an array of source keys where the value === val
-   *     array source:  an array of source indexes where the value === val
-   *     string source: an array of starting indexes where the substring == val
+   *   - object: an array of source keys where the `value === val`
+   *   - array:  an array of source indexes where the `value === val`
+   *   - string: an array of starting indexes where the `substring == val`
    * @return {Array}
    */
   function get(source, val) {
@@ -4353,14 +4399,15 @@ var get = (function getPrivateScope() {
   }
 
   /**
-   * Gets an array of keys from an object. Note that the use of the word,
-   *   "match", within vitals.get.keys refers to [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of keys from an object.
+   *
    * @public
    * @param {!(Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
    * @param {*=} val - This method will return an array of source keys where the
-   *   key matches the val if the val is a RegExp. Otherwise this method will
-   *   return an array of source keys where the value == val.
+   *   key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *   the val if the val is a RegExp. Otherwise this method will return an
+   *   array of source keys where the `value == val`.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
@@ -4375,8 +4422,9 @@ var get = (function getPrivateScope() {
   };
 
   /**
-   * Gets an array of keys from an object that match a pattern.
-   * @see [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of keys from an object that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *   a pattern.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} pattern - If pattern is not a RegExp or string it is converted
@@ -4392,7 +4440,8 @@ var get = (function getPrivateScope() {
   };
 
   /**
-   * Gets an array of keys from an object where the value === val.
+   * Gets an array of keys from an object where the `value === val`.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {*} val
@@ -4409,17 +4458,18 @@ var get = (function getPrivateScope() {
   get.keys.byVal = get.keys.byValue;
 
   /**
-   * Gets an array of indexes from an array or string by value/pattern. Note
-   *   that the use of the word, "match", within vitals.get.indexes refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of indexes from an array or string by value/pattern.
+   *
    * @public
    * @param {!(Object|string)} source - If no val param is defined this method
    *   will return an array of all an array's indexes or throw an error if the
    *   source is a string.
-   * @param {*=} val - If source is an array this method will return an array of
-   *   indexes where the value === val. Otherwise if the source is a string the
-   *   val is converted to a string if it is not a RegExp or string and an array
-   *   of starting indexes that match the val are returned.
+   * @param {*=} val - This method returns the indexes by one of the following
+   *   (per source type):
+   *   - array:  Return an array of indexes where the `value === val`.
+   *   - string: A non-regex val is converted to a string and then an array of
+   *     starting indexes that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val are returned.
    * @return {!Array}
    */
   get.indexes = function getIndexes(source, val) {
@@ -4440,17 +4490,18 @@ var get = (function getPrivateScope() {
   get.ii = get.indexes;
 
   /**
-   * Gets an array of values/substrings from an object or string. Note that the
-   *   use of the word, "match", within vitals.get.values refers to
-   *   [vitals.has.pattern]{@link https://github.com/imaginate/vitals/blob/master/src/methods/has.js}.
+   * Gets an array of values/substrings from an object or string.
+   *
    * @public
    * @param {!(Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the
    *   source is a string.
    * @param {*=} val - If the val is not a RegExp or string it is converted to a
    *   string. This method will return the following values (per source type):
-   *     object source: an array of source values where the key matches the val
-   *     string source: an array of substrings that match the val
+   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
+   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+   *     the val
    * @return {!Array}
    */
   get.values = function getValues(source, val) {
@@ -4772,16 +4823,18 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty (that accepts null),
-   *   String.prototype.includes, RegExp.prototype.test, and
-   *   Array.prototype.includes.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   (that accepts `null`), [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes),
+   *   [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test),
+   *   and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+   *
    * @public
    * @param {?(Object|function|string|Array)} source
-   * @param {*} key - If source is a string the following two statements apply:
-   *   For a RegExp key the source is tested for the RegExp pattern. Otherwise
-   *   the source is searched for a substring of the string-converted key.
-   *   If source is an array or arguments object the key is searched for in the
-   *   object's indexed values.
+   * @param {*} key - Details (per source type):
+   *   - string: For a RegExp key the source is tested for the RegExp pattern.
+   *     Otherwise the source is searched for a substring of the
+   *     string-converted key.
+   *   - array/arguments: The key is searched for in the source's indexed values.
    * @return {boolean}
    */
   function has(source, key) {
@@ -4798,7 +4851,9 @@ var has = (function hasPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.prototype.hasOwnProperty that accepts null.
+   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -4817,6 +4872,7 @@ var has = (function hasPrivateScope() {
 
   /**
    * A shortcut that checks for a value in an object.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} val
@@ -4836,7 +4892,9 @@ var has = (function hasPrivateScope() {
   has.val = has.value;
 
   /**
-   * A shortcut for String.prototype.includes and RegExp.prototype.test.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *   and [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *
    * @public
    * @param {string} source
    * @param {*} pattern
@@ -4851,7 +4909,8 @@ var has = (function hasPrivateScope() {
   };
 
   /**
-   * A shortcut for String.prototype.includes.
+   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes).
+   *
    * @public
    * @param {string} source
    * @param {*} str
@@ -4868,7 +4927,9 @@ var has = (function hasPrivateScope() {
   has.substr = has.substring;
 
   /**
-   * A shortcut for Object.prototype.propertyIsEnumerable that accepts null.
+   * A shortcut for [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+   *   that accepts `null`.
+   *
    * @public
    * @param {?(Object|function)} source
    * @param {*} key
@@ -4923,28 +4984,29 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object/array/string by invoking an action over
    *   the values of an existing object/array/string.
+   *
    * @public
    * @param {!(Object|function|Array|string)} source
    * @param {*} iteratee - Details per source type:
-   *   object source: The iteratee must be a function with the optional params
+   *   - object: The iteratee must be a function with the optional params -
    *     value, key, source. Note this method lazily clones the source based on
-   *     the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   array source: The iteratee must be a function with the optional params
+   *   - array: The iteratee must be a function with the optional params -
    *     value, index, source. Note this method lazily slices the source based
-   *     on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *     on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *     (i.e. if you alter the source object within the iteratee ensure to
    *     define the iteratee's third param so you can safely assume all
    *     references to the source are its original values).
-   *   string source: The iteratee must be a pattern to search for within the
+   *   - string: The iteratee must be a pattern to search for within the
    *     source. If the pattern is not a string or RegExp it will be converted
    *     to a string.
    * @param {*=} replacement - Only use (and required) with string sources. If
    *   not a string or function the replacement is converted to a string. For
    *   details about using replacement functions see the
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the iteratee or
    *   replacement function is bound to its value.
    * @return {!(Object|function|Array|string)}
@@ -4972,12 +5034,13 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new object with the same keys and new values by
    *   invoking an action over the values of an existing object.
+   *
    * @public
    * @param {!(Object|function)} source
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -4999,13 +5062,14 @@ var remap = (function remapPrivateScope() {
   /**
    * A shortcut for making a new array by invoking an action over the values of
    *   an existing array-like object.
+   *
    * @public
    * @param {(!Object|function|string)} source - If source is a string it is
    *   converted to an array using this list of chars as the separator (chars
-   *   listed in order of rank):  ", "  ","  "|"  " "
+   *   listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -5028,14 +5092,15 @@ var remap = (function remapPrivateScope() {
   remap.arr = remap.array;
 
   /**
-   * A shortcut for [String.prototype.replace]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace}
+   * A shortcut for [String.prototype.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
    *   that defaults to global replacements instead of only the first.
+   *
    * @public
    * @param {string} source
    * @param {*} pattern - If not a RegExp the pattern is converted to a string.
    * @param {*} replacement - If not a string or function the replacement is
    *   converted to a string. For details about using replacement functions see
-   *   [String.prototype.replace function param]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter}.
+   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
    * @param {Object=} thisArg - If thisArg is supplied the replacement function
    *   is bound to its value.
    * @return {string}
@@ -5238,6 +5303,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a result by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -5246,9 +5312,9 @@ var roll = (function rollPrivateScope() {
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
    * @param {function(*=, *=, (string|number)=, !(Object|function)=)} iteratee -
-   *   It has the optional params - previousValue, currentValue, key/index,
+   *   It has the optional params - previousValue, currentValue, key/index, and
    *   source. Note this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's fourth param so you can safely assume all references to
    *   the source are its original values).
@@ -5295,6 +5361,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a sum by iterating over object maps, arrays, or
    *   cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -5304,7 +5371,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -5351,6 +5418,7 @@ var roll = (function rollPrivateScope() {
   /**
    * A shortcut for deriving a difference by iterating over object maps, arrays,
    *   or cycles.
+   *
    * @public
    * @param {*=} base - If defined it is the base value. Note that for number
    *   sources (i.e. cycles) a base is required.
@@ -5360,7 +5428,7 @@ var roll = (function rollPrivateScope() {
    *   - number source: Iterates over all cycles.
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -6033,6 +6101,7 @@ var same = (function samePrivateScope() {
 
   /**
    * A functional representation of strict equality.
+   *
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -6047,6 +6116,7 @@ var same = (function samePrivateScope() {
 
   /**
    * A functional representation of loose equality.
+   *
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -6091,8 +6161,9 @@ var slice = (function slicePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end) and
-   *   String.prototype.slice(start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   *   and [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {?(Object|Array|function|string)} source
    * @param {number=} start - [default= 0]
@@ -6115,7 +6186,8 @@ var slice = (function slicePrivateScope() {
   }
 
   /**
-   * A shortcut for Array.prototype.slice.call(obj, start, end).
+   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
+   *
    * @public
    * @param {?(Object|Array|function)} source
    * @param {number=} start - [default= 0]
@@ -6135,7 +6207,8 @@ var slice = (function slicePrivateScope() {
   slice.arr = slice.array;
 
   /**
-   * A shortcut for String.prototype.slice(start, end).
+   * A shortcut for [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   *
    * @public
    * @param {string} str
    * @param {number=} start - [default= 0]
@@ -6186,6 +6259,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps, arrays, or cycles until an end
    *   value is returned.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -6196,10 +6270,10 @@ var until = (function untilPrivateScope() {
    *   - number source: Ends after the count of cycles equals the source.
    *   - string source: Converted to an array source and ends after all indexes
    *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank):  ", "  ","  "|"  " "
+   *     order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -6240,6 +6314,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over object maps until an end value is returned or
    *   all properties are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -6247,7 +6322,7 @@ var until = (function untilPrivateScope() {
    * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
-   *   [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -6270,16 +6345,17 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for iterating over array-like objects until an end value is
    *   returned or all indexed values are visited.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
    * @param {!(Object|function|string)} source - If source is a string it is
    *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.copy.array]{@link https://github.com/imaginate/vitals/blob/master/src/methods/copy.js})
-   *   the source based on the iteratee's [length property]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length}
+   *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
+   *   the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    *   (i.e. if you alter the source object within the iteratee ensure to define
    *   the iteratee's third param so you can safely assume all references to the
    *   source are its original values).
@@ -6305,6 +6381,7 @@ var until = (function untilPrivateScope() {
   /**
    * A shortcut for invoking an action until an end value is returned or the
    *   number of cycles is reached.
+   *
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
@@ -6526,36 +6603,35 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   - object: Must be "propName => propVal" or "propName => propDescriptor".
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
    *   - array:  An array of key names to define.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -6563,6 +6639,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   function amend(obj, props, val, descriptor, strongType, setter) {
@@ -6617,16 +6699,18 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -6652,34 +6736,35 @@ var amend = (function amendPrivateScope() {
   };
 
   /**
-   * A shortcut for Object.defineProperty.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
    * @param {*=} val - A val is required if a descriptor is not supplied.
-   * @param {!Object=} descriptor - [default= {
-   *     writable: true,
-   *     enumerable: true,
-   *     configurable: true
-   *   }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
    * @param {string=} strongType - If defined the new property is assigned
    *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails an [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined the new property is
    *   assigned an accessor descriptor that includes a setter that sets the
    *   property to the value returned by this setter method. The setter method
    *   will receive two params, the new value and the current value. If a
    *   strongType is defined this setter will not get called until the new value
    *   passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.property = function amendProperty(obj, key, val, descriptor, strongType, setter) {
@@ -6723,8 +6808,9 @@ var amend = (function amendPrivateScope() {
   amend.prop = amend.property;
 
   /**
-   * A shortcut for Object.defineProperty that only updates the descriptor of an
-   *   existing property.
+   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+   *   that only updates the descriptor of an existing property.
+   *
    * @public
    * @param {!Object} obj
    * @param {string} key
@@ -6747,37 +6833,35 @@ var amend = (function amendPrivateScope() {
   amend.prop.config = amend.property.config;
 
   /**
-   * A shortcut for Object.defineProperties that includes easier property
-   *   assignment, strong type assignment, and more flexible default descriptor
-   *   options.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, *>|Array<string>|string)} props - The details for
    *   the props param are as follows (per props type):
-   *   object: Defined as "propName => propVal" or "propName => propDescriptor".
-   *   array:  An array of key names to define.
-   *   string: Converted to an array of key names to define. Use the following
-   *     list of chars for the separator (chars listed in order of rank):
-   *     ", "  ","  "|"  " "
+   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
+   *   - array:  An array of key names to define.
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {*=} val - Only use (and required) if an array or string of keys is
    *   given for the props param. This param defines the value assigned for all
    *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - The default descriptor values for each prop.
-   *   [default= { writable: true, enumerable: true, configurable: true }]
+   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
+   *   The default descriptor values for each prop.
    * @param {string=} strongType - If defined all new properties are assigned
    *   an accessor descriptor (unless assigned a data descriptor in the props
    *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails an
-   *   [is method]{@link https://github.com/imaginate/vitals/blob/master/src/methods/is.js}
+   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
    *   type test. The setter is as follows:
-   *     ```
-   *     prop.set = function setter(newVal) {
-   *       if ( !vitals.is(strongType, newVal) ) {
-   *         throw new TypeError("Invalid type for object property value.");
-   *       }
-   *       value = newVal;
-   *     };
-   *     ```
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = newVal;
+   *   };
+   *   ```
    * @param {function(*, *): *=} setter - If defined all new properties are
    *   assigned an accessor descriptor (unless assigned a data descriptor in the
    *   props param) that includes a setter (unless assigned a setter in the
@@ -6785,6 +6869,12 @@ var amend = (function amendPrivateScope() {
    *   Note that this setter function will receive two params, the new value and
    *   the current value. Also note that if the strongType param is defined this
    *   setter will not get called until the new value passes the type test.
+   *   ```
+   *   prop.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *     value = setter(newVal, value);
+   *   };
+   *   ```
    * @return {!Object}
    */
   amend.properties = function amendProperties(obj, props, val, descriptor, strongType, setter) {
@@ -6841,16 +6931,18 @@ var amend = (function amendPrivateScope() {
   amend.props = amend.properties;
 
   /**
-   * A shortcut for Object.defineProperties that only updates the descriptors of
-   *   existing properties.
+   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   *   that only updates the descriptors of existing properties.
+   *
    * @public
    * @param {!Object} obj
    * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
    *   for the props param are as follows (per props type):
-   *   - object: Must be "propName => propDescriptor" pairs.
+   *   - object: Must be `propName => propDescriptor` pairs.
    *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names. Use this list of chars for
-   *     the separator (chars listed in order of rank):  ", "  ","  "|"  " "
+   *   - string: Converted to an array of key names using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     `", "` &nbsp; `","` &nbsp; `"|"` &nbsp; `" "`
    * @param {!Object=} descriptor - Only use (and required) if an array or
    *   string of keys is given for the props param.
    * @return {!Object}
@@ -7582,11 +7674,13 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -7613,11 +7707,13 @@ var create = (function createPrivateScope() {
   }
 
   /**
-   * A shortcut for Object.create that includes easier property assignment,
-   *   strong type assignment, and more flexible default descriptor options.
-   *   Note that this method uses [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
-   *   for assigning properties to the new object. See [vitals.amend]{@link https://github.com/imaginate/vitals/blob/master/src/methods/amend.js}
+   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   *   that includes easier value assignment, strong type assignment, and more
+   *   flexible default descriptor options. Note that this method uses
+   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
+   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
    *   for documentation about the property params.
+   *
    * @public
    * @param {Object} proto
    * @param {!(Object<string, *>|Array<string>|string)} props
@@ -7701,6 +7797,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
@@ -7718,6 +7815,7 @@ var freeze = (function freezePrivateScope() {
 
   /**
    * Freezes an object with optional deep freeze.
+   *
    * @public
    * @param {(Object|?function)} obj
    * @param {boolean=} deep
@@ -7811,6 +7909,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
@@ -7828,6 +7927,7 @@ var seal = (function sealPrivateScope() {
 
   /**
    * Seals an object with optional deep seal.
+   *
    * @public
    * @param {?(Object|function)} obj
    * @param {boolean=} deep
