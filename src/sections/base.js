@@ -3259,8 +3259,12 @@ var each = (function eachPrivateScope() {
    *   - object source: Iterates over all properties in random order.
    *   - array source:  Iterates over all indexed properties from 0 to length.
    *   - number source: Iterates over all cycles.
-   *   - string source: Converted to an array source. Use this list of chars for
-   *     the separator (chars listed in order of rank): ` ", "  ","  "|"  " " `
+   *   - string source: Converted to an array source using one of the following
+   *     list of values for the separator (values listed in order of rank):
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
    *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -3317,8 +3321,12 @@ var each = (function eachPrivateScope() {
    *
    * @public
    * @param {!(Object|function|string)} source - If source is a string it is
-   *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
+   *   converted to an array using one of the following list of values for the
+   *   separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -3493,9 +3501,14 @@ var fill = (function fillPrivateScope() {
    * @param {?(Array|Object|function|number)} source - If source is a number
    *   returns a new string filled with the value x times.
    * @param {(!Array|string)=} keys - Only use with an object/function source.
-   *   If provided it is converted to an array of keys to limit the object fill
-   *   to. The chars in the following list can be used as the separator for keys
-   *   in a keys string (chars listed in order of rank): ` ", "  ","  "|"  " " `
+   *   If defined it is considered an array of keys that will limit the fill
+   *   action. If a string is defined it is converted to an array using one of
+   *   the values in the following list for the separator (values listed in
+   *   order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {*} val - The value to fill the array, object, or string with.
    * @param {number=} start - [default= 0] Only for use with source arrays.
    * @param {number=} end - [default= source.length] Only for use with source
@@ -3538,13 +3551,17 @@ var fill = (function fillPrivateScope() {
    * Fills an existing object/function with specified keys and values.
    *
    * @public
-   * @param {!(Object|function)} obj
-   * @param {(!Array|string)=} keys - If provided it is converted to an array of
-   *   keys to limit the object fill to. The chars in the following list can be
-   *   used as the separator for keys in a keys string (chars listed in order of
-   *   rank): ` ", "  ","  "|"  " " `
+   * @param {(!Object|function)} obj
+   * @param {(!Array|string)=} keys - If defined it is considered an array of
+   *   keys that will limit the fill action. If a string is defined it is
+   *   converted to an array using one of the values in the following list for
+   *   the separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   fill.object = function fillObject(obj, keys, val) {
 
@@ -3567,7 +3584,7 @@ var fill = (function fillPrivateScope() {
    * Fills an existing or new array with specified values.
    *
    * @public
-   * @param {!(Array|number)} arr - If number makes new array with arr length.
+   * @param {(!Array|number)} arr - If number makes new array with arr length.
    * @param {*} val
    * @param {number=} start - [default= 0]
    * @param {number=} end - [default= arr.length]
@@ -4940,8 +4957,12 @@ var remap = (function remapPrivateScope() {
    *
    * @public
    * @param {(!Object|function|string)} source - If source is a string it is
-   *   converted to an array using this list of chars as the separator (chars
-   *   listed in order of rank): ` ", "  ","  "|"  " " `
+   *   converted to an array using one of the following values as the separator
+   *   (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -6318,9 +6339,12 @@ var until = (function untilPrivateScope() {
    *   - object source: Ends after all properties are visited.
    *   - array source:  Ends after all indexes are visited.
    *   - number source: Ends after the count of cycles equals the source.
-   *   - string source: Converted to an array source and ends after all indexes
-   *     are visited. Use this list of chars for the separator (chars listed in
-   *     order of rank): ` ", "  ","  "|"  " " `
+   *   - string source: Converted to an array source using one of the following
+   *     values as the separator (values listed in order of rank):
+   *     -- `", "`
+   *     -- `","`
+   *     -- `"|"`
+   *     -- `" "`
    * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
    *   has the optional params - value, key/index, source. Note this method
    *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -6368,8 +6392,8 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function)} obj
-   * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
+   * @param {(!Object|function)} obj
+   * @param {function(*=, string=, (!Object|function)=)} iteratee - The iteratee
    *   must be a function with the optional params - value, key, source. Note
    *   this method lazily clones the source based on the iteratee's
    *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -6399,9 +6423,13 @@ var until = (function untilPrivateScope() {
    * @public
    * @param {*} end - A value that ends the iteration if returned by the
    *   iteratee.
-   * @param {!(Object|function|string)} source - If source is a string it is
-   *   converted to an array. Use the following list of chars for the separator
-   *   (chars listed in order of rank): ` ", "  ","  "|"  " " `
+   * @param {(!Object|function|string)} source - If source is a string it is
+   *   converted to an array source using one of the following values as the
+   *   separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
    *   function with the optional params - value, index, source. Note this
    *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
