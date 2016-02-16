@@ -4361,10 +4361,10 @@ var get = (function getPrivateScope() {
    * @public
    * @param {?(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
-   *   - object source: array of own keys
-   *   - array source:  array of indexes
-   *   - string source: an error (i.e. a val is required for string sources)
-   * @param {*=} val - For a RegExp val and object/string source this method
+   *   - object: array of own keys
+   *   - array:  array of indexes
+   *   - string: an error (i.e. a val is required for string sources)
+   * @param {*=} val - For a `RegExp` val and object/string source this method
    *   will return the following values (per source type):
    *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
@@ -4373,7 +4373,7 @@ var get = (function getPrivateScope() {
    *   Otherwise this method will return the following values (per source type):
    *   - object: an array of source keys where the `value === val`
    *   - array:  an array of source indexes where the `value === val`
-   *   - string: an array of starting indexes where the `substring == val`
+   *   - string: an array of starting indexes where `substring === String(val)`
    * @return {Array}
    */
   function get(source, val) {
@@ -4402,12 +4402,12 @@ var get = (function getPrivateScope() {
    * Gets an array of keys from an object.
    *
    * @public
-   * @param {!(Object|function)} source - If no val param is defined this method
+   * @param {(!Object|function)} source - If no val param is defined this method
    *   will return an array of all an object's own keys.
    * @param {*=} val - This method will return an array of source keys where the
    *   key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *   the val if the val is a RegExp. Otherwise this method will return an
-   *   array of source keys where the `value == val`.
+   *   the val if the val is a `RegExp`. Otherwise this method will return an
+   *   array of source keys where the `value === String(val)`.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
@@ -4426,8 +4426,8 @@ var get = (function getPrivateScope() {
    *   a pattern.
    *
    * @public
-   * @param {!(Object|function)} source
-   * @param {*} pattern - If pattern is not a RegExp or string it is converted
+   * @param {(!Object|function)} source
+   * @param {*} pattern - If pattern is not a `RegExp` or string it is converted
    *   to a string.
    * @return {!Array<string>}
    */
@@ -4443,7 +4443,7 @@ var get = (function getPrivateScope() {
    * Gets an array of keys from an object where the `value === val`.
    *
    * @public
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {*} val
    * @return {!Array}
    */
@@ -4496,8 +4496,8 @@ var get = (function getPrivateScope() {
    * @param {!(Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the
    *   source is a string.
-   * @param {*=} val - If the val is not a RegExp or string it is converted to a
-   *   string. This method will return the following values (per source type):
+   * @param {*=} val - If the val is not a `RegExp` or string it is converted to
+   *   a string. This method will return the following values (per source type):
    *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
    *     the val
    *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
@@ -4526,7 +4526,7 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @return {!Array<string>}
    */
   function _allKeys(obj) {
@@ -4543,7 +4543,7 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @param {*} pattern
    * @return {!Array<string>}
    */
@@ -4562,7 +4562,7 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @param {*} val
    * @return {!Array<string>}
    */
@@ -4580,7 +4580,7 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @return {!Array<*>}
    */
   function _allObjVals(obj) {
@@ -4597,7 +4597,7 @@ var get = (function getPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @param {*} pattern
    * @return {!Array<*>}
    */
