@@ -25,8 +25,8 @@ var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
 
-var METHOD = /[a-z]+(?:\.[a-zA-Z.]+)?/;
-var ALIAS  = /\([a-zA-Z.*|]+\)/;
+var METHOD = /[a-z]+(?:\.[a-zA-Z._]+)?/;
+var ALIAS  = /\([a-zA-Z.*|_]+\)/;
 
 /**
  * @param {string} section

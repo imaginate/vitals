@@ -24,7 +24,7 @@ var fuse   = vitals.fuse;
 var get    = vitals.get;
 var remap  = vitals.remap;
 
-var GET  = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z.]+)?(?: +\([a-zA-Z.*|]+\))? *\n)+/;
+var GET  = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z._]+)?(?: +\([a-zA-Z.*|_]+\))? *\n)+/;
 var TRIM = /\n *\/\/ PUBLIC METHODS *\n/;
 var SLIM = /\n$/;
 var BASE = /[a-z]+(?= |\n|\.)/;

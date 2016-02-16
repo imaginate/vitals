@@ -25,7 +25,7 @@ var get    = vitals.get;
 var remap  = vitals.remap;
 var roll   = vitals.roll;
 
-var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .]+/g;
+var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
 var TRIM = /\/\*\*\n +\* /;
 var SPLIT = / *\n +\*(?: {1,3}|\/\n)?/g;
 
@@ -48,6 +48,8 @@ module.exports = function mkBody(content, fscontent) {
   var methods;
   /** @type {string} */
   var body;
+
+  if (GET.lastIndex !== 0) GET.lastIndex = 0;
 
   methods = get(content, GET);
 

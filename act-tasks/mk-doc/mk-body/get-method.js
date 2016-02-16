@@ -19,8 +19,9 @@
 'use strict';
 
 var cut = require('node-vitals')('cut');
+var remap = require('node-vitals')('remap');
 
-var TRIM = /\bfunction\b| +/g;
+var TRIM = /\bfunction\b|[ \]']/g;
 
 /**
  * @param {!Array<string>} lines
@@ -36,5 +37,6 @@ module.exports = function getMethod(lines) {
   last = lines.length - 1;
   method = lines[last];
   method = cut(method, TRIM);
+  method = remap(method, '[', '.');
   return method;
 };
