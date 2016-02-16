@@ -6316,8 +6316,17 @@ var to = (function toPrivateScope() {
    * Converts a value to an array.
    *
    * @public
-   * @param {(string|number)} val
-   * @param {*=} separator - Only valid if a string val is used.
+   * @param {(string|number)} val - Details per val type:
+   *   - string: [String.prototype.split](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+   *     is called on the string.
+   *   - number: A new array of val length is returned.
+   * @param {*=} separator - Only used with a string val. If no separator is
+   *   defined one of the following values is used (values listed in order of
+   *   rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
    * @return {!Array}
    */
   to.array = function toArray(val, separator) {
