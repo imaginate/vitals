@@ -49,30 +49,36 @@ var run = (function runPrivateScope() {
 
   /**
    * A shortcut for [child_process.spawnSync](https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
-   *   that returns the stdout.
+   *   that returns the stdout. Note that **vitals.run is considered unstable**
+   *   as it does not yet have a test suite. It is also scheduled for a future
+   *   rebuild. Use with caution and if possible help out by [contributing](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)
+   *   some unit tests.
    *
    * @public
    * @param {string} cmd
    * @param {Object=} opts
    * @param {?string=} opts.eol - [default= "LF"] The end of line character to
-   *   use when normalizing the result. If opts.eol is null or opts.buffer
-   *   is true and opts.eol is undefined no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
-   * @param {boolean=} opts.buffer - [default= false] If true and stdout is a
+   *   use when normalizing the result. If opts.eol is `null` or opts.buffer
+   *   is `true` and opts.eol is `undefined` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @param {boolean=} opts.buffer - [default= false] If `true` and stdout is a
    *   buffer the buffer is returned. Otherwise a string of stdout is returned.
    * @param {boolean=} opts.catchExit - [default= true] If process is exited
    *   with an error code an error is logged.
    * @param {string=} opts.encoding - [default= "utf8"] If opts.buffer is
-   *   true and opts.encoding is undefined no encoding is set.
+   *   `true` and opts.encoding is `undefined` no encoding is set.
    * @param {string=} opts.cwd
-   * @param {(string|!Buffer)=} opts.input
+   * @param {(!Buffer|string)=} opts.input
    * @param {!Object=} opts.env
    * @param {number=} opts.uid
    * @param {number=} opts.gid
    * @param {number=} opts.timeout
    * @param {string=} opts.killSignal
    * @param {number=} opts.maxBuffer
-   * @return {(string|!Buffer)}
+   * @return {(!Buffer|string)}
    */
   function run(cmd, opts) {
 
