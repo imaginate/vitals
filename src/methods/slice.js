@@ -3,7 +3,7 @@
  * VITALS - JS METHOD - SLICE
  * -----------------------------------------------------------------------------
  * @section base
- * @version 3.0.0-beta.1
+ * @version 3.0.0
  * @see [vitals.slice]{@link https://github.com/imaginate/vitals/wiki/vitals.slice}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

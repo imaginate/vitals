@@ -3,7 +3,7 @@
  * VITALS - JS METHOD - REMAP
  * -----------------------------------------------------------------------------
  * @section base
- * @version 3.0.0-beta.1
+ * @version 3.0.0
  * @see [vitals.remap]{@link https://github.com/imaginate/vitals/wiki/vitals.remap}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

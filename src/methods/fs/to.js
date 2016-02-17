@@ -3,7 +3,7 @@
  * VITALS - FILE SYSTEM METHODS - TO
  * -----------------------------------------------------------------------------
  * @section fs
- * @version 3.0.0-beta.1
+ * @version 3.0.0
  * @see [vitals.to]{@link https://github.com/imaginate/vitals/wiki/vitals.to}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
