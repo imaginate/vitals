@@ -49,8 +49,12 @@ var get = {};
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is `null` no
-   *   normalization is completed. Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing the result. If opts.eol is `null` or opts.buffer
+   *   is `true` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {(!Buffer|string)}
    */
   get.file = function getFile(filepath, opts) {
