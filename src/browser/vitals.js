@@ -1060,7 +1060,7 @@ var is = (function isPrivateScope() {
   /**
    * Checks if a value(s) is one of the provided types. See the [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
    *   for all available options. Note that all object types are nullable by
-   *   default (i.e. a `null` value will return `true`).
+   *   default (i.e. `null` will return `true`).
    *
    * @public
    * @param {string} types - The valid data types. See the [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
