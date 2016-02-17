@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - IS.DIRECTORY
+ * VITALS UNIT TESTS: VITALS.IS.DIRECTORY
  * -----------------------------------------------------------------------------
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
  *

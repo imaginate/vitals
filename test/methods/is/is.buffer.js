@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - IS.BUFFER
+ * VITALS UNIT TESTS: VITALS.IS.BUFFER
  * -----------------------------------------------------------------------------
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
  *

@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - IS.FILE
+ * VITALS UNIT TESTS: VITALS.IS.FILE
  * -----------------------------------------------------------------------------
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
  *
