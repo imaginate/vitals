@@ -45,15 +45,18 @@ var copy = {};
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file,
    *   a valid dirpath to an existing directory, or a valid dirpath to a new
-   *   directory noted by ending with a slash.
+   *   directory noted by ending with `"/"`.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
    * @param {boolean=} opts.buffer - [default= true] Use and return a buffer.
    * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
-   *   opts.buffer is false.
+   *   opts.buffer is `false`.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing a string result. If opts.buffer is true or
-   *   opts.eol is null no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing a string result. If opts.buffer is `true` or
+   *   opts.eol is `null` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {(!Buffer|string)} The contents of the source.
    */
   copy.file = function copyFile(source, dest, opts) {
@@ -85,18 +88,21 @@ var copy = {};
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory or
-   *   a valid dirpath to a new directory noted by ending with a slash.
+   *   a valid dirpath to a new directory noted by ending with a `"/"`.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
    * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
    * @param {boolean=} opts.buffer - [default= true] Use a buffer.
    * @param {string=} opts.encoding - [default= "utf8"] Only applies if
-   *   opts.buffer is false.
+   *   opts.buffer is `false`.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing a string result. If opts.buffer is true or
-   *   opts.eol is null no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing a string result. If opts.buffer is `true` or
+   *   opts.eol is `null` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {!Array} The filepaths copied to the dest.
    */
   copy.directory = function copyDirectory(source, dest, opts) {
