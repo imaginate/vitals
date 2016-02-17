@@ -36,6 +36,8 @@ var is = {};
   //////////////////////////////////////////////////////////
 
   /**
+   * Checks if a value(s) is a `Buffer` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -51,6 +53,8 @@ var is = {};
   is.buf = is.buffer;
 
   /**
+   * Checks if a value(s) is a valid directory-path.
+   *
    * @public
    * @param {...*} dirpath
    * @return {boolean}
@@ -66,6 +70,8 @@ var is = {};
   is.dir = is.directory;
 
   /**
+   * Checks if a value(s) is a valid file-path.
+   *
    * @public
    * @param {...*} filepath
    * @return {boolean}
