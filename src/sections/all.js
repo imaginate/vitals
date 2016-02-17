@@ -1060,7 +1060,7 @@ var is = (function isPrivateScope() {
    * A shortcut for type checking values.
    *
    * @public
-   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
    * @param {...*} val - The value to evaluate. If multiple values are
    *   provided all must pass the type check to return true.
    * @return {boolean} The evaluation result.
@@ -1088,6 +1088,8 @@ var is = (function isPrivateScope() {
   }
 
   /**
+   * Checks if a value(s) is `null`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1103,6 +1105,8 @@ var is = (function isPrivateScope() {
   is.nil = is['null'];
 
   /**
+   * Checks if a value(s) is `undefined`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1116,6 +1120,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is a boolean.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1131,6 +1137,8 @@ var is = (function isPrivateScope() {
   is.bool = is['boolean'];
 
   /**
+   * Checks if a value(s) is a string.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1146,7 +1154,7 @@ var is = (function isPrivateScope() {
   is.str = is.string;
 
   /**
-   * Empty strings return false in this method.
+   * Checks if a value(s) is a non-empty string.
    *
    * @public
    * @param {...*} val
@@ -1163,6 +1171,8 @@ var is = (function isPrivateScope() {
   is._str = is._string;
 
   /**
+   * Checks if a value(s) is a number.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1178,7 +1188,7 @@ var is = (function isPrivateScope() {
   is.num = is.number;
 
   /**
-   * Zeros return false in this method.
+   * Checks if a value(s) is a number and not `0`.
    *
    * @public
    * @param {...*} val
@@ -1195,6 +1205,8 @@ var is = (function isPrivateScope() {
   is._num = is._number;
 
   /**
+   * Checks if a value(s) is `NaN`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1208,6 +1220,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is an object.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1223,7 +1237,7 @@ var is = (function isPrivateScope() {
   is.obj = is.object;
 
   /**
-   * Functions return true in this method.
+   * Checks if a value(s) is an object or function.
    *
    * @public
    * @param {...*} val
@@ -1240,6 +1254,10 @@ var is = (function isPrivateScope() {
   is._obj = is._object;
 
   /**
+   * Checks if a value(s) is a function. Note that `vitals.is.function` is not
+   *   valid in ES3 and some ES5 browser environments. Use `vitals.is.func` for
+   *   browser safety.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1259,6 +1277,8 @@ var is = (function isPrivateScope() {
   catch (error) {}
 
   /**
+   * Checks if a value(s) is an `Array` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1274,7 +1294,7 @@ var is = (function isPrivateScope() {
   is.arr = is.array;
 
   /**
-   * Arguments return true in this method.
+   * Checks if a value(s) is an `Array` or `Arguments` instance.
    *
    * @public
    * @param {...*} val
@@ -1291,6 +1311,8 @@ var is = (function isPrivateScope() {
   is._arr = is._array;
 
   /**
+   * Checks if a value(s) is a `RegExp` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1307,6 +1329,8 @@ var is = (function isPrivateScope() {
   is.re = is.regexp;
 
   /**
+   * Checks if a value(s) is a `Date` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1320,6 +1344,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is an `Error` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1335,6 +1361,8 @@ var is = (function isPrivateScope() {
   is.err = is.error;
 
   /**
+   * Checks if a value(s) is an `Arguments` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1348,6 +1376,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is a DOM `Document` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1363,6 +1393,8 @@ var is = (function isPrivateScope() {
   is.doc = is.document;
 
   /**
+   * Checks if a value(s) is a DOM `Element` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1378,7 +1410,7 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty.
+   * Checks if a value(s) is considered empty.
    *
    * @public
    * @param {...*} val
@@ -1402,6 +1434,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen).
+   *
    * @public
    * @param {...(Object|?function)} val
    * @return {boolean}
@@ -1415,6 +1449,9 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is whole (i.e. has no decimal). Zero and non-decimal
+   *   negative numbers will return `true`.
+   *
    * @public
    * @param {...number} val
    * @return {boolean}
@@ -1428,8 +1465,10 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is odd.
+   *
    * @public
-   * @param {...number} val - Each value must be a whole number.
+   * @param {...number} val - Each val must be a whole number.
    * @return {boolean}
    */
   is.odd = function isOddNumber(val) {
@@ -1441,8 +1480,10 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is even.
+   *
    * @public
-   * @param {...number} val - Each value must be a whole number.
+   * @param {...number} val - Each val must be a whole number.
    * @return {boolean}
    */
   is.even = function isEvenNumber(val) {
@@ -2025,9 +2066,9 @@ var copy = (function copyPrivateScope() {
   copy.regex = copy.regexp;
 
   /**
-   * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in ES3 browser environments for
-   *   compatibility.
+   * Creates a new function with the properties of the given function. Note that
+   *   `vitals.copy.function` is not valid in ES3 and some ES5 browser
+   *   environments. Use `vitals.copy.func` for browser safety.
    *
    * @public
    * @param {function} func
@@ -8231,15 +8272,18 @@ var seal = (function sealPrivateScope() {
    * @param {string} source - Must be a valid filepath to an existing file.
    * @param {string} dest - Must be a valid filepath to a new or existing file,
    *   a valid dirpath to an existing directory, or a valid dirpath to a new
-   *   directory noted by ending with a slash.
+   *   directory noted by ending with `"/"`.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.buffer.
    * @param {boolean=} opts.buffer - [default= true] Use and return a buffer.
    * @param {string=} opts.encoding - [default= "utf8"] - Only applies if
-   *   opts.buffer is false.
+   *   opts.buffer is `false`.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing a string result. If opts.buffer is true or
-   *   opts.eol is null no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing a string result. If opts.buffer is `true` or
+   *   opts.eol is `null` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {(!Buffer|string)} The contents of the source.
    */
   copy.file = function copyFile(source, dest, opts) {
@@ -8271,18 +8315,21 @@ var seal = (function sealPrivateScope() {
    * @public
    * @param {string} source - Must be a valid dirpath to an existing directory.
    * @param {string} dest - Must be a valid dirpath to an existing directory or
-   *   a valid dirpath to a new directory noted by ending with a slash.
+   *   a valid dirpath to a new directory noted by ending with a `"/"`.
    * @param {(boolean|Object)=} opts - A boolean value sets opts.deep.
    * @param {boolean=} opts.deep - [default= false] Whether to include sub
    *   directories.
    * @param {boolean=} opts.recursive - Alias for opts.deep.
    * @param {boolean=} opts.buffer - [default= true] Use a buffer.
    * @param {string=} opts.encoding - [default= "utf8"] Only applies if
-   *   opts.buffer is false.
+   *   opts.buffer is `false`.
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing a string result. If opts.buffer is true or
-   *   opts.eol is null no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing a string result. If opts.buffer is `true` or
+   *   opts.eol is `null` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {!Array} The filepaths copied to the dest.
    */
   copy.directory = function copyDirectory(source, dest, opts) {
@@ -8612,8 +8659,12 @@ var seal = (function sealPrivateScope() {
    *   returned.
    * @param {string=} opts.encoding - [default= "utf8"]
    * @param {?string=} opts.eol - [default= "LF"] The end of line character
-   *   to use when normalizing the result. If opts.eol is `null` no
-   *   normalization is completed. Optional values: ` "LF", "CR", "CRLF" `
+   *   to use when normalizing the result. If opts.eol is `null` or opts.buffer
+   *   is `true` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
    * @return {(!Buffer|string)}
    */
   get.file = function getFile(filepath, opts) {
@@ -9185,6 +9236,8 @@ var seal = (function sealPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
+   * Checks if a value(s) is a `Buffer` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -9200,6 +9253,8 @@ var seal = (function sealPrivateScope() {
   is.buf = is.buffer;
 
   /**
+   * Checks if a value(s) is a valid directory-path.
+   *
    * @public
    * @param {...*} dirpath
    * @return {boolean}
@@ -9215,6 +9270,8 @@ var seal = (function sealPrivateScope() {
   is.dir = is.directory;
 
   /**
+   * Checks if a value(s) is a valid file-path.
+   *
    * @public
    * @param {...*} filepath
    * @return {boolean}
@@ -9346,30 +9403,36 @@ var run = (function runPrivateScope() {
 
   /**
    * A shortcut for [child_process.spawnSync](https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
-   *   that returns the stdout.
+   *   that returns the stdout. Note that **vitals.run is considered unstable**
+   *   as it does not yet have a test suite. It is also scheduled for a future
+   *   rebuild. Use with caution and if possible help out by [contributing](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)
+   *   some unit tests.
    *
    * @public
    * @param {string} cmd
    * @param {Object=} opts
    * @param {?string=} opts.eol - [default= "LF"] The end of line character to
-   *   use when normalizing the result. If opts.eol is null or opts.buffer
-   *   is true and opts.eol is undefined no normalization is completed.
-   *   Optional values: ` "LF", "CR", "CRLF" `
-   * @param {boolean=} opts.buffer - [default= false] If true and stdout is a
+   *   use when normalizing the result. If opts.eol is `null` or opts.buffer
+   *   is `true` and opts.eol is `undefined` no normalization is completed.
+   *   Optional values:
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @param {boolean=} opts.buffer - [default= false] If `true` and stdout is a
    *   buffer the buffer is returned. Otherwise a string of stdout is returned.
    * @param {boolean=} opts.catchExit - [default= true] If process is exited
    *   with an error code an error is logged.
    * @param {string=} opts.encoding - [default= "utf8"] If opts.buffer is
-   *   true and opts.encoding is undefined no encoding is set.
+   *   `true` and opts.encoding is `undefined` no encoding is set.
    * @param {string=} opts.cwd
-   * @param {(string|!Buffer)=} opts.input
+   * @param {(!Buffer|string)=} opts.input
    * @param {!Object=} opts.env
    * @param {number=} opts.uid
    * @param {number=} opts.gid
    * @param {number=} opts.timeout
    * @param {string=} opts.killSignal
    * @param {number=} opts.maxBuffer
-   * @return {(string|!Buffer)}
+   * @return {(!Buffer|string)}
    */
   function run(cmd, opts) {
 
