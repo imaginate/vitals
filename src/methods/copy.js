@@ -123,9 +123,9 @@ var copy = (function copyPrivateScope() {
   copy.regex = copy.regexp;
 
   /**
-   * Creates a new function with the properties of the given function. Use
-   *   copy.func instead of copy.function in ES3 browser environments for
-   *   compatibility.
+   * Creates a new function with the properties of the given function. Note that
+   *   `vitals.copy.function` is not valid in ES3 and some ES5 browser
+   *   environments. Use `vitals.copy.func` for browser safety.
    *
    * @public
    * @param {function} func
