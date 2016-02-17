@@ -60,7 +60,7 @@ var is = (function isPrivateScope() {
    * A shortcut for type checking values.
    *
    * @public
-   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/method-is-types)
+   * @param {string} types - The valid data types. See [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
    * @param {...*} val - The value to evaluate. If multiple values are
    *   provided all must pass the type check to return true.
    * @return {boolean} The evaluation result.
@@ -88,6 +88,8 @@ var is = (function isPrivateScope() {
   }
 
   /**
+   * Checks if a value(s) is `null`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -103,6 +105,8 @@ var is = (function isPrivateScope() {
   is.nil = is['null'];
 
   /**
+   * Checks if a value(s) is `undefined`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -116,6 +120,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is a boolean.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -131,6 +137,8 @@ var is = (function isPrivateScope() {
   is.bool = is['boolean'];
 
   /**
+   * Checks if a value(s) is a string.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -146,7 +154,7 @@ var is = (function isPrivateScope() {
   is.str = is.string;
 
   /**
-   * Empty strings return false in this method.
+   * Checks if a value(s) is a non-empty string.
    *
    * @public
    * @param {...*} val
@@ -163,6 +171,8 @@ var is = (function isPrivateScope() {
   is._str = is._string;
 
   /**
+   * Checks if a value(s) is a number.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -178,7 +188,7 @@ var is = (function isPrivateScope() {
   is.num = is.number;
 
   /**
-   * Zeros return false in this method.
+   * Checks if a value(s) is a number and not `0`.
    *
    * @public
    * @param {...*} val
@@ -195,6 +205,8 @@ var is = (function isPrivateScope() {
   is._num = is._number;
 
   /**
+   * Checks if a value(s) is `NaN`.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -208,6 +220,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is an object.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -223,7 +237,7 @@ var is = (function isPrivateScope() {
   is.obj = is.object;
 
   /**
-   * Functions return true in this method.
+   * Checks if a value(s) is an object or function.
    *
    * @public
    * @param {...*} val
@@ -240,6 +254,10 @@ var is = (function isPrivateScope() {
   is._obj = is._object;
 
   /**
+   * Checks if a value(s) is a function. Note that `vitals.is.function` is not
+   *   valid in ES3 and some ES5 browser environments. Use `vitals.is.func` for
+   *   browser safety.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -259,6 +277,8 @@ var is = (function isPrivateScope() {
   catch (error) {}
 
   /**
+   * Checks if a value(s) is an `Array` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -274,7 +294,7 @@ var is = (function isPrivateScope() {
   is.arr = is.array;
 
   /**
-   * Arguments return true in this method.
+   * Checks if a value(s) is an `Array` or `Arguments` instance.
    *
    * @public
    * @param {...*} val
@@ -291,6 +311,8 @@ var is = (function isPrivateScope() {
   is._arr = is._array;
 
   /**
+   * Checks if a value(s) is a `RegExp` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -307,6 +329,8 @@ var is = (function isPrivateScope() {
   is.re = is.regexp;
 
   /**
+   * Checks if a value(s) is a `Date` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -320,6 +344,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is an `Error` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -335,6 +361,8 @@ var is = (function isPrivateScope() {
   is.err = is.error;
 
   /**
+   * Checks if a value(s) is an `Arguments` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -348,6 +376,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is a DOM `Document` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -363,6 +393,8 @@ var is = (function isPrivateScope() {
   is.doc = is.document;
 
   /**
+   * Checks if a value(s) is a DOM `Element` instance.
+   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -378,7 +410,7 @@ var is = (function isPrivateScope() {
   is.elem = is.element;
 
   /**
-   * Checks if a value is considered empty.
+   * Checks if a value(s) is considered empty.
    *
    * @public
    * @param {...*} val
@@ -402,6 +434,8 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a value(s) is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen).
+   *
    * @public
    * @param {...(Object|?function)} val
    * @return {boolean}
@@ -415,6 +449,9 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is whole (i.e. has no decimal). Zero and non-decimal
+   *   negative numbers will return `true`.
+   *
    * @public
    * @param {...number} val
    * @return {boolean}
@@ -428,8 +465,10 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is odd.
+   *
    * @public
-   * @param {...number} val - Each value must be a whole number.
+   * @param {...number} val - Each val must be a whole number.
    * @return {boolean}
    */
   is.odd = function isOddNumber(val) {
@@ -441,8 +480,10 @@ var is = (function isPrivateScope() {
   };
 
   /**
+   * Checks if a number(s) is even.
+   *
    * @public
-   * @param {...number} val - Each value must be a whole number.
+   * @param {...number} val - Each val must be a whole number.
    * @return {boolean}
    */
   is.even = function isEvenNumber(val) {
