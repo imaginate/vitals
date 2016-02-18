@@ -149,17 +149,17 @@ describe('vitals.copy (section:base)', function() {
   title = titleStr('error', 'should throw an error');
   describe(title, function() {
 
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.copy();
+      });
+    });
+
     title = callStr({}, 'fail');
     it(title, function() {
       assert.throws(function() {
         vitals.copy({}, 'fail');
-      });
-    });
-
-    title = callStr(true, 'fail');
-    it(title, function() {
-      assert.throws(function() {
-        vitals.copy(true, 'fail');
       });
     });
 
