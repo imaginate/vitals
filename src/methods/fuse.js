@@ -3,7 +3,7 @@
  * VITALS - JS SHORTCUTS - FUSE
  * -----------------------------------------------------------------------------
  * @section base
- * @version 3.0.0
+ * @version 4.0.0
  * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

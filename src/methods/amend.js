@@ -3,7 +3,7 @@
  * VITALS - JS METHOD - AMEND
  * -----------------------------------------------------------------------------
  * @section strict
- * @version 3.0.0
+ * @version 4.0.0
  * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

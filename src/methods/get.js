@@ -3,7 +3,7 @@
  * VITALS - BASE METHOD - GET
  * -----------------------------------------------------------------------------
  * @section base
- * @version 3.0.0
+ * @version 4.0.0
  * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
