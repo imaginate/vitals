@@ -196,6 +196,13 @@ describe('vitals.get (section:base)', function() {
         });
       });
 
+      title = callStr(null);
+      it(title, function() {
+        assert.throws(function() {
+          vitals.get(null);
+        });
+      });
+
       title = callStr('str');
       it(title, function() {
         assert.throws(function() {
