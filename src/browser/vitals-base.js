@@ -1978,7 +1978,10 @@ var copy = (function copyPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * Returns a copy of the given value.
+   * Get a [copy](https://en.wikipedia.org/wiki/Cloning_(programming)) of any
+   *   value. Note that for array values [vitals.slice](https://github.com/imaginate/vitals/wiki/vitals.slice)
+   *   only copies the indexed properties while [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
+   *   copies all of the properties.
    *
    * @public
    * @param {*} val
@@ -2002,7 +2005,7 @@ var copy = (function copyPrivateScope() {
   }
 
   /**
-   * Creates a new object with the properties of the given object.
+   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) an object.
    *
    * @public
    * @param {!Object} obj
@@ -2020,7 +2023,10 @@ var copy = (function copyPrivateScope() {
   copy.obj = copy.object;
 
   /**
-   * Creates a new array with the properties of the given object.
+   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) an array.
+   *   Note that [vitals.slice.array](https://github.com/imaginate/vitals/wiki/vitals.slice#slicearray)
+   *   only copies the indexed properties while [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray)
+   *   copies all of the properties.
    *
    * @public
    * @param {!Object} obj
@@ -2040,7 +2046,7 @@ var copy = (function copyPrivateScope() {
   copy.args = copy.array;
 
   /**
-   * Creates a new RegExp from a given RegExp.
+   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) a `RegExp`.
    *
    * @public
    * @param {!RegExp} regex
@@ -2059,9 +2065,12 @@ var copy = (function copyPrivateScope() {
   copy.regex = copy.regexp;
 
   /**
-   * Creates a new function with the properties of the given function. Note that
-   *   `vitals.copy.function` is not valid in ES3 and some ES5 browser
-   *   environments. Use `vitals.copy.func` for browser safety.
+   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) a function
+   *   (i.e. creates a new function with all properties from the old function).
+   *   Note that the copied function's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   *   will be set to `0`. Also note that `vitals.copy.function` is not valid in
+   *   ES3 and some ES5 browser environments. Use `vitals.copy.func` for browser
+   *   safety.
    *
    * @public
    * @param {function} func
