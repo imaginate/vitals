@@ -4305,7 +4305,7 @@ var get = (function getPrivateScope() {
    * Gets keys, indexes, values, or substrings from an object, array, or string.
    *
    * @public
-   * @param {?(Object|function|Array|string)} source - If no val param is
+   * @param {!(Object|function|Array|string)} source - If no val param is
    *   defined this method will return the following values (per source type):
    *   - object: array of own keys
    *   - array:  array of indexes
@@ -4320,11 +4320,9 @@ var get = (function getPrivateScope() {
    *   - object: an array of source keys where the `value === val`
    *   - array:  an array of source indexes where the `value === val`
    *   - string: an array of starting indexes where `substring === String(val)`
-   * @return {Array}
+   * @return {!Array}
    */
   function get(source, val) {
-
-    if ( _is.nil(source) ) return null;
 
     if ( _is.str(source) ) {
       if (arguments.length < 2) throw _error('No val defined');
@@ -4407,7 +4405,7 @@ var get = (function getPrivateScope() {
    * Gets an array of indexes from an array or string by value/pattern.
    *
    * @public
-   * @param {!(Object|string)} source - If no val param is defined this method
+   * @param {(!Object|string)} source - If no val param is defined this method
    *   will return an array of all an array's indexes or throw an error if the
    *   source is a string.
    * @param {*=} val - This method returns the indexes by one of the following
@@ -4439,7 +4437,7 @@ var get = (function getPrivateScope() {
    * Gets an array of values/substrings from an object or string.
    *
    * @public
-   * @param {!(Object|function|string)} source - If no val param is defined this
+   * @param {(!Object|function|string)} source - If no val param is defined this
    *   method will return an array of all the object's values or an error if the
    *   source is a string.
    * @param {*=} val - If the val is not a `RegExp` or string it is converted to
