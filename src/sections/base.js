@@ -1874,6 +1874,7 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
+    if (!arguments.length) throw _error('Missing a val');
     if ( !_is.un.bool(deep) ) throw _error.type('deep');
 
     return !_is._obj(val)
