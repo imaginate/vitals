@@ -4880,40 +4880,46 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   *   (that accepts `null`), [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes),
-   *   [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test),
-   *   and [Array.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes).
+   * Checks if an object owns a property, if an array has a value, or a string
+   *   has a pattern or substring.
    *
    * @public
    * @param {?(Object|function|string|Array)} source
-   * @param {*} key - Details (per source type):
-   *   - string: For a RegExp key the source is tested for the RegExp pattern.
-   *     Otherwise the source is searched for a substring of the
-   *     string-converted key.
-   *   - array/arguments: The key is searched for in the source's indexed values.
+   * @param {*} val - Details (per source type):
+   *   - object: The val is converted to a string, and the object is checked for
+   *     a matching key via [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
+   *   - array: The array is checked for a matching indexed value via
+   *     `val === value`.
+   *   - string: If a `RegExp` val is provided the string source is tested for a
+   *     matching pattern via [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *     Otherwise the val is converted to a string, and the source string is
+   *     checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *     or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
+   *   - null: Regardless of val `false` is returned.
    * @return {boolean}
    */
-  function has(source, key) {
+  function has(source, val) {
 
-    if (arguments.length < 2) throw _error('No key defined');
+    if (arguments.length < 2) throw _error('No val defined');
     
     if ( _is.nil(source) ) return false;
 
-    if ( _is.str(source) ) return _match(source, key);
+    if ( _is.str(source) ) return _match(source, val);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
-    return _is._arr(source) ? _inArr(source, key) : _own(source, key);
+    return _is._arr(source) ? _inArr(source, val) : _own(source, val);
   }
 
   /**
-   * A shortcut for [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   *   that accepts `null`.
+   * Checks if an object owns a property.
    *
    * @public
-   * @param {?(Object|function)} source
-   * @param {*} key
+   * @param {(Object|?function)} source
+   * @param {*} key - Details (per source type):
+   *   - object: The key is converted to a string, and the object is checked for
+   *     a matching key via [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
+   *   - null: Regardless of key `false` is returned.
    * @return {boolean}
    */
   has.key = function hasKey(source, key) {
@@ -4928,11 +4934,15 @@ var has = (function hasPrivateScope() {
   };
 
   /**
-   * A shortcut that checks for a value in an object.
+   * Checks if an object or array has a value.
    *
    * @public
-   * @param {?(Object|function)} source
-   * @param {*} val
+   * @param {(Object|?function)} source
+   * @param {*} val - Details (per source type):
+   *   - object: The object is checked for a matching val via `val === value`.
+   *   - array: The array is checked for a matching indexed value via
+   *     `val === value`.
+   *   - null: Regardless of val `false` is returned.
    * @return {boolean}
    */
   has.value = function hasValue(source, val) {
@@ -4949,12 +4959,16 @@ var has = (function hasPrivateScope() {
   has.val = has.value;
 
   /**
-   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   *   and [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   * Checks if a string has a pattern or substring.
    *
    * @public
    * @param {string} source
-   * @param {*} pattern
+   * @param {*} pattern - Details (per pattern type):
+   *   - regex: The string source is tested for a matching pattern via
+   *     [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
+   *   - non-regex: The pattern is converted to a string, and the source string
+   *     is checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *     or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
    * @return {boolean}
    */
   has.pattern = function hasPattern(source, pattern) {
@@ -4966,30 +4980,34 @@ var has = (function hasPrivateScope() {
   };
 
   /**
-   * A shortcut for [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes).
+   * Checks if a string has a substring.
    *
    * @public
    * @param {string} source
-   * @param {*} str
+   * @param {*} val - The val is converted to a string, and the source string
+   *   is checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   *   or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
    * @return {boolean}
    */
-  has.substring = function hasSubstring(source, str) {
+  has.substring = function hasSubstring(source, val) {
 
     if ( !_is.str(source) ) throw _error.type('source', 'substring');
-    if (arguments.length < 2) throw _error('No str defined', 'substring');
+    if (arguments.length < 2) throw _error('No val defined', 'substring');
 
-    return _inStr(source, str);
+    return _inStr(source, val);
   };
   // define shorthand
   has.substr = has.substring;
 
   /**
-   * A shortcut for [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-   *   that accepts `null`.
+   * Checks if an enumerable property exists in an object.
    *
    * @public
-   * @param {?(Object|function)} source
-   * @param {*} key
+   * @param {(Object|?function)} source
+   * @param {*} key - Details (per source type):
+   *   - object: The key is converted to a string, and the object is checked for
+   *     a matching key via [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable).
+   *   - null: Regardless of key `false` is returned.
    * @return {boolean}
    */
   has.enumerable = function hasEnumerable(source, key) {
