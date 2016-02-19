@@ -41,7 +41,7 @@ module.exports = function getReturns(lines) {
   var desc;
 
   lines = pruneLines(lines);
-  type  = remap(lines[0], TYPE, '$1');
+  type  = lines.length ? remap(lines[0], TYPE, '$1') : 'undefined';
   desc  = getDescription(lines, 0);
   desc  = desc && fuse('\n', desc, '\n');
   return fuse('<i>', type, '</i>\n', desc);
@@ -61,5 +61,5 @@ function pruneLines(lines) {
     if ( has(line, /^@return/) ) start = i;
     return start === undefined;
   });
-  return slice(lines, start, -1);
+  return start === undefined ? [] : slice(lines, start, -1);
 }
