@@ -127,7 +127,7 @@ function updateDocsVersion(version) {
   filepaths = get.filepaths(base, opts);
   insertBadges(base, filepaths, version);
 
-  base = './act-tasks/mk-doc/templates';
+  base = './act-tasks/helpers/mk-doc/templates';
   filepaths = get.filepaths(base, opts);
   insertBadges(base, filepaths, version);
 }

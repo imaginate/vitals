@@ -20,7 +20,7 @@
 
 var get = require('node-vitals')('fs').get;
 
-var TEMPLATE = get.file('act-tasks/mk-doc/templates/footer.md');
+var TEMPLATE = get.file('act-tasks/helpers/mk-doc/templates/footer.md');
 
 /**
  * @param {string} content
