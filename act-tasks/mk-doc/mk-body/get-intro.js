@@ -19,20 +19,29 @@
 'use strict';
 
 var vitals = require('node-vitals')('base');
-var cut    = vitals.cut;
-var fuse   = vitals.fuse;
 var has    = vitals.has;
-var roll   = vitals.roll;
 var slice  = vitals.slice;
 var until  = vitals.until;
 
 var PUBLIC = /^@public/;
+
+var getDescription = require('./get-description');
 
 /**
  * @param {!Array<string>} lines
  * @return {string}
  */
 module.exports = function getIntro(lines) {
+  lines = pruneLines(lines);
+  return getDescription(lines);
+};
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {!Array<string>}
+ */
+function pruneLines(lines) {
 
   /** @type {number} */
   var end;
@@ -41,9 +50,5 @@ module.exports = function getIntro(lines) {
     if ( has(line, PUBLIC) ) end = i;
     return end === undefined;
   });
-  lines = slice(lines, 0, end);
-  return roll.up('', lines, function(line, i) {
-    line = cut(line, /^ +/);
-    return i && line ? fuse(' ', line) : line;
-  });
-};
+  return slice(lines, 0, end);
+}
