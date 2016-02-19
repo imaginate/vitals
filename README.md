@@ -10,25 +10,27 @@ _vitals_ is a foundational JavaScript library designed to replace all native str
 //       watch it own stringy things
 
 var v, i, t, a, l, s;
-var life, _;
+var functional, life;
 
 life = '123abc345XYZ';
 v = require('node-vitals')('base');
-i = v.slice(life, -3, -1);    // "XY"
-t = v.fill(4, '+>');          // "+>+>+>+>"
-a = v.cut(life, 3, /[a-z]/g); // "1245XYZ"
-l = v.has(life, 'Z');         // true
-s = v.remap(life, 3, 'w$&');  // "12w3abcw345XYZ"
-s = v.get(s, /[A-Z]/);        // [ "X", "Y", "Z" ]
-s = v.to.arr(s, '~');         // "X~Y~Z"
-s = v.is.str(i, t, a, l, s);  // false
-s = v.is('str|bool', i, t, a, l, s); // true
+i = v.cut(life, 3, /[a-z]/g); // "1245XYZ"
+t = v.remap(life, 3, 'w$&');  // "12w3abcw345XYZ"
+a = v.slice(life, -3, -1);    // "XY"
+l = v.get(life, /[A-Z]/);     // [ "X", "Y", "Z" ]
+s = v.fuse('v', life);        // "v123abc345XYZ"
+v.has(life, 'Z');             // true
+v.is('str|bool', i, t, a, l); // true
+v.is.str(i, t, a, l);         // false
+l = v.to.str(l, '~');         // "X~Y~Z"
+v.is.str(i, t, a, l);         // true
 
+// goodbye confusing equality, hello simplicity
 var same = require('node-vitals')('same');
-v =  1;
-_ = '1';
+var v =  1;
+var _ = '1';
 same.ish(v, _); // true
-same(v, _);    // false
+same(v, _);     // false
 ```
 
 
