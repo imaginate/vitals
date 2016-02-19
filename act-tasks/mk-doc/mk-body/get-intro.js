@@ -33,7 +33,7 @@ var getDescription = require('./get-description');
  */
 module.exports = function getIntro(lines) {
   lines = pruneLines(lines);
-  return getDescription(lines);
+  return getDescription(lines, 0);
 };
 
 /**
