@@ -27,12 +27,6 @@ describe('vitals.to.number (section:base)', function() {
       assert( result === 0 );
     });
 
-    title = callStr(undefined);
-    it(title, function() {
-      var result = vitals.to.num(undefined);
-      assert( is.nan(result) );
-    });
-
     title = callStr(true);
     it(title, function() {
       var result = vitals.to.num(true);
@@ -43,12 +37,6 @@ describe('vitals.to.number (section:base)', function() {
     it(title, function() {
       var result = vitals.to.num(false);
       assert( result === 0 );
-    });
-
-    title = callStr('str');
-    it(title, function() {
-      var result = vitals.to.num('str');
-      assert( is.nan(result) );
     });
 
     title = callStr('10');
@@ -63,43 +51,6 @@ describe('vitals.to.number (section:base)', function() {
       assert( result === 10 );
     });
 
-    title = callStr(NaN);
-    it(title, function() {
-      var result = vitals.to.num(NaN);
-      assert( is.nan(result) );
-    });
-
-    title = callStr({ a: 1, b: 2 });
-    it(title, function() {
-      var result = vitals.to.num({ a: 1, b: 2 });
-      assert( is.nan(result) );
-    });
-
-    title = callStr([ 1, 2, 3 ]);
-    it(title, function() {
-      var result = vitals.to.num([ 1, 2, 3 ]);
-      assert( is.nan(result) );
-    });
-
-    title = callStr(function(){});
-    it(title, function() {
-      var result = vitals.to.num(function(){});
-      assert( is.nan(result) );
-    });
-
-    title = callStr(/regex/g);
-    it(title, function() {
-      var result = vitals.to.num(/regex/g);
-      assert( is.nan(result) );
-    });
-
-    title = callStr( (function(){ return arguments; })(1, 2, 3) );
-    it(title, function() {
-      var args = (function(){ return arguments; })(1, 2, 3);
-      var result = vitals.to.num(args);
-      assert( is.nan(result) );
-    });
-
   });
 
   describe('should throw an error', function() {
@@ -108,6 +59,27 @@ describe('vitals.to.number (section:base)', function() {
     it(title, function() {
       assert.throws(function() {
         vitals.to.num();
+      });
+    });
+
+    title = callStr(undefined);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.to.num(undefined);
+      });
+    });
+
+    title = callStr('invalid');
+    it(title, function() {
+      assert.throws(function() {
+        vitals.to.num('invalid');
+      });
+    });
+
+    title = callStr([ 1, 2, 3 ]);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.to.num([ 1, 2, 3 ]);
       });
     });
 
