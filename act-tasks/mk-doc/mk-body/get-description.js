@@ -28,10 +28,10 @@ var roll   = vitals.roll;
 var slice  = vitals.slice;
 
 var TRIM = /^(?:@param \{[^}]+\} [a-zA-Z.]+ *-? *(?:\[default= [^\]]+\])?|@returns? \{[^}]+\} *-? *)/;
-var DASH = /^-(?=-)/;
 var INDENT = /^ +/;
+var SUBDASH = /^ *-/;
 var SUBLIST = /^ *--/;
-var NEW_LIST = /^ *-/;
+var NEW_LIST = /^ *-(?!-)/;
 var NEW_CODE = /^ *```/;
 var END_CODE = /^ *```$/;
 var LANGUAGE = /^ *```[a-zA-Z]+$/;
@@ -206,8 +206,7 @@ function parseSublist(line) {
     list = false;
   }
 
-  line = cut(line, INDENT);
-  line = cut(line, DASH);
+  line = cut(line, SUBDASH);
   return fuse('\n', indent, line);
 }
 
