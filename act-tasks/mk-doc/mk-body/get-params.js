@@ -146,6 +146,10 @@ function getDefault(lines, indents) {
  * @return {string}
  */
 function getDescrip(lines, indents) {
+
+  /** @type {string} */
+  var desc;
+
   desc = getDescription(lines, indents);
   return desc && fuse('\n', desc, '\n');
 }
