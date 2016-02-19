@@ -6372,17 +6372,27 @@ var to = (function toPrivateScope() {
   to.str = to.string;
 
   /**
-   * Converts a value to a number.
+   * Converts a primitive value to a number.
    *
    * @public
-   * @param {*} val
-   * @return {number}
+   * @param {?(string|number|boolean)} val - Only [valid strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
+   *   allowed.
+   * @return {number} `NaN` values will not be returned.
    */
   to.number = function toNumber(val) {
 
     if (!arguments.length) throw _error('Missing a val', 'number');
 
-    return Number(val);
+    if ( _is.num(val) ) return val;
+    if ( _is.nil.bool(val) ) return val ? 1 : 0;
+
+    if ( !_is.str(val) ) throw _error.type('val', 'number');
+
+    val = Number(val);
+
+    if ( _is.nan(val) ) throw _error.range('val', 'see github.com/imaginate/vitals/wiki/vitals.to#tonumber', 'number');
+
+    return val;
   };
   // define shorthand
   to.num = to.number;
