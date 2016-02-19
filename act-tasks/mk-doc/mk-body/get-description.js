@@ -122,8 +122,14 @@ var code;
  * @return {string}
  */
 function parseLines(lines, _indents) {
+
   indents = _indents;
   indent = getIndent(indents);
+
+  sublist = false;
+  list = false;
+  code = false;
+
   return roll.up('', lines, function(line) {
     return line
       ? code
