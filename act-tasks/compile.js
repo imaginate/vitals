@@ -9,9 +9,6 @@
  *
  * Supporting Libraries:
  * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -33,15 +30,6 @@ exports['methods'] = {
   }
 };
 
-var vitals = require('node-vitals')('base', 'fs');
-var cut    = vitals.cut;
-var each   = vitals.each;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var to     = vitals.to;
-
 var BROWSER  = './src/browser';
 var SECTIONS = './src/sections';
 
@@ -49,6 +37,10 @@ var INSERTS  = / *\/\/ INSERT ([a-zA-Z-_\/]+\.js)\n/g;
 var INTRO    = /^[\s\S]*?(\n\/{80}\n)/;
 var EXPORTS  = /\n *module\.exports = [a-zA-Z_]+;\n$/;
 var XBROWSER = /\n *\/\/ BROWSER ONLY *\n[\s\S]*?\n *\/\/ BROWSER ONLY END *\n/g;
+
+var getSections = require('./helpers/get-sections');
+var getFile = require('./helpers/get-file');
+var toFile = require('./helpers/to-file');
 
 /**
  * @public
@@ -59,21 +51,30 @@ function compileBrowser() {
   /** @type {!Array} */
   var filenames;
   /** @type {string} */
+  var filename;
+  /** @type {string} */
   var filepath;
   /** @type {string} */
   var content;
   /** @type {string} */
   var base;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  base = fuse(BROWSER, '/skeletons');
-  filenames = get.filepaths(base);
-  each(filenames, function(filename) {
-    filepath = fuse(base, '/', filename);
-    content = get.file(filepath);
-    content = insertFiles(content);
-    filepath = fuse(BROWSER, '/', filename);
-    to.file(content, filepath);
-  });
+  filenames = getSections(true, true);
+  base = BROWSER + '/skeletons';
+  len = filenames.length;
+  i = -1;
+  while (++i < len) {
+    filename = filenames[i];
+    filepath = base + '/' + filename;
+    content  = getFile(filepath);
+    content  = insertFiles(content);
+    filepath = BROWSER + '/' + filename;
+    toFile(content, filepath);
+  }
 }
 
 /**
@@ -85,22 +86,31 @@ function compileSections() {
   /** @type {!Array} */
   var filenames;
   /** @type {string} */
+  var filename;
+  /** @type {string} */
   var filepath;
   /** @type {string} */
   var content;
   /** @type {string} */
   var base;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
+  filenames = getSections(true);
   base = fuse(SECTIONS, '/skeletons');
-  filenames = get.filepaths(base);
-  each(filenames, function(filename) {
-    filepath = fuse(base, '/', filename);
-    content = get.file(filepath);
-    content = insertFiles(content);
-    content = cut(content, XBROWSER);
-    filepath = fuse(SECTIONS, '/', filename);
-    to.file(content, filepath);
-  });
+  len = filenames.length;
+  i = -1;
+  while (++i < len) {
+    filename = filenames[i];
+    filepath = base + '/' + filename;
+    content  = getFile(filepath);
+    content  = insertFiles(content);
+    content  = content.replace(XBROWSER, '');
+    filepath = SECTIONS + '/' + filename;
+    toFile(content, filepath);
+  }
 }
 
 /**
@@ -109,10 +119,10 @@ function compileSections() {
  * @return {string}
  */
 function insertFiles(content) {
-  return remap(content, INSERTS, function(o, filepath) {
-    filepath = fuse('src/', filepath);
-    content = get.file(filepath);
-    content = remap(content, INTRO, '$1');
-    return cut(content, EXPORTS);
+  return content.replace(INSERTS, function(o, filepath) {
+    filepath = 'src/' + filepath;
+    content = getFile(filepath);
+    content = content.replace(INTRO, '$1');
+    return content.replace(EXPORTS, '');
   });
 }
