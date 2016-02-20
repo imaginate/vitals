@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - CHECK STRING FOR MATCH
+ * VITALS HELPER: match
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,22 +15,67 @@
 
 'use strict';
 
-var _inStr = require('./in-str.js');
-var _is = require('./is.js');
-
-module.exports = _match;
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MATCH
+// VITALS HELPER: match
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * A shortcut for String.prototype.includes and RegExp.prototype.test.
- * @param {string} source
- * @param {*} pattern
- * @return {boolean}
- */
-function _match(source, pattern) {
-  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
-}
+var match = (function matchPrivateScope() {
+
+  /**
+   * A shortcut for `String.prototype.includes` and `RegExp.prototype.test`.
+   * @param {string} source
+   * @param {*} pattern
+   * @return {boolean}
+   */
+  function match(source, pattern) {
+    return isRegex(pattern)
+      ? pattern.test(source)
+      : inStr(source, pattern);
+  }
+
+  /**
+   * @private
+   * @return {string}
+   */
+  var toStr = Object.prototype.toString;
+
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isRegex(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
+  }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {string} str
+   * @return {boolean}
+   */
+  var baseInStr = !!String.prototype.includes
+    ? function baseInStr(source, str) { return source.includes(str); }
+    : function baseInStr(source, str) { return source.indexOf(str) !== -1; };
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} str
+   * @return {boolean}
+   */
+  function inStr(source, str) {
+    str = String(str);
+    if (!source) return !str;
+    if (!str) return true;
+    return baseInStr(source, str);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: match
+  return match;
+})();
+
+
+module.exports = match;
