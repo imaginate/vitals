@@ -24,8 +24,6 @@
 // PRIVATE HELPERS
 // *****************************************************************************
 
-// INSERT methods/helpers/own.js
-// INSERT methods/helpers/error-aid.js
 // INSERT methods/helpers/escape.js
 // INSERT methods/helpers/in-arr.js
 // INSERT methods/helpers/in-obj.js
@@ -33,6 +31,8 @@
 // INSERT methods/helpers/merge.js
 // INSERT methods/helpers/is.js
 // INSERT methods/helpers/match.js
+// INSERT methods/helpers/new-error-maker.js
+// INSERT methods/helpers/own.js
 // INSERT methods/helpers/own-enum.js
 // INSERT methods/helpers/slice-arr.js
 // INSERT methods/helpers/slice-str.js
