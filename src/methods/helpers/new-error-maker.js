@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - ERROR HELPER
+ * VITALS HELPER: newErrorMaker
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,44 +15,36 @@
 
 'use strict';
 
-module.exports = newErrorAid;
+module.exports = newErrorMaker;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ERROR-AID
+// VITALS HELPER: newErrorMaker
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @typedef {function(string, string=): !Error} ErrorAid
+ * @param {string} main - A vitals method.
+ * @return {function}
  */
+function newErrorMaker(main) {
 
-/**
- * The ErrorAid constructor.
- * @param {string} vitalsMethod
- * @return {!ErrorAid}
- */
-function newErrorAid(vitalsMethod) {
-
-  /** @type {!ErrorAid} */
-  var errorAid;
-
-  vitalsMethod = 'vitals.' + vitalsMethod;
+  main = 'vitals.' + main;
 
   /**
    * @param {string} msg
    * @param {string=} method
    * @return {!Error} 
    */
-  errorAid = function error(msg, method) {
+  var maker = function error(msg, method) {
 
     /** @type {!Error} */
-    var error;
+    var err;
 
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new Error(msg + ' for ' + method + ' call.');
-    error.__vitals = true;
-    return true;
+    method = method ? main : main + '.' + method;
+    err = new Error(msg + ' for ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
   };
 
   /**
@@ -60,17 +52,17 @@ function newErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!TypeError} 
    */
-  errorAid.type = function typeError(param, method) {
+  maker.type = function typeError(param, method) {
 
     /** @type {!TypeError} */
-    var error;
+    var err;
 
     param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-    error.__vitals = true;
-    return error;
+    method = method ? main : main + '.' + method;
+    err = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
   };
 
   /**
@@ -79,22 +71,22 @@ function newErrorAid(vitalsMethod) {
    * @param {string=} method
    * @return {!RangeError} 
    */
-  errorAid.range = function rangeError(param, valid, method) {
+  maker.range = function rangeError(param, valid, method) {
 
     /** @type {!RangeError} */
-    var error;
+    var err;
     /** @type {string} */
     var msg;
 
     param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
+    method = method ? main : main + '.' + method;
     msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
     msg += valid ? ' The valid options are: ' + valid : '';
-    error = new RangeError(msg);
-    error.__vitals = true;
-    return error;
+    err = new RangeError(msg);
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
   };
 
-  return errorAid;
+  return maker;
 }
