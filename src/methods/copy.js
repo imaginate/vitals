@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - COPY
+ * VITALS METHOD: copy
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,15 +16,15 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _inStr = require('./helpers/in-str.js');
-var _merge = require('./helpers/merge.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var inStr = require('./helpers/in-str.js');
+var merge = require('./helpers/merge.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// COPY
+// VITALS METHOD: copy
 ////////////////////////////////////////////////////////////////////////////////
 
 var copy = (function copyPrivateScope() {
@@ -167,7 +167,7 @@ var copy = (function copyPrivateScope() {
    * @return {!Object}
    */
   function _copyObj(obj, deep) {
-    return deep ? _mergeDeep({}, obj) : _merge({}, obj);
+    return deep ? _mergeDeep({}, obj) : merge({}, obj);
   }
 
   /**
@@ -182,7 +182,7 @@ var copy = (function copyPrivateScope() {
     var arr;
 
     arr = new Array(obj.length);
-    return deep ? _mergeDeep(arr, obj) : _merge(arr, obj);
+    return deep ? _mergeDeep(arr, obj) : merge(arr, obj);
   }
 
   /**
@@ -218,7 +218,7 @@ var copy = (function copyPrivateScope() {
     copiedFunc = function copiedFunction() {
       return func.apply(null, arguments);
     };
-    return deep ? _mergeDeep(copiedFunc, func) : _merge(copiedFunc, func);
+    return deep ? _mergeDeep(copiedFunc, func) : merge(copiedFunc, func);
   }
 
   //////////////////////////////////////////////////////////
@@ -246,7 +246,7 @@ var copy = (function copyPrivateScope() {
    * @type {!Object}
    * @const
    */
-  var FLAGS = _merge({
+  var FLAGS = merge({
     ignoreCase: 'i',
     multiline:  'm',
     global:     'g'
@@ -267,14 +267,14 @@ var copy = (function copyPrivateScope() {
 
     flags = '';
     for (key in FLAGS) {
-      if ( _own(FLAGS, key) && regex[key] ) {
+      if ( own(FLAGS, key) && regex[key] ) {
         flags += FLAGS[key];
       }
     }
 
     if ( _is.undefined(forceGlobal) ) return flags;
 
-    return _inStr(flags, 'g')
+    return inStr(flags, 'g')
       ? forceGlobal
         ? flags
         : flags.replace('g', '')
@@ -299,7 +299,7 @@ var copy = (function copyPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) ) {
+      if ( own(source, key) ) {
         dest[key] = copy(source[key], true);
       }
     }
@@ -310,7 +310,7 @@ var copy = (function copyPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('copy');
+  var _error = newErrorMaker('copy');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR COPY

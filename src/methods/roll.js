@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - BASE METHOD - ROLL
+ * VITALS METHOD: roll
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// ROLL
+// VITALS METHOD: roll
 ////////////////////////////////////////////////////////////////////////////////
 
 var roll = (function rollPrivateScope() {
@@ -233,7 +233,7 @@ var roll = (function rollPrivateScope() {
       case 0:
       case 1: 
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result);
           else {
             result = obj[key];
@@ -244,7 +244,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key]);
           else {
             result = obj[key];
@@ -255,7 +255,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 3:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key], key);
           else {
             result = obj[key];
@@ -266,7 +266,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key], key, obj);
           else {
             result = obj[key];
@@ -297,22 +297,22 @@ var roll = (function rollPrivateScope() {
       case 0:
       case 1: 
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result);
+        if ( own(obj, key) ) result = iteratee(result);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key]);
+        if ( own(obj, key) ) result = iteratee(result, obj[key]);
       }
       break;
       case 3:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key], key);
+        if ( own(obj, key) ) result = iteratee(result, obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key], key, obj);
+        if ( own(obj, key) ) result = iteratee(result, obj[key], key, obj);
       }
     }
     return result;
@@ -339,7 +339,7 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee();
           else {
             result = obj[key];
@@ -350,7 +350,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key]);
           else {
             result = obj[key];
@@ -361,7 +361,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key], key);
           else {
             result = obj[key];
@@ -372,7 +372,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key], key, obj);
           else {
             result = obj[key];
@@ -402,22 +402,22 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee();
+        if ( own(obj, key) ) result += iteratee();
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key]);
+        if ( own(obj, key) ) result += iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key], key);
+        if ( own(obj, key) ) result += iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key], key, obj);
+        if ( own(obj, key) ) result += iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -444,7 +444,7 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee();
           else {
             result = obj[key];
@@ -455,7 +455,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key]);
           else {
             result = obj[key];
@@ -466,7 +466,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key], key);
           else {
             result = obj[key];
@@ -477,7 +477,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key], key, obj);
           else {
             result = obj[key];
@@ -507,22 +507,22 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee();
+        if ( own(obj, key) ) result -= iteratee();
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key]);
+        if ( own(obj, key) ) result -= iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key], key);
+        if ( own(obj, key) ) result -= iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key], key, obj);
+        if ( own(obj, key) ) result -= iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -814,7 +814,7 @@ var roll = (function rollPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('roll');
+  var _error = newErrorMaker('roll');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR ROLL

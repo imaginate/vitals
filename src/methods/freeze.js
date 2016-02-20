@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - FREEZE
+ * VITALS METHOD: freeze
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 4.0.0
@@ -16,14 +16,13 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
-var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FREEZE
+// VITALS METHOD: freeze
 ////////////////////////////////////////////////////////////////////////////////
 
 var freeze = (function freezePrivateScope() {
@@ -87,7 +86,7 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && _is._obj( obj[key] ) ) {
+      if ( own(obj, key) && _is._obj( obj[key] ) ) {
         _deepFreeze( obj[key] );
       }
     }
@@ -126,7 +125,7 @@ var freeze = (function freezePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('freeze');
+  var _error = newErrorMaker('freeze');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FREEZE

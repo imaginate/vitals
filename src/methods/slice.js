@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - SLICE
+ * VITALS METHOD: slice
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _sliceArr = require('./helpers/slice-arr.js');
-var _sliceStr = require('./helpers/slice-str.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var sliceArr = require('./helpers/slice-arr.js');
+var sliceStr = require('./helpers/slice-str.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SLICE
+// VITALS METHOD: slice
 ////////////////////////////////////////////////////////////////////////////////
 
 var slice = (function slicePrivateScope() {
@@ -52,12 +52,12 @@ var slice = (function slicePrivateScope() {
 
     if ( _is.nil(source) ) return null;
 
-    if ( _is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return sliceStr(source, start, end);
 
     if ( !_is._obj(source)       ) throw _error.type('source');
     if ( !_is.num(source.length) ) throw _error.type('source.length');
 
-    return _sliceArr(source, start, end);
+    return sliceArr(source, start, end);
   }
 
   /**
@@ -76,7 +76,7 @@ var slice = (function slicePrivateScope() {
     if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
     if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
 
-    return _sliceArr(source, start, end);
+    return sliceArr(source, start, end);
   };
   // define shorthand
   slice.arr = slice.array;
@@ -96,7 +96,7 @@ var slice = (function slicePrivateScope() {
     if ( !_is.un.num(start) ) throw _error.type('start', 'string');
     if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
 
-    return _sliceStr(str, start, end);
+    return sliceStr(str, start, end);
   };
   // define shorthand
   slice.str = slice.string;
@@ -109,7 +109,7 @@ var slice = (function slicePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('slice');
+  var _error = newErrorMaker('slice');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SLICE

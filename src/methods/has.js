@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - HAS
+ * VITALS METHOD: has
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,18 +16,18 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _ownEnum = require('./helpers/own-enum.js');
-var _inObj = require('./helpers/in-obj.js');
-var _inArr = require('./helpers/in-arr.js');
-var _inStr = require('./helpers/in-str.js');
-var _match = require('./helpers/match.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var ownEnum = require('./helpers/own-enum.js');
+var inObj = require('./helpers/in-obj.js');
+var inArr = require('./helpers/in-arr.js');
+var inStr = require('./helpers/in-str.js');
+var match = require('./helpers/match.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// HAS
+// VITALS METHOD: has
 ////////////////////////////////////////////////////////////////////////////////
 
 var has = (function hasPrivateScope() {
@@ -70,11 +70,11 @@ var has = (function hasPrivateScope() {
     
     if ( _is.nil(source) ) return false;
 
-    if ( _is.str(source) ) return _match(source, val);
+    if ( _is.str(source) ) return match(source, val);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
-    return _is._arr(source) ? _inArr(source, val) : _own(source, val);
+    return _is._arr(source) ? inArr(source, val) : own(source, val);
   }
 
   /**
@@ -96,7 +96,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
-    return _own(source, key);
+    return own(source, key);
   };
 
   /**
@@ -119,7 +119,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? inArr(source, val) : inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -142,7 +142,7 @@ var has = (function hasPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
-    return _match(source, pattern);
+    return match(source, pattern);
   };
 
   /**
@@ -160,7 +160,7 @@ var has = (function hasPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No val defined', 'substring');
 
-    return _inStr(source, val);
+    return inStr(source, val);
   };
   // define shorthand
   has.substr = has.substring;
@@ -184,7 +184,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
-    return _ownEnum(source, key);
+    return ownEnum(source, key);
   };
   // define shorthand
   try {
@@ -200,7 +200,7 @@ var has = (function hasPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('has');
+  var _error = newErrorMaker('has');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR HAS

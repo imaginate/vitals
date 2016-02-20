@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - CREATE
+ * VITALS METHOD: create
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 4.0.0
@@ -16,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _sliceArr = require('./helpers/slice-arr.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var sliceArr = require('./helpers/slice-arr.js');
 var amend = require('./amend.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// CREATE
+// VITALS METHOD: create
 ////////////////////////////////////////////////////////////////////////////////
 
 var create = (function createPrivateScope() {
@@ -59,7 +59,7 @@ var create = (function createPrivateScope() {
     if ( !_is.nil.obj(proto) ) throw _error.type('proto');
 
     if (arguments.length > 1) {
-      args = _sliceArr(arguments);
+      args = sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     }
@@ -92,7 +92,7 @@ var create = (function createPrivateScope() {
     if ( !_is.nil.obj(proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
-      args = _sliceArr(arguments);
+      args = sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     } 
@@ -136,7 +136,7 @@ var create = (function createPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('create');
+  var _error = newErrorMaker('create');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CREATE

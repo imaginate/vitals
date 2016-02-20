@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - BASE METHOD - GET
+ * VITALS METHOD: get
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -20,15 +20,15 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _match = require('./helpers/match.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var match = require('./helpers/match.js');
+var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// GET
+// VITALS METHOD: get
 ////////////////////////////////////////////////////////////////////////////////
 
 var get = (function getPrivateScope() {
@@ -223,7 +223,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && arr.push(key);
+    for (key in obj) own(obj, key) && arr.push(key);
     return arr;
   }
 
@@ -242,7 +242,7 @@ var get = (function getPrivateScope() {
 
     pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
-    for (key in obj) _own(obj, key) && _match(key, pattern) && arr.push(key);
+    for (key in obj) own(obj, key) && match(key, pattern) && arr.push(key);
     return arr;
   }
 
@@ -260,7 +260,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && obj[key] === val && arr.push(key);
+    for (key in obj) own(obj, key) && obj[key] === val && arr.push(key);
     return arr;
   }
 
@@ -277,7 +277,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && arr.push( obj[key] );
+    for (key in obj) own(obj, key) && arr.push( obj[key] );
     return arr;
   }
 
@@ -297,7 +297,7 @@ var get = (function getPrivateScope() {
     pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) {
-      _own(obj, key) && _match(key, pattern) && arr.push( obj[key] );
+      own(obj, key) && match(key, pattern) && arr.push( obj[key] );
     }
     return arr;
   }
@@ -360,7 +360,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<number>}
    */
   function _strIndexes(str, pattern) {
-    return _match(str, pattern)
+    return match(str, pattern)
       ? _is.regex(pattern)
         ? _byRegexStrKeys(str, pattern)
         : _byStrStrKeys(str, pattern)
@@ -374,7 +374,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<string>}
    */
   function _strVals(str, pattern) {
-    return _match(str, pattern)
+    return match(str, pattern)
       ? _is.regex(pattern)
         ? _byRegexStrVals(str, pattern)
         : _byStrStrVals(str, pattern)
@@ -481,7 +481,7 @@ var get = (function getPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('get');
+  var _error = newErrorMaker('get');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR GET

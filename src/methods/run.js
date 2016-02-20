@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - SHELL METHOD - RUN
+ * VITALS METHOD: run
  * -----------------------------------------------------------------------------
  * @section shell
  * @version 4.0.0
@@ -16,16 +16,15 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _normalize = require('./helpers/normalize.js');
-var _sliceArr = require('./helpers/slice-arr.js');
-var _isEol = require('./helpers/is-eol.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var normalize = require('./helpers/normalize.js');
+var sliceArr = require('./helpers/slice-arr.js');
 var _is = require('./helpers/is.js');
 var cp = require('child_process');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// RUN
+// VITALS METHOD: run
 ////////////////////////////////////////////////////////////////////////////////
 
 var run = (function runPrivateScope() {
@@ -93,12 +92,12 @@ var run = (function runPrivateScope() {
       if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
       if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
       if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
-      if ( opts.eol && !_isEol(opts.eol)  ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
     }
 
     cmd = cmd.split(' ');
     opts = _prepOptions(opts);
-    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), opts);
+    result = cp.spawnSync(cmd[0], sliceArr(cmd, 1), opts);
 
     if (result.error) throw _error('"' + result.error.toString() + '"');
     if (opts.catchExit !== false && result.status) {
@@ -107,12 +106,12 @@ var run = (function runPrivateScope() {
 
     if (opts.buffer) {
       return _is.str(result.stdout) && opts.eol
-        ? _normalize(result.stdout, opts.eol)
+        ? normalize(result.stdout, opts.eol)
         : result.stdout;
     }
 
     result.stdout = result.stdout.toString();
-    return opts.eol ? _normalize(result.stdout, opts.eol) : result.stdout;
+    return opts.eol ? normalize(result.stdout, opts.eol) : result.stdout;
   }
 
   //////////////////////////////////////////////////////////
@@ -175,7 +174,7 @@ var run = (function runPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('run');
+  var _error = newErrorMaker('run');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR RUN

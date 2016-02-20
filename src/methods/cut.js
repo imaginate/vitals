@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - CUT
+ * VITALS METHOD: cut
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,18 +16,18 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _sliceArr = require('./helpers/slice-arr.js');
-var _escape = require('./helpers/escape.js');
-var _match = require('./helpers/match.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var sliceArr = require('./helpers/slice-arr.js');
+var escape = require('./helpers/escape.js');
+var match = require('./helpers/match.js');
+var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// CUT
+// VITALS METHOD: cut
 ////////////////////////////////////////////////////////////////////////////////
 
 var cut = (function cutPrivateScope() {
@@ -95,7 +95,7 @@ var cut = (function cutPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( _is.str(source) ) {
-      vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+      vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
       return _is.arr(vals)
         ? _cutPatterns(source, vals)
         : _cutPattern(source, vals);
@@ -103,7 +103,7 @@ var cut = (function cutPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
 
     if ( _is.func(vals) ) {
       if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
@@ -112,7 +112,7 @@ var cut = (function cutPrivateScope() {
         : _filterObj(source, vals, thisArg);
     }
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
@@ -157,7 +157,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
 
     if ( _is.func(val) ) {
       if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'property');
@@ -206,7 +206,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is.num(index)         ) throw _error.type('index',         'index');
     if ( !_is.un.num(toIndex)    ) throw _error.type('toIndex',       'index');
 
-    source = _is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
@@ -238,7 +238,7 @@ var cut = (function cutPrivateScope() {
       );
     }
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
     return _cutType(source, type);
   };
 
@@ -256,7 +256,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
     return _cutVal(source, val);
   };
   // define shorthand
@@ -307,8 +307,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'properties');
     if (arguments.length < 2) throw _error('No val defined', 'properties');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    source = _is.args(source) ? sliceArr(source) : source;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   };
   // define shorthand
@@ -329,7 +329,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'keys');
     if (arguments.length < 2) throw _error('No key defined', 'keys');
 
-    keys = arguments.length > 2 ? _sliceArr(arguments, 1) : keys;
+    keys = arguments.length > 2 ? sliceArr(arguments, 1) : keys;
     return _is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
   };
 
@@ -349,8 +349,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
     if (arguments.length < 2) throw _error('No index defined', 'indexes');
 
-    source = _is.arr(source) ? source : _sliceArr(source);
-    indexes = arguments.length > 2 ? _sliceArr(arguments, 1) : indexes;
+    source = _is.arr(source) ? source : sliceArr(source);
+    indexes = arguments.length > 2 ? sliceArr(arguments, 1) : indexes;
 
     if ( !_is.arr(indexes) ) {
       if ( !_is.num(indexes) ) throw _error.type('index', 'indexes');
@@ -379,8 +379,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    source = _is.args(source) ? sliceArr(source) : source;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
   };
   // define shorthand
@@ -401,7 +401,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'patterns');
     if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
 
-    patterns = arguments.length > 2 ? _sliceArr(arguments, 1) : patterns;
+    patterns = arguments.length > 2 ? sliceArr(arguments, 1) : patterns;
     return _is.arr(patterns)
       ? _cutPatterns(source, patterns)
       : _cutPattern(source, patterns);
@@ -562,7 +562,7 @@ var cut = (function cutPrivateScope() {
   function _cutPattern(source, pattern) {
     if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern);
+      pattern = escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
     return source.replace(pattern, '');
@@ -608,13 +608,13 @@ var cut = (function cutPrivateScope() {
     match = _is.undefined(match) ? _is.regex(key) : match;
 
     if (!match) {
-      if ( _own(source, key) ) delete source[key];
+      if ( own(source, key) ) delete source[key];
       return source;
     }
 
     pattern = key;
     for (key in source) {
-      if ( _own(source, key) && _match(key, pattern) ) {
+      if ( own(source, key) && match(key, pattern) ) {
         delete source[key];
       }
     }
@@ -657,7 +657,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) && source[key] === val ) {
+      if ( own(source, key) && source[key] === val ) {
         delete source[key];
       }
     }
@@ -676,7 +676,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) && is(type, source[key]) ) {
+      if ( own(source, key) && is(type, source[key]) ) {
         delete source[key];
       }
     }
@@ -850,22 +850,22 @@ var cut = (function cutPrivateScope() {
     switch (filter.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) && !filter() ) delete source[key];
+        if ( own(obj, key) && !filter() ) delete source[key];
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key]) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key]) ) delete source[key];
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key], key) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key], key) ) delete source[key];
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
       }
     }
     return source;
@@ -1169,7 +1169,7 @@ var cut = (function cutPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('cut');
+  var _error = newErrorMaker('cut');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CUT

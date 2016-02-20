@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - UNTIL
+ * VITALS METHOD: until
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,15 +16,15 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _splitKeys = require('./helpers/split-keys.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var splitKeys = require('./helpers/split-keys.js');
+var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// UNTIL
+// VITALS METHOD: until
 ////////////////////////////////////////////////////////////////////////////////
 
 var until = (function untilPrivateScope() {
@@ -86,7 +86,7 @@ var until = (function untilPrivateScope() {
 
     if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
@@ -154,7 +154,7 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source)        ) throw _error.type('source',        'array');
     if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
@@ -236,28 +236,28 @@ var until = (function untilPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee() === end) return true;
         }
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key]) === end) return true;
         }
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key], key) === end) return true;
         }
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key], key, obj) === end) return true;
         }
       }
@@ -360,7 +360,7 @@ var until = (function untilPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('until');
+  var _error = newErrorMaker('until');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR UNTIL

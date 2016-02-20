@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - FILE SYSTEM METHODS - GET
+ * VITALS FS METHOD: get
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 4.0.0
@@ -16,10 +16,9 @@
 
 'use strict';
 
-var newErrorAid = require('../helpers/error-aid.js');
-var _normalize = require('../helpers/normalize.js');
-var _isEol = require('../helpers/is-eol.js');
-var _own = require('../helpers/own.js');
+var newErrorMaker = require('../helpers/new-error-maker.js');
+var normalize = require('../helpers/normalize.js');
+var own = require('../helpers/own.js');
 var _is = require('./helpers/is.js');
 var fs = require('fs');
 
@@ -27,7 +26,7 @@ var get = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// GET
+// VITALS FS METHOD: get
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsGetPrivateScope() {
@@ -68,7 +67,7 @@ var get = {};
       if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
       if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
       if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
     opts = _prepOptions(opts);
@@ -211,7 +210,7 @@ var get = {};
     if (options.buffer) return fs.readFileSync(source);
 
     contents = fs.readFileSync(source, options.encoding);
-    return options.eol ? _normalize(contents, options.eol) : contents;
+    return options.eol ? normalize(contents, options.eol) : contents;
   }
 
   /**
@@ -429,7 +428,7 @@ var get = {};
 
     opts = {};
     for (key in options) {
-      if ( _own(options, key) ) {
+      if ( own(options, key) ) {
         opts[key] = VALID.test(key)
           ? _parseOption(options[key], key.replace(VALID, '$1'))
           : options[key];
@@ -595,7 +594,7 @@ var get = {};
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('get');
+  var _error = newErrorMaker('get');
 
   /**
    * @param {*} val

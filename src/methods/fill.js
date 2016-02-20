@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - FILL
+ * VITALS METHOD: fill
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _splitKeys = require('./helpers/split-keys.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var splitKeys = require('./helpers/split-keys.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FILL
+// VITALS METHOD: fill
 ////////////////////////////////////////////////////////////////////////////////
 
 var fill = (function fillPrivateScope() {
@@ -80,7 +80,7 @@ var fill = (function fillPrivateScope() {
     }
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      keys = _is.str(keys) ? splitKeys(keys) : keys;
       if ( !_is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
@@ -111,7 +111,7 @@ var fill = (function fillPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      keys = _is.str(keys) ? splitKeys(keys) : keys;
       if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
@@ -181,7 +181,7 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) ) {
+      if ( own(obj, key) ) {
         obj[key] = val;
       }
     }
@@ -274,7 +274,7 @@ var fill = (function fillPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('fill');
+  var _error = newErrorMaker('fill');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FILL

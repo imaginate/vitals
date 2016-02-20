@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - AMEND
+ * VITALS METHOD: amend
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 4.0.0
@@ -16,18 +16,17 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _splitKeys = require('./helpers/split-keys.js');
-var _cloneObj = require('./helpers/clone-obj.js');
-var _match = require('./helpers/match.js');
-var _merge = require('./helpers/merge.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var splitKeys = require('./helpers/split-keys.js');
+var cloneObj = require('./helpers/clone-obj.js');
+var merge = require('./helpers/merge.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 var is = require('./is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// AMEND
+// VITALS METHOD: amend
 ////////////////////////////////////////////////////////////////////////////////
 
 var amend = (function amendPrivateScope() {
@@ -101,7 +100,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props');
 
@@ -165,7 +164,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'config');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'config');
 
@@ -242,7 +241,7 @@ var amend = (function amendPrivateScope() {
     if ( strongType && !is(strongType + '=', val) ) {
       throw _error('The val param is not a valid strongType', 'property');
     }
-    if ( descriptor && (strongType || setter) && _own(descriptor, 'writable') ){
+    if ( descriptor && (strongType || setter) && own(descriptor, 'writable') ){
       throw _error(
         'A data descriptor may not be used with a strongType/setter', 'property'
       );
@@ -269,7 +268,7 @@ var amend = (function amendPrivateScope() {
     if ( !_is.str(key)       ) throw _error.type('key',       'property.config');
     if ( !_is.obj(descriptor)) throw _error.type('descriptor','property.config');
 
-    if ( !_own(obj, key) ) {
+    if ( !own(obj, key) ) {
       throw _error('The key was not defined in the obj', 'property.config');
     }
 
@@ -337,7 +336,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'properties');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'properties');
 
@@ -403,7 +402,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'properties.config');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'properties.config');
 
@@ -520,10 +519,10 @@ var amend = (function amendPrivateScope() {
 
     strongType += '=';
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         val = props[key];
         if ( _is.obj(val) && _isDescriptor(val) ) {
-          if ( _own(val, 'writable') ) continue;
+          if ( own(val, 'writable') ) continue;
           val = val.value;
         }
         if ( !is(strongType, val) ) return false;
@@ -555,7 +554,7 @@ var amend = (function amendPrivateScope() {
     descriptor = strongType || setter
       ? _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter)
       : _isAccessor(descriptor)
-        ? _cloneObj(descriptor)
+        ? cloneObj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
 
     return _ObjectDefineProperty(obj, key, descriptor);
@@ -627,7 +626,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         newProps[key] = _setupDescriptor(props[key], descriptor);
       }
     }
@@ -651,7 +650,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         newProps[key] = _setupDescriptorWithSetter(
           props[key], descriptor, strongType, setter
         );
@@ -679,7 +678,7 @@ var amend = (function amendPrivateScope() {
     var i;
 
     setupDesc = _isAccessor(descriptor)
-      ? function setupDesc(val, desc) { return _cloneObj(desc); }
+      ? function setupDesc(val, desc) { return cloneObj(desc); }
       : _setupDescriptorByKey;
     props = {};
     len = keys.length;
@@ -765,9 +764,9 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     val = _isDescriptor(val) ? val : { value: val };
-    return _merge(prop, val);
+    return merge(prop, val);
   }
 
   /**
@@ -783,11 +782,11 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
 
     if ( _isDescriptor(val) ) {
-      prop = _merge(prop, val);
-      if ( _own(prop, 'writable') || _isAccessor(prop) ) return prop;
+      prop = merge(prop, val);
+      if ( own(prop, 'writable') || _isAccessor(prop) ) return prop;
       val = prop.value;
       prop = _cloneAccessor(prop);
     }
@@ -807,7 +806,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     prop.value = val;
     return prop;
   }
@@ -825,7 +824,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     prop = _setupGetSet(val, prop, strongType, setter);
     return prop;
   }
@@ -920,7 +919,7 @@ var amend = (function amendPrivateScope() {
     if ( !_is.obj(obj) ) return false;
 
     for (key in obj) {
-      if ( _own(obj, key) && !_own(DESCRIPTOR_PROPS, key) ) return false;
+      if ( own(obj, key) && !own(DESCRIPTOR_PROPS, key) ) return false;
     }
     return true;
   }
@@ -931,7 +930,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isData(obj) {
-    return _own(obj, 'value') || _own(obj, 'writable');
+    return own(obj, 'value') || own(obj, 'writable');
   }
 
   /**
@@ -940,7 +939,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isAccessor(obj) {
-    return _own(obj, 'get') || _own(obj, 'set');
+    return own(obj, 'get') || own(obj, 'set');
   }
 
   /**
@@ -968,9 +967,9 @@ var amend = (function amendPrivateScope() {
     defaultDescriptor = hasSetter || _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR
       : DATA_DESCRIPTOR;
-    defaultDescriptor = _cloneObj(defaultDescriptor);
+    defaultDescriptor = cloneObj(defaultDescriptor);
 
-    return _merge(defaultDescriptor, descriptor);
+    return merge(defaultDescriptor, descriptor);
   }
 
   /**
@@ -987,7 +986,7 @@ var amend = (function amendPrivateScope() {
 
     accessor = {};
     for (key in descriptor) {
-      if ( _own(descriptor, key) && key !== 'value' ) {
+      if ( own(descriptor, key) && key !== 'value' ) {
         accessor[key] = descriptor[key];
       }
     }
@@ -1052,7 +1051,7 @@ var amend = (function amendPrivateScope() {
   var _ObjectDefineProperty = HAS_DEFINE_PROPS
     ? Object.defineProperty
     : function ObjectDefineProperty(obj, key, descriptor) {
-      obj[key] = _own(descriptor, 'get') ? descriptor.get() : descriptor.value;
+      obj[key] = own(descriptor, 'get') ? descriptor.get() : descriptor.value;
       return obj;
     };
 
@@ -1072,9 +1071,9 @@ var amend = (function amendPrivateScope() {
       var key;
 
       for (key in props) {
-        if ( _own(props, key) ) {
+        if ( own(props, key) ) {
           prop = props[key];
-          obj[key] = _own(prop, 'get') ? prop.get() : prop.value;
+          obj[key] = own(prop, 'get') ? prop.get() : prop.value;
         }
       }
       return obj;
@@ -1096,7 +1095,7 @@ var amend = (function amendPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && !_own(source, key) ) return false;
+      if ( own(obj, key) && !own(source, key) ) return false;
     }
     return true;
   }
@@ -1105,7 +1104,7 @@ var amend = (function amendPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('amend');
+  var _error = newErrorMaker('amend');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR AMEND

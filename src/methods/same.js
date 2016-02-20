@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - BASE METHOD - SAME
+ * VITALS METHOD: same
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,11 +16,11 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SAME
+// VITALS METHOD: same
 ////////////////////////////////////////////////////////////////////////////////
 
 var same = (function samePrivateScope() {
@@ -71,7 +71,7 @@ var same = (function samePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('same');
+  var _error = newErrorMaker('same');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SAME

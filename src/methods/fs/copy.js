@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - FILE SYSTEM METHODS - COPY
+ * VITALS FS METHOD: copy
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 4.0.0
@@ -16,10 +16,9 @@
 
 'use strict';
 
-var newErrorAid = require('../helpers/error-aid.js');
-var _normalize = require('../helpers/normalize.js');
-var _match = require('../helpers/match.js');
-var _isEol = require('../helpers/is-eol.js');
+var newErrorMaker = require('../helpers/new-error-maker.js');
+var normalize = require('../helpers/normalize.js');
+var match = require('../helpers/match.js');
 var _is = require('./helpers/is.js');
 var fs = require('fs');
 
@@ -27,7 +26,7 @@ var copy = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// COPY
+// VITALS FS METHOD: copy
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsCopyPrivateScope() {
@@ -71,10 +70,10 @@ var copy = {};
       if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
       if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
       if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    if ( _match(dest, /\/$/) ) _makeDir(dest);
+    if ( match(dest, /\/$/) ) _makeDir(dest);
 
     if ( _is.dir(dest) ) dest = _prepDir(dest) + _getFilename(source);
 
@@ -109,19 +108,19 @@ var copy = {};
 
     opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( _is._str(dest) && _match(dest, /\/$/) ) _makeDir(dest);
+    if ( _is._str(dest) && match(dest, /\/$/) ) _makeDir(dest);
 
     if ( !_is.dir(source)      ) throw _error.type('source', 'directory');
     if ( !_is.dir(dest)        ) throw _error.type('dest',   'directory');
     if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'directory');
 
     if (opts) {
-      if ( !_is.un.bool(opts.deep)       ) throw _error.type('opts.deep',      'directory');
-      if ( !_is.un.bool(opts.recursive)  ) throw _error.type('opts.recursive', 'directory');
-      if ( !_is.un.bool(opts.buffer)     ) throw _error.type('opts.buffer',    'directory');
-      if ( !_is.un.str(opts.encoding)    ) throw _error.type('opts.encoding',  'directory');
-      if ( !_is.nil.un.str(opts.eol)     ) throw _error.type('opts.eol',       'directory');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',      'directory');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive', 'directory');
+      if ( !_is.un.bool(opts.buffer)    ) throw _error.type('opts.buffer',    'directory');
+      if ( !_is.un.str(opts.encoding)   ) throw _error.type('opts.encoding',  'directory');
+      if ( !_is.nil.un.str(opts.eol)    ) throw _error.type('opts.eol',       'directory');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
     }
 
     opts = _prepOptions(opts);
@@ -152,7 +151,7 @@ var copy = {};
     }
     else {
       contents = fs.readFileSync(source, opts.encoding);
-      contents = opts.eol ? _normalize(contents, opts.eol) : contents;
+      contents = opts.eol ? normalize(contents, opts.eol) : contents;
       fs.writeFileSync(dest, contents, opts.encoding);
     }
     return contents;
@@ -402,7 +401,7 @@ var copy = {};
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('copy');
+  var _error = newErrorMaker('copy');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR COPY

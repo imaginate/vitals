@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - FILE SYSTEM METHODS - TO
+ * VITALS FS METHOD: to
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 4.0.0
@@ -16,7 +16,7 @@
 
 'use strict';
 
-var newErrorAid = require('../helpers/error-aid.js');
+var newErrorMaker = require('../helpers/new-error-maker.js');
 var _is = require('./helpers/is.js');
 var fs = require('fs');
 
@@ -24,7 +24,7 @@ var to = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// TO
+// VITALS FS METHOD: to
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsToPrivateScope() {
@@ -67,7 +67,7 @@ var to = {};
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('to');
+  var _error = newErrorMaker('to');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR TO

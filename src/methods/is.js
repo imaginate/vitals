@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - BASE METHOD - IS
+ * VITALS METHOD: is
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,13 +16,13 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// IS
+// VITALS METHOD: is
 ////////////////////////////////////////////////////////////////////////////////
 
 var is = (function isPrivateScope() {
@@ -653,7 +653,7 @@ var is = (function isPrivateScope() {
       var type;
 
       for (type in types) {
-        if( _own(types, type) ) addType(section, type, types[type], nullable);
+        if( own(types, type) ) addType(section, type, types[type], nullable);
       }
       return _types;
     }
@@ -670,7 +670,7 @@ var is = (function isPrivateScope() {
      * @return {DataTypes}
      */
     function addType(section, type, check, nullable) {
-      check = _own(addType, section) ? addType[section](check) : check;
+      check = own(addType, section) ? addType[section](check) : check;
       nullable = nullable !== false;
       _types['_' + type] = function(val, _nullable) {
         _nullable = _is.bool(_nullable) ? _nullable : nullable;
@@ -693,7 +693,7 @@ var is = (function isPrivateScope() {
       var type;
 
       for (shortcut in shortcuts) {
-        if( _own(shortcuts, shortcut) ) {
+        if( own(shortcuts, shortcut) ) {
           type = '_' + shortcuts[shortcut];
           shortcut = '_' + shortcut;
           _types[shortcut] = _types[type];
@@ -743,7 +743,7 @@ var is = (function isPrivateScope() {
         if ( !_is.obj(obj) ) return false;
 
         for (prop in obj) {
-          if( _own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+          if( own(obj, prop) && !eachCheck(obj[prop]) ) return false;
         }
         return true;
       };
@@ -919,7 +919,7 @@ var is = (function isPrivateScope() {
     i = checks.length;
     while (i--) {
       type = '_' + checks[i];
-      if ( !_own(TYPES, type) ) return null;
+      if ( !own(TYPES, type) ) return null;
       checks[i] = TYPES[type];
     }
 
@@ -955,7 +955,7 @@ var is = (function isPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('is');
+  var _error = newErrorMaker('is');
 
   /**
    * @private

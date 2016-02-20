@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - FILE SYSTEM METHODS - IS
+ * VITALS FS METHOD: is
  * -----------------------------------------------------------------------------
  * @section fs
  * @version 4.0.0
@@ -16,14 +16,14 @@
 
 'use strict';
 
-var newErrorAid = require('../helpers/error-aid.js');
+var newErrorMaker = require('../helpers/new-error-maker.js');
 var _is = require('./helpers/is.js');
 
 var is = {};
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// IS
+// VITALS FS METHOD: is
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsIsPrivateScope() {
@@ -114,7 +114,7 @@ var is = {};
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('is');
+  var _error = newErrorMaker('is');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS

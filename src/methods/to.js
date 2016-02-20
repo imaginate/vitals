@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - TO
+ * VITALS METHOD: to
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,13 +16,13 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _splitKeys = require('./helpers/split-keys.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var splitKeys = require('./helpers/split-keys.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// TO
+// VITALS METHOD: to
 ////////////////////////////////////////////////////////////////////////////////
 
 var to = (function toPrivateScope() {
@@ -127,7 +127,7 @@ var to = (function toPrivateScope() {
 
     if ( !_is.str(val) ) throw _error.type('val', 'array');
 
-    if ( _is.undefined(separator) ) return _splitKeys(val);
+    if ( _is.undefined(separator) ) return splitKeys(val);
 
     separator = _is.regex(separator) ? separator : String(separator);
     return val.split(separator);
@@ -198,7 +198,7 @@ var to = (function toPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('to');
+  var _error = newErrorMaker('to');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR TO

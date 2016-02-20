@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD - REMAP
+ * VITALS METHOD: remap
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,16 +16,16 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _splitKeys = require('./helpers/split-keys.js');
-var _escape = require('./helpers/escape.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var splitKeys = require('./helpers/split-keys.js');
+var escape = require('./helpers/escape.js');
+var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// REMAP
+// VITALS METHOD: remap
 ////////////////////////////////////////////////////////////////////////////////
 
 var remap = (function remapPrivateScope() {
@@ -140,7 +140,7 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source)        ) throw _error.type('source',        'array');
     if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
@@ -202,22 +202,22 @@ var remap = (function remapPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee();
+        if ( own(source, key) ) obj[key] = iteratee();
       }
       break;
       case 1:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key]);
+        if ( own(source, key) ) obj[key] = iteratee(source[key]);
       }
       break;
       case 2:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key], key);
+        if ( own(source, key) ) obj[key] = iteratee(source[key], key);
       }
       break;
       default:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key], key, source);
+        if ( own(source, key) ) obj[key] = iteratee(source[key], key, source);
       }
     }
     return obj;
@@ -267,7 +267,7 @@ var remap = (function remapPrivateScope() {
 
     if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern);
+      pattern = escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
 
@@ -340,7 +340,7 @@ var remap = (function remapPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('remap');
+  var _error = newErrorMaker('remap');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR REMAP

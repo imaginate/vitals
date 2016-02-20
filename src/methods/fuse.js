@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS SHORTCUTS - FUSE
+ * VITALS METHOD: fuse
  * -----------------------------------------------------------------------------
  * @section base
  * @version 4.0.0
@@ -16,15 +16,15 @@
 
 'use strict';
 
-var newErrorAid = require('./helpers/error-aid.js');
-var _sliceArr = require('./helpers/slice-arr.js');
-var _merge = require('./helpers/merge.js');
-var _own = require('./helpers/own.js');
+var newErrorMaker = require('./helpers/new-error-maker.js');
+var sliceArr = require('./helpers/slice-arr.js');
+var merge = require('./helpers/merge.js');
+var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FUSE
+// VITALS METHOD: fuse
 ////////////////////////////////////////////////////////////////////////////////
 
 var fuse = (function fusePrivateScope() {
@@ -63,23 +63,23 @@ var fuse = (function fusePrivateScope() {
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( _is.str(dest) ) {
-      vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+      vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
       return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if ( _is.arr(dest) ) {
       if (arguments.length > 2) {
-        vals = _sliceArr(arguments, 1);
+        vals = sliceArr(arguments, 1);
         return _fuseArrs(dest, vals);
       }
       return _fuseArr(dest, vals);
     }
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   }
 
@@ -102,19 +102,19 @@ var fuse = (function fusePrivateScope() {
 
     if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStr(dest, vals);
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseStrs(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest', 'value');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
       return _is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
     }
 
-    vals = _sliceArr(arguments, 1);
+    vals = sliceArr(arguments, 1);
     return _is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
   };
   // define shorthand
@@ -139,13 +139,13 @@ var fuse = (function fusePrivateScope() {
 
     if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStrTop(dest, vals);
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseStrsTop(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest', 'value.start');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
       return _is.arr(dest)
@@ -153,7 +153,7 @@ var fuse = (function fusePrivateScope() {
         : _fuseObjValTop(dest, vals);
     }
 
-    vals = _sliceArr(arguments, 1);
+    vals = sliceArr(arguments, 1);
     return _is.arr(dest)
       ? _fuseArrsValTop(dest, vals)
       : _fuseObjsValTop(dest, vals);
@@ -182,7 +182,7 @@ var fuse = (function fusePrivateScope() {
     if ( !_is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   };
   // define shorthand
@@ -204,10 +204,10 @@ var fuse = (function fusePrivateScope() {
     if ( !_is._arr(dest) ) throw _error.type('dest', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length > 2) {
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseArrs(dest, vals);
     }
 
@@ -229,7 +229,7 @@ var fuse = (function fusePrivateScope() {
     if ( !_is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
   };
   // define shorthand
@@ -246,7 +246,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObj(dest, val) {
-    if ( _is._obj(val) ) return _merge(dest, val);
+    if ( _is._obj(val) ) return merge(dest, val);
     if ( !_is.nil(val) ) dest[val] = undefined;
     return dest;
   }
@@ -314,7 +314,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObjValTop(dest, val) {
-    if ( !_own(dest, val) ) dest[val] = undefined;
+    if ( !own(dest, val) ) dest[val] = undefined;
     return dest;
   }
 
@@ -506,7 +506,7 @@ var fuse = (function fusePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('fuse');
+  var _error = newErrorMaker('fuse');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FUSE
