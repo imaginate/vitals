@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - CLONE OBJECT
+ * VITALS HELPER: cloneObj
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,19 +15,42 @@
 
 'use strict';
 
-var _merge = require('./merge.js');
-
-module.exports = _cloneObj;
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - CLONE-OBJ
+// VITALS HELPER: cloneObj
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
+var cloneObj = (function cloneObjPrivateScope() {
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
  * @param {!Object} obj
  * @return {!Object}
- */
-function _cloneObj(obj) {
-  return _merge({}, obj);
-}
+   */
+  function cloneObj(obj) {
+
+    /** @type {!Object} */
+    var clone;
+    /** @type {string} */
+    var key;
+
+    clone = {};
+    for (key in obj) {
+      if ( hasOwn.call(obj, key) ) clone[key] = obj[key];
+    }
+    return clone;
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: cloneObj
+  return cloneObj;
+})();
+
+
+module.exports = cloneObj;
