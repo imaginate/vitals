@@ -15,8 +15,8 @@
 var is = require('./is');
 var fs = require('fs');
 
-var BASE = './src/sections';
-var BWSR = './src/browser';
+var BASE = './src/sections/skeletons';
+var BWSR = './src/browser/skeletons';
 
 /**
  * @param {boolean=} fileform - "<section>.js" vs "<section>"
@@ -27,6 +27,8 @@ module.exports = function getSections(fileform, browser) {
 
   /** @type {!Array<string>} */
   var filepaths;
+  /** @type {string} */
+  var filepath;
   /** @type {!Array<string>} */
   var sections;
   /** @type {string} */
