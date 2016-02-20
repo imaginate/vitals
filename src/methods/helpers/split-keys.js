@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - CONVERT STRING OF KEYS TO ARRAY
+ * VITALS HELPER: splitKeys
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,28 +15,50 @@
 
 'use strict';
 
-var _inStr = require('./in-str.js');
-
-module.exports = _splitKeys;
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SPLIT-KEYS
+// VITALS HELPER: splitKeys
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @param {string} keys - One of the chars in the following list is used as
- *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
- * @return {!Array<string>}
- */
-function _splitKeys(keys) {
+var splitKeys = (function splitKeysPrivateScope() {
 
-  /** @type {string} */
-  var separator;
+  /**
+   * @private
+   * @param {string} keys
+   * @param {string} str
+   * @return {boolean}
+   */
+  var inStr = !!String.prototype.includes
+    ? function inStr(keys, str) { return keys.includes(str); }
+    : function inStr(keys, str) { return keys.indexOf(str) !== -1; };
 
-  separator = _inStr(keys, ', ')
-    ? ', '  : _inStr(keys, ',')
-      ? ',' : _inStr(keys, '|')
-        ? '|' : ' ';
-  return keys.split(separator);
-}
+  /**
+   * @param {string} keys - The keys are split using one of the values in the
+   *   following list as the separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
+   * @return {!Array<string>}
+   */
+  function splitKeys(keys) {
+
+    /** @type {string} */
+    var separator;
+
+    if (!keys) return [ '' ];
+
+    separator = inStr(keys, ', ')
+      ? ', '  : inStr(keys, ',')
+        ? ',' : inStr(keys, '|')
+          ? '|' : ' ';
+    return keys.split(separator);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: splitKeys
+  return splitKeys;
+})();
+
+
+module.exports = splitKeys;
