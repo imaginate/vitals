@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - IS HELPER
+ * VITALS FS HELPER: _is
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -18,7 +18,7 @@ var _is = require('../../helpers/is.js');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS
+// VITALS FS HELPER: _is
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
