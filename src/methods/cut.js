@@ -597,17 +597,17 @@ var cut = (function cutPrivateScope() {
    * @private
    * @param {!(Object|function)} source
    * @param {*} key
-   * @param {boolean=} match
+   * @param {boolean=} useMatch
    * @return {!(Object|function)}
    */
-  function _deleteKey(source, key, match) {
+  function _deleteKey(source, key, useMatch) {
 
     /** @type {!RegExp} */
     var pattern;
 
-    match = _is.undefined(match) ? _is.regex(key) : match;
+    useMatch = _is.undefined(useMatch) ? _is.regex(key) : useMatch;
 
-    if (!match) {
+    if (!useMatch) {
       if ( own(source, key) ) delete source[key];
       return source;
     }
@@ -630,17 +630,17 @@ var cut = (function cutPrivateScope() {
   function _deleteKeys(source, keys) {
 
     /** @type {boolean} */
-    var match;
+    var useMatch;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    match = _is.regex( keys[0] );
+    useMatch = _is.regex( keys[0] );
     len = keys.length;
     i = -1;
     while (++i < len) {
-      source = _deleteKey(source, keys[i], match);
+      source = _deleteKey(source, keys[i], useMatch);
     }
     return source;
   }
