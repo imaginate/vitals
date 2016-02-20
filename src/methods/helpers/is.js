@@ -276,6 +276,21 @@ var _is = (function _isPrivateScope() {
     return true;
   };
 
+  /**
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var EOL = /^(?:cr|lf|crlf)$/i;
+
+  /**
+   * @param {string} val
+   * @return {boolean}
+   */
+  is.eol = function isEol(val) {
+    return EOL.test(val);
+  };
+
   //////////////////////////////////////////////////////////
   // OBJECT STATES
   //////////////////////////////////////////////////////////
