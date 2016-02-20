@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - SUBSTRING IN STRING
+ * VITALS HELPER: inStr
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -17,23 +17,10 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IN-STR
+// VITALS HELPER: inStr
 ////////////////////////////////////////////////////////////////////////////////
 
-var _inStr = (function _inStrPrivateScope() {
-
-  /**
-   * A shortcut for String.prototype.includes.
-   * @param {string} source
-   * @param {*} str
-   * @return {boolean}
-   */
-  function _inStr(source, str) {
-    str = String(str);
-    if (!source) return !str;
-    if (!str) return true;
-    return stringIncludes(source, str);
-  }
+var inStr = (function inStrPrivateScope() {
 
   /**
    * @private
@@ -41,18 +28,27 @@ var _inStr = (function _inStrPrivateScope() {
    * @param {string} str
    * @return {boolean}
    */
-  var stringIncludes = !!String.prototype.includes
-    ? function stringIncludes(source, str) {
-        return source.includes(str);
-      }
-    : function stringIncludes(source, str) {
-        return source.indexOf(str) !== -1;
-      };
+  var baseInStr = !!String.prototype.includes
+    ? function baseInStr(source, str) { return source.includes(str); }
+    : function baseInStr(source, str) { return source.indexOf(str) !== -1; };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IN-STR
-  return _inStr;
+  /**
+   * A shortcut for `String.prototype.includes`.
+   * @param {string} source
+   * @param {*} str
+   * @return {boolean}
+   */
+  function inStr(source, str) {
+    str = String(str);
+    if (!source) return !str;
+    if (!str) return true;
+    return baseInStr(source, str);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: inStr
+  return inStr;
 })();
 
 
-module.exports = _inStr;
+module.exports = inStr;
