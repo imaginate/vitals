@@ -136,7 +136,7 @@ function testSections() {
  * @public
  * @type {function}
  */
-function browserTests() {
+function testBrowser() {
 
   /** @type {!Array<string>} */
   var sections;
