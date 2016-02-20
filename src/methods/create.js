@@ -3,7 +3,7 @@
  * VITALS METHOD: create
  * -----------------------------------------------------------------------------
  * @section strict
- * @version 4.0.0
+ * @version 4.0.1
  * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/vitals.create}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

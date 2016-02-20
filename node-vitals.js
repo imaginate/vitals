@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  * @file A JavaScript library of utility methods designed for elegance,
  *   performance, and reliability.
- * @version 4.0.0
+ * @version 4.0.1
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -21,7 +21,7 @@ var _merge = require('./src/methods/helpers/merge.js');
 var _own = require('./src/methods/helpers/own.js');
 var _is = require('./src/methods/helpers/is.js');
 
-var VERSION = '4.0.0';
+var VERSION = '4.0.1';
 
 /**
  * @public
