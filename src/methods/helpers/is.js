@@ -97,7 +97,10 @@ var _is = (function _isPrivateScope() {
   // JS OBJECTS
   //////////////////////////////////////////////////////////
 
-  /** @type {function} */
+  /**
+   * @private
+   * @return {string}
+   */
   var toStr = Object.prototype.toString;
 
   /**
@@ -234,7 +237,11 @@ var _is = (function _isPrivateScope() {
   // MISCELLANEOUS
   //////////////////////////////////////////////////////////
 
-  /** @type {function} */
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
   var hasOwn = Object.prototype.hasOwnProperty;
 
   /**
