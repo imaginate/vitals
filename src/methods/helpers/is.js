@@ -380,6 +380,16 @@ var _is = (function _isPrivateScope() {
     );
   };
 
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.un.regex = function isUndefinedOrRegExp(val) {
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
+    );
+  };
+
   //////////////////////////////////////////////////////////
   // OR NULL
   //////////////////////////////////////////////////////////
@@ -431,6 +441,16 @@ var _is = (function _isPrivateScope() {
   is.nil.arr = function isNullOrArray(val) {
     return val === null || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.regex = function isNullOrRegExp(val) {
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
@@ -494,6 +514,16 @@ var _is = (function _isPrivateScope() {
   is.nil.un.arr = function isNullOrUndefinedOrArray(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.un.regex = function isNullOrUndefinedOrRegExp(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
