@@ -12,6 +12,8 @@
 
 'use strict';
 
+var INVALID_DIRS = /^node_modules|vendor$/;
+
 var is = require('./is');
 var fs = require('fs');
 
@@ -48,6 +50,8 @@ function getFiles(base, isValid) {
   var files;
   /** @type {string} */
   var path;
+  /** @type {string} */
+  var file;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -58,8 +62,9 @@ function getFiles(base, isValid) {
   len = paths.length;
   i = -1;
   while (++i < len) {
-    path = base + paths[i];
-    if ( is.file(path) ) files.push(path);
+    file = paths[i];
+    path = base + file;
+    if ( is.file(path) && isValid(file) ) files.push(file);
   }
   return files;
 }
@@ -116,6 +121,8 @@ function getDirs(base) {
   var dirs;
   /** @type {string} */
   var path;
+  /** @type {string} */
+  var dir;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -126,8 +133,9 @@ function getDirs(base) {
   len = paths.length;
   i = -1;
   while (++i < len) {
-    path = base + paths[i];
-    if ( is.dir(path) ) dirs.push(path);
+    dir = paths[i];
+    path = base + dir;
+    if ( is.dir(path) && validDir(dir) ) dirs.push(dir);
   }
   return dirs;
 }
@@ -174,6 +182,15 @@ function mkCheck(valid, invalid) {
   return function isValid(str) {
     return ( !valid || valid.test(str) ) && ( !invalid || !invalid.test(str) );
   };
+}
+
+/**
+ * @private
+ * @param {string} dir
+ * @return {boolean}
+ */
+function validDir(dir) {
+  return !INVALID_DIRS.test(dir);
 }
 
 /**
