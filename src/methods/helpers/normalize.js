@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - METHOD HELPER - NORMALIZE STRING
+ * VITALS HELPER: normalize
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -17,42 +17,36 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - NORMALIZE
+// VITALS HELPER: normalize
 ////////////////////////////////////////////////////////////////////////////////
 
-var _normalize = (function _normalizePrivateScope() {
-
-  /**
-   * @param {string} str
-   * @param {string} eol
-   * @return {string}
-   */
-  function _normalize(str, eol) {
-    return str.replace(EOL.find[eol], EOL.replace[eol]);
-  }
+var normalize = (function normalizePrivateScope() {
 
   /**
    * @private
    * @type {!Object}
    * @const
    */
-  var EOL = {
-    'replace': {
-      'CRLF': '\r\n',
-      'CR':   '\r',
-      'LF':   '\n'
-    },
-    'find': {
-      'CRLF': /\r?\n|\r\n?/g,
-      'CR':   /\r?\n/g,
-      'LF':   /\r\n?/g
-    }
+  var OPTS = {
+    'CRLF': { 'pattern': /\r?\n|\r\n?/g, 'value': '\r\n' },
+    'CR':   { 'pattern': /\r?\n/g,       'value': '\r'   },
+    'LF':   { 'pattern': /\r\n?/g,       'value': '\n'   }
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR NORMALIZE
-  return _normalize;
+  /**
+   * @param {string} str
+   * @param {string} eol
+   * @return {string}
+   */
+  function normalize(str, eol) {
+    eol = OPTS[eol];
+    return str.replace(eol.pattern, eol.value);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: normalize
+  return normalize;
 })();
 
 
-module.exports = _normalize;
+module.exports = normalize;
