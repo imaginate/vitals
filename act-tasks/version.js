@@ -9,9 +9,6 @@
  *
  * Supporting Libraries:
  * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -41,22 +38,17 @@ exports['methods'] = {
   }
 };
 
-var vitals = require('node-vitals')('base', 'fs');
-var cut    = vitals.cut;
-var each   = vitals.each;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var to     = vitals.to;
-
 var ERROR_MSG = 'invalid value (must be a semantic version)';
 
-var VERSION   = /^"version": "/;
 var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
 var NPM_BADGE = /(badge\/npm-)[0-9]+\.[0-9]+\.[0-9]+(?:--[a-z]+\.?[0-9]*)?/;
 var ALL_VERSION = /\b(v?)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?\b/g;
 var NPM_VERSION = /("version": ")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?/;
+
+var getFilepaths = require('./helpers/get-filepaths');
+var getVersion = require('./helpers/get-version');
+var getFile = require('./helpers/get-file');
+var toFile = require('./helpers/to-file');
 
 /**
  * @public
@@ -65,23 +57,19 @@ var NPM_VERSION = /("version": ")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?/;
 function updateAllVersion(version) {
 
   /** @type {!Array<string>} */
-  var filepaths;
+  var files;
   /** @type {string} */
   var base;
-  /** @type {!Object} */
-  var opts;
 
   if ( !isSemVersion(version) ) throw new Error(ERROR_MSG);
 
   base = '.';
-  opts = { validExts: /\.js$/ };
-  filepaths = get.filepaths(base, opts);
-  insertVersions(base, filepaths, version);
+  files = getFilepaths(base, false, /\.js$/);
+  insertVersions(base, files, version);
 
   base = './src';
-  opts.deep = true;
-  filepaths = get.filepaths(base, opts);
-  insertVersions(base, filepaths, version);
+  files = getFilepaths(base, true, /\.js$/);
+  insertVersions(base, files, version);
 
   updateNPMVersion(version);
 }
@@ -99,10 +87,9 @@ function updateNPMVersion(version) {
 
   insertBadge('./README.md', version);
 
-  content = get.file('./package.json');
-  version = fuse('$1', version);
-  content = remap(content, NPM_VERSION, version);
-  to.file(content, './package.json');
+  content = getFile('./package.json');
+  content = content.replace(NPM_VERSION, '$1' + version);
+  toFile(content, './package.json');
 }
 
 /**
@@ -112,24 +99,21 @@ function updateNPMVersion(version) {
 function updateDocsVersion(version) {
 
   /** @type {!Array<string>} */
-  var filepaths;
+  var files;
   /** @type {string} */
   var base;
-  /** @type {!Object} */
-  var opts;
 
   version = version || getVersion();
 
   if ( !isSemVersion(version) ) throw new Error(ERROR_MSG);
 
   base = '../vitals.wiki';
-  opts = { validExts: /\.md$/ };
-  filepaths = get.filepaths(base, opts);
-  insertBadges(base, filepaths, version);
+  files = getFilepaths(base, false, /\.md$/);
+  insertBadges(base, files, version);
 
   base = './act-tasks/helpers/mk-doc/templates';
-  filepaths = get.filepaths(base, opts);
-  insertBadges(base, filepaths, version);
+  files = getFilepaths(base, false, /\.md$/);
+  insertBadges(base, files, version);
 }
 
 /**
@@ -138,21 +122,31 @@ function updateDocsVersion(version) {
  * @return {boolean}
  */
 function isSemVersion(version) {
-  return !!version && has(version, SEMANTIC);
+  return !!version && SEMANTIC.test(version);
 }
 
 /**
  * @private
- * @param {string} basedir
- * @param {!Array<string>} filepaths
+ * @param {string} base
+ * @param {!Array<string>} files
  * @param {string} version
  */
-function insertVersions(basedir, filepaths, version) {
-  basedir = slashDir(basedir);
-  each(filepaths, function(filepath) {
-    filepath = fuse(basedir, filepath);
-    insertVersion(filepath, version);
-  });
+function insertVersions(base, files, version) {
+
+  /** @type {string} */
+  var file;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  base = slashDir(base);
+  len = files.length;
+  i = -1;
+  while (++i < len) {
+    file = base + files[i];
+    insertVersion(file, version);
+  }
 }
 
 /**
@@ -165,24 +159,33 @@ function insertVersion(filepath, version) {
   /** @type {string} */
   var content;
 
-  version = fuse('$1', version);
-  content = get.file(filepath);
-  content = remap(content, ALL_VERSION, version);
-  to.file(content, filepath);
+  content = getFile(filepath);
+  content = content.replace(ALL_VERSION, '$1' + version);
+  toFile(content, filepath);
 }
 
 /**
  * @private
- * @param {string} basedir
- * @param {!Array<string>} filepaths
+ * @param {string} base
+ * @param {!Array<string>} files
  * @param {string} version
  */
-function insertBadges(basedir, filepaths, version) {
-  basedir = slashDir(basedir);
-  each(filepaths, function(filepath) {
-    filepath = fuse(basedir, filepath);
-    insertBadge(filepath, version);
-  });
+function insertBadges(base, files, version) {
+
+  /** @type {string} */
+  var file;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  base = slashDir(base);
+  len = files.length;
+  i = -1;
+  while (++i < len) {
+    file = base + files[i];
+    insertBadge(file, version);
+  }
 }
 
 /**
@@ -195,37 +198,18 @@ function insertBadge(filepath, version) {
   /** @type {string} */
   var content;
 
-  version = fuse('$1', version);
-  version = remap(version, /-/g, '--');
-  content = get.file(filepath);
-  content = remap(content, NPM_BADGE, version);
-  to.file(content, filepath);
+  version = '$1' + version.replace(/-/g, '--');
+  content = getFile(filepath);
+  content = content.replace(NPM_BADGE, version);
+  toFile(content, filepath);
 }
 
 /**
  * @private
+ * @param {string} dir
  * @return {string}
  */
-function getVersion() {
-
-  /** @type {string} */
-  var content;
-  /** @type {string} */
-  var version;
-
-  content = get.file('./package.json');
-  version = get(content, NPM_VERSION)[0];
-  version = cut(version, VERSION);
-  return version;
-}
-
-/**
- * @private
- * @param {string} basedir
- * @return {string}
- */
-function slashDir(basedir) {
-  return basedir
-    ? remap(basedir, /[^\/]$/, '$&/')
-    : '';
+function slashDir(dir) {
+  dir = dir || '';
+  return dir && dir.replace(/[^\/]$/, '$&/');
 }
