@@ -9,9 +9,6 @@
  *
  * Supporting Libraries:
  * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -34,19 +31,14 @@ exports['methods'] = {
   }
 };
 
-var is = require('node-are').is;
-
-var vitals = require('node-vitals')('base', 'fs');
-var cut    = vitals.cut;
-var each   = vitals.each;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var to     = vitals.to;
-
 var WIKI = '../vitals.wiki';
 var BASE = './src/methods';
 
+var getFilepaths = require('./helpers/get-filepaths');
+var getFile = require('./helpers/get-file');
+var toFile = require('./helpers/to-file');
 var mkDoc = require('./helpers/mk-doc');
+var is = require('./helpers/is');
 
 /**
  * @public
@@ -58,12 +50,18 @@ function buildDocs() {
   var method;
   /** @type {!Array<string>} */
   var files;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  files = get.filepaths(BASE);
-  each(files, function(file) {
-    method = cut(file, /\.js$/);
+  files = getFilepaths(BASE, false, /\.js$/);
+  len = files.length;
+  i = -1;
+  while (++i < len) {
+    method = cutFileExt(files[i]);
     buildDoc(method);
-  });
+  }
 }
 
 /**
@@ -81,17 +79,26 @@ function buildDoc(method) {
   /** @type {string} */
   var file;
 
-  file = fuse(BASE, '/', method, '.js');
-  fsfile = fuse(BASE, '/fs/', method, '.js');
+  file   = BASE + '/'    + method + '.js';
+  fsfile = BASE + '/fs/' + method + '.js';
 
   if ( !is.file(file) ) throw new RangeError('invalid vitals method');
 
-  content = get.file(file); 
+  content = getFile(file); 
   fscontent = is.file(fsfile)
-    ? get.file(fsfile)
+    ? getFile(fsfile)
     : undefined;
 
   content = mkDoc(content, fscontent);
-  file = fuse(WIKI, '/vitals.', method, '.md');
-  to.file(content, file);
+  file = WIKI + '/vitals.' + method + '.md';
+  toFile(content, file);
+}
+
+/**
+ * @private
+ * @param {string} filepath
+ * @return {string}
+ */
+function cutFileExt(filepath) {
+  return filepath.replace(/\.js$/, '');
 }
