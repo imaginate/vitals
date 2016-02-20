@@ -12,7 +12,7 @@
 
 'use strict';
 
-var VERSION = /[\s\S]+?"version": "([0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?)".*/;
+var VERSION = /^[\s\S]+?"version": "([0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?)"[\s\S]*$/;
 
 var getFile = require('./get-file');
 
