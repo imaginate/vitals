@@ -99,7 +99,7 @@ function compileSections() {
   var i;
 
   filenames = getSections(true);
-  base = fuse(SECTIONS, '/skeletons');
+  base = SECTIONS + '/skeletons';
   len = filenames.length;
   i = -1;
   while (++i < len) {
