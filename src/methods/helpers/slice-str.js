@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - SLICE STRING
+ * VITALS HELPER: sliceStr
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,13 +15,11 @@
 
 'use strict';
 
-var _is = require('./is.js');
-
-module.exports = _sliceStr;
+module.exports = sliceStr;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SLICE-STR
+// VITALS HELPER: sliceStr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -30,7 +28,7 @@ module.exports = _sliceStr;
  * @param {number=} end - [default= str.length]
  * @return {string}
  */
-function _sliceStr(str, start, end) {
+function sliceStr(str, start, end) {
 
   /** @type {number} */
   var len;
@@ -42,7 +40,7 @@ function _sliceStr(str, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = _is.undefined(end) || end > len
+  end = end === undefined || end > len
     ? len
     : end < 0
       ? len + end
