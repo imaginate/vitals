@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - HAS-OWN-PROPERTY
+ * VITALS HELPER: own
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -17,31 +17,31 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
+// VITALS HELPER: own
 ////////////////////////////////////////////////////////////////////////////////
 
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {(!Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
+var own = (function ownPrivateScope() {
 
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+  var hasOwn = Object.prototype.hasOwnProperty;
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
+  /**
+   * @param {(Object|?function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function own(source, key) {
+    return !!source && hasOwn.call(source, key);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: own
+  return own;
 })();
 
 
-module.exports = _own;
+module.exports = own;
