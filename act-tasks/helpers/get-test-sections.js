@@ -12,6 +12,7 @@
 
 'use strict';
 
+var is = require('./is');
 var fs = require('fs');
 
 var BASE = './test/setup/sections';
@@ -24,6 +25,8 @@ module.exports = function getTestSections(invalid) {
 
   /** @type {!Array<string>} */
   var filepaths;
+  /** @type {string} */
+  var filepath;
   /** @type {!Array<string>} */
   var sections;
   /** @type {string} */
@@ -41,8 +44,10 @@ module.exports = function getTestSections(invalid) {
   len = filepaths.length;
   i = -1;
   while (++i < len) {
-    section = cutFileExt(filepaths[i]);
-    if ( isValid(section) ) sections.push(section);
+    filepath = filepaths[i];
+    section  = cutFileExt(filepath);
+    filepath = BASE + '/' + filepath;
+    if ( is.file(filepath) && isValid(section) ) sections.push(section);
   }
   return sections;
 };
