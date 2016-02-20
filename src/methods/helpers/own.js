@@ -23,7 +23,7 @@
 var _own = (function _ownPrivateScope() {
 
   /**
-   * @param {?(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {*} key
    * @return {boolean}
    */
