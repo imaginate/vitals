@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - PROPERTY-IS-ENUMERABLE
+ * VITALS HELPER: ownEnum
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -17,31 +17,31 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN-ENUM
+// VITALS HELPER: ownEnum
 ////////////////////////////////////////////////////////////////////////////////
 
-var _ownEnum = (function _ownEnumPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _ownEnum(source, key) {
-    return !!source && _propertyIsEnumerable.call(source, key);
-  }
+var ownEnum = (function ownEnumPrivateScope() {
 
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+  var hasEnum = Object.prototype.propertyIsEnumerable;
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN-ENUM
-  return _ownEnum;
+  /**
+   * @param {(Object|?function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function ownEnum(source, key) {
+    return !!source && hasEnum.call(source, key);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: ownEnum
+  return ownEnum;
 })();
 
 
-module.exports = _ownEnum;
+module.exports = ownEnum;
