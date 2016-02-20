@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - IS HELPER
+ * VITALS HELPER: _is
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,11 +13,9 @@
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-var _own = require('./own.js');
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS
+// VITALS HELPER: _is
 ////////////////////////////////////////////////////////////////////////////////
 
 var _is = (function _isPrivateScope() {
@@ -527,8 +525,8 @@ var _is = (function _isPrivateScope() {
     );
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IS
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: _is
   return is;
 })();
 
