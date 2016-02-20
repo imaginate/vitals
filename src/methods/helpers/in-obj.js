@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - VALUE IN OBJECT
+ * VITALS HELPER: inObj
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,27 +15,40 @@
 
 'use strict';
 
-var _own = require('./own.js');
-
-module.exports = _inObj;
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IN-OBJ
+// VITALS HELPER: inObj
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @param {!(Object|function)} source
- * @param {*} val
- * @return {boolean}
- */
-function _inObj(source, val) {
+var inObj = (function inObjPrivateScope() {
 
-  /** @type {string} */
-  var key;
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
 
-  for (key in source) {
-    if ( _own(source, key) && source[key] === val ) return true;
+  /**
+   * @param {(!Object|function)} source
+   * @param {*} val
+   * @return {boolean}
+   */
+  function inObj(source, val) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( hasOwn.call(source, key) && source[key] === val ) return true;
+    }
+    return false;
   }
-  return false;
-}
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: inObj
+  return inObj;
+})();
+
+
+module.exports = inObj;
