@@ -9,9 +9,6 @@
  *
  * Supporting Libraries:
  * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  * @see [Closure Compiler]{@link https://github.com/google/closure-compiler}
  *
  * Annotations:
@@ -27,26 +24,19 @@
 exports['desc'] = 'minifies the browser versions';
 exports['method'] = minifyVitals;
 
-var is = require('node-are').is;
-
-var vitals = require('node-vitals')('all');
-var cut    = vitals.cut;
-var each   = vitals.each;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var run    = vitals.run;
-var to     = vitals.to;
-
 var WEBSITE  = 'https://github.com/imaginate/vitals';
 var BROWSER  = 'src/browser';
 var FRAMES   = 'src/browser/skeletons';
 var MINIFIER = 'vendor/closure-compiler.jar';
 
-var INTRO    = /^\/\*[\s\S]*?\*\//;
-var SEMANTIC = /"version": "[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?/;
-var VERSION  = /^"version": "/;
+var INTRO = /^\/\*[\s\S]*?\*\//;
+
+var getSections = require('./helpers/get-sections');
+var getVersion = require('./helpers/get-version');
+var getFile = require('./helpers/get-file');
+var toFile = require('./helpers/to-file');
+var is = require('./helpers/is');
+var cp = require('child_process');
 
 /**
  * @public
@@ -54,82 +44,86 @@ var VERSION  = /^"version": "/;
  */
 function minifyVitals() {
 
-  /** @type {!Array<string>} */
+  /** @type {!Array} */
   var filenames;
+  /** @type {string} */
+  var filename;
   /** @type {string} */
   var filepath;
   /** @type {string} */
   var content;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  filenames = get.filepaths(FRAMES);
-  each(filenames, function(filename) {
-    filepath = fuse(BROWSER, '/', filename);
-    content = get.file(filepath);
-    content = minify(content);
-    content = addCopyright(content, filename);
-    filepath = remap(filepath, /js$/, 'min.js');
-    to.file(content, filepath);
-  });
+  filenames = getSections(true, true);
+  len = filenames.length;
+  i = -1;
+  while (++i < len) {
+    filename = filenames[i];
+    filepath = BROWSER + '/' + filename;
+    content  = getFile(filepath);
+    content  = minify(content);
+    content  = addCopyright(content, filename);
+    filepath = getMinPath(filepath);
+    toFile(content, filepath);
+  }
 }
 
 /**
  * @private
  * @param {string} content
+ * @return {string}
  */
 function minify(content) {
 
-  /** @type {string} */
-  var cmd;
+  /** @type {!SpawnResult} */
+  var result;
   /** @type {string} */
   var msg;
 
-  if ( !is.file(MINIFIER) ) {
-    msg = fuse('missing minifier file - `', MINIFIER, '`');
-    throw new Error(msg);
-  }
+  if ( !is.file(MINIFIER) ) throw new Error('invalid minifier file - `' + MINIFIER + '`');
 
-  cmd = fuse('java -jar ', MINIFIER);
-  return run(cmd, {
-    catchExit: false,
-    input:     content
+  result = cp.spawnSync('java', [ '-jar', MINIFIER ], {
+    encoding: 'utf8',
+    input:  content
   });
+
+  if (result.error) throw result.error;
+
+  content = result.stdout.toString();
+  return content && content.replace(/\r\n?/g, '\n');
 }
 
 /**
  * @private
  * @param {string} content
- * @param {string} name
+ * @param {string} filename
  * @return {string}
  */
-function addCopyright(content, name) {
+function addCopyright(content, filename) {
 
   /** @type {string} */
-  var c;
+  var copyright;
   /** @type {string} */
-  var v;
+  var version;
+  /** @type {string} */
+  var license;
 
-  v = getVersion('v');
-  c = fuse('/* ', name, ' ', v, ' (', WEBSITE, ')\n');
-  c = fuse(c, ' * Copyright (c) 2016 Adam A Smith <adam@imaginate.life>\n');
-  c = fuse(c, ' * The Apache License (', WEBSITE, '/blob/master/LICENSE.md) */');
-  return remap(content, INTRO, c);
+  version = getVersion();
+  license = WEBSITE + '/blob/master/LICENSE.md';
+  copyright  = '/* ' + filename + ' v' + version + ' (' + WEBSITE + ')\n';
+  copyright += ' * Copyright (c) 2016 Adam A Smith <adam@imaginate.life>\n';
+  copyright += ' * The Apache License (' + license + ') */';
+  return content.replace(INTRO, copyright);
 }
 
 /**
  * @private
- * @param {string=} pre
+ * @param {string} filepath
  * @return {string}
  */
-function getVersion(pre) {
-
-  /** @type {string} */
-  var content;
-  /** @type {string} */
-  var version;
-
-  pre = pre || '';
-  content = get.file('./package.json');
-  version = get(content, SEMANTIC)[0];
-  version = cut(version, VERSION);
-  return fuse(pre, version);
+function getMinPath(filepath) {
+  return filepath.replace(/js$/, 'min.js');
 }
