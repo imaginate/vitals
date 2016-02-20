@@ -27,202 +27,71 @@ var cp = require('child_process');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
+// VITALS HELPER: cloneObj
 ////////////////////////////////////////////////////////////////////////////////
 
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
+var cloneObj = (function cloneObjPrivateScope() {
 
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
+  var hasOwn = Object.prototype.hasOwnProperty;
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - CLONE-OBJ
-////////////////////////////////////////////////////////////////////////////////
-
-/**
+  /**
  * @param {!Object} obj
  * @return {!Object}
- */
-function _cloneObj(obj) {
-  return _merge({}, obj);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ERROR-AID
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @typedef {function(string, string=): !Error} ErrorAid
- */
-
-/**
- * The ErrorAid constructor.
- * @param {string} vitalsMethod
- * @return {!ErrorAid}
- */
-function newErrorAid(vitalsMethod) {
-
-  /** @type {!ErrorAid} */
-  var errorAid;
-
-  vitalsMethod = 'vitals.' + vitalsMethod;
-
-  /**
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
    */
-  errorAid = function error(msg, method) {
+  function cloneObj(obj) {
 
-    /** @type {!Error} */
-    var error;
-
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new Error(msg + ' for ' + method + ' call.');
-    error.__vitals = true;
-    return true;
-  };
-
-  /**
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
-   */
-  errorAid.type = function typeError(param, method) {
-
-    /** @type {!TypeError} */
-    var error;
-
-    param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-    error.__vitals = true;
-    return error;
-  };
-
-  /**
-   * @param {string} param
-   * @param {string=} valid
-   * @param {string=} method
-   * @return {!RangeError} 
-   */
-  errorAid.range = function rangeError(param, valid, method) {
-
-    /** @type {!RangeError} */
-    var error;
+    /** @type {!Object} */
+    var clone;
     /** @type {string} */
-    var msg;
+    var key;
 
-    param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
-    msg += valid ? ' The valid options are: ' + valid : '';
-    error = new RangeError(msg);
-    error.__vitals = true;
-    return error;
-  };
-
-  return errorAid;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ESCAPE
-////////////////////////////////////////////////////////////////////////////////
-
-var _escape = (function _escapePrivateScope() {
-
-  /**
-   * @param {string} source
-   * @param {boolean=} anyChars
-   * @param {?RegExp=} escapeChars
-   * @return {string}
-   */
-  function _escape(source, anyChars, escapeChars) {
-    return escapeChars
-      ? source.replace(escapeChars, '\\$&')
-      : anyChars
-        ? anyEscape(source)
-        : source.replace(ALL_ESCAPE_CHARS, '\\$&');
+    clone = {};
+    for (key in obj) {
+      if ( hasOwn.call(obj, key) ) clone[key] = obj[key];
+    }
+    return clone;
   }
 
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var ALL_ESCAPE_CHARS = /[\\^$.*+?|(){}[\]]/g;
-
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var ANY_ESCAPE_CHARS = /[\\^$.+?|(){}[\]]/g;
-
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var ANY_REPLACE = /(\\+)\*/g;
-
-  /**
-   * @private
-   * @param {string} source
-   * @return {string}
-   */
-  function anyEscape(source) {
-    source = source.replace(ANY_ESCAPE_CHARS, '\\$&');
-    return ANY_REPLACE.test(source)
-      ? source.replace(ANY_REPLACE, anyReplacer)
-      : source;
-  }
-
-  /**
-   * @private
-   * @param {string} match
-   * @param {?string=} capture
-   * @return {string}
-   */
-  function anyReplacer(match, capture) {
-
-    /** @type {number} */
-    var len;
-
-    len = capture.length >>> 1; // len = capture.length / 2;
-    return len % 2 ? match.substr(1) : match; // is.odd(len) ? ...
-  }
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR ESCAPE
-  return _escape;
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: cloneObj
+  return cloneObj;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IN-ARR
+// VITALS HELPER: escape
+////////////////////////////////////////////////////////////////////////////////
+
+var escape = (function escapePrivateScope() {
+
+  /**
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var CHARS = /[\\^$.*+?|(){}[\]]/g;
+
+  /**
+   * @param {string} source
+   * @return {string}
+   */
+  function escape(source) {
+    return source.replace(CHARS, '\\$&');
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: escape
+  return escape;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: inArr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -230,7 +99,7 @@ var _escape = (function _escapePrivateScope() {
  * @param {*} val
  * @return {boolean}
  */
-function _inArr(source, val) {
+function inArr(source, val) {
 
   /** @type {number} */
   var len;
@@ -246,43 +115,45 @@ function _inArr(source, val) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IN-OBJ
+// VITALS HELPER: inObj
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @param {!(Object|function)} source
- * @param {*} val
- * @return {boolean}
- */
-function _inObj(source, val) {
-
-  /** @type {string} */
-  var key;
-
-  for (key in source) {
-    if ( _own(source, key) && source[key] === val ) return true;
-  }
-  return false;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IN-STR
-////////////////////////////////////////////////////////////////////////////////
-
-var _inStr = (function _inStrPrivateScope() {
+var inObj = (function inObjPrivateScope() {
 
   /**
-   * A shortcut for String.prototype.includes.
-   * @param {string} source
-   * @param {*} str
+   * @private
+   * @param {*} key
    * @return {boolean}
    */
-  function _inStr(source, str) {
-    str = String(str);
-    if (!source) return !str;
-    if (!str) return true;
-    return stringIncludes(source, str);
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
+   * @param {(!Object|function)} source
+   * @param {*} val
+   * @return {boolean}
+   */
+  function inObj(source, val) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( hasOwn.call(source, key) && source[key] === val ) return true;
+    }
+    return false;
   }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: inObj
+  return inObj;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: inStr
+////////////////////////////////////////////////////////////////////////////////
+
+var inStr = (function inStrPrivateScope() {
 
   /**
    * @private
@@ -290,58 +161,37 @@ var _inStr = (function _inStrPrivateScope() {
    * @param {string} str
    * @return {boolean}
    */
-  var stringIncludes = !!String.prototype.includes
-    ? function stringIncludes(source, str) {
-        return source.includes(str);
-      }
-    : function stringIncludes(source, str) {
-        return source.indexOf(str) !== -1;
-      };
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IN-STR
-  return _inStr;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS-EOL
-////////////////////////////////////////////////////////////////////////////////
-
-var _isEol = (function _isEolPrivateScope() {
+  var baseInStr = !!String.prototype.includes
+    ? function baseInStr(source, str) { return source.includes(str); }
+    : function baseInStr(source, str) { return source.indexOf(str) !== -1; };
 
   /**
-   * @param {string} val
+   * A shortcut for `String.prototype.includes`.
+   * @param {string} source
+   * @param {*} str
    * @return {boolean}
    */
-  function _isEol(val) {
-    return EOL.test(val);
+  function inStr(source, str) {
+    str = String(str);
+    if (!source) return !str;
+    if (!str) return true;
+    return baseInStr(source, str);
   }
 
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var EOL = /^(?:cr|lf|crlf)$/i;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IS-EOL
-  return _isEol;
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: inStr
+  return inStr;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS
+// VITALS HELPER: _is
 ////////////////////////////////////////////////////////////////////////////////
 
 var _is = (function _isPrivateScope() {
 
   /** @type {!Object} */
-  var _is = {};
-
-  /** @type {function} */
-  var toStr = Object.prototype.toString;
+  var is = {};
 
   //////////////////////////////////////////////////////////
   // PRIMITIVES
@@ -351,7 +201,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil = function(val) {
+  is.nil = function isNull(val) {
     return val === null;
   };
 
@@ -359,7 +209,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.undefined = function(val) {
+  is.undefined = function isUndefined(val) {
     return val === undefined;
   };
 
@@ -367,7 +217,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.bool = function(val) {
+  is.bool = function isBoolean(val) {
     return typeof val === 'boolean';
   };
 
@@ -375,7 +225,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.str = function(val) {
+  is.str = function isString(val) {
     return typeof val === 'string';
   };
 
@@ -384,7 +234,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._str = function(val) {
+  is._str = function isNonEmptyString(val) {
     return !!val && typeof val === 'string';
   };
 
@@ -392,7 +242,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.num = function(val) {
+  is.num = function isNumber(val) {
     return typeof val === 'number' && val === val;
   };
 
@@ -401,7 +251,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._num = function(val) {
+  is._num = function isNonZeroNumber(val) {
     return !!val && typeof val === 'number' && val === val;
   };
 
@@ -409,7 +259,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nan = function(val) {
+  is.nan = function isNan(val) {
     return val !== val;
   };
 
@@ -418,10 +268,16 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
+   * @private
+   * @return {string}
+   */
+  var toStr = Object.prototype.toString;
+
+  /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.obj = function(val) {
+  is.obj = function isObject(val) {
     return !!val && typeof val === 'object';
   };
 
@@ -430,7 +286,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._obj = function(val) {
+  is._obj = function isObjectOrFunction(val) {
     val = !!val && typeof val;
     return val && (val === 'object' || val === 'function');
   };
@@ -439,7 +295,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.func = function(val) {
+  is.func = function isFunction(val) {
     return !!val && typeof val === 'function';
   };
 
@@ -447,7 +303,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.arr = function(val) {
+  is.arr = function isArray(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
   };
 
@@ -456,8 +312,8 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._arr = function(val) {
-      if ( !_is.obj(val) ) return false;
+  is._arr = function isArrayOrArguments(val) {
+      if ( !is.obj(val) ) return false;
       val = toStr.call(val);
       return val === '[object Array]' || val === '[object Arguments]';
   };
@@ -466,7 +322,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.regex = function(val) {
+  is.regex = function isRegExp(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
   };
 
@@ -474,7 +330,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.date = function(val) {
+  is.date = function isDate(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
   };
 
@@ -482,7 +338,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.err = function(val) {
+  is.err = function isError(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
   };
 
@@ -490,7 +346,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.args = function(val) {
+  is.args = function isArguments(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Arguments]';
   };
 
@@ -502,7 +358,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.doc = function(val) {
+  is.doc = function isDOMDocument(val) {
     return !!val && typeof val === 'object' && val.nodeType === 9;
   };
 
@@ -510,55 +366,88 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.elem = function(val) {
+  is.elem = function isDOMElement(val) {
     return !!val && typeof val === 'object' && val.nodeType === 1;
   };
 
   //////////////////////////////////////////////////////////
-  // OTHERS
+  // MISCELLANEOUS
   //////////////////////////////////////////////////////////
 
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
-   * @param {*} val
+   * @private
+   * @param {*} key
    * @return {boolean}
    */
-  _is.empty = function(val) {
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
+   * Checks if a value is considered empty.
+   * @param {...*} val
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ` 0, "", {}, [], null, undefined, false, NaN, function(){} `
+   *   Note that for functions this method checks whether it has any defined
+   *   params: ` function empty(){}; function notEmpty(param){}; `
+   */
+  is.empty = function isEmpty(val) {
 
     /** @type {string} */
-    var prop;
+    var key;
 
-    // return empty primitives - 0, "", null, undefined, false, NaN
-    if ( !_is._obj(val) ) return !val;
+    // handle empty primitives - 0, "", null, undefined, false, NaN
+    if (!val) return true;
 
-    // return empty arrays and functions - [], function(){}
-    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+    // handle functions
+    if (typeof val === 'function') return !val.length;
 
-    // return empty object - {}
-    for (prop in val) {
-      if ( _own(val, prop) ) return false;
+    // handle non-empty primitives
+    if (typeof val !== 'object') return false;
+
+    // handle arrays
+    if (toStr.call(val) === '[object Array]') return !val.length;
+
+    // handle all other objects
+    for (key in val) {
+      if ( hasOwn.call(val, key) ) return false;
     }
     return true;
   };
 
   /**
-   * @param {(Object|?function)} obj
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var EOL = /^(?:cr|lf|crlf)$/i;
+
+  /**
+   * @param {string} val
    * @return {boolean}
    */
-  _is.frozen = (function() {
+  is.eol = function isEol(val) {
+    return EOL.test(val);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OBJECT STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * `Object.isFrozen` or a proper polyfill.
+   * @param {(!Object|function)} obj
+   * @return {boolean}
+   */
+  is.frozen = (function() {
 
     if (!Object.isFrozen) return function isFrozen(obj) { return false; };
 
     try {
-      Object.isFrozen(function(){});
+      Object.isFrozen( function(){} );
       return Object.isFrozen;
     }
-    catch (e) {
+    catch (err) {
       return function isFrozen(obj) {
-        return _is.obj(obj) && Object.isFrozen(obj);
+        return typeof obj === 'object' && Object.isFrozen(obj);
       };
     }
   })();
@@ -571,7 +460,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.whole = function(val) {
+  is.whole = function isWholeNumber(val) {
     return !(val % 1);
   };
 
@@ -579,7 +468,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.odd = function(val) {
+  is.odd = function isOddNumber(val) {
     return !!(val % 2);
   };
 
@@ -587,7 +476,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.even = function(val) {
+  is.even = function isEvenNumber(val) {
     return !(val % 2);
   };
 
@@ -596,13 +485,13 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /** @type {!Object} */
-  _is.un = {};
+  is.un = {};
 
   /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.bool = function(val) {
+  is.un.bool = function isUndefinedOrBoolean(val) {
     return val === undefined || typeof val === 'boolean';
   };
 
@@ -610,7 +499,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.str = function(val) {
+  is.un.str = function isUndefinedOrString(val) {
     return val === undefined || typeof val === 'string';
   };
 
@@ -618,7 +507,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.num = function(val) {
+  is.un.num = function isUndefinedOrNumber(val) {
     return val === undefined || (typeof val === 'number' && val === val);
   };
 
@@ -626,7 +515,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.obj = function(val) {
+  is.un.obj = function isUndefinedOrObject(val) {
     return val === undefined || (!!val && typeof val === 'object');
   };
 
@@ -634,7 +523,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.func = function(val) {
+  is.un.func = function isUndefinedOrFunction(val) {
     return val === undefined || (!!val && typeof val === 'function');
   };
 
@@ -642,9 +531,19 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.arr = function(val) {
+  is.un.arr = function isUndefinedOrArray(val) {
     return val === undefined || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.un.regex = function isUndefinedOrRegExp(val) {
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
@@ -656,7 +555,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.bool = function(val) {
+  is.nil.bool = function isNullOrBoolean(val) {
     return val === null || typeof val === 'boolean';
   };
 
@@ -664,7 +563,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.str = function(val) {
+  is.nil.str = function isNullOrString(val) {
     return val === null || typeof val === 'string';
   };
 
@@ -672,7 +571,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.num = function(val) {
+  is.nil.num = function isNullOrNumber(val) {
     return val === null || (typeof val === 'number' && val === val);
   };
 
@@ -680,7 +579,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.obj = function(val) {
+  is.nil.obj = function isNullOrObject(val) {
     return val === null || (!!val && typeof val === 'object');
   };
 
@@ -688,7 +587,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.func = function(val) {
+  is.nil.func = function isNullOrFunction(val) {
     return val === null || (!!val && typeof val === 'function');
   };
 
@@ -696,9 +595,19 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.arr = function(val) {
+  is.nil.arr = function isNullOrArray(val) {
     return val === null || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.regex = function isNullOrRegExp(val) {
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
@@ -707,13 +616,13 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /** @type {!Object} */
-  _is.nil.un = {};
+  is.nil.un = {};
 
   /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.bool = function(val) {
+  is.nil.un.bool = function isNullOrUndefinedOrBoolean(val) {
     return val === null || val === undefined || typeof val === 'boolean';
   };
 
@@ -721,7 +630,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.str = function(val) {
+  is.nil.un.str = function isNullOrUndefinedOrString(val) {
     return val === null || val === undefined || typeof  val === 'string';
   };
 
@@ -729,7 +638,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.num = function(val) {
+  is.nil.un.num = function isNullOrUndefinedOrNumber(val) {
     return val === null || val === undefined || (
       typeof val === 'number' && val === val
     );
@@ -739,7 +648,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.obj = function(val) {
+  is.nil.un.obj = function isNullOrUndefinedOrObject(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'object'
     );
@@ -749,7 +658,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.func = function(val) {
+  is.nil.un.func = function isNullOrUndefinedOrFunction(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'undefined'
     );
@@ -759,20 +668,30 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.arr = function(val) {
+  is.nil.un.arr = function isNullOrUndefinedOrArray(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
     );
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IS
-  return _is;
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.un.regex = function isNullOrUndefinedOrRegExp(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
+    );
+  };
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: _is
+  return is;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS
+// VITALS FS HELPER: _is
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -815,120 +734,275 @@ _is.file = function(filepath) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MATCH
+// VITALS HELPER: match
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * A shortcut for String.prototype.includes and RegExp.prototype.test.
- * @param {string} source
- * @param {*} pattern
- * @return {boolean}
- */
-function _match(source, pattern) {
-  return _is.regex(pattern) ? pattern.test(source) : _inStr(source, pattern);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MERGE
-////////////////////////////////////////////////////////////////////////////////
-
-
-/**
- * @param {!(Object|function)} dest
- * @param {!(Object|function)} source
- * @return {!(Object|function)}
- */
-function _merge(dest, source, deep) {
-
-  /** @type {string} */
-  var key;
-
-  for (key in source) {
-    if ( _own(source, key) ) {
-      dest[key] = source[key];
-    }
-  }
-  return dest;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - NORMALIZE
-////////////////////////////////////////////////////////////////////////////////
-
-var _normalize = (function _normalizePrivateScope() {
+var match = (function matchPrivateScope() {
 
   /**
-   * @param {string} str
-   * @param {string} eol
+   * A shortcut for `String.prototype.includes` and `RegExp.prototype.test`.
+   * @param {string} source
+   * @param {*} pattern
+   * @return {boolean}
+   */
+  function match(source, pattern) {
+    return isRegex(pattern)
+      ? pattern.test(source)
+      : inStr(source, pattern);
+  }
+
+  /**
+   * @private
    * @return {string}
    */
-  function _normalize(str, eol) {
-    return str.replace(EOL.find[eol], EOL.replace[eol]);
+  var toStr = Object.prototype.toString;
+
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isRegex(val) {
+    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
   }
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {string} str
+   * @return {boolean}
+   */
+  var baseInStr = !!String.prototype.includes
+    ? function baseInStr(source, str) { return source.includes(str); }
+    : function baseInStr(source, str) { return source.indexOf(str) !== -1; };
+
+  /**
+   * @private
+   * @param {string} source
+   * @param {*} str
+   * @return {boolean}
+   */
+  function inStr(source, str) {
+    str = String(str);
+    if (!source) return !str;
+    if (!str) return true;
+    return baseInStr(source, str);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: match
+  return match;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: merge
+////////////////////////////////////////////////////////////////////////////////
+
+var merge = (function mergePrivateScope() {
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
+   * @param {(!Object|function)} dest
+   * @param {(!Object|function)} source
+   * @return {(!Object|function)}
+   */
+  function merge(dest, source) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( hasOwn.call(source, key) ) dest[key] = source[key];
+    }
+    return dest;
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: merge
+  return merge;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: newErrorMaker
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {string} main - A vitals method.
+ * @return {function}
+ */
+function newErrorMaker(main) {
+
+  main = 'vitals.' + main;
+
+  /**
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var maker = function error(msg, method) {
+
+    /** @type {!Error} */
+    var err;
+
+    method = method ? main : main + '.' + method;
+    err = new Error(msg + ' for ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  /**
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  maker.type = function typeError(param, method) {
+
+    /** @type {!TypeError} */
+    var err;
+
+    param += ' param';
+    method = method ? main : main + '.' + method;
+    err = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  /**
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  maker.range = function rangeError(param, valid, method) {
+
+    /** @type {!RangeError} */
+    var err;
+    /** @type {string} */
+    var msg;
+
+    param += ' param';
+    method = method ? main : main + '.' + method;
+    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
+    msg += valid ? ' The valid options are: ' + valid : '';
+    err = new RangeError(msg);
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  return maker;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: normalize
+////////////////////////////////////////////////////////////////////////////////
+
+var normalize = (function normalizePrivateScope() {
 
   /**
    * @private
    * @type {!Object}
    * @const
    */
-  var EOL = {
-    'replace': {
-      'CRLF': '\r\n',
-      'CR':   '\r',
-      'LF':   '\n'
-    },
-    'find': {
-      'CRLF': /\r?\n|\r\n?/g,
-      'CR':   /\r?\n/g,
-      'LF':   /\r\n?/g
-    }
+  var OPTS = {
+    'CRLF': { 'pattern': /\r?\n|\r\n?/g, 'value': '\r\n' },
+    'CR':   { 'pattern': /\r?\n/g,       'value': '\r'   },
+    'LF':   { 'pattern': /\r\n?/g,       'value': '\n'   }
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR NORMALIZE
-  return _normalize;
+  /**
+   * @param {string} str
+   * @param {string} eol
+   * @return {string}
+   */
+  function normalize(str, eol) {
+    eol = OPTS[eol];
+    return str.replace(eol.pattern, eol.value);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: normalize
+  return normalize;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN-ENUM
+// VITALS HELPER: own
 ////////////////////////////////////////////////////////////////////////////////
 
-var _ownEnum = (function _ownEnumPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _ownEnum(source, key) {
-    return !!source && _propertyIsEnumerable.call(source, key);
-  }
+var own = (function ownPrivateScope() {
 
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+  var hasOwn = Object.prototype.hasOwnProperty;
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN-ENUM
-  return _ownEnum;
+  /**
+   * @param {(Object|?function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function own(source, key) {
+    return !!source && hasOwn.call(source, key);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: own
+  return own;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SLICE-ARR
+// VITALS HELPER: ownEnum
+////////////////////////////////////////////////////////////////////////////////
+
+var ownEnum = (function ownEnumPrivateScope() {
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasEnum = Object.prototype.propertyIsEnumerable;
+
+  /**
+   * @param {(Object|?function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function ownEnum(source, key) {
+    return !!source && hasEnum.call(source, key);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: ownEnum
+  return ownEnum;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: sliceArr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {!(Object|function)} source
+ * @param {(!Object|function)} source
  * @param {number=} start - [default= 0]
  * @param {number=} end - [default= source.length]
  * @return {!Array}
  */
-function _sliceArr(source, start, end) {
+function sliceArr(source, start, end) {
 
   /** @type {!Array} */
   var arr;
@@ -946,7 +1020,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = _is.undefined(end) || end > len
+  end = end === undefined || end > len
     ? len
     : end < 0
       ? len + end
@@ -964,7 +1038,7 @@ function _sliceArr(source, start, end) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SLICE-STR
+// VITALS HELPER: sliceStr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -973,7 +1047,7 @@ function _sliceArr(source, start, end) {
  * @param {number=} end - [default= str.length]
  * @return {string}
  */
-function _sliceStr(str, start, end) {
+function sliceStr(str, start, end) {
 
   /** @type {number} */
   var len;
@@ -985,7 +1059,7 @@ function _sliceStr(str, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = _is.undefined(end) || end > len
+  end = end === undefined || end > len
     ? len
     : end < 0
       ? len + end
@@ -995,25 +1069,49 @@ function _sliceStr(str, start, end) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SPLIT-KEYS
+// VITALS HELPER: splitKeys
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @param {string} keys - One of the chars in the following list is used as
- *   the separator (chars listed in order of use):  ", "  ","  "|"  " "
- * @return {!Array<string>}
- */
-function _splitKeys(keys) {
+var splitKeys = (function splitKeysPrivateScope() {
 
-  /** @type {string} */
-  var separator;
+  /**
+   * @private
+   * @param {string} keys
+   * @param {string} str
+   * @return {boolean}
+   */
+  var inStr = !!String.prototype.includes
+    ? function inStr(keys, str) { return keys.includes(str); }
+    : function inStr(keys, str) { return keys.indexOf(str) !== -1; };
 
-  separator = _inStr(keys, ', ')
-    ? ', '  : _inStr(keys, ',')
-      ? ',' : _inStr(keys, '|')
-        ? '|' : ' ';
-  return keys.split(separator);
-}
+  /**
+   * @param {string} keys - The keys are split using one of the values in the
+   *   following list as the separator (values listed in order of rank):
+   *   - `", "`
+   *   - `","`
+   *   - `"|"`
+   *   - `" "`
+   * @return {!Array<string>}
+   */
+  function splitKeys(keys) {
+
+    /** @type {string} */
+    var separator;
+
+    if (!keys) return [ '' ];
+
+    separator = inStr(keys, ', ')
+      ? ', '  : inStr(keys, ',')
+        ? ',' : inStr(keys, '|')
+          ? '|' : ' ';
+    return keys.split(separator);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: splitKeys
+  return splitKeys;
+})();
+
 
 
 // *****************************************************************************
@@ -1022,7 +1120,7 @@ function _splitKeys(keys) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// IS
+// VITALS METHOD: is
 ////////////////////////////////////////////////////////////////////////////////
 
 var is = (function isPrivateScope() {
@@ -1653,7 +1751,7 @@ var is = (function isPrivateScope() {
       var type;
 
       for (type in types) {
-        if( _own(types, type) ) addType(section, type, types[type], nullable);
+        if( own(types, type) ) addType(section, type, types[type], nullable);
       }
       return _types;
     }
@@ -1670,7 +1768,7 @@ var is = (function isPrivateScope() {
      * @return {DataTypes}
      */
     function addType(section, type, check, nullable) {
-      check = _own(addType, section) ? addType[section](check) : check;
+      check = own(addType, section) ? addType[section](check) : check;
       nullable = nullable !== false;
       _types['_' + type] = function(val, _nullable) {
         _nullable = _is.bool(_nullable) ? _nullable : nullable;
@@ -1693,7 +1791,7 @@ var is = (function isPrivateScope() {
       var type;
 
       for (shortcut in shortcuts) {
-        if( _own(shortcuts, shortcut) ) {
+        if( own(shortcuts, shortcut) ) {
           type = '_' + shortcuts[shortcut];
           shortcut = '_' + shortcut;
           _types[shortcut] = _types[type];
@@ -1743,7 +1841,7 @@ var is = (function isPrivateScope() {
         if ( !_is.obj(obj) ) return false;
 
         for (prop in obj) {
-          if( _own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+          if( own(obj, prop) && !eachCheck(obj[prop]) ) return false;
         }
         return true;
       };
@@ -1919,7 +2017,7 @@ var is = (function isPrivateScope() {
     i = checks.length;
     while (i--) {
       type = '_' + checks[i];
-      if ( !_own(TYPES, type) ) return null;
+      if ( !own(TYPES, type) ) return null;
       checks[i] = TYPES[type];
     }
 
@@ -1955,7 +2053,7 @@ var is = (function isPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('is');
+  var _error = newErrorMaker('is');
 
   /**
    * @private
@@ -1970,7 +2068,7 @@ var is = (function isPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// COPY
+// VITALS METHOD: copy
 ////////////////////////////////////////////////////////////////////////////////
 
 var copy = (function copyPrivateScope() {
@@ -2113,7 +2211,7 @@ var copy = (function copyPrivateScope() {
    * @return {!Object}
    */
   function _copyObj(obj, deep) {
-    return deep ? _mergeDeep({}, obj) : _merge({}, obj);
+    return deep ? _mergeDeep({}, obj) : merge({}, obj);
   }
 
   /**
@@ -2128,7 +2226,7 @@ var copy = (function copyPrivateScope() {
     var arr;
 
     arr = new Array(obj.length);
-    return deep ? _mergeDeep(arr, obj) : _merge(arr, obj);
+    return deep ? _mergeDeep(arr, obj) : merge(arr, obj);
   }
 
   /**
@@ -2164,7 +2262,7 @@ var copy = (function copyPrivateScope() {
     copiedFunc = function copiedFunction() {
       return func.apply(null, arguments);
     };
-    return deep ? _mergeDeep(copiedFunc, func) : _merge(copiedFunc, func);
+    return deep ? _mergeDeep(copiedFunc, func) : merge(copiedFunc, func);
   }
 
   //////////////////////////////////////////////////////////
@@ -2192,7 +2290,7 @@ var copy = (function copyPrivateScope() {
    * @type {!Object}
    * @const
    */
-  var FLAGS = _merge({
+  var FLAGS = merge({
     ignoreCase: 'i',
     multiline:  'm',
     global:     'g'
@@ -2213,14 +2311,14 @@ var copy = (function copyPrivateScope() {
 
     flags = '';
     for (key in FLAGS) {
-      if ( _own(FLAGS, key) && regex[key] ) {
+      if ( own(FLAGS, key) && regex[key] ) {
         flags += FLAGS[key];
       }
     }
 
     if ( _is.undefined(forceGlobal) ) return flags;
 
-    return _inStr(flags, 'g')
+    return inStr(flags, 'g')
       ? forceGlobal
         ? flags
         : flags.replace('g', '')
@@ -2245,7 +2343,7 @@ var copy = (function copyPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) ) {
+      if ( own(source, key) ) {
         dest[key] = copy(source[key], true);
       }
     }
@@ -2256,7 +2354,7 @@ var copy = (function copyPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('copy');
+  var _error = newErrorMaker('copy');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR COPY
@@ -2265,7 +2363,7 @@ var copy = (function copyPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// CUT
+// VITALS METHOD: cut
 ////////////////////////////////////////////////////////////////////////////////
 
 var cut = (function cutPrivateScope() {
@@ -2333,7 +2431,7 @@ var cut = (function cutPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( _is.str(source) ) {
-      vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+      vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
       return _is.arr(vals)
         ? _cutPatterns(source, vals)
         : _cutPattern(source, vals);
@@ -2341,7 +2439,7 @@ var cut = (function cutPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
 
     if ( _is.func(vals) ) {
       if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
@@ -2350,7 +2448,7 @@ var cut = (function cutPrivateScope() {
         : _filterObj(source, vals, thisArg);
     }
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   }
 
@@ -2395,7 +2493,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'property');
     if (arguments.length < 2) throw _error('No val defined', 'property');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
 
     if ( _is.func(val) ) {
       if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'property');
@@ -2444,7 +2542,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is.num(index)         ) throw _error.type('index',         'index');
     if ( !_is.un.num(toIndex)    ) throw _error.type('toIndex',       'index');
 
-    source = _is.arr(source) ? source : _sliceArr(source);
+    source = _is.arr(source) ? source : sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
@@ -2476,7 +2574,7 @@ var cut = (function cutPrivateScope() {
       );
     }
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
     return _cutType(source, type);
   };
 
@@ -2494,7 +2592,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
+    source = _is.args(source) ? sliceArr(source) : source;
     return _cutVal(source, val);
   };
   // define shorthand
@@ -2545,8 +2643,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'properties');
     if (arguments.length < 2) throw _error('No val defined', 'properties');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    source = _is.args(source) ? sliceArr(source) : source;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
   };
   // define shorthand
@@ -2567,7 +2665,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'keys');
     if (arguments.length < 2) throw _error('No key defined', 'keys');
 
-    keys = arguments.length > 2 ? _sliceArr(arguments, 1) : keys;
+    keys = arguments.length > 2 ? sliceArr(arguments, 1) : keys;
     return _is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
   };
 
@@ -2587,8 +2685,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
     if (arguments.length < 2) throw _error('No index defined', 'indexes');
 
-    source = _is.arr(source) ? source : _sliceArr(source);
-    indexes = arguments.length > 2 ? _sliceArr(arguments, 1) : indexes;
+    source = _is.arr(source) ? source : sliceArr(source);
+    indexes = arguments.length > 2 ? sliceArr(arguments, 1) : indexes;
 
     if ( !_is.arr(indexes) ) {
       if ( !_is.num(indexes) ) throw _error.type('index', 'indexes');
@@ -2617,8 +2715,8 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
     if (arguments.length < 2) throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? _sliceArr(source) : source;
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    source = _is.args(source) ? sliceArr(source) : source;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
   };
   // define shorthand
@@ -2639,7 +2737,7 @@ var cut = (function cutPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'patterns');
     if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
 
-    patterns = arguments.length > 2 ? _sliceArr(arguments, 1) : patterns;
+    patterns = arguments.length > 2 ? sliceArr(arguments, 1) : patterns;
     return _is.arr(patterns)
       ? _cutPatterns(source, patterns)
       : _cutPattern(source, patterns);
@@ -2800,7 +2898,7 @@ var cut = (function cutPrivateScope() {
   function _cutPattern(source, pattern) {
     if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern);
+      pattern = escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
     return source.replace(pattern, '');
@@ -2835,24 +2933,24 @@ var cut = (function cutPrivateScope() {
    * @private
    * @param {!(Object|function)} source
    * @param {*} key
-   * @param {boolean=} match
+   * @param {boolean=} useMatch
    * @return {!(Object|function)}
    */
-  function _deleteKey(source, key, match) {
+  function _deleteKey(source, key, useMatch) {
 
     /** @type {!RegExp} */
     var pattern;
 
-    match = _is.undefined(match) ? _is.regex(key) : match;
+    useMatch = _is.undefined(useMatch) ? _is.regex(key) : useMatch;
 
-    if (!match) {
-      if ( _own(source, key) ) delete source[key];
+    if (!useMatch) {
+      if ( own(source, key) ) delete source[key];
       return source;
     }
 
     pattern = key;
     for (key in source) {
-      if ( _own(source, key) && _match(key, pattern) ) {
+      if ( own(source, key) && match(key, pattern) ) {
         delete source[key];
       }
     }
@@ -2868,17 +2966,17 @@ var cut = (function cutPrivateScope() {
   function _deleteKeys(source, keys) {
 
     /** @type {boolean} */
-    var match;
+    var useMatch;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    match = _is.regex( keys[0] );
+    useMatch = _is.regex( keys[0] );
     len = keys.length;
     i = -1;
     while (++i < len) {
-      source = _deleteKey(source, keys[i], match);
+      source = _deleteKey(source, keys[i], useMatch);
     }
     return source;
   }
@@ -2895,7 +2993,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) && source[key] === val ) {
+      if ( own(source, key) && source[key] === val ) {
         delete source[key];
       }
     }
@@ -2914,7 +3012,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( _own(source, key) && is(type, source[key]) ) {
+      if ( own(source, key) && is(type, source[key]) ) {
         delete source[key];
       }
     }
@@ -3088,22 +3186,22 @@ var cut = (function cutPrivateScope() {
     switch (filter.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) && !filter() ) delete source[key];
+        if ( own(obj, key) && !filter() ) delete source[key];
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key]) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key]) ) delete source[key];
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key], key) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key], key) ) delete source[key];
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
+        if ( own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
       }
     }
     return source;
@@ -3407,7 +3505,7 @@ var cut = (function cutPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('cut');
+  var _error = newErrorMaker('cut');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CUT
@@ -3416,7 +3514,7 @@ var cut = (function cutPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// EACH
+// VITALS METHOD: each
 ////////////////////////////////////////////////////////////////////////////////
 
 var each = (function eachPrivateScope() {
@@ -3459,7 +3557,7 @@ var each = (function eachPrivateScope() {
 
     if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
@@ -3516,7 +3614,7 @@ var each = (function eachPrivateScope() {
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source)        ) throw _error.type('source',        'array');
     if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
@@ -3566,10 +3664,10 @@ var each = (function eachPrivateScope() {
     obj = iteratee.length > 2 ? copy(obj) : obj;
     iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
     switch (iteratee.length) {
-      case 0: for (key in obj) _own(obj, key) && iteratee();              break;
-      case 1: for (key in obj) _own(obj, key) && iteratee(obj[key]);      break;
-      case 2: for (key in obj) _own(obj, key) && iteratee(obj[key], key); break;
-     default: for (key in obj) _own(obj, key) && iteratee(obj[key], key, obj);
+      case 0: for (key in obj) own(obj, key) && iteratee();              break;
+      case 1: for (key in obj) own(obj, key) && iteratee(obj[key]);      break;
+      case 2: for (key in obj) own(obj, key) && iteratee(obj[key], key); break;
+     default: for (key in obj) own(obj, key) && iteratee(obj[key], key, obj);
     }
     return obj;
   }
@@ -3650,7 +3748,7 @@ var each = (function eachPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('each');
+  var _error = newErrorMaker('each');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR EACH
@@ -3659,7 +3757,7 @@ var each = (function eachPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FILL
+// VITALS METHOD: fill
 ////////////////////////////////////////////////////////////////////////////////
 
 var fill = (function fillPrivateScope() {
@@ -3716,7 +3814,7 @@ var fill = (function fillPrivateScope() {
     }
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      keys = _is.str(keys) ? splitKeys(keys) : keys;
       if ( !_is.arr(keys) ) throw _error.type('keys');
       return _fillKeys(source, keys, val);
     }
@@ -3747,7 +3845,7 @@ var fill = (function fillPrivateScope() {
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? _splitKeys(keys) : keys;
+      keys = _is.str(keys) ? splitKeys(keys) : keys;
       if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
       return _fillKeys(obj, keys, val);
     }
@@ -3817,7 +3915,7 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) ) {
+      if ( own(obj, key) ) {
         obj[key] = val;
       }
     }
@@ -3910,7 +4008,7 @@ var fill = (function fillPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('fill');
+  var _error = newErrorMaker('fill');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FILL
@@ -3919,7 +4017,7 @@ var fill = (function fillPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FUSE
+// VITALS METHOD: fuse
 ////////////////////////////////////////////////////////////////////////////////
 
 var fuse = (function fusePrivateScope() {
@@ -3958,23 +4056,23 @@ var fuse = (function fusePrivateScope() {
     if (arguments.length < 2) throw _error('No val defined');
 
     if ( _is.str(dest) ) {
-      vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+      vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
       return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if ( _is.arr(dest) ) {
       if (arguments.length > 2) {
-        vals = _sliceArr(arguments, 1);
+        vals = sliceArr(arguments, 1);
         return _fuseArrs(dest, vals);
       }
       return _fuseArr(dest, vals);
     }
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   }
 
@@ -3997,19 +4095,19 @@ var fuse = (function fusePrivateScope() {
 
     if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStr(dest, vals);
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseStrs(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest', 'value');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
       return _is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
     }
 
-    vals = _sliceArr(arguments, 1);
+    vals = sliceArr(arguments, 1);
     return _is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
   };
   // define shorthand
@@ -4034,13 +4132,13 @@ var fuse = (function fusePrivateScope() {
 
     if ( _is.str(dest) ) {
       if (arguments.length < 3) return _fuseStrTop(dest, vals);
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseStrsTop(dest, vals);
     }
 
     if ( !_is._obj(dest) ) throw _error.type('dest', 'value.start');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length < 3) {
       return _is.arr(dest)
@@ -4048,7 +4146,7 @@ var fuse = (function fusePrivateScope() {
         : _fuseObjValTop(dest, vals);
     }
 
-    vals = _sliceArr(arguments, 1);
+    vals = sliceArr(arguments, 1);
     return _is.arr(dest)
       ? _fuseArrsValTop(dest, vals)
       : _fuseObjsValTop(dest, vals);
@@ -4077,7 +4175,7 @@ var fuse = (function fusePrivateScope() {
     if ( !_is._obj(dest) ) throw _error.type('dest', 'object');
     if (arguments.length < 2) throw _error('No val defined', 'object');
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
   };
   // define shorthand
@@ -4099,10 +4197,10 @@ var fuse = (function fusePrivateScope() {
     if ( !_is._arr(dest) ) throw _error.type('dest', 'array');
     if (arguments.length < 2) throw _error('No val defined', 'array');
 
-    dest = _is.args(dest) ? _sliceArr(dest) : dest;
+    dest = _is.args(dest) ? sliceArr(dest) : dest;
 
     if (arguments.length > 2) {
-      vals = _sliceArr(arguments, 1);
+      vals = sliceArr(arguments, 1);
       return _fuseArrs(dest, vals);
     }
 
@@ -4124,7 +4222,7 @@ var fuse = (function fusePrivateScope() {
     if ( !_is.str(dest) ) throw _error.type('dest', 'string');
     if (arguments.length < 2) throw _error('No val defined', 'string');
 
-    vals = arguments.length > 2 ? _sliceArr(arguments, 1) : vals;
+    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
     return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
   };
   // define shorthand
@@ -4141,7 +4239,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObj(dest, val) {
-    if ( _is._obj(val) ) return _merge(dest, val);
+    if ( _is._obj(val) ) return merge(dest, val);
     if ( !_is.nil(val) ) dest[val] = undefined;
     return dest;
   }
@@ -4209,7 +4307,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!(Object|function)}
    */
   function _fuseObjValTop(dest, val) {
-    if ( !_own(dest, val) ) dest[val] = undefined;
+    if ( !own(dest, val) ) dest[val] = undefined;
     return dest;
   }
 
@@ -4401,7 +4499,7 @@ var fuse = (function fusePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('fuse');
+  var _error = newErrorMaker('fuse');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FUSE
@@ -4410,7 +4508,7 @@ var fuse = (function fusePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// GET
+// VITALS METHOD: get
 ////////////////////////////////////////////////////////////////////////////////
 
 var get = (function getPrivateScope() {
@@ -4605,7 +4703,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && arr.push(key);
+    for (key in obj) own(obj, key) && arr.push(key);
     return arr;
   }
 
@@ -4624,7 +4722,7 @@ var get = (function getPrivateScope() {
 
     pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
-    for (key in obj) _own(obj, key) && _match(key, pattern) && arr.push(key);
+    for (key in obj) own(obj, key) && match(key, pattern) && arr.push(key);
     return arr;
   }
 
@@ -4642,7 +4740,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && obj[key] === val && arr.push(key);
+    for (key in obj) own(obj, key) && obj[key] === val && arr.push(key);
     return arr;
   }
 
@@ -4659,7 +4757,7 @@ var get = (function getPrivateScope() {
     var key;
 
     arr = [];
-    for (key in obj) _own(obj, key) && arr.push( obj[key] );
+    for (key in obj) own(obj, key) && arr.push( obj[key] );
     return arr;
   }
 
@@ -4679,7 +4777,7 @@ var get = (function getPrivateScope() {
     pattern = _is.regex(pattern) ? pattern : String(pattern);
     arr = [];
     for (key in obj) {
-      _own(obj, key) && _match(key, pattern) && arr.push( obj[key] );
+      own(obj, key) && match(key, pattern) && arr.push( obj[key] );
     }
     return arr;
   }
@@ -4742,7 +4840,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<number>}
    */
   function _strIndexes(str, pattern) {
-    return _match(str, pattern)
+    return match(str, pattern)
       ? _is.regex(pattern)
         ? _byRegexStrKeys(str, pattern)
         : _byStrStrKeys(str, pattern)
@@ -4756,7 +4854,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<string>}
    */
   function _strVals(str, pattern) {
-    return _match(str, pattern)
+    return match(str, pattern)
       ? _is.regex(pattern)
         ? _byRegexStrVals(str, pattern)
         : _byStrStrVals(str, pattern)
@@ -4863,7 +4961,7 @@ var get = (function getPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('get');
+  var _error = newErrorMaker('get');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR GET
@@ -4872,7 +4970,7 @@ var get = (function getPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// HAS
+// VITALS METHOD: has
 ////////////////////////////////////////////////////////////////////////////////
 
 var has = (function hasPrivateScope() {
@@ -4915,11 +5013,11 @@ var has = (function hasPrivateScope() {
     
     if ( _is.nil(source) ) return false;
 
-    if ( _is.str(source) ) return _match(source, val);
+    if ( _is.str(source) ) return match(source, val);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
-    return _is._arr(source) ? _inArr(source, val) : _own(source, val);
+    return _is._arr(source) ? inArr(source, val) : own(source, val);
   }
 
   /**
@@ -4941,7 +5039,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'key');
 
-    return _own(source, key);
+    return own(source, key);
   };
 
   /**
@@ -4964,7 +5062,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'value');
 
-    return _is._arr(source) ? _inArr(source, val) : _inObj(source, val);
+    return _is._arr(source) ? inArr(source, val) : inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -4987,7 +5085,7 @@ var has = (function hasPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'pattern');
     if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
 
-    return _match(source, pattern);
+    return match(source, pattern);
   };
 
   /**
@@ -5005,7 +5103,7 @@ var has = (function hasPrivateScope() {
     if ( !_is.str(source) ) throw _error.type('source', 'substring');
     if (arguments.length < 2) throw _error('No val defined', 'substring');
 
-    return _inStr(source, val);
+    return inStr(source, val);
   };
   // define shorthand
   has.substr = has.substring;
@@ -5029,7 +5127,7 @@ var has = (function hasPrivateScope() {
 
     if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
 
-    return _ownEnum(source, key);
+    return ownEnum(source, key);
   };
   // define shorthand
   try {
@@ -5045,7 +5143,7 @@ var has = (function hasPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('has');
+  var _error = newErrorMaker('has');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR HAS
@@ -5054,7 +5152,7 @@ var has = (function hasPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// REMAP
+// VITALS METHOD: remap
 ////////////////////////////////////////////////////////////////////////////////
 
 var remap = (function remapPrivateScope() {
@@ -5169,7 +5267,7 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source)        ) throw _error.type('source',        'array');
     if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
@@ -5231,22 +5329,22 @@ var remap = (function remapPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee();
+        if ( own(source, key) ) obj[key] = iteratee();
       }
       break;
       case 1:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key]);
+        if ( own(source, key) ) obj[key] = iteratee(source[key]);
       }
       break;
       case 2:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key], key);
+        if ( own(source, key) ) obj[key] = iteratee(source[key], key);
       }
       break;
       default:
       for (key in source) {
-        if ( _own(source, key) ) obj[key] = iteratee(source[key], key, source);
+        if ( own(source, key) ) obj[key] = iteratee(source[key], key, source);
       }
     }
     return obj;
@@ -5296,7 +5394,7 @@ var remap = (function remapPrivateScope() {
 
     if ( !_is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = _escape(pattern);
+      pattern = escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
 
@@ -5369,7 +5467,7 @@ var remap = (function remapPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('remap');
+  var _error = newErrorMaker('remap');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR REMAP
@@ -5378,7 +5476,7 @@ var remap = (function remapPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// ROLL
+// VITALS METHOD: roll
 ////////////////////////////////////////////////////////////////////////////////
 
 var roll = (function rollPrivateScope() {
@@ -5588,7 +5686,7 @@ var roll = (function rollPrivateScope() {
       case 0:
       case 1: 
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result);
           else {
             result = obj[key];
@@ -5599,7 +5697,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key]);
           else {
             result = obj[key];
@@ -5610,7 +5708,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 3:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key], key);
           else {
             result = obj[key];
@@ -5621,7 +5719,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result = iteratee(result, obj[key], key, obj);
           else {
             result = obj[key];
@@ -5652,22 +5750,22 @@ var roll = (function rollPrivateScope() {
       case 0:
       case 1: 
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result);
+        if ( own(obj, key) ) result = iteratee(result);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key]);
+        if ( own(obj, key) ) result = iteratee(result, obj[key]);
       }
       break;
       case 3:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key], key);
+        if ( own(obj, key) ) result = iteratee(result, obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result = iteratee(result, obj[key], key, obj);
+        if ( own(obj, key) ) result = iteratee(result, obj[key], key, obj);
       }
     }
     return result;
@@ -5694,7 +5792,7 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee();
           else {
             result = obj[key];
@@ -5705,7 +5803,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key]);
           else {
             result = obj[key];
@@ -5716,7 +5814,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key], key);
           else {
             result = obj[key];
@@ -5727,7 +5825,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result += iteratee(obj[key], key, obj);
           else {
             result = obj[key];
@@ -5757,22 +5855,22 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee();
+        if ( own(obj, key) ) result += iteratee();
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key]);
+        if ( own(obj, key) ) result += iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key], key);
+        if ( own(obj, key) ) result += iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result += iteratee(obj[key], key, obj);
+        if ( own(obj, key) ) result += iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -5799,7 +5897,7 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee();
           else {
             result = obj[key];
@@ -5810,7 +5908,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key]);
           else {
             result = obj[key];
@@ -5821,7 +5919,7 @@ var roll = (function rollPrivateScope() {
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key], key);
           else {
             result = obj[key];
@@ -5832,7 +5930,7 @@ var roll = (function rollPrivateScope() {
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (z) result -= iteratee(obj[key], key, obj);
           else {
             result = obj[key];
@@ -5862,22 +5960,22 @@ var roll = (function rollPrivateScope() {
     switch (iteratee.length) {
       case 0: 
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee();
+        if ( own(obj, key) ) result -= iteratee();
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key]);
+        if ( own(obj, key) ) result -= iteratee(obj[key]);
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key], key);
+        if ( own(obj, key) ) result -= iteratee(obj[key], key);
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) result -= iteratee(obj[key], key, obj);
+        if ( own(obj, key) ) result -= iteratee(obj[key], key, obj);
       }
     }
     return result;
@@ -6169,7 +6267,7 @@ var roll = (function rollPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('roll');
+  var _error = newErrorMaker('roll');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR ROLL
@@ -6178,7 +6276,7 @@ var roll = (function rollPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SAME
+// VITALS METHOD: same
 ////////////////////////////////////////////////////////////////////////////////
 
 var same = (function samePrivateScope() {
@@ -6229,7 +6327,7 @@ var same = (function samePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('same');
+  var _error = newErrorMaker('same');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SAME
@@ -6238,7 +6336,7 @@ var same = (function samePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SLICE
+// VITALS METHOD: slice
 ////////////////////////////////////////////////////////////////////////////////
 
 var slice = (function slicePrivateScope() {
@@ -6267,12 +6365,12 @@ var slice = (function slicePrivateScope() {
 
     if ( _is.nil(source) ) return null;
 
-    if ( _is.str(source) ) return _sliceStr(source, start, end);
+    if ( _is.str(source) ) return sliceStr(source, start, end);
 
     if ( !_is._obj(source)       ) throw _error.type('source');
     if ( !_is.num(source.length) ) throw _error.type('source.length');
 
-    return _sliceArr(source, start, end);
+    return sliceArr(source, start, end);
   }
 
   /**
@@ -6291,7 +6389,7 @@ var slice = (function slicePrivateScope() {
     if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
     if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
 
-    return _sliceArr(source, start, end);
+    return sliceArr(source, start, end);
   };
   // define shorthand
   slice.arr = slice.array;
@@ -6311,7 +6409,7 @@ var slice = (function slicePrivateScope() {
     if ( !_is.un.num(start) ) throw _error.type('start', 'string');
     if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
 
-    return _sliceStr(str, start, end);
+    return sliceStr(str, start, end);
   };
   // define shorthand
   slice.str = slice.string;
@@ -6324,7 +6422,7 @@ var slice = (function slicePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('slice');
+  var _error = newErrorMaker('slice');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SLICE
@@ -6333,7 +6431,7 @@ var slice = (function slicePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// TO
+// VITALS METHOD: to
 ////////////////////////////////////////////////////////////////////////////////
 
 var to = (function toPrivateScope() {
@@ -6438,7 +6536,7 @@ var to = (function toPrivateScope() {
 
     if ( !_is.str(val) ) throw _error.type('val', 'array');
 
-    if ( _is.undefined(separator) ) return _splitKeys(val);
+    if ( _is.undefined(separator) ) return splitKeys(val);
 
     separator = _is.regex(separator) ? separator : String(separator);
     return val.split(separator);
@@ -6509,7 +6607,7 @@ var to = (function toPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('to');
+  var _error = newErrorMaker('to');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR TO
@@ -6518,7 +6616,7 @@ var to = (function toPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// UNTIL
+// VITALS METHOD: until
 ////////////////////////////////////////////////////////////////////////////////
 
 var until = (function untilPrivateScope() {
@@ -6580,7 +6678,7 @@ var until = (function untilPrivateScope() {
 
     if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source) ) throw _error.type('source');
 
@@ -6648,7 +6746,7 @@ var until = (function untilPrivateScope() {
    */
   until.array = function untilArray(end, source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = _splitKeys(source);
+    if ( _is.str(source) ) source = splitKeys(source);
 
     if ( !_is._obj(source)        ) throw _error.type('source',        'array');
     if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
@@ -6730,28 +6828,28 @@ var until = (function untilPrivateScope() {
     switch (iteratee.length) {
       case 0:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee() === end) return true;
         }
       }
       break;
       case 1:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key]) === end) return true;
         }
       }
       break;
       case 2:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key], key) === end) return true;
         }
       }
       break;
       default:
       for (key in obj) {
-        if ( _own(obj, key) ) {
+        if ( own(obj, key) ) {
           if (iteratee(obj[key], key, obj) === end) return true;
         }
       }
@@ -6854,7 +6952,7 @@ var until = (function untilPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('until');
+  var _error = newErrorMaker('until');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR UNTIL
@@ -6869,7 +6967,7 @@ var until = (function untilPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// AMEND
+// VITALS METHOD: amend
 ////////////////////////////////////////////////////////////////////////////////
 
 var amend = (function amendPrivateScope() {
@@ -6943,7 +7041,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props');
 
@@ -7007,7 +7105,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'config');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'config');
 
@@ -7084,7 +7182,7 @@ var amend = (function amendPrivateScope() {
     if ( strongType && !is(strongType + '=', val) ) {
       throw _error('The val param is not a valid strongType', 'property');
     }
-    if ( descriptor && (strongType || setter) && _own(descriptor, 'writable') ){
+    if ( descriptor && (strongType || setter) && own(descriptor, 'writable') ){
       throw _error(
         'A data descriptor may not be used with a strongType/setter', 'property'
       );
@@ -7111,7 +7209,7 @@ var amend = (function amendPrivateScope() {
     if ( !_is.str(key)       ) throw _error.type('key',       'property.config');
     if ( !_is.obj(descriptor)) throw _error.type('descriptor','property.config');
 
-    if ( !_own(obj, key) ) {
+    if ( !own(obj, key) ) {
       throw _error('The key was not defined in the obj', 'property.config');
     }
 
@@ -7179,7 +7277,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'properties');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'properties');
 
@@ -7245,7 +7343,7 @@ var amend = (function amendPrivateScope() {
 
     if ( !_is.obj(obj) ) throw _error.type('obj', 'properties.config');
 
-    if ( _is.str(props) ) props = _splitKeys(props);
+    if ( _is.str(props) ) props = splitKeys(props);
 
     if ( !_is.obj(props) ) throw _error.type('props', 'properties.config');
 
@@ -7362,10 +7460,10 @@ var amend = (function amendPrivateScope() {
 
     strongType += '=';
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         val = props[key];
         if ( _is.obj(val) && _isDescriptor(val) ) {
-          if ( _own(val, 'writable') ) continue;
+          if ( own(val, 'writable') ) continue;
           val = val.value;
         }
         if ( !is(strongType, val) ) return false;
@@ -7397,7 +7495,7 @@ var amend = (function amendPrivateScope() {
     descriptor = strongType || setter
       ? _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter)
       : _isAccessor(descriptor)
-        ? _cloneObj(descriptor)
+        ? cloneObj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
 
     return _ObjectDefineProperty(obj, key, descriptor);
@@ -7469,7 +7567,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         newProps[key] = _setupDescriptor(props[key], descriptor);
       }
     }
@@ -7493,7 +7591,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( _own(props, key) ) {
+      if ( own(props, key) ) {
         newProps[key] = _setupDescriptorWithSetter(
           props[key], descriptor, strongType, setter
         );
@@ -7521,7 +7619,7 @@ var amend = (function amendPrivateScope() {
     var i;
 
     setupDesc = _isAccessor(descriptor)
-      ? function setupDesc(val, desc) { return _cloneObj(desc); }
+      ? function setupDesc(val, desc) { return cloneObj(desc); }
       : _setupDescriptorByKey;
     props = {};
     len = keys.length;
@@ -7607,9 +7705,9 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     val = _isDescriptor(val) ? val : { value: val };
-    return _merge(prop, val);
+    return merge(prop, val);
   }
 
   /**
@@ -7625,11 +7723,11 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
 
     if ( _isDescriptor(val) ) {
-      prop = _merge(prop, val);
-      if ( _own(prop, 'writable') || _isAccessor(prop) ) return prop;
+      prop = merge(prop, val);
+      if ( own(prop, 'writable') || _isAccessor(prop) ) return prop;
       val = prop.value;
       prop = _cloneAccessor(prop);
     }
@@ -7649,7 +7747,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     prop.value = val;
     return prop;
   }
@@ -7667,7 +7765,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = _cloneObj(descriptor);
+    prop = cloneObj(descriptor);
     prop = _setupGetSet(val, prop, strongType, setter);
     return prop;
   }
@@ -7762,7 +7860,7 @@ var amend = (function amendPrivateScope() {
     if ( !_is.obj(obj) ) return false;
 
     for (key in obj) {
-      if ( _own(obj, key) && !_own(DESCRIPTOR_PROPS, key) ) return false;
+      if ( own(obj, key) && !own(DESCRIPTOR_PROPS, key) ) return false;
     }
     return true;
   }
@@ -7773,7 +7871,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isData(obj) {
-    return _own(obj, 'value') || _own(obj, 'writable');
+    return own(obj, 'value') || own(obj, 'writable');
   }
 
   /**
@@ -7782,7 +7880,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isAccessor(obj) {
-    return _own(obj, 'get') || _own(obj, 'set');
+    return own(obj, 'get') || own(obj, 'set');
   }
 
   /**
@@ -7810,9 +7908,9 @@ var amend = (function amendPrivateScope() {
     defaultDescriptor = hasSetter || _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR
       : DATA_DESCRIPTOR;
-    defaultDescriptor = _cloneObj(defaultDescriptor);
+    defaultDescriptor = cloneObj(defaultDescriptor);
 
-    return _merge(defaultDescriptor, descriptor);
+    return merge(defaultDescriptor, descriptor);
   }
 
   /**
@@ -7829,7 +7927,7 @@ var amend = (function amendPrivateScope() {
 
     accessor = {};
     for (key in descriptor) {
-      if ( _own(descriptor, key) && key !== 'value' ) {
+      if ( own(descriptor, key) && key !== 'value' ) {
         accessor[key] = descriptor[key];
       }
     }
@@ -7894,7 +7992,7 @@ var amend = (function amendPrivateScope() {
   var _ObjectDefineProperty = HAS_DEFINE_PROPS
     ? Object.defineProperty
     : function ObjectDefineProperty(obj, key, descriptor) {
-      obj[key] = _own(descriptor, 'get') ? descriptor.get() : descriptor.value;
+      obj[key] = own(descriptor, 'get') ? descriptor.get() : descriptor.value;
       return obj;
     };
 
@@ -7914,9 +8012,9 @@ var amend = (function amendPrivateScope() {
       var key;
 
       for (key in props) {
-        if ( _own(props, key) ) {
+        if ( own(props, key) ) {
           prop = props[key];
-          obj[key] = _own(prop, 'get') ? prop.get() : prop.value;
+          obj[key] = own(prop, 'get') ? prop.get() : prop.value;
         }
       }
       return obj;
@@ -7938,7 +8036,7 @@ var amend = (function amendPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && !_own(source, key) ) return false;
+      if ( own(obj, key) && !own(source, key) ) return false;
     }
     return true;
   }
@@ -7947,7 +8045,7 @@ var amend = (function amendPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('amend');
+  var _error = newErrorMaker('amend');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR AMEND
@@ -7956,7 +8054,7 @@ var amend = (function amendPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// CREATE
+// VITALS METHOD: create
 ////////////////////////////////////////////////////////////////////////////////
 
 var create = (function createPrivateScope() {
@@ -7992,7 +8090,7 @@ var create = (function createPrivateScope() {
     if ( !_is.nil.obj(proto) ) throw _error.type('proto');
 
     if (arguments.length > 1) {
-      args = _sliceArr(arguments);
+      args = sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     }
@@ -8025,7 +8123,7 @@ var create = (function createPrivateScope() {
     if ( !_is.nil.obj(proto) ) throw _error.type('proto', 'object');
 
     if (arguments.length > 1) {
-      args = _sliceArr(arguments);
+      args = sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     } 
@@ -8069,7 +8167,7 @@ var create = (function createPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('create');
+  var _error = newErrorMaker('create');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR CREATE
@@ -8078,7 +8176,7 @@ var create = (function createPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// FREEZE
+// VITALS METHOD: freeze
 ////////////////////////////////////////////////////////////////////////////////
 
 var freeze = (function freezePrivateScope() {
@@ -8142,7 +8240,7 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( _own(obj, key) && _is._obj( obj[key] ) ) {
+      if ( own(obj, key) && _is._obj( obj[key] ) ) {
         _deepFreeze( obj[key] );
       }
     }
@@ -8181,7 +8279,7 @@ var freeze = (function freezePrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('freeze');
+  var _error = newErrorMaker('freeze');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR FREEZE
@@ -8190,7 +8288,7 @@ var freeze = (function freezePrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// SEAL
+// VITALS METHOD: seal
 ////////////////////////////////////////////////////////////////////////////////
 
 var seal = (function sealPrivateScope() {
@@ -8265,7 +8363,7 @@ var seal = (function sealPrivateScope() {
       var key;
 
       for (key in obj) {
-        if ( _own(obj, key) && _is._obj(obj[key]) ) _deepSeal(obj[key]);
+        if ( own(obj, key) && _is._obj(obj[key]) ) _deepSeal(obj[key]);
       }
       return _seal(obj);
     };
@@ -8278,7 +8376,7 @@ var seal = (function sealPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('seal');
+  var _error = newErrorMaker('seal');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR SEAL
@@ -8293,7 +8391,7 @@ var seal = (function sealPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// COPY
+// VITALS FS METHOD: copy
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsCopyPrivateScope() {
@@ -8337,10 +8435,10 @@ var seal = (function sealPrivateScope() {
       if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
       if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
       if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
-    if ( _match(dest, /\/$/) ) _makeDir(dest);
+    if ( match(dest, /\/$/) ) _makeDir(dest);
 
     if ( _is.dir(dest) ) dest = _prepDir(dest) + _getFilename(source);
 
@@ -8375,19 +8473,19 @@ var seal = (function sealPrivateScope() {
 
     opts = _is.bool(opts) ? { deep: opts } : opts;
 
-    if ( _is._str(dest) && _match(dest, /\/$/) ) _makeDir(dest);
+    if ( _is._str(dest) && match(dest, /\/$/) ) _makeDir(dest);
 
     if ( !_is.dir(source)      ) throw _error.type('source', 'directory');
     if ( !_is.dir(dest)        ) throw _error.type('dest',   'directory');
     if ( !_is.nil.un.obj(opts) ) throw _error.type('opts',   'directory');
 
     if (opts) {
-      if ( !_is.un.bool(opts.deep)       ) throw _error.type('opts.deep',      'directory');
-      if ( !_is.un.bool(opts.recursive)  ) throw _error.type('opts.recursive', 'directory');
-      if ( !_is.un.bool(opts.buffer)     ) throw _error.type('opts.buffer',    'directory');
-      if ( !_is.un.str(opts.encoding)    ) throw _error.type('opts.encoding',  'directory');
-      if ( !_is.nil.un.str(opts.eol)     ) throw _error.type('opts.eol',       'directory');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
+      if ( !_is.un.bool(opts.deep)      ) throw _error.type('opts.deep',      'directory');
+      if ( !_is.un.bool(opts.recursive) ) throw _error.type('opts.recursive', 'directory');
+      if ( !_is.un.bool(opts.buffer)    ) throw _error.type('opts.buffer',    'directory');
+      if ( !_is.un.str(opts.encoding)   ) throw _error.type('opts.encoding',  'directory');
+      if ( !_is.nil.un.str(opts.eol)    ) throw _error.type('opts.eol',       'directory');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'directory');
     }
 
     opts = _prepOptions(opts);
@@ -8418,7 +8516,7 @@ var seal = (function sealPrivateScope() {
     }
     else {
       contents = fs.readFileSync(source, opts.encoding);
-      contents = opts.eol ? _normalize(contents, opts.eol) : contents;
+      contents = opts.eol ? normalize(contents, opts.eol) : contents;
       fs.writeFileSync(dest, contents, opts.encoding);
     }
     return contents;
@@ -8668,7 +8766,7 @@ var seal = (function sealPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('copy');
+  var _error = newErrorMaker('copy');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR COPY
@@ -8676,7 +8774,7 @@ var seal = (function sealPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// GET
+// VITALS FS METHOD: get
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsGetPrivateScope() {
@@ -8717,7 +8815,7 @@ var seal = (function sealPrivateScope() {
       if ( !_is.un.bool(opts.buffer)  ) throw _error.type('opts.buffer',   'file');
       if ( !_is.un.str(opts.encoding) ) throw _error.type('opts.encoding', 'file');
       if ( !_is.nil.un.str(opts.eol)  ) throw _error.type('opts.eol',      'file');
-      if ( opts.eol && !_isEol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"', 'file');
     }
 
     opts = _prepOptions(opts);
@@ -8860,7 +8958,7 @@ var seal = (function sealPrivateScope() {
     if (options.buffer) return fs.readFileSync(source);
 
     contents = fs.readFileSync(source, options.encoding);
-    return options.eol ? _normalize(contents, options.eol) : contents;
+    return options.eol ? normalize(contents, options.eol) : contents;
   }
 
   /**
@@ -9078,7 +9176,7 @@ var seal = (function sealPrivateScope() {
 
     opts = {};
     for (key in options) {
-      if ( _own(options, key) ) {
+      if ( own(options, key) ) {
         opts[key] = VALID.test(key)
           ? _parseOption(options[key], key.replace(VALID, '$1'))
           : options[key];
@@ -9244,7 +9342,7 @@ var seal = (function sealPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('get');
+  var _error = newErrorMaker('get');
 
   /**
    * @param {*} val
@@ -9262,7 +9360,7 @@ var seal = (function sealPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// IS
+// VITALS FS METHOD: is
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsIsPrivateScope() {
@@ -9353,7 +9451,7 @@ var seal = (function sealPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('is');
+  var _error = newErrorMaker('is');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS
@@ -9361,7 +9459,7 @@ var seal = (function sealPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// TO
+// VITALS FS METHOD: to
 ////////////////////////////////////////////////////////////////////////////////
 
 (function fsToPrivateScope() {
@@ -9404,7 +9502,7 @@ var seal = (function sealPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('to');
+  var _error = newErrorMaker('to');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR TO
@@ -9418,7 +9516,7 @@ var seal = (function sealPrivateScope() {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// RUN
+// VITALS METHOD: run
 ////////////////////////////////////////////////////////////////////////////////
 
 var run = (function runPrivateScope() {
@@ -9486,12 +9584,12 @@ var run = (function runPrivateScope() {
       if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
       if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
       if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
-      if ( opts.eol && !_isEol(opts.eol)  ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
     }
 
     cmd = cmd.split(' ');
     opts = _prepOptions(opts);
-    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), opts);
+    result = cp.spawnSync(cmd[0], sliceArr(cmd, 1), opts);
 
     if (result.error) throw _error('"' + result.error.toString() + '"');
     if (opts.catchExit !== false && result.status) {
@@ -9500,12 +9598,12 @@ var run = (function runPrivateScope() {
 
     if (opts.buffer) {
       return _is.str(result.stdout) && opts.eol
-        ? _normalize(result.stdout, opts.eol)
+        ? normalize(result.stdout, opts.eol)
         : result.stdout;
     }
 
     result.stdout = result.stdout.toString();
-    return opts.eol ? _normalize(result.stdout, opts.eol) : result.stdout;
+    return opts.eol ? normalize(result.stdout, opts.eol) : result.stdout;
   }
 
   //////////////////////////////////////////////////////////
@@ -9568,7 +9666,7 @@ var run = (function runPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('run');
+  var _error = newErrorMaker('run');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR RUN

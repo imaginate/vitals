@@ -26,152 +26,13 @@ var cp = require('child_process');
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - OWN
-////////////////////////////////////////////////////////////////////////////////
-
-var _own = (function _ownPrivateScope() {
-
-  /**
-   * @param {?(Object|function)} source
-   * @param {*} key
-   * @return {boolean}
-   */
-  function _own(source, key) {
-    return !!source && _hasOwnProperty.call(source, key);
-  }
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwnProperty = Object.prototype.hasOwnProperty;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR OWN
-  return _own;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - ERROR-AID
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @typedef {function(string, string=): !Error} ErrorAid
- */
-
-/**
- * The ErrorAid constructor.
- * @param {string} vitalsMethod
- * @return {!ErrorAid}
- */
-function newErrorAid(vitalsMethod) {
-
-  /** @type {!ErrorAid} */
-  var errorAid;
-
-  vitalsMethod = 'vitals.' + vitalsMethod;
-
-  /**
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  errorAid = function error(msg, method) {
-
-    /** @type {!Error} */
-    var error;
-
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new Error(msg + ' for ' + method + ' call.');
-    error.__vitals = true;
-    return true;
-  };
-
-  /**
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
-   */
-  errorAid.type = function typeError(param, method) {
-
-    /** @type {!TypeError} */
-    var error;
-
-    param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    error = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
-    error.__vitals = true;
-    return error;
-  };
-
-  /**
-   * @param {string} param
-   * @param {string=} valid
-   * @param {string=} method
-   * @return {!RangeError} 
-   */
-  errorAid.range = function rangeError(param, valid, method) {
-
-    /** @type {!RangeError} */
-    var error;
-    /** @type {string} */
-    var msg;
-
-    param += ' param';
-    method = method || '';
-    method = vitalsMethod + ( method && '.' ) + method;
-    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
-    msg += valid ? ' The valid options are: ' + valid : '';
-    error = new RangeError(msg);
-    error.__vitals = true;
-    return error;
-  };
-
-  return errorAid;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS-EOL
-////////////////////////////////////////////////////////////////////////////////
-
-var _isEol = (function _isEolPrivateScope() {
-
-  /**
-   * @param {string} val
-   * @return {boolean}
-   */
-  function _isEol(val) {
-    return EOL.test(val);
-  }
-
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var EOL = /^(?:cr|lf|crlf)$/i;
-
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IS-EOL
-  return _isEol;
-})();
-
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - IS
+// VITALS HELPER: _is
 ////////////////////////////////////////////////////////////////////////////////
 
 var _is = (function _isPrivateScope() {
 
   /** @type {!Object} */
-  var _is = {};
-
-  /** @type {function} */
-  var toStr = Object.prototype.toString;
+  var is = {};
 
   //////////////////////////////////////////////////////////
   // PRIMITIVES
@@ -181,7 +42,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil = function(val) {
+  is.nil = function isNull(val) {
     return val === null;
   };
 
@@ -189,7 +50,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.undefined = function(val) {
+  is.undefined = function isUndefined(val) {
     return val === undefined;
   };
 
@@ -197,7 +58,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.bool = function(val) {
+  is.bool = function isBoolean(val) {
     return typeof val === 'boolean';
   };
 
@@ -205,7 +66,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.str = function(val) {
+  is.str = function isString(val) {
     return typeof val === 'string';
   };
 
@@ -214,7 +75,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._str = function(val) {
+  is._str = function isNonEmptyString(val) {
     return !!val && typeof val === 'string';
   };
 
@@ -222,7 +83,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.num = function(val) {
+  is.num = function isNumber(val) {
     return typeof val === 'number' && val === val;
   };
 
@@ -231,7 +92,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._num = function(val) {
+  is._num = function isNonZeroNumber(val) {
     return !!val && typeof val === 'number' && val === val;
   };
 
@@ -239,7 +100,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nan = function(val) {
+  is.nan = function isNan(val) {
     return val !== val;
   };
 
@@ -248,10 +109,16 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
+   * @private
+   * @return {string}
+   */
+  var toStr = Object.prototype.toString;
+
+  /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.obj = function(val) {
+  is.obj = function isObject(val) {
     return !!val && typeof val === 'object';
   };
 
@@ -260,7 +127,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._obj = function(val) {
+  is._obj = function isObjectOrFunction(val) {
     val = !!val && typeof val;
     return val && (val === 'object' || val === 'function');
   };
@@ -269,7 +136,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.func = function(val) {
+  is.func = function isFunction(val) {
     return !!val && typeof val === 'function';
   };
 
@@ -277,7 +144,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.arr = function(val) {
+  is.arr = function isArray(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
   };
 
@@ -286,8 +153,8 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is._arr = function(val) {
-      if ( !_is.obj(val) ) return false;
+  is._arr = function isArrayOrArguments(val) {
+      if ( !is.obj(val) ) return false;
       val = toStr.call(val);
       return val === '[object Array]' || val === '[object Arguments]';
   };
@@ -296,7 +163,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.regex = function(val) {
+  is.regex = function isRegExp(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
   };
 
@@ -304,7 +171,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.date = function(val) {
+  is.date = function isDate(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
   };
 
@@ -312,7 +179,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.err = function(val) {
+  is.err = function isError(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
   };
 
@@ -320,7 +187,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.args = function(val) {
+  is.args = function isArguments(val) {
     return !!val && typeof val === 'object' && toStr.call(val) === '[object Arguments]';
   };
 
@@ -332,7 +199,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.doc = function(val) {
+  is.doc = function isDOMDocument(val) {
     return !!val && typeof val === 'object' && val.nodeType === 9;
   };
 
@@ -340,55 +207,88 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.elem = function(val) {
+  is.elem = function isDOMElement(val) {
     return !!val && typeof val === 'object' && val.nodeType === 1;
   };
 
   //////////////////////////////////////////////////////////
-  // OTHERS
+  // MISCELLANEOUS
   //////////////////////////////////////////////////////////
 
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
-   * @param {*} val
+   * @private
+   * @param {*} key
    * @return {boolean}
    */
-  _is.empty = function(val) {
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
+   * Checks if a value is considered empty.
+   * @param {...*} val
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ` 0, "", {}, [], null, undefined, false, NaN, function(){} `
+   *   Note that for functions this method checks whether it has any defined
+   *   params: ` function empty(){}; function notEmpty(param){}; `
+   */
+  is.empty = function isEmpty(val) {
 
     /** @type {string} */
-    var prop;
+    var key;
 
-    // return empty primitives - 0, "", null, undefined, false, NaN
-    if ( !_is._obj(val) ) return !val;
+    // handle empty primitives - 0, "", null, undefined, false, NaN
+    if (!val) return true;
 
-    // return empty arrays and functions - [], function(){}
-    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+    // handle functions
+    if (typeof val === 'function') return !val.length;
 
-    // return empty object - {}
-    for (prop in val) {
-      if ( _own(val, prop) ) return false;
+    // handle non-empty primitives
+    if (typeof val !== 'object') return false;
+
+    // handle arrays
+    if (toStr.call(val) === '[object Array]') return !val.length;
+
+    // handle all other objects
+    for (key in val) {
+      if ( hasOwn.call(val, key) ) return false;
     }
     return true;
   };
 
   /**
-   * @param {(Object|?function)} obj
+   * @private
+   * @type {!RegExp}
+   * @const
+   */
+  var EOL = /^(?:cr|lf|crlf)$/i;
+
+  /**
+   * @param {string} val
    * @return {boolean}
    */
-  _is.frozen = (function() {
+  is.eol = function isEol(val) {
+    return EOL.test(val);
+  };
+
+  //////////////////////////////////////////////////////////
+  // OBJECT STATES
+  //////////////////////////////////////////////////////////
+
+  /**
+   * `Object.isFrozen` or a proper polyfill.
+   * @param {(!Object|function)} obj
+   * @return {boolean}
+   */
+  is.frozen = (function() {
 
     if (!Object.isFrozen) return function isFrozen(obj) { return false; };
 
     try {
-      Object.isFrozen(function(){});
+      Object.isFrozen( function(){} );
       return Object.isFrozen;
     }
-    catch (e) {
+    catch (err) {
       return function isFrozen(obj) {
-        return _is.obj(obj) && Object.isFrozen(obj);
+        return typeof obj === 'object' && Object.isFrozen(obj);
       };
     }
   })();
@@ -401,7 +301,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.whole = function(val) {
+  is.whole = function isWholeNumber(val) {
     return !(val % 1);
   };
 
@@ -409,7 +309,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.odd = function(val) {
+  is.odd = function isOddNumber(val) {
     return !!(val % 2);
   };
 
@@ -417,7 +317,7 @@ var _is = (function _isPrivateScope() {
    * @param {number} val
    * @return {boolean}
    */
-  _is.even = function(val) {
+  is.even = function isEvenNumber(val) {
     return !(val % 2);
   };
 
@@ -426,13 +326,13 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /** @type {!Object} */
-  _is.un = {};
+  is.un = {};
 
   /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.bool = function(val) {
+  is.un.bool = function isUndefinedOrBoolean(val) {
     return val === undefined || typeof val === 'boolean';
   };
 
@@ -440,7 +340,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.str = function(val) {
+  is.un.str = function isUndefinedOrString(val) {
     return val === undefined || typeof val === 'string';
   };
 
@@ -448,7 +348,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.num = function(val) {
+  is.un.num = function isUndefinedOrNumber(val) {
     return val === undefined || (typeof val === 'number' && val === val);
   };
 
@@ -456,7 +356,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.obj = function(val) {
+  is.un.obj = function isUndefinedOrObject(val) {
     return val === undefined || (!!val && typeof val === 'object');
   };
 
@@ -464,7 +364,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.func = function(val) {
+  is.un.func = function isUndefinedOrFunction(val) {
     return val === undefined || (!!val && typeof val === 'function');
   };
 
@@ -472,9 +372,19 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.un.arr = function(val) {
+  is.un.arr = function isUndefinedOrArray(val) {
     return val === undefined || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.un.regex = function isUndefinedOrRegExp(val) {
+    return val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
@@ -486,7 +396,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.bool = function(val) {
+  is.nil.bool = function isNullOrBoolean(val) {
     return val === null || typeof val === 'boolean';
   };
 
@@ -494,7 +404,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.str = function(val) {
+  is.nil.str = function isNullOrString(val) {
     return val === null || typeof val === 'string';
   };
 
@@ -502,7 +412,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.num = function(val) {
+  is.nil.num = function isNullOrNumber(val) {
     return val === null || (typeof val === 'number' && val === val);
   };
 
@@ -510,7 +420,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.obj = function(val) {
+  is.nil.obj = function isNullOrObject(val) {
     return val === null || (!!val && typeof val === 'object');
   };
 
@@ -518,7 +428,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.func = function(val) {
+  is.nil.func = function isNullOrFunction(val) {
     return val === null || (!!val && typeof val === 'function');
   };
 
@@ -526,9 +436,19 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.arr = function(val) {
+  is.nil.arr = function isNullOrArray(val) {
     return val === null || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
+    );
+  };
+
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.regex = function isNullOrRegExp(val) {
+    return val === null || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
     );
   };
 
@@ -537,13 +457,13 @@ var _is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /** @type {!Object} */
-  _is.nil.un = {};
+  is.nil.un = {};
 
   /**
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.bool = function(val) {
+  is.nil.un.bool = function isNullOrUndefinedOrBoolean(val) {
     return val === null || val === undefined || typeof val === 'boolean';
   };
 
@@ -551,7 +471,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.str = function(val) {
+  is.nil.un.str = function isNullOrUndefinedOrString(val) {
     return val === null || val === undefined || typeof  val === 'string';
   };
 
@@ -559,7 +479,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.num = function(val) {
+  is.nil.un.num = function isNullOrUndefinedOrNumber(val) {
     return val === null || val === undefined || (
       typeof val === 'number' && val === val
     );
@@ -569,7 +489,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.obj = function(val) {
+  is.nil.un.obj = function isNullOrUndefinedOrObject(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'object'
     );
@@ -579,7 +499,7 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.func = function(val) {
+  is.nil.un.func = function isNullOrUndefinedOrFunction(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'undefined'
     );
@@ -589,68 +509,173 @@ var _is = (function _isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  _is.nil.un.arr = function(val) {
+  is.nil.un.arr = function isNullOrUndefinedOrArray(val) {
     return val === null || val === undefined || (
       !!val && typeof val === 'object' && toStr.call(val) === '[object Array]'
     );
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR IS
-  return _is;
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  is.nil.un.regex = function isNullOrUndefinedOrRegExp(val) {
+    return val === null || val === undefined || (
+      !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]'
+    );
+  };
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: _is
+  return is;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - NORMALIZE
+// VITALS HELPER: newErrorMaker
 ////////////////////////////////////////////////////////////////////////////////
 
-var _normalize = (function _normalizePrivateScope() {
+/**
+ * @param {string} main - A vitals method.
+ * @return {function}
+ */
+function newErrorMaker(main) {
+
+  main = 'vitals.' + main;
 
   /**
-   * @param {string} str
-   * @param {string} eol
-   * @return {string}
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
    */
-  function _normalize(str, eol) {
-    return str.replace(EOL.find[eol], EOL.replace[eol]);
-  }
+  var maker = function error(msg, method) {
+
+    /** @type {!Error} */
+    var err;
+
+    method = method ? main : main + '.' + method;
+    err = new Error(msg + ' for ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  /**
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  maker.type = function typeError(param, method) {
+
+    /** @type {!TypeError} */
+    var err;
+
+    param += ' param';
+    method = method ? main : main + '.' + method;
+    err = new TypeError('Invalid ' + param + ' in ' + method + ' call.');
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  /**
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  maker.range = function rangeError(param, valid, method) {
+
+    /** @type {!RangeError} */
+    var err;
+    /** @type {string} */
+    var msg;
+
+    param += ' param';
+    method = method ? main : main + '.' + method;
+    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
+    msg += valid ? ' The valid options are: ' + valid : '';
+    err = new RangeError(msg);
+    err.__vitals = true;
+    err.vitals = true;
+    return err;
+  };
+
+  return maker;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: normalize
+////////////////////////////////////////////////////////////////////////////////
+
+var normalize = (function normalizePrivateScope() {
 
   /**
    * @private
    * @type {!Object}
    * @const
    */
-  var EOL = {
-    'replace': {
-      'CRLF': '\r\n',
-      'CR':   '\r',
-      'LF':   '\n'
-    },
-    'find': {
-      'CRLF': /\r?\n|\r\n?/g,
-      'CR':   /\r?\n/g,
-      'LF':   /\r\n?/g
-    }
+  var OPTS = {
+    'CRLF': { 'pattern': /\r?\n|\r\n?/g, 'value': '\r\n' },
+    'CR':   { 'pattern': /\r?\n/g,       'value': '\r'   },
+    'LF':   { 'pattern': /\r\n?/g,       'value': '\n'   }
   };
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR NORMALIZE
-  return _normalize;
+  /**
+   * @param {string} str
+   * @param {string} eol
+   * @return {string}
+   */
+  function normalize(str, eol) {
+    eol = OPTS[eol];
+    return str.replace(eol.pattern, eol.value);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: normalize
+  return normalize;
 })();
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SLICE-ARR
+// VITALS HELPER: own
+////////////////////////////////////////////////////////////////////////////////
+
+var own = (function ownPrivateScope() {
+
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /**
+   * @param {(Object|?function)} source
+   * @param {*} key
+   * @return {boolean}
+   */
+  function own(source, key) {
+    return !!source && hasOwn.call(source, key);
+  }
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: own
+  return own;
+})();
+
+
+////////////////////////////////////////////////////////////////////////////////
+// VITALS HELPER: sliceArr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {!(Object|function)} source
+ * @param {(!Object|function)} source
  * @param {number=} start - [default= 0]
  * @param {number=} end - [default= source.length]
  * @return {!Array}
  */
-function _sliceArr(source, start, end) {
+function sliceArr(source, start, end) {
 
   /** @type {!Array} */
   var arr;
@@ -668,7 +693,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = _is.undefined(end) || end > len
+  end = end === undefined || end > len
     ? len
     : end < 0
       ? len + end
@@ -692,7 +717,7 @@ function _sliceArr(source, start, end) {
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// RUN
+// VITALS METHOD: run
 ////////////////////////////////////////////////////////////////////////////////
 
 var run = (function runPrivateScope() {
@@ -760,12 +785,12 @@ var run = (function runPrivateScope() {
       if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
       if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
       if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
-      if ( opts.eol && !_isEol(opts.eol)  ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
+      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
     }
 
     cmd = cmd.split(' ');
     opts = _prepOptions(opts);
-    result = cp.spawnSync(cmd[0], _sliceArr(cmd, 1), opts);
+    result = cp.spawnSync(cmd[0], sliceArr(cmd, 1), opts);
 
     if (result.error) throw _error('"' + result.error.toString() + '"');
     if (opts.catchExit !== false && result.status) {
@@ -774,12 +799,12 @@ var run = (function runPrivateScope() {
 
     if (opts.buffer) {
       return _is.str(result.stdout) && opts.eol
-        ? _normalize(result.stdout, opts.eol)
+        ? normalize(result.stdout, opts.eol)
         : result.stdout;
     }
 
     result.stdout = result.stdout.toString();
-    return opts.eol ? _normalize(result.stdout, opts.eol) : result.stdout;
+    return opts.eol ? normalize(result.stdout, opts.eol) : result.stdout;
   }
 
   //////////////////////////////////////////////////////////
@@ -842,7 +867,7 @@ var run = (function runPrivateScope() {
    * @private
    * @type {!ErrorAid}
    */
-  var _error = newErrorAid('run');
+  var _error = newErrorMaker('run');
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR RUN
