@@ -30,7 +30,7 @@ module.exports = function getMatches(str, pattern) {
   arr = [];
   obj = pattern.exec(str);
   while (obj) {
-    arr.push(obj.index);
+    arr.push(obj[0]);
     obj = pattern.exec(str);
   }
   return arr;
