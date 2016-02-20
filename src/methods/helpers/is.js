@@ -233,37 +233,51 @@ var _is = (function _isPrivateScope() {
   };
 
   //////////////////////////////////////////////////////////
-  // OTHERS
+  // MISCELLANEOUS
   //////////////////////////////////////////////////////////
 
+  /** @type {function} */
+  var hasOwn = Object.prototype.hasOwnProperty;
+
   /**
-   * Checks if a value is considered empty. For a list of empty values see below.
-   *   empty values: 0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   note: for functions this method checks whether it has any defined params:
-   *     function(){} => true | function(param){} => false
-   * @param {*} val
-   * @return {boolean}
+   * Checks if a value is considered empty.
+   * @param {...*} val
+   * @return {boolean} Returns `false` if value is one of the following:
+   *   ` 0, "", {}, [], null, undefined, false, NaN, function(){} `
+   *   Note that for functions this method checks whether it has any defined
+   *   params: ` function empty(){}; function notEmpty(param){}; `
    */
   _is.empty = function(val) {
 
     /** @type {string} */
-    var prop;
+    var key;
 
-    // return empty primitives - 0, "", null, undefined, false, NaN
-    if ( !_is._obj(val) ) return !val;
+    // handle empty primitives - 0, "", null, undefined, false, NaN
+    if (!val) return true;
 
-    // return empty arrays and functions - [], function(){}
-    if ( _is.arr(val) || _is.func(val) ) return !val.length;
+    // handle functions
+    if (typeof val === 'function') return !val.length;
 
-    // return empty object - {}
-    for (prop in val) {
-      if ( _own(val, prop) ) return false;
+    // handle non-empty primitives
+    if (typeof val !== 'object') return false;
+
+    // handle arrays
+    if (toStr.call(val) === '[object Array]') return !val.length;
+
+    // handle all other objects
+    for (key in val) {
+      if ( hasOwn.call(val, key) ) return false;
     }
     return true;
   };
 
+  //////////////////////////////////////////////////////////
+  // OBJECT STATES
+  //////////////////////////////////////////////////////////
+
   /**
-   * @param {(Object|?function)} obj
+   * `Object.isFrozen` or a proper polyfill.
+   * @param {(!Object|function)} obj
    * @return {boolean}
    */
   _is.frozen = (function() {
@@ -271,12 +285,12 @@ var _is = (function _isPrivateScope() {
     if (!Object.isFrozen) return function isFrozen(obj) { return false; };
 
     try {
-      Object.isFrozen(function(){});
+      Object.isFrozen( function(){} );
       return Object.isFrozen;
     }
-    catch (e) {
+    catch (err) {
       return function isFrozen(obj) {
-        return _is.obj(obj) && Object.isFrozen(obj);
+        return typeof obj === 'object' && Object.isFrozen(obj);
       };
     }
   })();
