@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - SLICE ARRAY-LIKE OBJECT
+ * VITALS HELPER: sliceArr
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,22 +15,20 @@
 
 'use strict';
 
-var _is = require('./is.js');
-
-module.exports = _sliceArr;
+module.exports = sliceArr;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - SLICE-ARR
+// VITALS HELPER: sliceArr
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {!(Object|function)} source
+ * @param {(!Object|function)} source
  * @param {number=} start - [default= 0]
  * @param {number=} end - [default= source.length]
  * @return {!Array}
  */
-function _sliceArr(source, start, end) {
+function sliceArr(source, start, end) {
 
   /** @type {!Array} */
   var arr;
@@ -48,7 +46,7 @@ function _sliceArr(source, start, end) {
       : start
     : 0;
   start = start < 0 ? 0 : start;
-  end = _is.undefined(end) || end > len
+  end = end === undefined || end > len
     ? len
     : end < 0
       ? len + end
