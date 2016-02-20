@@ -34,7 +34,7 @@ var merge = (function mergePrivateScope() {
    * @param {(!Object|function)} source
    * @return {(!Object|function)}
    */
-  function merge(source, val) {
+  function merge(dest, source) {
 
     /** @type {string} */
     var key;
