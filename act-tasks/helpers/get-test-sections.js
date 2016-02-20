@@ -60,7 +60,7 @@ module.exports = function getTestSections(invalid) {
 function mkCheck(invalid) {
   invalid = invalid && new RegExp(invalid);
   return invalid
-    ? function isValid(section) { return !invalid.test(str); }
+    ? function isValid(section) { return !invalid.test(section); }
     : function isValid(section) { return true; };
 }
 
