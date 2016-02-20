@@ -1,9 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS - JS METHOD HELPER - MERGE OBJECTS
+ * VITALS HELPER: merge
  * -----------------------------------------------------------------------------
  * @version 4.0.0
- * @see [vitals]{@link https://github.com/imaginate/vitals/tree/master/src/methods}
+ * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -15,30 +15,40 @@
 
 'use strict';
 
-var _own = require('./own.js');
-
-module.exports = _merge;
-
 
 ////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPER - MERGE
+// VITALS HELPER: merge
 ////////////////////////////////////////////////////////////////////////////////
 
+var merge = (function mergePrivateScope() {
 
-/**
- * @param {!(Object|function)} dest
- * @param {!(Object|function)} source
- * @return {!(Object|function)}
- */
-function _merge(dest, source, deep) {
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
 
-  /** @type {string} */
-  var key;
+  /**
+   * @param {(!Object|function)} dest
+   * @param {(!Object|function)} source
+   * @return {(!Object|function)}
+   */
+  function merge(source, val) {
 
-  for (key in source) {
-    if ( _own(source, key) ) {
-      dest[key] = source[key];
+    /** @type {string} */
+    var key;
+
+    for (key in source) {
+      if ( hasOwn.call(source, key) ) dest[key] = source[key];
     }
+    return dest;
   }
-  return dest;
-}
+
+  ////////////////////////////////////////////////////
+  // PRIVATE SCOPE END: merge
+  return merge;
+})();
+
+
+module.exports = merge;
