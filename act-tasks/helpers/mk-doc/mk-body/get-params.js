@@ -5,12 +5,6 @@
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
- * Supporting Libraries:
- * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
- *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
@@ -18,21 +12,14 @@
 
 'use strict';
 
-var vitals = require('node-vitals')('base');
-var each   = vitals.each;
-var fill   = vitals.fill;
-var fuse   = vitals.fuse;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var roll   = vitals.roll;
-var slice  = vitals.slice;
-var until  = vitals.until;
-
 var PARAM = /^@param \{[^}]+\} ([a-zA-Z.]+).*$/;
 var TYPE  = /^@param \{([^}]+)\}.*$/;
 var DEF   = /^@param .*?\[default= ([^\]]+)\].*$/;
 
 var getDescription = require('./get-description');
+
+/** @type {number} */
+var index;
 
 /**
  * @param {!Array<string>} lines
@@ -42,8 +29,29 @@ module.exports = function getParams(lines) {
 
   /** @type {!Array<!Array<string>>} */
   var params;
+  /** @type {string} */
+  var result;
   /** @type {number} */
-  var index;
+  var len;
+  /** @type {number} */
+  var i;
+
+  index = 0;
+  lines = pruneLines(lines);
+  params = buildParams(lines);
+  result = '';
+  len = params.length;
+  i = -1;
+  while (++i < len) result += getParam(params[i]);
+  return result;
+};
+
+/**
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+function getParam(lines) {
+
   /** @type {string} */
   var param;
   /** @type {string} */
@@ -57,19 +65,14 @@ module.exports = function getParams(lines) {
   /** @type {string} */
   var def;
 
-  index = 0;
-  lines = pruneLines(lines);
-  params = buildParams(lines);
-  return roll.up('', params, function(lines) {
-    param = remap(lines[0], PARAM, '$1');
-    type  = remap(lines[0], TYPE,  '$1');
-    prop  = has(param, '.');
-    def   = getDefault(lines, prop ? 3 : 2);
-    desc  = getDescrip(lines, prop ? 3 : 2);
-    intro = prop ? '    - ' : fuse('  ', ++index, '. ');
-    return fuse(intro, '**', param, '**  <i>` ', type, ' `</i>\n', def, desc);
-  });
-};
+  param = lines[0].replace(PARAM, '$1');
+  type  = lines[0].replace(TYPE,  '$1');
+  prop  = param.includes('.');
+  def   = getDefault(lines, prop ? 3 : 2);
+  desc  = getDescrip(lines, prop ? 3 : 2);
+  intro = prop ? '    - ' : '  ' + (++index) + '. ';
+  return intro + '**' + param + '**  <i>` ' + type + ' `</i>\n' + def + desc;
+}
 
 /**
  * @private
@@ -82,14 +85,19 @@ function pruneLines(lines) {
   var start;
   /** @type {number} */
   var end;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  lines = slice(lines, 0, -1);
-  until(false, lines, function(line, i) {
-    if ( has(line, /^@public/) ) start = ++i;
-    if ( has(line, /^@return/) ) end = i;
-    return start === undefined || end === undefined;
-  });
-  return slice(lines, start, end);
+  lines = lines.slice(0, -1);
+  len = lines.length;
+  i = -1;
+  while ( ++i < len && (start === undefined || end === undefined) ) {
+    if ( /^@public/.test(lines[i]) ) start = i + 1;
+    if ( /^@return/.test(lines[i]) ) end = i;
+  }
+  return lines.slice(start, end);
 }
 
 /**
@@ -105,17 +113,23 @@ function buildParams(lines) {
   var param;
   /** @type {number} */
   var start;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
   params = [];
   start = 0;
-  each(lines, function(line, i) {
-    if ( !i || !has(line, /^@param/) ) return;
-    param = slice(lines, start, i);
-    params = fuse.val(params, param);
+  len = lines.length;
+  i = 0;
+  while (++i < len) {
+    if ( !/^@param/.test(lines[i]) ) continue;
+    param = lines.slice(start, i);
+    params.push(param);
     start = i;
-  });
-  param = slice(lines, start);
-  params = fuse.val(params, param);
+  }
+  param = lines.slice(start);
+  params.push(param);
   return params;
 }
 
@@ -132,11 +146,11 @@ function getDefault(lines, indents) {
   /** @type {string} */
   var def;
 
-  if ( !has(lines[0], DEF) ) return '';
+  if ( !DEF.test(lines[0]) ) return '';
 
-  indent = fill(indents, '  ');
-  def = remap(lines[0], DEF, '$1');
-  return fuse('\n', indent, 'default value: ` ', def, ' `\n');
+  indent = getIndent(indents);
+  def = lines[0].replace(DEF, '$1');
+  return '\n' + indent + 'default value: ` ' + def + ' `\n';
 }
 
 /**
@@ -151,5 +165,22 @@ function getDescrip(lines, indents) {
   var desc;
 
   desc = getDescription(lines, indents);
-  return desc && fuse('\n', desc, '\n');
+  return desc && '\n' + desc + '\n';
+}
+
+/**
+ * @private
+ * @param {number} indents
+ * @return {string}
+ */
+function getIndent(indents) {
+
+  /** @type {string} */
+  var indent;
+
+  if (indents < 1) return '';
+
+  indent = '';
+  while (indents--) indent += '  ';
+  return indent;
 }

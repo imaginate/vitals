@@ -5,12 +5,6 @@
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
- * Supporting Libraries:
- * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
- *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
@@ -18,14 +12,7 @@
 
 'use strict';
 
-var vitals = require('node-vitals')('base');
-var cut    = vitals.cut;
-var fill   = vitals.fill;
-var fuse   = vitals.fuse;
-var get    = vitals.get;
-var has    = vitals.has;
-var roll   = vitals.roll;
-var slice  = vitals.slice;
+var get = require('../../get-match');
 
 var TRIM = /^(?:@param \{[^}]+\} [a-zA-Z.]+ *-? *(?:\[default= [^\]]+\])?|@returns? \{[^}]+\} *-? *)/;
 var INDENT = /^ +/;
@@ -52,15 +39,16 @@ module.exports = function getDescription(lines, indents) {
 
   if (!lines.length) return '';
 
-  begin = cut(lines[0] || '', TRIM);
-  lines = slice(lines, 1);
+  begin = lines[0] || '';
+  begin = begin.replace(TRIM, '');
+  lines = lines.slice(1);
   desc = parseLines(lines, indents);
-  desc = fuse(begin, desc);
+  desc = begin + desc;
 
   if (!desc) return '';
 
   indent = getIndent(indents);
-  return fuse(indent, desc);
+  return indent + desc;
 };
 
 /**
@@ -69,7 +57,15 @@ module.exports = function getDescription(lines, indents) {
  * @return {string}
  */
 function getIndent(indents) {
-  return fill(indents, '  ');
+
+  /** @type {string} */
+  var indent;
+
+  if (indents < 1) return '';
+
+  indent = '';
+  while (indents--) indent += '  ';
+  return indent;
 }
 
 /**
@@ -78,7 +74,7 @@ function getIndent(indents) {
  * @return {number}
  */
 function getSpaces(line) {
-  line = get(line, INDENT)[0] || '';
+  line = get(line, INDENT);
   return line.length;
 }
 
@@ -123,6 +119,15 @@ var code;
  */
 function parseLines(lines, _indents) {
 
+  /** @type {string} */
+  var desc;
+  /** @type {string} */
+  var line;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
   indents = _indents;
   indent = getIndent(indents);
 
@@ -130,19 +135,23 @@ function parseLines(lines, _indents) {
   list = false;
   code = false;
 
-  return roll.up('', lines, function(line) {
-    return line
-      ? code
-        ? parseCode(line)
-        : has(line, NEW_CODE)
-          ? parseNewCode(line)
-          : has(line, NEW_LIST)
-            ? parseList(line)
-            : has(line, SUBLIST)
-              ? parseSublist(line)
-              : parseLine(line)
-      : '';
-  });
+  desc = '';
+  len = lines.length;
+  i = -1;
+  while (++i < len) {
+    line = lines[i];
+    if (!line) continue;
+    desc += code
+      ? parseCode(line)
+      : NEW_CODE.test(line)
+        ? parseNewCode(line)
+        : NEW_LIST.test(line)
+          ? parseList(line)
+          : SUBLIST.test(line)
+            ? parseSublist(line)
+            : parseLine(line);
+  }
+  return desc;
 }
 
 /**
@@ -156,7 +165,7 @@ function parseLine(line) {
     list = false;
     --indents;
     indent = getIndent(indents);
-    return fuse('\n\n', indent, line);
+    return '\n\n' + indent + line;
   }
 
   if ( sublist && !isIndented(line, spaces) ) {
@@ -165,11 +174,11 @@ function parseLine(line) {
     list = isIndented(line, spaces);
     indents -= list ? 1 : 2;
     indent = getIndent(indents);
-    return fuse('\n\n', indent, line);
+    return '\n\n' + indent + line;
   }
 
-  line = cut(line, INDENT);
-  return fuse(' ', line);
+  line = line.replace(INDENT, '');
+  return ' ' + line;
 }
 
 /**
@@ -187,8 +196,8 @@ function parseList(line) {
     list = true;
   }
 
-  line = cut(line, INDENT);
-  return fuse('\n', indent, line);
+  line = line.replace(INDENT, '');
+  return '\n' + indent + line;
 }
 
 /**
@@ -206,8 +215,8 @@ function parseSublist(line) {
     list = false;
   }
 
-  line = cut(line, SUBDASH);
-  return fuse('\n', indent, line);
+  line = line.replace(SUBDASH, '');
+  return '\n' + indent + line;
 }
 
 /**
@@ -217,10 +226,10 @@ function parseSublist(line) {
  */
 function parseNewCode(line) {
   spaces = getSpaces(line);
-  line = slice(line, spaces);
-  if ( !has(line, LANGUAGE) ) line = '```javascript';
+  line = line.slice(spaces);
+  if ( !LANGUAGE.test(line) ) line = '```javascript';
   code = true;
-  return fuse('\n\n', indent, line, '\n');
+  return '\n\n' + indent + line + '\n';
 }
 
 /**
@@ -229,7 +238,7 @@ function parseNewCode(line) {
  * @return {string}
  */
 function parseCode(line) {
-  line = slice(line, spaces);
-  code = !has(line, END_CODE);
-  return fuse(indent, line, '\n');
+  line = line.slice(spaces);
+  code = !END_CODE.test(line);
+  return indent + line + '\n';
 }

@@ -5,25 +5,12 @@
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
- * Supporting Libraries:
- * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
- *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
 'use strict';
-
-var vitals = require('node-vitals')('base');
-var fuse   = vitals.fuse;
-var has    = vitals.has;
-var remap  = vitals.remap;
-var slice  = vitals.slice;
-var until  = vitals.until;
 
 var TYPE  = /^@returns? \{([^}]+)\}.*$/;
 
@@ -41,10 +28,10 @@ module.exports = function getReturns(lines) {
   var desc;
 
   lines = pruneLines(lines);
-  type  = lines.length ? remap(lines[0], TYPE, '$1') : 'undefined';
+  type  = lines.length ? lines[0].replace(TYPE, '$1') : 'undefined';
   desc  = getDescription(lines, 0);
-  desc  = desc && fuse('\n', desc, '\n');
-  return fuse('<i>', type, '</i>\n', desc);
+  desc  = desc && '\n' + desc + '\n';
+  return '<i>' + type + '</i>\n' + desc;
 };
 
 /**
@@ -56,10 +43,15 @@ function pruneLines(lines) {
 
   /** @type {number} */
   var start;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  until(false, lines, function(line, i) {
-    if ( has(line, /^@return/) ) start = i;
-    return start === undefined;
-  });
-  return start === undefined ? [] : slice(lines, start, -1);
+  len = lines.length;
+  i = -1;
+  while (++i < len && start === undefined) {
+    if ( /^@return/.test(lines[i]) ) start = i;
+  }
+  return start === undefined ? [] : lines.slice(start, -1);
 }
