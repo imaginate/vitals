@@ -33,12 +33,13 @@ module.exports = function getMethods(section, content) {
   /** @type {number} */
   var i;
 
-  section = '[' + section + '][' + section, ']';
+  section = '[' + section + '][' + section + ']';
   methods = '';
   lines = content.split('\n');
   len = lines.length;
   i = -1;
   while (++i < len) methods += getMethod(section, lines[i]);
+  return methods;
 };
 
 /**
