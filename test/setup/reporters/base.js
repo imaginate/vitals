@@ -1,14 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: MOCHA REPORTER
+ * VITALS UNIT TESTS MOCHA REPORTER: base
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -17,47 +12,51 @@
 
 'use strict';
 
-var chalk = require('chalk');
-
 // globally append all helpers
 require('../helpers.js');
 
-// get the Runnable constructor
 var Runnable = require('../../../node_modules/mocha/lib/runnable.js');
+var chalk = require('chalk');
+var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
+var ms = require('../../../node_modules/mocha/lib/ms.js');
+
+module.exports = Base;
 
 /**
  * Replace the fullTitle method with a different separator.
  * @return {string}
  */
-Runnable.prototype.fullTitle = function() {
+Runnable.prototype.fullTitle = function fullTitle() {
   return this.parent.fullTitle() + ' -> ' + this.title;
 };
-
-// get the reporter base
-var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
-var ms = require('../../../node_modules/mocha/lib/ms.js');
 
 /**
  * Replace the Base reporter list method.
  * @param {Array} failures
  */
-Base.list = function(failures) {
+Base.list = function list(failures) {
 
+  /** @type {!Error} */
+  var error;
+  /** @type {string} */
+  var title;
+  /** @type {number} */
+  var last;
   /** @type {number} */
   var len;
+  /** @type {number} */
+  var i;
 
   console.log(); // log empty line
 
+  i = -1;
   len = failures.length;
-  each(failures, function(test, i) {
+  last = len - 1;
+  while (++i < len) {
 
-    /** @type {!Error} */
-    var error;
-    /** @type {string} */
-    var title;
+    test = failures[i];
 
-    title = test.fullTitle();
-    title = fuse('  ', ++i, ') ', title);
+    title = '  ' + (i + 1) + ') ' + test.fullTitle();
     log.fail(title);
 
     error = test.err;
@@ -69,17 +68,17 @@ Base.list = function(failures) {
       error.stack = test.err.stack;
     }
 
-    if ( is.same(i, len) ) log.error.setFormat({ 'linesAfter': 0 });
+    if (i === last) log.error.setFormat({ 'linesAfter': 0 });
 
     log.error(error);
-  });
+  }
 };
 
 /**
  * Replace common output used by Spec.
  * @type {function}
  */
-Base.prototype.epilogue = function() {
+Base.prototype.epilogue = function epilogue() {
 
   /** @type {number} */
   var indents;
@@ -95,21 +94,21 @@ Base.prototype.epilogue = function() {
   console.log();
 
   time = ms(stats.duration);
-  time = fuse(' (', time, ')');
+  time = ' (' + time + ')';
   time = chalk.white.bold(time);
-  msg = fuse(' ', stats.passes || 0, ' passing');
+  msg = ' ' + (stats.passes || 0) + ' passing';
   msg = chalk.green.bold(msg);
-  msg = fuse(' ', msg, time);
+  msg = ' ' + msg + time;
   console.log(msg);
 
   if (stats.pending) {
-    msg = fuse('  ', stats.pending, ' pending');
+    msg = '  ' + stats.pending + ' pending';
     msg = chalk.yellow.bold(msg);
     console.log(msg);
   }
 
   if (stats.failures) {
-    msg = fuse('  ', stats.failures, ' failing');
+    msg = '  ' + stats.failures + ' failing';
     msg = chalk.red.bold(msg);
     console.log(msg);
     Base.list(this.failures);
@@ -117,5 +116,3 @@ Base.prototype.epilogue = function() {
 
   console.log();
 };
-
-module.exports = Base;
