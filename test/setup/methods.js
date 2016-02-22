@@ -1,15 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: ALL METHODS SETUP
+ * VITALS UNIT TESTS SETUP: METHODS
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [act]{@link https://github.com/imaginate/act}
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,41 +12,51 @@
 
 'use strict';
 
-global.vitals = loadVitalsMethods();
+global.vitals = getMethods();
+
+var isFile = require('../helpers/is-file');
+var cutJSExt = require('../helpers/cut-js-ext');
+var getFilepaths = require('../helpers/get-filepaths');
 
 /**
  * @private
  * @return {!Object}
  */
-function loadVitalsMethods() {
+function getMethods() {
 
   /** @type {!Array<string>} */
   var filenames;
   /** @type {string} */
+  var filename;
+  /** @type {string} */
   var filepath;
   /** @type {!Object} */
-  var methods;
+  var vitals;
   /** @type {string} */
   var method;
-  /** @type {!Object} */
-  var vitals;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
   vitals = {};
 
-  filenames = get.filepaths('src/methods');
-  each(filenames, function(filename) {
-    method = cut(filename, /\.js$/);
-    filepath = fuse('../../src/methods/', filename);
+  filenames = getFilepaths('src/methods');
+  len = filenames.length;
+  i = -1;
+  while (++i < len) {
+
+    filename = filenames[i];
+    method = cutJSExt(filename);
+
+    filepath = '../../src/methods/' + filename;
     vitals[method] = require(filepath);
-  });
 
-  filenames = get.filepaths('src/methods/fs');
-  each(filenames, function(filename) {
-    method = cut(filename, /\.js$/);
-    filepath = fuse('../../src/methods/fs/', filename);
-    methods = require(filepath);
-    vitals[method] = fuse(vitals[method] || {}, methods);
-  });
-
+    filepath = 'src/methods/fs/' + filename;
+    if ( isFile(filepath) ) {
+      filepath = '../../' + filepath;
+      merge(vitals[method], require(filepath));
+    }
+  }
   return vitals;
 }
