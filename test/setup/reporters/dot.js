@@ -1,14 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: MOCHA REPORTER
+ * VITALS UNIT TESTS MOCHA REPORTER: dot
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -60,7 +55,7 @@ function Dot(runner) {
    * @param {(string|function)} color
    */
   function writeDot(color) {
-    if ( is.same(++dots % width, 0) ) process.stdout.write('\n  ');
+    if (!(++dots % width)) process.stdout.write('\n  ');
     if ( is.str(color) ) color = chalk[color];
     process.stdout.write( color(DOT) );
   }
