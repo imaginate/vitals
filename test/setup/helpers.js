@@ -18,6 +18,7 @@ global.is = require('../helpers/is');
 global.log = require('../helpers/log');
 global.merge = require('../helpers/merge');
 global.assert = require('assert');
+global.freeze = require('../helpers/freeze');
 global.hasOwn = require('../helpers/has-own');
 global.hasVal = require('../helpers/has-val');
 global.setEol = require('../helpers/set-eol');
