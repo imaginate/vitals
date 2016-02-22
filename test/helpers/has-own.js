@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS HELPER: own
+ * VITALS UNIT TESTS HELPER: hasOwn
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -12,20 +12,20 @@
 
 'use strict';
 
-module.exports = own;
+module.exports = hasOwn;
 
 /**
  * @private
  * @param {*} key
  * @return {boolean}
  */
-var hasOwn = Object.prototype.hasOwnProperty;
+var hasOwnProp = Object.prototype.hasOwnProperty;
 
 /**
  * @param {(!Object|function)} source
  * @param {*} key
  * @return {boolean}
  */
-function own(source, key) {
-  return hasOwn.call(source, key);
+function hasOwn(source, key) {
+  return hasOwnProp.call(source, key);
 }

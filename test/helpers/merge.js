@@ -14,7 +14,7 @@
 
 module.exports = merge;
 
-var own = require('./own');
+var hasOwn = require('./has-own');
 
 /**
  * @param {(!Object|function)} dest
@@ -27,7 +27,7 @@ function merge(dest, source) {
   var key;
 
   for (key in source) {
-    if ( own(source, key) ) dest[key] = source[key];
+    if ( hasOwn(source, key) ) dest[key] = source[key];
   }
   return dest;
 }

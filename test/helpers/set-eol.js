@@ -12,7 +12,7 @@
 
 module.exports = setEol;
 
-var own = require('./own');
+var own = require('./has-own');
 
 var EOL = {
   'CR':   '\r',

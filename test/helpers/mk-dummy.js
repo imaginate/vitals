@@ -14,7 +14,7 @@ module.exports = mkDummy;
 
 var fs = require('fs');
 var is = require('./is');
-var own = require('./own');
+var own = require('./has-own');
 var isDir = require('./is-directory');
 var slashDir = require('./slash-dir');
 
