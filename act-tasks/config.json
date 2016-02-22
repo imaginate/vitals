@@ -1,5 +1,6 @@
 {
   "alias": {
-    "build": "compile minify"
+    "build": "compile minify",
+    "testall": "test -sections -browser"
   }
 }
