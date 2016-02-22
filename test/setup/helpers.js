@@ -22,6 +22,7 @@ global.freeze = require('../helpers/freeze');
 global.hasOwn = require('../helpers/has-own');
 global.hasVal = require('../helpers/has-val');
 global.setEol = require('../helpers/set-eol');
+global.hasEnum = require('../helpers/has-enum');
 global.sliceArr = require('../helpers/slice-arr');
 
 // DISPLAY HELPERS
