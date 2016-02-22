@@ -1,14 +1,9 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: MOCHA REPORTER
+ * VITALS UNIT TESTS MOCHA REPORTER: default (spec)
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
- * @see [vitals]{@link https://github.com/imaginate/vitals}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -52,15 +47,7 @@ function Spec(runner) {
   });
 
   runner.on('suite', function(suite) {
-
-    /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var title;
-
-    indent = fill(++indents, '  ');
-    title = fuse(indent, suite.title);
-    console.log(title);
+    console.log(mkIndent(++indents) + suite.title);
   });
 
   runner.on('suite end', function() {
@@ -71,51 +58,55 @@ function Spec(runner) {
   runner.on('pending', function(test) {
 
     /** @type {string} */
-    var indent;
-    /** @type {string} */
     var msg;
 
-    indent = fill(indents, '  ');
-    msg = fuse('  - ', test.title);
+    msg = '  - ' + test.title;
     msg = chalk.yellow(msg);
-    msg = fuse(indent, msg);
-    console.log(msg);
+    console.log(mkIndent(indents) + msg);
   });
 
   runner.on('pass', function(test) {
 
     /** @type {string} */
-    var indent;
-    /** @type {string} */
-    var title;
-    /** @type {string} */
     var msg;
 
-    indent = fill(indents, '  ');
-    title = chalk.white(test.title);
-    if ( !is.same(test.speed, 'fast') ) {
-      msg = fuse(' (', test.duration, 'ms)');
-      msg = is.same(test.speed, 'slow') ? chalk.red(msg) : chalk.yellow(msg);
+    if (test.speed !== 'fast') {
+      msg = ' (' + test.duration + 'ms)';
+      msg = test.speed === 'slow' ? chalk.red(msg) : chalk.yellow(msg);
     }
-    msg = fuse(indent, ' ', OK, ' ', title, msg || '');
-    console.log(msg);
+    else msg = '';
+    msg = ' ' + OK + ' ' + chalk.white(test.title) + msg;
+    console.log(mkIndent(indents) + msg);
   });
 
   runner.on('fail', function(test) {
 
     /** @type {string} */
-    var indent;
-    /** @type {string} */
     var msg;
 
-    indent = fill(indents, '  ');
-    msg = fuse('  ', ++fails, ') ', test.title);
+    msg = '  ' + (++fails) + ') ' + test.title;
     msg = chalk.red(msg);
-    msg = fuse(indent, msg);
-    console.log(msg);
+    console.log(mkIndent(indents) + msg);
   });
 
   runner.on('end', self.epilogue.bind(self));
 }
 
 inherits(Spec, Base);
+
+/**
+ * @private
+ * @param {number} indents
+ * @return {string}
+ */
+function mkIndent(indents) {
+
+  /** @type {string} */
+  var indent;
+
+  if (indents < 1) return '';
+
+  indent = '';
+  while (--indents) indent += '  ';
+  return indent;
+}
