@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS HELPER: LOG
+ * VITALS UNIT TESTS HELPER: log
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
