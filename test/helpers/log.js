@@ -43,6 +43,10 @@ log.fail.setStyle({
   }
 });
 
+log.toString.setFormat({
+  'lineLimit': 50
+});
+
 /**
  * @param {string} result
  */
