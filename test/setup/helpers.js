@@ -16,10 +16,10 @@
 // GENERAL HELPERS
 global.is = require('../helpers/is');
 global.log = require('../helpers/log');
-global.inArr = require('../helpers/in-arr');
 global.merge = require('../helpers/merge');
 global.assert = require('assert');
 global.hasOwn = require('../helpers/has-own');
+global.hasVal = require('../helpers/has-val');
 global.setEol = require('../helpers/set-eol');
 global.sliceArr = require('../helpers/slice-arr');
 
