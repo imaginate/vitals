@@ -12,10 +12,11 @@
 
 module.exports = mkDummy;
 
-var own = require('./own');
-
+var fs = require('fs');
 var is = require('./is');
-is.dir = require('./is-directory');
+var own = require('./own');
+var isDir = require('./is-directory');
+var slashDir = require('./slash-dir');
 
 var DUMMY_BASE = DUMMY.base;
 var DUMMY_CONTENT = DUMMY.content;
@@ -24,8 +25,6 @@ var DUMMY_CONTENT = DUMMY.content;
  * @typedef {(string|Array<string>)} Files
  * @typedef {Object<string, ?(Files|Dirs)>} Dirs
  */
-
-var fs = require('fs');
 
 /**
  * @global
@@ -63,8 +62,8 @@ function mkDummyDirs(dirs, base) {
  */
 function mkDummyDir(dir, paths) {
 
-  if ( !is.dir(dir) ) fs.mkdirSync(dir);
-  dir = dir.replace(/[^\/]$/, '$&/');
+  if ( !isDir(dir) ) fs.mkdirSync(dir);
+  dir = slashDir(dir);
 
   if ( is.obj(paths) ) {
     if ( is.arr(paths) ) mkDummyFiles(paths, dir);
