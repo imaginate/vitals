@@ -42,7 +42,7 @@ var SLOW_TEST = 5; // ms
  * @param {?TestCmdMethod=} opts.close  - [default= null]
  * @param {boolean=} opts.colors    - [default= true]
  * @param {boolean=} opts.recursive - [default= true]
- * @param {string=} opts.reporter   - [default= "index"]
+ * @param {string=} opts.reporter   - [default= "spec"]
  * @param {string=} opts.grep       - [default= ""]
  * @param {number=} opts.slow       - [default= SLOW_TEST]
  * @param {string=} opts.setup      - [default= "methods"]
@@ -62,13 +62,13 @@ module.exports = function newTestCmd(opts) {
     'close':     is.func(opts.close) ? opts.close : function(){},
     'colors':    opts.colors === false    ? null  : '--colors',
     'recursive': opts.recursive === false ? null  : '--recursive',
-    'reporter':  is.str(opts.reporter) ? opts.reporter : 'index',
+    'reporter':  is.str(opts.reporter) ? opts.reporter : 'spec',
     'grep':      is.str(opts.grep)     ? opts.grep     : null,
     'slow':      is.num(opts.slow)     ? opts.slow     : SLOW_TEST,
     'setup':     is.str(opts.setup)    ? opts.setup    : 'methods',
     'method':    is.str(opts.method)   ? opts.method   : null
   };
-  cmd.reporter = addJSExt(cmd.reporter || 'index');
+  cmd.reporter = addJSExt(cmd.reporter || 'spec');
   cmd.reporter = REPORTER + '/' + cmd.reporter;
   cmd.reporter = [ '--reporter', cmd.reporter ];
   cmd.grep = cmd.grep && [ '--grep', cmd.grep ];

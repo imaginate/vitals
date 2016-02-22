@@ -33,9 +33,9 @@ var MOCHA = './node_modules/mocha/bin/mocha';
  * @param {?TestCmdMethod=} vals.close  - [default= null]
  * @param {boolean=} vals.colors    - [default= true]
  * @param {boolean=} vals.recursive - [default= true]
- * @param {string=} vals.reporter   - [default= DEFAULTS.reporter]
+ * @param {string=} vals.reporter   - [default= "spec"]
  * @param {string=} vals.grep       - [default= ""]
- * @param {string=} vals.setup      - [default= DEFAULTS.setup]
+ * @param {string=} vals.setup      - [default= "methods"]
  * @param {string=} vals.method     - [default= ""] Test only a specific method.
  */
 module.exports = function runTestCmd(vals) {

@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS MOCHA REPORTER: default (spec)
+ * VITALS UNIT TESTS MOCHA REPORTER: spec
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -16,9 +16,9 @@
 
 'use strict';
 
-var Base = require('./base.js');
-var chalk = require('chalk');
 var inherits = require('util').inherits;
+var chalk = require('chalk');
+var Base = require('./base.js');
 var OK = chalk.green(Base.symbols.ok);
 
 module.exports = Spec;
