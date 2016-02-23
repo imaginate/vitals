@@ -40,6 +40,8 @@ Base.list = function list(failures) {
   var error;
   /** @type {string} */
   var title;
+  /** @type {!Object} */
+  var test;
   /** @type {number} */
   var last;
   /** @type {number} */
