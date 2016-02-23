@@ -16,7 +16,7 @@ var fs = require('fs');
  * @param {string} filepath
  * @return {boolean}
  */
-module.exports = unction isFile(filepath) {
+module.exports = function isFile(filepath) {
 
   if (typeof filepath !== 'string') throw new TypeError('invalid filepath (must be a string)');
 
