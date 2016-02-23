@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - COPY.REGEXP
+ * VITALS UNIT TESTS: vitals.copy.regexp
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,69 +16,93 @@
 describe('vitals.copy.regexp (section:base)', function() {
   var title;
 
-  title = 'should return new regex with same source and flags as input ';
-  title += '(except when global override param is set)';
-  title = titleStr('basic', title);
+  title = titleStr('should return a clone of the regex');
   describe(title, function() {
 
-    title = callStr( newRegex() );
+    title = callStr(/re/);
     it(title, function() {
-      var regex = newRegex();
-      var copy = vitals.copy.regex(regex);
-      assert(regex !== copy);
-      assert(regex.source === copy.source);
-      assert(regex.global === copy.global);
-      assert(regex.ignoreCase === copy.ignoreCase);
+      var re = freeze(/re/);
+      var cp = vitals.copy.regex(re);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === false );
+      assert( cp.source === re.source );
+      assert( cp.global === re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
     });
 
-    title = callStr(newRegex(), true);
+    title = callStr(/re/ig);
     it(title, function() {
-      var regex = newRegex();
-      var copy = vitals.copy.regex(regex, true);
-      assert(regex !== copy);
-      assert(regex.source === copy.source);
-      assert(regex.global !== copy.global);
-      assert(regex.ignoreCase === copy.ignoreCase);
+      var re = freeze(/re/ig);
+      var cp = vitals.copy.regex(re);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === true );
+      assert( cp.source === re.source );
+      assert( cp.global === re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
     });
-
-    title = callStr(newRegex(true), false);
-    it(title, function() {
-      var regex = newRegex(true);
-      var copy = vitals.copy.regex(regex, false);
-      assert(regex !== copy);
-      assert(regex.source === copy.source);
-      assert(regex.global !== copy.global);
-      assert(regex.ignoreCase === copy.ignoreCase);
-    });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should override the global regex flag');
   describe(title, function() {
+
+    title = callStr(/re/, true);
+    it(title, function() {
+      var re = freeze(/re/);
+      var cp = vitals.copy.regex(re, true);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === true );
+      assert( cp.source === re.source );
+      assert( cp.global !== re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
+    });
+
+    title = callStr(/re/ig, false);
+    it(title, function() {
+      var re = freeze(/re/ig);
+      var cp = vitals.copy.regex(re, false);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === false );
+      assert( cp.source === re.source );
+      assert( cp.global !== re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
+    });
+  });
+
+  title = titleStr('should throw an error');
+  describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.copy.regex();
+      }, validTypeErr);
+    });
 
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
         vitals.copy.regex(null);
-      });
+      }, validTypeErr);
     });
 
     title = callStr({});
     it(title, function() {
       assert.throws(function() {
         vitals.copy.regex({});
-      });
+      }, validTypeErr);
     });
 
-    title = callStr(newRegex(), 'fail');
+    title = callStr(/re/, 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.regex(newRegex(), 'fail');
-      });
+        vitals.copy.regex(/re/, 'fail');
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,12 +111,11 @@ describe('vitals.copy.regexp (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -104,13 +125,4 @@ function titleStr(section, shouldMsg) {
  */
 function callStr() {
   return testCall('copy.regex', arguments, 3);
-}
-
-/**
- * @private
- * @param {boolean=} makeGlobal
- * @return {!RegExp}
- */
-function newRegex(makeGlobal) {
-  return freeze( makeGlobal ? /a/gi : /a/i );
 }
