@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS METHOD - AMEND.PROPERTY
+ * VITALS UNIT TESTS: vitals.amend.property
  * -----------------------------------------------------------------------------
- * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
+ * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,203 +16,195 @@
 describe('vitals.amend.property (section:strict)', function() {
   var title;
 
-  title = 'should amend prop to obj with correct config';
-  title = titleStr('basic', title);
+  title = titleStr('should add prop to obj');
   describe(title, function() {
 
     title = callStr({}, 'a', 1);
     it(title, function() {
       var obj = vitals.amend.prop({}, 'a', 1);
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( has.enum(obj, 'a') );
+      assert( hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
     });
+  });
+
+  title = titleStr('should add prop to obj with valid descriptor');
+  describe(title, function() {
 
     title = callStr({}, 'a', '<descriptor>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc);
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
     });
 
     title = callStr({}, 'a', 1, '<descriptor>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc);
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
     });
-
   });
 
-  title = 'should amend prop to obj with correct strong type setter';
-  title = titleStr('strong type', title);
+  title = titleStr('should add prop to obj with strong type check');
   describe(title, function() {
 
     title = callStr({}, 'a', 1, 'number');
     it(title, function() {
       var obj = vitals.amend.prop({}, 'a', 1, 'number');
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( has.enum(obj, 'a') );
+      assert( hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
     });
 
     title = callStr({}, 'a', 1, '<descriptor>', 'number');
     it(title, function() {
       var desc = freeze({ enumerable: false });
       var obj = vitals.amend.prop({}, 'a', 1, desc, 'number');
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
     });
 
     title = callStr({}, 'a', '<descriptor>', 'number');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
       var obj = vitals.amend.prop({}, 'a', desc, 'number');
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 2);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 2);
+      assert( obj.a === 2 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
     });
-
   });
 
-  title = titleStr('setter', 'should amend prop to obj with correct setter');
+  title = titleStr('should add prop to obj with valid setter');
   describe(title, function() {
 
     title = callStr({}, 'a', 1, '<setter>');
     it(title, function() {
-      var obj = vitals.amend.prop({}, 'a', 1, getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', 1, setter);
+      assert( hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
     });
 
     title = callStr({}, 'a', 1, '<descriptor>', '<setter>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc, getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', 1, desc, setter);
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
     });
 
     title = callStr({}, 'a', '<descriptor>', '<setter>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc, getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', desc, setter);
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
     });
 
     title = callStr({}, 'a', 1, 'number', '<setter>');
     it(title, function() {
-      var obj = vitals.amend.prop({}, 'a', 1, 'number', getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', 1, 'number', setter);
+      assert( hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 3 );
     });
 
     title = callStr({}, 'a', 1, '<descriptor>', 'number', '<setter>');
     it(title, function() {
       var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number', getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number', setter);
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 3 );
     });
 
     title = callStr({}, 'a', '<descriptor>', 'number', '<setter>');
     it(title, function() {
       var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc, 'number', getSetter());
-      assert(obj.a === 1);
-      assert('a' in obj);
-      assert( !has.enum(obj, 'a') );
+      var obj = vitals.amend.prop({}, 'a', desc, 'number', setter);
+      assert( !hasEnum(obj, 'a') );
+      assert( obj.a === 1 );
       obj.a = 2;
-      assert(obj.a === 3);
-      assert.throws(function() { obj.a = 'string'; });
-      assert(obj.a === 3);
+      assert( obj.a === 3 );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert( obj.a === 3 );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
 
-    title = callStr('string', 'a', 5);
+    title = callStr({});
     it(title, function() {
       assert.throws(function() {
-        vitals.amend('string', 'a', 5);
-      });
-    });
-
-    title = callStr({}, 5, 5);
-    it(title, function() {
-      assert.throws(function() {
-        vitals.amend({}, 5, 5);
-      });
+        vitals.amend({});
+      }, validTypeErr);
     });
 
     title = callStr({}, 'a');
     it(title, function() {
       assert.throws(function() {
         vitals.amend({}, 'a');
-      });
+      }, validErr);
+    });
+
+    title = callStr('string', 'a', 5);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend('string', 'a', 5);
+      }, validTypeErr);
+    });
+
+    title = callStr({}, 5, 5);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend({}, 5, 5);
+      }, validTypeErr);
     });
 
     title = callStr({}, 'a', 5, 'string');
     it(title, function() {
       assert.throws(function() {
         vitals.amend({}, 'a', 5, 'string');
-      });
+      }, validErr);
     });
 
     title = callStr({}, 'a', 5, 'number', {});
     it(title, function() {
       assert.throws(function() {
         vitals.amend({}, 'a', 5, 'number', {});
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -223,12 +213,11 @@ describe('vitals.amend.property (section:strict)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -242,11 +231,11 @@ function callStr() {
 
 /**
  * @private
- * @return {function}
+ * @param {number} newVal
+ * @param {number=} oldVal
+ * @return {number}
  */
-function getSetter() {
-  return function setter(newVal, oldVal) {
-    oldVal = oldVal || 1;
-    return newVal + oldVal;
-  };
+function setter(newVal, oldVal) {
+  oldVal = oldVal || 1;
+  return newVal + oldVal;
 }
