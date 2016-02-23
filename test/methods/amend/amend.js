@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.AMEND
+ * VITALS UNIT TESTS: vitals.amend
  * -----------------------------------------------------------------------------
  * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
  * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
@@ -145,7 +145,7 @@ describe('vitals.amend (section:strict)', function() {
     });
   });
 
-  title = titleStr('should amend props to obj with strong type check');
+  title = titleStr('should add props to obj with strong type check');
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2 }, 'number');
@@ -240,7 +240,7 @@ describe('vitals.amend (section:strict)', function() {
     });
   });
 
-  title = titleStr('should amend props to obj with valid setter');
+  title = titleStr('should add props to obj with valid setter');
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2 }, '<setter>');
