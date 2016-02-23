@@ -12,11 +12,11 @@
 
 'use strict';
 
-global.vitals = getMethods();
-
 var isFile = require('../helpers/is-file');
 var cutJSExt = require('../helpers/cut-js-ext');
 var getFilepaths = require('../helpers/get-filepaths');
+
+global.vitals = getMethods();
 
 /**
  * @private
