@@ -7113,6 +7113,7 @@ var amend = (function amendPrivateScope() {
       if ( !_is.obj(descriptor) ) throw _error.type('descriptor', 'config');
       props = _setupConfigs(props, descriptor);
     }
+    else if ( !is('objMap', props) ) throw _error.type('props', 'config');
 
     if ( !_hasKeys(obj, props) ) {
       throw _error('A given prop was not defined in the obj', 'config');
@@ -7348,16 +7349,13 @@ var amend = (function amendPrivateScope() {
     if ( !_is.obj(props) ) throw _error.type('props', 'properties.config');
 
     if ( _is.arr(props) ) {
-      if ( !_is.obj(descriptor) ) {
-        throw _error.type('descriptor', 'properties.config');
-      }
+      if ( !_is.obj(descriptor) ) throw _error.type('descriptor', 'properties.config');
       props = _setupConfigs(props, descriptor);
     }
+    else if ( !is('objMap', props) ) throw _error.type('props', 'properties.config');
 
     if ( !_hasKeys(obj, props) ) {
-      throw _error(
-        'A given prop was not defined in the obj', 'properties.config'
-      );
+      throw _error('A given prop was not defined in the obj', 'properties.config');
     }
 
     return _amendConfigs(obj, props);
