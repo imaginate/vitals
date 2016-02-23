@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS METHOD - AMEND.PROPERTY.CONFIG
+ * VITALS UNIT TESTS: vitals.amend.property.config
  * -----------------------------------------------------------------------------
- * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
+ * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,73 +16,99 @@
 describe('vitals.amend.property.config (section:strict)', function() {
   var title;
 
-  describe('basic tests', function() {
+  title = titleStr('should update the prop\'s config');
+  describe(title, function() {
 
-    title = titleStr('should correctly change the prop config');
-    describe(title, function() {
-
-      // newObj()= {
-      //   "a":  1,
-      //   "b":  2,
-      //   "c":  3
-      // }
-
-      title = callStr(newObj(), 'a', '<descriptor>');
-      it(title, function() {
-        var result = {
-          a: { configurable: false, enumerable: true },
-          b: { configurable: true,  enumerable: true },
-          c: { configurable: true,  enumerable: true }
-        };
-        var desc = { configurable: false };
-        var obj = vitals.amend.prop.config(newObj(), 'a', desc);
-        each(newObj(), function(val, key) {
-          var desc = getDescriptor(obj, key);
-          assert( obj[key] === val );
-          assert( key in obj );
-          each(result[key], function(val, key) {
-            assert( desc[key] === val );
-          });
-        });
-      });
-
+    title = callStr('<object>', 'a', '<descriptor>');
+    it(title, function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var desc = { configurable: false };
+      vitals.amend.prop.config(obj, 'a', desc);
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      assert( obj.c === 3 );
+      desc = getDescriptor(obj, 'a');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === false );
+      desc = getDescriptor(obj, 'b');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === true );
+      desc = getDescriptor(obj, 'c');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === true );
     });
 
-    title = titleStr('should throw an error');
-    describe(title, function() {
-
-      title = callStr('fail', 'a', '<descriptor>');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.amend.prop.config('fail', 'a', { configurable: false });
-        });
-      });
-
-      title = callStr({ '5': 1 }, 5, '<descriptor>');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.amend.prop.config({ '5': 1 }, 5, { configurable: false });
-        });
-      });
-
-      title = callStr(newObj(), 'a');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.amend.prop.config(newObj(), 'a');
-        });
-      });
-
-      title = callStr(newObj(), 'd', '<descriptor>');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.amend.prop.config(newObj(), 'd', { configurable: false });
-        });
-      });
-
+    title = callStr('<object>', 'b', '<descriptor>');
+    it(title, function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var desc = { configurable: true };
+      vitals.amend.prop.config(obj, 'b', desc);
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      assert( obj.c === 3 );
+      desc = getDescriptor(obj, 'a');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === true );
+      desc = getDescriptor(obj, 'b');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === true );
+      desc = getDescriptor(obj, 'c');
+      assert( desc.enumerable === true );
+      assert( desc.configurable === true );
     });
-
   });
 
+  title = titleStr('should throw an error');
+  describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.amend.prop.config();
+      }, validTypeErr);
+    });
+
+    title = callStr('<object>');
+    it(title, function() {
+      assert.throws(function() {
+        var obj = { a: 1, b: 2, c: 3 };
+        vitals.amend.prop.config(obj);
+      }, validTypeErr);
+    });
+
+    title = callStr('<object>', 'a');
+    it(title, function() {
+      assert.throws(function() {
+        var obj = { a: 1, b: 2, c: 3 };
+        vitals.amend.prop.config(obj, 'a');
+      }, validTypeErr);
+    });
+
+    title = callStr('fail', 'a', '<descriptor>');
+    it(title, function() {
+      assert.throws(function() {
+        var desc = { configurable: false };
+        vitals.amend.prop.config('fail', 'a', desc);
+      }, validTypeErr);
+    });
+
+    title = callStr({ '5': 1 }, 5, '<descriptor>');
+    it(title, function() {
+      assert.throws(function() {
+        var desc = { configurable: false };
+        vitals.amend.prop.config({ '5': 1 }, 5, desc);
+      }, validTypeErr);
+    });
+
+    title = callStr('<object>', 'd', '<descriptor>');
+    it(title, function() {
+      assert.throws(function() {
+        var obj = { a: 1, b: 2, c: 3 };
+        var desc = { configurable: false };
+        vitals.amend.prop.config(obj, 'd', desc);
+      }, validErr);
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -97,7 +121,7 @@ describe('vitals.amend.property.config (section:strict)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -106,27 +130,5 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('amend.prop.config', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return {
-    'a': 1,
-    'b': 2,
-    'c': 3
-  };
-}
-
-/**
- * @private
- * @param {!Object} obj
- * @param {string} key
- * @return {!Object}
- */
-function getDescriptor(obj, key) {
-  return Object.getOwnPropertyDescriptor(obj, key);
+  return testCall('amend.prop.config', arguments, 3);
 }
