@@ -66,7 +66,7 @@ function getFiles(base, isValid) {
   while (++i < len) {
     file = paths[i];
     path = base + file;
-    if ( is.file(path) && isValid(file) ) files.push(file);
+    if ( isFile(path) && isValid(file) ) files.push(file);
   }
   return files;
 }
