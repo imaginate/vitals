@@ -26,9 +26,10 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.a === 1 );
       assert( obj.b === 2 );
       assert( obj.c === 3 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
-      assert( ++obj.c === 4 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( obj.c === 4 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert( hasEnum(obj, 'c') );
@@ -41,9 +42,10 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.a === 5 );
       assert( obj.b === 5 );
       assert( obj.c === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
-      assert( ++obj.c === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( obj.c === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert( hasEnum(obj, 'c') );
@@ -55,9 +57,10 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.a === 5 );
       assert( obj.b === 5 );
       assert( obj.c === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
-      assert( ++obj.c === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( obj.c === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert( hasEnum(obj, 'c') );
@@ -72,8 +75,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
       assert( !hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -90,9 +94,10 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.a === 1 );
       assert( obj.b === 2 );
       assert( obj.c === 3 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
-      assert( ++obj.c === 4 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( obj.c === 4 );
       assert( !hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
       assert( !hasEnum(obj, 'c') );
@@ -105,8 +110,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, 5, desc);
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
       assert( !hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -117,8 +123,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, 'a,b', 5, desc);
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
       assert( !hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -130,8 +137,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, desc);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -146,8 +154,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, 'number');
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -162,8 +171,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, 5, 'number');
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -177,8 +187,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, 'a,b', 5, 'number');
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 6 );
-      assert( ++obj.b === 6 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -196,8 +207,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, 'number');
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -216,8 +228,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, desc, 'number');
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 2 );
-      assert( ++obj.b === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -236,8 +249,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, setter);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 3 );
-      assert( ++obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
     });
@@ -248,8 +262,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, 5, setter);
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 11 );
-      assert( ++obj.b === 11 );
+      incrementProps(obj, 1);
+      assert( obj.a === 11 );
+      assert( obj.b === 11 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
     });
@@ -259,8 +274,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, 'a,b', 5, setter);
       assert( obj.a === 5 );
       assert( obj.b === 5 );
-      assert( ++obj.a === 11 );
-      assert( ++obj.b === 11 );
+      incrementProps(obj, 1);
+      assert( obj.a === 11 );
+      assert( obj.b === 11 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
     });
@@ -274,8 +290,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, setter);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 3 );
-      assert( ++obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
       assert( !hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -290,8 +307,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, desc, setter);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 3 );
-      assert( ++obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
     });
@@ -306,8 +324,9 @@ describe('vitals.amend (section:strict)', function() {
       var obj = vitals.amend({}, props, desc, 'number', setter);
       assert( obj.a === 1 );
       assert( obj.b === 2 );
-      assert( ++obj.a === 3 );
-      assert( ++obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
       assert.throws(function() { obj.a = 'string'; });
@@ -384,6 +403,19 @@ function titleStr(shouldMsg) {
  */
 function callStr() {
   return testCall('amend', arguments, 3);
+}
+
+/**
+ * @private
+ * @param {!Object} obj
+ * @param {number} amount
+ * @return {!Object}
+ */
+function incrementProps(obj, amount) {
+  if ('a' in obj) obj.a += amount;
+  if ('b' in obj) obj.b += amount;
+  if ('c' in obj) obj.c += amount;
+  return obj;
 }
 
 /**
