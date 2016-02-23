@@ -28,6 +28,23 @@ log.error.setConfig({
 var MOCHA = './node_modules/mocha/bin/mocha';
 
 /**
+ * @typedef {function} TestCmdMethod
+ *
+ * @typedef {{
+ *   __CMD:  boolean,
+ *   start:  !TestCmdMethod,
+ *   close:  !TestCmdMethod,
+ *   slow:   ?Array,
+ *   colors: ?string,
+ *   deep:   ?string,
+ *   report: !Array,
+ *   grep:   ?Array,
+ *   setup:  !Array,
+ *   test:   string
+ * }} TestCmd
+ */
+
+/**
  * @param {(?Object|TestCmd)} vals
  * @param {?TestCmdMethod=} vals.start  - [default= null]
  * @param {?TestCmdMethod=} vals.close  - [default= null]
@@ -35,8 +52,10 @@ var MOCHA = './node_modules/mocha/bin/mocha';
  * @param {boolean=} vals.recursive - [default= true]
  * @param {string=} vals.reporter   - [default= "spec"]
  * @param {string=} vals.grep       - [default= ""]
+ * @param {number=} vals.slow       - [default= 5]
  * @param {string=} vals.setup      - [default= "methods"]
  * @param {string=} vals.method     - [default= ""] Test only a specific method.
+ * @param {string=} vals.submethod  - [default= ""] Test only a specific submethod.
  */
 module.exports = function runTestCmd(vals) {
 
@@ -54,8 +73,8 @@ module.exports = function runTestCmd(vals) {
   args = [ MOCHA ];
   args = addArg(args, cmd.colors);
   args = addArg(args, cmd.slow);
-  args = addArg(args, cmd.reporter);
-  args = addArg(args, cmd.recursive);
+  args = addArg(args, cmd.report);
+  args = addArg(args, cmd.deep);
   args = addArg(args, cmd.grep);
   args = addArg(args, cmd.setup);
   args = addArg(args, cmd.test);
@@ -85,6 +104,6 @@ function addArg(args, arg) {
 
   if ( is.arr(arg) ) return args.concat(arg);
 
-  if (arg) args.push(arg);
+  if ( arg && is.str(arg) ) args.push(arg);
   return args;
 }
