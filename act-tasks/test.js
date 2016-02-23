@@ -19,13 +19,18 @@
 'use strict';
 
 exports['desc'] = 'run vitals unit tests';
-exports['value'] = 'vitals-method';
-exports['default'] = '-method';
+exports['value'] = 'vitals-submethod';
+exports['default'] = '-submethod';
 exports['methods'] = {
   'method': {
     'desc': 'unit tests for one method',
     'value': 'vitals-method',
     'method': testMethod
+  },
+  'submethod': {
+    'desc': 'unit tests for one submethod',
+    'value': 'vitals-submethod',
+    'method': testSubmethod
   },
   'methods': {
     'desc': 'unit tests for all methods',
@@ -54,6 +59,8 @@ var runTestCmd = require('./helpers/run-test-cmd');
 var buildTest = require('./helpers/build-test');
 var is = require('./helpers/is');
 
+var METHOD = /^([a-z]+)[a-zA-Z.]*$/;
+
 /**
  * @public
  * @param {string} method
@@ -65,6 +72,8 @@ function testMethod(method) {
   /** @type {string} */
   var name;
 
+  if (!method) throw new Error('missing a method value');
+
   file = 'src/methods/' + method + '.js';
 
   if ( !is.file(file) ) throw new RangeError( errMsg('method') );
@@ -75,6 +84,37 @@ function testMethod(method) {
     'setup':  'methods.js',
     'start':  newCmdMethod(true,  name),
     'close':  newCmdMethod(false, name)
+  });
+}
+
+/**
+ * @public
+ * @param {string} submethod
+ */
+function testSubmethod(submethod) {
+
+  /** @type {string} */
+  var method;
+  /** @type {string} */
+  var file;
+  /** @type {string} */
+  var name;
+
+  if (!submethod) throw new Error('missing a submethod value');
+
+  method = METHOD.test(submethod) && submethod.replace(METHOD, '$1');
+
+  file = 'test/methods/' + method + '/' + submethod + '.js';
+
+  if ( !is.file(file) ) throw new RangeError( errMsg('submethod') );
+
+  name = 'vitals.' + submethod;
+  runTestCmd({
+    'submethod': submethod,
+    'method':    method,
+    'setup':     'methods.js',
+    'start':     newCmdMethod(true,  name),
+    'close':     newCmdMethod(false, name)
   });
 }
 
