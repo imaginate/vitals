@@ -29,6 +29,7 @@ global.isBuffer = require('../helpers/is-buffer');
 global.sliceArr = require('../helpers/slice-arr');
 global.validErr = require('../helpers/valid-err');
 global.validSetErr = require('../helpers/valid-set-err');
+global.getPrototype = require('../helpers/get-prototype');
 global.validTypeErr = require('../helpers/valid-type-err');
 global.getDescriptor = require('../helpers/get-descriptor');
 global.validRangeErr = require('../helpers/valid-range-err');
