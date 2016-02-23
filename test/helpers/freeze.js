@@ -15,6 +15,7 @@
 module.exports = freeze;
 
 var is = require('./is');
+var hasOwn = require('./has-own');
 
 /**
  * @private
@@ -38,9 +39,31 @@ var ObjectFreeze = (function() {
 
 /**
  * @param {(!Object|function)} obj
+ * @param {boolean=} deep
  * @return {(!Object|function)}
  */
-function freeze(obj) {
+function freeze(obj, deep) {
   if ( !is.obj(obj) && !is.func(obj) ) throw new TypeError('invalid obj');
+  return deep ? deepFreeze(obj) : ObjectFreeze(obj);
+}
+
+/**
+ * @private
+ * @param {(!Object|function)} obj
+ * @return {(!Object|function)}
+ */
+function deepFreeze(obj) {
+
+  /** @type {string} */
+  var key;
+  /** @type {*} */
+  var val;
+
+  for (key in obj) {
+    if ( hasOwn(obj, key) ) {
+      val = obj[key];
+      if ( is.obj(val) || is.func(val) ) deepFreeze(val);
+    }
+  }
   return ObjectFreeze(obj);
 }
