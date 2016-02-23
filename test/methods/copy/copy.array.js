@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - COPY.ARRAY
+ * VITALS UNIT TESTS: vitals.copy.array
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,68 +16,74 @@
 describe('vitals.copy.array (section:base)', function() {
   var title;
 
-  title = 'should return new array with same values as input';
-  title = titleStr('basic', title);
+  title = titleStr('should return a clone of the array');
   describe(title, function() {
 
-    title = callStr( newArr() );
+    title = callStr('<array>');
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.copy.arr(arr);
-      assert(arr !== copy);
-      each(arr, function(val, i) {
-        assert( arr[i] === copy[i] );
-      });
+      var arr = freeze([ 1, { b: 2 }, 3 ], true);
+      var cp = vitals.copy.arr(arr);
+      assert( arr !== cp );
+      assert( arr[0] === cp[0] );
+      assert( arr[1] === cp[1] );
+      assert( arr[2] === cp[2] );
+      assert( arr[1].b === cp[1].b );
     });
 
-    title = callStr(newArr(), true);
+    title = callStr('<array>', true);
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.copy.arr(arr, true);
-      assert(arr !== copy);
-      assert(arr[0] === copy[0]);
-      assert(arr[1] !== copy[1]);
-      assert(arr[2] === copy[2]);
+      var arr = freeze([ 1, { b: 2 }, 3 ], true);
+      var cp = vitals.copy.arr(arr, true);
+      assert( arr !== cp );
+      assert( arr[0] === cp[0] );
+      assert( arr[1] !== cp[1] );
+      assert( arr[2] === cp[2] );
+      assert( arr[1].b === cp[1].b );
     });
 
-    title = callStr(newArr(), false);
+    title = callStr('<array>', false);
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.copy.arr(arr, false);
-      assert(arr !== copy);
-      each(arr, function(val, i) {
-        assert( arr[i] === copy[i] );
-      });
+      var arr = freeze([ 1, { b: 2 }, 3 ], true);
+      var cp = vitals.copy.arr(arr, false);
+      assert( arr !== cp );
+      assert( arr[0] === cp[0] );
+      assert( arr[1] === cp[1] );
+      assert( arr[2] === cp[2] );
+      assert( arr[1].b === cp[1].b );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.copy.arr();
+      }, validTypeErr);
+    });
 
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
         vitals.copy.arr(null);
-      });
+      }, validTypeErr);
     });
 
     title = callStr({});
     it(title, function() {
       assert.throws(function() {
         vitals.copy.arr({});
-      });
+      }, validTypeErr);
     });
 
     title = callStr([], 'fail');
     it(title, function() {
       assert.throws(function() {
         vitals.copy.arr([], 'fail');
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,12 +92,11 @@ describe('vitals.copy.array (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -103,12 +106,4 @@ function titleStr(section, shouldMsg) {
  */
 function callStr() {
   return testCall('copy.arr', arguments, 3);
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return freeze([ 1, { b: 2 }, 3 ], true);
 }
