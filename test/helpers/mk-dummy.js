@@ -44,11 +44,14 @@ function mkDummy(paths) {
  */
 function mkDummyDirs(dirs, base) {
 
+  /** @type {!(Files|Dirs)} */
+  var paths;
   /** @type {string} */
   var dir;
 
   for (dir in dirs) {
     if ( own(dirs, dir) ) {
+      paths = dirs[dir];
       dir = dir === 'root' ? base : base + dir;
       mkDummyDir(dir, paths);
     }
