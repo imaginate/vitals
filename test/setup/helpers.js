@@ -25,6 +25,7 @@ global.setEol = require('../helpers/set-eol');
 global.hasEnum = require('../helpers/has-enum');
 global.sliceArr = require('../helpers/slice-arr');
 global.validErr = require('../helpers/valid-err');
+global.validSetErr = require('../helpers/valid-set-err');
 global.validTypeErr = require('../helpers/valid-type-err');
 global.validRangeErr = require('../helpers/valid-range-err');
 
