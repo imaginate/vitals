@@ -16,11 +16,13 @@
 // GENERAL HELPERS
 global.is = require('../helpers/is');
 global.log = require('../helpers/log');
+global.isDir = require('../helpers/is-directory');
 global.merge = require('../helpers/merge');
 global.assert = require('assert');
 global.freeze = require('../helpers/freeze');
 global.hasOwn = require('../helpers/has-own');
 global.hasVal = require('../helpers/has-val');
+global.isFile = require('../helpers/is-file');
 global.setEol = require('../helpers/set-eol');
 global.hasEnum = require('../helpers/has-enum');
 global.sliceArr = require('../helpers/slice-arr');
