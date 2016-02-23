@@ -324,7 +324,7 @@ describe('vitals.amend (section:strict)', function() {
     it(title, function() {
       assert.throws(function() {
         vitals.amend();
-      }, validErr);
+      }, validTypeErr);
     });
 
     title = callStr('string', 'a,b,c', 5);
