@@ -159,8 +159,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 3 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 2 );
       assert( obj.b === 3 );
     });
@@ -176,8 +176,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 6 );
       assert( obj.b === 6 );
     });
@@ -192,8 +192,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 6 );
       assert( hasEnum(obj, 'a') );
       assert( hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 6 );
       assert( obj.b === 6 );
     });
@@ -212,8 +212,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 3 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 2 );
       assert( obj.b === 3 );
     });
@@ -233,8 +233,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 3 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 2 );
       assert( obj.b === 3 );
     });
@@ -329,8 +329,8 @@ describe('vitals.amend (section:strict)', function() {
       assert( obj.b === 5 );
       assert(  hasEnum(obj, 'a') );
       assert( !hasEnum(obj, 'b') );
-      assert.throws(function() { obj.a = 'string'; });
-      assert.throws(function() { obj.b = 'string'; });
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
       assert( obj.a === 3 );
       assert( obj.b === 5 );
     });
