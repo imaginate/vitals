@@ -31,6 +31,8 @@ function testCall(method, args, indent) {
   var result;
   /** @type {number} */
   var last;
+  /** @type {string} */
+  var arg;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -51,7 +53,7 @@ function testCall(method, args, indent) {
   len = args.length;
   i = -1;
   while (++i < len) {
-    arg = log.toString(arg);
+    arg = log.toString(args[i]);
     result += i < last ? arg + ', ' : arg;
   }
   result = method + '(' + result + ');';
