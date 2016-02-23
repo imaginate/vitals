@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS TESTS - COPY.FILE
+ * VITALS UNIT TESTS: vitals.copy.file
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -17,105 +15,88 @@
 
 if (BROWSER_TESTS) return;
 
+var CONTENT = DUMMY.content; // content for dummy files
+var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
 var fs = require('fs');
 
 describe('vitals.copy.file (section:fs)', function() {
   var title;
 
-  title = 'should copy file to correct location';
-  title = titleStr('basic', title);
+  title = titleStr('should copy file to correct location');
   describe(title, function() {
 
     before('setup dummy dirs and files', function() {
-      mkDummy('fake.js');
+      mkDummy('file.js');
     });
-
-    title = callStr('fake.js', 'fake1.js');
-    it(title, function() {
-      var src = addBase('fake.js');
-      var dest = addBase('fake1.js');
-      var result = vitals.copy.file(src, dest);
-      assert( is.buffer(result) );
-      result = result.toString();
-      assert( result === DUMMY.content );
-      src = fs.readFileSync(src);
-      src = src.toString();
-      assert( src === DUMMY.content );
-      dest = fs.readFileSync(dest);
-      dest = dest.toString();
-      assert( dest === DUMMY.content );
-    });
-
-    title = callStr('fake.js', 'fake2.js', false);
-    it(title, function() {
-      var src = addBase('fake.js');
-      var dest = addBase('fake2.js');
-      var result = vitals.copy.file(src, dest, false);
-      assert( result === DUMMY.content );
-      src = fs.readFileSync(src, 'utf8');
-      src = setEol(src, 'LF');
-      assert( src === DUMMY.content );
-      dest = fs.readFileSync(dest, 'utf8');
-      dest = setEol(dest, 'LF');
-      assert( dest === DUMMY.content );
-    });
-
-    title = callStr('fake.js', 'subdir/');
-    it(title, function() {
-      var src = addBase('fake.js');
-      var dest = addBase('subdir/');
-      var result = vitals.copy.file(src, dest);
-      assert( is.buffer(result) );
-      result = result.toString();
-      assert( result === DUMMY.content );
-      src = fs.readFileSync(src);
-      src = src.toString();
-      assert( src === DUMMY.content );
-      dest = fuse(dest, 'fake.js');
-      dest = fs.readFileSync(dest);
-      dest = dest.toString();
-      assert( dest === DUMMY.content );
-    });
-
     after('clean up dummy dirs and files', rmDummy);
 
+    title = callStr('file.js', 'file1.js');
+    it(title, function() {
+      var src = addBase('file.js');
+      var dest = addBase('file1.js');
+      var result = vitals.copy.file(src, dest);
+      assert( isBuffer(result) );
+      result = result.toString();
+      assert( result === CONTENT );
+      assert( validFile(src) );
+      assert( validFile(dest) );
+    });
+
+    title = callStr('file.js', 'file2.js', false);
+    it(title, function() {
+      var src = addBase('file.js');
+      var dest = addBase('file2.js');
+      var result = vitals.copy.file(src, dest, false);
+      assert( result === CONTENT );
+      assert( validFile(src, true) );
+      assert( validFile(dest, true) );
+    });
+
+    title = callStr('file.js', 'subdir/');
+    it(title, function() {
+      var src = addBase('file.js');
+      var dest = addBase('subdir/');
+      var result = vitals.copy.file(src, dest);
+      assert( isBuffer(result) );
+      result = result.toString();
+      assert( result === CONTENT );
+      assert( validFile(src) );
+      assert( validFile(dest + 'file.js') );
+    });
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
 
     before('setup dummy dirs and files', function() {
-      mkDummy('fake.js');
+      mkDummy('file.js');
     });
+    after('clean up dummy dirs and files', rmDummy);
 
     title = callStr();
     it(title, function() {
       assert.throws(function() {
         vitals.copy.file();
-      });
+      }, validTypeErr);
     });
 
-    title = callStr('fake.js');
+    title = callStr('file.js');
     it(title, function() {
       assert.throws(function() {
-        var src = addBase('fake.js');
+        var src = addBase('file.js');
         vitals.copy.file(src);
-      });
+      }, validTypeErr);
     });
 
-    title = callStr('invalid.js', 'fake1.js');
+    title = callStr('invalid.js', 'file1.js');
     it(title, function() {
       assert.throws(function() {
         var src = addBase('invalid.js');
-        var dest = addBase('fake1.js');
+        var dest = addBase('file1.js');
         vitals.copy.file(src, dest);
-      });
+      }, validTypeErr);
     });
-
-    after('clean up dummy dirs and files', rmDummy);
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,12 +105,11 @@ describe('vitals.copy.file (section:fs)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -137,23 +117,39 @@ function titleStr(section, shouldMsg) {
  * @param {...*} args
  * @return {string}
  */
-function callStr(args) {
-  args = remap(arguments, function(val, i) {
-    return i < 2 ? addBase(val) : val;
-  });
-  return testCall('copy.file', args, 3);
+function callStr() {
+  if (arguments.length) {
+    if (arguments.length > 1) arguments[1] = addBase(arguments[1]);
+    arguments[0] = addBase(arguments[0]);
+  }
+  return testCall('copy.file', arguments, 3);
 }
 
 /**
  * @private
- * @param {string} file
+ * @param {string=} path
  * @return {string}
  */
-function addBase(file) {
+function addBase(path) {
+  return path ? BASE + '/' + path : BASE;
+}
+
+/**
+ * @private
+ * @param {string} filepath
+ * @param {boolean=} encode
+ * @return {boolean}
+ */
+function validFile(filepath, encode) {
 
   /** @type {string} */
-  var base;
+  var content;
 
-  base = cut(DUMMY.base, /\/$/);
-  return fuse(base, '/', file);
+  if ( !isFile(filepath) ) return false;
+
+  content = encode
+    ? fs.readFileSync(filepath, 'utf8')
+    : fs.readFileSync(filepath).toString();
+  if (encode) content = setEol(content, 'LF');
+  return CONTENT === content;
 }
