@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - COPY
+ * VITALS UNIT TESTS: vitals.copy
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,153 +16,169 @@
 describe('vitals.copy (section:base)', function() {
   var title;
 
-  title = titleStr('basic', 'should return same value as input');
+  title = titleStr('should return a clone of the primitive');
   describe(title, function() {
 
-    title = callStr('<primitive>');
+    title = callStr(null);
     it(title, function() {
-      var vals = [ null, undefined, true, false, 'string', 5 ];
-      each(vals, function(val) {
-        assert(vitals.copy(val) === val);
-      });
-      assert( is.nan( vitals.copy(NaN) ) );
+      var val = vitals.copy(null);
+      assert( val === null );
     });
 
-    title = callStr('<primitive>', true);
+    title = callStr(undefined);
     it(title, function() {
-      var vals = [ null, undefined, true, false, 'string', 5 ];
-      each(vals, function(val) {
-        assert(vitals.copy(val) === val);
-      });
-      assert( is.nan( vitals.copy(NaN) ) );
+      var val = vitals.copy(undefined);
+      assert( val === undefined );
     });
 
+    title = callStr(true);
+    it(title, function() {
+      var val = vitals.copy(true);
+      assert( val === true );
+    });
+
+    title = callStr('string');
+    it(title, function() {
+      var val = vitals.copy('string');
+      assert( val === 'string' );
+    });
+
+    title = callStr(5);
+    it(title, function() {
+      var val = vitals.copy(5);
+      assert( val === 5 );
+    });
+
+    title = callStr(NaN);
+    it(title, function() {
+      var val = vitals.copy(NaN);
+      assert( is.nan(val) );
+    });
   });
 
-  title = 'should return new object with same key => value pairs as input';
-  title = titleStr('object', title);
+  title = titleStr('should return a clone of the object');
   describe(title, function() {
 
-    title = callStr( newObj() );
+    title = callStr('<object>');
     it(title, function() {
-      var obj = newObj();
-      var copy = vitals.copy(obj);
-      assert(obj !== copy);
-      each(obj, function(val, key) {
-        assert( obj[key] === copy[key] );
-      });
+      var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
+      var cp = vitals.copy(obj);
+      assert( obj !== cp );
+      assert( obj.a === cp.a );
+      assert( obj.b === cp.b );
+      assert( obj.c === cp.c );
+      assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr(newObj(), true);
+    title = callStr('<object>', true);
     it(title, function() {
-      var obj = newObj();
-      var copy = vitals.copy(obj, true);
-      assert(obj !== copy);
-      assert(obj.a === copy.a);
-      assert(obj.b !== copy.b);
-      assert(obj.c === copy.c);
+      var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
+      var cp = vitals.copy(obj, true);
+      assert( obj !== cp );
+      assert( obj.a === cp.a );
+      assert( obj.b !== cp.b );
+      assert( obj.c === cp.c );
+      assert( obj.b.d === cp.b.d );
     });
-
   });
 
-  title = 'should return new regex with same source and flags as input';
-  title = titleStr('regex', title);
+  title = titleStr('should return a clone of the regex');
   describe(title, function() {
 
-    title = callStr( newRegex() );
+    title = callStr(/re/);
     it(title, function() {
-      var regex = newRegex();
-      var copy = vitals.copy(regex);
-      assert(regex !== copy);
-      assert(regex.source === copy.source);
-      assert(regex.global === copy.global);
-      assert(regex.ignoreCase === copy.ignoreCase);
+      var re = freeze(/re/);
+      var cp = vitals.copy(re);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === false );
+      assert( cp.source === re.source );
+      assert( cp.global === re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
     });
 
-    title = callStr(newRegex(), true);
+    title = callStr(/re/ig);
     it(title, function() {
-      var regex = newRegex();
-      var copy = vitals.copy(regex, true);
-      assert(regex !== copy);
-      assert(regex.source === copy.source);
-      assert(regex.global === copy.global);
-      assert(regex.ignoreCase === copy.ignoreCase);
+      var re = freeze(/re/ig);
+      var cp = vitals.copy(re);
+      assert( cp !== re );
+      assert( cp.source === 're' );
+      assert( cp.global === true );
+      assert( cp.source === re.source );
+      assert( cp.global === re.global );
+      assert( cp.ignoreCase === re.ignoreCase );
     });
-
   });
 
-  title = 'should return new array with same values as input';
-  title = titleStr('array', title);
+  title = titleStr('should return a clone of the array');
   describe(title, function() {
 
-    title = callStr( newArr() );
+    title = callStr('<array>');
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.copy(arr);
-      assert(arr !== copy);
-      each(arr, function(val, i) {
-        assert( arr[i] === copy[i] );
-      });
+      var arr = freeze([ 1, { b: 2 }, 3 ], true);
+      var cp = vitals.copy(arr);
+      assert( arr !== cp );
+      assert( arr[0] === cp[0] );
+      assert( arr[1] === cp[1] );
+      assert( arr[2] === cp[2] );
+      assert( arr[1].b === cp[1].b );
     });
 
-    title = callStr(newArr(), true);
+    title = callStr('<array>', true);
     it(title, function() {
-      var arr = newArr();
-      var copy = vitals.copy(arr, true);
-      assert(arr !== copy);
-      assert(arr[0] === copy[0]);
-      assert(arr[1] !== copy[1]);
-      assert(arr[2] === copy[2]);
+      var arr = freeze([ 1, { b: 2 }, 3 ], true);
+      var cp = vitals.copy(arr, true);
+      assert( arr !== cp );
+      assert( arr[0] === cp[0] );
+      assert( arr[1] !== cp[1] );
+      assert( arr[2] === cp[2] );
+      assert( arr[1].b === cp[1].b );
     });
-
   });
 
-  title = 'should return new function with same body ';
-  title += 'and key => value pairs as input';
-  title = titleStr('function', title);
+  title = titleStr('should return a clone of the function');
   describe(title, function() {
 
-    title = callStr( newFunc() );
+    title = callStr('<function>');
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.copy(func);
-      assert(func !== copy);
-      assert(func.a === copy.a);
-      assert(func.b === copy.b);
-      assert( func() === copy() );
+      var cp = vitals.copy(func);
+      assert( func !== cp );
+      assert( func() === cp() );
+      assert( func.a === cp.a );
+      assert( func.b === cp.b );
+      assert( func.b.c === cp.b.c );
     });
 
-    title = callStr(newFunc(), true);
+    title = callStr('<function>', true);
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.copy(func, true);
-      assert(func !== copy);
-      assert(func.a === copy.a);
-      assert(func.b !== copy.b);
-      assert( func() === copy() );
+      var cp = vitals.copy(func, true);
+      assert( func !== cp );
+      assert( func() === cp() );
+      assert( func.a === cp.a );
+      assert( func.b !== cp.b );
+      assert( func.b.c === cp.b.c );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
 
     title = callStr();
     it(title, function() {
       assert.throws(function() {
         vitals.copy();
-      });
+      }, validErr);
     });
 
     title = callStr({}, 'fail');
     it(title, function() {
       assert.throws(function() {
         vitals.copy({}, 'fail');
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -173,12 +187,11 @@ describe('vitals.copy (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -192,30 +205,6 @@ function callStr() {
 
 /**
  * @private
- * @return {!Object}
- */
-function newObj() {
-  return freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
-}
-
-/**
- * @private
- * @return {!RegExp}
- */
-function newRegex() {
-  return freeze( /a/ );
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return freeze([ 1, { b: 2 }, 3 ], true);
-}
-
-/**
- * @private
  * @return {function}
  */
 function newFunc() {
@@ -225,6 +214,6 @@ function newFunc() {
 
   func = function testFunc() { return 5; };
   func.a = 1
-  func.b = { b: 2 };
+  func.b = { c: 2 };
   return freeze(func, true);
 }
