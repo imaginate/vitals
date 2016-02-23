@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CREATE
+ * VITALS UNIT TESTS: vitals.create
  * -----------------------------------------------------------------------------
- * @see [vitals.create]{@link https://github.com/imaginate/vitals/wiki/vitals.create}
+ * @see [vitals.create docs](https://github.com/imaginate/vitals/wiki/vitals.create)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,441 +16,455 @@
 describe('vitals.create (section:strict)', function() {
   var title;
 
-  title = titleStr('basic', 'should create new obj with given prototype');
+  title = titleStr('should create new obj with given prototype');
   describe(title, function() {
 
     title = callStr(null);
     it(title, function() {
       var obj = vitals.create(null);
-      assert(getProto(obj) === null);
+      var proto = getPrototype(obj);
+      assert( proto === null );
     });
 
     title = callStr({});
     it(title, function() {
-      var proto = { a: function(){} };
-      var obj = vitals.create(proto);
-      assert(getProto(obj) === proto);
+      var proto1 = { a: function(){} };
+      var obj = vitals.create(proto1);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
     });
 
     title = callStr('<Array.prototype>');
     it(title, function() {
-      var obj = vitals.create(Array.prototype);
-      assert(getProto(obj) === Array.prototype);
+      var proto1 = Array.prototype;
+      var obj = vitals.create(proto1);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
     });
-
   });
 
-  title = 'should create new obj with given prototype and amend given props';
-  title = titleStr('basic prop', title);
+  title = titleStr('should create new obj with given prototype and props');
   describe(title, function() {
 
     title = callStr({}, { a: 1, b: 2, c: 3 });
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze({ a: 1, b: 2, c: 3 });
-      var obj = vitals.create(proto, props);
-      assert(getProto(obj) === proto);
-      each(props, function(val, key) {
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-      });
+      var obj = vitals.create(proto1, props);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      assert( obj.c === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( obj.c === 4 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert( hasEnum(obj, 'c') );
     });
 
     title = callStr({}, [ 'a', 'b', 'c' ], 5);
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze([ 'a', 'b', 'c' ]);
-      var obj = vitals.create(proto, props, 5);
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = 6;
-        assert(obj[key] === 6);
-      });
+      var obj = vitals.create(proto1, props, 5);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      assert( obj.c === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( obj.c === 6 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert( hasEnum(obj, 'c') );
     });
 
     title = callStr({}, 'a,b,c', 5);
     it(title, function() {
-      var proto = {};
-      var props = [ 'a', 'b', 'c' ];
-      var obj = vitals.create(proto, 'a,b,c', 5);
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = 6;
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var obj = vitals.create(proto1, 'a,b,c', 5);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      assert( obj.c === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( obj.c === 6 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert( hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: false },
-      b: { value: 2, enumerable: false }
-    });
+    title = callStr({}, '<descriptors>');
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: false },
         b: { value: 2, enumerable: false }
       });
-      var obj = vitals.create(proto, props);
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-      });
+      var obj = vitals.create(proto1, props);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( !hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
-
   });
 
-  title = 'should create new obj with given prototype ';
-  title += 'and amend given props with correct config';
-  title = titleStr('default descriptor', title);
+  title = titleStr('should create new obj with given prototype and props with valid descriptor');
   describe(title, function() {
 
-    title = callStr({}, { a: 1, b: 2, c: 3 }, { enumerable: false });
+    title = callStr({}, { a: 1, b: 2, c: 3 }, '<descriptor>');
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze({ a: 1, b: 2, c: 3 });
-      var obj = vitals.create(proto, props, { enumerable: false });
-      assert(getProto(obj) === proto);
-      each(props, function(val, key) {
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-      });
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, desc);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      assert( obj.c === 3 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( obj.c === 4 );
+      assert( !hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
+      assert( !hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, [ 'a', 'b', 'c' ], 5, { enumerable: false });
+    title = callStr({}, [ 'a', 'b' ], 5, '<descriptor>');
     it(title, function() {
-      var proto = {};
-      var props = freeze([ 'a', 'b', 'c' ]);
-      var obj = vitals.create(proto, props, 5, { enumerable: false });
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = 6;
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var props = freeze([ 'a', 'b' ]);
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, 5, desc);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( !hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, 'a,b,c', 5, { enumerable: false });
+    title = callStr({}, 'a,b', 5, '<descriptor>');
     it(title, function() {
-      var proto = {};
-      var props = [ 'a', 'b', 'c' ];
-      var obj = vitals.create(proto, 'a,b,c', 5, { enumerable: false });
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = 6;
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, 'a,b', 5, desc);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( !hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: true },
-      b: 2
-    }, { enumerable: false });
+    title = callStr({}, '<varied props>', '<descriptor>');
     it(title, function() {
-      var proto = {};
-      var props = { a: { value: 1, enumerable: true }, b: 2 };
-      var obj = vitals.create(proto, props, { enumerable: false });
-      assert(getProto(obj) === proto);
-      each({ a: 1, b: 2 }, function(val, key) {
-        assert(obj[key] === val);
-        assert(key in obj);
-        if (key === 'a') assert( has.enum(obj, key) );
-        if (key === 'b') assert( !has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-      });
+      var proto1 = {};
+      var props = freeze({ a: { value: 1, enumerable: true }, b: 2 }, true);
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, desc);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert(  hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
-
   });
 
-  title = 'should create new obj with given prototype and amend ';
-  title += 'given props with correct strong type setter';
-  title = titleStr('strong type', title);
+  title = titleStr('should create new obj with given prototype and props with strong type check');
   describe(title, function() {
 
-    title = callStr({}, { a: 1, b: 2, c: 3 }, 'number');
+    title = callStr({}, { a: 1, b: 2 }, 'number');
     it(title, function() {
-      var proto = {};
-      var props = freeze({ a: 1, b: 2, c: 3 });
-      var obj = vitals.create(proto, props, 'number');
-      assert(getProto(obj) === proto);
-      each(props, function(val, key) {
-        assert(obj[key] === val);
-        assert(key in obj);
-        obj[key] = ++val;
-        assert(obj[key] === val);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === val);
-      });
+      var proto1 = {};
+      var props = freeze({ a: 1, b: 2 });
+      var obj = vitals.create(proto1, props, 'number');
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
     });
 
-    title = callStr({}, [ 'a', 'b', 'c' ], 5, 'number');
+    title = callStr({}, [ 'a', 'b' ], 5, 'number');
     it(title, function() {
-      var proto = {};
-      var props = freeze([ 'a', 'b', 'c' ]);
-      var obj = vitals.create(proto, props, 5, 'number');
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        obj[key] = 6;
-        assert(obj[key] === 6);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var props = freeze([ 'a', 'b' ]);
+      var obj = vitals.create(proto1, props, 5, 'number');
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
     });
 
-    title = callStr({}, 'a,b,c', 5, 'number');
+    title = callStr({}, 'a,b', 5, 'number');
     it(title, function() {
-      var proto = {};
-      var props = [ 'a', 'b', 'c' ];
-      var obj = vitals.create(proto, 'a,b,c', 5, 'number');
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        obj[key] = 6;
-        assert(obj[key] === 6);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var obj = vitals.create(proto1, 'a,b', 5, 'number');
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 6 );
+      assert( obj.b === 6 );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: false },
-      b: { value: 2, enumerable: false }
-    }, 'number');
+    title = callStr({}, '<descriptors>', 'number');
     it(title, function() {
-      var proto = {};
-      var props = {
-        a: { value: 1, enumerable: false },
+      var proto1 = {};
+      var props = freeze({
+        a: { value: 1, enumerable: true  },
         b: { value: 2, enumerable: false }
-      };
-      var obj = vitals.create(proto, props, 'number');
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === val);
       });
+      var obj = vitals.create(proto1, props, 'number');
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert(  hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: true },
-      b: { value: 2 }
-    }, { enumerable: false }, 'number');
+    title = callStr({}, '<descriptors>', '<descriptor>', 'number');
     it(title, function() {
-      var proto = null;
-      var props = {
+      var proto1 = null;
+      var props = freeze({
         a: { value: 1, enumerable: true },
         b: { value: 2 }
-      };
-      var obj = vitals.create(proto, props, { enumerable: false }, 'number');
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        if (key === 'a') assert( has.enum(obj, key) );
-        if (key === 'b') assert( !has.enum(obj, key) );
-        obj[key] = ++val;
-        assert(obj[key] === val);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === val);
       });
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, desc, 'number');
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
+      assert(  hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 2 );
+      assert( obj.b === 3 );
     });
-
   });
 
-  title = 'should create new obj with given prototype ';
-  title += 'and amend given props with correct setter';
-  title = titleStr('setter', title);
+  title = titleStr('should create new obj with given prototype and props with valid setter');
   describe(title, function() {
 
-    title = callStr({}, { a: 1, b: 2, c: 3 }, getSetter());
+    title = callStr({}, { a: 1, b: 2 }, '<setter>');
     it(title, function() {
-      var proto = {};
-      var props = freeze({ a: 1, b: 2, c: 3 });
-      var obj = vitals.create(proto, props, getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(val, key) {
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === ++val);
-      });
+      var proto1 = {};
+      var props = freeze({ a: 1, b: 2 });
+      var obj = vitals.create(proto1, props, setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, [ 'a', 'b', 'c' ], 5, getSetter());
+    title = callStr({}, [ 'a', 'b' ], 5, '<setter>');
     it(title, function() {
-      var proto = {};
-      var props = freeze([ 'a', 'b', 'c' ]);
-      var obj = vitals.create(proto, props, 5, getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var props = freeze([ 'a', 'b' ]);
+      var obj = vitals.create(proto1, props, 5, setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 11 );
+      assert( obj.b === 11 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, 'a,b,c', 5, getSetter());
+    title = callStr({}, 'a,b', 5, '<setter>');
     it(title, function() {
-      var proto = {};
-      var props = [ 'a', 'b', 'c' ];
-      var obj = vitals.create(proto, 'a,b,c', 5, getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(key) {
-        assert(obj[key] === 5);
-        assert(key in obj);
-        assert( has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === 6);
-      });
+      var proto1 = {};
+      var obj = vitals.create(proto1, 'a,b', 5, setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 5 );
+      assert( obj.b === 5 );
+      incrementProps(obj, 1);
+      assert( obj.a === 11 );
+      assert( obj.b === 11 );
+      assert( hasEnum(obj, 'a') );
+      assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: false },
-      b: { value: 2, enumerable: false }
-    }, getSetter());
+    title = callStr({}, '<descriptors>', '<setter>');
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: false },
         b: { value: 2, enumerable: false }
       });
-      var obj = vitals.create(proto, props, getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        assert( !has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === ++val);
-      });
+      var obj = vitals.create(proto1, props, setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
+      assert( !hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: true },
-      b: { value: 2, enumerable: false }
-    }, { enumerable: false }, getSetter());
+    title = callStr({}, '<descriptors>', '<descriptor>', '<setter>');
     it(title, function() {
-      var proto = {};
+      var proto1 = {};
       var props = freeze({
-        a: { value: 1, enumerable: true },
+        a: { value: 1, enumerable: true  },
         b: { value: 2, enumerable: false }
       });
-      var obj = vitals.create(proto, props, { enumerable: false }, getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        if (key === 'a') assert( has.enum(obj, key) );
-        if (key === 'b') assert( !has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === ++val);
-      });
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, desc, setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
+      assert(  hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, {
-      a: { value: 1, enumerable: true },
-      b: { value: 2, enumerable: false }
-    }, { enumerable: false }, 'number', getSetter());
+    title = callStr({}, '<descriptors>', '<descriptor>', 'number', '<setter>');
     it(title, function() {
-      var proto = null;
+      var proto1 = null;
       var props = freeze({
-        a: { value: 1, enumerable: true },
+        a: { value: 1, enumerable: true  },
         b: { value: 2, enumerable: false }
       });
-      var desc = { enumerable: false };
-      var obj = vitals.create(proto, props, desc, 'number', getSetter());
-      assert(getProto(obj) === proto);
-      each(props, function(desc, key) {
-        var val = desc.value;
-        assert(obj[key] === val);
-        assert(key in obj);
-        if (key === 'a') assert( has.enum(obj, key) );
-        if (key === 'b') assert( !has.enum(obj, key) );
-        obj[key] = 1;
-        assert(obj[key] === ++val);
-        assert.throws(function() { obj[key] = 'string'; });
-        assert(obj[key] === val);
-      });
+      var desc = freeze({ enumerable: false });
+      var obj = vitals.create(proto1, props, desc, 'number', setter);
+      var proto2 = getPrototype(obj);
+      assert( proto1 === proto2 );
+      assert( obj.a === 1 );
+      assert( obj.b === 2 );
+      incrementProps(obj, 1);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
+      assert(  hasEnum(obj, 'a') );
+      assert( !hasEnum(obj, 'b') );
+      assert.throws(function() { obj.a = 'string'; }, validSetErr);
+      assert.throws(function() { obj.b = 'string'; }, validSetErr);
+      assert( obj.a === 3 );
+      assert( obj.b === 5 );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.create();
+      }, validTypeErr);
+    });
 
     title = callStr('string');
     it(title, function() {
       assert.throws(function() {
         vitals.create('string');
-      });
+      }, validTypeErr);
     });
 
     title = callStr({}, 5, 5);
     it(title, function() {
       assert.throws(function() {
         vitals.create({}, 5, 5);
-      });
+      }, validTypeErr);
     });
 
     title = callStr({}, 'a,b,c');
     it(title, function() {
       assert.throws(function() {
         vitals.create({}, 'a,b,c');
-      });
+      }, validErr);
     });
 
     title = callStr({}, 'a,b,c', 5, 'string');
     it(title, function() {
       assert.throws(function() {
         vitals.create({}, 'a,b,c', 5, 'string');
-      });
+      }, validErr);
     });
 
     title = callStr({}, 'a,b,c', 5, 'number', {});
     it(title, function() {
       assert.throws(function() {
         vitals.create({}, 'a,b,c', 5, 'number', {});
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -461,12 +473,11 @@ describe('vitals.create (section:strict)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -481,19 +492,23 @@ function callStr() {
 /**
  * @private
  * @param {!Object} obj
- * @return {Object}
+ * @param {number} amount
+ * @return {!Object}
  */
-function getProto(obj) {
-  return Object.getPrototypeOf(obj);
+function incrementProps(obj, amount) {
+  if ('a' in obj) obj.a += amount;
+  if ('b' in obj) obj.b += amount;
+  if ('c' in obj) obj.c += amount;
+  return obj;
 }
 
 /**
  * @private
- * @return {function}
+ * @param {number} newVal
+ * @param {number=} oldVal
+ * @return {number}
  */
-function getSetter() {
-  return function setter(newVal, oldVal) {
-    oldVal = oldVal || 1;
-    return newVal + oldVal;
-  };
+function setter(newVal, oldVal) {
+  oldVal = oldVal || 1;
+  return newVal + oldVal;
 }
