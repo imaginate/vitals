@@ -1,86 +1,89 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - COPY.FUNCTION
+ * VITALS UNIT TESTS: vitals.copy.func
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
  * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
  */
 
-describe('vitals.copy.function (section:base)', function() {
+describe('vitals.copy.func (section:base)', function() {
   var title;
 
-  title = 'should return new function with same body ';
-  title += 'and key => value pairs as input';
-  title = titleStr('basic', title);
+  title = titleStr('should return a clone of the function');
   describe(title, function() {
 
-    title = callStr( newFunc() );
+    title = callStr('<function>');
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.copy.func(func);
-      assert(func !== copy);
-      assert(func.a === copy.a);
-      assert(func.b === copy.b);
-      assert( func() === copy() );
+      var cp = vitals.copy.func(func);
+      assert( func !== cp );
+      assert( func() === cp() );
+      assert( func.a === cp.a );
+      assert( func.b === cp.b );
+      assert( func.b.c === cp.b.c );
     });
 
-    title = callStr(newFunc(), true);
+    title = callStr('<function>', true);
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.copy.func(func, true);
-      assert(func !== copy);
-      assert(func.a === copy.a);
-      assert(func.b !== copy.b);
-      assert( func() === copy() );
+      var cp = vitals.copy.func(func, true);
+      assert( func !== cp );
+      assert( func() === cp() );
+      assert( func.a === cp.a );
+      assert( func.b !== cp.b );
+      assert( func.b.c === cp.b.c );
     });
 
-    title = callStr(newFunc(), false);
+    title = callStr('<function>', false);
     it(title, function() {
       var func = newFunc();
-      var copy = vitals.copy.func(func, false);
-      assert(func !== copy);
-      assert(func.a === copy.a);
-      assert(func.b === copy.b);
-      assert( func() === copy() );
+      var cp = vitals.copy.func(func, false);
+      assert( func !== cp );
+      assert( func() === cp() );
+      assert( func.a === cp.a );
+      assert( func.b === cp.b );
+      assert( func.b.c === cp.b.c );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.copy.func();
+      }, validTypeErr);
+    });
 
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
         vitals.copy.func(null);
-      });
+      }, validTypeErr);
     });
 
     title = callStr({});
     it(title, function() {
       assert.throws(function() {
         vitals.copy.func({});
-      });
+      }, validTypeErr);
     });
 
-    title = callStr(newFunc(true), 'fail');
+    title = callStr('<function>', 'fail');
     it(title, function() {
       assert.throws(function() {
-        vitals.copy.func(newFunc(true), 'fail');
-      });
+        vitals.copy.func(newFunc(), 'fail');
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,12 +92,11 @@ describe('vitals.copy.function (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -108,18 +110,15 @@ function callStr() {
 
 /**
  * @private
- * @param {boolean=} noProps
  * @return {function}
  */
-function newFunc(noProps) {
+function newFunc() {
 
   /** @type {function} */
   var func;
 
   func = function testFunc() { return 5; };
-  if (!noProps) {
-    func.a = 1
-    func.b = { b: 2 };
-  }
+  func.a = 1
+  func.b = { c: 2 };
   return freeze(func, true);
 }
