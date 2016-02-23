@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - COPY.OBJECT
+ * VITALS UNIT TESTS: vitals.copy.object
  * -----------------------------------------------------------------------------
- * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
+ * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3]{@link http://usejsdoc.org/}
@@ -18,61 +16,67 @@
 describe('vitals.copy.object (section:base)', function() {
   var title;
 
-  title = 'should return new object with same key => value pairs as input';
-  title = titleStr('basic', title);
+  title = titleStr('should return a clone of the object');
   describe(title, function() {
 
-    title = callStr( newObj() );
+    title = callStr('<object>');
     it(title, function() {
-      var obj = newObj();
-      var copy = vitals.copy.obj(obj);
-      assert(obj !== copy);
-      each(obj, function(val, key) {
-        assert( obj[key] === copy[key] );
-      });
+      var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
+      var cp = vitals.copy.obj(obj);
+      assert( obj !== cp );
+      assert( obj.a === cp.a );
+      assert( obj.b === cp.b );
+      assert( obj.c === cp.c );
+      assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr(newObj(), true);
+    title = callStr('<object>', true);
     it(title, function() {
-      var obj = newObj();
-      var copy = vitals.copy.obj(obj, true);
-      assert(obj !== copy);
-      assert(obj.a === copy.a);
-      assert(obj.b !== copy.b);
-      assert(obj.c === copy.c);
+      var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
+      var cp = vitals.copy.obj(obj, true);
+      assert( obj !== cp );
+      assert( obj.a === cp.a );
+      assert( obj.b !== cp.b );
+      assert( obj.c === cp.c );
+      assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr(newObj(), false);
+    title = callStr('<object>', false);
     it(title, function() {
-      var obj = newObj();
-      var copy = vitals.copy.obj(obj, false);
-      assert(obj !== copy);
-      each(obj, function(val, key) {
-        assert( obj[key] === copy[key] );
-      });
+      var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
+      var cp = vitals.copy.obj(obj, false);
+      assert( obj !== cp );
+      assert( obj.a === cp.a );
+      assert( obj.b === cp.b );
+      assert( obj.c === cp.c );
+      assert( obj.b.d === cp.b.d );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.copy.obj();
+      }, validTypeErr);
+    });
 
     title = callStr(null);
     it(title, function() {
       assert.throws(function() {
         vitals.copy.obj(null);
-      });
+      }, validTypeErr);
     });
 
     title = callStr({}, 'fail');
     it(title, function() {
       assert.throws(function() {
         vitals.copy.obj({}, 'fail');
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,12 +85,11 @@ describe('vitals.copy.object (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -96,12 +99,4 @@ function titleStr(section, shouldMsg) {
  */
 function callStr() {
   return testCall('copy.obj', arguments, 3);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return freeze({ a: 1, b: { b: 2 }, c: 3 }, true);
 }
