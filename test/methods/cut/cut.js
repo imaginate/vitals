@@ -536,13 +536,13 @@ describe('vitals.cut (section:base)', function() {
 
     title = callStr('ABC.a*b*c.123', '*');
     it(title, function() {
-      var str = vitals.cut.pattern('ABC.a*b*c.123', '*');
+      var str = vitals.cut('ABC.a*b*c.123', '*');
       assert( str === 'ABC.abc.123' );
     });
 
     title = callStr('ABC.a*b*c.123', '.*');
     it(title, function() {
-      var str = vitals.cut.pattern('ABC.a*b*c.123', '.*');
+      var str = vitals.cut('ABC.a*b*c.123', '.*');
       assert( str === 'ABC.a*b*c.123' );
     });
   });
