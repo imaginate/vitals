@@ -334,6 +334,184 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
   });
+
+  title = titleStr('should splice props from array where index === val');
+  describe(title, function() {
+
+    title = callStr('<array>', 1);
+    it(title, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var arr2 = vitals.cut(arr1, 1);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 3 );
+      assert( arr2.length === 2 );
+    });
+
+    // Note that `vitals.cut` decides which method of removing properties from
+    //   an array to use based upon the type of the first or all given values.
+
+    // Below you will see two examples that demonstrate `vitals.cut`
+    //   only removing properties where `value === index`
+    //   because all of the values are a number.
+
+    title = callStr('<array>', 1, 3);
+    it(title, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.cut(arr1, 1, 3);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 3 );
+      assert( arr2[2] === 5 );
+      assert( arr2.length === 3 );
+    });
+
+    title = callStr('<array>', [ 0, 1 ]);
+    it(title, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.cut(arr1, [ 0, 1 ]);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 3 );
+      assert( arr2[1] === 4 );
+      assert( arr2[2] === 5 );
+      assert( arr2.length === 3 );
+    });
+  });
+
+  title = titleStr('should splice props from array where value === val');
+  describe(title, function() {
+
+    title = callStr('<array>', 'a');
+    it(title, function() {
+      var arr1 = [ 'a', 'b', 'c' ];
+      var arr2 = vitals.cut(arr1, 'a');
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 'b' );
+      assert( arr2[1] === 'c' );
+      assert( arr2.length === 2 );
+    });
+
+    // Note that `vitals.cut` decides which method of removing properties from
+    //   an array to use based upon the type of the first or all given values.
+
+    // Below you will see two examples that demonstrate `vitals.cut` only
+    //   removing properties where `value === indexedValue` because all
+    //   values are not a number and the first value is not a function.
+
+    title = callStr('<array>', 1, 'a');
+    it(title, function() {
+      var arr1 = [ 1, 2, 'a', 'b' ];
+      var arr2 = vitals.cut(arr1, 1, 'a');
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 2 );
+      assert( arr2[1] === 'b' );
+      assert( arr2.length === 2 );
+    });
+
+    title = callStr('<array>', [ 2, /b/ ]);
+    it(title, function() {
+      var arr1 = [ 1, 2, 'a', 'b' ];
+      var arr2 = vitals.cut(arr1, [ 2, /b/ ]);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 'a' );
+      assert( arr2[2] === 'b' );
+      assert( arr2.length === 3 );
+    });
+  });
+
+  title = titleStr('should splice props from array where filter returns false');
+  describe(title, function() {
+
+    title = callStr('<array>', '<filter>');
+    it(title, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var fltr = function filter() {
+        return true;
+      };
+      var arr2 = vitals.cut(arr1, fltr);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 2 );
+      assert( arr2[2] === 3 );
+      assert( arr2.length === 3 );
+    });
+
+    title = callStr('<array>', '<filter>');
+    it(title, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var fltr = function filter() {
+        return null;
+      };
+      var arr2 = vitals.cut(arr1, fltr);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 0 );
+    });
+
+    title = callStr('<array>', '<filter>');
+    it(title, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var fltr = function filter(val, i) {
+        return val > 1 && i < 2;
+      };
+      var arr2 = vitals.cut(arr1, fltr);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 2 );
+      assert( arr2.length === 1 );
+    });
+
+    // Note that filter iterates in reverse order (i.e. last index to zero)
+    //   to accurately splice `false` results.
+
+    title = callStr('<array>', '<filter>');
+    it(title, function() {
+
+      // unstable example not using the source param
+      var arr1 = [ 1, 2, 3 ];
+      var fltr = function filter(val, i) {
+        return i < 2 && arr1.length > 2;
+      };
+      var arr2 = vitals.cut(arr1, fltr);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 0 );
+
+      // stable example using the source param
+      arr1 = [ 1, 2, 3 ];
+      fltr = function filter(val, i, src) {
+        return i > 0 && src.length > 2;
+      };
+      arr2 = vitals.cut(arr1, fltr);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 2 );
+      assert( arr2[1] === 3 );
+      assert( arr2.length === 2 );
+    });
+
+    title = callStr('<array>', '<filter>', '<this>');
+    it(title, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var fltr = function filter(val) {
+        return hasVal(this, val);
+      };
+      var thisArg = [ 1 ];
+      var arr2 = vitals.cut(arr1, fltr, thisArg);
+      assert( is.arr(arr2) );
+      assert( arr2 === arr1 );
+      assert( arr2[0] === 1 );
+      assert( arr2.length === 1 );
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
