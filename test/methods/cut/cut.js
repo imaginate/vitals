@@ -1,14 +1,12 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CUT
+ * VITALS UNIT TESTS: vitals.cut
  * -----------------------------------------------------------------------------
- * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/vitals.cut}
+ * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
+ * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
@@ -18,513 +16,324 @@
 describe('vitals.cut (section:base)', function() {
   var title;
 
-  describe('object tests', function() {
+  title = titleStr('should delete props from obj where obj owns key');
+  describe(title, function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should delete props from obj where key === val');
-    describe(title, function() {
-
-      title = callStr('<object>', 'a');
-      it(title, function() {
-        var obj = vitals.cut(newObj(), 'a');
-        assert( !has(obj, 'a')  );
-        assert(  has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert(  has(obj, '2')  );
-        assert(  has(obj, '3')  );
-        assert(  has(obj, 'a1') );
-        assert(  has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
-      title = callStr('<object>', 'a', 'b');
-      it(title, function() {
-        var obj = vitals.cut(newObj(), 'a', 'b');
-        assert( !has(obj, 'a')  );
-        assert( !has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert(  has(obj, '2')  );
-        assert(  has(obj, '3')  );
-        assert(  has(obj, 'a1') );
-        assert(  has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
-      title = callStr('<object>', [ 'a', 'b', 2, /^[0-9]$/ ]);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), [ 'a', 'b', 2, /^[0-9]$/ ]);
-        assert( !has(obj, 'a')  );
-        assert( !has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert( !has(obj, '2')  );
-        assert(  has(obj, '3')  );
-        assert(  has(obj, 'a1') );
-        assert(  has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
+    title = callStr('<object>', 'a');
+    it(title, function() {
+      var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
+      var obj2 = vitals.cut(obj1, 'a');
+      assert( !hasOwn(obj2, 'a') );
+      assert(  hasOwn(obj2, 'b') );
+      assert(  hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
     });
 
-    title = 'should delete props from obj where key matches pattern';
-    title = titleStr(title);
-    describe(title, function() {
-
-      title = callStr('<object>', /a/);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), /a/);
-        assert( !has(obj, 'a')  );
-        assert(  has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert(  has(obj, '2')  );
-        assert(  has(obj, '3')  );
-        assert( !has(obj, 'a1') );
-        assert(  has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
-      title = callStr('<object>', /^[0-9]$/);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), /^[0-9]$/);
-        assert(  has(obj, 'a')  );
-        assert(  has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert( !has(obj, '1')  );
-        assert( !has(obj, '2')  );
-        assert( !has(obj, '3')  );
-        assert(  has(obj, 'a1') );
-        assert(  has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
-      title = callStr('<object>', /a/, 'b');
-      it(title, function() {
-        var obj = vitals.cut(newObj(), /a/, 'b');
-        assert( !has(obj, 'a')  );
-        assert( !has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert(  has(obj, '2')  );
-        assert(  has(obj, '3')  );
-        assert( !has(obj, 'a1') );
-        assert( !has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
-      title = callStr('<object>', [ /a/, 2, /^3/ ]);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), [ /a/, 2, /^3/ ]);
-        assert( !has(obj, 'a')  );
-        assert(  has(obj, 'b')  );
-        assert(  has(obj, 'c')  );
-        assert(  has(obj, '1')  );
-        assert( !has(obj, '2')  );
-        assert( !has(obj, '3')  );
-        assert( !has(obj, 'a1') );
-        assert( !has(obj, 'b2') );
-        assert(  has(obj, 'c3') );
-      });
-
+    title = callStr('<object>', 'a', 'b');
+    it(title, function() {
+      var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
+      var obj2 = vitals.cut(obj1, 'a', 'b');
+      assert( !hasOwn(obj2, 'a') );
+      assert( !hasOwn(obj2, 'b') );
+      assert(  hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
     });
 
-    title = titleStr('should delete props from obj where value === val');
-    describe(title, function() {
+    // Note that `vitals.cut` decides which method of removing properties from a
+    //   non-array object to use based upon the type of the first given value.
 
-      title = callStr('<object>', 4);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), 4);
-        assert(  has(obj, 'a')  ); // = "d"
-        assert(  has(obj, 'b')  ); // = "e"
-        assert(  has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert(  has(obj, '2')  ); // =  5
-        assert(  has(obj, '3')  ); // =  6
-        assert(  has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
+    // Below you will see two examples that demonstrate `vitals.cut` only
+    //   removing properties where the object [owns](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+    //   the key of the string conversion of one of the values
+    //   because the first value is a string.
 
-      title = callStr('<object>', 4, 'd');
-      it(title, function() {
-        var obj = vitals.cut(newObj(), 4, 'd');
-        assert( !has(obj, 'a')  ); // = "d"
-        assert(  has(obj, 'b')  ); // = "e"
-        assert(  has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert(  has(obj, '2')  ); // =  5
-        assert(  has(obj, '3')  ); // =  6
-        assert(  has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
-
-      title = callStr('<object>', [ 6, '1', 8 ]);
-      it(title, function() {
-        var obj = vitals.cut(newObj(), [ 6, '1', 8 ]);
-        assert(  has(obj, 'a')  ); // = "d"
-        assert(  has(obj, 'b')  ); // = "e"
-        assert(  has(obj, 'c')  ); // = "f"
-        assert(  has(obj, '1')  ); // =  4
-        assert(  has(obj, '2')  ); // =  5
-        assert( !has(obj, '3')  ); // =  6
-        assert( !has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
-
+    title = callStr('<object>', 'a', 2);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var obj2 = vitals.cut(obj1, 'a', 2);
+      assert( !hasOwn(obj2, 'a')  );
+      assert(  hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert(  hasOwn(obj2, '1')  );
+      assert( !hasOwn(obj2, '2')  );
+      assert(  hasOwn(obj2, '3')  );
+      assert(  hasOwn(obj2, 'a1') );
+      assert(  hasOwn(obj2, 'b2') );
+      assert(  hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
     });
 
-    title = 'should delete props from obj where filter function returns false';
-    title = titleStr(title);
-    describe(title, function() {
+    title = callStr('<object>', [ 'a', 'b', 2, /^[0-9]$/ ]);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var keys = [ 'a', 'b', 2, /^[0-9]$/ ];
+      var obj2 = vitals.cut(obj1, keys);
+      assert( !hasOwn(obj2, 'a')  );
+      assert( !hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert(  hasOwn(obj2, '1')  );
+      assert( !hasOwn(obj2, '2')  );
+      assert(  hasOwn(obj2, '3')  );
+      assert(  hasOwn(obj2, 'a1') );
+      assert(  hasOwn(obj2, 'b2') );
+      assert(  hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
+    });
+  });
 
-      title = callStr('<object>', '<filterFunc>');
-      it(title, function() {
-        var filter = function() { return true; };
-        var obj = vitals.cut(newObj(), filter);
-        assert(  has(obj, 'a')  ); // = "d"
-        assert(  has(obj, 'b')  ); // = "e"
-        assert(  has(obj, 'c')  ); // = "f"
-        assert(  has(obj, '1')  ); // =  4
-        assert(  has(obj, '2')  ); // =  5
-        assert(  has(obj, '3')  ); // =  6
-        assert(  has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
+  title = titleStr('should delete props from obj where obj owns matching key');
+  describe(title, function() {
 
-      title = callStr('<object>', '<filterFunc>');
-      it(title, function() {
-        var filter = function() { return false; };
-        var obj = vitals.cut(newObj(), filter);
-        assert( !has(obj, 'a')  ); // = "d"
-        assert( !has(obj, 'b')  ); // = "e"
-        assert( !has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert( !has(obj, '2')  ); // =  5
-        assert( !has(obj, '3')  ); // =  6
-        assert( !has(obj, 'a1') ); // = "1"
-        assert( !has(obj, 'b2') ); // = "2"
-        assert( !has(obj, 'c3') ); // = "3"
-      });
+    title = callStr('<object>', /a/);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var obj2 = vitals.cut(obj1, /a/);
+      assert( !hasOwn(obj2, 'a')  );
+      assert(  hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert(  hasOwn(obj2, '1')  );
+      assert(  hasOwn(obj2, '2')  );
+      assert(  hasOwn(obj2, '3')  );
+      assert( !hasOwn(obj2, 'a1') );
+      assert(  hasOwn(obj2, 'b2') );
+      assert(  hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
+    });
 
-      title = callStr('<object>', '<filterFunc>');
-      it(title, function() {
-        var filter = function(val, key) {
-          var combined = val + key;
-          return combined.length > 2;
-        };
-        var obj = vitals.cut(newObj(), filter);
-        assert( !has(obj, 'a')  ); // = "d"
-        assert( !has(obj, 'b')  ); // = "e"
-        assert( !has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert( !has(obj, '2')  ); // =  5
-        assert( !has(obj, '3')  ); // =  6
-        assert(  has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
+    title = callStr('<object>', /^[0-9]$/);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var obj2 = vitals.cut(obj1, /^[0-9]$/);
+      assert(  hasOwn(obj2, 'a')  );
+      assert(  hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert( !hasOwn(obj2, '1')  );
+      assert( !hasOwn(obj2, '2')  );
+      assert( !hasOwn(obj2, '3')  );
+      assert(  hasOwn(obj2, 'a1') );
+      assert(  hasOwn(obj2, 'b2') );
+      assert(  hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
+    });
 
-      title = callStr('<object>', '<filterFunc>');
-      it(title, function() {
-        var filter = function(val, key, obj) {
-          return has(obj, val);
-        };
-        var obj = vitals.cut(newObj(), filter);
-        assert( !has(obj, 'a')  ); // = "d"
-        assert( !has(obj, 'b')  ); // = "e"
-        assert( !has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert( !has(obj, '2')  ); // =  5
-        assert( !has(obj, '3')  ); // =  6
-        assert(  has(obj, 'a1') ); // = "1"
-        assert(  has(obj, 'b2') ); // = "2"
-        assert(  has(obj, 'c3') ); // = "3"
-      });
+    // Note that `vitals.cut` decides which method of removing properties from a
+    //   non-array object to use based upon the type of the first given value.
 
-      title = callStr('<object>', '<filterFunc>', '<thisArg>');
-      it(title, function() {
-        var filter = function(val, key) {
-          return has(this, key);
-        };
-        var thisArg = { a: 1, b: 1, c: 1 };
-        var obj = vitals.cut(newObj(), filter, thisArg);
-        assert(  has(obj, 'a')  ); // = "d"
-        assert(  has(obj, 'b')  ); // = "e"
-        assert(  has(obj, 'c')  ); // = "f"
-        assert( !has(obj, '1')  ); // =  4
-        assert( !has(obj, '2')  ); // =  5
-        assert( !has(obj, '3')  ); // =  6
-        assert( !has(obj, 'a1') ); // = "1"
-        assert( !has(obj, 'b2') ); // = "2"
-        assert( !has(obj, 'c3') ); // = "3"
-      });
+    // Below you will see two examples that demonstrate `vitals.cut` only
+    //   removing properties where the object [owns](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+    //   a key that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
+    //   one of the values because the first value is a regex.
 
+    title = callStr('<object>', /a/, 2);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var obj2 = vitals.cut(obj1, /a/, 2);
+      assert( !hasOwn(obj2, 'a')  );
+      assert(  hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert(  hasOwn(obj2, '1')  );
+      assert( !hasOwn(obj2, '2')  );
+      assert(  hasOwn(obj2, '3')  );
+      assert( !hasOwn(obj2, 'a1') );
+      assert( !hasOwn(obj2, 'b2') );
+      assert(  hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
+    });
+
+    title = callStr('<object>', [ /a$/, 'b', 3 ]);
+    it(title, function() {
+      var obj1 = {
+         'a': 1,  'b': 2,  'c': 3,
+         '1': 4,  '2': 5,  '3': 6,
+        'a1': 7, 'b2': 8, 'c3': 9
+      };
+      var obj2 = vitals.cut(obj1, [ /a$/, 'b', 3 ]);
+      assert( !hasOwn(obj2, 'a')  );
+      assert( !hasOwn(obj2, 'b')  );
+      assert(  hasOwn(obj2, 'c')  );
+      assert(  hasOwn(obj2, '1')  );
+      assert(  hasOwn(obj2, '2')  );
+      assert( !hasOwn(obj2, '3')  );
+      assert(  hasOwn(obj2, 'a1') );
+      assert( !hasOwn(obj2, 'b2') );
+      assert( !hasOwn(obj2, 'c3') );
+      assert( obj1 === obj2 );
     });
 
   });
 
-  describe('array tests', function() {
+  title = titleStr('should delete props from obj where value === val');
+  describe(title, function() {
 
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should splice props from array where index === val');
-    describe(title, function() {
-
-      title = callStr('<array>', 1);
-      it(title, function() {
-        var arr = vitals.cut(newArr(), 1);
-        var be = [ 'a', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', 1, 3, 6, 9);
-      it(title, function() {
-        var arr = vitals.cut(newArr(), 1, 3, 6, 9);
-        var be = [ 'a', 'c', 2, 3, 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', [ 0, 1 ]);
-      it(title, function() {
-        var arr = vitals.cut(newArr(), [ 0, 1 ]);
-        var be = [ 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
+    title = callStr('<object>', 3);
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var obj2 = vitals.cut(obj1, 3);
+      assert(  hasOwn(obj2, 'a') );
+      assert(  hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
     });
 
-    title = titleStr('should splice props from array where value === val');
-    describe(title, function() {
-
-      title = callStr('<array>', 'a');
-      it(title, function() {
-        var arr = vitals.cut(newArr(), 'a');
-        var be = [ 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', 1, 2, 'a');
-      it(title, function() {
-        var arr = vitals.cut(newArr(), 1, 2, 'a');
-        var be = [ 'b', 'c', 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', [ 1, 2, 'a', /b/ ]);
-      it(title, function() {
-        var arr = vitals.cut(newArr(), 1, 2, 'a');
-        var be = [ 'b', 'c', 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
+    title = callStr('<object>', 1, 3);
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var obj2 = vitals.cut(obj1, 1, 3);
+      assert( !hasOwn(obj2, 'a') );
+      assert(  hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
     });
 
-    title = 'should splice props from array where filter function returns false';
-    title = titleStr(title);
-    describe(title, function() {
+    // Note that `vitals.cut` decides which method of removing properties from a
+    //   non-array object to use based upon the type of the first given value.
 
-      title = callStr('<array>', '<filterFunc>');
-      it(title, function() {
-        var filter = function() { return true; };
-        var arr = vitals.cut(newArr(), filter);
-        var be = [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
+    // Below you will see two examples that demonstrate `vitals.cut` only
+    //   removing properties where `value === propValue` because the
+    //   first value is not a string, regex, or function.
 
-      title = callStr('<array>', '<filterFunc>');
-      it(title, function() {
-        var filter = function() { return false; };
-        var arr = vitals.cut(newArr(), filter);
-        assert( !arr.length );
-      });
-
-      title = callStr('<array>', '<filterFunc>');
-      it(title, function() {
-        var filter = function(val, i) {
-          var combined = String(val + i);
-          return combined.length > 2;
-        };
-        var arr = vitals.cut(newArr(), filter);
-        var be = [ 'a1', 'b2', 'c3' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', '<filterFunc>');
-      it(title, function() {
-        var filter = function(val, i, arr) {
-          return arr.some(function(subval) {
-            return arr.indexOf(val + subval) !== -1;
-          });
-        };
-        var arr = vitals.cut(newArr(), filter);
-        var be = [ 'a', 'b', 'c' ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
-      title = callStr('<array>', '<filterFunc>', '<thisArg>');
-      it(title, function() {
-        var filter = function(val, i, arr) {
-          var that = this;
-          return arr.some(function(subval) {
-            return that.indexOf(val + subval) !== -1;
-          });
-        };
-        var thisArg = [ 4, 6, 8 ];
-        var arr = vitals.cut(newArr(), filter, thisArg);
-        var be = [ 1, 2, 3 ];
-        each(be, function(val, i) {
-          assert(arr[i] === val);
-        });
-      });
-
+    title = callStr('<object>', 1, 'd');
+    it(title, function() {
+      var obj1 = {
+        a:  1,   b:  2,
+        c: 'd',  e: 'f',
+        g: null, h: null
+      };
+      var obj2 = vitals.cut(obj1, 1, 'd');
+      assert( !hasOwn(obj2, 'a') );
+      assert(  hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert(  hasOwn(obj2, 'e') );
+      assert(  hasOwn(obj2, 'g') );
+      assert(  hasOwn(obj2, 'h') );
+      assert( obj1 === obj2 );
     });
 
-  });
-
-  describe('string tests', function() {
-
-    // newStr()= "abc123a1b2c3"
-
-    title = titleStr('should remove all substring occurrences from string');
-    describe(title, function() {
-
-      title = callStr(newStr(), 'a');
-      it(title, function() {
-        var str = vitals.cut(newStr(), 'a');
-        var be = 'bc1231b2c3';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), 1, 'a');
-      it(title, function() {
-        var str = vitals.cut(newStr(), 1, 'a');
-        var be = 'bc23b2c3';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), [ { 'a': 2 }, 1, 'c' ]);
-      it(title, function() {
-        var str = vitals.cut(newStr(), [ { 'a': 2 }, 1, 'c' ]);
-        var be = 'ab23ab23';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), '*');
-      it(title, function() {
-        var str = vitals.cut.pattern(newStr(), '*');
-        var be = 'abc123a1b2c3';
-        assert(str === be);
-      });
-
-    });
-
-    title = titleStr('should remove all substring patterns from string');
-    describe(title, function() {
-
-      title = callStr(newStr(), /[a-z]/);
-      it(title, function() {
-        var str = vitals.cut(newStr(), /[a-z]/);
-        var be = 'bc123a1b2c3';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), /[a-z]/g);
-      it(title, function() {
-        var str = vitals.cut(newStr(), /[a-z]/g);
-        var be = '123123';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), /[a-z]/, 1, 'c');
-      it(title, function() {
-        var str = vitals.cut(newStr(), /[a-z]/, 1, 'c');
-        var be = 'b23ab23';
-        assert(str === be);
-      });
-
-      title = callStr(newStr(), [ 1, 'a', /[a-z][0-9]/ ]);
-      it(title, function() {
-        var str = vitals.cut(newStr(), [ 1, 'a', /[a-z][0-9]/ ]);
-        var be = 'b3b2c3';
-        assert(str === be);
-        // Test Result Explained              (str= "abc123a1b2c3")
-        // Step 1) cuts "1" from str          (str= "abc23ab2c3")
-        // Step 2) cuts "a" from str          (str= "bc23b2c3")
-        // Step 3) cuts /[a-z][0-9]/ from str (str= "b3b2c3")
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.cut();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.cut({});
-        });
-      });
-
-      title = callStr(1, 1);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.cut(1, 1);
-        });
-      });
-
-      title = callStr({}, function(){}, false);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.cut({}, function(){}, false);
-        });
-      });
-
+    title = callStr('<object>', [ 2, '1', null, 'a' ]);
+    it(title, function() {
+      var obj1 = {
+        a:  1,   b:  2,
+        c: 'd',  e: 'f',
+        g: null, h: null
+      };
+      var obj2 = vitals.cut(obj1, [ 2, '1', null, 'a' ]);
+      assert(  hasOwn(obj2, 'a') );
+      assert( !hasOwn(obj2, 'b') );
+      assert(  hasOwn(obj2, 'c') );
+      assert(  hasOwn(obj2, 'e') );
+      assert( !hasOwn(obj2, 'g') );
+      assert( !hasOwn(obj2, 'h') );
+      assert( obj1 === obj2 );
     });
   });
 
+  title = titleStr('should delete props from obj where filter returns false');
+  describe(title, function() {
+
+    title = callStr('<object>', '<filter>');
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var fltr = function filter() {
+        return true;
+      };
+      var obj2 = vitals.cut(obj1, fltr);
+      assert( hasOwn(obj2, 'a') );
+      assert( hasOwn(obj2, 'b') );
+      assert( hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
+    });
+
+    title = callStr('<object>', '<filter>');
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var fltr = function filter() {
+        return null;
+      };
+      var obj2 = vitals.cut(obj1, fltr);
+      assert( !hasOwn(obj2, 'a') );
+      assert( !hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
+    });
+
+    title = callStr('<object>', '<filter>');
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3, d: 4, e: 5 };
+      var fltr = function filter(val, key) {
+        return val > 2 && key !== 'c';
+      };
+      var obj2 = vitals.cut(obj1, fltr);
+      assert( !hasOwn(obj2, 'a') );
+      assert( !hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert(  hasOwn(obj2, 'd') );
+      assert(  hasOwn(obj2, 'e') );
+      assert( obj1 === obj2 );
+    });
+
+    title = callStr('<object>', '<filter>');
+    it(title, function() {
+
+      // unstable example not using the source param
+      var obj1 = { a: 'b', b: 'z', c: 'b' };
+      var fltr = function filter(val) {
+        return hasOwn(obj1, val);
+      };
+      var obj2 = vitals.cut(obj1, fltr);
+      try {
+        assert(  hasOwn(obj2, 'a') ); // since iteration order is not guaranteed
+        assert( !hasOwn(obj2, 'c') ); // both of these asserts can fail or pass
+      }
+      catch (err) {}
+      assert( !hasOwn(obj2, 'b') );
+      assert( obj1 === obj2 );
+
+      // stable example using the source param
+      obj1 = { a: 'c', b: 'b', c: 'a' };
+      fltr = function filter(val, key, src) {
+        return val in src;
+      };
+      obj2 = vitals.cut(obj1, fltr);
+      assert( hasOwn(obj2, 'a') );
+      assert( hasOwn(obj2, 'b') );
+      assert( hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
+    });
+
+    title = callStr('<object>', '<filter>', '<this>');
+    it(title, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var fltr = function filter(val, key) {
+        return hasOwn(this, key);
+      };
+      var thisArg = { a: 1 };
+      var obj2 = vitals.cut(obj1, fltr, thisArg);
+      assert(  hasOwn(obj2, 'a') );
+      assert( !hasOwn(obj2, 'b') );
+      assert( !hasOwn(obj2, 'c') );
+      assert( obj1 === obj2 );
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -537,7 +346,7 @@ describe('vitals.cut (section:base)', function() {
  * @return {string}
  */
 function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -546,39 +355,5 @@ function titleStr(shouldMsg) {
  * @return {string}
  */
 function callStr() {
-  return testCall('cut', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return {
-    'a':  'd',
-    'b':  'e',
-    'c':  'f',
-    '1':   4,
-    '2':   5,
-    '3':   6,
-    'a1': '1',
-    'b2': '2',
-    'c3': '3'
-  };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
-
-/**
- * @private
- * @return {string}
- */
-function newStr() {
-  return 'abc123a1b2c3';
+  return testCall('cut', arguments, 3);
 }
