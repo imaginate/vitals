@@ -512,6 +512,72 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 1 );
     });
   });
+
+  title = titleStr('should remove all substrings from string');
+  describe(title, function() {
+
+    title = callStr('abcABCabc', 'a');
+    it(title, function() {
+      var str = vitals.cut('abcABCabc', 'a');
+      assert( str === 'bcABCbc' );
+    });
+
+    title = callStr('abc123a1b2c3', 1, 'a');
+    it(title, function() {
+      var str = vitals.cut('abc123a1b2c3', 1, 'a');
+      assert( str === 'bc23b2c3' );
+    });
+
+    title = callStr('abc123a1b2c3', [ { 'a': 2 }, 'c' ]);
+    it(title, function() {
+      var str = vitals.cut('abc123a1b2c3', [ { 'a': 2 }, 'c' ]);
+      assert( str === 'ab123a1b23' );
+    });
+
+    title = callStr('ABC.a*b*c.123', '*');
+    it(title, function() {
+      var str = vitals.cut.pattern('ABC.a*b*c.123', '*');
+      assert( str === 'ABC.abc.123' );
+    });
+
+    title = callStr('ABC.a*b*c.123', '.*');
+    it(title, function() {
+      var str = vitals.cut.pattern('ABC.a*b*c.123', '.*');
+      assert( str === 'ABC.a*b*c.123' );
+    });
+  });
+
+  title = titleStr('should remove all patterns from string');
+  describe(title, function() {
+
+    title = callStr('abc123', /[a-z]/);
+    it(title, function() {
+      var str = vitals.cut('abc123', /[a-z]/);
+      assert( str === 'bc123' );
+    });
+
+    title = callStr('abc123', /[a-z]/g);
+    it(title, function() {
+      var str = vitals.cut('abc123', /[a-z]/g);
+      assert( str === '123' );
+    });
+
+    // Note that for string sources `vitals.cut` removes patterns in the defined
+    //   order. Below you will see two examples that remove the same patterns
+    //   from the same string and return different results.
+
+    title = callStr('abc.123.abc1', 1, 'c', /[a-z]$/);
+    it(title, function() {
+      var str = vitals.cut('abc.123.abc1', 1, 'c', /[a-z]$/);
+      assert( str === 'ab.23.a' );
+    });
+
+    title = callStr('abc.123.abc1', [ /[a-z]$/, 1, 'c' ]);
+    it(title, function() {
+      var str = vitals.cut('abc.123.abc1', [ /[a-z]$/, 1, 'c' ]);
+      assert( str === 'ab.23.ab' );
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
