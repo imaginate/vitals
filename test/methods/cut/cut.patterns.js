@@ -18,82 +18,84 @@
 describe('vitals.cut.patterns (section:base)', function() {
   var title;
 
-  title = 'should remove all substring patterns from string';
-  title = titleStr('basic', title);
+  title = titleStr('should remove all patterns from string');
   describe(title, function() {
 
     // newStr()= "abc123a1b2c3"
 
-    title = callStr(newStr(), 'a');
+    title = callStr('abcABCabc', 'a');
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), 'a');
-      var be = 'bc1231b2c3';
-      assert(str === be);
+      var str = vitals.cut.patterns('abcABCabc', 'a');
+      assert( str === 'bcABCbc' );
     });
 
-    title = callStr(newStr(), 1);
+    title = callStr('abc123abc123', 1);
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), 1);
-      var be = 'abc23ab2c3';
-      assert(str === be);
+      var str = vitals.cut.patterns('abc123abc123', 1);
+      assert( str === 'abc23abc23' );
     });
 
-    title = callStr(newStr(), /[a-z]/);
+    title = callStr('abc123', /[a-z]/);
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), /[a-z]/);
-      var be = 'bc123a1b2c3';
-      assert(str === be);
+      var str = vitals.cut.patterns('abc123', /[a-z]/);
+      assert( str === 'bc123' );
     });
 
-    title = callStr(newStr(), /[a-z]/g);
+    title = callStr('abc123', /[a-z]/g);
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), /[a-z]/g);
-      var be = '123123';
-      assert(str === be);
+      var str = vitals.cut.patterns('abc123', /[a-z]/g);
+      assert( str === '123' );
     });
 
-    title = callStr(newStr(), 1, /[a-z]/);
+    title = callStr('ABC.a*b*c.123', '*');
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), 1, /[a-z]/);
-      var be = 'bc23ab2c3';
-      assert(str === be);
+      var str = vitals.cut.patterns('ABC.a*b*c.123', '*');
+      assert( str === 'ABC.abc.123' );
     });
 
-    title = callStr(newStr(), [ 1, /[a-z]/ ]);
+    title = callStr('ABC.a*b*c.123', '.*');
     it(title, function() {
-      var str = vitals.cut.patterns(newStr(), [ 1, /[a-z]/ ]);
-      var be = 'bc23ab2c3';
-      assert(str === be);
+      var str = vitals.cut.patterns('ABC.a*b*c.123', '.*');
+      assert( str === 'ABC.a*b*c.123' );
     });
 
+    title = callStr('abc123abc123', 1, /[a-z]/);
+    it(title, function() {
+      var str = vitals.cut.patterns('abc123abc123', 1, /[a-z]/);
+      assert( str === 'bc23abc23' );
+    });
+
+    title = callStr('abc123abc123', [ 1, /[a-z]/g ]);
+    it(title, function() {
+      var str = vitals.cut.patterns('abc123abc123', [ 1, /[a-z]/g ]);
+      assert( str === '2323' );
+    });
   });
 
-  title = titleStr('error', 'should throw an error');
+  title = titleStr('should throw an error');
   describe(title, function() {
 
     title = callStr();
     it(title, function() {
       assert.throws(function() {
         vitals.cut.patterns();
-      });
+      }, validTypeErr);
     });
 
     title = callStr('str');
     it(title, function() {
       assert.throws(function() {
         vitals.cut.patterns('str');
-      });
+      }, validErr);
     });
 
     title = callStr(1, 1);
     it(title, function() {
       assert.throws(function() {
         vitals.cut.patterns(1, 1);
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -102,12 +104,11 @@ describe('vitals.cut.patterns (section:base)', function() {
 
 /**
  * @private
- * @param {string} section
  * @param {string} shouldMsg
  * @return {string}
  */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
+function titleStr(shouldMsg) {
+  return breakStr(shouldMsg, 2);
 }
 
 /**
@@ -117,12 +118,4 @@ function titleStr(section, shouldMsg) {
  */
 function callStr() {
   return testCall('cut.patterns', arguments, 3);
-}
-
-/**
- * @private
- * @return {string}
- */
-function newStr() {
-  return 'abc123a1b2c3';
 }
