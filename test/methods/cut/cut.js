@@ -578,6 +578,38 @@ describe('vitals.cut (section:base)', function() {
       assert( str === 'ab.23.ab' );
     });
   });
+
+  describe('should throw an error', function() {
+
+    title = callStr();
+    it(title, function() {
+      assert.throws(function() {
+        vitals.cut();
+      }, validErr);
+    });
+
+    title = callStr({});
+    it(title, function() {
+      assert.throws(function() {
+        vitals.cut({});
+      }, validErr);
+    });
+
+    title = callStr(1, 1);
+    it(title, function() {
+      assert.throws(function() {
+        vitals.cut(1, 1);
+      }, validTypeErr);
+    });
+
+    title = callStr({}, '<filter>', false);
+    it(title, function() {
+      assert.throws(function() {
+        var fltr = function filter(){};
+        vitals.cut({}, fltr, false);
+      }, validTypeErr);
+    });
+  });
 });
 
 ////////////////////////////////////////////////////////////////////////////////
