@@ -12,8 +12,8 @@
  * @see [Closure Compiler]{@link https://github.com/google/closure-compiler}
  *
  * Annotations:
- * @see [JSDoc3]{@link http://usejsdoc.org/}
- * @see [Closure Compiler specific JSDoc]{@link https://developers.google.com/closure/compiler/docs/js-for-compiler}
+ * @see [JSDoc3](http://usejsdoc.org)
+ * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  *
  * Requires:
  * @see [Java Runtime Environment 7+]{@link https://java.com/en/download/}
