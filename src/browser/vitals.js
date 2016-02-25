@@ -2598,17 +2598,13 @@ var cut = (function cutPrivateScope() {
     if ( !_is._obj(source) ) throw _error.type('source', 'type');
     if ( !_is.str(type)    ) throw _error.type('type',   'type');
 
-    try {
-      is(type, '_');
-    }
-    catch (err) {
-      throw new RangeError(
-        'Invalid type value for vitals.cut.type call. ' +
-        'See error from are: ' + err.toString()
-      );
+    source = _is.args(source) ? sliceArr(source) : source;
+
+    if ( _is.empty(source) ) {
+      is(type, ''); // run once to catch invalid types
+      return source;
     }
 
-    source = _is.args(source) ? sliceArr(source) : source;
     return _cutType(source, type);
   };
 
@@ -3036,9 +3032,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {string} type
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _deleteValByType(source, type) {
 
@@ -3046,9 +3042,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) && is(type, source[key]) ) {
-        delete source[key];
-      }
+      if ( own(source, key) && is(type, source[key]) ) delete source[key];
     }
     return source;
   }
