@@ -179,7 +179,6 @@ describe('vitals.cut (section:base)', function() {
       assert( !hasOwn(obj2, 'c3') );
       assert( obj1 === obj2 );
     });
-
   });
 
   title = titleStr('should delete props from obj where value === val');
