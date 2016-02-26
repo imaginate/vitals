@@ -3,7 +3,8 @@
  * VITALS UNIT TESTS: vitals.each
  * -----------------------------------------------------------------------------
  * @see [vitals.each docs](https://github.com/imaginate/vitals/wiki/vitals.each)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +14,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.each (section:base)', function() {
-  var title;
+method('each', function() {
 
-  title = titleStr('should iterate over all key => value pairs in object');
-  describe(title, function() {
+  should('iterate over all key => value pairs in object', function() {
 
-    title = callStr('<object>', '<iteratee>');
-    it(title, function() {
+    test('<object>', '<iteratee>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var vals = [];
       var keys = [];
@@ -39,14 +37,12 @@ describe('vitals.each (section:base)', function() {
     });
   });
 
-  title = titleStr('should iterate in order over all index => value pairs in array');
-  describe(title, function() {
+  should('iterate over all index => value pairs in array', function() {
 
-    title = callStr('<array>', '<iteratee>');
-    it(title, function() {
+    test('<array>', '<iteratee>', function() {
       var arr = [ 1, 2, 3 ];
       var vals = [];
-      var keys = [];
+      var keys = []; // ensures that indexes are visited in order
       vitals.each(arr, function(val, i) {
         vals.push(val);
         keys.push(i);
@@ -62,11 +58,9 @@ describe('vitals.each (section:base)', function() {
     });
   });
 
-  title = titleStr('should iterate for x number of cycles');
-  describe(title, function() {
+  should('iterate for x number of cycles', function() {
 
-    title = callStr(3, '<iteratee>');
-    it(title, function() {
+    test(3, '<iteratee>', function() {
       var cycles = [];
       var cycle = 0;
       vitals.each(3, function(i) {
@@ -79,11 +73,9 @@ describe('vitals.each (section:base)', function() {
     });
   });
 
-  title = titleStr('should convert string to array & correctly iterate');
-  describe(title, function() {
+  should('convert string to array & correctly iterate', function() {
 
-    title = callStr('1, 2, 3', '<iteratee>');
-    it(title, function() {
+    test('1, 2, 3', '<iteratee>', function() {
       var vals = [];
       var keys = [];
       vitals.each('1, 2, 3', function(val, i) {
@@ -100,8 +92,7 @@ describe('vitals.each (section:base)', function() {
       assert( keys.length === 3 );
     });
 
-    title = callStr('1,2,3', '<iteratee>');
-    it(title, function() {
+    test('1,2,3', '<iteratee>', function() {
       var vals = [];
       var keys = [];
       vitals.each('1,2,3', function(val, i) {
@@ -118,8 +109,7 @@ describe('vitals.each (section:base)', function() {
       assert( keys.length === 3 );
     });
 
-    title = callStr('1|2|3', '<iteratee>');
-    it(title, function() {
+    test('1|2|3', '<iteratee>', function() {
       var vals = [];
       var keys = [];
       vitals.each('1|2|3', function(val, i) {
@@ -136,8 +126,7 @@ describe('vitals.each (section:base)', function() {
       assert( keys.length === 3 );
     });
 
-    title = callStr('1 2 3', '<iteratee>');
-    it(title, function() {
+    test('1 2 3', '<iteratee>', function() {
       var vals = [];
       var keys = [];
       vitals.each('1 2 3', function(val, i) {
@@ -155,11 +144,9 @@ describe('vitals.each (section:base)', function() {
     });
   });
 
-  title = titleStr('should return the valid result');
-  describe(title, function() {
+  should('return the valid result', function() {
 
-    title = callStr('<object>', '<iteratee>');
-    it(title, function() {
+    test('<object>', '<iteratee>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.each(obj1, function(val, key){});
       assert( obj2 === obj1 );
@@ -168,8 +155,7 @@ describe('vitals.each (section:base)', function() {
       assert( obj2.c === 3 );
     });
 
-    title = callStr('<object>', '<iteratee>');
-    it(title, function() {
+    test('<object>', '<iteratee>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.each(obj1, function(val, key, obj){});
       assert( obj2 !== obj1 );
@@ -178,8 +164,7 @@ describe('vitals.each (section:base)', function() {
       assert( obj2.c === 3 );
     });
 
-    title = callStr('<array>', '<iteratee>');
-    it(title, function() {
+    test('<array>', '<iteratee>', function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.each(arr1, function(val, i){});
       assert( is.arr(arr2) );
@@ -190,8 +175,7 @@ describe('vitals.each (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('<array>', '<iteratee>');
-    it(title, function() {
+    test('<array>', '<iteratee>', function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.each(arr1, function(val, i, arr){});
       assert( is.arr(arr2) );
@@ -202,8 +186,7 @@ describe('vitals.each (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('1,2,3', '<iteratee>');
-    it(title, function() {
+    test('1,2,3', '<iteratee>', function() {
       var arr = vitals.each('1,2,3', function(val, i){});
       assert( is.arr(arr) );
       assert( arr[0] === '1' );
@@ -212,8 +195,7 @@ describe('vitals.each (section:base)', function() {
       assert( arr.length === 3 );
     });
 
-    title = callStr('1,2,3', '<iteratee>');
-    it(title, function() {
+    test('1,2,3', '<iteratee>', function() {
       var arr = vitals.each('1,2,3', function(val, i, arr){});
       assert( is.arr(arr) );
       assert( arr[0] === '1' );
@@ -222,18 +204,15 @@ describe('vitals.each (section:base)', function() {
       assert( arr.length === 3 );
     });
 
-    title = callStr(3, '<iteratee>');
-    it(title, function() {
+    test(3, '<iteratee>', function() {
       var result = vitals.each(3, function(i){});
       assert( is.undefined(result) );
     });
   });
 
-  title = titleStr('should bind the iteratee correctly');
-  describe(title, function() {
+  should('bind the iteratee correctly', function() {
 
-    title = callStr('<object>', '<iteratee>', '<this>');
-    it(title, function() {
+    test('<object>', '<iteratee>', '<this>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var self = {};
       vitals.each(obj, function(val, key) {
@@ -244,8 +223,7 @@ describe('vitals.each (section:base)', function() {
       assert( self.c === 3 );
     });
 
-    title = callStr('<array>', '<iteratee>', '<this>');
-    it(title, function() {
+    test('<array>', '<iteratee>', '<this>', function() {
       var arr = [ 1, 2, 3 ];
       var self = new Array(3);
       vitals.each(arr, function(val, i) {
@@ -258,8 +236,7 @@ describe('vitals.each (section:base)', function() {
       assert( self.length === 3 );
     });
 
-    title = callStr(3, '<iteratee>', '<this>');
-    it(title, function() {
+    test(3, '<iteratee>', '<this>', function() {
       var cycle = 0;
       var self = new Array(3);
       vitals.each(3, function(i) {
@@ -273,57 +250,30 @@ describe('vitals.each (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.each();
       }, validTypeErr);
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       assert.throws(function() {
         vitals.each({});
       }, validTypeErr);
     });
 
-    title = callStr(null, '<iteratee>');
-    it(title, function() {
+    test(null, '<iteratee>', function() {
       assert.throws(function() {
         vitals.each(null, function(){});
       }, validTypeErr);
     });
 
-    title = callStr({}, '<iteratee>', 'fail');
-    it(title, function() {
+    test({}, '<iteratee>', 'fail', function() {
       assert.throws(function() {
         vitals.each({}, function(){}, 'fail');
       }, validTypeErr);
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('each', arguments, 3);
-}
