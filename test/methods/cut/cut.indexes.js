@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.cut.indexes
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.cut.indexes (section:base)', function() {
-  var title;
+method('cut.indexes', 'cut.ii', function() {
 
-  title = titleStr('should splice indexes from array');
-  describe(title, function() {
+  should('splice indexes from array', function() {
 
-    title = callStr('<array>', 1);
-    it(title, function() {
+    test('<array>', 1, function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.cut.ii(arr1, 1);
       assert( is.arr(arr2) );
@@ -30,8 +29,7 @@ describe('vitals.cut.indexes (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', -1);
-    it(title, function() {
+    test('<array>', -1, function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.cut.ii(arr1, -1);
       assert( is.arr(arr2) );
@@ -41,8 +39,7 @@ describe('vitals.cut.indexes (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', 1, 3);
-    it(title, function() {
+    test('<array>', 1, 3, function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut.ii(arr1, 1, 3);
       assert( is.arr(arr2) );
@@ -53,8 +50,7 @@ describe('vitals.cut.indexes (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('<array>', 2, -1, 0);
-    it(title, function() {
+    test('<array>', 2, -1, 0, function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut.ii(arr1, 2, -1, 0);
       assert( is.arr(arr2) );
@@ -64,8 +60,7 @@ describe('vitals.cut.indexes (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', [ 2, -1, 0 ]);
-    it(title, function() {
+    test('<array>', [ 2, -1, 0 ], function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut.ii(arr1, [ 2, -1, 0 ]);
       assert( is.arr(arr2) );
@@ -76,64 +71,36 @@ describe('vitals.cut.indexes (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.cut.ii();
       }, validTypeErr);
     });
 
-    title = callStr([]);
-    it(title, function() {
+    test([], function() {
       assert.throws(function() {
         vitals.cut.ii([]);
       }, validErr);
     });
 
-    title = callStr([], 'a');
-    it(title, function() {
+    test([], 'a', function() {
       assert.throws(function() {
         vitals.cut.ii([], 'a');
       }, validTypeErr);
     });
 
-    title = callStr({}, 1);
-    it(title, function() {
+    test({}, 1, function() {
       assert.throws(function() {
         vitals.cut.ii({}, 1);
       }, validTypeErr);
     });
 
-    title = callStr(null, 1);
-    it(title, function() {
+    test(null, 1, function() {
       assert.throws(function() {
         vitals.cut.ii(null, 1);
       }, validTypeErr);
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('cut.ii', arguments, 3);
-}

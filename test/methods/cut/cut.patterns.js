@@ -15,107 +15,69 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.cut.patterns (section:base)', function() {
-  var title;
+method('cut.patterns', function() {
 
-  title = titleStr('should remove all patterns from string');
-  describe(title, function() {
+  should('remove all patterns from string', function() {
 
-    // newStr()= "abc123a1b2c3"
-
-    title = callStr('abcABCabc', 'a');
-    it(title, function() {
+    test('abcABCabc', 'a', function() {
       var str = vitals.cut.patterns('abcABCabc', 'a');
       assert( str === 'bcABCbc' );
     });
 
-    title = callStr('abc123abc123', 1);
-    it(title, function() {
+    test('abc123abc123', 1, function() {
       var str = vitals.cut.patterns('abc123abc123', 1);
       assert( str === 'abc23abc23' );
     });
 
-    title = callStr('abc123', /[a-z]/);
-    it(title, function() {
+    test('abc123', /[a-z]/, function() {
       var str = vitals.cut.patterns('abc123', /[a-z]/);
       assert( str === 'bc123' );
     });
 
-    title = callStr('abc123', /[a-z]/g);
-    it(title, function() {
+    test('abc123', /[a-z]/g, function() {
       var str = vitals.cut.patterns('abc123', /[a-z]/g);
       assert( str === '123' );
     });
 
-    title = callStr('ABC.a*b*c.123', '*');
-    it(title, function() {
+    test('ABC.a*b*c.123', '*', function() {
       var str = vitals.cut.patterns('ABC.a*b*c.123', '*');
       assert( str === 'ABC.abc.123' );
     });
 
-    title = callStr('ABC.a*b*c.123', '.*');
-    it(title, function() {
+    test('ABC.a*b*c.123', '.*', function() {
       var str = vitals.cut.patterns('ABC.a*b*c.123', '.*');
       assert( str === 'ABC.a*b*c.123' );
     });
 
-    title = callStr('abc123abc123', 1, /[a-z]/);
-    it(title, function() {
+    test('abc123abc123', 1, /[a-z]/, function() {
       var str = vitals.cut.patterns('abc123abc123', 1, /[a-z]/);
       assert( str === 'bc23abc23' );
     });
 
-    title = callStr('abc123abc123', [ 1, /[a-z]/g ]);
-    it(title, function() {
+    test('abc123abc123', [ 1, /[a-z]/g ], function() {
       var str = vitals.cut.patterns('abc123abc123', [ 1, /[a-z]/g ]);
       assert( str === '2323' );
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.cut.patterns();
       }, validTypeErr);
     });
 
-    title = callStr('str');
-    it(title, function() {
+    test('str', function() {
       assert.throws(function() {
         vitals.cut.patterns('str');
       }, validErr);
     });
 
-    title = callStr(1, 1);
-    it(title, function() {
+    test(1, 1, function() {
       assert.throws(function() {
         vitals.cut.patterns(1, 1);
       }, validTypeErr);
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('cut.patterns', arguments, 3);
-}

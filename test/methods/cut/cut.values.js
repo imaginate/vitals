@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.cut.values
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.cut.values (section:base)', function() {
-  var title;
+method('cut.values', 'cut.vals', function() {
 
-  title = titleStr('should delete props from obj where value === val');
-  describe(title, function() {
+  should('delete props from obj where value === val', function() {
 
-    title = callStr('<object>', 'd');
-    it(title, function() {
+    test('<object>', 'd', function() {
       var obj1 = { a: 'd', b: 'e', c: 'f' };
       var obj2 = vitals.cut.vals(obj1, 'd');
       assert( !hasOwn(obj2, 'a') );
@@ -29,8 +28,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', 2);
-    it(title, function() {
+    test('<object>', 2, function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.cut.vals(obj1, 2);
       assert(  hasOwn(obj2, 'a') );
@@ -39,8 +37,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', /d/g);
-    it(title, function() {
+    test('<object>', /d/g, function() {
       var obj1 = { a: 'd', b: 'e', c: 'f' };
       var obj2 = vitals.cut.vals(obj1, /d/g);
       assert( hasOwn(obj2, 'a') );
@@ -49,8 +46,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', 'd', null);
-    it(title, function() {
+    test('<object>', 'd', null, function() {
       var obj1 = {
         a:  1,   b:  2,
         c: 'd',  e: 'f',
@@ -66,8 +62,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', [ 'd', null ]);
-    it(title, function() {
+    test('<object>', [ 'd', null ], function() {
       var obj1 = {
         a:  1,   b:  2,
         c: 'd',  e: 'f',
@@ -84,11 +79,9 @@ describe('vitals.cut.values (section:base)', function() {
     });
   });
 
-  title = titleStr('should splice props from array where value === val');
-  describe(title, function() {
+  should('splice props from array where value === val', function() {
 
-    title = callStr('<array>', 1);
-    it(title, function() {
+    test('<array>', 1, function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.cut.vals(arr1, 1);
       assert( is.arr(arr2) );
@@ -98,8 +91,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', 'b');
-    it(title, function() {
+    test('<array>', 'b', function() {
       var arr1 = [ 'a', 'b', 'c' ];
       var arr2 = vitals.cut.vals(arr1, 'b');
       assert( is.arr(arr2) );
@@ -109,8 +101,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', /a/g);
-    it(title, function() {
+    test('<array>', /a/g, function() {
       var arr1 = [ 'a', 'b', 'c' ];
       var arr2 = vitals.cut.vals(arr1, /a/g);
       assert( is.arr(arr2) );
@@ -121,8 +112,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('<array>', 1, 'a');
-    it(title, function() {
+    test('<array>', 1, 'a', function() {
       var arr1 = [ 1, 2, 'a', 'b' ];
       var arr2 = vitals.cut.vals(arr1, 1, 'a');
       assert( is.arr(arr2) );
@@ -132,8 +122,7 @@ describe('vitals.cut.values (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', [  1, 'a' ]);
-    it(title, function() {
+    test('<array>', [  1, 'a' ], function() {
       var arr1 = [ 1, 2, 'a', 'b' ];
       var arr2 = vitals.cut.vals(arr1, [  1, 'a' ]);
       assert( is.arr(arr2) );
@@ -144,50 +133,24 @@ describe('vitals.cut.values (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.cut.vals();
       }, validTypeErr);
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       assert.throws(function() {
         vitals.cut.vals({});
       }, validErr);
     });
 
-    title = callStr(null, 1);
-    it(title, function() {
+    test(null, 1, function() {
       assert.throws(function() {
         vitals.cut.vals(null, 1);
       }, validTypeErr);
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('cut.vals', arguments, 3);
-}

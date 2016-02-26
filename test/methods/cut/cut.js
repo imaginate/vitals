@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.cut
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.cut (section:base)', function() {
-  var title;
+method('cut', function() {
 
-  title = titleStr('should delete props from obj where obj owns key');
-  describe(title, function() {
+  should('delete props from obj where obj owns key', function() {
 
-    title = callStr('<object>', 'a');
-    it(title, function() {
+    test('<object>', 'a', function() {
       var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
       var obj2 = vitals.cut(obj1, 'a');
       assert( !hasOwn(obj2, 'a') );
@@ -29,8 +28,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', 'a', 'b');
-    it(title, function() {
+    test('<object>', 'a', 'b', function() {
       var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
       var obj2 = vitals.cut(obj1, 'a', 'b');
       assert( !hasOwn(obj2, 'a') );
@@ -47,8 +45,7 @@ describe('vitals.cut (section:base)', function() {
     //   the key of the string conversion of one of the values
     //   because the first value is a string.
 
-    title = callStr('<object>', 'a', 2);
-    it(title, function() {
+    test('<object>', 'a', 2, function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -67,8 +64,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', [ 'a', 'b', 2, /^[0-9]$/ ]);
-    it(title, function() {
+    test('<object>', [ 'a', 'b', 2, /^[0-9]$/ ], function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -89,11 +85,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should delete props from obj where obj owns matching key');
-  describe(title, function() {
+  should('delete props from obj where obj owns matching key', function() {
 
-    title = callStr('<object>', /a/);
-    it(title, function() {
+    test('<object>', /a/, function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -112,8 +106,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', /^[0-9]$/);
-    it(title, function() {
+    test('<object>', /^[0-9]$/, function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -140,8 +133,7 @@ describe('vitals.cut (section:base)', function() {
     //   a key that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
     //   one of the values because the first value is a regex.
 
-    title = callStr('<object>', /a/, 2);
-    it(title, function() {
+    test('<object>', /a/, 2, function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -160,8 +152,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', [ /a$/, 'b', 3 ]);
-    it(title, function() {
+    test('<object>', [ /a$/, 'b', 3 ], function() {
       var obj1 = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
@@ -181,11 +172,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should delete props from obj where value === val');
-  describe(title, function() {
+  should('delete props from obj where value === val', function() {
 
-    title = callStr('<object>', 3);
-    it(title, function() {
+    test('<object>', 3, function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.cut(obj1, 3);
       assert(  hasOwn(obj2, 'a') );
@@ -194,8 +183,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', 1, 3);
-    it(title, function() {
+    test('<object>', 1, 3, function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.cut(obj1, 1, 3);
       assert( !hasOwn(obj2, 'a') );
@@ -211,8 +199,7 @@ describe('vitals.cut (section:base)', function() {
     //   removing properties where `value === propValue` because the
     //   first value is not a string, regex, or function.
 
-    title = callStr('<object>', 1, 'd');
-    it(title, function() {
+    test('<object>', 1, 'd', function() {
       var obj1 = {
         a:  1,   b:  2,
         c: 'd',  e: 'f',
@@ -228,8 +215,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', [ 2, '1', null, 'a' ]);
-    it(title, function() {
+    test('<object>', [ 2, '1', null, 'a' ], function() {
       var obj1 = {
         a:  1,   b:  2,
         c: 'd',  e: 'f',
@@ -246,11 +232,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should delete props from obj where filter returns false');
-  describe(title, function() {
+  should('delete props from obj where filter returns false', function() {
 
-    title = callStr('<object>', '<filter>');
-    it(title, function() {
+    test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var fltr = function filter() {
         return true;
@@ -262,8 +246,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', '<filter>');
-    it(title, function() {
+    test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var fltr = function filter() {
         return null;
@@ -275,8 +258,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', '<filter>');
-    it(title, function() {
+    test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3, d: 4, e: 5 };
       var fltr = function filter(val, key) {
         return val > 2 && key !== 'c';
@@ -290,8 +272,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', '<filter>');
-    it(title, function() {
+    test('<object>', '<filter>', function() {
 
       // unstable example not using the source param
       var obj1 = { a: 'b', b: 'z', c: 'b' };
@@ -319,8 +300,7 @@ describe('vitals.cut (section:base)', function() {
       assert( obj1 === obj2 );
     });
 
-    title = callStr('<object>', '<filter>', '<this>');
-    it(title, function() {
+    test('<object>', '<filter>', '<this>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var fltr = function filter(val, key) {
         return hasOwn(this, key);
@@ -334,11 +314,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should splice props from array where index === val');
-  describe(title, function() {
+  should('splice props from array where index === val', function() {
 
-    title = callStr('<array>', 1);
-    it(title, function() {
+    test('<array>', 1, function() {
       var arr1 = [ 1, 2, 3 ];
       var arr2 = vitals.cut(arr1, 1);
       assert( is.arr(arr2) );
@@ -355,8 +333,7 @@ describe('vitals.cut (section:base)', function() {
     //   only removing properties where `value === index`
     //   because all of the values are a number.
 
-    title = callStr('<array>', 1, 3);
-    it(title, function() {
+    test('<array>', 1, 3, function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut(arr1, 1, 3);
       assert( is.arr(arr2) );
@@ -367,8 +344,7 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('<array>', [ 0, 1 ]);
-    it(title, function() {
+    test('<array>', [ 0, 1 ], function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut(arr1, [ 0, 1 ]);
       assert( is.arr(arr2) );
@@ -380,11 +356,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should splice props from array where value === val');
-  describe(title, function() {
+  should('splice props from array where value === val', function() {
 
-    title = callStr('<array>', 'a');
-    it(title, function() {
+    test('<array>', 'a', function() {
       var arr1 = [ 'a', 'b', 'c' ];
       var arr2 = vitals.cut(arr1, 'a');
       assert( is.arr(arr2) );
@@ -401,8 +375,7 @@ describe('vitals.cut (section:base)', function() {
     //   removing properties where `value === indexedValue` because all
     //   values are not a number and the first value is not a function.
 
-    title = callStr('<array>', 1, 'a');
-    it(title, function() {
+    test('<array>', 1, 'a', function() {
       var arr1 = [ 1, 2, 'a', 'b' ];
       var arr2 = vitals.cut(arr1, 1, 'a');
       assert( is.arr(arr2) );
@@ -412,8 +385,7 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', [ 2, /b/ ]);
-    it(title, function() {
+    test('<array>', [ 2, /b/ ], function() {
       var arr1 = [ 1, 2, 'a', 'b' ];
       var arr2 = vitals.cut(arr1, [ 2, /b/ ]);
       assert( is.arr(arr2) );
@@ -425,11 +397,9 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should splice props from array where filter returns false');
-  describe(title, function() {
+  should('splice props from array where filter returns false', function() {
 
-    title = callStr('<array>', '<filter>');
-    it(title, function() {
+    test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
       var fltr = function filter() {
         return true;
@@ -443,8 +413,7 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 3 );
     });
 
-    title = callStr('<array>', '<filter>');
-    it(title, function() {
+    test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
       var fltr = function filter() {
         return null;
@@ -455,8 +424,7 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 0 );
     });
 
-    title = callStr('<array>', '<filter>');
-    it(title, function() {
+    test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
       var fltr = function filter(val, i) {
         return val > 1 && i < 2;
@@ -471,8 +439,7 @@ describe('vitals.cut (section:base)', function() {
     // Note that filter iterates in reverse order (i.e. last index to zero)
     //   to accurately splice `false` results.
 
-    title = callStr('<array>', '<filter>');
-    it(title, function() {
+    test('<array>', '<filter>', function() {
 
       // unstable example not using the source param
       var arr1 = [ 1, 2, 3 ];
@@ -497,8 +464,7 @@ describe('vitals.cut (section:base)', function() {
       assert( arr2.length === 2 );
     });
 
-    title = callStr('<array>', '<filter>', '<this>');
-    it(title, function() {
+    test('<array>', '<filter>', '<this>', function() {
       var arr1 = [ 1, 2, 3 ];
       var fltr = function filter(val) {
         return hasVal(this, val);
@@ -512,51 +478,42 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 
-  title = titleStr('should remove all substrings from string');
-  describe(title, function() {
+  should('remove all substrings from string', function() {
 
-    title = callStr('abcABCabc', 'a');
-    it(title, function() {
+    test('abcABCabc', 'a', function() {
       var str = vitals.cut('abcABCabc', 'a');
       assert( str === 'bcABCbc' );
     });
 
-    title = callStr('abc123a1b2c3', 1, 'a');
-    it(title, function() {
+    test('abc123a1b2c3', 1, 'a', function() {
       var str = vitals.cut('abc123a1b2c3', 1, 'a');
       assert( str === 'bc23b2c3' );
     });
 
-    title = callStr('abc123a1b2c3', [ { 'a': 2 }, 'c' ]);
-    it(title, function() {
+    test('abc123a1b2c3', [ { 'a': 2 }, 'c' ], function() {
       var str = vitals.cut('abc123a1b2c3', [ { 'a': 2 }, 'c' ]);
       assert( str === 'ab123a1b23' );
     });
 
-    title = callStr('ABC.a*b*c.123', '*');
-    it(title, function() {
+    test('ABC.a*b*c.123', '*', function() {
       var str = vitals.cut('ABC.a*b*c.123', '*');
       assert( str === 'ABC.abc.123' );
     });
 
-    title = callStr('ABC.a*b*c.123', '.*');
-    it(title, function() {
+    test('ABC.a*b*c.123', '.*', function() {
       var str = vitals.cut('ABC.a*b*c.123', '.*');
       assert( str === 'ABC.a*b*c.123' );
     });
   });
 
-  title = titleStr('should remove all patterns from string');
-  describe(title, function() {
+  should('remove all patterns from string', function() {
 
-    title = callStr('abc123', /[a-z]/);
-    it(title, function() {
+    test('abc123', /[a-z]/, function() {
       var str = vitals.cut('abc123', /[a-z]/);
       assert( str === 'bc123' );
     });
 
-    title = callStr('abc123', /[a-z]/g);
-    it(title, function() {
+    test('abc123', /[a-z]/g, function() {
       var str = vitals.cut('abc123', /[a-z]/g);
       assert( str === '123' );
     });
@@ -565,44 +522,38 @@ describe('vitals.cut (section:base)', function() {
     //   order. Below you will see two examples that remove the same patterns
     //   from the same string and return different results.
 
-    title = callStr('abc.123.abc1', 1, 'c', /[a-z]$/);
-    it(title, function() {
+    test('abc.123.abc1', 1, 'c', /[a-z]$/, function() {
       var str = vitals.cut('abc.123.abc1', 1, 'c', /[a-z]$/);
       assert( str === 'ab.23.a' );
     });
 
-    title = callStr('abc.123.abc1', [ /[a-z]$/, 1, 'c' ]);
-    it(title, function() {
+    test('abc.123.abc1', [ /[a-z]$/, 1, 'c' ], function() {
       var str = vitals.cut('abc.123.abc1', [ /[a-z]$/, 1, 'c' ]);
       assert( str === 'ab.23.ab' );
     });
   });
 
-  describe('should throw an error', function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.cut();
       }, validErr);
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       assert.throws(function() {
         vitals.cut({});
       }, validErr);
     });
 
-    title = callStr(1, 1);
-    it(title, function() {
+    test(1, 1, function() {
       assert.throws(function() {
         vitals.cut(1, 1);
       }, validTypeErr);
     });
 
-    title = callStr({}, '<filter>', false);
-    it(title, function() {
+    test({}, '<filter>', false, function() {
       assert.throws(function() {
         var fltr = function filter(){};
         vitals.cut({}, fltr, false);
@@ -610,25 +561,3 @@ describe('vitals.cut (section:base)', function() {
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('cut', arguments, 3);
-}
