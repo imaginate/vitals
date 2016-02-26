@@ -93,7 +93,7 @@ module.exports = function runTestCmd(opts) {
     files = getFiles(cmd.test, true);
     len = files.length;
     i = -1;
-    while (++i) {
+    while (++i < len) {
       file = cmd.test + files[i];
       if ( inSection(file) ) mocha.addFile(file);
     }
