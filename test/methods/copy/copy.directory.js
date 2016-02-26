@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.copy.directory
  * -----------------------------------------------------------------------------
+ * @section fs
  * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -19,20 +21,19 @@ var CONTENT = DUMMY.content; // content for dummy files
 var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
 var fs = require('fs');
 
-describe('vitals.copy.directory (section:fs)', function() {
-  var title;
+method('copy.directory', function() {
+  this.slow(25);
 
-  title = titleStr('should shallowly copy files from dir to dir');
-  describe(title, function() {
+  should('shallowly copy files from dir to dir', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [ 'file1.js', 'file2.js', 'file3.js' ];
       mkDummy({ 'root': files, 'subdir1': null });
     });
+
     after('clean up dummy dirs and files', rmDummy);
 
-    title = callStr('', 'subdir1');
-    it(title, function() {
+    test('', 'subdir1', function() {
       var dest  = addBase('subdir1');
       var files = vitals.copy.dir(BASE, dest);
       assert( is.arr(files) );
@@ -45,8 +46,7 @@ describe('vitals.copy.directory (section:fs)', function() {
       assert( validFile(dest + '/file3.js') );
     });
 
-    title = callStr('', 'subdir2/');
-    it(title, function() {
+    test('', 'subdir2/', function() {
       var dest = addBase('subdir2/');
       var files = vitals.copy.dir(BASE, dest);
       assert( is.arr(files) );
@@ -60,8 +60,7 @@ describe('vitals.copy.directory (section:fs)', function() {
     });
   });
 
-  title = titleStr('should deeply copy files from dir to dir');
-  describe(title, function() {
+  should('deeply copy files from dir to dir', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [ 'file1.js', 'file2.js', 'file3.js' ];
@@ -71,10 +70,10 @@ describe('vitals.copy.directory (section:fs)', function() {
         'root':    files
       });
     });
+
     after('clean up dummy dirs and files', rmDummy);
 
-    title = callStr('', 'subdir/', true);
-    it(title, function() {
+    test('', 'subdir/', true, function() {
       var dest = addBase('subdir/');
       var files = vitals.copy.dir(BASE, dest, true);
       assert( is.arr(files) );
@@ -100,39 +99,35 @@ describe('vitals.copy.directory (section:fs)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [ 'file1.js', 'file2.js', 'file3.js' ];
       mkDummy({ 'root': files, 'subdir1': null });
     });
+
     after('clean up dummy dirs and files', rmDummy);
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.copy.dir();
       }, validTypeErr);
     });
 
-    title = callStr('');
-    it(title, function() {
+    test('', function() {
       assert.throws(function() {
         vitals.copy.dir(BASE);
       }, validTypeErr);
     });
 
-    title = callStr('', 'invalid');
-    it(title, function() {
+    test('', 'invalid', function() {
       assert.throws(function() {
         var dest = addBase('invalid');
         vitals.copy.dir(BASE, dest);
       }, validTypeErr);
     });
 
-    title = callStr('invalid', 'subdir1');
-    it(title, function() {
+    test('invalid', 'subdir1', function() {
       assert.throws(function() {
         var src = addBase('invalid');
         var dest = addBase('subdir1');
@@ -145,28 +140,6 @@ describe('vitals.copy.directory (section:fs)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  if (arguments.length) {
-    if (arguments.length > 1) arguments[1] = addBase(arguments[1]);
-    arguments[0] = addBase(arguments[0]);
-  }
-  return testCall('copy.dir', arguments, 3);
-}
 
 /**
  * @private

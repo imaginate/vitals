@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.copy.func
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.copy.func (section:base)', function() {
-  var title;
+method('copy.func', function() {
 
-  title = titleStr('should return a clone of the function');
-  describe(title, function() {
+  should('return a clone of the function', function() {
 
-    title = callStr('<function>');
-    it(title, function() {
+    test('<function>', function() {
       var func = newFunc();
       var cp = vitals.copy.func(func);
       assert( func !== cp );
@@ -30,8 +29,7 @@ describe('vitals.copy.func (section:base)', function() {
       assert( func.b.c === cp.b.c );
     });
 
-    title = callStr('<function>', true);
-    it(title, function() {
+    test('<function>', true, function() {
       var func = newFunc();
       var cp = vitals.copy.func(func, true);
       assert( func !== cp );
@@ -41,8 +39,7 @@ describe('vitals.copy.func (section:base)', function() {
       assert( func.b.c === cp.b.c );
     });
 
-    title = callStr('<function>', false);
-    it(title, function() {
+    test('<function>', false, function() {
       var func = newFunc();
       var cp = vitals.copy.func(func, false);
       assert( func !== cp );
@@ -53,32 +50,27 @@ describe('vitals.copy.func (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.copy.func();
       }, validTypeErr);
     });
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       assert.throws(function() {
         vitals.copy.func(null);
       }, validTypeErr);
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       assert.throws(function() {
         vitals.copy.func({});
       }, validTypeErr);
     });
 
-    title = callStr('<function>', 'fail');
-    it(title, function() {
+    test('<function>', 'fail', function() {
       assert.throws(function() {
         vitals.copy.func(newFunc(), 'fail');
       }, validTypeErr);
@@ -89,24 +81,6 @@ describe('vitals.copy.func (section:base)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('copy.func', arguments, 3);
-}
 
 /**
  * @private

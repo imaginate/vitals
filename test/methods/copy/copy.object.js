@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.copy.object
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.copy.object (section:base)', function() {
-  var title;
+method('copy.object', function() {
 
-  title = titleStr('should return a clone of the object');
-  describe(title, function() {
+  should('return a clone of the object', function() {
 
-    title = callStr('<object>');
-    it(title, function() {
+    test('<object>', function() {
       var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
       var cp = vitals.copy.obj(obj);
       assert( obj !== cp );
@@ -30,8 +29,7 @@ describe('vitals.copy.object (section:base)', function() {
       assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr('<object>', true);
-    it(title, function() {
+    test('<object>', true, function() {
       var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
       var cp = vitals.copy.obj(obj, true);
       assert( obj !== cp );
@@ -41,8 +39,7 @@ describe('vitals.copy.object (section:base)', function() {
       assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr('<object>', false);
-    it(title, function() {
+    test('<object>', false, function() {
       var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
       var cp = vitals.copy.obj(obj, false);
       assert( obj !== cp );
@@ -53,50 +50,24 @@ describe('vitals.copy.object (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.copy.obj();
       }, validTypeErr);
     });
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       assert.throws(function() {
         vitals.copy.obj(null);
       }, validTypeErr);
     });
 
-    title = callStr({}, 'fail');
-    it(title, function() {
+    test({}, 'fail', function() {
       assert.throws(function() {
         vitals.copy.obj({}, 'fail');
       }, validTypeErr);
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('copy.obj', arguments, 3);
-}

@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.copy.file
  * -----------------------------------------------------------------------------
+ * @section fs
  * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -19,19 +21,18 @@ var CONTENT = DUMMY.content; // content for dummy files
 var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
 var fs = require('fs');
 
-describe('vitals.copy.file (section:fs)', function() {
-  var title;
+method('copy.file', function() {
+  this.slow(25);
 
-  title = titleStr('should copy file to correct location');
-  describe(title, function() {
+  should('copy file to correct location', function() {
 
     before('setup dummy dirs and files', function() {
       mkDummy('file.js');
     });
+
     after('clean up dummy dirs and files', rmDummy);
 
-    title = callStr('file.js', 'file1.js');
-    it(title, function() {
+    test('file.js', 'file1.js', function() {
       var src = addBase('file.js');
       var dest = addBase('file1.js');
       var result = vitals.copy.file(src, dest);
@@ -42,8 +43,7 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( validFile(dest) );
     });
 
-    title = callStr('file.js', 'file2.js', false);
-    it(title, function() {
+    test('file.js', 'file2.js', false, function() {
       var src = addBase('file.js');
       var dest = addBase('file2.js');
       var result = vitals.copy.file(src, dest, false);
@@ -52,8 +52,7 @@ describe('vitals.copy.file (section:fs)', function() {
       assert( validFile(dest, true) );
     });
 
-    title = callStr('file.js', 'subdir/');
-    it(title, function() {
+    test('file.js', 'subdir/', function() {
       var src = addBase('file.js');
       var dest = addBase('subdir/');
       var result = vitals.copy.file(src, dest);
@@ -65,31 +64,28 @@ describe('vitals.copy.file (section:fs)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
     before('setup dummy dirs and files', function() {
       mkDummy('file.js');
     });
+
     after('clean up dummy dirs and files', rmDummy);
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.copy.file();
       }, validTypeErr);
     });
 
-    title = callStr('file.js');
-    it(title, function() {
+    test('file.js', function() {
       assert.throws(function() {
         var src = addBase('file.js');
         vitals.copy.file(src);
       }, validTypeErr);
     });
 
-    title = callStr('invalid.js', 'file1.js');
-    it(title, function() {
+    test('invalid.js', 'file1.js', function() {
       assert.throws(function() {
         var src = addBase('invalid.js');
         var dest = addBase('file1.js');
@@ -102,28 +98,6 @@ describe('vitals.copy.file (section:fs)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  if (arguments.length) {
-    if (arguments.length > 1) arguments[1] = addBase(arguments[1]);
-    arguments[0] = addBase(arguments[0]);
-  }
-  return testCall('copy.file', arguments, 3);
-}
 
 /**
  * @private
