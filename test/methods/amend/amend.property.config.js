@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.amend.property.config
  * -----------------------------------------------------------------------------
+ * @section strict
  * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.amend.property.config (section:strict)', function() {
-  var title;
+method('amend.property.config', function() {
 
-  title = titleStr('should update the prop\'s config');
-  describe(title, function() {
+  should('update the prop\'s config', function() {
 
-    title = callStr('<object>', 'a', '<descriptor>');
-    it(title, function() {
+    test('<object>', 'a', '<descriptor>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var desc = { configurable: false };
       vitals.amend.prop.config(obj, 'a', desc);
@@ -38,8 +37,7 @@ describe('vitals.amend.property.config (section:strict)', function() {
       assert( desc.configurable === true );
     });
 
-    title = callStr('<object>', 'b', '<descriptor>');
-    it(title, function() {
+    test('<object>', 'b', '<descriptor>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var desc = { configurable: true };
       vitals.amend.prop.config(obj, 'b', desc);
@@ -58,50 +56,43 @@ describe('vitals.amend.property.config (section:strict)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.amend.prop.config();
       }, validTypeErr);
     });
 
-    title = callStr('<object>');
-    it(title, function() {
+    test('<object>', function() {
       assert.throws(function() {
         var obj = { a: 1, b: 2, c: 3 };
         vitals.amend.prop.config(obj);
       }, validTypeErr);
     });
 
-    title = callStr('<object>', 'a');
-    it(title, function() {
+    test('<object>', 'a', function() {
       assert.throws(function() {
         var obj = { a: 1, b: 2, c: 3 };
         vitals.amend.prop.config(obj, 'a');
       }, validTypeErr);
     });
 
-    title = callStr('fail', 'a', '<descriptor>');
-    it(title, function() {
+    test('fail', 'a', '<descriptor>', function() {
       assert.throws(function() {
         var desc = { configurable: false };
         vitals.amend.prop.config('fail', 'a', desc);
       }, validTypeErr);
     });
 
-    title = callStr({ '5': 1 }, 5, '<descriptor>');
-    it(title, function() {
+    test({ '5': 1 }, 5, '<descriptor>', function() {
       assert.throws(function() {
         var desc = { configurable: false };
         vitals.amend.prop.config({ '5': 1 }, 5, desc);
       }, validTypeErr);
     });
 
-    title = callStr('<object>', 'd', '<descriptor>');
-    it(title, function() {
+    test('<object>', 'd', '<descriptor>', function() {
       assert.throws(function() {
         var obj = { a: 1, b: 2, c: 3 };
         var desc = { configurable: false };
@@ -110,25 +101,3 @@ describe('vitals.amend.property.config (section:strict)', function() {
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('amend.prop.config', arguments, 3);
-}

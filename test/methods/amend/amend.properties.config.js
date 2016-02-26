@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.amend.properties.config
  * -----------------------------------------------------------------------------
+ * @section strict
  * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,14 +15,11 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.amend.properties.config (section:strict)', function() {
-  var title;
+method('amend.properties.config', function() {
 
-  title = titleStr('should update each prop\'s config');
-  describe(title, function() {
+  should('update each prop\'s config', function() {
 
-    title = callStr('<object>', '<props>');
-    it(title, function() {
+    test('<object>', '<props>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var desc;
       var props = {
@@ -43,8 +42,7 @@ describe('vitals.amend.properties.config (section:strict)', function() {
       assert( desc.configurable === false );
     });
 
-    title = callStr('<object>', [ 'a', 'b' ], '<descriptor>');
-    it(title, function() {
+    test('<object>', [ 'a', 'b' ], '<descriptor>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var keys = [ 'a', 'b' ];
       var desc = { configurable: false };
@@ -63,8 +61,7 @@ describe('vitals.amend.properties.config (section:strict)', function() {
       assert( desc.configurable === true );
     });
 
-    title = callStr('<object>', 'a,b', '<descriptor>');
-    it(title, function() {
+    test('<object>', 'a,b', '<descriptor>', function() {
       var obj = { a: 1, b: 2, c: 3 };
       var desc = { configurable: false };
       vitals.amend.props.config(obj, 'a,b', desc);
@@ -83,48 +80,41 @@ describe('vitals.amend.properties.config (section:strict)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.amend.props.config();
       }, validTypeErr);
     });
 
-    title = callStr('fail', 'a,b,c', '<descriptor>');
-    it(title, function() {
+    test('fail', 'a,b,c', '<descriptor>', function() {
       assert.throws(function() {
         var desc = { configurable: false };
         vitals.amend.props.config('fail', 'a,b,c', desc);
       }, validTypeErr);
     });
 
-    title = callStr({ '5': 1 }, 5, '<descriptor>');
-    it(title, function() {
+    test({ '5': 1 }, 5, '<descriptor>', function() {
       assert.throws(function() {
         var desc = { configurable: false };
         vitals.amend.props.config({ '5': 1 }, 5, desc);
       }, validTypeErr);
     });
 
-    title = callStr('<object>', 'a,b,c');
-    it(title, function() {
+    test('<object>', 'a,b,c', function() {
       assert.throws(function() {
         vitals.amend.props.config({ a: 1, b: 2, c: 3 }, 'a,b,c');
       }, validTypeErr);
     });
 
-    title = callStr('<object>', { a: 1 });
-    it(title, function() {
+    test('<object>', { a: 1 }, function() {
       assert.throws(function() {
         vitals.amend.props.config({ a: 1, b: 2, c: 3 }, { a: 1 });
       }, validTypeErr);
     });
 
-    title = callStr('<object>', 'a,d', '<descriptor>');
-    it(title, function() {
+    test('<object>', 'a,d', '<descriptor>', function() {
       assert.throws(function() {
         var desc = { configurable: false };
         vitals.amend.props.config({ a: 1, b: 2, c: 3 }, 'a,d', desc);
@@ -132,25 +122,3 @@ describe('vitals.amend.properties.config (section:strict)', function() {
     });
   });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('amend.props.config', arguments, 3);
-}
