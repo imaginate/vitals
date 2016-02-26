@@ -13,7 +13,6 @@
 module.exports = breakStr;
 
 var is = require('./is');
-var chalk = require('chalk');
 var indentStr = require('./indent-str');
 
 var MAX_LENGTH = 60;
@@ -51,8 +50,7 @@ function breakStr(str, indent) {
     result = result + '\n' + substr;
     str = str.slice(i);
   }
-  result = indentStr(result, indent);
-  return chalk.white(result);
+  return indentStr(result, indent);
 }
 
 /**
