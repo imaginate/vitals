@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS MOCHA REPORTER: dot
+ * VITALS UNIT TESTS MOCHA REPORTER: dotty
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -19,6 +19,7 @@
 var inherits = require('util').inherits;
 var chalk = require('chalk');
 var Base = require('./base.js');
+
 var DOT = Base.symbols.dot;
 
 var SPEED = {
@@ -27,13 +28,13 @@ var SPEED = {
   'fast':   chalk.white
 };
 
-module.exports = Dot;
+module.exports = Dotty;
 
 /**
- * Initialize a new `Dot` test reporter.
+ * Initialize a new `Dotty` test reporter.
  * @param {Runner} runner
  */
-function Dot(runner) {
+function Dotty(runner) {
 
   /** @type {number} */
   var width;
@@ -78,4 +79,4 @@ function Dot(runner) {
   });
 }
 
-inherits(Dot, Base);
+inherits(Dotty, Base);
