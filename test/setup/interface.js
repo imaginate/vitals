@@ -16,6 +16,9 @@
 
 'use strict';
 
+var sliceArr = require('../helpers/slice-arr');
+var testCall = require('../helpers/test-call');
+
 var Mocha = require('mocha');
 var Suite = Mocha.Suite;
 var Test = Mocha.Test;

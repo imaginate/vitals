@@ -36,11 +36,6 @@ global.validSetErr = require('../helpers/valid-set-err');
 global.validTypeErr = require('../helpers/valid-type-err');
 global.validRangeErr = require('../helpers/valid-range-err');
 
-// DISPLAY HELPERS
-global.breakStr = require('../helpers/break-str');
-global.testCall = require('../helpers/test-call');
-global.testTitle = require('../helpers/test-title');
-
 // REFERENCE HELPERS
 global.VERSION = require('../helpers/parse-version')(process.version);
 global.BROWSER_TESTS = false;

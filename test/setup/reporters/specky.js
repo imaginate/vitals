@@ -16,6 +16,7 @@
 
 'use strict';
 
+var breakStr = require('../../helpers/break-str');
 var inherits = require('util').inherits;
 var chalk = require('chalk');
 var Base = require('./base.js');
