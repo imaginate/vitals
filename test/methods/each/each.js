@@ -2,6 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.each
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.each docs](https://github.com/imaginate/vitals/wiki/vitals.each)
  * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
  * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
