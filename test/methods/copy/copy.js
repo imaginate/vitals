@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.copy
  * -----------------------------------------------------------------------------
+ * @section base
  * @see [vitals.copy docs](https://github.com/imaginate/vitals/wiki/vitals.copy)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,54 +15,44 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.copy (section:base)', function() {
-  var title;
+method('copy', function() {
 
-  title = titleStr('should return a clone of the primitive');
-  describe(title, function() {
+  should('return a clone of the primitive', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var val = vitals.copy(null);
       assert( val === null );
     });
 
-    title = callStr(undefined);
-    it(title, function() {
+    test(undefined, function() {
       var val = vitals.copy(undefined);
       assert( val === undefined );
     });
 
-    title = callStr(true);
-    it(title, function() {
+    test(true, function() {
       var val = vitals.copy(true);
       assert( val === true );
     });
 
-    title = callStr('string');
-    it(title, function() {
+    test('string', function() {
       var val = vitals.copy('string');
       assert( val === 'string' );
     });
 
-    title = callStr(5);
-    it(title, function() {
+    test(5, function() {
       var val = vitals.copy(5);
       assert( val === 5 );
     });
 
-    title = callStr(NaN);
-    it(title, function() {
+    test(NaN, function() {
       var val = vitals.copy(NaN);
       assert( is.nan(val) );
     });
   });
 
-  title = titleStr('should return a clone of the object');
-  describe(title, function() {
+  should('return a clone of the object', function() {
 
-    title = callStr('<object>');
-    it(title, function() {
+    test('<object>', function() {
       var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
       var cp = vitals.copy(obj);
       assert( obj !== cp );
@@ -70,8 +62,7 @@ describe('vitals.copy (section:base)', function() {
       assert( obj.b.d === cp.b.d );
     });
 
-    title = callStr('<object>', true);
-    it(title, function() {
+    test('<object>', true, function() {
       var obj = freeze({ a: 1, b: { d: 2 }, c: 3 }, true);
       var cp = vitals.copy(obj, true);
       assert( obj !== cp );
@@ -82,11 +73,9 @@ describe('vitals.copy (section:base)', function() {
     });
   });
 
-  title = titleStr('should return a clone of the regex');
-  describe(title, function() {
+  should('return a clone of the regex', function() {
 
-    title = callStr(/re/);
-    it(title, function() {
+    test(/re/, function() {
       var re = freeze(/re/);
       var cp = vitals.copy(re);
       assert( cp !== re );
@@ -97,8 +86,7 @@ describe('vitals.copy (section:base)', function() {
       assert( cp.ignoreCase === re.ignoreCase );
     });
 
-    title = callStr(/re/ig);
-    it(title, function() {
+    test(/re/ig, function() {
       var re = freeze(/re/ig);
       var cp = vitals.copy(re);
       assert( cp !== re );
@@ -110,11 +98,9 @@ describe('vitals.copy (section:base)', function() {
     });
   });
 
-  title = titleStr('should return a clone of the array');
-  describe(title, function() {
+  should('return a clone of the array', function() {
 
-    title = callStr('<array>');
-    it(title, function() {
+    test('<array>', function() {
       var arr = freeze([ 1, { b: 2 }, 3 ], true);
       var cp = vitals.copy(arr);
       assert( arr !== cp );
@@ -124,8 +110,7 @@ describe('vitals.copy (section:base)', function() {
       assert( arr[1].b === cp[1].b );
     });
 
-    title = callStr('<array>', true);
-    it(title, function() {
+    test('<array>', true, function() {
       var arr = freeze([ 1, { b: 2 }, 3 ], true);
       var cp = vitals.copy(arr, true);
       assert( arr !== cp );
@@ -136,11 +121,9 @@ describe('vitals.copy (section:base)', function() {
     });
   });
 
-  title = titleStr('should return a clone of the function');
-  describe(title, function() {
+  should('return a clone of the function', function() {
 
-    title = callStr('<function>');
-    it(title, function() {
+    test('<function>', function() {
       var func = newFunc();
       var cp = vitals.copy(func);
       assert( func !== cp );
@@ -150,8 +133,7 @@ describe('vitals.copy (section:base)', function() {
       assert( func.b.c === cp.b.c );
     });
 
-    title = callStr('<function>', true);
-    it(title, function() {
+    test('<function>', true, function() {
       var func = newFunc();
       var cp = vitals.copy(func, true);
       assert( func !== cp );
@@ -162,18 +144,15 @@ describe('vitals.copy (section:base)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.copy();
       }, validErr);
     });
 
-    title = callStr({}, 'fail');
-    it(title, function() {
+    test({}, 'fail', function() {
       assert.throws(function() {
         vitals.copy({}, 'fail');
       }, validTypeErr);
@@ -184,24 +163,6 @@ describe('vitals.copy (section:base)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('copy', arguments, 3);
-}
 
 /**
  * @private
