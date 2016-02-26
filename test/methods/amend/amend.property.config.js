@@ -15,7 +15,7 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-method('amend.property.config', function() {
+method('amend.property.config', 'amend.prop.config', function() {
 
   should('update the prop\'s config', function() {
 

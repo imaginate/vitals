@@ -15,7 +15,7 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-method('amend.property', function() {
+method('amend.property', 'amend.prop', function() {
 
   should('add prop to obj', function() {
 
