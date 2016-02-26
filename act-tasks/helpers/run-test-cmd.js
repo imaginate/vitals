@@ -18,74 +18,90 @@
 var is = require('./is');
 var cp = require('child_process');
 var log = require('log-ocd')();
+var Mocha = require('mocha');
+var getFile = require('./get-file');
+var getFiles = require('./get-filepaths');
 var newTestCmd = require('./new-test-cmd');
+
+var SETUP = '../../test/setup';
+var SECTION = /^[\s\S]+?@section ([a-z-]+)[\s\S]+$/;
 
 log.error.setConfig({
   'throw': false,
   'exit':  true
 });
 
-var MOCHA = './node_modules/mocha/bin/mocha';
-
 /**
  * @typedef {function} TestCmdMethod
  *
  * @typedef {{
- *   __CMD:  boolean,
- *   start:  !TestCmdMethod,
- *   close:  !TestCmdMethod,
- *   slow:   ?Array,
- *   colors: ?string,
- *   deep:   ?string,
- *   report: !Array,
- *   grep:   ?Array,
- *   setup:  !Array,
- *   test:   string
+ *   __CMD:   boolean,
+ *   start:   !TestCmdMethod,
+ *   close:   !TestCmdMethod,
+ *   report:  string,
+ *   slow:    string,
+ *   dir:     boolean,
+ *   section: string,
+ *   setup:   string,
+ *   test:    string
  * }} TestCmd
  */
 
 /**
- * @param {(?Object|TestCmd)} vals
- * @param {?TestCmdMethod=} vals.start  - [default= null]
- * @param {?TestCmdMethod=} vals.close  - [default= null]
- * @param {boolean=} vals.colors    - [default= true]
- * @param {boolean=} vals.recursive - [default= true]
- * @param {string=} vals.reporter   - [default= "spec"]
- * @param {string=} vals.grep       - [default= ""]
- * @param {number=} vals.slow       - [default= 5]
- * @param {string=} vals.setup      - [default= "methods"]
- * @param {string=} vals.method     - [default= ""] Test only a specific method.
- * @param {string=} vals.submethod  - [default= ""] Test only a specific submethod.
+ * @param {(?Object|TestCmd)} opts
+ * @param {?TestCmdMethod=} opts.start  - [default= null]
+ * @param {?TestCmdMethod=} opts.close  - [default= null]
+ * @param {string=} opts.reporter  - [default= "specky"]
+ * @param {number=} opts.slow      - [default= 5]
+ * @param {string=} opts.setup     - [default= "methods"]
+ * @param {string=} opts.method    - [default= ""] Test only a specific method.
+ * @param {string=} opts.section   - [default= ""] Test only a specific section.
+ * @param {string=} opts.submethod - [default= ""] Test only a specific submethod.
  */
-module.exports = function runTestCmd(vals) {
+module.exports = function runTestCmd(opts) {
 
-  /** @type {!ChildProcess} */
-  var child;
-  /** @type {!Array<string>} */
-  var args;
-  /** @type {!Object} */
-  var opts;
+  /** @type {function(string): boolean} */
+  var inSection;
+  /** @type {!Mocha} */
+  var mocha;
+  /** @type {!Array} */
+  var files;
+  /** @type {string} */
+  var file;
   /** @type {!TestCmd} */
   var cmd;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
-  cmd = newTestCmd(vals);
-
-  args = [ MOCHA ];
-  args = addArg(args, cmd.colors);
-  args = addArg(args, cmd.slow);
-  args = addArg(args, cmd.report);
-  args = addArg(args, cmd.deep);
-  args = addArg(args, cmd.grep);
-  args = addArg(args, cmd.setup);
-  args = addArg(args, cmd.test);
-
-  opts = { 'stdio': 'inherit' };
+  cmd = newTestCmd(opts);
 
   cmd.start();
 
+  require(SETUP);
+
+  mocha = new Mocha();
+  mocha.slow(cmd.slow);
+  mocha.reporter(cmd.report);
+  mocha.ui('vitals');
+
+  require(slashDir(SETUP) + cmd.setup);
+
+  if (cmd.dir) {
+    inSection = mkSectionTest(cmd.section);
+    files = getFiles(cmd.test, true);
+    len = files.length;
+    i = -1;
+    while (++i) {
+      file = cmd.test + files[i];
+      if ( inSection(file) ) mocha.addFile(file);
+    }
+  }
+  else mocha.addFile(cmd.test);
+
   try {
-    child = cp.spawn('node', args, opts);
-    child.on('close', cmd.close);
+    mocha.run(cmd.close);
   }
   catch (err) {
     err.name = err.name || 'Error';
@@ -96,14 +112,38 @@ module.exports = function runTestCmd(vals) {
 
 /**
  * @private
- * @param {!Array<string>} args
- * @param {(?string|Array)} arg
- * @return {!Array<string>}
+ * @param {string} validSection
+ * @return {function}
  */
-function addArg(args, arg) {
+function mkSectionTest(validSection) {
 
-  if ( is.arr(arg) ) return args.concat(arg);
+  return validSection
+    ? inSection
+    : function anySection(){ return true; };
 
-  if ( arg && is.str(arg) ) args.push(arg);
-  return args;
+  /**
+   * @private
+   * @param {string} filepath
+   * @return {boolean}
+   */
+  function inSection(filepath) {
+
+    /** @type {string} */
+    var content;
+    /** @type {string} */
+    var section;
+
+    content = getFile(filepath);
+    section = content.replace(SECTION, '$1');
+    return section === validSection;
+  }
+}
+
+/**
+ * @private
+ * @param {string} dirpath
+ * @return {string}
+ */
+function slashDir(dirpath) {
+  return dirpath.replace(/[^\/]$/, '$&/');
 }

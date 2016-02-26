@@ -26,25 +26,18 @@ module.exports = function newBrowserTest(section, callback) {
   var setup;
   /** @type {string} */
   var file;
-  /** @type {string} */
-  var grep;
 
-  if (section === 'all') {
-    file = 'vitals.js';
-    grep = null;
-  }
-  else {
-    file = 'vitals-' + section + '.js';
-    grep = 'section:' + section;
-  }
-
+  file = section === 'all'
+    ? 'vitals.js'
+    : 'vitals-' + section + '.js';
   file = 'browser/' + file;
   setup = 'browser/' + section + '.js';
-  callback = newMinBrowserTest(file, setup, grep, callback);
+  section = section === 'all' ? '' : section;
+  callback = newMinBrowserTest(file, setup, section, callback);
   return function browserTest() {
     runTestCmd({
-      'reporter': 'dot',
-      'grep':     grep,
+      'reporter': 'dotty',
+      'section':  section,
       'setup':    setup,
       'start':    newCmdMethod(true,  file),
       'close':    newCmdMethod(false, file, callback)
@@ -56,17 +49,17 @@ module.exports = function newBrowserTest(section, callback) {
  * @private
  * @param {string} file
  * @param {string} setup
- * @param {?string} grep
+ * @param {string} section
  * @param {?function} callback
  * @return {function}
  */
-function newMinBrowserTest(file, setup, grep, callback) {
+function newMinBrowserTest(file, setup, section, callback) {
   setup = mkMinFile(setup);
   file = mkMinFile(file);
   return function minBrowserTest() {
     return runTestCmd({
-      'reporter': 'dot',
-      'grep':     grep,
+      'reporter': 'dotty',
+      'section':  section,
       'setup':    setup,
       'start':    newCmdMethod(true,  file),
       'close':    newCmdMethod(false, file, callback)

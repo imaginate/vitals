@@ -148,8 +148,8 @@ function testSection(section, callback) {
 
   name = 'vitals ' + section;
   runTestCmd({
-    'reporter': 'dot',
-    'grep':     section === 'all' ? null : 'section:' + section,
+    'reporter': 'dotty',
+    'section':  section === 'all' ? '' : section,
     'setup':    'sections/' + section,
     'start':    newCmdMethod(true,  name),
     'close':    newCmdMethod(false, name, callback)
