@@ -14,7 +14,6 @@ module.exports = testCall;
 
 var is = require('./is');
 var log = require('./log');
-var chalk = require('chalk');
 var sliceArr = require('./slice-arr');
 var indentStr = require('./indent-str');
 
@@ -45,7 +44,7 @@ function testCall(method, args, indent) {
 
   if (!args || !args.length) {
     result = method + '()';
-    return chalk.white(result);
+    return result;
   }
 
   result = '';
