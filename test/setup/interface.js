@@ -252,9 +252,8 @@ function Interface(suite) {
      * @return {Test}
      */
     context.test.skip = function(args, tests) {
-      args = sliceArr(arguments, 0, -1);
-      tests = arguments[args.length];
-      return context.test(args, null);
+      arguments[arguments.length - 1] = null;
+      return context.test.apply(this, arguments);
     };
 
     /**
@@ -270,9 +269,7 @@ function Interface(suite) {
       /** @type {Test} */
       var test;
 
-      args = sliceArr(arguments, 0, -1);
-      tests = arguments[args.length];
-      test = context.test(args, tests);
+      test = context.test.apply(this, arguments);
       mocha.grep( test.fullTitle() );
       return test;
     };
