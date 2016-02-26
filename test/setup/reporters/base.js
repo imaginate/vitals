@@ -12,13 +12,12 @@
 
 'use strict';
 
-// globally append all helpers
-require('../helpers.js');
-
-var Runnable = require('../../../node_modules/mocha/lib/runnable.js');
 var chalk = require('chalk');
-var Base = require('../../../node_modules/mocha/lib/reporters/base.js');
-var ms = require('../../../node_modules/mocha/lib/ms.js');
+
+var Mocha = require('mocha');
+var Runnable = Mocha.Runnable;
+var Base = Mocha.reporters.Base;
+var ms = require('mocha/lib/ms.js');
 
 module.exports = Base;
 
