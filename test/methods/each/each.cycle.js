@@ -1,118 +1,85 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - EACH.CYCLE
+ * VITALS UNIT TESTS: vitals.each.cycle
  * -----------------------------------------------------------------------------
- * @see [vitals.each]{@link https://github.com/imaginate/vitals/wiki/vitals.each}
+ * @section base
+ * @see [vitals.each docs](https://github.com/imaginate/vitals/wiki/vitals.each)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.each.cycle (section:base)', function() {
-  var title;
+method('each.cycle', 'each.time', function() {
 
-  describe('basic tests', function() {
+  should('iterate for x number of cycles', function() {
 
-    title = titleStr('should call the iteratee x times');
-    describe(title, function() {
-
-      title = callStr(8, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.each.time(8, function() {
-          ++times;
-        });
-        assert( times === 8 );
+    test(3, '<iteratee>', function() {
+      var cycles = [];
+      var cycle = 0;
+      vitals.each.time(3, function(i) {
+        cycles[i] = ++cycle;
       });
-
-      title = callStr(15, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.each.time(15, function(time) {
-          assert( times++ === time );
-        });
-        assert( times === 15 );
-      });
-
+      assert( cycles[0] === 1 );
+      assert( cycles[1] === 2 );
+      assert( cycles[2] === 3 );
+      assert( cycles.length === 3 );
     });
-
-    title = titleStr('should bind the iteratee correctly');
-    describe(title, function() {
-
-      title = callStr(5, '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var times = 0;
-        var thisArg = {};
-        vitals.each.time(5, function() {
-          this.times = ++times;
-        }, thisArg);
-        assert( times === 5 );
-        assert( thisArg.times === 5 );
-      });
-
-    });
-
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.each.time();
-        });
-      });
-
-      title = callStr(5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.each.time(5);
-        });
-      });
-
-      title = callStr({}, function(){});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.each.time({}, function(){});
-        });
-      });
-
-      title = callStr(5, function(){}, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.each.time(5, function(){}, 'fail');
-        });
-      });
-
-    });
-
   });
 
+  should('return the valid result', function() {
+
+    test(3, '<iteratee>', function() {
+      var result = vitals.each.time(3, function(i){});
+      assert( is.undefined(result) );
+    });
+  });
+
+  should('bind the iteratee correctly', function() {
+
+    test(3, '<iteratee>', '<this>', function() {
+      var cycle = 0;
+      var self = new Array(3);
+      vitals.each.time(3, function(i) {
+        this[i] = ++cycle;
+      }, self);
+      assert( is.arr(self) );
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.each.time();
+      }, validTypeErr);
+    });
+
+    test(5, function() {
+      assert.throws(function() {
+        vitals.each.time(5);
+      }, validTypeErr);
+    });
+
+    test({}, '<iteratee>', function() {
+      assert.throws(function() {
+        vitals.each.time({}, function(){});
+      }, validTypeErr);
+    });
+
+    test(5, '<iteratee>', 'fail', function() {
+      assert.throws(function() {
+        vitals.each.time(5, function(){}, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('each.time', arguments, 4);
-}
