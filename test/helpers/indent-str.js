@@ -26,13 +26,14 @@ function indentStr(str, indents) {
 
   indents = indents || 0;
 
-  if ( !is.str(str)     ) throw new TypeError('invalid type for `str` param');
-  if ( !is.num(indents) ) throw new TypeError('invalid type for `indents` param');
+  if ( !is.str(str)       ) throw new TypeError('invalid type for `str` param');
+  if ( !is.num(indents)   ) throw new TypeError('invalid type for `indents` param');
+  if ( !is.whole(indents) ) throw new RangeError('invalid number for `indents` param');
 
-  if (!indents) return str;
+  if (indents < 1) return str;
 
   indent = '';
-  while (--indents) indent += '  ';
+  while (indents--) indent += '  ';
   indent = '\n' + indent;
   return str.replace(/\n/g, indent);
 }
