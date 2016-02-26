@@ -15,7 +15,7 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-method('copy.object', function() {
+method('copy.object', 'copy.obj', function() {
 
   should('return a clone of the object', function() {
 

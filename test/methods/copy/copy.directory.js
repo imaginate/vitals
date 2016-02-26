@@ -21,7 +21,7 @@ var CONTENT = DUMMY.content; // content for dummy files
 var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
 var fs = require('fs');
 
-method('copy.directory', function() {
+method('copy.directory', 'copy.dir', function() {
   this.slow(25);
 
   should('shallowly copy files from dir to dir', function() {

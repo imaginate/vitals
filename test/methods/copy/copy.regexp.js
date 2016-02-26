@@ -15,7 +15,7 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-method('copy.regexp', function() {
+method('copy.regexp', 'copy.regex', function() {
 
   should('return a clone of the regex', function() {
 
