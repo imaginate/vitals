@@ -2,8 +2,10 @@
  * -----------------------------------------------------------------------------
  * VITALS UNIT TESTS: vitals.create.object
  * -----------------------------------------------------------------------------
+ * @section strict
  * @see [vitals.create docs](https://github.com/imaginate/vitals/wiki/vitals.create)
- * @see [global test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
@@ -13,29 +15,24 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.create.object (section:strict)', function() {
-  var title;
+method('create.object', 'create.obj', function() {
 
-  title = titleStr('should create new obj with given prototype');
-  describe(title, function() {
+  should('create new obj with given prototype', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var obj = vitals.create.obj(null);
       var proto = getPrototype(obj);
       assert( proto === null );
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       var proto1 = { a: function(){} };
       var obj = vitals.create.obj(proto1);
       var proto2 = getPrototype(obj);
       assert( proto1 === proto2 );
     });
 
-    title = callStr('<Array.prototype>');
-    it(title, function() {
+    test('<Array.prototype>', function() {
       var proto1 = Array.prototype;
       var obj = vitals.create.obj(proto1);
       var proto2 = getPrototype(obj);
@@ -43,11 +40,9 @@ describe('vitals.create.object (section:strict)', function() {
     });
   });
 
-  title = titleStr('should create new obj with given prototype and props');
-  describe(title, function() {
+  should('create new obj with given prototype and props', function() {
 
-    title = callStr({}, { a: 1, b: 2, c: 3 });
-    it(title, function() {
+    test({}, { a: 1, b: 2, c: 3 }, function() {
       var proto1 = {};
       var props = freeze({ a: 1, b: 2, c: 3 });
       var obj = vitals.create.obj(proto1, props);
@@ -65,8 +60,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, [ 'a', 'b', 'c' ], 5);
-    it(title, function() {
+    test({}, [ 'a', 'b', 'c' ], 5, function() {
       var proto1 = {};
       var props = freeze([ 'a', 'b', 'c' ]);
       var obj = vitals.create.obj(proto1, props, 5);
@@ -84,8 +78,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, 'a,b,c', 5);
-    it(title, function() {
+    test({}, 'a,b,c', 5, function() {
       var proto1 = {};
       var obj = vitals.create.obj(proto1, 'a,b,c', 5);
       var proto2 = getPrototype(obj);
@@ -102,8 +95,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, '<descriptors>');
-    it(title, function() {
+    test({}, '<descriptors>', function() {
       var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: false },
@@ -122,11 +114,9 @@ describe('vitals.create.object (section:strict)', function() {
     });
   });
 
-  title = titleStr('should create new obj with given prototype and props with valid descriptor');
-  describe(title, function() {
+  should('create new obj with given prototype and props with valid descriptor', function() {
 
-    title = callStr({}, { a: 1, b: 2, c: 3 }, '<descriptor>');
-    it(title, function() {
+    test({}, { a: 1, b: 2, c: 3 }, '<descriptor>', function() {
       var proto1 = {};
       var props = freeze({ a: 1, b: 2, c: 3 });
       var desc = freeze({ enumerable: false });
@@ -145,8 +135,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( !hasEnum(obj, 'c') );
     });
 
-    title = callStr({}, [ 'a', 'b' ], 5, '<descriptor>');
-    it(title, function() {
+    test({}, [ 'a', 'b' ], 5, '<descriptor>', function() {
       var proto1 = {};
       var props = freeze([ 'a', 'b' ]);
       var desc = freeze({ enumerable: false });
@@ -162,8 +151,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, 'a,b', 5, '<descriptor>');
-    it(title, function() {
+    test({}, 'a,b', 5, '<descriptor>', function() {
       var proto1 = {};
       var desc = freeze({ enumerable: false });
       var obj = vitals.create.obj(proto1, 'a,b', 5, desc);
@@ -178,8 +166,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, '<varied props>', '<descriptor>');
-    it(title, function() {
+    test({}, '<varied props>', '<descriptor>', function() {
       var proto1 = {};
       var props = freeze({ a: { value: 1, enumerable: true }, b: 2 }, true);
       var desc = freeze({ enumerable: false });
@@ -196,11 +183,9 @@ describe('vitals.create.object (section:strict)', function() {
     });
   });
 
-  title = titleStr('should create new obj with given prototype and props with strong type check');
-  describe(title, function() {
+  should('create new obj with given prototype and props with strong type check', function() {
 
-    title = callStr({}, { a: 1, b: 2 }, 'number');
-    it(title, function() {
+    test({}, { a: 1, b: 2 }, 'number', function() {
       var proto1 = {};
       var props = freeze({ a: 1, b: 2 });
       var obj = vitals.create.obj(proto1, props, 'number');
@@ -219,8 +204,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( obj.b === 3 );
     });
 
-    title = callStr({}, [ 'a', 'b' ], 5, 'number');
-    it(title, function() {
+    test({}, [ 'a', 'b' ], 5, 'number', function() {
       var proto1 = {};
       var props = freeze([ 'a', 'b' ]);
       var obj = vitals.create.obj(proto1, props, 5, 'number');
@@ -239,8 +223,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( obj.b === 6 );
     });
 
-    title = callStr({}, 'a,b', 5, 'number');
-    it(title, function() {
+    test({}, 'a,b', 5, 'number', function() {
       var proto1 = {};
       var obj = vitals.create.obj(proto1, 'a,b', 5, 'number');
       var proto2 = getPrototype(obj);
@@ -258,8 +241,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( obj.b === 6 );
     });
 
-    title = callStr({}, '<descriptors>', 'number');
-    it(title, function() {
+    test({}, '<descriptors>', 'number', function() {
       var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: true  },
@@ -281,8 +263,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( obj.b === 3 );
     });
 
-    title = callStr({}, '<descriptors>', '<descriptor>', 'number');
-    it(title, function() {
+    test({}, '<descriptors>', '<descriptor>', 'number', function() {
       var proto1 = null;
       var props = freeze({
         a: { value: 1, enumerable: true },
@@ -306,11 +287,9 @@ describe('vitals.create.object (section:strict)', function() {
     });
   });
 
-  title = titleStr('should create new obj with given prototype and props with valid setter');
-  describe(title, function() {
+  should('create new obj with given prototype and props with valid setter', function() {
 
-    title = callStr({}, { a: 1, b: 2 }, '<setter>');
-    it(title, function() {
+    test({}, { a: 1, b: 2 }, '<setter>', function() {
       var proto1 = {};
       var props = freeze({ a: 1, b: 2 });
       var obj = vitals.create.obj(proto1, props, setter);
@@ -325,8 +304,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, [ 'a', 'b' ], 5, '<setter>');
-    it(title, function() {
+    test({}, [ 'a', 'b' ], 5, '<setter>', function() {
       var proto1 = {};
       var props = freeze([ 'a', 'b' ]);
       var obj = vitals.create.obj(proto1, props, 5, setter);
@@ -341,8 +319,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, 'a,b', 5, '<setter>');
-    it(title, function() {
+    test({}, 'a,b', 5, '<setter>', function() {
       var proto1 = {};
       var obj = vitals.create.obj(proto1, 'a,b', 5, setter);
       var proto2 = getPrototype(obj);
@@ -356,8 +333,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, '<descriptors>', '<setter>');
-    it(title, function() {
+    test({}, '<descriptors>', '<setter>', function() {
       var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: false },
@@ -375,8 +351,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, '<descriptors>', '<descriptor>', '<setter>');
-    it(title, function() {
+    test({}, '<descriptors>', '<descriptor>', '<setter>', function() {
       var proto1 = {};
       var props = freeze({
         a: { value: 1, enumerable: true  },
@@ -395,8 +370,7 @@ describe('vitals.create.object (section:strict)', function() {
       assert( !hasEnum(obj, 'b') );
     });
 
-    title = callStr({}, '<descriptors>', '<descriptor>', 'number', '<setter>');
-    it(title, function() {
+    test({}, '<descriptors>', '<descriptor>', 'number', '<setter>', function() {
       var proto1 = null;
       var props = freeze({
         a: { value: 1, enumerable: true  },
@@ -420,46 +394,39 @@ describe('vitals.create.object (section:strict)', function() {
     });
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.create.obj();
       }, validTypeErr);
     });
 
-    title = callStr('string');
-    it(title, function() {
+    test('string', function() {
       assert.throws(function() {
         vitals.create.obj('string');
       }, validTypeErr);
     });
 
-    title = callStr({}, 5, 5);
-    it(title, function() {
+    test({}, 5, 5, function() {
       assert.throws(function() {
         vitals.create.obj({}, 5, 5);
       }, validTypeErr);
     });
 
-    title = callStr({}, 'a,b,c');
-    it(title, function() {
+    test({}, 'a,b,c', function() {
       assert.throws(function() {
         vitals.create.obj({}, 'a,b,c');
       }, validErr);
     });
 
-    title = callStr({}, 'a,b,c', 5, 'string');
-    it(title, function() {
+    test({}, 'a,b,c', 5, 'string', function() {
       assert.throws(function() {
         vitals.create.obj({}, 'a,b,c', 5, 'string');
       }, validErr);
     });
 
-    title = callStr({}, 'a,b,c', 5, 'number', {});
-    it(title, function() {
+    test({}, 'a,b,c', 5, 'number', {}, function() {
       assert.throws(function() {
         vitals.create.obj({}, 'a,b,c', 5, 'number', {});
       }, validTypeErr);
@@ -470,24 +437,6 @@ describe('vitals.create.object (section:strict)', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('create.obj', arguments, 3);
-}
 
 /**
  * @private
