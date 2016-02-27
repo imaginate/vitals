@@ -1,148 +1,105 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.INDEXES
+ * VITALS UNIT TESTS: vitals.get.indexes
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section base
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.get.indexes (section:base)', function() {
-  var title;
+method('get.indexes', 'get.ii', function() {
 
-  describe('array tests', function() {
+  should('return array of all indexes', function() {
 
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should return array of all indexes');
-    describe(title, function() {
-
-      title = callStr('<array>');
-      it(title, function() {
-        var inds = vitals.get.indexes( newArr() );
-        assert( inds.length === 9 );
-        each(9, function(i) {
-          assert( inds[i] === i );
-        });
-      });
-
-    });
-
-    title = titleStr('should return array of indexes where value === val');
-    describe(title, function() {
-
-      title = callStr('<array>', 2);
-      it(title, function() {
-        var vals = vitals.get.indexes(newArr(), 2);
-        assert( vals.length === 1 );
-        assert( vals[0] === 4 );
-      });
-
-      title = callStr('<array>', '2');
-      it(title, function() {
-        var vals = vitals.get.indexes(newArr(), '2');
-        assert( vals.length === 0 );
-      });
-
-    });
-
-  });
-
-  describe('string tests', function() {
-
-    title = titleStr('should return array of indexes where substr matches val');
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', /[a-z]/);
-      it(title, function() {
-        var vals = vitals.get.indexes('abc123a1b2c3', /[a-z]/);
-        assert( vals.length === 6 );
-        each([ 0,1,2,6,8,10 ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('abc123a1b2c3', 5);
-      it(title, function() {
-        var vals = vitals.get.indexes('abc123a1b2c3', 5);
-        assert( vals.length === 0 );
-      });
-
-      title = callStr('abc123a1b2c3', 'a');
-      it(title, function() {
-        var vals = vitals.get.indexes('abc123a1b2c3', 'a');
-        assert( vals.length === 2 );
-        assert( vals[0] === 0 );
-        assert( vals[1] === 6 );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.indexes();
-        });
-      });
-
-      title = callStr(null);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.indexes(null);
-        });
-      });
-
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.indexes('str');
-        });
-      });
-
+    test('<array>', function() {
+      var arr = [ 'a', 'b', 'c' ];
+      var keys = vitals.get.ii(arr);
+      assert( is.arr(keys) );
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
     });
   });
 
+  should('return array of indexes where value === val', function() {
+
+    test('<array>', 2, function() {
+      var arr = [ 1, 2, 1, 2 ];
+      var keys = vitals.get.ii(arr, 2);
+      assert( is.arr(keys) );
+      assert( keys[0] === 1 );
+      assert( keys[1] === 3 );
+      assert( keys.length === 2 );
+    });
+
+    test('<array>', '2', function() {
+      var arr = [ 1, 2, 1, 2 ];
+      var keys = vitals.get.ii(arr, '2');
+      assert( is.arr(keys) );
+      assert( keys.length === 0 );
+    });
+  });
+
+  should('return array of indexes where substring matches val', function() {
+
+    test('abc123', /[a-z]/, function() {
+      var keys = vitals.get.ii('abc123', /[a-z]/);
+      assert( is.arr(keys) );
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
+    });
+
+    test('abc123', 5, function() {
+      var keys = vitals.get.ii('abc123', 5);
+      assert( is.arr(keys) );
+      assert( keys.length === 0 );
+    });
+
+    test('abc123', 3, function() {
+      var keys = vitals.get.ii('abc123', 3);
+      assert( is.arr(keys) );
+      assert( keys[0] === 5 );
+      assert( keys.length === 1 );
+    });
+
+    test('abc123abc123', 'a', function() {
+      var keys = vitals.get.ii('abc123abc123', 'a');
+      assert( is.arr(keys) );
+      assert( keys[0] === 0 );
+      assert( keys[1] === 6 );
+      assert( keys.length === 2 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.get.indexes();
+      }, validTypeErr);
+    });
+
+    test(null, function() {
+      assert.throws(function() {
+        vitals.get.indexes(null);
+      }, validTypeErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.get.indexes('str');
+      }, validErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('get.indexes', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
