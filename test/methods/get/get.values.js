@@ -1,197 +1,123 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.VALUES
+ * VITALS UNIT TESTS: vitals.get.values
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section base
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.get.values (section:base)', function() {
-  var title;
+method('get.values', 'get.vals', function() {
 
-  describe('object tests', function() {
+  should('return array of all values', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should return array of all values');
-    describe(title, function() {
-
-      title = callStr('<object>');
-      it(title, function() {
-        var keys = vitals.get.vals( newObj() ).sort();
-        assert( keys.length === 9 );
-        each(newObj(true).sort(), function(key, i) {
-          assert( keys[i] === key );
-        });
-      });
-
-    });
-
-    title = titleStr('should return array of values where key matches val');
-    describe(title, function() {
-
-      title = callStr('<object>', /^[a-z]$/);
-      it(title, function() {
-        var vals = vitals.get.vals(newObj(), /^[a-z]$/).sort();
-        assert( vals.length === 3 );
-        each([ 'd','e','f' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('<object>', 1);
-      it(title, function() {
-        var vals = vitals.get.vals(newObj(), 1);
-        assert( vals.length === 2 );
-        assert( vals[0] ===  4  );
-        assert( vals[1] === '1' );
-      });
-
-      title = callStr('<object>', '1');
-      it(title, function() {
-        var vals = vitals.get.vals(newObj(), '1');
-        assert( vals.length === 2 );
-        assert( vals[0] ===  4  );
-        assert( vals[1] === '1' );
-      });
-
-      title = callStr('<object>', 4);
-      it(title, function() {
-        var vals = vitals.get.vals(newObj(), 4);
-        assert( vals.length === 0 );
-      });
-
-    });
-
-  });
-
-  describe('string tests', function() {
-
-    title = titleStr('should return array of substrs where substr matches val');
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', /[a-z]/);
-      it(title, function() {
-        var vals = vitals.get.vals('abc123a1b2c3', /[a-z]/);
-        assert( vals.length === 6 );
-        each([ 'a','b','c','a','b','c' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('abc123a1b2c3', 5);
-      it(title, function() {
-        var vals = vitals.get.vals('abc123a1b2c3', 5);
-        assert( vals.length === 0 );
-      });
-
-      title = callStr('abc123a1b2c3', 'a');
-      it(title, function() {
-        var vals = vitals.get.vals('abc123a1b2c3', 'a');
-        assert( vals.length === 2 );
-        assert( vals[0] === 'a' );
-        assert( vals[1] === 'a' );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.vals();
-        });
-      });
-
-      title = callStr(null);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.vals(null);
-        });
-      });
-
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.vals('str');
-        });
-      });
-
+    test('<object>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var vals = vitals.get.vals(obj);
+      assert( is.arr(vals) );
+      assert( hasVal(vals, 1) );
+      assert( hasVal(vals, 2) );
+      assert( hasVal(vals, 3) );
+      assert( vals.length === 3 );
     });
   });
 
+  should('return array of values where key matches val', function() {
+
+    test('<object>', /^[0-9]$/, function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd'
+      };
+      var vals = vitals.get.vals(obj, /^[0-9]$/);
+      assert( is.arr(vals) );
+      assert( hasVal(vals, 'c') );
+      assert( hasVal(vals, 'd') );
+      assert( vals.length === 2 );
+    });
+
+    test('<object>', 1, function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd'
+      };
+      var vals = vitals.get.vals(obj, 1);
+      assert( is.arr(vals) );
+      assert( vals.length === 0 );
+    });
+
+    test('<object>', 'a', function() {
+      var obj = {
+        'a': 'c', 'b': 'd',
+        'a1': 3,  'b2': 4
+      };
+      var vals = vitals.get.vals(obj, 'a');
+      assert( is.arr(vals) );
+      assert( hasVal(vals, 'c') );
+      assert( hasVal(vals, 3) );
+      assert( vals.length === 2 );
+    });
+  });
+
+  should('return array of strings where substring matches val', function() {
+
+    test('abc123', /[a-z]/, function() {
+      var vals = vitals.get.vals('abc123', /[a-z]/);
+      assert( is.arr(vals) );
+      assert( vals[0] === 'a' );
+      assert( vals[1] === 'b' );
+      assert( vals[2] === 'c' );
+      assert( vals.length === 3 );
+    });
+
+    test('abc123', 3, function() {
+      var vals = vitals.get.vals('abc123', 3);
+      assert( is.arr(vals) );
+      assert( vals[0] === '3' );
+      assert( vals.length === 1 );
+    });
+
+    test('abc123', 4, function() {
+      var vals = vitals.get.vals('abc123', 4);
+      assert( is.arr(vals) );
+      assert( vals.length === 0 );
+    });
+
+    test('abc123abc123', 'a', function() {
+      var vals = vitals.get.vals('abc123abc123', 'a');
+      assert( is.arr(vals) );
+      assert( vals[0] === 'a' );
+      assert( vals[1] === 'a' );
+      assert( vals.length === 2 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.get.vals();
+      }, validTypeErr);
+    });
+
+    test(null, function() {
+      assert.throws(function() {
+        vitals.get.vals(null);
+      }, validTypeErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.get.vals('str');
+      }, validErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('get.vals', arguments, 4);
-}
-
-/**
- * @private
- * @param {boolean=} vals
- * @return {!Object}
- */
-function newObj(vals) {
-  return vals
-    ? [ 'd', 'e', 'f', 4, 5, 6, '1', '2', '3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
