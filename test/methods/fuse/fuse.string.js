@@ -1,103 +1,63 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FUSE.STRING
+ * VITALS UNIT TESTS: vitals.fuse.string
  * -----------------------------------------------------------------------------
- * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
+ * @section base
+ * @see [vitals.fuse docs](https://github.com/imaginate/vitals/wiki/vitals.fuse)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fuse.string (section:base)', function() {
-  var title;
+method('fuse.string', 'fuse.str', function() {
 
-  describe('basic tests', function() {
+  should('append values to dest string', function() {
 
-    title = titleStr('should append strings to dest string');
-    describe(title, function() {
-
-      title = callStr('', 5);
-      it(title, function() {
-        var str = vitals.fuse.str('', 5);
-        assert( str === '5' );
-      });
-
-      title = callStr('', 'a', 5);
-      it(title, function() {
-        var str = vitals.fuse.str('', 'a', 5);
-        assert( str === 'a5' );
-      });
-
-      title = callStr('', [ 'a', 5 ]);
-      it(title, function() {
-        var str = vitals.fuse.str('', [ 'a', 5 ]);
-        assert( str === 'a5' );
-      });
-
-      title = callStr('', 5, [ 'a', 'b' ]);
-      it(title, function() {
-        var str = vitals.fuse.str('', 5, [ 'a', 'b' ]);
-        assert( str === '5a,b' );
-      });
-
+    test('', 5, function() {
+      var str = vitals.fuse.str('', 5);
+      assert( str === '5' );
     });
 
-  });
+    test('', 'a', 5, function() {
+      var str = vitals.fuse.str('', 'a', 5);
+      assert( str === 'a5' );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+    test('', [ 'a', 5 ], function() {
+      var str = vitals.fuse.str('', [ 'a', 5 ]);
+      assert( str === 'a5' );
+    });
 
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.str();
-        });
-      });
-
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.str('str');
-        });
-      });
-
-      title = callStr({}, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.str({}, 5);
-        });
-      });
-
+    test('', 5, [ 'a', 'b' ], function() {
+      var str = vitals.fuse.str('', 5, [ 'a', 'b' ]);
+      assert( str === '5a,b' );
     });
   });
 
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fuse.str();
+      }, validTypeErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.fuse.str('str');
+      }, validErr);
+    });
+
+    test({}, 5, function() {
+      assert.throws(function() {
+        vitals.fuse.str({}, 5);
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fuse.str', arguments, 4);
-}
