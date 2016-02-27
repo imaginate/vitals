@@ -16,13 +16,16 @@ var chalk = require('chalk');
 
 var Mocha = require('mocha');
 var Runnable = Mocha.Runnable;
+var Suite = Mocha.Suite;
 var Base = Mocha.reporters.Base;
 var ms = require('mocha/lib/ms.js');
 
 module.exports = Base;
 
 /**
- * Replace the fullTitle method with a different separator.
+ * Replace `Runnable.prototype.fullTitle`.
+ *
+ * @private
  * @return {string}
  */
 Runnable.prototype.fullTitle = function fullTitle() {
@@ -30,7 +33,26 @@ Runnable.prototype.fullTitle = function fullTitle() {
 };
 
 /**
- * Replace the Base reporter list method.
+ * Replace `Suite.prototype.fullTitle`.
+ *
+ * @private
+ * @return {string}
+ */
+Suite.prototype.fullTitle = function fullTitle() {
+
+  /** @type {string} */
+  var title;
+
+  title = this.parent ? this.parent.fullTitle() || '' : '';
+  title += title && ' -> ';
+  title += this.title;
+  return title;
+};
+
+/**
+ * Replace `Base.list`.
+ *
+ * @private
  * @param {Array} failures
  */
 Base.list = function list(failures) {
@@ -76,7 +98,9 @@ Base.list = function list(failures) {
 };
 
 /**
- * Replace common output used by Spec.
+ * Replace `Base.prototype.epilogue`.
+ *
+ * @private
  * @type {function}
  */
 Base.prototype.epilogue = function epilogue() {
