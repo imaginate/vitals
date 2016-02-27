@@ -1,14 +1,14 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.FILEPATHS
+ * VITALS UNIT TESTS: vitals.get.filepaths
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section fs
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
@@ -17,10 +17,13 @@
 
 if (BROWSER_TESTS) return;
 
-describe('vitals.get.filepaths (section:fs)', function() {
-  var title;
+var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
+var addBase = DUMMY.addBase;
 
-  describe('shallow tests', function() {
+method('get.filepaths', function() {
+  this.slow(25);
+
+  suite('shallow tests', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [
@@ -35,439 +38,370 @@ describe('vitals.get.filepaths (section:fs)', function() {
       });
     });
 
-    title = titleStr('should return all of the files');
-    describe(title, function() {
-
-      title = callStr('');
-      it(title, function() {
-        var base = addBase('');
-        var files = vitals.get.filepaths(base);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-    });
-
-    title = titleStr('should return all of the files with the base dirpath');
-    describe(title, function() {
-
-      title = callStr('', { base: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { base: true };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, addBase('_file.js')) );
-        assert( has(files, addBase('file1.js')) );
-        assert( has(files, addBase('file2.js')) );
-        assert( has(files, addBase('_.min.js')) );
-        assert( has(files, addBase('1.min.js')) );
-        assert( has(files, addBase('2.min.js')) );
-        assert( has(files, addBase('_file.md')) );
-        assert( has(files, addBase('file1.md')) );
-        assert( has(files, addBase('file2.md')) );
-        assert( has(files, addBase('_AZ.json')) );
-        assert( has(files, addBase('AZ1.json')) );
-        assert( has(files, addBase('AZ2.json')) );
-      });
-
-    });
-
-    title = titleStr('should only return the files with valid exts');
-    describe(title, function() {
-
-      title = callStr('', { validExts: 'js' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validExts: 'js' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-      });
-
-      title = callStr('', { validExts: '.md|.min.js' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validExts: '.md|.min.js' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-      });
-
-      title = callStr('', { validExts: [ 'md', '.js*' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validExts: [ 'md', '.js*' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { validExts: /\.js$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validExts: /\.js$/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-      });
-
-    });
-
-    title = titleStr('should not return the files with invalid exts');
-    describe(title, function() {
-
-      title = callStr('', { invalidExts: 'js' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidExts: 'js' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidExts: '.md|.min.js' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidExts: '.md|.min.js' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidExts: [ 'md', '.js*' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidExts: [ 'md', '.js*' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 0 );
-      });
-
-      title = callStr('', { invalidExts: /\.js$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidExts: /\.js$/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-    });
-
-    title = titleStr('should only return the files with valid names');
-    describe(title, function() {
-
-      title = callStr('', { validNames: 'file1' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validNames: 'file1' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 2 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file1.md') );
-      });
-
-      title = callStr('', { validNames: '*1' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validNames: '*1' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'AZ1.json') );
-      });
-
-      title = callStr('', { validNames: [ '_*', 'az*' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validNames: [ '_*', 'az*' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { validNames: /file/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validNames: /file/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-      });
-
-    });
-
-    title = titleStr('should not return the files with invalid names');
-    describe(title, function() {
-
-      title = callStr('', { invalidNames: 'az*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidNames: 'az*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 10 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-      });
-
-      title = callStr('', { invalidNames: '*1|*2' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidNames: '*1|*2' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, '_file.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, '_AZ.json') );
-      });
-
-      title = callStr('', { invalidNames: [ 'file1', 'file2' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidNames: [ 'file1', 'file2' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 8 );
-        assert( has(files, '_file.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidNames: /^[a-z]/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidNames: /^[a-z]/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 8 );
-        assert( has(files, '_file.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-    });
-
-    title = titleStr('should only return the valid files');
-    describe(title, function() {
-
-      title = callStr('', { validFiles: 'file' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validFiles: 'file' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 0 );
-      });
-
-      title = callStr('', { validFiles: 'file*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validFiles: 'file*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-      });
-
-      title = callStr('', { validFiles: [ 'file1.js', 'az1.json' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validFiles: [ 'file1.js', 'az1.json' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 2 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'AZ1.json') );
-      });
-
-      title = callStr('', { validFiles: /[0-9]\.js.*$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validFiles: /[0-9]\.js.*$/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-    });
-
-    title = titleStr('should not return the invalid files');
-    describe(title, function() {
-
-      title = callStr('', { invalidFiles: '_*.js*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidFiles: '_*.js*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 9 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '1.min.js') );
-        assert( has(files, '2.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidFiles: 'file1.*|1*|2*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidFiles: 'file1.*|1*|2*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 8 );
-        assert( has(files, '_file.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, '_AZ.json') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidFiles: [ '_*', '*.js' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidFiles: [ '_*', '*.js' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.md') );
-        assert( has(files, 'file2.md') );
-        assert( has(files, 'AZ1.json') );
-        assert( has(files, 'AZ2.json') );
-      });
-
-      title = callStr('', { invalidFiles: /[0-9]/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidFiles: /[0-9]/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, '_file.js') );
-        assert( has(files, '_.min.js') );
-        assert( has(files, '_file.md') );
-        assert( has(files, '_AZ.json') );
-      });
-
-    });
-
     after('clean up dummy dirs and files', rmDummy);
 
+    should('return all of the files', function() {
+
+      test(BASE, function() {
+        var files = vitals.get.filepaths(BASE);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+    });
+
+    should('return all of the files with the base dirpath', function() {
+
+      test(BASE, { base: true }, function() {
+        var opts = { base: true };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, addBase('_file.js')) );
+        assert( hasVal(files, addBase('file1.js')) );
+        assert( hasVal(files, addBase('file2.js')) );
+        assert( hasVal(files, addBase('_.min.js')) );
+        assert( hasVal(files, addBase('1.min.js')) );
+        assert( hasVal(files, addBase('2.min.js')) );
+        assert( hasVal(files, addBase('_file.md')) );
+        assert( hasVal(files, addBase('file1.md')) );
+        assert( hasVal(files, addBase('file2.md')) );
+        assert( hasVal(files, addBase('_AZ.json')) );
+        assert( hasVal(files, addBase('AZ1.json')) );
+        assert( hasVal(files, addBase('AZ2.json')) );
+      });
+    });
+
+    should('only return the files with valid exts', function() {
+
+      test(BASE, { validExts: 'js' }, function() {
+        var opts = { validExts: 'js' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+      });
+
+      test(BASE, { validExts: '.md|.min.js' }, function() {
+        var opts = { validExts: '.md|.min.js' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+      });
+
+      test(BASE, { validExts: [ 'md', '.js*' ] }, function() {
+        var opts = { validExts: [ 'md', '.js*' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { validExts: /\.js$/ }, function() {
+        var opts = { validExts: /\.js$/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+      });
+    });
+
+    should('not return the files with invalid exts', function() {
+
+      test(BASE, { invalidExts: 'js' }, function() {
+        var opts = { invalidExts: 'js' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidExts: '.md|.min.js' }, function() {
+        var opts = { invalidExts: '.md|.min.js' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidExts: [ 'md', '.js*' ] }, function() {
+        var opts = { invalidExts: [ 'md', '.js*' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 0 );
+      });
+
+      test(BASE, { invalidExts: /\.js$/ }, function() {
+        var opts = { invalidExts: /\.js$/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+    });
+
+    should('only return the files with valid names', function() {
+
+      test(BASE, { validNames: 'file1' }, function() {
+        var opts = { validNames: 'file1' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 2 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file1.md') );
+      });
+
+      test(BASE, { validNames: '*1' }, function() {
+        var opts = { validNames: '*1' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'AZ1.json') );
+      });
+
+      test(BASE, { validNames: [ '_*', 'az*' ] }, function() {
+        var opts = { validNames: [ '_*', 'az*' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { validNames: /file/ }, function() {
+        var opts = { validNames: /file/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+      });
+    });
+
+    should('not return the files with invalid names', function() {
+
+      test(BASE, { invalidNames: 'az*' }, function() {
+        var opts = { invalidNames: 'az*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 10 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+      });
+
+      test(BASE, { invalidNames: '*1|*2' }, function() {
+        var opts = { invalidNames: '*1|*2' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, '_AZ.json') );
+      });
+
+      test(BASE, { invalidNames: [ 'file1', 'file2' ] }, function() {
+        var opts = { invalidNames: [ 'file1', 'file2' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 8 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidNames: /^[a-z]/ }, function() {
+        var opts = { invalidNames: /^[a-z]/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 8 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+    });
+
+    should('only return the valid files', function() {
+
+      test(BASE, { validFiles: 'file' }, function() {
+        var opts = { validFiles: 'file' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 0 );
+      });
+
+      test(BASE, { validFiles: 'file*' }, function() {
+        var opts = { validFiles: 'file*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+      });
+
+      test(BASE, { validFiles: [ 'file1.js', 'az1.json' ] }, function() {
+        var opts = { validFiles: [ 'file1.js', 'az1.json' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 2 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'AZ1.json') );
+      });
+
+      test(BASE, { validFiles: /[0-9]\.js.*$/ }, function() {
+        var opts = { validFiles: /[0-9]\.js.*$/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+    });
+
+    should('not return the invalid files', function() {
+
+      test(BASE, { invalidFiles: '_*.js*' }, function() {
+        var opts = { invalidFiles: '_*.js*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 9 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '1.min.js') );
+        assert( hasVal(files, '2.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidFiles: 'file1.*|1*|2*' }, function() {
+        var opts = { invalidFiles: 'file1.*|1*|2*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 8 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, '_AZ.json') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidFiles: [ '_*', '*.js' ] }, function() {
+        var opts = { invalidFiles: [ '_*', '*.js' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.md') );
+        assert( hasVal(files, 'file2.md') );
+        assert( hasVal(files, 'AZ1.json') );
+        assert( hasVal(files, 'AZ2.json') );
+      });
+
+      test(BASE, { invalidFiles: /[0-9]/ }, function() {
+        var opts = { invalidFiles: /[0-9]/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, '_file.js') );
+        assert( hasVal(files, '_.min.js') );
+        assert( hasVal(files, '_file.md') );
+        assert( hasVal(files, '_AZ.json') );
+      });
+    });
   });
 
-  describe('deep tests', function() {
+  suite('deep tests', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [ 'file1.js', 'file2.js' ];
@@ -483,311 +417,232 @@ describe('vitals.get.filepaths (section:fs)', function() {
       });
     });
 
-    title = titleStr('should return all of the files');
-    describe(title, function() {
-
-      title = callStr('', true);
-      it(title, function() {
-        var base = addBase('');
-        var files = vitals.get.filepaths(base, true);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-        assert( has(files, 'subdir/subdir1/file1.js') );
-        assert( has(files, 'subdir/subdir1/file2.js') );
-        assert( has(files, 'subdir/subdir2/file1.js') );
-        assert( has(files, 'subdir/subdir2/file2.js') );
-      });
-
-      title = callStr('', { deep: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-        assert( has(files, 'subdir/subdir1/file1.js') );
-        assert( has(files, 'subdir/subdir1/file2.js') );
-        assert( has(files, 'subdir/subdir2/file1.js') );
-        assert( has(files, 'subdir/subdir2/file2.js') );
-      });
-
-      title = callStr('', { recursive: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { recursive: true };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-        assert( has(files, 'subdir/subdir1/file1.js') );
-        assert( has(files, 'subdir/subdir1/file2.js') );
-        assert( has(files, 'subdir/subdir2/file1.js') );
-        assert( has(files, 'subdir/subdir2/file2.js') );
-      });
-
-    });
-
-    title = titleStr('should return all of the files with the base dirpath');
-    describe(title, function() {
-
-      title = callStr('', { deep: true, basepath: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, basepath: true };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, addBase('file1.js')) );
-        assert( has(files, addBase('file2.js')) );
-        assert( has(files, addBase('subdir/file1.js')) );
-        assert( has(files, addBase('subdir/file2.js')) );
-        assert( has(files, addBase('subdir1/file1.js')) );
-        assert( has(files, addBase('subdir1/file2.js')) );
-        assert( has(files, addBase('subdir2/file1.js')) );
-        assert( has(files, addBase('subdir2/file2.js')) );
-        assert( has(files, addBase('subdir/subdir1/file1.js')) );
-        assert( has(files, addBase('subdir/subdir1/file2.js')) );
-        assert( has(files, addBase('subdir/subdir2/file1.js')) );
-        assert( has(files, addBase('subdir/subdir2/file2.js')) );
-      });
-
-    });
-
-    title = titleStr('should only return the files from valid dirs');
-    describe(title, function() {
-
-      title = callStr('', { deep: true, validDirs: 'subdir' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, validDirs: 'subdir' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-      });
-
-      title = callStr('', { deep: true, validDirs: 'subdir*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, validDirs: 'subdir*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 12 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-        assert( has(files, 'subdir/subdir1/file1.js') );
-        assert( has(files, 'subdir/subdir1/file2.js') );
-        assert( has(files, 'subdir/subdir2/file1.js') );
-        assert( has(files, 'subdir/subdir2/file2.js') );
-      });
-
-      title = callStr('', { deep: true, validDirs: [ 'subdir1', 'subdir2' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, validDirs: [ 'subdir1', 'subdir2' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-      });
-
-      title = callStr('', { deep: true, validDirs: /^subdir[0-9]$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, validDirs: /^subdir[0-9]$/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-      });
-
-    });
-
-    title = titleStr('should not return the files from invalid dirs');
-    describe(title, function() {
-
-      title = callStr('', { deep: true, invalidDirs: 'subdir' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, invalidDirs: 'subdir' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 6 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir1/file1.js') );
-        assert( has(files, 'subdir1/file2.js') );
-        assert( has(files, 'subdir2/file1.js') );
-        assert( has(files, 'subdir2/file2.js') );
-      });
-
-      title = callStr('', { deep: true, invalidDirs: 'subdir*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, invalidDirs: 'subdir*' };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 2 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-      });
-
-      title = callStr('', { deep: true, invalidDirs: [ 'subdir1','subdir2' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, invalidDirs: [ 'subdir1', 'subdir2' ] };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-      });
-
-      title = callStr('', { deep: true, invalidDirs: /^subdir[0-9]$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, invalidDirs: /^subdir[0-9]$/ };
-        var files = vitals.get.filepaths(base, opts);
-        assert( is.arr(files) );
-        assert( files.length === 4 );
-        assert( has(files, 'file1.js') );
-        assert( has(files, 'file2.js') );
-        assert( has(files, 'subdir/file1.js') );
-        assert( has(files, 'subdir/file2.js') );
-      });
-
-    });
-
     after('clean up dummy dirs and files', rmDummy);
 
+    should('return all of the files', function() {
+
+      test(BASE, true, function() {
+        var files = vitals.get.filepaths(BASE, true);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+        assert( hasVal(files, 'subdir/subdir1/file1.js') );
+        assert( hasVal(files, 'subdir/subdir1/file2.js') );
+        assert( hasVal(files, 'subdir/subdir2/file1.js') );
+        assert( hasVal(files, 'subdir/subdir2/file2.js') );
+      });
+
+      test(BASE, { deep: true }, function() {
+        var opts = { deep: true };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+        assert( hasVal(files, 'subdir/subdir1/file1.js') );
+        assert( hasVal(files, 'subdir/subdir1/file2.js') );
+        assert( hasVal(files, 'subdir/subdir2/file1.js') );
+        assert( hasVal(files, 'subdir/subdir2/file2.js') );
+      });
+
+      test(BASE, { recursive: true }, function() {
+        var opts = { recursive: true };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+        assert( hasVal(files, 'subdir/subdir1/file1.js') );
+        assert( hasVal(files, 'subdir/subdir1/file2.js') );
+        assert( hasVal(files, 'subdir/subdir2/file1.js') );
+        assert( hasVal(files, 'subdir/subdir2/file2.js') );
+      });
+    });
+
+    should('return all of the files with the base dirpath', function() {
+
+      test(BASE, { deep: true, basepath: true }, function() {
+        var opts = { deep: true, basepath: true };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, addBase('file1.js')) );
+        assert( hasVal(files, addBase('file2.js')) );
+        assert( hasVal(files, addBase('subdir/file1.js')) );
+        assert( hasVal(files, addBase('subdir/file2.js')) );
+        assert( hasVal(files, addBase('subdir1/file1.js')) );
+        assert( hasVal(files, addBase('subdir1/file2.js')) );
+        assert( hasVal(files, addBase('subdir2/file1.js')) );
+        assert( hasVal(files, addBase('subdir2/file2.js')) );
+        assert( hasVal(files, addBase('subdir/subdir1/file1.js')) );
+        assert( hasVal(files, addBase('subdir/subdir1/file2.js')) );
+        assert( hasVal(files, addBase('subdir/subdir2/file1.js')) );
+        assert( hasVal(files, addBase('subdir/subdir2/file2.js')) );
+      });
+    });
+
+    should('only return the files from valid dirs', function() {
+
+      test(BASE, { deep: true, validDirs: 'subdir' }, function() {
+        var opts = { deep: true, validDirs: 'subdir' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+      });
+
+      test(BASE, { deep: true, validDirs: 'subdir*' }, function() {
+        var opts = { deep: true, validDirs: 'subdir*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 12 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+        assert( hasVal(files, 'subdir/subdir1/file1.js') );
+        assert( hasVal(files, 'subdir/subdir1/file2.js') );
+        assert( hasVal(files, 'subdir/subdir2/file1.js') );
+        assert( hasVal(files, 'subdir/subdir2/file2.js') );
+      });
+
+      test(BASE, { deep: true, validDirs: [ 'subdir1', 'subdir2' ] }, function() {
+        var opts = { deep: true, validDirs: [ 'subdir1', 'subdir2' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+      });
+
+      test(BASE, { deep: true, validDirs: /^subdir[0-9]$/ }, function() {
+        var opts = { deep: true, validDirs: /^subdir[0-9]$/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+      });
+    });
+
+    should('not return the files from invalid dirs', function() {
+
+      test(BASE, { deep: true, invalidDirs: 'subdir' }, function() {
+        var opts = { deep: true, invalidDirs: 'subdir' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 6 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir1/file1.js') );
+        assert( hasVal(files, 'subdir1/file2.js') );
+        assert( hasVal(files, 'subdir2/file1.js') );
+        assert( hasVal(files, 'subdir2/file2.js') );
+      });
+
+      test(BASE, { deep: true, invalidDirs: 'subdir*' }, function() {
+        var opts = { deep: true, invalidDirs: 'subdir*' };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 2 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+      });
+
+      test(BASE, { deep: true, invalidDirs: [ 'subdir1','subdir2' ] }, function() {
+        var opts = { deep: true, invalidDirs: [ 'subdir1', 'subdir2' ] };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+      });
+
+      test(BASE, { deep: true, invalidDirs: /^subdir[0-9]$/ }, function() {
+        var opts = { deep: true, invalidDirs: /^subdir[0-9]$/ };
+        var files = vitals.get.filepaths(BASE, opts);
+        assert( is.arr(files) );
+        assert( files.length === 4 );
+        assert( hasVal(files, 'file1.js') );
+        assert( hasVal(files, 'file2.js') );
+        assert( hasVal(files, 'subdir/file1.js') );
+        assert( hasVal(files, 'subdir/file2.js') );
+      });
+    });
   });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+  suite('error tests', function() {
 
     before('setup dummy dirs and files', function() {
       var files = [ 'file1.js', 'file2.js', 'file3.js' ];
       mkDummy({ 'root': files, 'subdir': null });
     });
 
-      title = callStr();
-      it(title, function() {
+    after('clean up dummy dirs and files', rmDummy);
+
+    should('throw an error', function() {
+
+      test(function() {
         assert.throws(function() {
           vitals.get.filepaths();
-        });
+        }, validTypeErr);
       });
 
-      title = callStr('invalid');
-      it(title, function() {
+      test('invalid', function() {
         assert.throws(function() {
           var base = addBase('invalid');
           vitals.get.filepaths(base);
-        });
+        }, validTypeErr);
       });
 
-      title = callStr('', 'fail');
-      it(title, function() {
+      test(BASE, 'fail', function() {
         assert.throws(function() {
-          var base = addBase('');
-          vitals.get.filepaths(base, 'fail');
-        });
+          vitals.get.filepaths(BASE, 'fail');
+        }, validTypeErr);
       });
 
-      title = callStr('', { validExts: false });
-      it(title, function() {
+      test(BASE, { validExts: false }, function() {
         assert.throws(function() {
-          var base = addBase('');
           var opts = { validExts: false };
-          vitals.get.filepaths(base, opts);
-        });
+          vitals.get.filepaths(BASE, opts);
+        }, validTypeErr);
       });
-
-      after('clean up dummy dirs and files', rmDummy);
-
     });
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr(args) {
-  args = remap(arguments, function(val, i) {
-    return i ? val : addBase(val);
-  });
-  return testCall('get.filepaths', args, 4);
-}
-
-/**
- * @private
- * @param {string=} dir
- * @return {string}
- */
-function addBase(dir) {
-
-  /** @type {string} */
-  var base;
-
-  base = cut(DUMMY.base, /\/$/);
-  return dir ? fuse(base, '/', dir) : base;
-}
