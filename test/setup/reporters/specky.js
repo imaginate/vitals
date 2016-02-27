@@ -16,6 +16,7 @@
 
 'use strict';
 
+var indentStr = require('../../helpers/indent-str');
 var breakStr = require('../../helpers/break-str');
 var inherits = require('util').inherits;
 var chalk = require('chalk');
@@ -64,7 +65,7 @@ function Specky(runner) {
 
     msg = suite.title;
 
-    if (indents === 1) method = getMethod(msg);
+    if (suite.main) method = getMethod(msg);
     else msg = breakStr(msg, indents);
 
     msg = chalk.white(msg);
@@ -83,6 +84,7 @@ function Specky(runner) {
     var msg;
 
     msg = '- ' + test.title;
+    msg = indentStr(msg, indents + 1);
     msg = chalk.yellow(msg);
     msg = mkIndent(indents) + msg;
     console.log(msg);
@@ -95,7 +97,8 @@ function Specky(runner) {
     /** @type {string} */
     var msg;
 
-    title = chalk.white(test.title);
+    title = indentStr(test.title, indents + 1);
+    title = chalk.white(title);
 
     if (test.speed !== 'fast') {
       msg = ' (' + test.duration + 'ms)';
@@ -116,6 +119,7 @@ function Specky(runner) {
 
     ++fails;
     msg = fails + ' ' + test.title;
+    msg = indentStr(msg, indents + 1);
     msg = chalk.red(msg);
     msg = mkIndent(indents) + msg;
     console.log(msg);
