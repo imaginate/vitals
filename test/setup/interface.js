@@ -78,6 +78,7 @@ function Interface(suite) {
 
       suite = Suite.create(suites[0], title);
       suite.file = file;
+      suite.main = true;
       suite.method = alias || method;
 
       suites.unshift(suite);
@@ -112,6 +113,7 @@ function Interface(suite) {
       suite = Suite.create(suites[0], title);
       suite.pending = true;
       suite.method = alias || method;
+      suite.main = true;
 
       suites.unshift(suite);
       tests.call(suite);
