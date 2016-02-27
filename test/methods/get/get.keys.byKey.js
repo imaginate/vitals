@@ -1,152 +1,97 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.KEYS.BY-KEY
+ * VITALS UNIT TESTS: vitals.get.keys.byKey
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section base
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.get.keys.byKey (section:base)', function() {
-  var title;
+method('get.keys.byKey', function() {
 
-  describe('basic tests', function() {
+  should('return array of keys where key matches pattern', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should return array of keys where key matches pattern');
-    describe(title, function() {
-
-      title = callStr('<object>', /^[a-z]$/);
-      it(title, function() {
-        var vals = vitals.get.keys.byKey(newObj(), /^[a-z]$/).sort();
-        assert( vals.length === 3 );
-        each([ 'a','b','c' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('<object>', 'a');
-      it(title, function() {
-        var vals = vitals.get.keys.byKey(newObj(), 'a').sort();
-        assert( vals.length === 2 );
-        each([ 'a','a1' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('<object>', 1);
-      it(title, function() {
-        var vals = vitals.get.keys.byKey(newObj(), 1).sort();
-        assert( vals.length === 2 );
-        each([ '1','a1' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-      title = callStr('<object>', 'd');
-      it(title, function() {
-        var vals = vitals.get.keys.byKey(newObj(), 'd');
-        assert( vals.length === 0 );
-      });
-
+    test('<object>', /^[0-9]$/, function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd'
+      };
+      var keys = vitals.get.keys.byKey(obj, /^[0-9]$/);
+      assert( is.arr(keys) );
+      assert( hasVal(keys, '3') );
+      assert( hasVal(keys, '4') );
+      assert( keys.length === 2 );
     });
 
-  });
+    test('<object>', 'a', function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd',
+        'a3': 5,  'b4': 6
+      };
+      var keys = vitals.get.keys.byKey(obj, 'a');
+      assert( is.arr(keys) );
+      assert( hasVal(keys, 'a') );
+      assert( hasVal(keys, 'a3') );
+      assert( keys.length === 2 );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+    test('<object>', 4, function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd',
+        'a3': 5,  'b4': 6
+      };
+      var keys = vitals.get.keys.byKey(obj, 4);
+      assert( is.arr(keys) );
+      assert( hasVal(keys, '4') );
+      assert( hasVal(keys, 'b4') );
+      assert( keys.length === 2 );
+    });
 
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys.byKey();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys.byKey({});
-        });
-      });
-
-      title = callStr(null, 'str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys.byKey(null, 'str');
-        });
-      });
-
-      title = callStr('str', 'str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys.byKey('str', 'str');
-        });
-      });
-
+    test('<object>', 'd', function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd'
+      };
+      var keys = vitals.get.keys.byKey(obj, 'd');
+      assert( is.arr(keys) );
+      assert( keys.length === 0 );
     });
   });
 
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.get.keys.byKey();
+      }, validTypeErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.get.keys.byKey({});
+      }, validErr);
+    });
+
+    test(null, 'str', function() {
+      assert.throws(function() {
+        vitals.get.keys.byKey(null, 'str');
+      }, validTypeErr);
+    });
+
+    test('str', 'str', function() {
+      assert.throws(function() {
+        vitals.get.keys.byKey('str', 'str');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('get.keys.byKey', arguments, 5, true);
-}
-
-/**
- * @private
- * @param {boolean=} keys
- * @return {!Object}
- */
-function newObj(keys) {
-  return keys
-    ? [ 'a', 'b', 'c', '1', '2', '3', 'a1', 'b2', 'c3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
