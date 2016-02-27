@@ -12,10 +12,6 @@
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
- *
- * @todo Add get.<oneValue> for all existing methods.
- * @todo Add get.prototypeOf (get.proto).
- * @todo Add get.<method>.byType.
  */
 
 'use strict';
