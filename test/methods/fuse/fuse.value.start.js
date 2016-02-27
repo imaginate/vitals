@@ -1,190 +1,146 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FUSE.VALUE.START
+ * VITALS UNIT TESTS: vitals.fuse.value.start
  * -----------------------------------------------------------------------------
- * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
+ * @section base
+ * @see [vitals.fuse docs](https://github.com/imaginate/vitals/wiki/vitals.fuse)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fuse.value.start (section:base)', function() {
-  var title;
+method('fuse.value.start', 'fuse.val.top', function() {
 
-  describe('object tests', function() {
+  should('add new props to dest obj', function() {
 
-    title = titleStr('should add new props to dest obj');
-    describe(title, function() {
-
-      title = callStr({ a: 1 }, 'a');
-      it(title, function() {
-        var obj = vitals.fuse.val.top({ a: 1 }, 'a');
-        assert( obj.a === 1 );
-      });
-
-      title = callStr({ a: 1 }, { a: 10, z: 10 });
-      it(title, function() {
-        var obj = { a: 10, z: 10 };
-        var dest = vitals.fuse.val.top({ a: 1 }, obj);
-        assert( dest.a === 1 );
-        assert( has(dest, obj) );
-        assert( dest[obj] === undefined );
-      });
-
-      title = callStr({ a: 1 }, 'z');
-      it(title, function() {
-        var obj = vitals.fuse.val.top({ a: 1 }, 'z');
-        assert( obj.a === 1 );
-        assert( has(obj, 'z') );
-        assert( obj.z === undefined );
-      });
-
-      title = callStr({ a: 1 }, 'a', 'b', 'c', null);
-      it(title, function() {
-        var obj = vitals.fuse.val.top({ a: 1 }, 'a', 'b', 'c', null);
-        assert( obj.a === 1 );
-        each([ 'b','c','null' ], function(key) {
-          assert( has(obj, key) );
-          assert( obj[key] === undefined );
-        });
-      });
-
-      title = callStr({ a: 1 }, [ 'a', 'b', 'c' ]);
-      it(title, function() {
-        var arr = [ 'a', 'b', 'c' ];
-        var obj = vitals.fuse.val.top({ a: 1 }, arr);
-        assert( obj.a === 1 );
-        assert( has(obj, arr) );
-        assert( obj[arr] === undefined );
-      });
-
+    test({ a: 1 }, { a: 10, z: 10 }, function() {
+      var dest = { a: 1 };
+      var obj = vitals.fuse.val.top(dest, { a: 10, z: 10 });
+      assert( obj === dest );
+      assert(  hasOwn(dest, 'a') );
+      assert( !hasOwn(dest, 'z') );
+      assert(  hasOwn(dest, '[object Object]') );
+      assert( obj.a === 1 );
+      assert( obj['[object Object]'] === undefined );
     });
 
-  });
-
-  describe('array tests', function() {
-
-    title = titleStr('should unshift new properties to dest array');
-    describe(title, function() {
-
-      title = callStr([ 8 ], 5);
-      it(title, function() {
-        var arr = vitals.fuse.val.top([ 8 ], 5);
-        assert( arr.length === 2 );
-        assert( arr[0] === 5 );
-        assert( arr[1] === 8 );
-      });
-
-      title = callStr([ 8 ], [ 5 ]);
-      it(title, function() {
-        var arr = [ 5 ];
-        var dest = vitals.fuse.val.top([ 8 ], arr);
-        assert( dest.length === 2 );
-        assert( dest[0] === arr );
-        assert( dest[1] === 8 );
-      });
-
-      title = callStr([ 8 ], 5, true, null);
-      it(title, function() {
-        var arr = vitals.fuse.val.top([ 8 ], 5, true, null);
-        assert( arr.length === 4 );
-        assert( arr[0] === null );
-        assert( arr[1] === true );
-        assert( arr[2] === 5 );
-        assert( arr[3] === 8 );
-      });
-
+    test({ a: 1 }, 'z', function() {
+      var dest = { a: 1 };
+      var obj = vitals.fuse.val.top(dest, 'z');
+      assert( obj === dest );
+      assert( hasOwn(dest, 'a') );
+      assert( hasOwn(dest, 'z') );
+      assert( obj.a === 1 );
+      assert( obj.z === undefined );
     });
 
-  });
-
-  describe('string tests', function() {
-
-    title = titleStr('should append strings to dest string');
-    describe(title, function() {
-
-      title = callStr('z', 5);
-      it(title, function() {
-        var str = vitals.fuse.val.top('z', 5);
-        assert( str === '5z' );
-      });
-
-      title = callStr('z', 'a', 5);
-      it(title, function() {
-        var str = vitals.fuse.val.top('z', 'a', 5);
-        assert( str === '5az' );
-      });
-
-      title = callStr('z', [ 'a', 5 ]);
-      it(title, function() {
-        var str = vitals.fuse.val.top('z', [ 'a', 5 ]);
-        assert( str === 'a,5z' );
-      });
-
-      title = callStr('z', 5, [ 'a', 'b' ]);
-      it(title, function() {
-        var str = vitals.fuse.val.top('z', 5, [ 'a', 'b' ]);
-        assert( str === 'a,b5z' );
-      });
-
+    test({ a: 1 }, 'a', 'b', null, function() {
+      var dest = { a: 1 };
+      var obj = vitals.fuse.val.top(dest, 'a', 'b', null);
+      assert( obj === dest );
+      assert( hasOwn(dest, 'a') );
+      assert( hasOwn(dest, 'b') );
+      assert( hasOwn(dest, 'null') );
+      assert( obj.a === 1 );
+      assert( obj.b === undefined );
+      assert( obj['null'] === undefined );
     });
 
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.val.top();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.val.top({});
-        });
-      });
-
-      title = callStr(null, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.val.top(null, 5);
-        });
-      });
-
+    test({ a: 1 }, [ 'a', 'b' ], function() {
+      var dest = { a: 1 };
+      var obj = vitals.fuse.val.top(dest, [ 'a', 'b' ]);
+      assert( obj === dest );
+      assert(  hasOwn(dest, 'a') );
+      assert( !hasOwn(dest, 'b') );
+      assert(  hasOwn(dest, 'a,b') );
+      assert( obj.a === 1 );
+      assert( obj['a,b'] === undefined );
     });
   });
 
+  should('unshift new properties to dest array', function() {
+
+    test([ 1 ], 5, function() {
+      var dest = [ 1 ];
+      var arr = vitals.fuse.val.top(dest, 5);
+      assert( is.arr(arr) );
+      assert( arr === dest );
+      assert( arr[0] === 5 );
+      assert( arr[1] === 1 );
+      assert( arr.length === 2 );
+    });
+
+    test([ 1 ], 5, true, null, function() {
+      var dest = [ 1 ];
+      var arr = vitals.fuse.val.top(dest, 5, true, null);
+      assert( is.arr(arr) );
+      assert( arr === dest );
+      assert( arr[0] === null );
+      assert( arr[1] === true );
+      assert( arr[2] === 5 );
+      assert( arr[3] === 1 );
+      assert( arr.length === 4 );
+    });
+
+    test([ 1 ], [ 5, true, null ], function() {
+      var dest = [ 1 ];
+      var prop = [ 5, true, null ];
+      var arr = vitals.fuse.val.top(dest, prop);
+      assert( is.arr(arr) );
+      assert( arr === dest );
+      assert( arr[0] === prop );
+      assert( arr[1] === 1 );
+      assert( arr.length === 2 );
+    });
+  });
+
+  should('append strings to dest string', function() {
+
+    test('v', 5, function() {
+      var str = vitals.fuse.val.top('v', 5);
+      assert( str === '5v' );
+    });
+
+    test('v', 'a', 5, function() {
+      var str = vitals.fuse.val.top('v', 'a', 5);
+      assert( str === '5av' );
+    });
+
+    test('v', [ 'a', 5 ], function() {
+      var str = vitals.fuse.val.top('v', [ 'a', 5 ]);
+      assert( str === 'a,5v' );
+    });
+
+    test('v', 5, [ 'a', 'b' ], function() {
+      var str = vitals.fuse.val.top('v', 5, [ 'a', 'b' ]);
+      assert( str === 'a,b5v' );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fuse.val.top();
+      }, validErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.fuse.val.top({});
+      }, validErr);
+    });
+
+    test(null, 5, function() {
+      assert.throws(function() {
+        vitals.fuse.val.top(null, 5);
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fuse.val.top', arguments, 4);
-}
