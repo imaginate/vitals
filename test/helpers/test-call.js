@@ -14,17 +14,14 @@ module.exports = testCall;
 
 var is = require('./is');
 var log = require('./log');
-var sliceArr = require('./slice-arr');
-var indentStr = require('./indent-str');
 
 /**
  * @global
  * @param {string} method
- * @param {!(Array|Arguments)} args
- * @param {number} indent
+ * @param {!Array} args
  * @return {string}
  */
-function testCall(method, args, indent) {
+function testCall(method, args) {
 
   /** @type {string} */
   var result;
@@ -37,15 +34,10 @@ function testCall(method, args, indent) {
   /** @type {number} */
   var i;
 
-  args = sliceArr(args);
-
   if ( !is.str(method) ) throw new TypeError('invalid type for `method` param');
   if ( !is.arr(args)   ) throw new TypeError('invalid type for `args` param');
 
-  if (!args || !args.length) {
-    result = method + '()';
-    return result;
-  }
+  if (!args || !args.length) return method + '()';
 
   result = '';
   last = args.length - 1;
@@ -55,6 +47,5 @@ function testCall(method, args, indent) {
     arg = log.toString(args[i]);
     result += i < last ? arg + ', ' : arg;
   }
-  result = method + '(' + result + ');';
-  return indentStr(result, indent);
+  return method + '(' + result + ');';
 }
