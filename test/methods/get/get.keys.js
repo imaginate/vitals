@@ -1,153 +1,86 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.KEYS
+ * VITALS UNIT TESTS: vitals.get.keys
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section base
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.get.keys (section:base)', function() {
-  var title;
+method('get.keys', function() {
 
-  describe('basic tests', function() {
+  should('return array of all keys', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should return array of all keys');
-    describe(title, function() {
-
-      title = callStr('<object>');
-      it(title, function() {
-        var keys = vitals.get.keys( newObj() ).sort();
-        assert( keys.length === 9 );
-        each(newObj(true).sort(), function(key, i) {
-          assert( keys[i] === key );
-        });
-      });
-
-    });
-
-    title = titleStr('should return array of keys where key matches val');
-    describe(title, function() {
-
-      title = callStr('<object>', /^[a-z]$/);
-      it(title, function() {
-        var vals = vitals.get.keys(newObj(), /^[a-z]$/).sort();
-        assert( vals.length === 3 );
-        each([ 'a','b','c' ], function(val, i) {
-          assert( vals[i] === val );
-        });
-      });
-
-    });
-
-    title = titleStr('should return array of keys where value === val');
-    describe(title, function() {
-
-      title = callStr('<object>', 5);
-      it(title, function() {
-        var vals = vitals.get.keys(newObj(), 5);
-        assert( vals.length === 1 );
-        assert( vals[0] === '2' );
-      });
-
-      title = callStr('<object>', 10);
-      it(title, function() {
-        var vals = vitals.get.keys(newObj(), 10);
-        assert( vals.length === 0 );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys();
-        });
-      });
-
-      title = callStr(null);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys(null);
-        });
-      });
-
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.keys('str');
-        });
-      });
-
+    test('<object>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var keys = vitals.get.keys(obj);
+      assert( is.arr(keys) );
+      assert( hasVal(keys, 'a') );
+      assert( hasVal(keys, 'b') );
+      assert( hasVal(keys, 'c') );
+      assert( keys.length === 3 );
     });
   });
 
+  should('return array of keys where key matches val', function() {
+
+    test('<object>', /^[0-9]$/, function() {
+      var obj = {
+        'a':  1,  'b':  2,
+        '3': 'c', '4': 'd'
+      };
+      var keys = vitals.get.keys(obj, /^[0-9]$/);
+      assert( is.arr(keys) );
+      assert( hasVal(keys, '3') );
+      assert( hasVal(keys, '4') );
+      assert( keys.length === 2 );
+    });
+  });
+
+  should('return array of keys where value === val', function() {
+
+    test('<object>', 2, function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var keys = vitals.get.keys(obj, 2);
+      assert( is.arr(keys) );
+      assert( keys[0] === 'b' );
+      assert( keys.length === 1 );
+    });
+
+    test('<object>', 4, function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var keys = vitals.get.keys(obj, 4);
+      assert( is.arr(keys) );
+      assert( keys.length === 0 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.get.keys();
+      }, validTypeErr);
+    });
+
+    test(null, function() {
+      assert.throws(function() {
+        vitals.get.keys(null);
+      }, validTypeErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.get.keys('str');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('get.keys', arguments, 4);
-}
-
-/**
- * @private
- * @param {boolean=} keys
- * @return {!Object}
- */
-function newObj(keys) {
-  return keys
-    ? [ 'a', 'b', 'c', '1', '2', '3', 'a1', 'b2', 'c3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
