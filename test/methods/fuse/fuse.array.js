@@ -1,130 +1,101 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FUSE.ARRAY
+ * VITALS UNIT TESTS: vitals.fuse.array
  * -----------------------------------------------------------------------------
- * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
+ * @section base
+ * @see [vitals.fuse docs](https://github.com/imaginate/vitals/wiki/vitals.fuse)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fuse.array (section:base)', function() {
-  var title;
+method('fuse.array', 'fuse.arr', function() {
 
-  describe('basic tests', function() {
+  should('push new properties to dest array', function() {
 
-    title = titleStr('should push new properties to dest array');
-    describe(title, function() {
-
-      title = callStr([], 5);
-      it(title, function() {
-        var arr = vitals.fuse.arr([], 5);
-        assert( arr.length === 1 );
-        assert( arr[0] === 5 );
-      });
-
-      title = callStr([], 5, true, null);
-      it(title, function() {
-        var arr = vitals.fuse.arr([], 5, true, null);
-        assert( arr.length === 2 );
-        assert( arr[0] === 5 );
-        assert( arr[1] === true );
-      });
-
+    test([], 5, function() {
+      var dest = [];
+      var arr = vitals.fuse.arr(dest, 5);
+      assert( is.arr(arr) );
+      assert( arr === dest );
+      assert( arr[0] === 5 );
+      assert( arr.length === 1 );
     });
 
-    title = titleStr('should concatenate arrays to dest array');
-    describe(title, function() {
-
-      title = callStr([], [ 5 ]);
-      it(title, function() {
-        var arr = vitals.fuse.arr([], [ 5 ]);
-        assert( arr.length === 1 );
-        assert( arr[0] === 5 );
-      });
-
-      title = callStr([], [ 5, true, null ]);
-      it(title, function() {
-        var arr = vitals.fuse.arr([], [ 5, true, null ]);
-        assert( arr.length === 3 );
-        assert( arr[0] === 5 );
-        assert( arr[1] === true );
-        assert( arr[2] === null );
-      });
-
-      title = callStr([], [ 5 ], [ 6 ], null);
-      it(title, function() {
-        var arr = vitals.fuse.arr([], [ 5 ], [ 6 ], null);
-        assert( arr.length === 2 );
-        assert( arr[0] === 5 );
-        assert( arr[1] === 6 );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.arr();
-        });
-      });
-
-      title = callStr([]);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.arr([]);
-        });
-      });
-
-      title = callStr({}, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.arr({}, 5);
-        });
-      });
-
-      title = callStr(null, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fuse.arr(null, 5);
-        });
-      });
-
+    test([], 5, true, null, function() {
+      var dest = [];
+      var arr = vitals.fuse.arr(dest, 5, true, null); // `null` values are skipped
+      assert( is.arr(arr) );
+      assert( arr === dest );
+      assert( arr[0] === 5 );
+      assert( arr[1] === true );
+      assert( arr.length === 2 );
     });
   });
 
+  should('concatenate arrays to dest array', function() {
+
+    test([], [ 5 ], function() {
+      var dest = [];
+      var arr = vitals.fuse.arr(dest, [ 5 ]);
+      assert( is.arr(arr) );
+      assert( arr !== dest );
+      assert( arr[0] === 5 );
+      assert( arr.length === 1 );
+    });
+
+    test([], [ 5, true, null ], function() {
+      var dest = [];
+      var arr = vitals.fuse.arr(dest, [ 5, true, null ]);
+      assert( is.arr(arr) );
+      assert( arr !== dest );
+      assert( arr[0] === 5 );
+      assert( arr[1] === true );
+      assert( arr[2] === null );
+      assert( arr.length === 3 );
+    });
+
+    test([], [ 5 ], [ 6 ], null, function() {
+      var dest = [];
+      var arr = vitals.fuse.arr(dest, [ 5 ], [ 6 ], null); // `null` values are skipped
+      assert( is.arr(arr) );
+      assert( arr !== dest );
+      assert( arr[0] === 5 );
+      assert( arr[1] === 6 );
+      assert( arr.length === 2 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fuse.arr();
+      }, validTypeErr);
+    });
+
+    test([], function() {
+      assert.throws(function() {
+        vitals.fuse.arr([]);
+      }, validErr);
+    });
+
+    test({}, 5, function() {
+      assert.throws(function() {
+        vitals.fuse.arr({}, 5);
+      }, validTypeErr);
+    });
+
+    test(null, 5, function() {
+      assert.throws(function() {
+        vitals.fuse.arr(null, 5);
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fuse.arr', arguments, 4);
-}
