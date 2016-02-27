@@ -19,6 +19,8 @@ if (BROWSER_TESTS) return;
 
 var CONTENT = DUMMY.content; // content for dummy files
 var BASE = DUMMY.base.replace(/\/$/, ''); // base directory for dummy files
+
+var addBase = DUMMY.addBase;
 var fs = require('fs');
 
 method('copy.file', function() {
@@ -98,15 +100,6 @@ method('copy.file', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // PRIVATE HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string=} path
- * @return {string}
- */
-function addBase(path) {
-  return path ? BASE + '/' + path : BASE;
-}
 
 /**
  * @private
