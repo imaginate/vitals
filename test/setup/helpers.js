@@ -44,5 +44,6 @@ global.BROWSER_TESTS = false;
 global.DUMMY = {};
 global.DUMMY.base = './test/dummy';
 global.DUMMY.content = '// test\n';
+global.DUMMY.addBase = require('../helpers/add-dummy-base');
 global.mkDummy = require('../helpers/mk-dummy');
 global.rmDummy = require('../helpers/rm-dummy');
