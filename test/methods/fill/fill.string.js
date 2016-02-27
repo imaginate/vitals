@@ -1,91 +1,58 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FILL.STRING
+ * VITALS UNIT TESTS: vitals.fill.string
  * -----------------------------------------------------------------------------
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
+ * @section base
+ * @see [vitals.fill docs](https://github.com/imaginate/vitals/wiki/vitals.fill)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fill.string (section:base)', function() {
-  var title;
+method('fill.string', 'fill.str', function() {
 
-  describe('basic tests', function() {
+  should('fill new string with val x times', function() {
 
-    title = titleStr('should fill new string with val x times');
-    describe(title, function() {
-
-      title = callStr(5, 5);
-      it(title, function() {
-        var str = vitals.fill.str(5, 5);
-        assert( str === '55555' );
-      });
-
-      title = callStr(0, 5);
-      it(title, function() {
-        var str = vitals.fill.str(0, 5);
-        assert( str === '' );
-      });
-
+    test(3, 'str', function() {
+      var str = vitals.fill.str(3, '-str-');
+      assert( str === '-str--str--str-' );
     });
 
-  });
+    test(3, 5, function() {
+      var str = vitals.fill.str(3, 5);
+      assert( str === '555' );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.str();
-        });
-      });
-
-      title = callStr(5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.str(5);
-        });
-      });
-
-      title = callStr('fail', 'val');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.str('fail', 'val');
-        });
-      });
-
+    test(0, 5, function() {
+      var str = vitals.fill.str(0, 5);
+      assert( str === '' );
     });
   });
 
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fill.str();
+      }, validTypeErr);
+    });
+
+    test(5, function() {
+      assert.throws(function() {
+        vitals.fill.str(5);
+      }, validErr);
+    });
+
+    test('fail', 'val', function() {
+      assert.throws(function() {
+        vitals.fill.str('fail', 'val');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fill.str', arguments, 4);
-}
