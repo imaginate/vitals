@@ -1,164 +1,112 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FREEZE
+ * VITALS UNIT TESTS: vitals.freeze
  * -----------------------------------------------------------------------------
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/vitals.freeze}
+ * @section strict
+ * @see [vitals.freeze docs](https://github.com/imaginate/vitals/wiki/vitals.freeze)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.freeze (section:strict)', function() {
-  var title;
+method('freeze', function() {
 
-  title = titleStr('basic', 'should shallowly freeze the object');
-  describe(title, function() {
+  should('shallowly freeze the object', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var obj = vitals.freeze(null);
       assert( obj === null );
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       var obj = vitals.freeze({});
-      assert( isFrozen(obj) );
+      assert( is.frozen(obj) );
     });
 
-    title = callStr(function(){});
-    it(title, function() {
-      var func = vitals.freeze(function(){});
-      assert( isFrozen(func) );
+    test('<function>', function() {
+      var func = function(){};
+      func = vitals.freeze(func);
+      assert( is.frozen(func) );
     });
 
-    title = callStr({ a: {} });
-    it(title, function() {
+    test({ a: {} }, function() {
       var obj = vitals.freeze({ a: {} });
-      assert(  isFrozen(obj)   );
-      assert( !isFrozen(obj.a) );
+      assert(  is.frozen(obj)   );
+      assert( !is.frozen(obj.a) );
     });
 
-    title = callStr(null, false);
-    it(title, function() {
+    test(null, false, function() {
       var obj = vitals.freeze(null, false);
       assert( obj === null );
     });
 
-    title = callStr({}, false);
-    it(title, function() {
+    test({}, false, function() {
       var obj = vitals.freeze({}, false);
-      assert( isFrozen(obj) );
+      assert( is.frozen(obj) );
     });
 
-    title = callStr(function(){}, false);
-    it(title, function() {
-      var func = vitals.freeze(function(){}, false);
-      assert( isFrozen(func) );
+    test('<function>', false, function() {
+      var func = function(){};
+      func = vitals.freeze(func, false);
+      assert( is.frozen(func) );
     });
 
-    title = callStr({ a: {} }, false);
-    it(title, function() {
+    test({ a: {} }, false, function() {
       var obj = vitals.freeze({ a: {} }, false);
-      assert(  isFrozen(obj)   );
-      assert( !isFrozen(obj.a) );
+      assert(  is.frozen(obj)   );
+      assert( !is.frozen(obj.a) );
     });
-
   });
 
-  title = titleStr('deep', 'should deeply freeze the object');
-  describe(title, function() {
+  should('deeply freeze the object', function() {
 
-    title = callStr(null, true);
-    it(title, function() {
+    test(null, true, function() {
       var obj = vitals.freeze(null, true);
       assert( obj === null );
     });
 
-    title = callStr({}, true);
-    it(title, function() {
+    test({}, true, function() {
       var obj = vitals.freeze({}, true);
-      assert( isFrozen(obj) );
+      assert( is.frozen(obj) );
     });
 
-    title = callStr(function(){}, true);
-    it(title, function() {
-      var func = vitals.freeze(function(){}, true);
-      assert( isFrozen(func) );
+    test('<function>', true, function() {
+      var func = function(){};
+      func = vitals.freeze(func, true);
+      assert( is.frozen(func) );
     });
 
-    title = callStr({ a: {} }, true);
-    it(title, function() {
+    test({ a: {} }, true, function() {
       var obj = vitals.freeze({ a: {} }, true);
-      assert( isFrozen(obj)   );
-      assert( isFrozen(obj.a) );
+      assert( is.frozen(obj)   );
+      assert( is.frozen(obj.a) );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.freeze();
-      });
+      }, validTypeErr);
     });
 
-    title = callStr('invalid source');
-    it(title, function() {
+    test('invalid', function() {
       assert.throws(function() {
-        vitals.freeze('invalid source');
-      });
+        vitals.freeze('invalid');
+      }, validTypeErr);
     });
 
-    title = callStr({}, 'invalid deep');
-    it(title, function() {
+    test({}, 'invalid', function() {
       assert.throws(function() {
-        vitals.freeze({}, 'invalid deep');
-      });
+        vitals.freeze({}, 'invalid');
+      }, validTypeErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} section
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('freeze', arguments, 3);
-}
-
-/**
- * @private
- * @param {!(Object|function)} obj
- * @return {boolean}
- */
-function isFrozen(obj) {
-  return Object.isFrozen(obj);
-}
