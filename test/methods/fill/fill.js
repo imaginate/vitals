@@ -1,241 +1,172 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FILL
+ * VITALS UNIT TESTS: vitals.fill
  * -----------------------------------------------------------------------------
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
+ * @section base
+ * @see [vitals.fill docs](https://github.com/imaginate/vitals/wiki/vitals.fill)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fill (section:base)', function() {
-  var title;
+method('fill', function() {
 
-  describe('object tests', function() {
+  should('fill object properties with val', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should fill object properties with val');
-    describe(title, function() {
-
-      title = callStr('<object>', 5);
-      it(title, function() {
-        var keys = newObj(true);
-        var obj = vitals.fill(newObj(), 5);
-        each(keys, function(key) {
-          assert( has(obj, key)  );
-          assert( obj[key] === 5 );
-        });
-      });
-
-      title = callStr('<object>', 'a,b,c', 5);
-      it(title, function() {
-        var obj1 = newObj();
-        var obj2 = vitals.fill(newObj(), 'a,b,c', 5);
-        each(obj1, function(val, key) {
-          assert( has(obj2, key) );
-          if ( /^[a-z]$/.test(key) ) assert( obj2[key] === 5 );
-          else assert( obj2[key] === val );
-        });
-      });
-
-      title = callStr('<object>', [ 'x', 'y', 'z' ], 5);
-      it(title, function() {
-        var obj = vitals.fill(newObj(), [ 'x', 'y', 'z' ], 5);
-        assert( obj.x === 5 );
-        assert( obj.y === 5 );
-        assert( obj.z === 5 );
-      });
-
+    test('<object>', 5, function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var obj2 = vitals.fill(obj1, 5);
+      assert( obj2.a === 5 );
+      assert( obj2.b === 5 );
+      assert( obj2.c === 5 );
+      assert( obj2 === obj1 );
     });
 
-  });
-
-  describe('array tests', function() {
-
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should fill array properties with val');
-    describe(title, function() {
-
-      title = callStr('<array>', 5);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5);
-        each(9, function(i) {
-          assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, 2);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5, 2);
-        each(newArr(), function(val, i) {
-          if (i > 1) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
-      title = callStr('<array>', 5, -2);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5, -2);
-        each(newArr(), function(val, i) {
-          if (i > 6) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
-      title = callStr('<array>', 5, 0, 3);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5, 0, 3);
-        each(newArr(), function(val, i) {
-          if (i > 2) assert( arr[i] === val );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, 0, -3);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5, 0, -3);
-        each(newArr(), function(val, i) {
-          if (i > 5) assert( arr[i] === val );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, -3, -1);
-      it(title, function() {
-        var arr = vitals.fill(newArr(), 5, -3, -1);
-        each(newArr(), function(val, i) {
-          if (i === 6 || i === 7) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
+    test('<object>', 'a,b,c', 6, function() {
+      var obj1 = { a: 1, b: 2, c: 3, d: 4, e: 5 };
+      var obj2 = vitals.fill(obj1, 'a,b,c', 6);
+      assert( obj2.a === 6 );
+      assert( obj2.b === 6 );
+      assert( obj2.c === 6 );
+      assert( obj2.d === 4 );
+      assert( obj2.e === 5 );
+      assert( obj2 === obj1 );
     });
 
-  });
-
-  describe('string tests', function() {
-
-    title = titleStr('should fill new string with val x times');
-    describe(title, function() {
-
-      title = callStr(5, 5);
-      it(title, function() {
-        var str = vitals.fill(5, 5);
-        assert( str === '55555' );
-      });
-
-      title = callStr(0, 5);
-      it(title, function() {
-        var str = vitals.fill(0, 5);
-        assert( str === '' );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill({});
-        });
-      });
-
-      title = callStr(false, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill(false, 5);
-        });
-      });
-
-      title = callStr([], 'keys', 'val');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill([], 'keys', 'val');
-        });
-      });
-
+    test('<object>', [ 'a', 'b', 'c' ], 6, function() {
+      var obj1 = { a: 1, b: 2, c: 3, d: 4, e: 5 };
+      var keys = [ 'a', 'b', 'c' ];
+      var obj2 = vitals.fill(obj1, keys, 6);
+      assert( obj2.a === 6 );
+      assert( obj2.b === 6 );
+      assert( obj2.c === 6 );
+      assert( obj2.d === 4 );
+      assert( obj2.e === 5 );
+      assert( obj2 === obj1 );
     });
   });
 
+  should('fill array properties with val', function() {
+
+    test('<array>', 5, function() {
+      var obj1 = [ 1, 2, 3 ];
+      var obj2 = vitals.fill(obj1, 5);
+      assert( obj2[0] === 5 );
+      assert( obj2[1] === 5 );
+      assert( obj2[2] === 5 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 3 );
+    });
+
+    test('<array>', 6, 2, function() {
+      var obj1 = [ 1, 2, 3, 4, 5 ];
+      var obj2 = vitals.fill(obj1, 6, 2);
+      assert( obj2[0] === 1 );
+      assert( obj2[1] === 2 );
+      assert( obj2[2] === 6 );
+      assert( obj2[3] === 6 );
+      assert( obj2[4] === 6 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 5 );
+    });
+
+    test('<array>', 6, -2, function() {
+      var obj1 = [ 1, 2, 3, 4, 5 ];
+      var obj2 = vitals.fill(obj1, 6, -2);
+      assert( obj2[0] === 1 );
+      assert( obj2[1] === 2 );
+      assert( obj2[2] === 3 );
+      assert( obj2[3] === 6 );
+      assert( obj2[4] === 6 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 5 );
+    });
+
+    test('<array>', 6, 0, 3, function() {
+      var obj1 = [ 1, 2, 3, 4, 5 ];
+      var obj2 = vitals.fill(obj1, 6, 0, 3);
+      assert( obj2[0] === 6 );
+      assert( obj2[1] === 6 );
+      assert( obj2[2] === 6 );
+      assert( obj2[3] === 4 );
+      assert( obj2[4] === 5 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 5 );
+    });
+
+    test('<array>', 6, 0, -3, function() {
+      var obj1 = [ 1, 2, 3, 4, 5 ];
+      var obj2 = vitals.fill(obj1, 6, 0, -3);
+      assert( obj2[0] === 6 );
+      assert( obj2[1] === 6 );
+      assert( obj2[2] === 3 );
+      assert( obj2[3] === 4 );
+      assert( obj2[4] === 5 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 5 );
+    });
+
+    test('<array>', 6, -3, -1, function() {
+      var obj1 = [ 1, 2, 3, 4, 5 ];
+      var obj2 = vitals.fill(obj1, 6, -3, -1);
+      assert( obj2[0] === 1 );
+      assert( obj2[1] === 2 );
+      assert( obj2[2] === 6 );
+      assert( obj2[3] === 6 );
+      assert( obj2[4] === 5 );
+      assert( obj2 === obj1 );
+      assert( obj2.length === 5 );
+    });
+  });
+
+  should('fill new string with val x times', function() {
+
+    test(3, 'str', function() {
+      var str = vitals.fill(3, '-str-');
+      assert( str === '-str--str--str-' );
+    });
+
+    test(5, 5, function() {
+      var str = vitals.fill(5, 5);
+      assert( str === '55555' );
+    });
+
+    test(0, 5, function() {
+      var str = vitals.fill(0, 5);
+      assert( str === '' );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fill();
+      }, validErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.fill({});
+      }, validErr);
+    });
+
+    test(false, 5, function() {
+      assert.throws(function() {
+        vitals.fill(false, 5);
+      }, validTypeErr);
+    });
+
+    test([], 'keys', 'val', function() {
+      assert.throws(function() {
+        vitals.fill([], 'keys', 'val');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fill', arguments, 4);
-}
-
-/**
- * @private
- * @param {boolean=} keys
- * @return {!Object}
- */
-function newObj(keys) {
-  return keys
-    ? [ 'a', 'b', 'c', '1', '2', '3', 'a1', 'b2', 'c3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
