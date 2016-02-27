@@ -1,216 +1,186 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - FILL.ARRAY
+ * VITALS UNIT TESTS: vitals.fill.array
  * -----------------------------------------------------------------------------
- * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
+ * @section base
+ * @see [vitals.fill docs](https://github.com/imaginate/vitals/wiki/vitals.fill)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.fill.array (section:base)', function() {
-  var title;
+method('fill.array', 'fill.arr', function() {
 
-  describe('basic tests', function() {
+  should('fill array props with val', function() {
 
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should fill array properties with val');
-    describe(title, function() {
-
-      title = callStr('<array>', 5);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5);
-        each(9, function(i) {
-          assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, 2);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5, 2);
-        each(newArr(), function(val, i) {
-          if (i > 1) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
-      title = callStr('<array>', 5, -2);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5, -2);
-        each(newArr(), function(val, i) {
-          if (i > 6) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
-      title = callStr('<array>', 5, 0, 3);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5, 0, 3);
-        each(newArr(), function(val, i) {
-          if (i > 2) assert( arr[i] === val );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, 0, -3);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5, 0, -3);
-        each(newArr(), function(val, i) {
-          if (i > 5) assert( arr[i] === val );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr('<array>', 5, -3, -1);
-      it(title, function() {
-        var arr = vitals.fill.arr(newArr(), 5, -3, -1);
-        each(newArr(), function(val, i) {
-          if (i === 6 || i === 7) assert( arr[i] === 5 );
-          else assert( arr[i] === val );
-        });
-      });
-
+    test('<array>', 5, function() {
+      var arr1 = [ 1, 2, 3 ];
+      var arr2 = vitals.fill.arr(arr1, 5);
+      assert( arr2[0] === 5 );
+      assert( arr2[1] === 5 );
+      assert( arr2[2] === 5 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 3 );
     });
 
-    title = titleStr('should make new array with x length and fill it with val');
-    describe(title, function() {
-
-      title = callStr(8, 5);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5);
-        assert( arr.length === 8 );
-        each(8, function(i) {
-          assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr(8, 5, 2);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5, 2);
-        assert( arr.length === 8 );
-        each(8, function(i) {
-          if (i > 1) assert( arr[i] === 5 );
-          else assert( arr[i] === undefined );
-        });
-      });
-
-      title = callStr(8, 5, -2);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5, -2);
-        each(8, function(i) {
-          if (i > 5) assert( arr[i] === 5 );
-          else assert( arr[i] === undefined );
-        });
-      });
-
-      title = callStr(8, 5, 0, 3);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5, 0, 3);
-        each(8, function(i) {
-          if (i > 2) assert( arr[i] === undefined );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr(8, 5, 0, -3);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5, 0, -3);
-        each(8, function(i) {
-          if (i > 4) assert( arr[i] === undefined );
-          else assert( arr[i] === 5 );
-        });
-      });
-
-      title = callStr(8, 5, -3, -1);
-      it(title, function() {
-        var arr = vitals.fill.arr(8, 5, -3, -1);
-        each(8, function(i) {
-          if (i === 5 || i === 6) assert( arr[i] === 5 );
-          else assert( arr[i] === undefined );
-        });
-      });
-
+    test('<array>', 6, 2, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.fill.arr(arr1, 6, 2);
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 2 );
+      assert( arr2[2] === 6 );
+      assert( arr2[3] === 6 );
+      assert( arr2[4] === 6 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 5 );
     });
 
-  });
+    test('<array>', 6, -2, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.fill.arr(arr1, 6, -2);
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 2 );
+      assert( arr2[2] === 3 );
+      assert( arr2[3] === 6 );
+      assert( arr2[4] === 6 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 5 );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+    test('<array>', 6, 0, 3, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.fill.arr(arr1, 6, 0, 3);
+      assert( arr2[0] === 6 );
+      assert( arr2[1] === 6 );
+      assert( arr2[2] === 6 );
+      assert( arr2[3] === 4 );
+      assert( arr2[4] === 5 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 5 );
+    });
 
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.arr();
-        });
-      });
+    test('<array>', 6, 0, -3, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.fill.arr(arr1, 6, 0, -3);
+      assert( arr2[0] === 6 );
+      assert( arr2[1] === 6 );
+      assert( arr2[2] === 3 );
+      assert( arr2[3] === 4 );
+      assert( arr2[4] === 5 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 5 );
+    });
 
-      title = callStr([]);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.arr([]);
-        });
-      });
-
-      title = callStr({}, 5);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.arr({}, 5);
-        });
-      });
-
-      title = callStr([], 'val', 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.arr([], 'val', 'fail');
-        });
-      });
-
-      title = callStr([], 'val', 0, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.fill.arr([], 'val', 0, 'fail');
-        });
-      });
-
+    test('<array>', 6, -3, -1, function() {
+      var arr1 = [ 1, 2, 3, 4, 5 ];
+      var arr2 = vitals.fill.arr(arr1, 6, -3, -1);
+      assert( arr2[0] === 1 );
+      assert( arr2[1] === 2 );
+      assert( arr2[2] === 6 );
+      assert( arr2[3] === 6 );
+      assert( arr2[4] === 5 );
+      assert( arr2 === arr1 );
+      assert( arr2.length === 5 );
     });
   });
 
+  should('make new array with x length and fill it with val', function() {
+
+    test(3, 5, function() {
+      var arr = vitals.fill.arr(3, 5);
+      assert( arr[0] === 5 );
+      assert( arr[1] === 5 );
+      assert( arr[2] === 5 );
+      assert( arr.length === 3 );
+    });
+
+    test(5, 6, 2, function() {
+      var arr = vitals.fill.arr(5, 6, 2);
+      assert( arr[0] === undefined );
+      assert( arr[1] === undefined );
+      assert( arr[2] === 6 );
+      assert( arr[3] === 6 );
+      assert( arr[4] === 6 );
+      assert( arr.length === 5 );
+    });
+
+    test(5, 6, -2, function() {
+      var arr = vitals.fill.arr(5, 6, -2);
+      assert( arr[0] === undefined );
+      assert( arr[1] === undefined );
+      assert( arr[2] === undefined );
+      assert( arr[3] === 6 );
+      assert( arr[4] === 6 );
+      assert( arr.length === 5 );
+    });
+
+    test(5, 6, 0, 3, function() {
+      var arr = vitals.fill.arr(5, 6, 0, 3);
+      assert( arr[0] === 6 );
+      assert( arr[1] === 6 );
+      assert( arr[2] === 6 );
+      assert( arr[3] === undefined );
+      assert( arr[4] === undefined );
+      assert( arr.length === 5 );
+    });
+
+    test(5, 6, 0, -3, function() {
+      var arr = vitals.fill.arr(5, 6, 0, -3);
+      assert( arr[0] === 6 );
+      assert( arr[1] === 6 );
+      assert( arr[2] === undefined );
+      assert( arr[3] === undefined );
+      assert( arr[4] === undefined );
+      assert( arr.length === 5 );
+    });
+
+    test(5, 6, -3, -1, function() {
+      var arr = vitals.fill.arr(5, 6, -3, -1);
+      assert( arr[0] === undefined );
+      assert( arr[1] === undefined );
+      assert( arr[2] === 6 );
+      assert( arr[3] === 6 );
+      assert( arr[4] === undefined );
+      assert( arr.length === 5 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.fill.arr();
+      }, validErr);
+    });
+
+    test([], function() {
+      assert.throws(function() {
+        vitals.fill.arr([]);
+      }, validErr);
+    });
+
+    test({}, 5, function() {
+      assert.throws(function() {
+        vitals.fill.arr({}, 5);
+      }, validTypeErr);
+    });
+
+    test([], 'val', 'fail', function() {
+      assert.throws(function() {
+        vitals.fill.arr([], 'val', 'fail');
+      }, validTypeErr);
+    });
+
+    test([], 'val', 0, 'fail', function() {
+      assert.throws(function() {
+        vitals.fill.arr([], 'val', 0, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('fill.arr', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
