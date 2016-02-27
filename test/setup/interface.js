@@ -303,6 +303,72 @@ function Interface(suite) {
     };
 
     /**
+     * Defines a suite of tests.
+     *
+     * @public
+     * @param {string} msg
+     * @param {function} tests
+     * @return {Suite}
+     */
+    context.suite = function(msg, tests) {
+
+      /** @type {Suite} */
+      var suite;
+
+      suite = Suite.create(suites[0], msg);
+      suite.file = file;
+      suite.method = suite.parent.method;
+
+      suites.unshift(suite);
+      tests.call(suite);
+      suites.shift();
+
+      return suite;
+    };
+
+    /**
+     * Defines a skipped suite of tests.
+     *
+     * @public
+     * @param {string} msg
+     * @param {function} tests
+     * @return {Suite}
+     */
+    context.suite.skip = function(msg, tests) {
+
+      /** @type {Suite} */
+      var suite;
+
+      suite = Suite.create(suites[0], msg);
+      suite.pending = true;
+      suite.method = suite.parent.method;
+
+      suites.unshift(suite);
+      tests.call(suite);
+      suites.shift();
+
+      return suite;
+    };
+
+    /**
+     * Defines the only not skipped suite of tests.
+     *
+     * @public
+     * @param {string} msg
+     * @param {function} tests
+     * @return {Suite}
+     */
+    context.suite.only = function(msg, tests) {
+
+      /** @type {Suite} */
+      var suite;
+
+      suite = context.suite(msg, tests);
+      mocha.grep( suite.fullTitle() );
+      return suite;
+    };
+
+    /**
      * Execute before running tests.
      *
      * @public
