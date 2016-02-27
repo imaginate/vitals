@@ -239,7 +239,7 @@ function Interface(suite) {
       tests = arguments[args.length];
       suite = suites[0];
       tests = suite.pending ? null : tests;
-      msg   = testCall(suite.method, args, 3);
+      msg   = testCall(suite.method, args);
       test  = new Test(msg, tests);
       test.file = file;
       suite.addTest(test);
@@ -255,8 +255,22 @@ function Interface(suite) {
      * @return {Test}
      */
     context.test.skip = function(args, tests) {
-      arguments[arguments.length - 1] = null;
-      return context.test.apply(this, arguments);
+
+      /** @type {Suite} */
+      var suite;
+      /** @type {Test} */
+      var test;
+      /** @type {string} */
+      var msg;
+
+      args  = sliceArr(arguments, 0, -1);
+      tests = null;
+      suite = suites[0];
+      msg   = testCall(suite.method, args);
+      test  = new Test(msg, tests);
+      test.file = file;
+      suite.addTest(test);
+      return test;
     };
 
     /**
@@ -269,10 +283,21 @@ function Interface(suite) {
      */
     context.test.only = function(args, tests) {
 
+      /** @type {Suite} */
+      var suite;
       /** @type {Test} */
       var test;
+      /** @type {string} */
+      var msg;
 
-      test = context.test.apply(this, arguments);
+      args  = sliceArr(arguments, 0, -1);
+      tests = arguments[args.length];
+      suite = suites[0];
+      tests = suite.pending ? null : tests;
+      msg   = testCall(suite.method, args);
+      test  = new Test(msg, tests);
+      test.file = file;
+      suite.addTest(test);
       mocha.grep( test.fullTitle() );
       return test;
     };
