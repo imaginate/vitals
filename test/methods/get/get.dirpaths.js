@@ -1,14 +1,14 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - GET.DIRPATHS
+ * VITALS UNIT TESTS: vitals.get.dirpaths
  * -----------------------------------------------------------------------------
- * @see [vitals.get]{@link https://github.com/imaginate/vitals/wiki/vitals.get}
+ * @section fs
+ * @see [vitals.get docs](https://github.com/imaginate/vitals/wiki/vitals.get)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
@@ -17,314 +17,219 @@
 
 if (BROWSER_TESTS) return;
 
-describe('vitals.get.dirpaths (section:fs)', function() {
-  var title;
+var BASE = DUMMY.base.replace(/\/$/, ''); // BASE directory for dummy files
+var addBase = DUMMY.addBase;
 
-  describe('basic tests', function() {
+method('get.dirpaths', function() {
+  this.slow(25);
 
-    before('setup dummy dirs and files', function() {
-      var files = [ 'file1.js', 'file2.js', 'file3.js' ];
-      mkDummy({
+  before('setup dummy dirs and files', function() {
+    var files = [ 'file1.js', 'file2.js', 'file3.js' ];
+    mkDummy({
+      'root':    files,
+      'subdir1': files,
+      'subdir2': files,
+      'subdir3': files,
+      'subdir': {
         'root':    files,
         'subdir1': files,
         'subdir2': files,
-        'subdir3': files,
-        'subdir': {
-          'root':    files,
-          'subdir1': files,
-          'subdir2': files,
-          'subdir3': files
-        }
-      });
-    });
-
-    title = titleStr('should shallowly return all of the dirs');
-    describe(title, function() {
-
-      title = callStr('');
-      it(title, function() {
-        var base = addBase('');
-        var dirs = vitals.get.dirpaths(base);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 4 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-      });
-
-    });
-
-    title = titleStr('should deeply return all of the dirs');
-    describe(title, function() {
-
-      title = callStr('', true);
-      it(title, function() {
-        var base = addBase('');
-        var dirs = vitals.get.dirpaths(base, true);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 7 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-        assert( has(dirs, 'subdir/subdir1') );
-        assert( has(dirs, 'subdir/subdir2') );
-        assert( has(dirs, 'subdir/subdir3') );
-      });
-
-      title = callStr('', { deep: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 7 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-        assert( has(dirs, 'subdir/subdir1') );
-        assert( has(dirs, 'subdir/subdir2') );
-        assert( has(dirs, 'subdir/subdir3') );
-      });
-
-      title = callStr('', { recursive: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { recursive: true };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 7 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-        assert( has(dirs, 'subdir/subdir1') );
-        assert( has(dirs, 'subdir/subdir2') );
-        assert( has(dirs, 'subdir/subdir3') );
-      });
-
-    });
-
-    title = titleStr('should return all of the dirs with the base dirpath');
-    describe(title, function() {
-
-      title = callStr('', { base: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { base: true };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 4 );
-        assert( has(dirs, addBase('subdir')) );
-        assert( has(dirs, addBase('subdir1')) );
-        assert( has(dirs, addBase('subdir2')) );
-        assert( has(dirs, addBase('subdir3')) );
-      });
-
-      title = callStr('', { deep: true, basepath: true });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { deep: true, basepath: true };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 7 );
-        assert( has(dirs, addBase('subdir')) );
-        assert( has(dirs, addBase('subdir1')) );
-        assert( has(dirs, addBase('subdir2')) );
-        assert( has(dirs, addBase('subdir3')) );
-        assert( has(dirs, addBase('subdir/subdir1')) );
-        assert( has(dirs, addBase('subdir/subdir2')) );
-        assert( has(dirs, addBase('subdir/subdir3')) );
-      });
-
-    });
-
-    title = titleStr('should only return the valid dirs');
-    describe(title, function() {
-
-      title = callStr('', { validDirs: 'subdir' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validDirs: 'subdir' };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 1 );
-        assert( has(dirs, 'subdir') );
-      });
-
-      title = callStr('', { validDirs: 'subdir*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validDirs: 'subdir*' };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 4 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-      });
-
-      title = callStr('', { validDirs: [ 'subdir1', 'subdir2' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validDirs: [ 'subdir1', 'subdir2' ] };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 2 );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-      });
-
-      title = callStr('', { validDirs: /^subdir[0-9]$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { validDirs: /^subdir[0-9]$/ };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 3 );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-      });
-
-    });
-
-    title = titleStr('should not return the invalid dirs');
-    describe(title, function() {
-
-      title = callStr('', { invalidDirs: 'subdir' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidDirs: 'subdir' };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 3 );
-        assert( has(dirs, 'subdir1') );
-        assert( has(dirs, 'subdir2') );
-        assert( has(dirs, 'subdir3') );
-      });
-
-      title = callStr('', { invalidDirs: 'subdir*' });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidDirs: 'subdir*' };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 0 );
-      });
-
-      title = callStr('', { invalidDirs: [ 'subdir1', 'subdir2' ] });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidDirs: [ 'subdir1', 'subdir2' ] };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 2 );
-        assert( has(dirs, 'subdir') );
-        assert( has(dirs, 'subdir3') );
-      });
-
-      title = callStr('', { invalidDirs: /^subdir[0-9]$/ });
-      it(title, function() {
-        var base = addBase('');
-        var opts = { invalidDirs: /^subdir[0-9]$/ };
-        var dirs = vitals.get.dirpaths(base, opts);
-        assert( is.arr(dirs) );
-        assert( dirs.length === 1 );
-        assert( has(dirs, 'subdir') );
-      });
-
-    });
-
-    after('clean up dummy dirs and files', rmDummy);
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-    before('setup dummy dirs and files', function() {
-      var files = [ 'file1.js', 'file2.js', 'file3.js' ];
-      mkDummy({ 'root': files, 'subdir': null });
-    });
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.get.dirpaths();
-        });
-      });
-
-      title = callStr('invalid');
-      it(title, function() {
-        assert.throws(function() {
-          var base = addBase('invalid');
-          vitals.get.dirpaths(base);
-        });
-      });
-
-      title = callStr('', 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          var base = addBase('');
-          vitals.get.dirpaths(base, 'fail');
-        });
-      });
-
-      title = callStr('', { validDirs: false });
-      it(title, function() {
-        assert.throws(function() {
-          var base = addBase('');
-          var opts = { validDirs: false };
-          vitals.get.dirpaths(base, opts);
-        });
-      });
-
-      after('clean up dummy dirs and files', rmDummy);
-
+        'subdir3': files
+      }
     });
   });
 
+  after('clean up dummy dirs and files', rmDummy);
+
+  should('shallowly return all of the dirs', function() {
+
+    test(BASE, function() {
+      var dirs = vitals.get.dirpaths(BASE);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 4 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+    });
+  });
+
+  should('deeply return all of the dirs', function() {
+
+    test(BASE, true, function() {
+      var dirs = vitals.get.dirpaths(BASE, true);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 7 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+      assert( hasVal(dirs, 'subdir/subdir1') );
+      assert( hasVal(dirs, 'subdir/subdir2') );
+      assert( hasVal(dirs, 'subdir/subdir3') );
+    });
+
+    test(BASE, { deep: true }, function() {
+      var opts = { deep: true };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 7 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+      assert( hasVal(dirs, 'subdir/subdir1') );
+      assert( hasVal(dirs, 'subdir/subdir2') );
+      assert( hasVal(dirs, 'subdir/subdir3') );
+    });
+
+    test(BASE, { recursive: true }, function() {
+      var opts = { recursive: true };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 7 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+      assert( hasVal(dirs, 'subdir/subdir1') );
+      assert( hasVal(dirs, 'subdir/subdir2') );
+      assert( hasVal(dirs, 'subdir/subdir3') );
+    });
+  });
+
+  should('return all of the dirs with the base dirpath', function() {
+
+    test(BASE, { base: true }, function() {
+      var opts = { base: true };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 4 );
+      assert( hasVal(dirs, addBase('subdir')) );
+      assert( hasVal(dirs, addBase('subdir1')) );
+      assert( hasVal(dirs, addBase('subdir2')) );
+      assert( hasVal(dirs, addBase('subdir3')) );
+    });
+
+    test(BASE, { deep: true, basepath: true }, function() {
+      var opts = { deep: true, basepath: true };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 7 );
+      assert( hasVal(dirs, addBase('subdir')) );
+      assert( hasVal(dirs, addBase('subdir1')) );
+      assert( hasVal(dirs, addBase('subdir2')) );
+      assert( hasVal(dirs, addBase('subdir3')) );
+      assert( hasVal(dirs, addBase('subdir/subdir1')) );
+      assert( hasVal(dirs, addBase('subdir/subdir2')) );
+      assert( hasVal(dirs, addBase('subdir/subdir3')) );
+    });
+  });
+
+  should('only return the valid dirs', function() {
+
+    test(BASE, { validDirs: 'subdir' }, function() {
+      var opts = { validDirs: 'subdir' };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 1 );
+      assert( hasVal(dirs, 'subdir') );
+    });
+
+    test(BASE, { validDirs: 'subdir*' }, function() {
+      var opts = { validDirs: 'subdir*' };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 4 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+    });
+
+    test(BASE, { validDirs: [ 'subdir1', 'subdir2' ] }, function() {
+      var opts = { validDirs: [ 'subdir1', 'subdir2' ] };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 2 );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+    });
+
+    test(BASE, { validDirs: /^subdir[0-9]$/ }, function() {
+      var opts = { validDirs: /^subdir[0-9]$/ };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 3 );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+    });
+  });
+
+  should('not return the invalid dirs', function() {
+
+    test(BASE, { invalidDirs: 'subdir' }, function() {
+      var opts = { invalidDirs: 'subdir' };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 3 );
+      assert( hasVal(dirs, 'subdir1') );
+      assert( hasVal(dirs, 'subdir2') );
+      assert( hasVal(dirs, 'subdir3') );
+    });
+
+    test(BASE, { invalidDirs: 'subdir*' }, function() {
+      var opts = { invalidDirs: 'subdir*' };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 0 );
+    });
+
+    test(BASE, { invalidDirs: [ 'subdir1', 'subdir2' ] }, function() {
+      var opts = { invalidDirs: [ 'subdir1', 'subdir2' ] };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 2 );
+      assert( hasVal(dirs, 'subdir') );
+      assert( hasVal(dirs, 'subdir3') );
+    });
+
+    test(BASE, { invalidDirs: /^subdir[0-9]$/ }, function() {
+      var opts = { invalidDirs: /^subdir[0-9]$/ };
+      var dirs = vitals.get.dirpaths(BASE, opts);
+      assert( is.arr(dirs) );
+      assert( dirs.length === 1 );
+      assert( hasVal(dirs, 'subdir') );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.get.dirpaths();
+      }, validTypeErr);
+    });
+
+    test('invalid', function() {
+      assert.throws(function() {
+        var base = addBase('invalid');
+        vitals.get.dirpaths(base);
+      }, validTypeErr);
+    });
+
+    test(BASE, 'fail', function() {
+      assert.throws(function() {
+        vitals.get.dirpaths(BASE, 'fail');
+      }, validTypeErr);
+    });
+
+    test(BASE, { validDirs: false }, function() {
+      assert.throws(function() {
+        var opts = { validDirs: false };
+        vitals.get.dirpaths(BASE, opts);
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr(args) {
-  args = remap(arguments, function(val, i) {
-    return i ? val : addBase(val);
-  });
-  return testCall('get.dirpaths', args, 4);
-}
-
-/**
- * @private
- * @param {string=} dir
- * @return {string}
- */
-function addBase(dir) {
-
-  /** @type {string} */
-  var base;
-
-  base = cut(DUMMY.base, /\/$/);
-  return dir ? fuse(base, '/', dir) : base;
-}
