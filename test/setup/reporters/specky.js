@@ -69,7 +69,7 @@ function Specky(runner) {
     else msg = breakStr(msg, indents);
 
     msg = chalk.white(msg);
-    msg = mkIndent(indents - 1) + msg;
+    msg = mkIndent(indents) + msg;
     console.log(msg);
   });
 
@@ -84,9 +84,9 @@ function Specky(runner) {
     var msg;
 
     msg = '- ' + test.title;
-    msg = indentStr(msg, indents + 1);
+    msg = indentStr(msg, indents + 2);
     msg = chalk.yellow(msg);
-    msg = mkIndent(indents) + msg;
+    msg = mkIndent(indents + 1) + msg;
     console.log(msg);
   });
 
@@ -97,7 +97,7 @@ function Specky(runner) {
     /** @type {string} */
     var msg;
 
-    title = indentStr(test.title, indents + 1);
+    title = indentStr(test.title, indents + 2);
     title = chalk.white(title);
 
     if (test.speed !== 'fast') {
@@ -108,7 +108,7 @@ function Specky(runner) {
     }
 
     msg = OK + ' ' + title + (msg || '');
-    msg = mkIndent(indents) + msg;
+    msg = mkIndent(indents + 1) + msg;
     console.log(msg);
   });
 
@@ -119,9 +119,9 @@ function Specky(runner) {
 
     ++fails;
     msg = fails + ' ' + test.title;
-    msg = indentStr(msg, indents + 1);
+    msg = indentStr(msg, indents + 2);
     msg = chalk.red(msg);
-    msg = mkIndent(indents) + msg;
+    msg = mkIndent(indents + 1) + msg;
     console.log(msg);
   });
 
