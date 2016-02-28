@@ -1,90 +1,66 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS.EMPTY
+ * VITALS UNIT TESTS: vitals.is.empty
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section base
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.is.empty (section:base)', function() {
-  var title;
+method('is.empty', function() {
 
-  title = titleStr('should return true');
-  describe(title, function() {
+  should('return true', function() {
 
-    title = callStr([]);
-    it(title, function() {
+    test([], function() {
       var result = vitals.is.empty([]);
       assert( result === true );
     });
 
-    title = callStr(0, '', {}, null, undefined, false, NaN, function(){});
-    it(title, function() {
+    test(0, '', {}, null, undefined, false, NaN, function(){}, function() {
       var func = function(){};
       var result = vitals.is.empty(0, '', {}, null, undefined, false, NaN, func);
       assert( result === true );
     });
-
   });
 
-  title = titleStr('should return false');
-  describe(title, function() {
+  should('return false', function() {
 
-    title = callStr([ 1 ]);
-    it(title, function() {
+    test([ 1 ], function() {
       var result = vitals.is.empty([ 1 ]);
       assert( result === false );
     });
 
-    title = callStr(1, null, undefined, false, NaN);
-    it(title, function() {
-      var result = vitals.is.empty(1, null, undefined, false, NaN);
+    test({ a: 1 }, function() {
+      var result = vitals.is.empty({ a: 1 });
       assert( result === false );
     });
 
-  });
-
-  title = titleStr('should throw an error');
-  describe(title, function() {
-
-    title = callStr();
-    it(title, function() {
-      assert.throws(function() {
-        vitals.is.empty();
-      });
+    test(function(a){}, function() {
+      var func = function(a){};
+      var result = vitals.is.empty(func);
+      assert( result === false );
     });
 
+    test(1, null, undefined, false, NaN, function() {
+      var result = vitals.is.empty(1, null, undefined, false, NaN);
+      assert( result === false );
+    });
   });
 
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.is.empty();
+      }, validErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is.empty', arguments, 3);
-}
