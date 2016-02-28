@@ -1,110 +1,72 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS.ODD
+ * VITALS UNIT TESTS: vitals.is.odd
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section base
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.is.odd (section:base)', function() {
-  var title;
+method('is.odd', function() {
 
-  title = titleStr('should return true');
-  describe(title, function() {
+  should('return true', function() {
 
-    title = callStr(5);
-    it(title, function() {
+    test(5, function() {
       var result = vitals.is.odd(5);
       assert( result === true );
     });
 
-    title = callStr(-5, 1, 5);
-    it(title, function() {
+    test(-5, 1, 5, function() {
       var result = vitals.is.odd(-5, 1, 5);
       assert( result === true );
     });
-
   });
 
-  title = titleStr('should return false');
-  describe(title, function() {
+  should('return false', function() {
 
-    title = callStr(2);
-    it(title, function() {
+    test(2, function() {
       var result = vitals.is.odd(2);
       assert( result === false );
     });
 
-    title = callStr(-5, 0, 5);
-    it(title, function() {
+    test(-5, 0, 5, function() {
       var result = vitals.is.odd(-5, 0, 5);
       assert( result === false );
     });
-
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.is.odd();
-      });
+      }, validErr);
     });
 
-    title = callStr(NaN);
-    it(title, function() {
+    test(NaN, function() {
       assert.throws(function() {
         vitals.is.odd(NaN);
-      });
+      }, validTypeErr);
     });
 
-    title = callStr('fail');
-    it(title, function() {
+    test('fail', function() {
       assert.throws(function() {
         vitals.is.odd('fail');
-      });
+      }, validTypeErr);
     });
 
-    title = callStr(1.5);
-    it(title, function() {
+    test(1.5, function() {
       assert.throws(function() {
         vitals.is.odd(1.5);
-      });
+      }, validRangeErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is.odd', arguments, 3);
-}
