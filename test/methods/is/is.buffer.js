@@ -1,14 +1,14 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS.BUFFER
+ * VITALS UNIT TESTS: vitals.is.buffer
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section fs
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
@@ -17,89 +17,49 @@
 
 if (BROWSER_TESTS) return;
 
-describe('vitals.is.buffer (section:fs)', function() {
-  var title;
+method('is.buffer', 'is.buf', function() {
 
-  describe('basic tests', function() {
+  should('return true', function() {
 
-    title = titleStr('should return true');
-    describe(title, function() {
-
-      title = callStr('<Buffer>');
-      it(title, function() {
-        var buffer = newBuffer();
-        var result = vitals.is.buf(buffer);
-        assert( result === true );
-      });
-
-      title = callStr('<Buffer>', '<Buffer>', '<Buffer>');
-      it(title, function() {
-        var buf1 = newBuffer();
-        var buf2 = newBuffer();
-        var buf3 = newBuffer();
-        var result = vitals.is.buf(buf1, buf2, buf3);
-        assert( result === true );
-      });
-
+    test('<Buffer>', function() {
+      var buffer = newBuffer();
+      var result = vitals.is.buf(buffer);
+      assert( result === true );
     });
 
-    title = titleStr('should return false');
-    describe(title, function() {
-
-      title = callStr('fail');
-      it(title, function() {
-        var result = vitals.is.buf('fail');
-        assert( result === false );
-      });
-
-      title = callStr('<Buffer>', '<Buffer>', null);
-      it(title, function() {
-        var buf1 = newBuffer();
-        var buf2 = newBuffer();
-        var result = vitals.is.buf(buf1, buf2, null);
-        assert( result === false );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.is.buf();
-        });
-      });
-
+    test('<Buffer>', '<Buffer>', '<Buffer>', function() {
+      var buf1 = newBuffer();
+      var buf2 = newBuffer();
+      var buf3 = newBuffer();
+      var result = vitals.is.buf(buf1, buf2, buf3);
+      assert( result === true );
     });
   });
 
+  should('return false', function() {
+
+    test('fail', function() {
+      var result = vitals.is.buf('fail');
+      assert( result === false );
+    });
+
+    test('<Buffer>', '<Buffer>', null, function() {
+      var buf1 = newBuffer();
+      var buf2 = newBuffer();
+      var result = vitals.is.buf(buf1, buf2, null);
+      assert( result === false );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.is.buf();
+      }, validErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is.buf', arguments, 4);
-}
 
 /**
  * @private
