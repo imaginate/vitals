@@ -408,12 +408,33 @@ var TYPES = {
 
 method('is', function() {
 
-  initTests(TYPES);
+  buildTests(TYPES);
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.is();
+      }, validErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.is('str');
+      }, validErr);
+    });
+
+    test('fail', 'a', function() {
+      assert.throws(function() {
+        vitals.is('fail', 'a');
+      }, validRangeErr);
+    });
+  });
 
   /**
    * @param {!Object} sections
    */
-  function initTests(sections) {
+  function buildTests(sections) {
 
     /** @type {!Object} */
     var section;
@@ -554,25 +575,4 @@ method('is', function() {
     i = vals.length;
     while (i--) applyTest(type, vals[i], result);
   }
-
-  should('throw an error', function() {
-
-    test(function() {
-      assert.throws(function() {
-        vitals.is();
-      }, validErr);
-    });
-
-    test('str', function() {
-      assert.throws(function() {
-        vitals.is('str');
-      }, validErr);
-    });
-
-    test('fail', 'a', function() {
-      assert.throws(function() {
-        vitals.is('fail', 'a');
-      }, validRangeErr);
-    });
-  });
 });
