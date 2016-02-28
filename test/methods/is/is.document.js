@@ -1,96 +1,61 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS.DOCUMENT
+ * VITALS UNIT TESTS: vitals.is.document
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section base
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.is.document (section:base)', function() {
-  var title;
+method('is.document', 'is.doc', function() {
 
-  title = titleStr('should return true');
-  describe(title, function() {
+  should('return true', function() {
 
-    title = callStr({ nodeType: 9 });
-    it(title, function() {
+    test('<Document>', function() {
       var doc = { nodeType: 9 };
       var result = vitals.is.doc(doc);
       assert( result === true );
     });
 
-    title = callStr({ nodeType: 9 }, { nodeType: 9 }, { nodeType: 9 });
-    it(title, function() {
+    test('<Document>', '<Document>', '<Document>', function() {
       var doc1 = { nodeType: 9 };
       var doc2 = { nodeType: 9 };
       var doc3 = { nodeType: 9 };
       var result = vitals.is.doc(doc1, doc2, doc3);
       assert( result === true );
     });
-
   });
 
-  title = titleStr('should return false');
-  describe(title, function() {
+  should('return false', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var result = vitals.is.doc(null);
       assert( result === false );
     });
 
-    title = callStr({ nodeType: 9 }, { nodeType: 9 }, { nodeType: 3 });
-    it(title, function() {
+    test('<Document>', '<Document>', '<Object>', function() {
       var doc1 = { nodeType: 9 };
       var doc2 = { nodeType: 9 };
       var obj3 = { nodeType: 3 };
       var result = vitals.is.doc(doc1, doc2, obj3);
       assert( result === false );
     });
-
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.is.doc();
-      });
+      }, validErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is.doc', arguments, 3);
-}
