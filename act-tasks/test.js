@@ -59,7 +59,7 @@ var runTestCmd = require('./helpers/run-test-cmd');
 var buildTest = require('./helpers/build-test');
 var is = require('./helpers/is');
 
-var METHOD = /^([a-z]+)[a-zA-Z.]*$/;
+var METHOD = /^([a-z]+)[a-zA-Z._]*$/;
 
 /**
  * @public
