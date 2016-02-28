@@ -1,89 +1,54 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS.NULL
+ * VITALS UNIT TESTS: vitals.is.null
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section base
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.is.null (section:base)', function() {
-  var title;
+method('is.null', function() {
 
-  title = titleStr('should return true');
-  describe(title, function() {
+  should('return true', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var result = vitals.is.null(null);
       assert( result === true );
     });
 
-    title = callStr(null, null, null);
-    it(title, function() {
+    test(null, null, null, function() {
       var result = vitals.is.null(null, null, null);
       assert( result === true );
     });
-
   });
 
-  title = titleStr('should return false');
-  describe(title, function() {
+  should('return false', function() {
 
-    title = callStr(undefined);
-    it(title, function() {
+    test(undefined, function() {
       var result = vitals.is.null(undefined);
       assert( result === false );
     });
 
-    title = callStr(null, null, undefined);
-    it(title, function() {
+    test(null, null, undefined, function() {
       var result = vitals.is.null(null, null, undefined);
       assert( result === false );
     });
-
   });
 
-  title = titleStr('should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.is.null();
-      });
+      }, validErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is.null', arguments, 3);
-}
