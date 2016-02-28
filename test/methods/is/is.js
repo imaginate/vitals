@@ -1,22 +1,22 @@
 /**
  * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: VITALS.IS
+ * VITALS UNIT TESTS: vitals.is
  * -----------------------------------------------------------------------------
- * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
+ * @section base
+ * @see [vitals.is docs](https://github.com/imaginate/vitals/wiki/vitals.is)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-/** @type {!Object<string, !Object>} */
-var TESTS = {
+var TYPES = {
+
   'primitives': {
     'null': {
       shortcut: 'nil',
@@ -71,6 +71,7 @@ var TESTS = {
       }
     }
   },
+
   'js objects': {
     'object': {
       shortcut: 'obj',
@@ -135,6 +136,7 @@ var TESTS = {
       }
     }
   },
+
   'dom objects': {
     'document': {
       shortcut: 'doc',
@@ -155,6 +157,7 @@ var TESTS = {
       }
     }
   },
+
   'arrays': {
     'nulls': {
       shortcut: 'nils',
@@ -272,6 +275,7 @@ var TESTS = {
       }
     }
   },
+
   'maps': {
     'nullMap': {
       shortcut: 'nilMap',
@@ -389,6 +393,7 @@ var TESTS = {
       }
     }
   },
+
   'others': {
     'empty': {
       truthy: [ null, undefined, false, '', 0, {}, [], function(){}, NaN ],
@@ -401,107 +406,173 @@ var TESTS = {
   }
 };
 
-describe('vitals.is (section:base)', function() {
+method('is', function() {
 
-  each(TESTS, function(section, title) {
-    describe(title, function() {
-      each(section, function(test, type) {
-        each(test.truthy, function(val) {
-          title = callStr(type, val);
-          it(title, function() {
-            var result = vitals.is(type, val);
-            assert( result === true );
-          });
-        });
-        each(test.falsy, function(val) {
-          title = callStr(type, val);
-          it(title, function() {
-            var result = vitals.is(type, val);
-            assert( result === false );
-          });
-        });
-        each(test.plural.truthy, function(vals) {
-          vals = fuse.val.top(vals, type);
-          title = callStr.apply(null, vals);
-          it(title, function() {
-            var result = vitals.is.apply(null, vals);
-            assert( result === true );
-          });
-        });
-        each(test.plural.falsy, function(vals) {
-          vals = fuse.val.top(vals, type);
-          title = callStr.apply(null, vals);
-          it(title, function() {
-            var result = vitals.is.apply(null, vals);
-            assert( result === false );
-          });
-        });
-        var types = test.shortcut && test.shortcut.split('|');
-        each(types || [], function(type) {
-          each(test.truthy, function(val) {
-            title = callStr(type, val);
-            it(title, function() {
-              var result = vitals.is(type, val);
-              assert( result === true );
-            });
-          });
-          each(test.falsy, function(val) {
-            title = callStr(type, val);
-            it(title, function() {
-              var result = vitals.is(type, val);
-              assert( result === false );
-            });
-          });
-        });
-      });
+  initTests(TYPES);
+
+  /**
+   * @param {!Object} sections
+   */
+  function initTests(sections) {
+
+    /** @type {!Object} */
+    var section;
+    /** @type {string} */
+    var title;
+
+    for (title in sections) {
+      if ( hasOwn(sections, title) ) {
+        section = sections[title];
+        setupSection(title, section);
+      }
+    }
+  }
+
+  /**
+   * @param {string} title
+   * @param {!Object} section
+   */
+  function setupSection(title, section) {
+
+    /** @type {!Object} */
+    var main;
+    /** @type {string} */
+    var type;
+
+    suite(title, function() {
+      for (type in section) {
+        if ( hasOwn(section, type) ) {
+          main = section[type];
+          setupType(type, main);
+        }
+      }
     });
-  });
+  }
 
-  describe('should throw an error', function() {
+  /**
+   * @param {string} type
+   * @param {!Object} main
+   */
+  function setupType(type, main) {
 
-    title = callStr();
-    it(title, function() {
+    /** @type {!Array} */
+    var types;
+    /** @type {number} */
+    var i;
+
+    suite(type, function() {
+      setupTests(type, main);
+    });
+
+    if ( main.shortcut ) {
+      types = main.shortcut.split('|');
+      i = types.length;
+      while (i--) {
+        type = types[i];
+        suite(type, function() {
+          setupTests(type, main);
+        });
+      }
+    }
+  }
+
+  /**
+   * @param {string} type
+   * @param {!Object} main
+   */
+  function setupTests(type, main) {
+    should('return true', function() {
+      mkTests(type, main.truthy, true);
+      applyTests(type, main.plural.truthy, true);
+    });
+    should('return false', function() {
+      mkTests(type, main.falsy, false);
+      applyTests(type, main.plural.falsy, false);
+    });
+  }
+
+  /**
+   * @param {string} type
+   * @param {*} val
+   * @param {boolean} result
+   */
+  function mkTest(type, val, result) {
+    test(type, val, function() {
+      var actual = vitals.is(type, val);
+      assert( actual === result );
+    });
+  }
+
+  /**
+   * @param {string} type
+   * @param {!Array} vals
+   * @param {boolean} result
+   */
+  function applyTest(type, vals, result) {
+
+    /** @type {!Array} */
+    var testArgs;
+    /** @type {!Array} */
+    var args;
+
+    args = sliceArr(vals);
+    args.unshift(type);
+    testArgs = sliceArr(args);
+    testArgs.push(theTest);
+    test.apply(null, testArgs);
+
+    function theTest() {
+      var actual = vitals.is.apply(null, args);
+      assert( actual === result );
+    }
+  }
+
+  /**
+   * @param {string} type
+   * @param {!Array} vals
+   * @param {boolean} result
+   */
+  function mkTests(type, vals, result) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) mkTest(type, vals[i], result);
+  }
+
+  /**
+   * @param {string} type
+   * @param {!Array} vals
+   * @param {boolean} result
+   */
+  function applyTests(type, vals, result) {
+
+    /** @type {number} */
+    var i;
+
+    i = vals.length;
+    while (i--) applyTest(type, vals[i], result);
+  }
+
+  should('throw an error', function() {
+
+    test(function() {
       assert.throws(function() {
         vitals.is();
-      });
+      }, validErr);
     });
 
-    title = callStr('str');
-    it(title, function() {
+    test('str', function() {
       assert.throws(function() {
         vitals.is('str');
-      });
+      }, validErr);
     });
 
-    title = callStr('fail', 'a');
-    it(title, function() {
+    test('fail', 'a', function() {
       assert.throws(function() {
         vitals.is('fail', 'a');
-      });
+      }, validRangeErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('is', arguments, 4);
-}
