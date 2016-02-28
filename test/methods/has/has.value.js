@@ -1,181 +1,86 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - HAS.VALUE
+ * VITALS UNIT TESTS: vitals.has.value
  * -----------------------------------------------------------------------------
- * @see [vitals.has]{@link https://github.com/imaginate/vitals/wiki/vitals.has}
+ * @section base
+ * @see [vitals.has docs](https://github.com/imaginate/vitals/wiki/vitals.has)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.has.value (section:base)', function() {
-  var title;
+method('has.value', 'has.val', function() {
 
-  describe('object tests', function() {
+  should('return true', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should return true');
-    describe(title, function() {
-
-      title = callStr('<object>', 'd');
-      it(title, function() {
-        assert( vitals.has.val(newObj(), 'd') );
-      });
-
-      title = callStr('<object>', 5);
-      it(title, function() {
-        assert( vitals.has.val(newObj(), 5) );
-      });
-
+    test('<object>', 'a', function() {
+      var result = vitals.has.val({ '1': 'a' }, 'a');
+      assert( result === true );
     });
 
-    title = titleStr('should return false');
-    describe(title, function() {
-
-      title = callStr(null, 'val');
-      it(title, function() {
-        assert( !vitals.has.val(null, 'val') );
-      });
-
-      title = callStr('<object>', 'a');
-      it(title, function() {
-        assert( !vitals.has.val(newObj(), 'a') );
-      });
-
+    test('<object>', 1, function() {
+      var result = vitals.has.val({ a: 1 }, 1);
+      assert( result === true );
     });
 
-  });
-
-  describe('array tests', function() {
-
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should return true');
-    describe(title, function() {
-
-      title = callStr('<array>', 3);
-      it(title, function() {
-        assert( vitals.has.val(newArr(), 3) );
-      });
-
-      title = callStr('<array>', 'a');
-      it(title, function() {
-        assert( vitals.has.val(newArr(), 'a') );
-      });
-
+    test('<array>', 'a', function() {
+      var result = vitals.has.val([ 'a' ], 'a');
+      assert( result === true );
     });
 
-    title = titleStr('should return false');
-    describe(title, function() {
-
-      title = callStr('<array>', 5);
-      it(title, function() {
-        assert( !vitals.has.val(newArr(), 5) );
-      });
-
-      title = callStr('<array>', '1');
-      it(title, function() {
-        assert( !vitals.has.val(newArr(), '1') );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.val();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.val({});
-        });
-      });
-
-      title = callStr('str', 'val');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.val('str', 'val');
-        });
-      });
-
+    test('<array>', 1, function() {
+      var result = vitals.has.val([ 1 ], 1);
+      assert( result === true );
     });
   });
 
+  should('return false', function() {
+
+    test(null, 1, function() {
+      var result = vitals.has.val(null, 1);
+      assert( result === false );
+    });
+
+    test('<object>', 5, function() {
+      var result = vitals.has.val({ a: 1 }, 5);
+      assert( result === false );
+    });
+
+    test('<array>', 'd', function() {
+      var result = vitals.has.val([ 'a' ], 'd');
+      assert( result === false );
+    });
+
+    test('<array>', 5, function() {
+      var result = vitals.has.val([ 1 ], 5);
+      assert( result === false );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.has.val();
+      }, validErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.has.val({});
+      }, validErr);
+    });
+
+    test('str', 'val', function() {
+      assert.throws(function() {
+        vitals.has.val('str', 'val');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('has.val', arguments, 4);
-}
-
-/**
- * @private
- * @param {boolean=} keys
- * @return {!Object}
- */
-function newObj(keys) {
-  return keys
-    ? [ 'a', 'b', 'c', '1', '2', '3', 'a1', 'b2', 'c3' ]
-    : {
-      'a':  'd',
-      'b':  'e',
-      'c':  'f',
-      '1':   4,
-      '2':   5,
-      '3':   6,
-      'a1': '1',
-      'b2': '2',
-      'c3': '3'
-    };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
