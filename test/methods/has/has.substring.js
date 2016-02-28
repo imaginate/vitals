@@ -1,109 +1,71 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - HAS.SUBSTRING
+ * VITALS UNIT TESTS: vitals.has.substring
  * -----------------------------------------------------------------------------
- * @see [vitals.has]{@link https://github.com/imaginate/vitals/wiki/vitals.has}
+ * @section base
+ * @see [vitals.has docs](https://github.com/imaginate/vitals/wiki/vitals.has)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.has.substring (section:base)', function() {
-  var title;
+method('has.substring', 'has.substr', function() {
 
-  describe('basic tests', function() {
+  should('return true', function() {
 
-    title = titleStr('should return true');
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', 1);
-      it(title, function() {
-        assert( vitals.has.substr('abc123a1b2c3', 1) );
-      });
-
-      title = callStr('abc123a1b2c3', 'a');
-      it(title, function() {
-        assert( vitals.has.substr('abc123a1b2c3', 'a') );
-      });
-
+    test('abc123', 'a', function() {
+      var result = vitals.has.substr('abc123', 'a');
+      assert( result === true );
     });
 
-    title = titleStr('should return false');
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', /[a-z]/);
-      it(title, function() {
-        assert( !vitals.has.substr('abc123a1b2c3', /[a-z]/) );
-      });
-
-      title = callStr('abc123a1b2c3', 5);
-      it(title, function() {
-        assert( !vitals.has.substr('abc123a1b2c3', 5) );
-      });
-
-      title = callStr('abc123a1b2c3', 'd');
-      it(title, function() {
-        assert( !vitals.has.substr('abc123a1b2c3', 'd') );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.substr();
-        });
-      });
-
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.substr('str');
-        });
-      });
-
-      title = callStr({}, 'val');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.has.substr({}, 'val');
-        });
-      });
-
+    test('abc123', 3, function() {
+      var result = vitals.has.substr('abc123', 3);
+      assert( result === true );
     });
   });
 
+  should('return false', function() {
+
+    test('abc123', /[a-z]/, function() {
+      var result = vitals.has.substr('abc123', /[a-z]/);
+      assert( result === false );
+    });
+
+    test('abc123', 'd', function() {
+      var result = vitals.has.substr('abc123', 'd');
+      assert( result === false );
+    });
+
+    test('abc123', 5, function() {
+      var result = vitals.has.substr('abc123', 5);
+      assert( result === false );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.has.substr();
+      }, validTypeErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.has.substr('str');
+      }, validErr);
+    });
+
+    test({}, 'val', function() {
+      assert.throws(function() {
+        vitals.has.substr({}, 'val');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('has.substr', arguments, 4);
-}
