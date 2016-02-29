@@ -1,168 +1,96 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - REMAP.OBJECT
+ * VITALS UNIT TESTS: vitals.remap.object
  * -----------------------------------------------------------------------------
- * @see [vitals.remap]{@link https://github.com/imaginate/vitals/wiki/vitals.remap}
+ * @section base
+ * @see [vitals.remap docs](https://github.com/imaginate/vitals/wiki/vitals.remap)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.remap.object (section:base)', function() {
-  var title;
+method('remap.object', 'remap.obj', function() {
 
-  describe('basic tests', function() {
+  should('make new object by iterating over all key => value pairs in source', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should iterate over every prop and return valid obj');
-    describe(title, function() {
-
-      title = callStr('<object>', '<iteratee>');
-      it(title, function() {
-        var obj = vitals.remap.obj(newObj(), function(val, key) {
-          return val;
-        });
-        each(newObj(), function(val, key) {
-          assert( obj[key] === val );
-        });
+    test('<object>', '<iteratee>', function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var obj2 = vitals.remap.obj(obj1, function(val) {
+        return ++val;
       });
-
-      title = callStr('<object>', '<iteratee>');
-      it(title, function() {
-        var obj = vitals.remap.obj(newObj(), function(val, key) {
-          return val + key;
-        });
-        each(newObj(), function(val, key) {
-          val += key;
-          assert( obj[key] === val );
-        });
-      });
-
+      assert( obj2 !== obj1 );
+      assert( obj2.a === 2 );
+      assert( obj2.b === 3 );
+      assert( obj2.c === 4 );
     });
 
-    title = titleStr('should correctly clone the source');
-    describe(title, function() {
-
-      title = callStr('<object>', '<iteratee>');
-      it(title, function() {
-        var obj1 = newObj();
-        vitals.remap.obj(obj1, function(val, key, obj) {
-          assert( obj !== obj1 )
-        });
+    test('<object>', '<iteratee>', function() {
+      var obj1 = { a: 1, b: 2, c: 3 };
+      var obj2 = vitals.remap.obj(obj1, function(val, key) {
+        return key;
       });
-
-    });
-
-    title = titleStr('should correctly bind the iteratee');
-    describe(title, function() {
-
-      title = callStr('<object>', '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var obj = newObj();
-        var thisArg = {};
-        vitals.remap.obj(obj, function(val, key) {
-          this[key] = val;
-        }, thisArg);
-        each(obj, function(val, key) {
-          assert( has(thisArg, key)    );
-          assert( thisArg[key] === val );
-        });
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.obj();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.obj({});
-        });
-      });
-
-      title = callStr(null, function(){});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.obj(null, function(){});
-        });
-      });
-
-      title = callStr({}, function(){}, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.obj({}, function(){}, 'fail');
-        });
-      });
-
+      assert( obj2 !== obj1 );
+      assert( obj2.a === 'a' );
+      assert( obj2.b === 'b' );
+      assert( obj2.c === 'c' );
     });
   });
 
+  should('correctly clone the source', function() {
+
+    test('<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      vitals.remap.obj(obj, function(val, key, src) {
+        assert( obj !== src )
+      });
+    });
+  });
+
+  should('correctly bind the iteratee', function() {
+
+    test('<object>', '<iteratee>', '<this>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var self = {};
+      vitals.remap.obj(obj, function(val, key) {
+        this[key] = val;
+      }, self);
+      assert( self !== obj );
+      assert( self.a === 1 );
+      assert( self.b === 2 );
+      assert( self.c === 3 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.remap.obj();
+      }, validTypeErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.remap.obj({});
+      }, validTypeErr);
+    });
+
+    test(null, '<iteratee>', function() {
+      assert.throws(function() {
+        vitals.remap.obj(null, function(){});
+      }, validTypeErr);
+    });
+
+    test({}, '<iteratee>', 'fail', function() {
+      assert.throws(function() {
+        vitals.remap.obj({}, function(){}, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('remap.obj', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return {
-    'a':  'd',
-    'b':  'e',
-    'c':  'f',
-    '1':   4,
-    '2':   5,
-    '3':   6,
-    'a1': '1',
-    'b2': '2',
-    'c3': '3'
-  };
-}
