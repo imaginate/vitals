@@ -1,202 +1,175 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - SLICE.ARRAY
+ * VITALS UNIT TESTS: vitals.slice.array
  * -----------------------------------------------------------------------------
- * @see [vitals.slice]{@link https://github.com/imaginate/vitals/wiki/vitals.slice}
+ * @section base
+ * @see [vitals.slice docs](https://github.com/imaginate/vitals/wiki/vitals.slice)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.slice.array (section:base)', function() {
-  var title;
+method('slice.array', 'slice.arr', function() {
 
-  describe('object tests', function() {
+  should('return cloned array', function() {
 
-    // newObj()= { "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" }
-
-    title = titleStr('should return a correctly copied array');
-    describe(title, function() {
-
-      title = callStr('<object>');
-      it(title, function() {
-        var arr1 = newObj();
-        var arr2 = vitals.slice.arr(arr1);
-        assert( arr1 !== arr2 );
-        assert( arr2.join() === 'a,b,c,1,2,3,a1,b2,c3' );
-      });
-
-      title = callStr('<object>', 1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newObj(), 1);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2,c3' );
-      });
-
-      title = callStr('<object>', -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newObj(), -1);
-        assert( arr.join() === 'c3' );
-      });
-
-      title = callStr('<object>', 1, 8);
-      it(title, function() {
-        var arr = vitals.slice.arr(newObj(), 1, 8);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2' );
-      });
-
-      title = callStr('<object>', 1, -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newObj(), 1, -1);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2' );
-      });
-
-      title = callStr('<object>', -3, -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newObj(), -3, -1);
-        assert( arr.join() === 'a1,b2' );
-      });
-
+    test('<object>', function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', 'length': 3 };
+      var arr = vitals.slice.arr(obj);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'a' );
+      assert( arr[1] === 'b' );
+      assert( arr[2] === 'c' );
+      assert( arr.length === 3 );
     });
 
-  });
-
-  describe('array tests', function() {
-
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should return a correctly copied array');
-    describe(title, function() {
-
-      title = callStr('<array>');
-      it(title, function() {
-        var arr1 = newArr();
-        var arr2 = vitals.slice.arr(arr1);
-        assert( arr1 !== arr2 );
-        assert( arr2.join() === 'a,b,c,1,2,3,a1,b2,c3' );
-      });
-
-      title = callStr('<array>', 1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newArr(), 1);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2,c3' );
-      });
-
-      title = callStr('<array>', -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newArr(), -1);
-        assert( arr.join() === 'c3' );
-      });
-
-      title = callStr('<array>', 1, 8);
-      it(title, function() {
-        var arr = vitals.slice.arr(newArr(), 1, 8);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2' );
-      });
-
-      title = callStr('<array>', 1, -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newArr(), 1, -1);
-        assert( arr.join() === 'b,c,1,2,3,a1,b2' );
-      });
-
-      title = callStr('<array>', -3, -1);
-      it(title, function() {
-        var arr = vitals.slice.arr(newArr(), -3, -1);
-        assert( arr.join() === 'a1,b2' );
-      });
-
+    test('<object>', 1, function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', 'length': 3 };
+      var arr = vitals.slice.arr(obj, 1);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'b' );
+      assert( arr[1] === 'c' );
+      assert( arr.length === 2 );
     });
 
-  });
+    test('<object>', -1, function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', 'length': 3 };
+      var arr = vitals.slice.arr(obj, -1);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'c' );
+      assert( arr.length === 1 );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+    test('<object>', 1, 3, function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', '3': 'd', 'length': 4 };
+      var arr = vitals.slice.arr(obj, 1, 3);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'b' );
+      assert( arr[1] === 'c' );
+      assert( arr.length === 2 );
+    });
 
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.slice.arr();
-        });
-      });
+    test('<object>', 1, -1, function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', '3': 'd', 'length': 4 };
+      var arr = vitals.slice.arr(obj, 1, -1);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'b' );
+      assert( arr[1] === 'c' );
+      assert( arr.length === 2 );
+    });
 
-      title = callStr(null);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.slice.arr(null);
-        });
-      });
+    test('<object>', -3, -1, function() {
+      var obj = { '0': 'a', '1': 'b', '2': 'c', '3': 'd', 'length': 4 };
+      var arr = vitals.slice.arr(obj, -3, -1);
+      assert( is.arr(arr) );
+      assert( arr !== obj );
+      assert( arr[0] === 'b' );
+      assert( arr[1] === 'c' );
+      assert( arr.length === 2 );
+    });
 
-      title = callStr({}, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.slice.arr({}, 'fail');
-        });
-      });
+    test('<array>', function() {
+      var arr1 = [ 'a', 'b', 'c' ];
+      var arr2 = vitals.slice.arr(arr1);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'a' );
+      assert( arr2[1] === 'b' );
+      assert( arr2[2] === 'c' );
+      assert( arr2.length === 3 );
+    });
 
-      title = callStr({}, 1, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.slice.arr({}, 1, 'fail');
-        });
-      });
+    test('<array>', 1, function() {
+      var arr1 = [ 'a', 'b', 'c' ];
+      var arr2 = vitals.slice.arr(arr1, 1);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'b' );
+      assert( arr2[1] === 'c' );
+      assert( arr2.length === 2 );
+    });
 
+    test('<array>', -1, function() {
+      var arr1 = [ 'a', 'b', 'c' ];
+      var arr2 = vitals.slice.arr(arr1, -1);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'c' );
+      assert( arr2.length === 1 );
+    });
+
+    test('<array>', 1, 3, function() {
+      var arr1 = [ 'a', 'b', 'c', 'd' ];
+      var arr2 = vitals.slice.arr(arr1, 1, 3);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'b' );
+      assert( arr2[1] === 'c' );
+      assert( arr2.length === 2 );
+    });
+
+    test('<array>', 1, -1, function() {
+      var arr1 = [ 'a', 'b', 'c', 'd' ];
+      var arr2 = vitals.slice.arr(arr1, 1, -1);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'b' );
+      assert( arr2[1] === 'c' );
+      assert( arr2.length === 2 );
+    });
+
+    test('<array>', -3, -1, function() {
+      var arr1 = [ 'a', 'b', 'c', 'd' ];
+      var arr2 = vitals.slice.arr(arr1, -3, -1);
+      assert( is.arr(arr2) );
+      assert( arr2 !== arr1 );
+      assert( arr2[0] === 'b' );
+      assert( arr2[1] === 'c' );
+      assert( arr2.length === 2 );
     });
   });
 
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.slice.arr();
+      }, validTypeErr);
+    });
+
+    test(null, function() {
+      assert.throws(function() {
+        vitals.slice.arr(null);
+      }, validTypeErr);
+    });
+
+    test('fail', function() {
+      assert.throws(function() {
+        vitals.slice.arr('fail');
+      }, validTypeErr);
+    });
+
+    test({}, 'fail', function() {
+      assert.throws(function() {
+        vitals.slice.arr({}, 'fail');
+      }, validTypeErr);
+    });
+
+    test({}, 1, 'fail', function() {
+      assert.throws(function() {
+        vitals.slice.arr({}, 1, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('slice.arr', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return {
-    'length': 9,
-    '0': 'a',
-    '1': 'b',
-    '2': 'c',
-    '3':  1,
-    '4':  2,
-    '5':  3,
-    '6': 'a1',
-    '7': 'b2',
-    '8': 'c3'
-  };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
