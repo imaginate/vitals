@@ -1,164 +1,112 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - SEAL
+ * VITALS UNIT TESTS: vitals.seal
  * -----------------------------------------------------------------------------
- * @see [vitals.seal]{@link https://github.com/imaginate/vitals/wiki/vitals.seal}
+ * @section strict
+ * @see [vitals.seal docs](https://github.com/imaginate/vitals/wiki/vitals.seal)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.seal (section:strict)', function() {
-  var title;
+method('seal', function() {
 
-  title = titleStr('basic', 'should shallowly seal the object');
-  describe(title, function() {
+  should('shallowly seal the object', function() {
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       var obj = vitals.seal(null);
       assert( obj === null );
     });
 
-    title = callStr({});
-    it(title, function() {
+    test({}, function() {
       var obj = vitals.seal({});
-      assert( isSealed(obj) );
+      assert( is.sealed(obj) );
     });
 
-    title = callStr(function(){});
-    it(title, function() {
-      var func = vitals.seal(function(){});
-      assert( isSealed(func) );
+    test('<function>', function() {
+      var func = function(){};
+      func = vitals.seal(func);
+      assert( is.sealed(func) );
     });
 
-    title = callStr({ a: {} });
-    it(title, function() {
+    test({ a: {} }, function() {
       var obj = vitals.seal({ a: {} });
-      assert(  isSealed(obj)   );
-      assert( !isSealed(obj.a) );
+      assert(  is.sealed(obj)   );
+      assert( !is.sealed(obj.a) );
     });
 
-    title = callStr(null, false);
-    it(title, function() {
+    test(null, false, function() {
       var obj = vitals.seal(null, false);
       assert( obj === null );
     });
 
-    title = callStr({}, false);
-    it(title, function() {
+    test({}, false, function() {
       var obj = vitals.seal({}, false);
-      assert( isSealed(obj) );
+      assert( is.sealed(obj) );
     });
 
-    title = callStr(function(){}, false);
-    it(title, function() {
-      var func = vitals.seal(function(){}, false);
-      assert( isSealed(func) );
+    test('<function>', false, function() {
+      var func = function(){};
+      func = vitals.seal(func, false);
+      assert( is.sealed(func) );
     });
 
-    title = callStr({ a: {} }, false);
-    it(title, function() {
+    test({ a: {} }, false, function() {
       var obj = vitals.seal({ a: {} }, false);
-      assert(  isSealed(obj)   );
-      assert( !isSealed(obj.a) );
+      assert(  is.sealed(obj)   );
+      assert( !is.sealed(obj.a) );
     });
-
   });
 
-  title = titleStr('deep', 'should deeply seal the object');
-  describe(title, function() {
+  should('deeply seal the object', function() {
 
-    title = callStr(null, true);
-    it(title, function() {
+    test(null, true, function() {
       var obj = vitals.seal(null, true);
       assert( obj === null );
     });
 
-    title = callStr({}, true);
-    it(title, function() {
+    test({}, true, function() {
       var obj = vitals.seal({}, true);
-      assert( isSealed(obj) );
+      assert( is.sealed(obj) );
     });
 
-    title = callStr(function(){}, true);
-    it(title, function() {
-      var func = vitals.seal(function(){}, true);
-      assert( isSealed(func) );
+    test('<function>', true, function() {
+      var func = function(){};
+      func = vitals.seal(func, true);
+      assert( is.sealed(func) );
     });
 
-    title = callStr({ a: {} }, true);
-    it(title, function() {
+    test({ a: {} }, true, function() {
       var obj = vitals.seal({ a: {} }, true);
-      assert( isSealed(obj)   );
-      assert( isSealed(obj.a) );
+      assert( is.sealed(obj)   );
+      assert( is.sealed(obj.a) );
     });
-
   });
 
-  title = titleStr('error', 'should throw an error');
-  describe(title, function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.seal();
-      });
+      }, validTypeErr);
     });
 
-    title = callStr('invalid source');
-    it(title, function() {
+    test('invalid', function() {
       assert.throws(function() {
-        vitals.seal('invalid source');
-      });
+        vitals.seal('invalid');
+      }, validTypeErr);
     });
 
-    title = callStr({}, 'invalid deep');
-    it(title, function() {
+    test({}, 'invalid', function() {
       assert.throws(function() {
-        vitals.seal({}, 'invalid deep');
-      });
+        vitals.seal({}, 'invalid');
+      }, validTypeErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} section
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(section, shouldMsg) {
-  return testTitle(section, shouldMsg, 1);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('seal', arguments, 3);
-}
-
-/**
- * @private
- * @param {!(Object|function)} obj
- * @return {boolean}
- */
-function isSealed(obj) {
-  return Object.isSealed(obj);
-}
