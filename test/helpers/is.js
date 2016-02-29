@@ -194,7 +194,7 @@ var baseIsFrozen = (function() {
     Object.isFrozen( function(){} );
     return Object.isFrozen;
   }
-  catch (e) {
+  catch (err) {
     return function baseIsFrozen(obj) {
       return typeof obj === 'object' && Object.isFrozen(obj);
     };
@@ -210,6 +210,38 @@ exports.frozen = function isFrozen(obj) {
     throw new TypeError('invalid obj (must be an object or function)');
   }
   return baseIsFrozen(obj);
+};
+
+/**
+ * This method is `Object.isSealed` or if required a proper polyfill.
+ * @private
+ * @param {(!Object|function)} obj
+ * @return {boolean}
+ */
+var baseIsSealed = (function() {
+
+  if (!Object.isSealed) return function baseIsSealed(obj) { return false; };
+
+  try {
+    Object.isSealed( function(){} );
+    return Object.isSealed;
+  }
+  catch (err) {
+    return function baseIsSealed(obj) {
+      return typeof obj === 'object' && Object.isSealed(obj);
+    };
+  }
+})();
+
+/**
+ * @param {(!Object|function)} obj
+ * @return {boolean}
+ */
+exports.sealed = function isSealed(obj) {
+  if ( !obj || (typeof obj !== 'object' && typeof obj !== 'function') ) {
+    throw new TypeError('invalid obj (must be an object or function)');
+  }
+  return baseIsSealed(obj);
 };
 
 //////////////////////////////////////////////////////////
