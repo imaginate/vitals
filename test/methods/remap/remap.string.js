@@ -1,121 +1,102 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - REMAP.STRING
+ * VITALS UNIT TESTS: vitals.remap.string
  * -----------------------------------------------------------------------------
- * @see [vitals.remap]{@link https://github.com/imaginate/vitals/wiki/vitals.remap}
+ * @section base
+ * @see [vitals.remap docs](https://github.com/imaginate/vitals/wiki/vitals.remap)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.remap.string (section:base)', function() {
-  var title;
+method('remap.string', 'remap.str', function() {
 
-  describe('basic tests', function() {
+  should('replace all patterns in source', function() {
 
-    title = 'should replace all patterns in source';
-    title = titleStr(title);
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', 3, 5);
-      it(title, function() {
-        var str = vitals.remap.str('abc123a1b2c3', 3, 5);
-        assert( str === 'abc125a1b2c5' );
-      });
-
-      title = callStr('abc123a1b2c3', '*', '$&');
-      it(title, function() {
-        var str = vitals.remap.str('abc123a1b2c3', '*', '$&');
-        assert( str === 'abc123a1b2c3' );
-      });
-
-      title = callStr('abc123a1b2c3', /[a-z]/, 'z');
-      it(title, function() {
-        var str = vitals.remap.str('abc123a1b2c3', /[a-z]/, 'z');
-        assert( str === 'zbc123a1b2c3' );
-      });
-
+    test('abc123', 3, 5, function() {
+      var str = vitals.remap.str('abc123', 3, 5);
+      assert( str === 'abc125' );
     });
 
-    title = titleStr('should correctly bind the replacer');
-    describe(title, function() {
-
-      title = callStr('abc123a1b2c3', /a/, '<replacer>', '<thisArg>');
-      it(title, function() {
-        var replacer = function(match) {
-          this[match] = true;
-          return match;
-        };
-        var thisArg = {};
-        vitals.remap.str('abc123a1b2c3', /a/, replacer, thisArg);
-        assert( thisArg.a === true );
-      });
-
+    test('abc123abc123', 3, 5, function() {
+      var str = vitals.remap.str('abc123abc123', 3, 5);
+      assert( str === 'abc125abc125' );
     });
 
-  });
+    test('abc123', 'a', 'z', function() {
+      var str = vitals.remap.str('abc123', 'a', 'z');
+      assert( str === 'zbc123' );
+    });
 
-  describe('error tests', function() {
-    describe('should throw an error', function() {
+    test('abc123', 'a', '$&', function() {
+      var str = vitals.remap.str('abc123', '*', '$&');
+      assert( str === 'abc123' );
+    });
 
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.str();
-        });
-      });
+    test('abc123', /[a-z]/, 'z', function() {
+      var str = vitals.remap.str('abc123', /[a-z]/, 'z');
+      assert( str === 'zbc123' );
+    });
 
-      title = callStr('str');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.str('str');
-        });
-      });
+    test('abc123', /[a-z]/g, 'z', function() {
+      var str = vitals.remap.str('abc123', /[a-z]/g, 'z');
+      assert( str === 'zzz123' );
+    });
 
-      title = callStr('str', 'z');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.str('str', 'z');
-        });
-      });
+    test('abc123', '*', 'z', function() {
+      var str = vitals.remap.str('abc123', '*', 'z');
+      assert( str === 'abc123' );
+    });
 
-      title = callStr(null, 'a', 'z');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.remap.str(null, 'a', 'z');
-        });
-      });
-
+    test('abc123', '.*', 'z', function() {
+      var str = vitals.remap.str('abc123', '.*', 'z');
+      assert( str === 'abc123' );
     });
   });
 
+  should('correctly bind the replacer', function() {
+
+    test('abc123', /a|1/g, '<replacer>', '<this>', function() {
+      var self = {};
+      vitals.remap.str('abc123', /a|1/g, function(match) {
+        this[match] = true;
+        return match;
+      }, self);
+      assert( self['a'] === true );
+      assert( self['1'] === true );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.remap.str();
+      }, validErr);
+    });
+
+    test('str', function() {
+      assert.throws(function() {
+        vitals.remap.str('str');
+      }, validErr);
+    });
+
+    test('str', 'z', function() {
+      assert.throws(function() {
+        vitals.remap.str('str', 'z');
+      }, validErr);
+    });
+
+    test(null, 'a', 'z', function() {
+      assert.throws(function() {
+        vitals.remap.str(null, 'a', 'z');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('remap.str', arguments, 4);
-}
