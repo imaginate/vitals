@@ -1,107 +1,70 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - SAME
+ * VITALS UNIT TESTS: vitals.same
  * -----------------------------------------------------------------------------
- * @see [vitals.same]{@link https://github.com/imaginate/vitals/wiki/vitals.same}
+ * @section base
+ * @see [vitals.same docs](https://github.com/imaginate/vitals/wiki/vitals.same)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.same (section:base)', function() {
-  var title;
+method('same', function() {
 
-  title = titleStr('should return true');
-  describe(title, function() {
+  should('return true', function() {
 
-    title = callStr(5, 5);
-    it(title, function() {
+    test(5, 5, function() {
       var result = vitals.same(5, 5);
       assert( result === true );
     });
 
-    title = callStr('str', 'str');
-    it(title, function() {
+    test('str', 'str', function() {
       var result = vitals.same('str', 'str');
       assert( result === true );
     });
 
-    title = callStr(null, null);
-    it(title, function() {
+    test(null, null, function() {
       var result = vitals.same(null, null);
       assert( result === true );
     });
-
   });
 
-  title = titleStr('should return false');
-  describe(title, function() {
+  should('return false', function() {
 
-    title = callStr(5, '5');
-    it(title, function() {
+    test(5, '5', function() {
       var result = vitals.same(5, '5');
       assert( result === false );
     });
 
-    title = callStr({}, {});
-    it(title, function() {
+    test({}, {}, function() {
       var result = vitals.same({}, {});
       assert( result === false );
     });
 
-    title = callStr(null, undefined);
-    it(title, function() {
+    test(null, undefined, function() {
       var result = vitals.same(null, undefined);
       assert( result === false );
     });
-
   });
 
-  describe('should throw an error', function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.same();
-      });
+      }, validErr);
     });
 
-    title = callStr(1);
-    it(title, function() {
+    test(1, function() {
       assert.throws(function() {
         vitals.same(1);
-      });
+      }, validErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('same', arguments, 3);
-}
