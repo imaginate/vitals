@@ -1,289 +1,232 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - ROLL
+ * VITALS UNIT TESTS: vitals.roll
  * -----------------------------------------------------------------------------
- * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/vitals.roll}
+ * @section base
+ * @see [vitals.roll docs](https://github.com/imaginate/vitals/wiki/vitals.roll)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.roll (section:base)', function() {
-  var title;
+method('roll', function() {
 
-  describe('object tests', function() {
+  should('reduce the source object to a result', function() {
 
-    // newObj()= {
-    //   a: 1,
-    //   b: 2,
-    //   c: 3
-    // }
-
-    title = titleStr('should return the correct result');
-    describe(title, function() {
-
-      title = callStr(newObj(), '<iteratee>');
-      it(title, function() {
-        var result = vitals.roll(newObj(), function(prevVal, currVal) {
-          return prevVal + currVal;
-        });
-        assert( result === 6 );
+    test('<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var result = vitals.roll(obj, function(prevVal, currVal) {
+        return prevVal + currVal;
       });
-
-      title = callStr(1, newObj(), '<iteratee>');
-      it(title, function() {
-        var result = vitals.roll(1, newObj(), function(prevVal, currVal) {
-          return prevVal + currVal;
-        });
-        assert( result === 7 );
-      });
-
+      assert( result === 6 );
     });
 
-    title = titleStr('should correctly clone the source');
-    describe(title, function() {
-
-      title = callStr(newObj(), '<iteratee>');
-      it(title, function() {
-        var obj1 = newObj();
-        vitals.roll(obj1, function(prevVal, currVal, key, obj) {
-          assert( obj !== obj1 )
-        });
+    test(1, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var result = vitals.roll(1, obj, function(prevVal, currVal) {
+        return prevVal + currVal;
       });
-
-    });
-
-    title = titleStr('should bind the iteratee correctly');
-    describe(title, function() {
-
-      title = callStr(0, newObj(), '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var obj = newObj();
-        var thisArg = {};
-        vitals.roll(0, obj, function(prevVal, currVal, key) {
-          this[key] = currVal;
-        }, thisArg);
-        each(obj, function(val, key) {
-          assert( has(thisArg, key)    );
-          assert( thisArg[key] === val );
-        });
-      });
-
-    });
-
-  });
-
-  describe('array tests', function() {
-
-    // newArr()= [ 1, 2, 3 ]
-
-    title = titleStr('should iterate over every index in order');
-    describe(title, function() {
-
-      title = callStr(newArr(), '<iteratee>');
-      it(title, function() {
-        var arr = newArr();
-        var ii = 1;
-        vitals.roll(newArr(), function(prevVal, currVal, i) {
-          assert( arr[i] === currVal );
-          assert( ii++ === i );
-        });
-      });
-
-      title = callStr(0, newArr(), '<iteratee>');
-      it(title, function() {
-        var arr = newArr();
-        var ii = 0;
-        vitals.roll(0, newArr(), function(prevVal, currVal, i) {
-          assert( arr[i] === currVal );
-          assert( ii++ === i );
-        });
-      });
-
-    });
-
-    title = titleStr('should return the correct result');
-    describe(title, function() {
-
-      title = callStr(newArr(), '<iteratee>');
-      it(title, function() {
-        var result = vitals.roll(newArr(), function(prevVal, currVal) {
-          return prevVal + currVal;
-        });
-        assert( result === 6 );
-      });
-
-      title = callStr(1, newArr(), '<iteratee>');
-      it(title, function() {
-        var result = vitals.roll(1, newArr(), function(prevVal, currVal) {
-          return prevVal + currVal;
-        });
-        assert( result === 7 );
-      });
-
-    });
-
-    title = titleStr('should correctly clone the source');
-    describe(title, function() {
-
-      title = callStr(newArr(), '<iteratee>');
-      it(title, function() {
-        var arr1 = newArr();
-        vitals.roll(arr1, function(prevVal, currVal, i, arr) {
-          assert( arr !== arr1 )
-        });
-      });
-
-    });
-
-    title = titleStr('should bind the iteratee correctly');
-    describe(title, function() {
-
-      title = callStr(0, newArr(), '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var arr = newArr();
-        var thisArg = new Array(3);
-        vitals.roll(0, arr, function(prevVal, currVal, i) {
-          this[i] = currVal;
-        }, thisArg);
-        assert( arr.join() === thisArg.join() );
-      });
-
-    });
-
-  });
-
-  describe('cycle tests', function() {
-
-    title = titleStr('should call the iteratee x times');
-    describe(title, function() {
-
-      title = callStr(0, 8, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.roll(0, 8, function() {
-          ++times;
-        });
-        assert( times === 8 );
-      });
-
-      title = callStr(0, 15, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.roll(0, 15, function(prevVal, time) {
-          assert( times++ === time );
-        });
-        assert( times === 15 );
-      });
-
-    });
-
-    title = titleStr('should return the correct result');
-    describe(title, function() {
-
-      title = callStr(0, 8, '<iteratee>');
-      it(title, function() {
-        var result = vitals.roll(0, 8, function(prevVal) {
-          return prevVal + 5;
-        });
-        assert( result === 40 );
-      });
-
-    });
-
-    title = titleStr('should bind the iteratee correctly');
-    describe(title, function() {
-
-      title = callStr(0, 5, '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var thisArg = { times: 0 };
-        vitals.roll(0, 5, function() {
-          ++this.times;
-        }, thisArg);
-        assert( thisArg.times === 5 );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.roll();
-        });
-      });
-
-      title = callStr({});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.roll({});
-        });
-      });
-
-      title = callStr(null, function(){});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.roll(null, function(){});
-        });
-      });
-
-      title = callStr({}, function(){}, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.roll({}, function(){}, 'fail');
-        });
-      });
-
+      assert( result === 7 );
     });
   });
 
+  should('reduce the source array to a result', function() {
+
+    test('<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var result = vitals.roll(arr, function(prevVal, currVal) {
+        return prevVal + currVal;
+      });
+      assert( result === 6 );
+    });
+
+    test(1, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var result = vitals.roll(1, arr, function(prevVal, currVal) {
+        return prevVal + currVal;
+      });
+      assert( result === 7 );
+    });
+  });
+
+  should('return the valid result after x cycles', function() {
+
+    test(0, 8, '<iteratee>', function() {
+      var result = vitals.roll(0, 8, function(prevVal) {
+        return prevVal + 5;
+      });
+      assert( result === 40 );
+    });
+  });
+
+  should('iterate over all key => value pairs', function() {
+
+    test(0, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var vals = [];
+      var keys = [];
+      vitals.roll(0, obj, function(prev, val, key) {
+        vals.push(val);
+        keys.push(key);
+        return 0;
+      });
+      assert( hasVal(vals, 1) );
+      assert( hasVal(vals, 2) );
+      assert( hasVal(vals, 3) );
+      assert( vals.length === 3 );
+      assert( hasVal(keys, 'a') );
+      assert( hasVal(keys, 'b') );
+      assert( hasVal(keys, 'c') );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('iterate over all index => value pairs', function() {
+
+    test('<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var vals = [];
+      var keys = [];
+      vitals.roll(arr, function(prev, val, i) {
+        vals.push(val);
+        keys.push(i);
+        return 0;
+      });
+      assert( vals[0] === 2 );
+      assert( vals[1] === 3 );
+      assert( vals.length === 2 );
+      assert( keys[0] === 1 );
+      assert( keys[1] === 2 );
+      assert( keys.length === 2 );
+    });
+
+    test(0, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var vals = [];
+      var keys = [];
+      vitals.roll(0, arr, function(prev, val, i) {
+        vals.push(val);
+        keys.push(i);
+        return 0;
+      });
+      assert( vals[0] === 1 );
+      assert( vals[1] === 2 );
+      assert( vals[2] === 3 );
+      assert( vals.length === 3 );
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('call the iteratee x times', function() {
+
+    test(0, 3, '<iteratee>', function() {
+      var keys = [];
+      vitals.roll(0, 3, function(prev, i) {
+        keys.push(i);
+        return 0;
+      });
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('correctly clone the source', function() {
+
+    test('<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      vitals.roll(obj, function(prevVal, currVal, key, src) {
+        assert( obj !== src );
+        return 0;
+      });
+    });
+
+    test('<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      vitals.roll(arr, function(prevVal, currVal, i, src) {
+        assert( arr !== src );
+        return 0;
+      });
+    });
+  });
+
+  should('bind the iteratee correctly', function() {
+
+    test(0, '<object>', '<iteratee>', '<this>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var self = {};
+      vitals.roll(0, obj, function(prevVal, currVal, key) {
+        this[key] = currVal;
+        return 0;
+      }, self);
+      assert( self !== obj );
+      assert( self.a === 1 );
+      assert( self.b === 2 );
+      assert( self.c === 3 );
+    });
+
+    test(0, '<array>', '<iteratee>', '<this>', function() {
+      var arr = [ 1, 2, 3 ];
+      var self = [];
+      vitals.roll(0, arr, function(prevVal, currVal, i) {
+        this[i] = currVal;
+        return 0;
+      }, self);
+      assert( self !== arr );
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+
+    test(0, 3, '<iteratee>', '<this>', function() {
+      var cycle = 0;
+      var self = [];
+      vitals.roll(0, 3, function(prevVal, i) {
+        this[i] = ++cycle;
+        return 0;
+      }, self);
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.roll();
+      }, validErr);
+    });
+
+    test({}, function() {
+      assert.throws(function() {
+        vitals.roll({});
+      }, validErr);
+    });
+
+    test(null, '<iteratee>', function() {
+      assert.throws(function() {
+        vitals.roll(null, function(){});
+      }, validTypeErr);
+    });
+
+    test({}, '<iteratee>', 'fail', function() {
+      assert.throws(function() {
+        vitals.roll({}, function(){}, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('roll', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return { a: 1, b: 2, c: 3 };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 1, 2, 3 ];
-}
