@@ -403,6 +403,50 @@ var TYPES = {
         falsy:  [ [ null, undefined, false, '', 1, {}, [], function(){}, NaN ] ]
       }
     }
+  },
+
+  'special chars': {
+    '*': {
+      shortcut: 'any',
+      truthy: [ {}, [], 'str', null ],
+      falsy:  [],
+      plural: {
+        truthy: [ [ {}, [], 'str', null ] ],
+        falsy:  []
+      }
+    },
+    'obj|str': {
+      truthy: [ null, {}, 'str' ],
+      falsy:  [ 5, true, function(){} ],
+      plural: {
+        truthy: [ [ null, {}, 'str' ] ],
+        falsy:  [ [ null, {}, function(){} ] ]
+      }
+    },
+    '!object': {
+      truthy: [ {}, [], /re/ ],
+      falsy:  [ null, 'str' ],
+      plural: {
+        truthy: [ [ {}, [], /re/ ] ],
+        falsy:  [ [ null, {}, [] ] ]
+      }
+    },
+    '?string': {
+      truthy: [ null, 'str' ],
+      falsy:  [ {}, [], 5, undefined ],
+      plural: {
+        truthy: [ [ null, 'str' ] ],
+        falsy:  [ [ null, 'str', {} ] ]
+      }
+    },
+    'string=': {
+      truthy: [ 'str', undefined ],
+      falsy:  [ null, 5, {}, [] ],
+      plural: {
+        truthy: [ [ 'str', undefined ] ],
+        falsy:  [ [ 'str', null ] ]
+      }
+    }
   }
 };
 
