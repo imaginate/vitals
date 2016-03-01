@@ -3,7 +3,7 @@
  * VITALS METHOD: fill
  * -----------------------------------------------------------------------------
  * @section base
- * @version 4.0.1
+ * @version 4.1.0
  * @see [vitals.fill]{@link https://github.com/imaginate/vitals/wiki/vitals.fill}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

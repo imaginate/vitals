@@ -3,7 +3,7 @@
  * VITALS METHOD: run
  * -----------------------------------------------------------------------------
  * @section shell
- * @version 4.0.1
+ * @version 4.1.0
  * @see [vitals.run]{@link https://github.com/imaginate/vitals/wiki/vitals.run}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
