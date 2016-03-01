@@ -27,16 +27,20 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 .wafpickle-*
+act-tasks/tmp.*
 bootstrap/compiled.php
 build/Release
 coverage
 CVS
 Desktop.ini
 ehthumbs.db
+FUTURE.md
 lib-cov
 logs
 Network Trash Folder
 node_modules
+NOTES.md
 pids
 Temporary Items
 Thumbs.db
+TODO.md

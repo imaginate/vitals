@@ -26,6 +26,7 @@ $RECYCLE.BIN/
 .Spotlight-V100
 .Trashes
 .wafpickle-*
+act-tasks/tmp.*
 bootstrap/compiled.php
 build/Release
 coverage
