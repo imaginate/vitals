@@ -32,7 +32,7 @@ module.exports = function newBrowserTest(section, callback) {
     : 'vitals-' + section + '.js';
   file = 'browser/' + file;
   setup = 'browser/' + section + '.js';
-  section = section === 'all' ? '' : section;
+  section = section === 'all' ? '!fs|shell' : section;
   callback = newMinBrowserTest(file, setup, section, callback);
   return function browserTest() {
     runTestCmd({
