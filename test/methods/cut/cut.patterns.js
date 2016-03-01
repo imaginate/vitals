@@ -1,14 +1,14 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - CUT.PATTERNS
+ * VITALS UNIT TESTS: vitals.cut.patterns
  * -----------------------------------------------------------------------------
- * @see [vitals.cut]{@link https://github.com/imaginate/vitals/wiki/vitals.cut}
+ * @section base
+ * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
