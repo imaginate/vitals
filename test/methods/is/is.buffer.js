@@ -15,8 +15,6 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-if (BROWSER_TESTS) return;
-
 method('is.buffer', 'is.buf', function() {
 
   should('return true', function() {

@@ -15,8 +15,6 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-if (BROWSER_TESTS) return;
-
 var addBase = DUMMY.addBase;
 
 method('is.file', function() {

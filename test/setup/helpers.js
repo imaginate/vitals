@@ -38,7 +38,6 @@ global.validRangeErr = require('../helpers/valid-range-err');
 
 // REFERENCE HELPERS
 global.VERSION = require('../helpers/parse-version')(process.version);
-global.BROWSER_TESTS = false;
 
 // FILE SYSTEM HELPERS
 global.DUMMY = {};

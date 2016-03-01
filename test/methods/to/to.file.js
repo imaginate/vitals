@@ -15,8 +15,6 @@
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-if (BROWSER_TESTS) return;
-
 var CONTENT = DUMMY.content; // content for dummy files
 var BASE = DUMMY.base; // base directory for dummy files
 
