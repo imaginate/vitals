@@ -1,48 +1,41 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - TO.ARRAY
+ * VITALS UNIT TESTS: vitals.to.array
  * -----------------------------------------------------------------------------
- * @see [vitals.to]{@link https://github.com/imaginate/vitals/wiki/vitals.to}
+ * @section base
+ * @see [vitals.to docs](https://github.com/imaginate/vitals/wiki/vitals.to)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.to.array (section:base)', function() {
-  var title;
+method('to.array', 'to.arr', function() {
 
-  title = titleStr('should make new array with set length');
-  describe(title, function() {
+  should('make new array with set length', function() {
 
-    title = callStr(10);
-    it(title, function() {
+    test(10, function() {
       var result = vitals.to.arr(10);
       assert( is.arr(result) );
       assert( result.length === 10 );
     });
-
   });
 
-  title = titleStr('should validly split the string');
-  describe(title, function() {
+  should('validly split the string', function() {
 
-    title = callStr('123');
-    it(title, function() {
+    test('123', function() {
       var result = vitals.to.arr('123');
       assert( is.arr(result) );
       assert( result[0] === '123' );
       assert( result.length === 1 );
     });
 
-    title = callStr('1,2,3');
-    it(title, function() {
+    test('1,2,3', function() {
       var result = vitals.to.arr('1,2,3');
       assert( is.arr(result) );
       assert( result[0] === '1' );
@@ -51,8 +44,7 @@ describe('vitals.to.array (section:base)', function() {
       assert( result.length === 3 );
     });
 
-    title = callStr('1|2|3');
-    it(title, function() {
+    test('1|2|3', function() {
       var result = vitals.to.arr('1|2|3');
       assert( is.arr(result) );
       assert( result[0] === '1' );
@@ -61,8 +53,7 @@ describe('vitals.to.array (section:base)', function() {
       assert( result.length === 3 );
     });
 
-    title = callStr('1--2--3', '--');
-    it(title, function() {
+    test('1--2--3', '--', function() {
       var result = vitals.to.arr('1--2--3', '--');
       assert( is.arr(result) );
       assert( result[0] === '1' );
@@ -71,8 +62,7 @@ describe('vitals.to.array (section:base)', function() {
       assert( result.length === 3 );
     });
 
-    title = callStr('1--2--3', /-+/);
-    it(title, function() {
+    test('1--2--3', /-+/, function() {
       var result = vitals.to.arr('1--2--3', /-+/);
       assert( is.arr(result) );
       assert( result[0] === '1' );
@@ -81,8 +71,7 @@ describe('vitals.to.array (section:base)', function() {
       assert( result.length === 3 );
     });
 
-    title = callStr('10203', 0);
-    it(title, function() {
+    test('10203', 0, function() {
       var result = vitals.to.arr('10203', 0);
       assert( is.arr(result) );
       assert( result[0] === '1' );
@@ -90,47 +79,20 @@ describe('vitals.to.array (section:base)', function() {
       assert( result[2] === '3' );
       assert( result.length === 3 );
     });
-
   });
 
-  describe('should throw an error', function() {
+  should('throw an error', function() {
 
-    title = callStr();
-    it(title, function() {
+    test(function() {
       assert.throws(function() {
         vitals.to.arr();
-      });
+      }, validErr);
     });
 
-    title = callStr(null);
-    it(title, function() {
+    test(null, function() {
       assert.throws(function() {
         vitals.to.arr(null);
-      });
+      }, validTypeErr);
     });
-
   });
-
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 2);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('to.arr', arguments, 3);
-}
