@@ -1,407 +1,278 @@
 /**
  * -----------------------------------------------------------------------------
- * TEST - VITALS - JS METHOD - UNTIL
+ * VITALS UNIT TESTS: vitals.until
  * -----------------------------------------------------------------------------
- * @see [vitals.until]{@link https://github.com/imaginate/vitals/wiki/vitals.until}
+ * @section base
+ * @see [vitals.until docs](https://github.com/imaginate/vitals/wiki/vitals.until)
+ * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
+ * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Supporting Libraries:
- * @see [are]{@link https://github.com/imaginate/are}
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-describe('vitals.until (section:base)', function() {
-  var title;
+method('until', function() {
 
-  describe('object tests', function() {
+  should('return valid boolean', function() {
 
-    // newObj()= {
-    //   'a':  'd',
-    //   'b':  'e',
-    //   'c':  'f',
-    //   '1':   4,
-    //   '2':   5,
-    //   '3':   6,
-    //   'a1': '1',
-    //   'b2': '2',
-    //   'c3': '3'
-    // }
-
-    title = titleStr('should iterate over every prop');
-    describe(title, function() {
-
-      title = callStr(true, '<object>', '<iteratee>');
-      it(title, function() {
-        var obj = {};
-        vitals.until(true, newObj(), function(val, key) {
-          obj[key] = val;
-        });
-        each(newObj(), function(val, key) {
-          assert( obj[key] === val );
-        });
+    test(true, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var pass = vitals.until(true, obj, function(val) {
+        return val === 2;
       });
-
+      assert( pass === true );
     });
 
-    title = titleStr('should return valid boolean');
-    describe(title, function() {
-
-      title = callStr(true, '<object>', '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(true, newObj(), function(val, key) {
-          return val === 5;
-        });
-        assert( pass === true );
+    test('b', '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var pass = vitals.until('b', obj, function(val, key) {
+        return key;
       });
-
-      title = callStr(true, '<object>', '<iteratee>');
-      it(title, function() {
-        var fail = vitals.until(true, newObj(), function(val, key) {
-          return val === '5';
-        });
-        assert( fail === false );
-      });
-
-      title = callStr(5, '<object>', '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(5, newObj(), function(val, key) {
-          return val;
-        });
-        assert( pass === true );
-      });
-
-      title = callStr('5', '<object>', '<iteratee>');
-      it(title, function() {
-        var fail = vitals.until('5', newObj(), function(val, key) {
-          return val;
-        });
-        assert( fail === false );
-      });
-
+      assert( pass === true );
     });
 
-    title = titleStr('should correctly clone the source');
-    describe(title, function() {
-
-      title = callStr(true, '<object>', '<iteratee>');
-      it(title, function() {
-        var obj1 = newObj();
-        vitals.until(true, obj1, function(val, key, obj) {
-          assert( obj !== obj1 );
-        });
+    test(true, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var fail = vitals.until(true, obj, function(val) {
+        return val === 4;
       });
-
+      assert( fail === false );
     });
 
-    title = titleStr('should correctly bind the iteratee');
-    describe(title, function() {
-
-      title = callStr(true, '<object>', '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var obj = newObj();
-        var thisArg = {};
-        var fail = vitals.until(true, obj, function(val, key) {
-          this[key] = val;
-        }, thisArg);
-        each(obj, function(val, key) {
-          assert( has(thisArg, key)    );
-          assert( thisArg[key] === val );
-        });
-        assert( fail === false );
+    test('d', '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var fail = vitals.until('d', obj, function(val, key) {
+        return key;
       });
-
+      assert( fail === false );
     });
 
-  });
-
-  describe('array tests', function() {
-
-    // newArr()= [ "a", "b", "c", 1, 2, 3, "a1", "b2", "c3" ]
-
-    title = titleStr('should iterate over every index in order');
-    describe(title, function() {
-
-      title = callStr(true, '<array>', '<iteratee>');
-      it(title, function() {
-        var arr = newArr();
-        var ii = 0;
-        vitals.until(true, newArr(), function(val, i) {
-          assert( arr[i] === val );
-          assert( ii++ === i );
-        });
+    test(true, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var pass = vitals.until(true, arr, function(val, i) {
+        return i === 2;
       });
-
+      assert( pass === true );
     });
 
-    title = titleStr('should return valid boolean');
-    describe(title, function() {
-
-      title = callStr(true, '<array>', '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(true, newArr(), function(val, i) {
-          return val === 3;
-        });
-        assert( pass === true );
+    test(3, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var pass = vitals.until(3, arr, function(val) {
+        return val;
       });
-
-      title = callStr(true, '<array>', '<iteratee>');
-      it(title, function() {
-        var fail = vitals.until(true, newArr(), function(val, i) {
-          return val === '3';
-        });
-        assert( fail === false );
-      });
-
-      title = callStr(3, '<array>', '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(3, newArr(), function(val, i) {
-          return val;
-        });
-        assert( pass === true );
-      });
-
-      title = callStr('3', '<array>', '<iteratee>');
-      it(title, function() {
-        var fail = vitals.until('3', newArr(), function(val, i) {
-          return val;
-        });
-        assert( fail === false );
-      });
-
+      assert( pass === true );
     });
 
-    title = titleStr('should correctly clone the source');
-    describe(title, function() {
-
-      title = callStr(true, '<array>', '<iteratee>');
-      it(title, function() {
-        var arr1 = newArr();
-        vitals.until(true, arr1, function(val, i, arr) {
-          assert( arr !== arr1 );
-        });
+    test(true, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var fail = vitals.until(true, arr, function(val, i) {
+        return i === 5;
       });
-
+      assert( fail === false );
     });
 
-    title = titleStr('should correctly bind the iteratee');
-    describe(title, function() {
-
-      title = callStr(true, '<array>', '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var arr = newArr();
-        var thisArg = new Array(9);
-        var fail = vitals.until(true, arr, function(val, i) {
-          this[i] = val;
-        }, thisArg);
-        assert( arr.join() === thisArg.join() );
-        assert( fail === false );
+    test(5, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var fail = vitals.until(5, arr, function(val) {
+        return val;
       });
-
+      assert( fail === false );
     });
 
-  });
-
-  describe('cycle tests', function() {
-
-    title = titleStr('should call the iteratee x times');
-    describe(title, function() {
-
-      title = callStr(true, 8, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.until(true, 8, function() {
-          ++times;
-        });
-        assert( times === 8 );
+    test(true, 3, '<iteratee>', function() {
+      var pass = vitals.until(true, 3, function(i) {
+        return i === 1;
       });
-
-      title = callStr(true, 15, '<iteratee>');
-      it(title, function() {
-        var times = 0;
-        vitals.until(true, 15, function(time) {
-          assert( times++ === time );
-        });
-        assert( times === 15 );
-      });
-
+      assert( pass === true );
     });
 
-    title = titleStr('should return valid boolean');
-    describe(title, function() {
-
-      title = callStr(true, 5, '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(true, 5, function(time) {
-          return time === 3;
-        });
-        assert( pass === true );
+    test(true, 3, '<iteratee>', function() {
+      var fail = vitals.until(true, 3, function(i) {
+        return i === 5;
       });
-
-      title = callStr(true, 3, '<iteratee>');
-      it(title, function() {
-        var fail = vitals.until(true, 3, function(time) {
-          return time === 3;
-        });
-        assert( fail === false );
-      });
-
+      assert( fail === false );
     });
 
-    title = titleStr('should correctly bind the iteratee');
-    describe(title, function() {
+    // Note that when `vitals.until` is used without a limiting object or cycle
+    //   count that the _end_ value must be returned to stop the iteration and
+    //   avoid an infinite loop error.
 
-      title = callStr(true, 5, '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var times = 0;
-        var thisArg = {};
-        var fail = vitals.until(true, 5, function() {
-          this.times = ++times;
-        }, thisArg);
-        assert( times === 5 );
-        assert( thisArg.times === 5 );
-        assert( fail === false );
+    test(true, '<iteratee>', function() {
+      var cycle = 0;
+      var pass = vitals.until(true, function() {
+        return ++cycle === 5;
       });
-
+      assert( pass === true );
     });
 
-  });
-
-  describe('generic tests', function() {
-
-    title = titleStr('should return valid boolean');
-    describe(title, function() {
-
-      title = callStr(true, '<iteratee>');
-      it(title, function() {
-        var count = 0;
-        var pass = vitals.until(true, function() {
-          return ++count === 5;
-        });
-        assert( pass === true );
+    test(true, '<iteratee>', function() {
+      var pass = vitals.until(true, function(i) {
+        return i === 10;
       });
-
-      title = callStr(true, '<iteratee>');
-      it(title, function() {
-        var pass = vitals.until(true, function(time) {
-          return time === 100;
-        });
-        assert( pass === true );
-      });
-
-    });
-
-    title = titleStr('should correctly bind the iteratee');
-    describe(title, function() {
-
-      title = callStr(true, '<iteratee>', '<thisArg>');
-      it(title, function() {
-        var times = 0;
-        var thisArg = {};
-        var pass = vitals.until(true, function(time) {
-          this.times = ++times;
-          return time === 5;
-        }, thisArg);
-        assert( times === 6 );
-        assert( thisArg.times === 6 );
-        assert( pass === true );
-      });
-
-    });
-
-  });
-
-  describe('error tests', function() {
-    describe('should throw an error', function() {
-
-      title = callStr();
-      it(title, function() {
-        assert.throws(function() {
-          vitals.until();
-        });
-      });
-
-      title = callStr(true);
-      it(title, function() {
-        assert.throws(function() {
-          vitals.until(true);
-        });
-      });
-
-      title = callStr(true, {});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.until(true, {});
-        });
-      });
-
-      title = callStr(true, null, function(){});
-      it(title, function() {
-        assert.throws(function() {
-          vitals.until(true, null, function(){});
-        });
-      });
-
-      title = callStr(true, {}, function(){}, 'fail');
-      it(title, function() {
-        assert.throws(function() {
-          vitals.until(true, {}, function(){}, 'fail');
-        });
-      });
-
+      assert( pass === true );
     });
   });
 
+  should('iterate over all key => value pairs in object', function() {
+
+    test(true, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var vals = [];
+      var keys = [];
+      vitals.until(true, obj, function(val, key) {
+        vals.push(val);
+        keys.push(key);
+      });
+      assert( hasVal(vals, 1) );
+      assert( hasVal(vals, 2) );
+      assert( hasVal(vals, 3) );
+      assert( vals.length === 3 );
+      assert( hasVal(keys, 'a') );
+      assert( hasVal(keys, 'b') );
+      assert( hasVal(keys, 'c') );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('iterate from 0 to length over all props in array', function() {
+
+    test(true, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      var vals = [];
+      var keys = [];
+      vitals.until(true, arr, function(val, i) {
+        vals.push(val);
+        keys.push(i);
+      });
+      assert( vals[0] === 1 );
+      assert( vals[1] === 2 );
+      assert( vals[2] === 3 );
+      assert( vals.length === 3 );
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('call the iteratee x times', function() {
+
+    test(true, 3, '<iteratee>', function() {
+      var keys = [];
+      vitals.until(true, 3, function(i) {
+        keys.push(i);
+      });
+      assert( keys[0] === 0 );
+      assert( keys[1] === 1 );
+      assert( keys[2] === 2 );
+      assert( keys.length === 3 );
+    });
+  });
+
+  should('correctly clone the source', function() {
+
+    test(true, '<object>', '<iteratee>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      vitals.until(true, obj, function(val, key, src) {
+        assert( obj !== src )
+      });
+    });
+
+    test(true, '<array>', '<iteratee>', function() {
+      var arr = [ 1, 2, 3 ];
+      vitals.until(true, arr, function(val, i, src) {
+        assert( arr !== src );
+      });
+    });
+  });
+
+  should('correctly bind the iteratee', function() {
+
+    test(true, '<object>', '<iteratee>', '<this>', function() {
+      var obj = { a: 1, b: 2, c: 3 };
+      var self = {};
+      vitals.until(true, obj, function(val, key) {
+        this[key] = val;
+      }, self);
+      assert( self !== obj );
+      assert( self.a === 1 );
+      assert( self.b === 2 );
+      assert( self.c === 3 );
+    });
+
+    test(true, '<array>', '<iteratee>', '<this>', function() {
+      var arr = [ 1, 2, 3 ];
+      var self = [];
+      vitals.until(true, arr, function(val, i) {
+        this[i] = val;
+      }, self);
+      assert( self !== arr );
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+
+    test(true, 3, '<iteratee>', '<this>', function() {
+      var cycle = 0;
+      var self = [];
+      var fail = vitals.until(true, 3, function(i) {
+        this[i] = ++cycle;
+      }, self);
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+
+    test(true, '<iteratee>', '<this>', function() {
+      var cycle = 0;
+      var self = [];
+      var fail = vitals.until(true, function(i) {
+        this[i] = ++cycle;
+        return cycle === 3;
+      }, self);
+      assert( self[0] === 1 );
+      assert( self[1] === 2 );
+      assert( self[2] === 3 );
+      assert( self.length === 3 );
+    });
+  });
+
+  should('throw an error', function() {
+
+    test(function() {
+      assert.throws(function() {
+        vitals.until();
+      }, validErr);
+    });
+
+    test(true, function() {
+      assert.throws(function() {
+        vitals.until(true);
+      }, validErr);
+    });
+
+    test(true, {}, function() {
+      assert.throws(function() {
+        vitals.until(true, {});
+      }, validTypeErr);
+    });
+
+    test(true, null, '<iteratee>', function() {
+      assert.throws(function() {
+        vitals.until(true, null, function(){});
+      }, validTypeErr);
+    });
+
+    test(true, {}, '<iteratee>', 'fail', function() {
+      assert.throws(function() {
+        vitals.until(true, {}, function(){}, 'fail');
+      }, validTypeErr);
+    });
+  });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// PRIVATE HELPERS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} shouldMsg
- * @return {string}
- */
-function titleStr(shouldMsg) {
-  return breakStr(shouldMsg, 3);
-}
-
-/**
- * @private
- * @param {...*} args
- * @return {string}
- */
-function callStr() {
-  return testCall('until', arguments, 4);
-}
-
-/**
- * @private
- * @return {!Object}
- */
-function newObj() {
-  return {
-    'a':  'd',
-    'b':  'e',
-    'c':  'f',
-    '1':   4,
-    '2':   5,
-    '3':   6,
-    'a1': '1',
-    'b2': '2',
-    'c3': '3'
-  };
-}
-
-/**
- * @private
- * @return {!Array}
- */
-function newArr() {
-  return [ 'a', 'b', 'c', 1, 2, 3, 'a1', 'b2', 'c3' ];
-}
