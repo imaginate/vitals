@@ -15,15 +15,12 @@
 
 'use strict';
 
-var is = require('./is');
 var cp = require('child_process');
 var log = require('log-ocd')();
-var Mocha = require('mocha');
 var getFile = require('./get-file');
 var getFiles = require('./get-filepaths');
 var newTestCmd = require('./new-test-cmd');
 
-var SETUP = '../../test/setup';
 var SECTION = /^[\s\S]+?@section ([a-z-]+)[\s\S]+$/;
 
 log.error.setConfig({
@@ -60,73 +57,108 @@ log.error.setConfig({
  */
 module.exports = function runTestCmd(opts) {
 
-  /** @type {function(string): boolean} */
-  var inSection;
-  /** @type {!Mocha} */
-  var mocha;
-  /** @type {!Array} */
+  /** @type {!ChildProcess} */
+  var child;
+  /** @type {!Array<string>} */
   var files;
-  /** @type {string} */
-  var file;
+  /** @type {!Array<string>} */
+  var args;
+  /** @type {!Object} */
+  var opts;
   /** @type {!TestCmd} */
   var cmd;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
 
   cmd = newTestCmd(opts);
+  files = mkTestFiles(cmd.test, cmd.section, cmd.dir);
+  args = [
+    './act-tasks/helpers/test-module.js',
+    cmd.report,
+    cmd.slow,
+    cmd.setup
+  ];
+  args = args.concat(files);
+  opts = { 'stdio': 'inherit' };
 
   cmd.start();
 
-  require(SETUP);
-
-  mocha = new Mocha();
-  mocha.slow(cmd.slow);
-  mocha.reporter(cmd.report);
-  mocha.ui('vitals');
-
-  require(slashDir(SETUP) + cmd.setup);
-
-  if (cmd.dir) {
-    inSection = mkSectionTest(cmd.section);
-    files = getFiles(cmd.test, true);
-    len = files.length;
-    i = -1;
-    while (++i < len) {
-      file = cmd.test + files[i];
-      if ( inSection(file) ) mocha.addFile(file);
-    }
-  }
-  else mocha.addFile(cmd.test);
-
   try {
-    mocha.run(cmd.close);
+    child = cp.spawn('node', args, opts);
   }
   catch (err) {
     err.name = err.name || 'Error';
     err.name = 'Internal `test` ' + err.name;
     log.error(err);
   }
+
+  child.on('close', cmd.close);
 };
 
 /**
  * @private
- * @param {string} validSection
+ * @param {string} base
+ * @param {string} section
+ * @param {boolean} deep
+ * @return {!Array<string>}
+ */
+function mkTestFiles(base, section, deep) {
+
+  /** @type {function(string): boolean} */
+  var inSection;
+  /** @type {!Array} */
+  var allFiles;
+  /** @type {!Array} */
+  var files;
+  /** @type {string} */
+  var file;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  if (!deep) return [ base ];
+
+  inSection = mkSectionTest(section);
+  allFiles = getFiles(base, true);
+  files = [];
+  len = allFiles.length;
+  i = -1;
+  while (++i < len) {
+    file = base + allFiles[i];
+    if ( inSection(file) ) files.push(file);
+  }
+  return files;
+}
+
+/**
+ * @private
+ * @param {string} valid - The valid section(s).
  * @return {function}
  */
-function mkSectionTest(validSection) {
+function mkSectionTest(valid) {
 
-  return validSection
-    ? inSection
-    : function anySection(){ return true; };
+  /** @type {boolean} */
+  var not;
+  /** @type {!RegExp} */
+  var re;
+
+  if (!valid) {
+    /**
+     * @return {boolean}
+     */
+    return function inSection() {
+      return true;
+    };
+  }
+
+  not = /^!/.test(valid);
+  if (not) valid = valid.slice(1);
+  re = new RegExp('^' + valid + '$');
 
   /**
-   * @private
    * @param {string} filepath
    * @return {boolean}
    */
-  function inSection(filepath) {
+  return function inSection(filepath) {
 
     /** @type {string} */
     var content;
@@ -135,15 +167,8 @@ function mkSectionTest(validSection) {
 
     content = getFile(filepath);
     section = content.replace(SECTION, '$1');
-    return section === validSection;
-  }
-}
-
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-function slashDir(dirpath) {
-  return dirpath.replace(/[^\/]$/, '$&/');
+    return not
+      ? !re.test(section)
+      : re.test(section);
+  };
 }
