@@ -2059,7 +2059,7 @@ var is = (function isPrivateScope() {
    * @private
    * @type {string}
    */
-  var DOCS = 'https://github.com/imaginate/vitals/blob/master/docs/is.js';
+  var DOCS = 'https://github.com/imaginate/vitals/wiki/vitals.is-types';
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS
@@ -7178,9 +7178,7 @@ var amend = (function amendPrivateScope() {
       throw _error('The val param is not a valid strongType', 'property');
     }
     if ( descriptor && (strongType || setter) && own(descriptor, 'writable') ){
-      throw _error(
-        'A data descriptor may not be used with a strongType/setter', 'property'
-      );
+      throw _error('A data descriptor may not be used with a strongType/setter', 'property');
     }
 
     return _amendProp(obj, key, val, descriptor, strongType, setter);
@@ -7584,9 +7582,7 @@ var amend = (function amendPrivateScope() {
     newProps = {};
     for (key in props) {
       if ( own(props, key) ) {
-        newProps[key] = _setupDescriptorWithSetter(
-          props[key], descriptor, strongType, setter
-        );
+        newProps[key] = _setupDescriptorWithSetter(props[key], descriptor, strongType, setter);
       }
     }
     return newProps;
@@ -7644,9 +7640,7 @@ var amend = (function amendPrivateScope() {
     len = keys.length;
     i = -1;
     while (++i < len) {
-      props[ keys[i] ] = _setupDescriptorByKeyWithSetter(
-        val, descriptor, strongType, setter
-      );
+      props[ keys[i] ] = _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter);
     }
     return props;
   }
