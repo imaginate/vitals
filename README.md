@@ -2,12 +2,12 @@
 ### Give Your JS Life
 _vitals_ is a foundational JavaScript library designed to replace all native string, object and array methods with just 16 [base methods](#api). It will improve your project's **readability**, **stability** and **performance**. It fixes core JS issues such as [+ overloading](http://www.crockford.com/javascript/javascript.html) and [unequal equality](http://whydoesitsuck.com/why-does-javascript-suck/). Its additional methods will also allow you to more efficiently utilize [immutability](https://en.wikipedia.org/wiki/Immutable_object), [strong typing](https://en.wikipedia.org/wiki/Strong_and_weak_typing), and [node.js](https://nodejs.org) interactions with the [file system](https://en.wikipedia.org/wiki/File_system) or [shell](https://en.wikipedia.org/wiki/Command-line_interface#Command-line_interpreter). Built with **simplicity** _vitals_ hopes to inspire you to use [functional JavaScript](https://medium.com/javascript-scene/the-two-pillars-of-javascript-pt-2-functional-programming-a63aa53a41a4) as the bedrock for all of your projects!
 
-#### Own That String
+#### Own That String Example
 ```javascript
-// every vitals method handles multiple operations
-//   if you give it an array it goes one way
-//     give it an object it goes another
-//       watch it own stringy things
+// every root vitals method handles multiple operations
+// most handle responses for objects, arrays, and strings
+// sub vitals methods offer fine-grained control
+// watch this example of vitals owning stringy things
 
 var v, i, t, a, l, s;
 var functional, life;
@@ -20,17 +20,17 @@ a = v.slice(life, -3, -1);    // "XY"
 l = v.get(life, /[A-Z]/);     // [ "X", "Y", "Z" ]
 s = v.fuse('v', life);        // "v123abc345XYZ"
 v.has(life, 'Z');             // true
-v.is('str|bool', i, t, a, l); // true
+v.is('str|arr', i, t, a, l);  // true
 v.is.str(i, t, a, l);         // false
 l = v.to.str(l, '~');         // "X~Y~Z"
 v.is.str(i, t, a, l);         // true
 
-// goodbye confusing equality, hello simplicity
+// goodbye confusing equality
 var same = require('node-vitals')('same');
 var v =  1;
 var _ = '1';
 same.ish(v, _); // true
-same(v, _);     // false
+same(v, _);    // false
 ```
 
 
