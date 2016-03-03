@@ -3,7 +3,7 @@
  * VITALS METHOD: is
  * -----------------------------------------------------------------------------
  * @section base
- * @version 4.1.0
+ * @version 4.1.1
  * @see [vitals.is]{@link https://github.com/imaginate/vitals/wiki/vitals.is}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
