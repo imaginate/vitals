@@ -3,7 +3,7 @@
  * VITALS METHOD: roll
  * -----------------------------------------------------------------------------
  * @section base
- * @version 4.1.1
+ * @version 4.1.2
  * @see [vitals.roll]{@link https://github.com/imaginate/vitals/wiki/vitals.roll}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

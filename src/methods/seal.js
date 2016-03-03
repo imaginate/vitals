@@ -3,7 +3,7 @@
  * VITALS METHOD: seal
  * -----------------------------------------------------------------------------
  * @section strict
- * @version 4.1.1
+ * @version 4.1.2
  * @see [vitals.seal]{@link https://github.com/imaginate/vitals/wiki/vitals.seal}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

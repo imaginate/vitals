@@ -1,6 +1,6 @@
 {
   "name": "node-vitals",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "description": "Do more with less. A simple, high-performing, functional JavaScript library.",
   "main": "node-vitals.js",
   "repository": {
