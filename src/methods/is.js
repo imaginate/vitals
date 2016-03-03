@@ -961,7 +961,7 @@ var is = (function isPrivateScope() {
    * @private
    * @type {string}
    */
-  var DOCS = 'https://github.com/imaginate/vitals/blob/master/docs/is.js';
+  var DOCS = 'https://github.com/imaginate/vitals/wiki/vitals.is-types';
 
   //////////////////////////////////////////////////////////
   // END OF PRIVATE SCOPE FOR IS
