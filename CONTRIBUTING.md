@@ -1,6 +1,6 @@
 # Contributing Guide
 ### Make Your JS Better
-All contributions are appreciated! Please follow the below directions for contributing to [vitals](https://github.com/imaginate/vitals).
+All contributions are appreciated! Please follow the below directions for contributing to [vitals](http://vitalsjs.com).
 
 
 ## Directions
@@ -24,10 +24,10 @@ All contributions are appreciated! Please follow the below directions for contri
 
 ## Contact
 - **bugs and improvements:** [open an issue](https://github.com/imaginate/vitals/issues)
-- **all other questions:** adam@imaginate.life
+- **all other questions:** adam@vitalsjs.com
 
 
 --
-**Thanks for being a part of the [vitals](https://github.com/imaginate/vitals) team,**
+**Thanks for being a part of the [vitals](http://vitalsjs.com) team,**
 
-<a href="http://www.algorithmiv.com/vitals"><img src="http://www.algorithmiv.com/images/aIV-logo.png" alt="Algorithm IV Logo" /></a>
+<a href="http://vitalsjs.com"><img src="http://www.algorithmiv.com/images/aIV-logo.png" alt="Algorithm IV Logo" /></a>
