@@ -24,7 +24,7 @@
 exports['desc'] = 'minifies the browser versions';
 exports['method'] = minifyVitals;
 
-var WEBSITE  = 'https://github.com/imaginate/vitals';
+var WEBSITE  = 'http://vitalsjs.com';
 var BROWSER  = 'src/browser';
 var FRAMES   = 'src/browser/skeletons';
 var MINIFIER = 'vendor/closure-compiler.jar';
@@ -112,7 +112,7 @@ function addCopyright(content, filename) {
   var license;
 
   version = getVersion();
-  license = WEBSITE + '/blob/master/LICENSE.md';
+  license = WEBSITE + '/license';
   copyright  = '/* ' + filename + ' v' + version + ' (' + WEBSITE + ')\n';
   copyright += ' * Copyright (c) 2016 Adam A Smith <adam@imaginate.life>\n';
   copyright += ' * The Apache License (' + license + ') */';
