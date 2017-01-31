@@ -3,7 +3,7 @@
  * VITALS FS METHOD: copy
  * -----------------------------------------------------------------------------
  * @section fs
- * @version 4.1.2
+ * @version 4.1.3
  * @see [vitals.copy]{@link https://github.com/imaginate/vitals/wiki/vitals.copy}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

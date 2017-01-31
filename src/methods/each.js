@@ -3,7 +3,7 @@
  * VITALS METHOD: each
  * -----------------------------------------------------------------------------
  * @section base
- * @version 4.1.2
+ * @version 4.1.3
  * @see [vitals.each]{@link https://github.com/imaginate/vitals/wiki/vitals.each}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

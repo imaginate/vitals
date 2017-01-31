@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------------
  * VITALS HELPER: normalize
  * -----------------------------------------------------------------------------
- * @version 4.1.2
+ * @version 4.1.3
  * @see [vitals]{@link https://github.com/imaginate/vitals}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

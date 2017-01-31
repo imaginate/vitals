@@ -3,7 +3,7 @@
  * VITALS METHOD: fuse
  * -----------------------------------------------------------------------------
  * @section base
- * @version 4.1.2
+ * @version 4.1.3
  * @see [vitals.fuse]{@link https://github.com/imaginate/vitals/wiki/vitals.fuse}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

@@ -3,7 +3,7 @@
  * VITALS METHOD: amend
  * -----------------------------------------------------------------------------
  * @section strict
- * @version 4.1.2
+ * @version 4.1.3
  * @see [vitals.amend]{@link https://github.com/imaginate/vitals/wiki/vitals.amend}
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
