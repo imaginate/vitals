@@ -18,7 +18,7 @@
   "homepage": "http://www.algorithmiv.com/vitals",
   "devDependencies": {
     "chalk": "1.x",
-    "mocha": "2.x",
+    "mocha": "3.x",
     "log-ocd": ">1.0.0-beta",
     "node-act": "1.x"
   },
