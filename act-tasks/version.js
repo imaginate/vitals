@@ -5,7 +5,7 @@
  * @file Use `$ act version` to access this file.
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2016 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
  * @see [act]{@link https://github.com/imaginate/act}

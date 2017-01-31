@@ -1,6 +1,6 @@
 ## [vitals](http://vitalsjs.com) license
 
-**Copyright 2016 Adam A Smith ([imaginate.life](http://imaginate.life))**
+**Copyright 2017 Adam A Smith ([imaginate.life](http://imaginate.life))**
 
 Licensed under the **Apache License**, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
