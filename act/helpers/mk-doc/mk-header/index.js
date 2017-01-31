@@ -20,7 +20,7 @@ var TRIM = /\n *\/\/ PUBLIC METHODS *\n/;
 var SLIM = /\n$/;
 var BASE = /\b[a-z]+\b/;
 
-var TEMPLATE = getFile('act-tasks/helpers/mk-doc/templates/header.md');
+var TEMPLATE = getFile('act/helpers/mk-doc/templates/header.md');
 
 var getSection = require('./get-section');
 var getMethods = require('./get-methods');

@@ -71,7 +71,7 @@ module.exports = function runTestCmd(opts) {
   cmd = newTestCmd(opts);
   files = mkTestFiles(cmd.test, cmd.section, cmd.dir);
   args = [
-    './act-tasks/helpers/test-module.js',
+    './act/helpers/test-module.js',
     cmd.report,
     cmd.slow,
     cmd.setup

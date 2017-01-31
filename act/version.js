@@ -111,7 +111,7 @@ function updateDocsVersion(version) {
   files = getFilepaths(base, false, /\.md$/);
   insertBadges(base, files, version);
 
-  base = './act-tasks/helpers/mk-doc/templates';
+  base = './act/helpers/mk-doc/templates';
   files = getFilepaths(base, false, /\.md$/);
   insertBadges(base, files, version);
 }

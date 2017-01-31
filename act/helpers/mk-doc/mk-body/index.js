@@ -19,7 +19,7 @@ var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
 var TRIM = /\/\*\*\n +\* /;
 var SPLIT = / *\n +\*(?: {1,3}|\/\n)?/g;
 
-var TEMPLATE = getFile('act-tasks/helpers/mk-doc/templates/body.md');
+var TEMPLATE = getFile('act/helpers/mk-doc/templates/body.md');
 
 var getMethod  = require('./get-method');
 var getTests   = require('./get-tests');

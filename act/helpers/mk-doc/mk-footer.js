@@ -14,7 +14,7 @@
 
 var getFile = require('../get-file');
 
-var TEMPLATE = getFile('act-tasks/helpers/mk-doc/templates/footer.md');
+var TEMPLATE = getFile('act/helpers/mk-doc/templates/footer.md');
 
 /**
  * @param {string} content
