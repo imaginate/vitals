@@ -132,6 +132,9 @@ var is = {
   'array':     isArray,
   'arr':       isArray,
 
+  'arrayLike': isArrayLike,
+  'arrLike':   isArrayLike,
+
   'regexp':    isRegExp,
   'regex':     isRegExp,
 
@@ -256,6 +259,15 @@ function isFunction(val) {
  */
 function isArray(val) {
   return isObject(val) && toString(val) === '[object Array]';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isArrayLike(val) {
+  return isObject(val) && isNumber(val.length) && val.length >= 0;
 }
 
 /**
