@@ -1,0 +1,57 @@
+/**
+ * -----------------------------------------------------------------------------
+ * ACT TASK HELPER: sliceArray
+ * -----------------------------------------------------------------------------
+ * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ *
+ * Annotations:
+ * @see [JSDoc3](http://usejsdoc.org)
+ * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ */
+
+'use strict';
+
+/**
+ * @public
+ * @param {(!Object|function)} source
+ * @param {number=} start - [default= 0]
+ * @param {number=} end - [default= source.length]
+ * @return {!Array}
+ */
+module.exports = function sliceArray(source, start, end) {
+
+  /** @type {!Array} */
+  var arr;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var ii;
+  /** @type {number} */
+  var i;
+
+  len = source.length;
+
+  if (!start)
+    start = 0;
+  else if (start < 0) {
+    start = len + start;
+    if (start < 0)
+      start = 0;
+  }
+
+  if (end === undefined || end > len)
+    end = len;
+  else if (end < 0)
+    end = len + end;
+
+  if (start >= end)
+    return [];
+
+  arr = new Array(end - start);
+  ii = start - 1;
+  i = 0;
+  while (++ii < end)
+    arr[i++] = source[ii];
+  return arr;
+};
