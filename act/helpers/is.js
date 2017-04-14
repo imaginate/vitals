@@ -143,6 +143,9 @@ var is = {
   'error':     isError,
   'err':       isError,
 
+  'strings':   isStrings,
+  'strs':      isStrings,
+
   'empty':     isEmpty,
 
   'frozen':    isFrozen,
@@ -295,6 +298,34 @@ function isDate(val) {
  */
 function isError(val) {
   return isObject(val) && toString(val) === '[object Error]';
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// JS ARRAYS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isStrings(val) {
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  if ( !isArrayLike(val) )
+    return false;
+
+  len = val.length;
+  i = -1;
+  while (++i < len) {
+    if ( !isString(val[i]) )
+      return false;
+  }
+  return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
