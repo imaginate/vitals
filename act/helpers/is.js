@@ -7,259 +7,424 @@
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
-//////////////////////////////////////////////////////////
-// PRIMITIVES
-//////////////////////////////////////////////////////////
+/**
+ * @typedef {{
+ *   isDirectory: function():boolean,
+ *   isFile:      function():boolean
+ * }} StatsDummy
+ */
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var FS = require('fs');
+
+/**
+ * @private
+ * @const {!StatsDummy}
+ */
+var STAT_DUMMY = {
+  isDirectory: function() { return false; },
+  isFile:      function() { return false; }
+};
+
+/**
+ * @private
+ * @param {string} filepath
+ * @return {!Stats}
+ */
+var _getStats = FS.statSync;
+
+/**
+ * @private
+ * @param {string} prop
+ * @return {boolean}
+ */
+var _hasOwn = Object.prototype.hasOwnProperty;
+
+/**
+ * @private
  * @param {*} val
  * @return {boolean}
  */
-exports.null = function isNull(val) {
-  return val === null;
-};
-exports.nil = exports.null;
+var _isBuffer = Buffer.isBuffer;
 
 /**
- * @param {*} val
- * @return {boolean}
+ * @private
+ * @return {string}
  */
-exports.undefined = function isUndefined(val) {
-  return val === undefined;
-};
+var _toString = Object.prototype.toString;
 
 /**
- * @param {*} val
- * @return {boolean}
+ * @private
+ * @param {string} filepath
+ * @return {(!Stats|StatsDummy)}
  */
-exports.boolean = function isBoolean(val) {
-  return typeof val === 'boolean';
-};
-exports.bool = exports.boolean;
-
-/**
- * @param {*} val
- * @return {boolean}
- */
-exports.string = function isString(val) {
-  return typeof val === 'string';
-};
-exports.str = exports.string;
-
-/**
- * @param {*} val
- * @return {boolean}
- */
-exports.number = function isNumber(val) {
-  return typeof val === 'number' && val === val;
-};
-exports.num = exports.number;
-
-/**
- * @param {*} val
- * @return {boolean}
- */
-exports.nan = function isNan(val) {
-  return val !== val;
-};
-
-//////////////////////////////////////////////////////////
-// JS OBJECTS
-//////////////////////////////////////////////////////////
-
-/** @type {function} */
-var toStr = Object.prototype.toString;
-
-/**
- * @param {*} val
- * @return {boolean}
- */
-exports.object = function isObject(val) {
-  return !!val && typeof val === 'object';
-};
-exports.obj = exports.object;
-
-/**
- * @param {*} val
- * @return {boolean}
- */
-exports.func = function isFunction(val) {
-  return !!val && typeof val === 'function';
-};
-try {
-  exports.function = exports.func;
+function getStats(filepath) {
+  try {
+    return _getStats(filepath);
+  }
+  catch (e) {
+    return STAT_DUMMY;
+  }
 }
-catch (err) {}
 
 /**
+ * @private
+ * @param {!Object} obj
+ * @param {string} prop
+ * @return {boolean}
+ */
+function hasOwn(obj, prop) {
+  return _hasOwn.call(obj, prop);
+}
+
+/** 
+ * @private
+ * @param {!Object} obj
+ * @return {string}
+ */
+function toString(obj) {
+  return _toString.call(obj);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @type {!Object<string, function>}
+ */
+var is = {
+
+  'null':      isNull,
+  'nil':       isNull,
+
+  'undefined': isUndefined,
+
+  'boolean':   isBoolean,
+  'bool':      isBoolean,
+
+  'string':    isString,
+  'str':       isString,
+
+  'number':    isNumber,
+  'num':       isNumber,
+
+  'nan':       isNan,
+
+  'object':    isObject,
+  'obj':       isObject,
+
+  // `is.function' property must be wrapped in `try => catch'
+  // `is.function' defined immediately after this object closes
+  'func':      isFunction,
+
+  'array':     isArray,
+  'arr':       isArray,
+
+  'regexp':    isRegExp,
+  'regex':     isRegExp,
+
+  'date':      isDate,
+
+  'error':     isError,
+  'err':       isError,
+
+  'empty':     isEmpty,
+
+  'frozen':    isFrozen,
+
+  'whole':     isWholeNumber,
+
+  'odd':       isOddNumber,
+
+  'even':      isEvenNumber,
+
+  'buffer':    isBuffer,
+  'buff':      isBuffer,
+  'buf':       isBuffer,
+
+  'directory': isDirectory,
+  'dirpath':   isDirectory,
+  'dir':       isDirectory,
+
+  'filepath':  isFile,
+  'file':      isFile
+};
+
+try {
+  is['function'] = isFunction;
+}
+catch (error) {}
+
+module.exports = is;
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIMITIVES
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @param {*} val
  * @return {boolean}
  */
-exports.array = function isArray(val) {
-  return !!val && typeof val === 'object' && toStr.call(val) === '[object Array]';
-};
-exports.arr = exports.array;
+function isNull(val) {
+  return val === null;
+}
 
 /**
+ * @public
  * @param {*} val
  * @return {boolean}
  */
-exports.regexp = function isRegExp(val) {
-  return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
-};
-exports.regex = exports.regexp;
+function isUndefined(val) {
+  return val === undefined;
+}
 
 /**
+ * @public
  * @param {*} val
  * @return {boolean}
  */
-exports.date = function isDate(val) {
-  return !!val && typeof val === 'object' && toStr.call(val) === '[object Date]';
-};
+function isBoolean(val) {
+  return typeof val === 'boolean';
+}
 
 /**
+ * @public
  * @param {*} val
  * @return {boolean}
  */
-exports.error = function isError(val) {
-  return !!val && typeof val === 'object' && toStr.call(val) === '[object Error]';
-};
-exports.err = exports.error;
+function isString(val) {
+  return typeof val === 'string';
+}
 
-//////////////////////////////////////////////////////////
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNumber(val) {
+  return typeof val === 'number' && val === val;
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNan(val) {
+  return val !== val;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// JS OBJECTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isObject(val) {
+  return !!val && typeof val === 'object';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isFunction(val) {
+  return !!val && typeof val === 'function';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isArray(val) {
+  return isObject(val) && toString(val) === '[object Array]';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isRegExp(val) {
+  return isObject(val) && toString(val) === '[object RegExp]';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isDate(val) {
+  return isObject(val) && toString(val) === '[object Date]';
+}
+
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isError(val) {
+  return isObject(val) && toString(val) === '[object Error]';
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // MISCELLANEOUS
-//////////////////////////////////////////////////////////
-
-/** @type {function} */
-var hasOwn = Object.prototype.hasOwnProperty;
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Checks if a value is considered empty.
+ *
+ * @public
  * @param {...*} val
  * @return {boolean} Returns `false` if value is one of the following:
  *   ` 0, "", {}, [], null, undefined, false, NaN, function(){} `
  *   Note that for functions this method checks whether it has any defined
  *   params: ` function empty(){}; function notEmpty(param){}; `
  */
-exports.empty = function isEmpty(val) {
+function isEmpty(val) {
 
   /** @type {string} */
   var key;
 
   // handle empty primitives - 0, "", null, undefined, false, NaN
-  if (!val) return true;
+  if (!val)
+    return true;
 
-  // handle functions
-  if (typeof val === 'function') return !val.length;
+  if ( isFunction(val) )
+    return !val.length;
 
   // handle non-empty primitives
-  if (typeof val !== 'object') return false;
+  if ( !isObject(val) )
+    return false;
 
-  // handle arrays
-  if (toStr.call(val) === '[object Array]') return !val.length;
+  if ( isArray(val) )
+    return !val.length;
 
   // handle all other objects
   for (key in val) {
-    if ( hasOwn.call(val, key) ) return false;
+    if ( hasOwn(val, key) )
+      return false;
   }
   return true;
-};
+}
 
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // OBJECT STATES
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @public
  * @param {(!Object|function)} obj
  * @return {boolean}
  */
-exports.frozen = function isFrozen(obj) {
-  if ( !obj || (typeof obj !== 'object' && typeof obj !== 'function') ) {
-    throw new TypeError('invalid obj (must be an object or function)');
-  }
+function isFrozen(obj) {
+
+  if ( !isObject(obj) && !isFunction(obj) )
+    throw new TypeError('invalid `obj` type (must be an object or function)');
+
   return Object.isFrozen(obj);
-};
+}
 
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // NUMBER STATES
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @public
  * @param {number} val
  * @return {boolean}
  */
-exports.whole = function isWholeNumber(val) {
-  if (typeof val !== 'number' || val !== val) throw new TypeError('invalid val (must be a number)');
+function isWholeNumber(val) {
+
+  if ( !isNumber(val) ) 
+    throw new TypeError('invalid `val` type (must be a number)');
+
   return !(val % 1);
-};
+}
 
 /**
+ * @public
  * @param {number} val
  * @return {boolean}
  */
-exports.odd = function isOddNumber(val) {
-  if (typeof val !== 'number' || val !== val) throw new TypeError('invalid val (must be a number)');
-  if (val % 1) throw new RangeError('invalid val (must be a whole number)');
+function isOddNumber(val) {
+
+  if ( !isNumber(val) ) 
+    throw new TypeError('invalid `val` type (must be a number)');
+  if ( !isWholeNumber(val) ) 
+    throw new RangeError('invalid `val` number (must be a whole number)');
+
   return !!(val % 2);
-};
+}
 
 /**
+ * @public
  * @param {number} val
  * @return {boolean}
  */
-exports.even = function isEvenNumber(val) {
-  if (typeof val !== 'number' || val !== val) throw new TypeError('invalid val (must be a number)');
-  if (val % 1) throw new RangeError('invalid val (must be a whole number)');
+function isEvenNumber(val) {
+
+  if ( !isNumber(val) )
+    throw new TypeError('invalid `val` type (must be a number)');
+  if ( !isWholeNumber(val) )
+    throw new RangeError('invalid `val` number (must be a whole number)');
+
   return !(val % 2);
-};
+}
 
-//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 // FILE SYSTEM
-//////////////////////////////////////////////////////////
-
-var fs = require('fs');
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @public
  * @param {*} val
  * @return {boolean}
  */
-exports.buffer = Buffer.isBuffer;
+function isBuffer(val) {
+  return isObject(val) && _isBuffer(val);
+}
 
 /**
+ * @public
  * @param {string} dirpath
  * @return {boolean}
  */
-exports.dir = function isDirectory(dirpath) {
+function isDirectory(dirpath) {
 
-  if (typeof dirpath !== 'string') throw new TypeError('invalid dirpath (must be a string)');
+  if ( !isString(dirpath) )
+    throw new TypeError('invalid `dirpath` type (must be a string)');
 
-  if (!dirpath) return false;
-
-  try {
-    return fs.statSync(dirpath).isDirectory();
-  }
-  catch (e) {
-    return false;
-  }
-};
+  return !!dirpath && getStats(dirpath).isDirectory();
+}
 
 /**
+ * @public
  * @param {string} filepath
  * @return {boolean}
  */
-exports.file = function isFile(filepath) {
+function isFile(filepath) {
 
-  if (typeof filepath !== 'string') throw new TypeError('invalid filepath (must be a string)');
+  if ( !isString(filepath) )
+    throw new TypeError('invalid `filepath` type (must be a string)');
 
-  if (!filepath) return false;
-
-  try {
-    return fs.statSync(filepath).isFile();
-  }
-  catch (e) {
-    return false;
-  }
-};
+  return !!filepath && getStats(filepath).isFile();
+}
