@@ -152,10 +152,13 @@ var is = {
 
   'frozen':         isFrozen,
 
+  'wholeNumber':    isWholeNumber,
   'whole':          isWholeNumber,
 
+  'oddNumber':      isOddNumber,
   'odd':            isOddNumber,
 
+  'evenNumber':     isEvenNumber,
   'even':           isEvenNumber,
 
   'equalTo':        isEqualTo,
