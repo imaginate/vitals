@@ -11,9 +11,22 @@
 
 'use strict';
 
-var TRIM = /\bfunction\b|[ \]']/g;
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @const {!RegExp}
+ */
+var FUNC = /\bfunction\b|[ \]']/g;
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @param {!Array<string>} lines
  * @return {string}
  */
@@ -21,10 +34,8 @@ module.exports = function getMethod(lines) {
 
   /** @type {string} */
   var method;
-  /** @type {number} */
-  var last;
 
-  last = lines.length - 1;
-  method = lines[last].replace(TRIM, '');
+  method = lines[lines.length - 1];
+  method = method.replace(FUNC, '');
   return method.replace('[', '.');
 };
