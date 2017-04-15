@@ -11,26 +11,76 @@
 
 'use strict';
 
-/**
- * @param {string} str
- * @param {!RegExp} pattern
- * @return {string}
- */
-module.exports = function getMatches(str, pattern) {
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
-  /** @type {!Array} */
-  var arr;
-  /** @type {Object} */
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('./is.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isNE = IS.notEqualTo;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isRegExp = IS.regexp;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @param {string} source
+ * @param {!RegExp} pattern
+ * @return {!Array<string>}
+ */
+module.exports = function getMatches(source, pattern) {
+
+  /** @type {!Array<string>} */
+  var matches;
+  /** @type {?Object} */
   var obj;
 
-  if (!pattern.global) pattern = new RegExp(pattern.source, 'g');
-  if (pattern.lastIndex !== 0) pattern.lastIndex = 0;
+  if ( !isString(source) )
+    throw new TypeError('invalid `source` type (must be a string)');
+  if ( !isRegExp(pattern) )
+    throw new Error('invalid `pattern` type (must be a RegExp)');
 
-  arr = [];
-  obj = pattern.exec(str);
+  if (!source)
+    return [];
+
+  if ( !pattern.global )
+    pattern = new RegExp(pattern.source, 'g');
+  if ( isNE(pattern.lastIndex, 0) )
+    pattern.lastIndex = 0;
+
+  matches = [];
+  obj = pattern.exec(source);
   while (obj) {
-    arr.push(obj[0]);
-    obj = pattern.exec(str);
+    matches.push(obj[0]);
+    obj = pattern.exec(source);
   }
-  return arr;
+  return matches;
 };
