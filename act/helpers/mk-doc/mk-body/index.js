@@ -11,46 +11,166 @@
 
 'use strict';
 
-var get = require('../../get-matches');
-var getFile = require('../../get-file');
-
-var GET = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
-var TRIM = /\/\*\*\n +\* /;
-var SPLIT = / *\n +\*(?: {1,3}|\/\n)?/g;
-
-var TEMPLATE = getFile('act/helpers/mk-doc/templates/body.md');
-
-var getMethod  = require('./get-method');
-var getTests   = require('./get-tests');
-var getIntro   = require('./get-intro');
-var getParams  = require('./get-params');
-var getReturns = require('./get-returns');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {string} content
- * @param {string=} fscontent
+ * @private
+ * @const {!RegExp}
+ */
+var DOCS_OPEN = /\/\*\*\n +\* /;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var DOCS_LINE = / *\n +\*(?: {1,3}|\/\n)?/g;
+
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('../../is.js');
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var PUBLIC_DOCS = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} filepath
+ * @param {boolean=} buffer
+ * @return {(!Buffer|string)}
+ */
+var getFileContent = require('../../get-file-content.js');
+
+/**
+ * @private
+ * @param {string} source
+ * @param {!RegExp} pattern
+ * @return {!Array<string>}
+ */
+var getMatches = require('../../get-matches.js');
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+/**
+ * @private
+ * @param {(!ArrayLike<string>|...string)=} path
  * @return {string}
  */
-module.exports = function mkBody(content, fscontent) {
+var resolvePath = require('../../resolve-path.js');
 
-  /** @type {!Array<string>} */
-  var methods;
+////////////////////////////////////////////////////////////////////////////////
+// MACROS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @const {string}
+ */
+var TMPL_PATH = resolvePath(__dirname, '../templates/body.md');
+
+/**
+ * @private
+ * @const {string}
+ */
+var TEMPLATE = getFileContent(TMPL_PATH);
+
+////////////////////////////////////////////////////////////////////////////////
+// GET METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+var getMethod = require('./get-method.js');
+
+/**
+ * @private
+ * @param {string} method
+ * @return {string}
+ */
+var getTests = require('./get-tests.js');
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+var getIntro = require('./get-intro.js');
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+var getParams = require('./get-params.js');
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+var getReturns = require('./get-returns.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// MAKE METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} detail
+ * @return {string}
+ */
+function mkDetail(detail) {
+
   /** @type {string} */
-  var body;
+  var method;
+  /** @type {string} */
+  var result;
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var part;
 
-  methods = get(content, GET);
+  detail = detail.replace(DOCS_OPEN, '');
+  lines = detail.split(DOCS_LINE);
 
-  if (!methods.length) throw new Error('no public methods found');
+  result = TEMPLATE;
 
-  body = mkDetails(methods);
+  method = getMethod(lines);
+  result = result.replace('{{ method }}', method);
 
-  if (fscontent) {
-    methods = get(fscontent, GET);
-    body = body + mkDetails(methods);
-  }
+  part = getTests(method);
+  result = result.replace('{{ tests }}', part);
 
-  return body;
-};
+  part = getIntro(lines);
+  result = result.replace('{{ intro }}', part);
+
+  part = getParams(lines);
+  result = result.replace('{{ params }}', part);
+
+  part = getReturns(lines);
+  result = result.replace('{{ returns }}', part);
+
+  return result;
+}
 
 /**
  * @private
@@ -67,46 +187,42 @@ function mkDetails(details) {
   var i;
 
   result = '';
+
   len = details.length;
   i = -1;
-  while (++i < len) result += mkDetail(details[i]);
+  while ( isLT(++i, len) )
+    result += mkDetail(details[i]);
   return result;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
 /**
- * @private
- * @param {string} detail
+ * @public
+ * @param {string} content
+ * @param {string=} fscontent
  * @return {string}
  */
-function mkDetail(detail) {
+module.exports = function mkBody(content, fscontent) {
 
-  /** @type {string} */
-  var returns;
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var params;
-  /** @type {string} */
-  var tests;
-  /** @type {string} */
-  var intro;
   /** @type {!Array<string>} */
-  var lines;
+  var methods;
+  /** @type {string} */
+  var body;
 
-  detail  = detail.replace(TRIM, '');
-  lines   = detail.split(SPLIT);
-  method  = getMethod(lines);
-  tests   = getTests(method);
-  intro   = getIntro(lines);
-  params  = getParams(lines);
-  returns = getReturns(lines);
+  methods = getMatches(content, PUBLIC_DOCS);
 
-  detail = TEMPLATE;
-  detail = detail.replace('{{ method }}',  method);
-  detail = detail.replace('{{ tests }}',   tests);
-  detail = detail.replace('{{ intro }}',   intro);
-  detail = detail.replace('{{ params }}',  params);
-  detail = detail.replace('{{ returns }}', returns);
+  if ( isLT(methods.length, 1) )
+    throw new Error('no public methods found');
 
-  return detail;
-}
+  body = mkDetails(methods);
+
+  if (fscontent) {
+    methods = getMatches(fscontent, PUBLIC_DOCS);
+    body += mkDetails(methods);
+  }
+
+  return body;
+};
