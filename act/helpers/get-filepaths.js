@@ -2,202 +2,277 @@
  * -----------------------------------------------------------------------------
  * ACT TASK HELPER: getFilepaths
  * -----------------------------------------------------------------------------
- * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  *
- * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-var INVALID_DIRS = /^node_modules|vendor$/;
-
-var is = require('./is');
-var fs = require('fs');
-
-/**
- * @param {string} base
- * @param {boolean=} deep
- * @param {!RegExp=} valid
- * @param {!RegExp=} invalid
- * @return {!Array<string>}
- */
-module.exports = function getFilepaths(base, deep, valid, invalid) {
-
-  /** @type {function(string): boolean} */
-  var isValid;
-
-  base = prepDir(base);
-  isValid = mkCheck(valid, invalid);
-  return deep
-    ? getFilesDeep(base, isValid)
-    : getFiles(base, isValid);
-};
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {string} base
- * @param {function(string): boolean} isValid
- * @return {!Array<string>}
+ * @const {!Object<string, function>}
  */
-function getFiles(base, isValid) {
-
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {!Array<string>} */
-  var files;
-  /** @type {string} */
-  var path;
-  /** @type {string} */
-  var file;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  paths = fs.readdirSync(base);
-  files = [];
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    file = paths[i];
-    path = base + file;
-    if ( is.file(path) && isValid(file) ) files.push(file);
-  }
-  return files;
-}
+var FS = require('fs');
 
 /**
  * @private
- * @param {string} base
- * @param {function(string): boolean} isValid
- * @return {!Array<string>}
+ * @const {!RegExp}
  */
-function getFilesDeep(base, isValid) {
-
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {!Array<string>} */
-  var files;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var dir;
-  /** @type {number} */
-  var end;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var ii;
-  /** @type {number} */
-  var i;
-
-  files = getFiles(base, isValid);
-  dirs = getDirsDeep(base);
-  end = dirs.length;
-  i = -1;
-  while (++i < end) {
-    dir = prepDir(dirs[i]);
-    paths = getFiles(base + dir, isValid);
-    len = paths.length;
-    ii = -1;
-    while (++ii < len) files.push(dir + paths[ii]);
-  }
-  return files;
-}
+var INVALID_DIRS = /^\.git|\.bak|node_modules|vendor|tmp|logs?$/;
 
 /**
  * @private
- * @param {string} base
- * @return {!Array<string>}
+ * @const {!Object<string, function>}
  */
-function getDirs(base) {
+var IS = require('./is.js');
 
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var path;
-  /** @type {string} */
-  var dir;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  paths = fs.readdirSync(base);
-  dirs = [];
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    dir = paths[i];
-    path = base + dir;
-    if ( is.dir(path) && validDir(dir) ) dirs.push(dir);
-  }
-  return dirs;
-}
-
-/**
- * @private
- * @param {string} base
- * @return {!Array<string>}
- */
-function getDirsDeep(base) {
-
-  /** @type {!Array<string>} */
-  var result;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var dir;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var ii;
-  /** @type {number} */
-  var i;
-
-  result = getDirs(base);
-  i = -1;
-  while (++i < result.length) {
-    dir = prepDir(result[i]);
-    dirs = getDirs(base + dir);
-    len = dirs.length;
-    ii = -1;
-    while (++ii < len) result.push(dir + dirs[ii]);
-  }
-  return result;
-}
-
-/**
- * @private
- * @param {!RegExp=} valid
- * @param {!RegExp=} invalid
- * @return {function}
- */
-function mkCheck(valid, invalid) {
-  return function isValid(str) {
-    return ( !valid || valid.test(str) ) && ( !invalid || !invalid.test(str) );
-  };
-}
-
-/**
- * @private
- * @param {string} dir
- * @return {boolean}
- */
-function validDir(dir) {
-  return !INVALID_DIRS.test(dir);
-}
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
  * @param {string} dirpath
  * @return {string}
  */
-function prepDir(dirpath) {
-  return dirpath.replace(/[^\/]$/, '$&/');
+var cleanDirpath = require('./clean-dirpath.js');
+
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathname = require('./get-pathname.js');
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isBoolean = IS.boolean;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isDirectory = IS.directory;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFile = IS.file;
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isRegExp = IS.regexp;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
+/**
+ * @private
+ * @param {string} dirname
+ * @return {boolean}
+ */
+function isValidDirname(dirname) {
+  return !INVALID_DIRS.test(dirname);
 }
+
+/**
+ * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/fs.html#fs_fs_readdirsync_path)
+ * @see [node.js v7.9](https://nodejs.org/docs/v7.9.0/api/fs.html#fs_fs_readdirsync_path_options)
+ * @private
+ * @param {string} dirpath
+ * @return {!Array<string>} - An array of all the dirnames and filenames in
+ *   the directory.
+ */
+var readPaths = FS.readdirSync;
+
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('./resolve-path.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} pwd
+ * @param {boolean} full
+ * @param {function(string): boolean} isValidFilename
+ * @return {!Array<string>}
+ */
+function getFiles(pwd, full, isValidFilename) {
+
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {!Array<string>} */
+  var files;
+  /** @type {string} */
+  var path;
+  /** @type {string} */
+  var name;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  pwd = cleanDirpath(pwd);
+
+  files = [];
+  paths = readPaths(pwd);
+  len = paths.length;
+  i = -1;
+  while ( isLT(++i, len) ) {
+    name = getPathname(paths[i]);
+    path = pwd + name;
+    if ( isFile(path) && isValidFilename(name) )
+      files.push(full ? path : name);
+  }
+  return files;
+}
+
+/**
+ * @private
+ * @param {string} pwd
+ * @param {string} prepend
+ * @param {function(string): boolean} isValidFilename
+ * @return {!Array<string>}
+ */
+function getFilesDeep(pwd, prepend, isValidFilename) {
+
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {!Array<string>} */
+  var files;
+  /** @type {string} */
+  var path;
+  /** @type {string} */
+  var name;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  pwd = cleanDirpath(pwd);
+  prepend = prepend && cleanDirpath(prepend);
+
+  files = [];
+  paths = readPaths(pwd);
+  len = paths.length;
+  i = -1;
+  while ( isLT(++i, len) ) {
+    name = getPathname(paths[i]);
+    path = pwd + name;
+    if ( isFile(path) ) {
+      if ( isValidFilename(name) )
+        files.push(prepend + name);
+    }
+    else if ( isDirectory(path) ) {
+      if ( isValidDirname(name) )
+        getFilesDeep(path, prepend + name, isValidFilename);
+    }
+  }
+  return files;
+}
+
+/**
+ * @private
+ * @param {!RegExp=} validNames
+ * @param {!RegExp=} invalidNames
+ * @return {function(string): boolean}
+ */
+function mkFilenameCheck(validNames, invalidNames) {
+
+  if (!!validNames && !!invalidNames)
+    return function isValidFilename(filename) {
+      return validNames.test(filename) && !invalidNames.test(filename);
+    };
+
+  if (!!validNames)
+    return function isValidFilename(filename) {
+      return validNames.test(filename);
+    };
+
+  if (!!invalidNames)
+    return function isValidFilename(filename) {
+      return !invalidNames.test(filename);
+    };
+
+  return function isValidFilename(filename) {
+    return true;
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {string} dirpath
+ * @param {?Object|boolean=} opts - If a `boolean` then it is `opts.deep`.
+ * @param {?boolean=} opts.deep - Make a recursive search for valid filenames.
+ * @param {?boolean=} opts.full - Return absolute filepaths instead of relative.
+ * @param {?RegExp=} opts.valid - A pattern for matching valid filenames.
+ * @param {?RegExp=} opts.invalid - A pattern for matching invalid filenames.
+ * @return {!Array<string>}
+ */
+module.exports = function getFilepaths(dirpath, opts) {
+
+  /** @type {function(string): boolean} */
+  var isValidFilename;
+
+  if ( !isString(dirpath) )
+    throw new TypeError('invalid `dirpath` type (must be a string)');
+  if ( !isDirectory(dirpath) )
+    throw new Error('invalid `dirpath` path (must be a readable directory)');
+
+  if (!opts)
+    opts = {};
+  else {
+    if ( !!opts.deep && !isBoolean(opts.deep) )
+      throw new TypeError('invalid `opts.deep` type (must be a boolean or undefined)');
+    if ( !!opts.full && !isBoolean(opts.full) )
+      throw new TypeError('invalid `opts.full` type (must be a boolean or undefined)');
+    if ( !!opts.valid && !isRegExp(opts.valid) )
+      throw new TypeError('invalid `opts.valid` type (must be a RegExp or undefined)');
+    if ( !!opts.invalid && !isRegExp(opts.invalid) )
+      throw new TypeError('invalid `opts.invalid` type (must be a RegExp or undefined)');
+  }
+
+  dirpath = resolvePath(dirpath);
+  isValidFilename = mkFilenameCheck(opts.valid, opts.invalid);
+  return !!opts.deep
+    ? getFilesDeep(dirpath, !!opts.full ? dirpath : '', isValidFilename)
+    : getFiles(dirpath, !!opts.full, isValidFilename);
+};
