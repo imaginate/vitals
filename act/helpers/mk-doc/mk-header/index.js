@@ -11,20 +11,102 @@
 
 'use strict';
 
-var get = require('../../get-match');
-var getFile = require('../../get-file');
-
-var GET  = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z._]+)?(?: +\([a-zA-Z.*|_]+\))? *\n)+/;
-var TRIM = /\n *\/\/ PUBLIC METHODS *\n/;
-var SLIM = /\n$/;
-var BASE = /\b[a-z]+\b/;
-
-var TEMPLATE = getFile('act/helpers/mk-doc/templates/header.md');
-
-var getSection = require('./get-section');
-var getMethods = require('./get-methods');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @const {!RegExp}
+ */
+var EOL = /\n$/;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var MAIN = /\b[a-z]+\b/;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var METHODS = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z._]+)?(?: +\([a-zA-Z.*|_]+\))? *\n)+/;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var TITLE = /\n *\/\/ PUBLIC METHODS *\n/;
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} filepath
+ * @param {boolean=} buffer
+ * @return {(!Buffer|string)}
+ */
+var getFileContent = require('../../get-file-content.js');
+
+/**
+ * @private
+ * @param {string} source
+ * @param {!RegExp} pattern
+ * @return {string}
+ */
+var getMatch = require('../../get-match.js');
+
+/**
+ * @private
+ * @param {(!ArrayLike<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('../../resolve-path.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// MACROS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @const {string}
+ */
+var TMPL_PATH = resolvePath(__dirname, '../templates/header.md');
+
+/**
+ * @private
+ * @const {string}
+ */
+var TEMPLATE = getFileContent(TMPL_PATH);
+
+////////////////////////////////////////////////////////////////////////////////
+// GET METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} content
+ * @return {string}
+ */
+var getMethods = require('./get-methods.js');
+
+/**
+ * @private
+ * @param {string} content
+ * @return {string}
+ */
+var getSection = require('./get-section.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @param {string} content
  * @param {string=} fscontent
  * @return {string}
@@ -38,27 +120,28 @@ module.exports = function mkHeader(content, fscontent) {
   /** @type {string} */
   var header;
   /** @type {string} */
-  var base;
+  var main;
 
   section = getSection(content);
-  content = get(content, GET);
+  content = getMatch(content, METHODS);
 
-  if (!content) throw new Error('no public methods found');
+  if (!content) 
+    throw new Error('no public methods found');
 
-  content = content.replace(TRIM, '');
-  content = content.replace(SLIM, '');
-  base = get(content, BASE);
+  content = content.replace(TITLE, '');
+  content = content.replace(EOL, '');
+  main = getMatch(content, MAIN);
   methods = getMethods(section, content);
 
   if (fscontent) {
-    fscontent = get(fscontent, GET);
-    fscontent = fscontent.replace(TRIM, '');
-    fscontent = fscontent.replace(SLIM, '');
+    fscontent = getMatch(fscontent, METHODS);
+    fscontent = fscontent.replace(TITLE, '');
+    fscontent = fscontent.replace(EOL, '');
     methods = methods + getMethods('fs', fscontent);
   }
 
   header = TEMPLATE;
-  header = header.replace('{{ base }}', base);
+  header = header.replace('{{ base }}', main);
   header = header.replace('{{ methods }}', methods);
 
   return header;
