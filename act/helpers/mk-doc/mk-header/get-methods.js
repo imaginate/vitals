@@ -13,10 +13,103 @@
 
 var get = require('../../get-match');
 
-var METHOD = /[a-z]+(?:\.[a-zA-Z._]+)?/;
-var ALIAS  = /\([a-zA-Z.*|_]+\)/;
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @const {!RegExp}
+ */
+var ALIAS = /\([a-zA-Z.*|_]+\)/;
+
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('../../is.js');
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var MAIN = /^[^\.]+/;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var METHOD = /[a-z]+(?:\.[a-zA-Z._]+)?/;
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var PROP = /[a-z]\./;
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} source
+ * @param {!RegExp} pattern
+ * @return {string}
+ */
+var getMatch = require('../../get-match.js');
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} section
+ * @param {string} line
+ * @return {string}
+ */
+function getMethod(section, line) {
+
+  /** @type {string} */
+  var method;
+  /** @type {string} */
+  var alias;
+  /** @type {string} */
+  var link;
+
+  method = getMatch(line, METHOD);
+
+  link = '#user-content-';
+  link += PROP.test(method)
+    ? method.replace(MAIN, '')
+    : 'main';
+  link = link.replace(/\./g, '');
+
+  alias = getMatch(line, ALIAS);
+  alias = alias.replace('|', ', ');
+  alias = alias.replace(/[*()]/g, '');
+
+  return '| [' + method  + '](' + link    + ') ' +
+         '| [' + section + '][' + section + '] ' +
+         '| ' + alias + ' ' +
+         '|\n';
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @param {string} section
  * @param {string} content
  * @return {string}
@@ -32,34 +125,12 @@ module.exports = function getMethods(section, content) {
   /** @type {number} */
   var i;
 
-  section = '[' + section + '][' + section + ']';
   methods = '';
+
   lines = content.split('\n');
   len = lines.length;
   i = -1;
-  while (++i < len) methods += getMethod(section, lines[i]);
+  while ( isLT(++i, len) )
+    methods += getMethod(section, lines[i]);
   return methods;
 };
-
-/**
- * @private
- * @param {string} section
- * @param {string} line
- * @return {string}
- */
-function getMethod(section, line) {
-
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var alias;
-
-  method = get(line, METHOD);
-  method = '[' + method + '](#' + method.replace(/\./g, '') + ')';
-
-  alias = get(line, ALIAS);
-  alias = alias.replace('|', ', ');
-  alias = alias.replace(/[*()]/g, '');
-
-  return '| ' + method + ' | ' + section + ' | ' + alias + ' |\n';
-}
