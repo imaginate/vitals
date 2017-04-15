@@ -21,7 +21,7 @@
  * @private
  * @const {number}
  */
-var INDENT_COUNT = 4;
+var INDENT_COUNT = 2;
 
 /**
  * @private
