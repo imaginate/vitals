@@ -106,66 +106,88 @@ function toString(obj) {
  */
 var is = {
 
-  'null':      isNull,
-  'nil':       isNull,
+  'null':           isNull,
+  'nil':            isNull,
 
-  'undefined': isUndefined,
+  'undefined':      isUndefined,
 
-  'boolean':   isBoolean,
-  'bool':      isBoolean,
+  'boolean':        isBoolean,
+  'bool':           isBoolean,
 
-  'string':    isString,
-  'str':       isString,
+  'string':         isString,
+  'str':            isString,
 
-  'number':    isNumber,
-  'num':       isNumber,
+  'number':         isNumber,
+  'num':            isNumber,
 
-  'nan':       isNan,
+  'nan':            isNan,
 
-  'object':    isObject,
-  'obj':       isObject,
+  'object':         isObject,
+  'obj':            isObject,
 
-  // `is.function' property must be wrapped in `try => catch'
-  // `is.function' defined immediately after this object closes
-  'func':      isFunction,
+// `is.function' property must be wrapped in `try => catch'
+// `is.function' defined immediately after this object closes
 
-  'array':     isArray,
-  'arr':       isArray,
+//'function':       isFunction,
+  'func':           isFunction,
 
-  'arrayLike': isArrayLike,
-  'arrLike':   isArrayLike,
+  'array':          isArray,
+  'arr':            isArray,
 
-  'regexp':    isRegExp,
-  'regex':     isRegExp,
+  'arrayLike':      isArrayLike,
+  'arrLike':        isArrayLike,
 
-  'date':      isDate,
+  'regexp':         isRegExp,
+  'regex':          isRegExp,
 
-  'error':     isError,
-  'err':       isError,
+  'date':           isDate,
 
-  'strings':   isStrings,
-  'strs':      isStrings,
+  'error':          isError,
+  'err':            isError,
 
-  'empty':     isEmpty,
+  'strings':        isStrings,
+  'strs':           isStrings,
 
-  'frozen':    isFrozen,
+  'empty':          isEmpty,
 
-  'whole':     isWholeNumber,
+  'frozen':         isFrozen,
 
-  'odd':       isOddNumber,
+  'whole':          isWholeNumber,
 
-  'even':      isEvenNumber,
+  'odd':            isOddNumber,
 
-  'buffer':    isBuffer,
-  'buff':      isBuffer,
-  'buf':       isBuffer,
+  'even':           isEvenNumber,
 
-  'directory': isDirectory,
-  'dirpath':   isDirectory,
-  'dir':       isDirectory,
+  'equalTo':        isEqualTo,
+  'equal':          isEqualTo,
+  'eq':             isEqualTo,
 
-  'filepath':  isFile,
-  'file':      isFile
+  'greaterThan':    isGreaterThan,
+  'greater':        isGreaterThan,
+  'gt':             isGreaterThan,
+
+  'greaterOrEqual': isGreaterOrEqual,
+  'greaterEqual':   isGreaterOrEqual,
+  'ge':             isGreaterOrEqual,
+
+  'lessThan':       isLessThan,
+  'less':           isLessThan,
+  'lt':             isLessThan,
+
+  'lessOrEqual':    isLessOrEqual,
+  'lessEqual':      isLessOrEqual,
+  'le':             isLessOrEqual,
+
+  'buffer':         isBuffer,
+  'buff':           isBuffer,
+  'buf':            isBuffer,
+
+  'directory':      isDirectory,
+  'dirpath':        isDirectory,
+  'dir':            isDirectory,
+
+  'filepath':       isFile,
+  'file':           isFile
 };
 
 try {
@@ -431,6 +453,96 @@ function isEvenNumber(val) {
     throw new RangeError('invalid `val` number (must be a whole number)');
 
   return !(val % 2);
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isEqualTo(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 === val2;
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isGreaterThan(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 > val2;
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isGreaterOrEqual(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 >= val2;
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isLessThan(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 < val2;
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isLessOrEqual(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 <= val2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
