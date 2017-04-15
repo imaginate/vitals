@@ -1,9 +1,6 @@
 
---
-**Happy Developing,**
-
-<a href="http://www.algorithmiv.com/vitals"><img src="http://www.algorithmiv.com/images/aIV-logo.png" alt="Algorithm IV Logo" /></a>
-
+----
+### Happy Developing
 
 [base]: https://github.com/imaginate/vitals/wiki#api
 [strict]: https://github.com/imaginate/vitals/wiki#api
