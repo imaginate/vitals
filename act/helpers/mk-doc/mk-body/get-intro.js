@@ -11,18 +11,54 @@
 
 'use strict';
 
-var PUBLIC = /^@public/;
-
-var getDescription = require('./get-description');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {!Array<string>} lines
- * @return {string}
+ * @private
+ * @const {!Object<string, function>}
  */
-module.exports = function getIntro(lines) {
-  lines = pruneLines(lines);
-  return getDescription(lines, 0);
-};
+var IS = require('../../is.js');
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var PUBLIC_TAG = /^@public/;
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+/**
+ * @private
+ * @param {(!Object|function)} source
+ * @param {number=} start - [default= 0]
+ * @param {number=} end - [default= source.length]
+ * @return {!Array}
+ */
+var sliceArray = require('../../slice-array.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {number} depth
+ * @return {!Array<string>}
+ */
+var getDescription = require('./get-description.js');
 
 /**
  * @private
@@ -40,8 +76,25 @@ function pruneLines(lines) {
 
   len = lines.length;
   i = -1;
-  while (++i < len && end === undefined) {
-    if ( PUBLIC.test(lines[i]) ) end = i;
+  while ( isLT(++i, len) ) {
+    if ( PUBLIC_TAG.test(lines[i]) ) {
+      end = i;
+      break;
+    }
   }
-  return lines.slice(0, end);
+  return sliceArray(lines, 0, end);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+module.exports = function getIntro(lines) {
+  lines = pruneLines(lines);
+  return getDescription(lines, 0);
+};
