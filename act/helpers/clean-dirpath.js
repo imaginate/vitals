@@ -42,6 +42,22 @@ var cleanPath = require('./clean-path.js');
 
 /**
  * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isGT = IS.greaterThan;
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+/**
+ * @private
  * @param {*} val
  * @return {boolean}
  */
@@ -58,10 +74,14 @@ var isString = IS.string;
  */
 module.exports = function cleanDirpath(dirpath) {
 
+  if ( isLT(arguments.length, 1) )
+    throw new Error('invalid missing `dirpath` string');
+  if ( isGT(arguments.length, 1) )
+    throw new Error('invalid param count (only 1 `dirpath` allowed)');
   if ( !isString(dirpath) )
     throw new TypeError('invalid `dirpath` type (must be a string)');
   if ( !dirpath )
-    throw new Error('invalid empty `dirpath` string');
+    throw new RangeError('invalid empty `dirpath` string');
 
   dirpath = cleanPath(dirpath);
   return appendSlash(dirpath);
