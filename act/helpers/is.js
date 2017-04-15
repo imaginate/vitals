@@ -181,6 +181,10 @@ var is = {
   'lessEqual':      isLessOrEqual,
   'le':             isLessOrEqual,
 
+  'notEqualTo':     isNotEqualTo,
+  'notEqual':       isNotEqualTo,
+  'ne':             isNotEqualTo,
+
   'buffer':         isBuffer,
   'buff':           isBuffer,
   'buf':            isBuffer,
@@ -546,6 +550,24 @@ function isLessOrEqual(val1, val2) {
     throw new Error('invalid param count (only 2 params allowed)');
 
   return val1 <= val2;
+}
+
+/**
+ * @public
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+function isNotEqualTo(val1, val2) {
+
+  if ( !isNumber(val1) )
+    throw new TypeError('invalid `val1` type (must be a number)');
+  if ( !isNumber(val2) )
+    throw new TypeError('invalid `val2` type (must be a number)');
+  if ( arguments.length > 2 )
+    throw new Error('invalid param count (only 2 params allowed)');
+
+  return val1 !== val2;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
