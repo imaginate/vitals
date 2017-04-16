@@ -118,27 +118,6 @@ var isLT = IS.lessThan;
 
 /**
  * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isObject = IS.object;
-
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-
-/**
- * @private
  * @param {number} depth
  * @return {string}
  */
