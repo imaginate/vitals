@@ -31,7 +31,7 @@ var INDENT = /^ +/;
  * @private
  * @const {!Object<string, function>}
  */
-var IS = require('../../../is.js');
+var IS = require('../../is.js');
 
 /**
  * @private
@@ -73,7 +73,7 @@ var SUBLIST = /^ *--/;
  * @param {!RegExp} pattern
  * @return {string}
  */
-var getMatch = require('../../../get-match.js');
+var getMatch = require('../../get-match.js');
 
 /**
  * @private
@@ -121,7 +121,7 @@ var isLT = IS.lessThan;
  * @param {number} depth
  * @return {string}
  */
-var mkIndent = require('../../mk-indent.js');
+var mkIndent = require('../mk-indent.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXTERNALS

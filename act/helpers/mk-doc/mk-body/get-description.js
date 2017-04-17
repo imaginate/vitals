@@ -19,7 +19,7 @@
  * @private
  * @const {!Object<string, function>}
  */
-var IS = require('../../../is.js');
+var IS = require('../../is.js');
 
 /**
  * @private
@@ -67,7 +67,7 @@ var isWholeNumber = IS.wholeNumber;
  * @param {number=} end - [default= source.length]
  * @return {!Array}
  */
-var sliceArray = require('../../../slice-array.js');
+var sliceArray = require('../../slice-array.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // METHODS
@@ -79,7 +79,7 @@ var sliceArray = require('../../../slice-array.js');
  * @param {number} depth
  * @return {string}
  */
-var parseToHtml = require('./parse-to-html.js');
+var parseToHtml = require('./parse-to-html/index.js');
 
 /**
  * @private
