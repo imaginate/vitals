@@ -4,14 +4,13 @@
  * -----------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
- * @see [vitals.freeze]{@link https://github.com/imaginate/vitals/wiki/vitals.freeze}
+ * @see [vitals.freeze](https://github.com/imaginate/vitals/wiki/vitals.freeze)
  *
- * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  *
- * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
