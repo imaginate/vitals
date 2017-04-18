@@ -145,6 +145,7 @@ function newMkIndent(count) {
   }
 
   mkIndent.construct = newMkIndent;
+  mkIndent.COUNT = count;
   return mkIndent;
 }
 
