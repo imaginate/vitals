@@ -58,6 +58,13 @@ var isNumber = IS.number;
 
 /**
  * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+
+/**
+ * @private
  * @param {number} val
  * @return {boolean}
  */
@@ -78,11 +85,11 @@ function mkIndentMacro(count) {
   var indent;
 
   if ( !isNumber(count) )
-    throw new TypeError('invalid `INDENT_COUNT` type (must be a number)');
+    throw new TypeError('invalid `count` type (must be a number)');
   if ( !isWholeNumber(count) )
-    throw new RangeError('invalid `INDENT_COUNT` value (must be a whole number)');
+    throw new RangeError('invalid `count` value (must be a whole number)');
   if ( !isGT(count, 0) )
-    throw new RangeError('invalid `INDENT_COUNT` value (must be greater than zero)');
+    throw new RangeError('invalid `count` value (must be greater than zero)');
 
   indent = ' ';
   while (--count)
@@ -90,36 +97,59 @@ function mkIndentMacro(count) {
   return indent;
 }
 
+/**
+ * @public
+ * @param {number=} count
+ * @return {string}
+ */
+function newMkIndent(count) {
+
+  if ( isUndefined(count) )
+    count = INDENT_COUNT;
+
+  if ( !isNumber(count) )
+    throw new TypeError('invalid `count` type (must be a number)');
+  if ( !isWholeNumber(count) )
+    throw new RangeError('invalid `count` value (must be a whole number)');
+  if ( !isGT(count, 0) )
+    throw new RangeError('invalid `count` value (must be greater than zero)');
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var INDENT_STRING = mkIndentMacro(count);
+
+  /**
+   * @public
+   * @param {number} depth
+   * @return {string}
+   */
+  function mkIndent(depth) {
+
+    /** @type {string} */
+    var indent;
+
+    if ( !isNumber(depth) )
+      throw new TypeError('invalid `depth` type (must be a number)');
+    if ( !isWholeNumber(depth) )
+      throw new RangeError('invalid `depth` number (must be a whole number)');
+
+    if ( isLT(depth, 1) )
+      return '';
+
+    indent = INDENT_STRING;
+    while (--depth)
+      indent += INDENT_STRING;
+    return indent;
+  }
+
+  mkIndent.construct = newMkIndent;
+  return mkIndent;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
 ////////////////////////////////////////////////////////////////////////////////
 
-/**
- * @private
- * @const {string}
- */
-var INDENT_STRING = mkIndentMacro(INDENT_COUNT);
-
-/**
- * @public
- * @param {number} depth
- * @return {string}
- */
-module.exports = function mkIndent(depth) {
-
-  /** @type {string} */
-  var indent;
-
-  if ( !isNumber(depth) )
-    throw new TypeError('invalid `depth` type (must be a number)');
-  if ( !isWholeNumber(depth) )
-    throw new RangeError('invalid `depth` number (must be a whole number)');
-
-  if ( isLT(depth, 1) )
-    return '';
-
-  indent = INDENT_STRING;
-  while (--depth)
-    indent += INDENT_STRING;
-  return indent;
-};
+module.exports = newMkIndent();
