@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var QUOTE = /^ *>+ /;
+var QUOTE = /^ *>+/;
 
 /**
  * @private
