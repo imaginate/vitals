@@ -1,4 +1,5 @@
-# Ignore Files
+## FILES TO NOT TRACK
+
 *.cab
 *.css.map
 *.lnk
@@ -8,38 +9,50 @@
 *.msp
 *.pids
 *.seed
-$RECYCLE.BIN/
+*.temp
+*.tmp
+
 .*.swp
 ._*
-.apdisk
+
 .AppleDB
 .AppleDesktop
 .AppleDouble
 .DS_Store
-.env
-.env.php
-.env.*.php
-.hg
-.lock-wscript
 .LSOverride
-.sass-cache
 .Spotlight-V100
 .Trashes
-.wafpickle-*
-act-tasks/tmp.*
-bootstrap/compiled.php
-build/Release
-coverage
-CVS
+
+.apdisk
+.env
+.hg
+.lock-wscript
+.sass-cache
+
+$RECYCLE.BIN/
+CVS/
+Network Trash Folder/
+Temporary Items/
+
+build/
+coverage/
+devel/
+dist/
+lib-cov/
+log/
+logs/
+node_modules/
+pids/
+temp/
+tmp/
+www/
+
 Desktop.ini
+
 ehthumbs.db
-FUTURE.md
-lib-cov
-logs
-Network Trash Folder
-node_modules
-NOTES.md
-pids
-Temporary Items
 Thumbs.db
+
+FUTURE.md
+NOTES.md
 TODO.md
+
