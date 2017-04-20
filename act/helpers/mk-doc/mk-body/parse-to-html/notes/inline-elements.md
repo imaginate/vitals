@@ -18,6 +18,7 @@
 
 ## Special Characters
 - `*`
+- `~`
 - `\``
 - `!`
 - `[`
