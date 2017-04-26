@@ -131,7 +131,7 @@ var isString = IS.string;
 var trimSpace = require('./trim-space.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-// METHODS
+// MAIN METHOD
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -143,6 +143,10 @@ var trimSpace = require('./trim-space.js');
  * @return {string}
  */
 function parseInline(_source, _link) {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // CONSTANTS
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -184,6 +188,10 @@ function parseInline(_source, _link) {
    */
   var LAST = LEN - 1;
 
+  //////////////////////////////////////////////////////////////////////////////
+  // EXTERNALS
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
    * @private
    * @type {number}
@@ -217,6 +225,10 @@ function parseInline(_source, _link) {
    */
   var $reserve = [];
 
+  //////////////////////////////////////////////////////////////////////////////
+  // MAIN PARSE METHOD
+  //////////////////////////////////////////////////////////////////////////////
+
   /**
    * @private
    * @type {function}
@@ -236,6 +248,10 @@ function parseInline(_source, _link) {
       }
     }
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // SPECIAL CHARACTER PARSE METHODS
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -264,6 +280,169 @@ function parseInline(_source, _link) {
         throw new Error('invalid asterisks in `' + SOURCE + '`');
     }
   }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseTilde() {
+
+    /** @type {number} */
+    var count;
+
+    count = 1;
+    while ( isLT(++$i, LEN) && (SOURCE[$i] === TILDE) )
+      ++count;
+
+    switch (count) {
+      case 1:
+        parseLow();
+        break;
+      case 2:
+        parseDel();
+        break;
+      case 3:
+        parseDelLow();
+        break;
+      default:
+        throw new Error('invalid asterisks in `' + SOURCE + '`');
+    }
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseTick() {
+
+    /** @type {string} */
+    var ch;
+
+    ch = getNextChar();
+    if (ch === TICK)
+      throw new Error('invalid backticks in `' + SOURCE + '`');
+
+    parseCode();
+
+    if ( isGT($i, LAST) )
+      throw new Error('invalid `code` in `' + SOURCE + '` (missing a closing backtick)');
+    if ( isLT(++$i, LEN) && (SOURCE[$i] === TICK) )
+      throw new Error('invalid backticks in `' + SOURCE + '`');
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseExclamation() {
+
+    /** @type {string} */
+    var ch;
+
+    ch = getNextChar();
+    switch (ch) {
+      case '&':
+        $result += '<br>';
+        $i += 2;
+        break;
+      case '$':
+        $result += '</p><p>';
+        $i += 2;
+        break;
+      case '[':
+        if (NESTING) {
+          parseImg();
+          break;
+        }
+      default:
+        $result += cleanHtmlChar('!');
+        ++$i;
+        if (!!ch) {
+          $result += cleanHtmlChar(ch);
+          ++$i;
+        }
+        break;
+    }
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseBracket() {
+
+    if (NESTING)
+      parseAnchor();
+    else {
+      $result += cleanHtmlChar('[');
+      ++$i;
+    }
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseAt() {
+
+    if (NESTING)
+      parseMentions();
+    else {
+      $result = cleanHtmlChar('@');
+      ++$i;
+    }
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseHash() {
+
+    /** @type {string} */
+    var ch;
+    /** @type {number} */
+    var i;
+
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseLess() {
+
+    /** @type {string} */
+    var ch;
+    /** @type {number} */
+    var i;
+
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseEscape() {
+
+    /** @type {string} */
+    var ch;
+
+    ch = SOURCE[$i + 1];
+
+    if ( !hasProp(SPECIAL, ch) )
+      $result += cleanHtmlChar(ESC);
+    else {
+      $result += cleanHtmlChar(ch);
+      ++$i;
+    }
+
+    ++$i;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // HTML ELEMENT PARSE METHODS
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -362,34 +541,6 @@ function parseInline(_source, _link) {
         $result = '';
         $stack.push('B');
         break;
-    }
-  }
-
-  /**
-   * @private
-   * @type {function}
-   */
-  function parseTilde() {
-
-    /** @type {number} */
-    var count;
-
-    count = 1;
-    while ( isLT(++$i, LEN) && (SOURCE[$i] === TILDE) )
-      ++count;
-
-    switch (count) {
-      case 1:
-        parseLow();
-        break;
-      case 2:
-        parseDel();
-        break;
-      case 3:
-        parseDelLow();
-        break;
-      default:
-        throw new Error('invalid asterisks in `' + SOURCE + '`');
     }
   }
 
@@ -497,16 +648,13 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseTick() {
+  function parseCode() {
 
     /** @type {string} */
     var ch;
 
-    ch = getNextChar();
-    if (ch === TICK)
-      throw new Error('invalid backticks in `' + SOURCE + '`');
-
     $result += '<code>';
+
     loop:
     while ( isLT(++$i, LEN) ) {
       ch = SOURCE[$i];
@@ -516,8 +664,8 @@ function parseInline(_source, _link) {
           if (!!ch)
             ++$i;
           if (ch !== TICK)
-            $result += ESC;
-          $result += ch;
+            $result += cleanHtmlChar(ESC);
+          $result += cleanHtmlChar(ch);
           break;
         case TICK:
           break loop;
@@ -526,48 +674,8 @@ function parseInline(_source, _link) {
           break;
       }
     }
+
     $result += '</code>';
-
-    if ( isGT($i, LAST) )
-      throw new Error('invalid `code` in `' + SOURCE + '` (missing a closing backtick)');
-
-    if ( isLT(++$i, LEN) && (SOURCE[$i] === TICK) )
-      throw new Error('invalid backticks in `' + SOURCE + '`');
-  }
-
-  /**
-   * @private
-   * @type {function}
-   */
-  function parseExclamation() {
-
-    /** @type {string} */
-    var ch;
-
-    ch = getNextChar();
-    switch (ch) {
-      case '&':
-        $result += '<br>';
-        $i += 2;
-        break;
-      case '$':
-        $result += '</p><p>';
-        $i += 2;
-        break;
-      case '[':
-        if (NESTING) {
-          parseImg();
-          break;
-        }
-      default:
-        $result += cleanHtmlChar('!');
-        ++$i;
-        if (!!ch) {
-          $result += cleanHtmlChar(ch);
-          ++$i;
-        }
-        break;
-    }
   }
 
   /**
@@ -582,8 +690,6 @@ function parseInline(_source, _link) {
     var src;
     /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
     alt = '';
     src = '';
@@ -680,20 +786,7 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseBracket() {
-    if (NESTING)
-      parseLink();
-    else {
-      $result += cleanHtmlChar('[');
-      ++$i;
-    }
-  }
-
-  /**
-   * @private
-   * @type {function}
-   */
-  function parseLink() {
+  function parseAnchor() {
 
     /** @type {string} */
     var html;
@@ -701,8 +794,6 @@ function parseInline(_source, _link) {
     var href;
     /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
     html = '';
     href = '';
@@ -797,7 +888,22 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseAt() {
+  function parseMentions() {
+
+    /** @type {string} */
+    var html;
+    /** @type {string} */
+    var href;
+    /** @type {string} */
+    var ch;
+
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseMentionsTag() {
 
     /** @type {string} */
     var ch;
@@ -810,7 +916,7 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseHash() {
+  function parseHashTag() {
 
     /** @type {string} */
     var ch;
@@ -823,7 +929,7 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseLess() {
+  function parseEmail() {
 
     /** @type {string} */
     var ch;
@@ -832,26 +938,9 @@ function parseInline(_source, _link) {
 
   }
 
-  /**
-   * @private
-   * @type {function}
-   */
-  function parseEscape() {
-
-    /** @type {string} */
-    var ch;
-
-    ch = SOURCE[$i + 1];
-
-    if ( hasProp(SPECIAL, ch) ) {
-      $result += ch;
-      ++$i;
-    }
-    else
-      $result += ESC;
-
-    ++$i;
-  }
+  //////////////////////////////////////////////////////////////////////////////
+  // HELPER METHODS
+  //////////////////////////////////////////////////////////////////////////////
 
   /**
    * @private
@@ -904,6 +993,10 @@ function parseInline(_source, _link) {
     last = $stack.length - 1;
     return isGT(last, 0) && ($stack[last] === id);
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // MAIN METHOD INIT & RETURN
+  //////////////////////////////////////////////////////////////////////////////
 
   parseSource();
   return $result;
