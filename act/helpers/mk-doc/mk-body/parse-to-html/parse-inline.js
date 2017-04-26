@@ -65,10 +65,10 @@ var cleanHtmlChar = require('./clean-html-char.js');
 
 /**
  * @private
- * @param {string} ch
+ * @param {string} src
  * @return {string}
  */
-var cleanHttpChar = require('./clean-http-char.js');
+var cleanHttpLink = require('./clean-http-link.js');
 
 /**
  * @private
@@ -620,13 +620,13 @@ function parseInline(_source, _link) {
             if (!!ch)
               ++$i;
             if ( !hasProp(SPECIAL, ch) && (ch !== ')') )
-              src += cleanHttpChar(ESC);
-            src += cleanHttpChar(ch);
+              src += ESC;
+            src += ch;
             break;
           case ')':
             break loop;
           default:
-            src += cleanHttpChar(ch);
+            src += ch;
             break;
         }
       }
@@ -634,6 +634,7 @@ function parseInline(_source, _link) {
         throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing parenthesis)');
       if ( !isHttpLink(src) )
         throw new Error('invalid `src` http link for `img` in `' + SOURCE + '`');
+      src = cleanHttpLink(src);
     }
     else if (SOURCE[$i] !== '[')
       throw new Error('invalid `img` in `' + SOURCE + '` (missing the src)');

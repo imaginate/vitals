@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: cleanHttpChar
+ * ACT TASK HELPER: cleanHttpLink
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -17,15 +17,6 @@
 
 /**
  * @private
- * @const {!Object<string, string>}
- */
-var CHARS = {
-  ' ': '%20',
-  '"': ''
-};
-
-/**
- * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../../../is.js');
@@ -33,14 +24,6 @@ var IS = require('../../../is.js');
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {!Object} src
- * @param {string} prop
- * @return {boolean}
- */
-var hasProp = require('../../../has-own-property.js');
 
 /**
  * @private
@@ -55,15 +38,13 @@ var isString = IS.string;
 
 /**
  * @public
- * @param {string} ch
+ * @param {string} src
  * @return {string}
  */
-function cleanHttpChar(ch) {
+function cleanHttpLink(src) {
 
-  if ( !isString(ch) )
-    throw new TypeError('invalid `ch` type (must be a string)');
+  if ( !isString(src) )
+    throw new TypeError('invalid `src` type (must be a string)');
 
-  return !!ch && hasProp(CHARS, ch)
-    ? CHARS[ch]
-    : ch;
+  return !!src && encodeURI(src);
 };
