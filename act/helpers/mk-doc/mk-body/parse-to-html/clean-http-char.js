@@ -20,7 +20,8 @@
  * @const {!Object<string, string>}
  */
 var CHARS = {
-  ' ': '%20'
+  ' ': '%20',
+  '"': ''
 };
 
 /**
