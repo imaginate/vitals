@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: isBlank
+ * ACT TASK HELPER: isWordBreak
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var BLANK = /^[ \t]+$/;
+var BREAK = /[ \t\r\n)}\].!?:;]/;
 
 /**
  * @private
@@ -44,13 +44,13 @@ var isString = IS.string;
 
 /**
  * @public
- * @param {string} src
+ * @param {string} ch
  * @return {boolean}
  */
-function isBlank(src) {
+function isWordBreak(ch) {
 
-  if ( !isString(src) )
-    throw new TypeError('invalid `src` type (must be a string)');
+  if ( !isString(ch) )
+    throw new TypeError('invalid `ch` type (must be a string)');
 
-  return BLANK.test(src);
+  return !ch || BREAK.test(ch);
 };
