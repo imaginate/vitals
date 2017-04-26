@@ -95,7 +95,21 @@ var hasProp = require('../../../has-own-property.js');
  * @param {string} ch
  * @return {boolean}
  */
+var isBlankChar = require('./is-blank-char.js');
+
+/**
+ * @private
+ * @param {string} ch
+ * @return {boolean}
+ */
 var isBreakChar = require('./is-word-break.js');
+
+/**
+ * @private
+ * @param {string} src
+ * @return {boolean}
+ */
+var isEmail = require('./is-email.js');
 
 /**
  * @private
@@ -104,6 +118,14 @@ var isBreakChar = require('./is-word-break.js');
  * @return {boolean}
  */
 var isEQ = IS.equalTo;
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isGE = IS.greaterOrEqual;
 
 /**
  * @private
@@ -434,9 +456,15 @@ function parseInline(_source, _link) {
 
     /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
+    ch = getNextChar();
+
+    if ( !!NESTING && !!ch && isBlankChar(ch) )
+      parseEmail();
+    else {
+      $result = cleanHtmlChar('<');
+      ++$i;
+    }
   }
 
   /**
@@ -448,7 +476,7 @@ function parseInline(_source, _link) {
     /** @type {string} */
     var ch;
 
-    ch = SOURCE[$i + 1];
+    ch = getNextChar();
 
     if ( !hasProp(SPECIAL, ch) )
       $result += cleanHtmlChar(ESC);
@@ -996,10 +1024,41 @@ function parseInline(_source, _link) {
   function parseEmail() {
 
     /** @type {string} */
+    var email;
+    /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
+    email = '';
+
+    loop:
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i];
+      switch (ch) {
+        case ESC:
+          ch = getNextChar();
+          if (!!ch)
+            ++$i;
+          if ( !hasProp(SPECIAL, ch) && (ch !== '>') )
+            email += ESC;
+          email += ch;
+          break;
+        case '>':
+          break loop;
+        default:
+          email += ch;
+          break;
+      }
+    }
+
+    if ( isGT($i, LAST) )
+      throw new Error('invalid `email` in `' + SOURCE + '` (missing the closing angle)');
+    if ( !isEmail(email) )
+      throw new Error('invalid `email` in `' + SOURCE + '`');
+
+    $result += '<a href="mailto:' + cleanHttpLink(email) + '">';
+    $result += email;
+    $result += '</a>';
+    ++$i;
   }
 
   //////////////////////////////////////////////////////////////////////////////
