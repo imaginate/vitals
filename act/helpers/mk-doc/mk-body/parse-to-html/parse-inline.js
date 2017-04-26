@@ -23,16 +23,6 @@ var ASTERISK = '*';
 
 /**
  * @private
- * @const {!Object<string, string>}
- */
-var ENTITY = {
-  '&': '&amp;',
-  '<': '&lt;',
-  '>': '&gt;'
-};
-
-/**
- * @private
  * @const {string}
  */
 var ESC = '\\';
@@ -61,6 +51,27 @@ var TILDE = '~';
 
 /**
  * @private
+ * @param {string} src
+ * @return {string}
+ */
+var cleanHtmlAttr = require('./clean-html-attr.js');
+
+/**
+ * @private
+ * @param {string} ch
+ * @return {string}
+ */
+var cleanHtmlChar = require('./clean-html-char.js');
+
+/**
+ * @private
+ * @param {string} ch
+ * @return {string}
+ */
+var cleanHttpChar = require('./clean-http-char.js');
+
+/**
+ * @private
  * @param {!Object} src
  * @param {string} prop
  * @return {boolean}
@@ -82,6 +93,13 @@ var isEQ = IS.equalTo;
  * @return {boolean}
  */
 var isGT = IS.greaterThan;
+
+/**
+ * @private
+ * @param {string} src
+ * @return {boolean}
+ */
+var isHttpLink = require('./is-http-link.js');
 
 /**
  * @private
@@ -112,9 +130,18 @@ var trimSpace = require('./trim-space.js');
 /**
  * @private
  * @param {string} _source
+ * @param {boolean=} _link
+ *   When defined as `true`, this parameter indicates that #_source is the
+ *   content for an anchor tag (i.e. disables nested anchor and image tags).
  * @return {string}
  */
-function parseInline(_source) {
+function parseInline(_source, _link) {
+
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var NESTING = !_link;
 
   /**
    * @private
@@ -197,9 +224,7 @@ function parseInline(_source) {
       if ( hasProp(SPECIAL, ch) )
         SPECIAL[ch]();
       else {
-        $result += hasProp(ENTITY, ch)
-          ? ENTITY[ch]
-          : ch;
+        $result += cleanHtmlChar(ch);
         ++$i;
       }
     }
@@ -490,15 +515,13 @@ function parseInline(_source) {
         case TICK:
           break loop;
         default:
-          $result += hasProp(ENTITY, ch)
-            ? ENTITY[ch]
-            : ch;
+          $result += cleanHtmlChar(ch);
           break;
       }
     }
     $result += '</code>';
 
-    if ( isEQ($i, LEN) )
+    if ( isGT($i, LAST) )
       throw new Error('invalid `code` in `' + SOURCE + '` (missing a closing backtick)');
 
     if ( isLT(++$i, LEN) && (SOURCE[$i] === TICK) )
@@ -513,9 +536,136 @@ function parseInline(_source) {
 
     /** @type {string} */
     var ch;
+
+    ch = getNextChar();
+    switch (ch) {
+      case '&':
+        $result += '<br>';
+        $i += 2;
+        break;
+      case '$':
+        $result += '</p><p>';
+        $i += 2;
+        break;
+      case '[':
+        if (NESTING) {
+          parseImg();
+          break;
+        }
+      default:
+        $result += cleanHtmlChar('!');
+        ++$i;
+        if (!!ch) {
+          $result += cleanHtmlChar(ch);
+          ++$i;
+        }
+        break;
+    }
+  }
+
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseImg() {
+
+    /** @type {string} */
+    var alt;
+    /** @type {string} */
+    var src;
+    /** @type {string} */
+    var ch;
     /** @type {number} */
     var i;
 
+    alt = '';
+    src = '';
+
+    ++$i;
+
+    loop:
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i];
+      switch (ch) {
+        case ESC:
+          ch = getNextChar();
+          if (!!ch)
+            ++$i;
+          if ( !hasProp(SPECIAL, ch) && (ch !== ']') )
+            alt += ESC;
+          alt += ch;
+          break;
+        case ']':
+          break loop;
+        default:
+          alt += ch;
+          break;
+      }
+    }
+
+    alt = cleanHtmlAttr(alt);
+
+    if ( isGT($i, LAST) )
+      throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing bracket & src)');
+    if ( isGT(++$i, LAST) )
+      throw new Error('invalid `img` in `' + SOURCE + '` (missing the src)');
+
+    if (SOURCE[$i] === '(') {
+      loop:
+      while ( isLT(++$i, LEN) ) {
+        ch = SOURCE[$i];
+        switch (ch) {
+          case ESC:
+            ch = getNextChar();
+            if (!!ch)
+              ++$i;
+            if ( !hasProp(SPECIAL, ch) && (ch !== ')') )
+              src += cleanHttpChar(ESC);
+            src += cleanHttpChar(ch);
+            break;
+          case ')':
+            break loop;
+          default:
+            src += cleanHttpChar(ch);
+            break;
+        }
+      }
+      if ( isGT($i, LAST) )
+        throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing parenthesis)');
+      if ( !isHttpLink(src) )
+        throw new Error('invalid `src` http link for `img` in `' + SOURCE + '`');
+    }
+    else if (SOURCE[$i] !== '[')
+      throw new Error('invalid `img` in `' + SOURCE + '` (missing the src)');
+    else {
+      loop:
+      while ( isLT(++$i, LEN) ) {
+        ch = SOURCE[$i];
+        switch (ch) {
+          case ESC:
+            ch = getNextChar();
+            if (!!ch)
+              ++$i;
+            if ( !hasProp(SPECIAL, ch) && (ch !== ']') )
+              src += ESC;
+            src += ch;
+            break;
+          case ']':
+            break loop;
+          default:
+            src += ch;
+            break;
+        }
+      }
+      if ( isGT($i, LAST) )
+        throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing bracket)');
+      if ( !isRefID(src) )
+        throw new Error('invalid `src` reference ID for `img` in `' + SOURCE + '`');
+      src = '@REF{' + src + '}';
+    }
+
+    $result += '<img src="' + src + '" alt="' + alt + '"/>';
+    ++$i;
   }
 
   /**
