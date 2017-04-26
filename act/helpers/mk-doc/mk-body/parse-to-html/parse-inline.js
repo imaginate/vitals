@@ -29,6 +29,12 @@ var ESC = '\\';
 
 /**
  * @private
+ * @const {string}
+ */
+var HASH = '#';
+
+/**
+ * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../../../is.js');
@@ -122,6 +128,13 @@ var isRefID = require('./is-ref-id.js');
  * @return {boolean}
  */
 var isString = IS.string;
+
+/**
+ * @private
+ * @param {string} ch
+ * @return {boolean}
+ */
+var isWordBreak = require('./is-word-break.js');
 
 /**
  * @private
@@ -775,7 +788,7 @@ function parseInline(_source, _link) {
         throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing bracket)');
       if ( !isRefID(src) )
         throw new Error('invalid `src` reference ID for `img` in `' + SOURCE + '`');
-      src = '@REF{' + src + '}';
+      src = '${' + src + '}';
     }
 
     $result += '<img src="' + src + '" alt="' + alt + '"/>';
@@ -877,7 +890,7 @@ function parseInline(_source, _link) {
         throw new Error('invalid `a` in `' + SOURCE + '` (missing the closing bracket)');
       if ( !isRefID(href) )
         throw new Error('invalid `href` reference ID for `a` in `' + SOURCE + '`');
-      href = '@REF{' + href + '}';
+      href = '${' + href + '}';
     }
 
     $result += '<a href="' + href  + '">' + html + '</a>';
@@ -891,25 +904,54 @@ function parseInline(_source, _link) {
   function parseMentions() {
 
     /** @type {string} */
-    var html;
-    /** @type {string} */
-    var href;
+    var ref;
     /** @type {string} */
     var ch;
 
+    ref = '';
+
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i];
+      if ( isWordBreak(ch) || (ch === HASH) )
+        break;
+      ref += ch;
+    }
+
+    if ( !isRefID(ref) )
+      throw new Error('invalid `mentions` reference ID in `' + SOURCE + '`');
+
+    ref = '@{' + ref + '}';
+
+    if ( isLT($i, LEN) && (SOURCE[$i] === HASH) )
+      ref += parseMentionsTag();
+
+    $result += '<a href="' + ref + '">' + ref + '</a>';
   }
 
   /**
    * @private
-   * @type {function}
+   * @return {string}
    */
   function parseMentionsTag() {
 
     /** @type {string} */
+    var ref;
+    /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
+    ref = '';
+
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i]; 
+      if ( isWordBreak(ch) )
+        break;
+      ref += ch;
+    }
+
+    if ( !isRefID(ref) )
+      throw new Error('invalid `mentions` reference ID in `' + SOURCE + '`');
+
+    return '#{' + ref + '}';
   }
 
   /**
