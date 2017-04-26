@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var BREAK = /[ \t\r\n)}\].!?:;]/;
+var BREAK = /^[ \t\r\n)}\].!?:;]+$/;
 
 /**
  * @private

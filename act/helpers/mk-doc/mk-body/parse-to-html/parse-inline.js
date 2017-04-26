@@ -23,6 +23,12 @@ var ASTERISK = '*';
 
 /**
  * @private
+ * @const {!RegExp}
+ */
+var BREAK = /^[ \t\r\n)\]}]$/
+
+/**
+ * @private
  * @const {string}
  */
 var ESC = '\\';
@@ -86,6 +92,13 @@ var hasProp = require('../../../has-own-property.js');
 
 /**
  * @private
+ * @param {string} ch
+ * @return {boolean}
+ */
+var isBreakChar = require('./is-word-break.js');
+
+/**
+ * @private
  * @param {number} val1
  * @param {number} val2
  * @return {boolean}
@@ -128,13 +141,6 @@ var isRefID = require('./is-ref-id.js');
  * @return {boolean}
  */
 var isString = IS.string;
-
-/**
- * @private
- * @param {string} ch
- * @return {boolean}
- */
-var isWordBreak = require('./is-word-break.js');
 
 /**
  * @private
@@ -412,11 +418,12 @@ function parseInline(_source, _link) {
    */
   function parseHash() {
 
-    /** @type {string} */
-    var ch;
-    /** @type {number} */
-    var i;
-
+    if (NESTING)
+      parseParamTag();
+    else {
+      $result = cleanHtmlChar('#');
+      ++$i;
+    }
   }
 
   /**
@@ -958,13 +965,28 @@ function parseInline(_source, _link) {
    * @private
    * @type {function}
    */
-  function parseHashTag() {
+  function parseParamTag() {
 
     /** @type {string} */
+    var ref;
+    /** @type {string} */
     var ch;
-    /** @type {number} */
-    var i;
 
+    ref = '';
+
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i];
+      if ( isWordBreak(ch) )
+        break;
+      ref += ch;
+    }
+
+    if ( !isRefID(ref) )
+      throw new Error('invalid `hashtag` reference ID in `' + SOURCE + '`');
+
+    ref = '#{' + ref + '}';
+
+    $result += '<a href="' + ref + '">' + ref + '</a>';
   }
 
   /**
@@ -1034,6 +1056,23 @@ function parseInline(_source, _link) {
 
     last = $stack.length - 1;
     return isGT(last, 0) && ($stack[last] === id);
+  }
+
+  /**
+   * @private
+   * @param {string} ch
+   * @return {boolean}
+   */
+  function isWordBreak(ch) {
+
+    if (ch !== '.')
+      return isBreakChar(ch);
+
+    if ( isGE($i, LAST) )
+      return true;
+
+    ch = SOURCE[$i + 1];
+    return BREAK.test(ch);
   }
 
   //////////////////////////////////////////////////////////////////////////////
