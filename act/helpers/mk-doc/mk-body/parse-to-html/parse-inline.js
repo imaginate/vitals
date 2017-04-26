@@ -111,6 +111,13 @@ var isLT = IS.lessThan;
 
 /**
  * @private
+ * @param {string} src
+ * @return {boolean}
+ */
+var isRefID = require('./is-ref-id.js');
+
+/**
+ * @private
  * @param {*} val
  * @return {boolean}
  */
@@ -674,12 +681,116 @@ function parseInline(_source, _link) {
    * @type {function}
    */
   function parseBracket() {
+    if (NESTING)
+      parseLink();
+    else {
+      $result += cleanHtmlChar('[');
+      ++$i;
+    }
+  }
 
+  /**
+   * @private
+   * @type {function}
+   */
+  function parseLink() {
+
+    /** @type {string} */
+    var html;
+    /** @type {string} */
+    var href;
     /** @type {string} */
     var ch;
     /** @type {number} */
     var i;
 
+    html = '';
+    href = '';
+
+    loop:
+    while ( isLT(++$i, LEN) ) {
+      ch = SOURCE[$i];
+      switch (ch) {
+        case ESC:
+          ch = getNextChar();
+          if (!!ch)
+            ++$i;
+          if (ch !== ']')
+            html += ESC;
+          html += ch;
+          break;
+        case ']':
+          break loop;
+        default:
+          html += ch;
+          break;
+      }
+    }
+
+    html = parseInline(html, true);
+
+    if ( isGT($i, LAST) )
+      throw new Error('invalid `a` in `' + SOURCE + '` (missing the closing bracket & href)');
+    if ( isGT(++$i, LAST) )
+      throw new Error('invalid `a` in `' + SOURCE + '` (missing the href)');
+
+    if (SOURCE[$i] === '(') {
+      loop:
+      while ( isLT(++$i, LEN) ) {
+        ch = SOURCE[$i];
+        switch (ch) {
+          case ESC:
+            ch = getNextChar();
+            if (!!ch)
+              ++$i;
+            if ( !hasProp(SPECIAL, ch) && (ch !== ')') )
+              href += ESC;
+            href += ch;
+            break;
+          case ')':
+            break loop;
+          default:
+            href += ch;
+            break;
+        }
+      }
+      if ( isGT($i, LAST) )
+        throw new Error('invalid `a` in `' + SOURCE + '` (missing the closing parenthesis)');
+      if ( !isHttpLink(href) )
+        throw new Error('invalid `href` http link for `a` in `' + SOURCE + '`');
+      href = cleanHttpLink(href);
+    }
+    else if (SOURCE[$i] !== '[')
+      throw new Error('invalid `a` in `' + SOURCE + '` (missing the href)');
+    else {
+      loop:
+      while ( isLT(++$i, LEN) ) {
+        ch = SOURCE[$i];
+        switch (ch) {
+          case ESC:
+            ch = getNextChar();
+            if (!!ch)
+              ++$i;
+            if ( !hasProp(SPECIAL, ch) && (ch !== ']') )
+              href += ESC;
+            href += ch;
+            break;
+          case ']':
+            break loop;
+          default:
+            href += ch;
+            break;
+        }
+      }
+      if ( isGT($i, LAST) )
+        throw new Error('invalid `a` in `' + SOURCE + '` (missing the closing bracket)');
+      if ( !isRefID(href) )
+        throw new Error('invalid `href` reference ID for `a` in `' + SOURCE + '`');
+      href = '@REF{' + href + '}';
+    }
+
+    $result += '<a href="' + href  + '">' + html + '</a>';
+    ++$i;
   }
 
   /**
