@@ -63,5 +63,5 @@ module.exports = function hasOwnProperty(src, prop) {
   if ( !isString(prop) )
     throw new TypeError('invalid `prop` type (must be a string)');
 
-  return hasOwn.call(src, prop);
+  return !!prop && hasOwn.call(src, prop);
 };
