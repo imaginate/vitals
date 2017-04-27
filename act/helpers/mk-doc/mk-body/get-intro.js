@@ -42,8 +42,8 @@ var isLT = IS.lessThan;
 /**
  * @private
  * @param {(!Object|function)} source
- * @param {number=} start - [default= 0]
- * @param {number=} end - [default= source.length]
+ * @param {number=} start = `0`
+ * @param {number=} end = `source.length`
  * @return {!Array}
  */
 var sliceArray = require('../../slice-array.js');
@@ -71,17 +71,11 @@ function pruneLines(lines) {
   var end;
   /** @type {number} */
   var len;
-  /** @type {number} */
-  var i;
 
   len = lines.length;
-  i = -1;
-  while ( isLT(++i, len) ) {
-    if ( PUBLIC_TAG.test(lines[i]) ) {
-      end = i;
-      break;
-    }
-  }
+  end = 0;
+  while ( isLT(end, len) && !PUBLIC_TAG.test(lines[end]) )
+    ++end;
   return sliceArray(lines, 0, end);
 }
 
@@ -96,5 +90,5 @@ function pruneLines(lines) {
  */
 module.exports = function getIntro(lines) {
   lines = pruneLines(lines);
-  return getDescription(lines, 0);
+  return getDescription(lines, { html: true });
 };
