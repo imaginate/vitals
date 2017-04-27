@@ -6,8 +6,16 @@
 <a name="!{{ id }}!-example" href="https://github.com/imaginate/vitals/blob/master/test/methods/!{{ main }}!/!{{ method }}!.js">Examples</a>
 
 <h3><a name="!{{ id }}!-params"></a>Params</h3>
-!{{ params }}!
+?{{ params
+  <table width="100%">
+    <tbody>!{{ params }}!</tbody>
+  </table>
+}}?
 
 <h3><a name="!{{ id }}!-returns"></a>Returns</h3>
-!{{ returns }}!
+?{{ returns
+  <table width="100%">
+    <tbody>!{{ returns }}!</tbody>
+  </table>
+}}?
 
