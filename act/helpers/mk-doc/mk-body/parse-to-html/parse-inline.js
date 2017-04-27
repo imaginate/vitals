@@ -823,7 +823,7 @@ function parseInline(_source, _link) {
         throw new Error('invalid `img` in `' + SOURCE + '` (missing the closing bracket)');
       if ( !isRefID(src) )
         throw new Error('invalid `src` reference ID for `img` in `' + SOURCE + '`');
-      src = '${{' + src + '}}';
+      src = '${{' + src + '}}$';
     }
 
     $result += '<img src="' + src + '" alt="' + alt + '"/>';
@@ -925,7 +925,7 @@ function parseInline(_source, _link) {
         throw new Error('invalid `a` in `' + SOURCE + '` (missing the closing bracket)');
       if ( !isRefID(href) )
         throw new Error('invalid `href` reference ID for `a` in `' + SOURCE + '`');
-      href = '${{' + href + '}}';
+      href = '${{' + href + '}}$';
     }
 
     $result += '<a href="' + href  + '">' + html + '</a>';
@@ -956,35 +956,37 @@ function parseInline(_source, _link) {
       throw new Error('invalid `mentions` reference ID in `' + SOURCE + '`');
 
     if ( isLT($i, LEN) && (SOURCE[$i] === HASH) )
-      ref += parseMentionsTag();
+      ref += '#' + parseMentionsID();
 
-    $result += '<a href="@{{url:' + ref + '}}">@{{name:' + ref + '}}</a>';
+    $result += '<a href="@{{' + ref + '}}@">';
+    $result += '#{{' + ref + '}}#';
+    $result += '</a>';
   }
 
   /**
    * @private
    * @return {string}
    */
-  function parseMentionsTag() {
+  function parseMentionsID() {
 
     /** @type {string} */
-    var ref;
+    var id;
     /** @type {string} */
     var ch;
 
-    ref = '';
+    id = '';
 
     while ( isLT(++$i, LEN) ) {
       ch = SOURCE[$i]; 
       if ( isWordBreak(ch) )
         break;
-      ref += ch;
+      id += ch;
     }
 
-    if ( !isRefID(ref) )
+    if ( !isRefID(id) )
       throw new Error('invalid `mentions` reference ID in `' + SOURCE + '`');
 
-    return '#' + ref;
+    return id;
   }
 
   /**
@@ -1010,7 +1012,9 @@ function parseInline(_source, _link) {
     if ( !isRefID(param) )
       throw new Error('invalid `hashtag` reference ID in `' + SOURCE + '`');
 
-    $result += '<a href="#{{' + param + '}}">' + param + '</a>';
+    $result += '<a href="@{{!{{ main }}!#!{{ id }}!-params-' + param + '}}@">';
+    $result += param;
+    $result += '</a>';
   }
 
   /**
