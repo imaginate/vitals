@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var ID = /^[a-zA-Z0-9_-]+$/;
+var ID = /^[a-zA-Z0-9_-$]+$/;
 
 /**
  * @private
