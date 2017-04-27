@@ -183,6 +183,9 @@ function parseParam(lines) {
   value = getMatch(line, PARAM);
   result = insertTag(result, 'param', value);
 
+  value = value.replace(/\./g, '-');
+  result = insertTag(result, 'param-id', value);
+
   line = line.replace(PARAM, '');
   line = trimSpace(line);
   value = DFLT.test(line)
