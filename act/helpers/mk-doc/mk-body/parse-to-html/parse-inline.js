@@ -84,6 +84,13 @@ var cleanHttpLink = require('./clean-http-link.js');
 
 /**
  * @private
+ * @param {string} id
+ * @return {string}
+ */
+var cleanRefID = require('./clean-ref-id.js');
+
+/**
+ * @private
  * @param {!Object} src
  * @param {string} prop
  * @return {boolean}
@@ -998,6 +1005,8 @@ function parseInline(_source, _link) {
     /** @type {string} */
     var param;
     /** @type {string} */
+    var id;
+    /** @type {string} */
     var ch;
 
     param = '';
@@ -1009,10 +1018,12 @@ function parseInline(_source, _link) {
       param += ch;
     }
 
-    if ( !isRefID(param) )
+    id = cleanRefID(param);
+
+    if ( !isRefID(id) )
       throw new Error('invalid `hashtag` reference ID in `' + SOURCE + '`');
 
-    $result += '<a href="@{{!{{ main }}!#!{{ id }}!-params-' + param + '}}@">';
+    $result += '<a href="@{{!{{ main }}!#!{{ id }}!-params-' + id + '}}@">';
     $result += param;
     $result += '</a>';
   }
