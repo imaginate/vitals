@@ -17,15 +17,15 @@
 
 /**
  * @private
- * @const {!RegExp}
- */
-var MAIN = /^[a-z]+/;
-
-/**
- * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../../is.js');
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var MAIN = /^[a-zA-Z0-9_]+/;
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
