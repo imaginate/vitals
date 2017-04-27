@@ -25,7 +25,7 @@ var IS = require('../../is.js');
  * @private
  * @const {!RegExp}
  */
-var NON_DESC = /^(?:@param \{[^}]+\} [a-zA-Z.]+ *-? *(?:\[default= [^\]]+\])?|@returns? \{[^}]+\} *-? *)/;
+var TAGS = /^@(?:param|returns?)/;
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
@@ -63,8 +63,8 @@ var isWholeNumber = IS.wholeNumber;
 /**
  * @private
  * @param {(!Object|function)} source
- * @param {number=} start - [default= 0]
- * @param {number=} end - [default= source.length]
+ * @param {number=} start = `0`
+ * @param {number=} end = `source.length`
  * @return {!Array}
  */
 var sliceArray = require('../../slice-array.js');
@@ -97,8 +97,8 @@ var parseToMdown = require('./parse-to-mdown.js');
  * @public
  * @param {!Array<string>} lines
  * @param {?Object=} opts
- * @param {number=} opts.depth
- * @param {boolean=} opts.html
+ * @param {number=} opts.depth = `0`
+ * @param {boolean=} opts.html = `false`
  * @return {string}
  */
 module.exports = function getDescription(lines, opts) {
@@ -117,9 +117,7 @@ module.exports = function getDescription(lines, opts) {
     : 0;
 
   lines = sliceArray(lines);
-  if ( !!lines[0] )
-    lines[0] = lines[0].replace(NON_DESC, '');
-  if ( !lines[0] )
+  if ( !lines[0] || TAGS.test(lines[0]) )
     lines.shift();
 
   return !!opts.html
