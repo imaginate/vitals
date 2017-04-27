@@ -48,7 +48,10 @@ function clearSoftTag(src, tag) {
   var pattern;
 
   pattern = new RegExp('?{{\\s*' + tag + '\\s+[\\s\\S]*?}}?', 'g');
-  return src.replace(pattern, '');
+  src = src.replace(pattern, '');
+
+  pattern = new RegExp('?{{\\s*!\\s*' + tag + '\\s+([\\s\\S]*?)\\s*}}?', 'g');
+  return src.replace(pattern, '$1');
 }
 
 /**
@@ -79,7 +82,10 @@ function saveSoftTag(src, tag) {
   var pattern;
 
   pattern = new RegExp('?{{\\s*' + tag + '\\s+([\\s\\S]*?)\\s*}}?', 'g');
-  return src.replace(pattern, '$1');
+  src = src.replace(pattern, '$1');
+
+  pattern = new RegExp('?{{\\s*!\\s*' + tag + '\\s+[\\s\\S]*?}}?', 'g');
+  return src.replace(pattern, '');
 }
 
 ////////////////////////////////////////////////////////////////////////////////
