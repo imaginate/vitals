@@ -39,17 +39,15 @@ var METHODS = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z._]+)?(?
  */
 var TITLE = /\n *\/\/ PUBLIC METHODS *\n/;
 
+/**
+ * @private
+ * @const {string}
+ */
+var TEMPLATE = require('../get-template.js')('header');
+
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} filepath
- * @param {boolean=} buffer
- * @return {(!Buffer|string)}
- */
-var getFileContent = require('../../get-file-content.js');
 
 /**
  * @private
@@ -61,26 +59,12 @@ var getMatch = require('../../get-match.js');
 
 /**
  * @private
- * @param {(!ArrayLike<string>|...string)=} path
+ * @param {string} src
+ * @param {string} tag
+ * @param {string} val
  * @return {string}
  */
-var resolvePath = require('../../resolve-path.js');
-
-////////////////////////////////////////////////////////////////////////////////
-// MACROS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @const {string}
- */
-var TMPL_PATH = resolvePath(__dirname, '../templates/header.md');
-
-/**
- * @private
- * @const {string}
- */
-var TEMPLATE = getFileContent(TMPL_PATH);
+var insertTag = require('../insert-tag.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // GET METHODS
@@ -140,9 +124,6 @@ module.exports = function mkHeader(content, fscontent) {
     methods = methods + getMethods('fs', fscontent);
   }
 
-  header = TEMPLATE;
-  header = header.replace('{{ base }}', main);
-  header = header.replace('{{ methods }}', methods);
-
-  return header;
+  header = insertTag(TEMPLATE, 'main', main);
+  return insertTag(header, ' methods', methods);
 };
