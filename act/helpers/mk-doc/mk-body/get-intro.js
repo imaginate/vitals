@@ -55,8 +55,10 @@ var sliceArray = require('../../slice-array.js');
 /**
  * @private
  * @param {!Array<string>} lines
- * @param {number} depth
- * @return {!Array<string>}
+ * @param {?Object=} opts
+ * @param {number=} opts.depth = `0`
+ * @param {boolean=} opts.html = `false`
+ * @return {string}
  */
 var getDescription = require('./get-description.js');
 
