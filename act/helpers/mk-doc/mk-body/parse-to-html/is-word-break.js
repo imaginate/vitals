@@ -47,7 +47,7 @@ var isString = IS.string;
  * @param {string} ch
  * @return {boolean}
  */
-function isWordBreak(ch) {
+module.exports = function isWordBreak(ch) {
 
   if ( !isString(ch) )
     throw new TypeError('invalid `ch` type (must be a string)');

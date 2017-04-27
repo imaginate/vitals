@@ -53,7 +53,7 @@ var isString = IS.string;
  * @param {string} src
  * @return {string}
  */
-function cleanHtmlAttr(src) {
+module.exports = function cleanHtmlAttr(src) {
 
   if ( !isString(src) )
     throw new TypeError('invalid `src` type (must be a string)');

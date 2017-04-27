@@ -53,7 +53,7 @@ var isString = IS.string;
  * @param {string} source
  * @return {string}
  */
-function trimSpace(source) {
+module.exports = function trimSpace(source) {
 
   if ( !isString(source) )
     throw new TypeError('invalid `source` type (must be a string)');

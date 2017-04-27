@@ -78,7 +78,7 @@ var isWholeNumber = IS.wholeNumber;
  * @param {number} depth
  * @return {boolean}
  */
-function isEmpty(line, depth) {
+module.exports = function isEmpty(line, depth) {
 
   if ( !isString(line) )
     throw new TypeError('invalid `line` type (must be a string)');

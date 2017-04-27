@@ -47,7 +47,7 @@ var isString = IS.string;
  * @param {string} src
  * @return {boolean}
  */
-function isEmail(src) {
+module.exports = function isEmail(src) {
 
   if ( !isString(src) )
     throw new TypeError('invalid `src` type (must be a string)');

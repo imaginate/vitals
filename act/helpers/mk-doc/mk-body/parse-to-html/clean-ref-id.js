@@ -41,7 +41,7 @@ var isString = IS.string;
  * @param {string} id
  * @return {string}
  */
-function cleanRefID(id) {
+module.exports = function cleanRefID(id) {
 
   if ( !isString(id) )
     throw new TypeError('invalid `id` type (must be a string)');

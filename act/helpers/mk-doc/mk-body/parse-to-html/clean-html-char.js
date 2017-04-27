@@ -59,7 +59,7 @@ var isString = IS.string;
  * @param {string} ch
  * @return {string}
  */
-function cleanHtmlChar(ch) {
+module.exports = function cleanHtmlChar(ch) {
 
   if ( !isString(ch) )
     throw new TypeError('invalid `ch` type (must be a string)');
