@@ -39,17 +39,15 @@ var IS = require('../../is.js');
  */
 var PUBLIC_DOCS = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
 
+/**
+ * @private
+ * @const {string}
+ */
+var TEMPLATE = require('../get-template.js')('body');
+
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} filepath
- * @param {boolean=} buffer
- * @return {(!Buffer|string)}
- */
-var getFileContent = require('../../get-file-content.js');
 
 /**
  * @private
@@ -61,38 +59,38 @@ var getMatches = require('../../get-matches.js');
 
 /**
  * @private
+ * @param {string} src
+ * @param {string} tag
+ * @param {string} val
+ * @return {string}
+ */
+var insertTag = require('../insert-tag.js');
+
+/**
+ * @private
  * @param {number} val1
  * @param {number} val2
  * @return {boolean}
  */
 var isLT = IS.lessThan;
 
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @private
- * @param {(!ArrayLike<string>|...string)=} path
+ * @param {!Array<string>} lines
  * @return {string}
  */
-var resolvePath = require('../../resolve-path.js');
-
-////////////////////////////////////////////////////////////////////////////////
-// MACROS
-////////////////////////////////////////////////////////////////////////////////
+var getIntro = require('./get-intro.js');
 
 /**
  * @private
- * @const {string}
+ * @param {string} method
+ * @return {string}
  */
-var TMPL_PATH = resolvePath(__dirname, '../templates/body.md');
-
-/**
- * @private
- * @const {string}
- */
-var TEMPLATE = getFileContent(TMPL_PATH);
-
-////////////////////////////////////////////////////////////////////////////////
-// GET METHODS
-////////////////////////////////////////////////////////////////////////////////
+var getMainMethod = require('./get-main-method.js');
 
 /**
  * @private
@@ -106,14 +104,7 @@ var getMethod = require('./get-method.js');
  * @param {string} method
  * @return {string}
  */
-var getTests = require('./get-tests.js');
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-var getIntro = require('./get-intro.js');
+var getMethodID = require('./get-method-id.js');
 
 /**
  * @private
@@ -124,14 +115,25 @@ var getParams = require('./get-params.js');
 
 /**
  * @private
+ * @param {string} content
+ * @return {!Object<string, string>}
+ */
+var getRefs = require('./get-refs.js');
+
+/**
+ * @private
  * @param {!Array<string>} lines
  * @return {string}
  */
 var getReturns = require('./get-returns.js');
 
-////////////////////////////////////////////////////////////////////////////////
-// MAKE METHODS
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {string} content
+ * @param {!Object<string, string>} refs
+ * @return {string}
+ */
+var insertRefs = require('./insert-refs.js');
 
 /**
  * @private
@@ -147,37 +149,42 @@ function mkDetail(detail) {
   /** @type {!Array<string>} */
   var lines;
   /** @type {string} */
-  var part;
+  var val;
 
   detail = detail.replace(DOCS_OPEN, '');
   lines = detail.split(DOCS_LINE);
+  method = getMethod(lines);
 
   result = TEMPLATE;
 
-  method = getMethod(lines);
-  result = result.replace('{{ method }}', method);
+  val = getIntro(lines);
+  result = insertTag(result, 'intro', val);
 
-  part = getTests(method);
-  result = result.replace('{{ tests }}', part);
+  val = getParams(lines);
+  result = insertTag(result, 'params', val);
 
-  part = getIntro(lines);
-  result = result.replace('{{ intro }}', part);
+  val = getReturns(lines);
+  result = insertTag(result, 'returns', val);
 
-  part = getParams(lines);
-  result = result.replace('{{ params }}', part);
+  result = insertTag(result, 'method', method);
 
-  part = getReturns(lines);
-  result = result.replace('{{ returns }}', part);
+  val = getMainMethod(method);
+  result = insertTag(result, 'main', val);
+
+  val = getMethodID(method);
+  result = insertTag(result, 'id', val);
 
   return result;
 }
 
 /**
  * @private
- * @param {!Array<string>} details - All of the public methods JSDoc.
+ * @param {!Array<string>} details
+ *   All of the public methods JSDoc.
+ * @param {!Object<string, string>} refs
  * @return {string}
  */
-function mkDetails(details) {
+function mkDetails(details, refs) {
 
   /** @type {string} */
   var result;
@@ -192,7 +199,8 @@ function mkDetails(details) {
   i = -1;
   while ( isLT(++i, len) )
     result += mkDetail(details[i]);
-  return result;
+
+  return insertRefs(result, refs);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -209,6 +217,8 @@ module.exports = function mkBody(content, fscontent) {
 
   /** @type {!Array<string>} */
   var methods;
+  /** @type {!Object<string, string>} */
+  var refs;
   /** @type {string} */
   var body;
 
@@ -217,11 +227,13 @@ module.exports = function mkBody(content, fscontent) {
   if ( isLT(methods.length, 1) )
     throw new Error('no public methods found');
 
-  body = mkDetails(methods);
+  refs = getRefs(content);
+  body = mkDetails(methods, refs);
 
   if (fscontent) {
     methods = getMatches(fscontent, PUBLIC_DOCS);
-    body += mkDetails(methods);
+    refs = getRefs(fscontent);
+    body += mkDetails(methods, refs);
   }
 
   return body;
