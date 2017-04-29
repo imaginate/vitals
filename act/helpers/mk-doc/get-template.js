@@ -27,11 +27,25 @@ var IS = require('../is.js');
 
 /**
  * @private
+ * @param {string} dirpath
+ * @return {string}
+ */
+var cleanDirpath = require('../clean-dirpath.js');
+
+/**
+ * @private
  * @param {string} filepath
  * @param {boolean=} buffer
  * @return {(!Buffer|string)}
  */
 var getFileContent = require('../get-file-content.js');
+
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isDirectory = IS.directory;
 
 /**
  * @private
@@ -91,8 +105,12 @@ module.exports = function getTemplate(template) {
     throw new TypeError('invalid empty `template` string');
 
   path = trimTemplateExt(template);
-  path += '.tmpl';
   path = resolvePath(TEMPLATES, path);
+
+  if ( isDirectory(path) )
+    path = cleanDirpath(path) + 'index';
+
+  path += '.tmpl';
 
   if ( !isFile(path) )
     throw new Error('invalid template path `' + path + '`');
