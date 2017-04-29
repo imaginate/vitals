@@ -17,9 +17,45 @@
 
 /**
  * @private
+ * @const {string}
+ */
+var CONTENT = '\\s+([\\s\\S]*?)';
+
+/**
+ * @private
+ * @const {string}
+ */
+var HARD_CLOSE = '\\s*\\}\\}!';
+
+/**
+ * @private
+ * @const {string}
+ */
+var HARD_OPEN = '!\\{\\{\\s*';
+
+/**
+ * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../is.js');
+
+/**
+ * @private
+ * @const {string}
+ */
+var NOT = '!\\s*';
+
+/**
+ * @private
+ * @const {string}
+ */
+var SOFT_CLOSE = '\\s*\\}\\}\\?';
+
+/**
+ * @private
+ * @const {string}
+ */
+var SOFT_OPEN = '\\?\\{\\{\\s*';
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
@@ -47,10 +83,10 @@ function clearSoftTag(src, tag) {
   /** @type {!RegExp} */
   var pattern;
 
-  pattern = new RegExp('?{{\\s*' + tag + '\\s+[\\s\\S]*?}}?', 'g');
+  pattern = new RegExp(SOFT_OPEN + tag + CONTENT + SOFT_CLOSE, 'g');
   src = src.replace(pattern, '');
 
-  pattern = new RegExp('?{{\\s*!\\s*' + tag + '\\s+([\\s\\S]*?)\\s*}}?', 'g');
+  pattern = new RegExp(SOFT_OPEN + NOT + tag + CONTENT + SOFT_CLOSE, 'g');
   return src.replace(pattern, '$1');
 }
 
@@ -66,7 +102,7 @@ function insertHardTag(src, tag, val) {
   /** @type {!RegExp} */
   var pattern;
 
-  pattern = new RegExp('!{{\\s*' + tag + '\\s*}}!', 'g');
+  pattern = new RegExp(HARD_OPEN + tag + HARD_CLOSE, 'g');
   return src.replace(pattern, val);
 }
 
@@ -81,10 +117,10 @@ function saveSoftTag(src, tag) {
   /** @type {!RegExp} */
   var pattern;
 
-  pattern = new RegExp('?{{\\s*' + tag + '\\s+([\\s\\S]*?)\\s*}}?', 'g');
+  pattern = new RegExp(SOFT_OPEN + tag + CONTENT + SOFT_CLOSE, 'g');
   src = src.replace(pattern, '$1');
 
-  pattern = new RegExp('?{{\\s*!\\s*' + tag + '\\s+[\\s\\S]*?}}?', 'g');
+  pattern = new RegExp(SOFT_OPEN + NOT + tag + CONTENT + SOFT_CLOSE, 'g');
   return src.replace(pattern, '');
 }
 
