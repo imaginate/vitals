@@ -17,12 +17,6 @@
 
 /**
  * @private
- * @const {!RegExp}
- */
-var MD = /\.md$/;
-
-/**
- * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../is.js');
@@ -60,6 +54,13 @@ var isString = IS.string;
  */
 var resolvePath = require('../resolve-path.js');
 
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimTemplateExt = require('./trim-template-ext.js');
+
 ////////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,10 +87,12 @@ module.exports = function getTemplate(template) {
 
   if ( !isString(template) )
     throw new TypeError('invalid `template` type (must be a string)');
+  if ( !template )
+    throw new TypeError('invalid empty `template` string');
 
-  template = template.replace(MD, '');
-  template += '.md';
-  path = resolvePath(TEMPLATES, template);
+  path = trimTemplateExt(template);
+  path += '.tmpl';
+  path = resolvePath(TEMPLATES, path);
 
   if ( !isFile(path) )
     throw new Error('invalid template path `' + path + '`');
