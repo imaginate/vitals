@@ -1,5 +1,5 @@
 {
-  "name": {
+  "NAME": {
     "vitals": "vitals",
     "base": "vitals base section",
     "strict": "vitals strict section",
@@ -26,7 +26,7 @@
     "trim": "vitals.trim",
     "until": "vitals.until"
   },
-  "url": {
+  "URL": {
     "vitals": "https://github.com/imaginate/vitals/wiki",
     "base": "https://github.com/imaginate/vitals/wiki#user-content-api",
     "strict": "https://github.com/imaginate/vitals/wiki#user-content-api",
