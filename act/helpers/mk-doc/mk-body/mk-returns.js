@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getReturns
+ * ACT TASK HELPER: mkReturns
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -33,23 +33,9 @@ var RETURN = /^@returns?/;
  */
 var TEMPLATE = require('../get-template.js')('body/returns');
 
-/**
- * @private
- * @const {!RegExp}
- */
-var TYPE = /[^{}]+(?=\})/;
-
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} source
- * @param {!RegExp} pattern
- * @return {string}
- */
-var getMatch = require('../../get-match.js');
 
 /**
  * @private
@@ -59,14 +45,6 @@ var getMatch = require('../../get-match.js');
  * @return {string}
  */
 var insertTag = require('../insert-tag.js');
-
-/**
- * @private
- * @param {number} val1
- * @param {number} val2
- * @return {boolean}
- */
-var isGT = IS.greaterThan;
 
 /**
  * @private
@@ -101,16 +79,16 @@ var isString = IS.string;
  */
 var sliceArray = require('../../slice-array.js');
 
-/**
- * @private
- * @param {string} src
- * @return {string}
- */
-var trimSpace = require('./trim-space.js');
-
 ////////////////////////////////////////////////////////////////////////////////
 // METHODS
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+var getReturnType = require('./get-return-type.js');
 
 /**
  * @private
@@ -120,54 +98,7 @@ var trimSpace = require('./trim-space.js');
  * @param {boolean=} opts.html = `false`
  * @return {string}
  */
-var getDescription = require('./get-description.js');
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-function getType(lines) {
-
-  /** @type {string} */
-  var line;
-
-  if ( !isGT(lines.length, 0) )
-    return 'undefined';
-
-  line = lines[0];
-
-  if ( !isReturn(line) )
-    return 'undefined';
-
-  line = line.replace(RETURN, '');
-  line = trimSpace(line);
-  return getMatch(line, TYPE) || 'undefined';
-}
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-function parseReturns(lines) {
-
-  /** @type {string} */
-  var result;
-  /** @type {string} */
-  var value;
-
-  result = TEMPLATE;
-
-  value = getType(lines);
-  result = insertTag(result, 'type', value);
-
-  lines = sliceArray(lines, 1);
-  value = getDescription(lines, { html: true });
-  result = insertTag(result, 'description', value);
-
-  return result;
-}
+var parseDescription = require('./parse-description.js');
 
 /**
  * @private
@@ -198,7 +129,23 @@ function pruneLines(lines) {
  * @param {!Array<string>} lines
  * @return {string}
  */
-module.exports = function getReturns(lines) {
+module.exports = function mkReturns(lines) {
+
+  /** @type {string} */
+  var result;
+  /** @type {string} */
+  var value;
+
   lines = pruneLines(lines);
-  return parseReturns(lines);
+
+  result = TEMPLATE;
+
+  value = getReturnType(lines);
+  result = insertTag(result, 'type', value);
+
+  lines = sliceArray(lines, 1);
+  value = parseDescription(lines, { html: true });
+  result = insertTag(result, 'description', value);
+
+  return result;
 };
