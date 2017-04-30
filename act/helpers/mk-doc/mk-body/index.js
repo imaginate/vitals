@@ -17,33 +17,9 @@
 
 /**
  * @private
- * @const {!RegExp}
- */
-var DOCS_OPEN = /\/\*\*\n +\* /;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var DOCS_LINE = / *\n +\*(?: {1,3}|\/\n)?/g;
-
-/**
- * @private
  * @const {!Object<string, function>}
  */
 var IS = require('../../is.js');
-
-/**
- * @private
- * @const {!RegExp}
- */
-var PUBLIC_DOCS = /\/\*\*[^@]*?@public[\s\S]+?\*\/\n[a-zA-Z .'[\]_]+/g;
-
-/**
- * @private
- * @const {string}
- */
-var TEMPLATE = require('../get-template.js')('body');
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
@@ -51,28 +27,17 @@ var TEMPLATE = require('../get-template.js')('body');
 
 /**
  * @private
- * @param {string} source
- * @param {!RegExp} pattern
- * @return {!Array<string>}
- */
-var getMatches = require('../../get-matches.js');
-
-/**
- * @private
- * @param {string} src
- * @param {string} tag
- * @param {string} val
- * @return {string}
- */
-var insertTag = require('../insert-tag.js');
-
-/**
- * @private
- * @param {number} val1
- * @param {number} val2
+ * @param {*} val
  * @return {boolean}
  */
-var isLT = IS.lessThan;
+var isString = IS.string;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
 
 ////////////////////////////////////////////////////////////////////////////////
 // METHODS
@@ -80,38 +45,10 @@ var isLT = IS.lessThan;
 
 /**
  * @private
- * @param {!Array<string>} lines
+ * @param {string} content
  * @return {string}
  */
-var getIntro = require('./get-intro.js');
-
-/**
- * @private
- * @param {string} method
- * @return {string}
- */
-var getMainMethod = require('./get-main-method.js');
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-var getMethod = require('./get-method.js');
-
-/**
- * @private
- * @param {string} method
- * @return {string}
- */
-var getMethodID = require('../get-method-id.js');
-
-/**
- * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-var getParams = require('./get-params.js');
+var getDocs = require('./get-docs.js');
 
 /**
  * @private
@@ -122,86 +59,11 @@ var getRefs = require('./get-refs.js');
 
 /**
  * @private
- * @param {!Array<string>} lines
- * @return {string}
- */
-var getReturns = require('./get-returns.js');
-
-/**
- * @private
- * @param {string} content
+ * @param {!Array<string>} docs
  * @param {!Object<string, string>} refs
  * @return {string}
  */
-var insertRefs = require('./insert-refs.js');
-
-/**
- * @private
- * @param {string} detail
- * @return {string}
- */
-function mkDetail(detail) {
-
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var result;
-  /** @type {!Array<string>} */
-  var lines;
-  /** @type {string} */
-  var val;
-
-  detail = detail.replace(DOCS_OPEN, '');
-  lines = detail.split(DOCS_LINE);
-  method = getMethod(lines);
-
-  result = TEMPLATE;
-
-  val = getIntro(lines);
-  result = insertTag(result, 'intro', val);
-
-  val = getParams(lines);
-  result = insertTag(result, 'params', val);
-
-  val = getReturns(lines);
-  result = insertTag(result, 'returns', val);
-
-  result = insertTag(result, 'method', method);
-
-  val = getMainMethod(method);
-  result = insertTag(result, 'main', val);
-
-  val = getMethodID(method);
-  result = insertTag(result, 'id', val);
-
-  return result;
-}
-
-/**
- * @private
- * @param {!Array<string>} details
- *   All of the public methods JSDoc.
- * @param {!Object<string, string>} refs
- * @return {string}
- */
-function mkDetails(details, refs) {
-
-  /** @type {string} */
-  var result;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  result = '';
-
-  len = details.length;
-  i = -1;
-  while ( isLT(++i, len) )
-    result += mkDetail(details[i]);
-
-  return insertRefs(result, refs);
-}
+var mkDetails = require('./mk-details.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
@@ -215,25 +77,26 @@ function mkDetails(details, refs) {
  */
 module.exports = function mkBody(content, fscontent) {
 
-  /** @type {!Array<string>} */
-  var methods;
   /** @type {!Object<string, string>} */
   var refs;
+  /** @type {!Array<string>} */
+  var docs;
   /** @type {string} */
   var body;
 
-  methods = getMatches(content, PUBLIC_DOCS);
+  if ( !isString(content) )
+    throw new TypeError('invalid `content` type (must be a string)');
+  if ( !isString(fscontent) && !isUndefined(fscontent) )
+    throw new TypeError('invalid `fscontent` type (must be a string or undefined)');
 
-  if ( isLT(methods.length, 1) )
-    throw new Error('no public methods found');
-
+  docs = getDocs(content);
   refs = getRefs(content);
-  body = mkDetails(methods, refs);
+  body = mkDetails(docs, refs);
 
   if (fscontent) {
-    methods = getMatches(fscontent, PUBLIC_DOCS);
+    docs = getDocs(fscontent);
     refs = getRefs(fscontent);
-    body += mkDetails(methods, refs);
+    body += mkDetails(docs, refs);
   }
 
   return body;
