@@ -11,11 +11,68 @@
 
 'use strict';
 
-var mkHeader = require('./mk-header');
-var mkBody   = require('./mk-body');
-var mkFooter = require('./mk-footer');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('../is.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} content
+ * @param {string=} fscontent
+ * @return {string}
+ */
+var mkBody = require('./mk-body/index.js');
+
+/**
+ * @private
+ * @param {string} content
+ * @param {string=} fscontent
+ * @return {string}
+ */
+var mkFooter = require('./mk-footer.js');
+
+/**
+ * @private
+ * @param {string} content
+ * @param {string=} fscontent
+ * @return {string}
+ */
+var mkHeader = require('./mk-header/index.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @param {string} content
  * @param {string=} fscontent
  * @return {string}
@@ -23,14 +80,16 @@ var mkFooter = require('./mk-footer');
 module.exports = function mkDoc(content, fscontent) {
 
   /** @type {string} */
-  var header;
-  /** @type {string} */
-  var footer;
-  /** @type {string} */
-  var body;
+  var result;
 
-  header = mkHeader(content, fscontent);
-  body   = mkBody(content, fscontent);
-  footer = mkFooter(content, fscontent);
-  return header + body + footer;
+  if ( !isString(content) )
+    throw new TypeError('invalid `content` type (must be a string)');
+  if ( !isString(fscontent) && !isUndefined(fscontent) )
+    throw new TypeError('invalid `fscontent` type (must be a string or undefined)');
+
+  result = mkHeader(content, fscontent);
+  result += mkBody(content, fscontent);
+  result += mkFooter(content, fscontent);
+
+  return result;
 };
