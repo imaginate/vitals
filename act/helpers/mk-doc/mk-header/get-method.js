@@ -47,41 +47,6 @@ var getMatch = require('../../get-match.js');
 var isString = IS.string;
 
 ////////////////////////////////////////////////////////////////////////////////
-// METHODS
-////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @param {string} line
- * @return {string}
- */
-function mkMethodRow(line) {
-
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var alias;
-  /** @type {string} */
-  var link;
-
-
-  link = '#user-content-';
-  link += PROP.test(method)
-    ? method.replace(MAIN, '')
-    : 'main';
-  link = link.replace(/\./g, '');
-
-  alias = getMatch(line, ALIAS);
-  alias = alias.replace('|', ', ');
-  alias = alias.replace(/[*()]/g, '');
-
-  return '| [' + method  + '](' + link    + ') ' +
-         '| [' + section + '][' + section + '] ' +
-         '| ' + alias + ' ' +
-         '|\n';
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
 ////////////////////////////////////////////////////////////////////////////////
 
