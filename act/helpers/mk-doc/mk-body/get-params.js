@@ -55,7 +55,7 @@ var RETURN_TAG = /^@return/;
  * @private
  * @const {string}
  */
-var TEMPLATE = require('../get-template.js')('param');
+var TEMPLATE = require('../get-template.js')('body/param');
 
 /**
  * @private

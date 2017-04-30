@@ -31,7 +31,7 @@ var RETURN = /^@returns?/;
  * @private
  * @const {string}
  */
-var TEMPLATE = require('../get-template.js')('returns');
+var TEMPLATE = require('../get-template.js')('body/returns');
 
 /**
  * @private
