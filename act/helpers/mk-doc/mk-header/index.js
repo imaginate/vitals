@@ -115,10 +115,6 @@ module.exports = function mkHeader(content, fscontent) {
 
   section = getSection(content);
   content = trimToMethods(content);
-
-  if (!content) 
-    throw new Error('no public methods found for `mkHeader`');
-
   main = getMainMethod(content);
   rows = mkMethodRows(content, section);
 
@@ -127,7 +123,7 @@ module.exports = function mkHeader(content, fscontent) {
     rows += mkMethodRows(fscontent, 'fs');
   }
 
-  header = insertTag(TEMPLATE, 'method-rows', rows);
+  header = insertTag(TEMPLATE, 'rows', rows);
   header = insertTag(header, 'main', main);
 
   return header;
