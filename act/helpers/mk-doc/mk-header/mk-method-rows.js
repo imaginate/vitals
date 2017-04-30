@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getMethods
+ * ACT TASK HELPER: mkMethodRows
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -11,17 +11,9 @@
 
 'use strict';
 
-var get = require('../../get-match');
-
 ////////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 ////////////////////////////////////////////////////////////////////////////////
-
-/**
- * @private
- * @const {!RegExp}
- */
-var ALIAS = /\([a-zA-Z.*|_]+\)/;
 
 /**
  * @private
@@ -29,35 +21,18 @@ var ALIAS = /\([a-zA-Z.*|_]+\)/;
  */
 var IS = require('../../is.js');
 
-/**
- * @private
- * @const {!RegExp}
- */
-var MAIN = /^[^\.]+/;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var METHOD = /[a-z]+(?:\.[a-zA-Z._]+)?/;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var PROP = /[a-z]\./;
-
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {string} source
- * @param {!RegExp} pattern
+ * @param {string} src
+ * @param {string} tag
+ * @param {string} val
  * @return {string}
  */
-var getMatch = require('../../get-match.js');
+var insertTag = require('../insert-tag.js');
 
 /**
  * @private
@@ -67,42 +42,23 @@ var getMatch = require('../../get-match.js');
  */
 var isLT = IS.lessThan;
 
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
 ////////////////////////////////////////////////////////////////////////////////
 // METHODS
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {string} section
  * @param {string} line
  * @return {string}
  */
-function getMethod(section, line) {
-
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var alias;
-  /** @type {string} */
-  var link;
-
-  method = getMatch(line, METHOD);
-
-  link = '#user-content-';
-  link += PROP.test(method)
-    ? method.replace(MAIN, '')
-    : 'main';
-  link = link.replace(/\./g, '');
-
-  alias = getMatch(line, ALIAS);
-  alias = alias.replace('|', ', ');
-  alias = alias.replace(/[*()]/g, '');
-
-  return '| [' + method  + '](' + link    + ') ' +
-         '| [' + section + '][' + section + '] ' +
-         '| ' + alias + ' ' +
-         '|\n';
-}
+var mkMethodRow = require('./mk-method-row.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
@@ -110,27 +66,39 @@ function getMethod(section, line) {
 
 /**
  * @public
- * @param {string} section
  * @param {string} content
+ * @param {string} section
  * @return {string}
  */
-module.exports = function getMethods(section, content) {
+module.exports = function mkMethodRows(content, section) {
 
-  /** @type {string} */
-  var methods;
   /** @type {!Array<string>} */
   var lines;
+  /** @type {string} */
+  var rows;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  methods = '';
+  if ( !isString(content) )
+    throw new TypeError('invalid `content` type (must be a string)');
+  if ( !content )
+    throw new Error('invalid empty `content` string');
+  if ( !isString(section) )
+    throw new TypeError('invalid `section` type (must be a string)');
+  if ( !section )
+    throw new Error('invalid empty `section` string');
+
+  rows = '';
 
   lines = content.split('\n');
   len = lines.length;
   i = -1;
   while ( isLT(++i, len) )
-    methods += getMethod(section, lines[i]);
-  return methods;
+    rows += mkMethodRow(lines[i]);
+
+  rows = insertTag(rows, 'section', section);
+
+  return rows;
 };
