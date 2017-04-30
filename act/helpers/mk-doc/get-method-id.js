@@ -19,7 +19,7 @@
  * @private
  * @const {!Object<string, function>}
  */
-var IS = require('../../is.js');
+var IS = require('../is.js');
 
 /**
  * @private
@@ -54,6 +54,8 @@ module.exports = function getMethodID(method) {
 
   if ( !isString(method) )
     throw new TypeError('invalid `method` type (must be a string)');
+  if ( !method )
+    throw new Error('invalid empty `method` string');
 
   if ( !MAIN.test(method) )
     return 'main';

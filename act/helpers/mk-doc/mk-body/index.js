@@ -104,7 +104,7 @@ var getMethod = require('./get-method.js');
  * @param {string} method
  * @return {string}
  */
-var getMethodID = require('./get-method-id.js');
+var getMethodID = require('../get-method-id.js');
 
 /**
  * @private
