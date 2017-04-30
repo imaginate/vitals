@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getIntro
+ * ACT TASK HELPER: mkIntro
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -25,7 +25,7 @@ var IS = require('../../is.js');
  * @private
  * @const {!RegExp}
  */
-var PUBLIC_TAG = /^@public/;
+var PUBLIC = /^@public/;
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
@@ -60,7 +60,7 @@ var sliceArray = require('../../slice-array.js');
  * @param {boolean=} opts.html = `false`
  * @return {string}
  */
-var getDescription = require('./get-description.js');
+var parseDescription = require('./parse-description.js');
 
 /**
  * @private
@@ -76,7 +76,7 @@ function pruneLines(lines) {
 
   len = lines.length;
   end = 0;
-  while ( isLT(end, len) && !PUBLIC_TAG.test(lines[end]) )
+  while ( isLT(end, len) && !PUBLIC.test(lines[end]) )
     ++end;
   return sliceArray(lines, 0, end);
 }
@@ -90,7 +90,7 @@ function pruneLines(lines) {
  * @param {!Array<string>} lines
  * @return {string}
  */
-module.exports = function getIntro(lines) {
+module.exports = function mkIntro(lines) {
   lines = pruneLines(lines);
-  return getDescription(lines, { html: true });
+  return parseDescription(lines, { html: true });
 };
