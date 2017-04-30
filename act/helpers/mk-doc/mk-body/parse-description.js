@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getDescription
+ * ACT TASK HELPER: parseDescription
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -101,7 +101,7 @@ var parseToMdown = require('./parse-to-mdown.js');
  * @param {boolean=} opts.html = `false`
  * @return {string}
  */
-module.exports = function getDescription(lines, opts) {
+module.exports = function parseDescription(lines, opts) {
 
   /** @type {number} */
   var depth;
