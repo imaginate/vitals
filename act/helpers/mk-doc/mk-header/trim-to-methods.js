@@ -71,10 +71,17 @@ var trimTitle = require('./trim-title.js');
  */
 module.exports = function trimToMethods(content) {
 
+  /** @type {string} */
+  var result;
+
   if ( !isString(content) )
     throw new TypeError('invalid `content` type (must be a string)');
 
-  content = getMatch(content, METHODS);
-  content = trimTitle(content);
-  return trimEol(content);
+  result = getMatch(content, METHODS);
+
+  if (!result)
+    throw new Error('no public methods found for `mkHeader` in `' + content + '`');
+
+  result = trimTitle(result);
+  return trimEol(result);
 };
