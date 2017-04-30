@@ -1,6 +1,6 @@
 /**
  * -----------------------------------------------------------------------------
- * ACT TASK HELPER: mkDoc
+ * ACT TASK HELPER: insertMentions
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -19,7 +19,7 @@
  * @private
  * @const {!Object<string, function>}
  */
-var IS = require('../is.js');
+var IS = require('../../is.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
@@ -32,13 +32,6 @@ var IS = require('../is.js');
  */
 var isString = IS.string;
 
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isUndefined = IS.undefined;
-
 ////////////////////////////////////////////////////////////////////////////////
 // METHODS
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,31 +41,14 @@ var isUndefined = IS.undefined;
  * @param {string} doc
  * @return {string}
  */
-var insertMentions = require('./mentions/insert.js');
+var insertMentionsName = require('./insert-name.js');
 
 /**
  * @private
- * @param {string} content
- * @param {string=} fscontent
+ * @param {string} doc
  * @return {string}
  */
-var mkBody = require('./mk-body/index.js');
-
-/**
- * @private
- * @param {string} content
- * @param {string=} fscontent
- * @return {string}
- */
-var mkFooter = require('./mk-footer.js');
-
-/**
- * @private
- * @param {string} content
- * @param {string=} fscontent
- * @return {string}
- */
-var mkHeader = require('./mk-header/index.js');
+var insertMentionsUrl = require('./insert-url.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
@@ -80,23 +56,14 @@ var mkHeader = require('./mk-header/index.js');
 
 /**
  * @public
- * @param {string} content
- * @param {string=} fscontent
+ * @param {string} doc
  * @return {string}
  */
-module.exports = function mkDoc(content, fscontent) {
+module.exports = function insertMentions(doc) {
 
-  /** @type {string} */
-  var result;
+  if ( !isString(doc) )
+    throw new TypeError('invalid `doc` type (must be a string)');
 
-  if ( !isString(content) )
-    throw new TypeError('invalid `content` type (must be a string)');
-  if ( !isString(fscontent) && !isUndefined(fscontent) )
-    throw new TypeError('invalid `fscontent` type (must be a string or undefined)');
-
-  result = mkHeader(content, fscontent);
-  result += mkBody(content, fscontent);
-  result += mkFooter(content, fscontent);
-
-  return insertMentions(result);
+  doc = insertMentionsName(doc);
+  return insertMentionsUrl(doc);
 };
