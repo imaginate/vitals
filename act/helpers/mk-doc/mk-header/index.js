@@ -17,27 +17,9 @@
 
 /**
  * @private
- * @const {!RegExp}
+ * @const {!Object<string, function>}
  */
-var EOL = /\n$/;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var MAIN = /\b[a-z]+\b/;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var METHODS = /\n *\/\/ PUBLIC METHODS *\n(?: *\/\/ - [a-z]+(?:\.[a-zA-Z._]+)?(?: +\([a-zA-Z.*|_]+\))? *\n)+/;
-
-/**
- * @private
- * @const {!RegExp}
- */
-var TITLE = /\n *\/\/ PUBLIC METHODS *\n/;
+var IS = require('../../is.js');
 
 /**
  * @private
@@ -51,14 +33,6 @@ var TEMPLATE = require('../get-template.js')('header');
 
 /**
  * @private
- * @param {string} source
- * @param {!RegExp} pattern
- * @return {string}
- */
-var getMatch = require('../../get-match.js');
-
-/**
- * @private
  * @param {string} src
  * @param {string} tag
  * @param {string} val
@@ -66,17 +40,37 @@ var getMatch = require('../../get-match.js');
  */
 var insertTag = require('../insert-tag.js');
 
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+
+/**
+ * @private
+ * @param {string} content
+ * @return {string}
+ */
+var trimToMethods = require('./trim-to-methods.js');
+
 ////////////////////////////////////////////////////////////////////////////////
-// GET METHODS
+// METHODS
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {string} section
  * @param {string} content
  * @return {string}
  */
-var getMethods = require('./get-methods.js');
+var getMainMethod = require('./get-main-method.js');
 
 /**
  * @private
@@ -84,6 +78,14 @@ var getMethods = require('./get-methods.js');
  * @return {string}
  */
 var getSection = require('./get-section.js');
+
+/**
+ * @private
+ * @param {string} content
+ * @param {string} section
+ * @return {string}
+ */
+var mkMethodRows = require('./mk-method-rows.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
@@ -100,30 +102,33 @@ module.exports = function mkHeader(content, fscontent) {
   /** @type {string} */
   var section;
   /** @type {string} */
-  var methods;
-  /** @type {string} */
   var header;
   /** @type {string} */
   var main;
+  /** @type {string} */
+  var rows;
+
+  if ( !isString(content) )
+    throw new TypeError('invalid `content` type (must be a string)');
+  if ( !isString(fscontent) && !isUndefined(fscontent) )
+    throw new TypeError('invalid `fscontent` type (must be a string or undefined)');
 
   section = getSection(content);
-  content = getMatch(content, METHODS);
+  content = trimToMethods(content);
 
   if (!content) 
-    throw new Error('no public methods found');
+    throw new Error('no public methods found for `mkHeader`');
 
-  content = content.replace(TITLE, '');
-  content = content.replace(EOL, '');
-  main = getMatch(content, MAIN);
-  methods = getMethods(section, content);
+  main = getMainMethod(content);
+  rows = mkMethodRows(content, section);
 
   if (fscontent) {
-    fscontent = getMatch(fscontent, METHODS);
-    fscontent = fscontent.replace(TITLE, '');
-    fscontent = fscontent.replace(EOL, '');
-    methods = methods + getMethods('fs', fscontent);
+    fscontent = trimToMethods(fscontent);
+    rows += mkMethodRows(fscontent, 'fs');
   }
 
-  header = insertTag(TEMPLATE, 'main', main);
-  return insertTag(header, ' methods', methods);
+  header = insertTag(TEMPLATE, 'method-rows', rows);
+  header = insertTag(header, 'main', main);
+
+  return header;
 };
