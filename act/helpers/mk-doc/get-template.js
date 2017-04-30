@@ -70,6 +70,13 @@ var resolvePath = require('../resolve-path.js');
 
 /**
  * @private
+ * @param {string} content
+ * @return {string}
+ */
+var trimTemplateComments = require('./trim-template-comments.js');
+
+/**
+ * @private
  * @param {string} path
  * @return {string}
  */
@@ -97,6 +104,8 @@ var TEMPLATES = resolvePath(__dirname, './templates');
 module.exports = function getTemplate(template) {
 
   /** @type {string} */
+  var content;
+  /** @type {string} */
   var path;
 
   if ( !isString(template) )
@@ -115,5 +124,6 @@ module.exports = function getTemplate(template) {
   if ( !isFile(path) )
     throw new Error('invalid template path `' + path + '`');
 
-  return getFileContent(path);
+  content = getFileContent(path);
+  return trimTemplateComments(content);
 };
