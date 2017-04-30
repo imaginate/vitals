@@ -137,9 +137,6 @@ function saveSoftTag(src, tag) {
  */
 module.exports = function insertTag(src, tag, val) {
 
-  /** @type {string} */
-  var path;
-
   if ( !isString(src) )
     throw new TypeError('invalid `src` type (must be a string)');
   if ( !isString(tag) )
