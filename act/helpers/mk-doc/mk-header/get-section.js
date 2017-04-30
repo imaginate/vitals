@@ -17,9 +17,26 @@
 
 /**
  * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('../../is.js');
+
+/**
+ * @private
  * @const {!RegExp}
  */
 var SECTION = /^[\s\S]+?@section ([a-z-]+)[\s\S]+$/;
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
 
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
@@ -31,5 +48,19 @@ var SECTION = /^[\s\S]+?@section ([a-z-]+)[\s\S]+$/;
  * @return {string}
  */
 module.exports = function getSection(content) {
-  return content.replace(SECTION, '$1');
+
+  /** @type {string} */
+  var section;
+
+  if ( !isString(content) )
+    throw new TypeError('invalid `content` type (must be a string)');
+  if ( !content )
+    throw new Error('invalid empty `content` string');
+
+  section = content.replace(SECTION, '$1');
+
+  if (!section)
+    throw new Error('no section found for `mkHeader` in `' + content + '`');
+
+  return section;
 };
