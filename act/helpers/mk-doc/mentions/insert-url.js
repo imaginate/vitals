@@ -82,6 +82,13 @@ var trimID = require('./trim-id.js');
 
 /**
  * @private
+ * @param {string} id
+ * @return {string}
+ */
+var trimPrefix = require('./trim-prefix.js');
+
+/**
+ * @private
  * @param {string} ref
  * @return {string}
  */
@@ -106,6 +113,7 @@ function insertUrl(tag, ref) {
 
   if ( hasID(ref) ) {
     id = trimRef(ref);
+    id = trimPrefix(id);
     ref = trimID(ref);
 
     if ( !isValid(ref) || !isValid(id) )
