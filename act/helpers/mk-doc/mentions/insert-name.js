@@ -68,7 +68,7 @@ var isValid = require('./is-valid.js');
 
 /**
  * @private
- * @param {string} ref
+ * @param {string} id
  * @return {string}
  */
 var parseID = require('./parse-name-id.js');

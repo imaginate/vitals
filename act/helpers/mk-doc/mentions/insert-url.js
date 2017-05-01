@@ -68,7 +68,7 @@ var isValid = require('./is-valid.js');
 
 /**
  * @private
- * @param {string} ref
+ * @param {string} id
  * @return {string}
  */
 var parseID = require('./parse-url-id.js');
@@ -110,8 +110,6 @@ function insertUrl(tag, ref) {
 
     if ( !isValid(ref) || !isValid(id) )
       throw new Error('invalid reference id `' + ref + '#' + id + '`');
-
-    id = parseID(id);
   }
   else if ( !isValid(ref) )
     throw new Error('invalid reference id `' + ref + '`');
@@ -121,7 +119,7 @@ function insertUrl(tag, ref) {
 
   url = DATA[ref];
   if (!!id)
-    url += parseNameID(id);
+    url += parseID(id);
 
   return url;
 }
