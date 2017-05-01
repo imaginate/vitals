@@ -25,7 +25,7 @@ var HASH = /#/;
  * @private
  * @const {!Object<string, function>}
  */
-var IS = require('../is.js');
+var IS = require('../../is.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // HELPERS
