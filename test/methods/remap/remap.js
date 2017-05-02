@@ -108,6 +108,11 @@ method('remap', function() {
     });
 
     test('abc123', 'a', '$&', function() {
+      var str = vitals.remap.str('abc123', 'a', '$&');
+      assert( str === 'abc123' );
+    });
+
+    test('abc123', '*', '$&', function() {
       var str = vitals.remap.str('abc123', '*', '$&');
       assert( str === 'abc123' );
     });
