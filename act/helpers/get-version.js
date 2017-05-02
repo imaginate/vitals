@@ -11,18 +11,41 @@
 
 'use strict';
 
-var VERSION = /^[\s\S]+?"version": "([0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+.?[0-9]*)?)"[\s\S]*$/;
-
-var getFile = require('./get-file');
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('./resolve-path.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @const {string}
+ */
+var REPO_DIR = require('./get-repo-root.js')();
+
+/**
+ * @private
+ * @const {string}
+ */
+var PACKAGE = resolvePath(REPO_DIR, './package.json');
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
  * @return {string}
  */
 module.exports = function getVersion() {
-
-  /** @type {string} */
-  var content;
-
-  content = getFile('./package.json');
-  return content.replace(VERSION, '$1');
+  return require(PACKAGE).version;
 };
