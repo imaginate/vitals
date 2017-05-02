@@ -26,6 +26,34 @@
     "trim": "vitals.trim",
     "until": "vitals.until"
   },
+  "METHOD": {
+    "amend": true,
+    "copy": true,
+    "create": true,
+    "cut": true,
+    "each": true,
+    "fill": true,
+    "freeze": true,
+    "fuse": true,
+    "get": true,
+    "has": true,
+    "is": true,
+    "remap": true,
+    "roll": true,
+    "run": true,
+    "same": true,
+    "seal": true,
+    "slice": true,
+    "to": true,
+    "trim": true,
+    "until": true
+  },
+  "SECTION": {
+    "base": true,
+    "strict": true,
+    "fs": true,
+    "shell": true
+  },
   "URL": {
     "vitals": "https://github.com/imaginate/vitals/wiki",
     "base": "https://github.com/imaginate/vitals/wiki#user-content-api",
