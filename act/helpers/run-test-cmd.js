@@ -73,15 +73,18 @@ var SECTION = /^[\s\S]+?@section ([a-zA-Z-]+)[\s\S]+$/;
 
 /**
  * @private
- * @param {string} filepath
- * @param {boolean=} buffer
- * @return {(!Buffer|string)}
+ * @param {(string|!Error)} header
+ * @param {(string|!Error)=} msg
+ * @param {...*} val
+ * @return {boolean}
  */
 var err = LOG.error;
 
 err.setConfig({
+  'header': true,
   'throw': false,
-  'exit':  true
+  'exit': true,
+  'msg': true
 });
 
 /**
