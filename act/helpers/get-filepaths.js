@@ -60,14 +60,14 @@ var isBoolean = IS.boolean;
 
 /**
  * @private
- * @param {*} val
+ * @param {string} val
  * @return {boolean}
  */
 var isDirectory = IS.directory;
 
 /**
  * @private
- * @param {*} val
+ * @param {string} val
  * @return {boolean}
  */
 var isFile = IS.file;
@@ -85,6 +85,13 @@ var isLT = IS.lessThan;
  * @param {*} val
  * @return {boolean}
  */
+var isNull = IS['null'];
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
 var isRegExp = IS.regexp;
 
 /**
@@ -96,12 +103,10 @@ var isString = IS.string;
 
 /**
  * @private
- * @param {string} dirname
+ * @param {*} val
  * @return {boolean}
  */
-function isValidDirname(dirname) {
-  return !INVALID_DIRS.test(dirname);
-}
+var isUndefined = IS.undefined;
 
 /**
  * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/fs.html#fs_fs_readdirsync_path)
@@ -166,9 +171,10 @@ function getFiles(pwd, full, isValidFilename) {
  * @param {string} pwd
  * @param {string} prepend
  * @param {function(string): boolean} isValidFilename
+ * @param {function(string): boolean} isValidDirname
  * @return {!Array<string>}
  */
-function getFilesDeep(pwd, prepend, isValidFilename) {
+function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname) {
 
   /** @type {!Array<string>} */
   var paths;
@@ -207,8 +213,8 @@ function getFilesDeep(pwd, prepend, isValidFilename) {
 
 /**
  * @private
- * @param {!RegExp=} validNames
- * @param {!RegExp=} invalidNames
+ * @param {?RegExp} validNames
+ * @param {?RegExp} invalidNames
  * @return {function(string): boolean}
  */
 function mkFilenameCheck(validNames, invalidNames) {
@@ -233,6 +239,34 @@ function mkFilenameCheck(validNames, invalidNames) {
   };
 }
 
+/**
+ * @private
+ * @param {?RegExp} validNames
+ * @param {?RegExp} invalidNames
+ * @return {function(string): boolean}
+ */
+function mkDirnameCheck(validNames, invalidNames) {
+
+  if (!!validNames && !!invalidNames)
+    return function isValidDirname(dirname) {
+      return validNames.test(dirname) && !invalidNames.test(dirname);
+    };
+
+  if (!!validNames)
+    return function isValidDirname(dirname) {
+      return validNames.test(dirname);
+    };
+
+  if (!!invalidNames)
+    return function isValidDirname(dirname) {
+      return !invalidNames.test(dirname);
+    };
+
+  return function isValidDirname(dirname) {
+    return true;
+  };
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // EXPORTS
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,39 +274,95 @@ function mkFilenameCheck(validNames, invalidNames) {
 /**
  * @public
  * @param {string} dirpath
- * @param {?Object|boolean=} opts - If a `boolean` then it is `opts.deep`.
- * @param {?boolean=} opts.deep - Make a recursive search for valid filenames.
- * @param {?boolean=} opts.full - Return absolute filepaths instead of relative.
- * @param {?RegExp=} opts.valid - A pattern for matching valid filenames.
- * @param {?RegExp=} opts.invalid - A pattern for matching invalid filenames.
+ * @param {?Object|boolean=} opts
+ *   If a `boolean` then it is `opts.deep`.
+ * @param {?boolean=} opts.deep = `false`
+ *   Make a recursive search for valid filenames.
+ * @param {?boolean=} opts.full = `false`
+ *   Return absolute filepaths instead of relative.
+ * @param {?RegExp=} opts.valid
+ *   An alias for `opts.validFiles`.
+ * @param {?RegExp=} opts.invalid
+ *   An alias for `opts.invalidFiles`.
+ * @param {?RegExp=} opts.validFiles = `null`
+ *   A pattern for matching valid filenames. If `null` is given then no check is
+ *   performed.
+ * @param {?RegExp=} opts.invalidFiles = `null`
+ *   A pattern for matching invalid filenames. If `null` is given then no check
+ *   is performed.
+ * @param {?RegExp=} opts.validDirs = `null`
+ *   Only used when `opts.deep` is `true`. A pattern for matching valid dirnames.
+ *   If `null` is given then no check is performed.
+ * @param {?RegExp=} opts.invalidDirs = `/^\.git|\.bak|node_modules|vendor|tmp|logs?$/`
+ *   Only used when `opts.deep` is `true`. A pattern for matching invalid
+ *   dirnames. If `null` is given then no check is performed.
  * @return {!Array<string>}
  */
 module.exports = function getFilepaths(dirpath, opts) {
 
   /** @type {function(string): boolean} */
   var isValidFilename;
+  /** @type {function(string): boolean} */
+  var isValidDirname;
 
   if ( !isString(dirpath) )
     throw new TypeError('invalid `dirpath` type (must be a string)');
   if ( !isDirectory(dirpath) )
     throw new Error('invalid `dirpath` path (must be a readable directory)');
 
-  if (!opts)
+  if ( isBoolean(opts) )
+    opts = { deep: opts };
+  else if ( isNull(opts) || isUndefined(opts) )
     opts = {};
   else {
-    if ( !!opts.deep && !isBoolean(opts.deep) )
-      throw new TypeError('invalid `opts.deep` type (must be a boolean or undefined)');
-    if ( !!opts.full && !isBoolean(opts.full) )
-      throw new TypeError('invalid `opts.full` type (must be a boolean or undefined)');
-    if ( !!opts.valid && !isRegExp(opts.valid) )
-      throw new TypeError('invalid `opts.valid` type (must be a RegExp or undefined)');
-    if ( !!opts.invalid && !isRegExp(opts.invalid) )
-      throw new TypeError('invalid `opts.invalid` type (must be a RegExp or undefined)');
+    if ( !isObject(opts) || isRegExp(opts) )
+      throw new TypeError('invalid `opts` type (must be an object, boolean, undefined, or null)');
+    if ( !isNull(opts.deep) && !isUndefined(opts.deep) && !isBoolean(opts.deep) )
+      throw new TypeError('invalid `opts.deep` type (must be a boolean, undefined, or null)');
+    if ( !isNull(opts.full) && !isUndefined(opts.full) && !isBoolean(opts.full) )
+      throw new TypeError('invalid `opts.full` type (must be a boolean, undefined, or null)');
+    if ( !isNull(opts.valid) && !isUndefined(opts.valid) && !isRegExp(opts.valid) )
+      throw new TypeError('invalid `opts.valid` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts.invalid) && !isUndefined(opts.invalid) && !isRegExp(opts.invalid) )
+      throw new TypeError('invalid `opts.invalid` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts.validFiles) && !isUndefined(opts.validFiles) && !isRegExp(opts.validFiles) )
+      throw new TypeError('invalid `opts.validFiles` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts.invalidFiles) && !isUndefined(opts.invalidFiles) && !isRegExp(opts.invalidFiles) )
+      throw new TypeError('invalid `opts.invalidFiles` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts.validDirs) && !isUndefined(opts.validDirs) && !isRegExp(opts.validDirs) )
+      throw new TypeError('invalid `opts.validDirs` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts.invalidDirs) && !isUndefined(opts.invalidDirs) && !isRegExp(opts.invalidDirs) )
+      throw new TypeError('invalid `opts.invalidDirs` type (must be a RegExp, undefined, or null)');
   }
 
+  if ( !isUndefined(opts.valid) && !isUndefined(opts.validFiles) && (opts.valid !== opts.validFiles) )
+    throw new Error('conflicting values for alias `opts.valid` and `opts.validFiles`');
+  if ( !isUndefined(opts.invalid) && !isUndefined(opts.invalidFiles) && (opts.invalid !== opts.invalidFiles) )
+    throw new Error('conflicting values for alias `opts.invalid` and `opts.invalidFiles`');
+
+  if ( !isBoolean(opts.deep) )
+    opts.deep = false;
+  if ( !isBoolean(opts.full) )
+    opts.full = false;
+  if ( !isUndefined(opts.valid) )
+    opts.validFiles = opts.valid;
+  else if ( isUndefined(opts.validFiles) )
+    opts.validFiles = null;
+  if ( !isUndefined(opts.invalid) )
+    opts.invalidFiles = opts.invalid;
+  else if ( isUndefined(opts.invalidFiles) )
+    opts.invalidFiles = null;
+  if ( isUndefined(opts.validDirs) )
+    opts.validDirs = null;
+  if ( isUndefined(opts.invalidDirs) )
+    opts.invalidDirs = INVALID_DIRS;
+
   dirpath = resolvePath(dirpath);
-  isValidFilename = mkFilenameCheck(opts.valid, opts.invalid);
-  return !!opts.deep
-    ? getFilesDeep(dirpath, !!opts.full ? dirpath : '', isValidFilename)
-    : getFiles(dirpath, !!opts.full, isValidFilename);
+  isValidFilename = mkFilenameCheck(opts.validFiles, opts.invalidFiles);
+
+  if (!opts.deep)
+    return getFiles(dirpath, opts.full, isValidFilename);
+
+  isValidDirname = mkDirnameCheck(opts.validDirs, opts.invalidDirs);
+  return getFilesDeep(dirpath, opts.full ? dirpath : '', isValidFilename, isValidDirname);
 };
