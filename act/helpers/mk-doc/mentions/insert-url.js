@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var AT = /@\{\{\s*([a-zA-Z0-9_-$#]+)\s*\}\}@/g;
+var AT = /@\{\{\s*([a-zA-Z0-9_\-\$#]+)\s*\}\}@/g;
 
 /**
  * @private

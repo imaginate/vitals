@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var EMAIL = /^[a-zA-Z0-9_-+=.]+@[a-zA-Z0-9_-.]+\.[a-z]{2,}([/?].*)?$/;
+var EMAIL = /^[a-zA-Z0-9_\-+=\.]+@[a-zA-Z0-9_\-\.]+\.[a-z]{2,}([/?].*)?$/;
 
 /**
  * @private

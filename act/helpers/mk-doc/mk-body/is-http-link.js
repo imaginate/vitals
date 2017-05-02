@@ -19,7 +19,7 @@
  * @private
  * @const {!RegExp}
  */
-var LINK = /^https?:\/\/[a-zA-Z0-9_-.]+\.[a-zA-Z]{2,}/;
+var LINK = /^https?:\/\/[a-zA-Z0-9_\-\.]+\.[a-zA-Z]{2,}/;
 
 /**
  * @private
