@@ -11,21 +11,98 @@
 
 'use strict';
 
+////////////////////////////////////////////////////////////////////////////////
+// TYPEDEFS
+////////////////////////////////////////////////////////////////////////////////
+
 /**
  * @typedef {function} TestCmdMethod
  */
 
-var log = require('log-ocd')();
-var is = require('./is');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
-log.debug.setFormat({
-  'linesBefore': 2,
-  'linesAfter':  0
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('./is.js');
+
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var LOG = require('log-ocd')();
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFunction = IS.func;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+
+/**
+ * @private
+ * @param {string} header
+ * @param {...*} val
+ * @return {boolean}
+ */
+var logClose = LOG.pass;
+
+logClose.setConfig({
+  'header': true,
+  'throw': false,
+  'exit': false,
+  'msg': false
+});
+
+logClose.setFormat({
+  'linesBefore': 1,
+  'linesAfter': 1
 });
 
 /**
- * @param {boolean} start - start or close
- * @param {string=} name - the name to log
+ * @private
+ * @param {string} header
+ * @param {...*} val
+ * @return {boolean}
+ */
+var logStart = LOG.debug;
+
+logStart.setConfig({
+  'header': true,
+  'throw': false,
+  'exit': false,
+  'msg': false
+});
+
+logStart.setFormat({
+  'linesBefore': 2,
+  'linesAfter': 0
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {boolean} start
+ *   If `true`, it is a start method. If `false`, it is a close method.
+ * @param {string=} name
+ *   The name to log.
  * @param {?function=} callback
  * @return {!TestCmdMethod}
  */
@@ -36,19 +113,35 @@ module.exports = function newTestCmdMethod(start, name, callback) {
   /** @type {string} */
   var msg;
 
-  if ( is.func(name) ) {
+  if ( isFunction(name) ) {
     callback = name;
     name = undefined;
   }
 
   if (name) {
-    logger = start ? log.debug : log.pass;
-    msg = start ? 'Starting' : 'Finished';
-    msg = msg + ' `' + name + '` tests';
+    logger = start
+      ? logStart
+      : logClose;
+    msg = start
+      ? 'Starting'
+      : 'Finished';
+    msg += ' `' + name + '` tests';
   }
 
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var CALLBACK = isFunction(callback);
+
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var LOGGER = isFunction(logger) && !!msg && isString(msg);
+
   return function testCmdMethod() {
-    msg && logger(msg);
-    callback && callback();
+    LOGGER && logger(msg);
+    CALLBACK && callback();
   };
 };
