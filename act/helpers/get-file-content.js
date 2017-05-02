@@ -51,8 +51,9 @@ var isString = IS.string;
  * @private
  * @param {string} filepath
  * @param {string=} encoding
- * @return {(string|!Buffer)} - If no encoding is provided a buffer is returned.
- *   Otherwise a string of the file's content is returned.
+ * @return {(string|!Buffer)}
+ *   If no encoding is provided a buffer is returned. Otherwise a string of the
+ *   file's content is returned.
  */
 var readFile = FS.readFileSync;
 
