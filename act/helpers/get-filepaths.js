@@ -92,6 +92,13 @@ var isNull = IS['null'];
  * @param {*} val
  * @return {boolean}
  */
+var isObject = IS.object;
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
 var isRegExp = IS.regexp;
 
 /**
