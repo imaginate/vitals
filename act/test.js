@@ -2,21 +2,20 @@
  * -----------------------------------------------------------------------------
  * ACT TASK: test
  * -----------------------------------------------------------------------------
- * @file Use `$ act test` to access this file.
+ * @file Use `act test` to access this file.
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
- * Supporting Libraries:
- * @see [act]{@link https://github.com/imaginate/act}
- * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
- *
- * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)
  * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
 
 exports['desc'] = 'run vitals unit tests';
 exports['value'] = 'vitals-submethod';
@@ -52,14 +51,117 @@ exports['methods'] = {
 };
 exports['done'] = false; // turn off automatic done logging
 
-var newBrowserTest = require('./helpers/new-browser-test');
-var newCmdMethod = require('./helpers/new-test-cmd-method');
-var getSections = require('./helpers/get-test-sections');
-var runTestCmd = require('./helpers/run-test-cmd');
-var buildTest = require('./helpers/build-test');
-var is = require('./helpers/is');
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('./helpers/is.js');
+
+/**
+ * @private
+ * @const {!RegExp}
+ */
 var METHOD = /^([a-z]+)[a-zA-Z._]*$/;
+
+/**
+ * @private
+ * @const {string}
+ */
+var REPO_DIR = require('./helpers/get-repo-root.js')();
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFile = IS.file;
+
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('./helpers/resolve-path.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// PRIVATE METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {!Array<string>} sections
+ * @param {function} newTest
+ * @return {function}
+ */
+var buildTest = require('./helpers/build-test.js');
+
+/**
+ * @private
+ * @param {string=} invalid
+ *   The invalid sections.
+ * @return {!Array<string>}
+ */
+var getSections = require('./helpers/get-test-sections.js');
+
+/**
+ * @private
+ * @param {string} section
+ * @param {?function} callback
+ * @return {function}
+ */
+var newBrowserTest = require('./helpers/new-browser-test.js');
+
+/**
+ * @private
+ * @param {string} section
+ * @param {?function=} callback
+ * @return {function}
+ */
+function newSectionTest(section, callback) {
+  return function sectionTest() {
+    testSection(section, callback);
+  };
+}
+
+/**
+ * @private
+ * @param {boolean} start
+ *   If `true`, it is a start method. If `false`, it is a close method.
+ * @param {string=} name
+ *   The name to log.
+ * @param {?function=} callback
+ * @return {!TestCmdMethod}
+ */
+var newTestCmdMethod = require('./helpers/new-test-cmd-method.js');
+
+/**
+ * @private
+ * @param {(?Object|TestCmd)} opts
+ * @param {?TestCmdMethod=} opts.start = `null`
+ * @param {?TestCmdMethod=} opts.close = `null`
+ * @param {string=} opts.reporter = `"specky"`
+ * @param {number=} opts.slow = `5`
+ * @param {string=} opts.setup = `"methods"`
+ * @param {string=} opts.method = `""`
+ *   Test only a specific method.
+ * @param {string=} opts.section = `""`
+ *   Test only a specific section.
+ * @param {string=} opts.submethod = `""`
+ *   Test only a specific submethod.
+ */
+var runTestCmd = require('./helpers/run-test-cmd.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// PUBLIC METHODS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @public
@@ -72,18 +174,21 @@ function testMethod(method) {
   /** @type {string} */
   var name;
 
-  if (!method) throw new Error('missing a method value');
+  if (!method)
+    throw new Error('invalid missing method');
 
-  file = 'src/methods/' + method + '.js';
+  file = method + '.js';
+  file = resolvePath(REPO_DIR, 'src/methods', file);
 
-  if ( !is.file(file) ) throw new RangeError( errMsg('method') );
+  if ( !isFile(file) )
+    throw new RangeError('invalid method (must be a valid vitals method)');
 
   name = 'vitals.' + method;
   runTestCmd({
     'method': method,
-    'setup':  'methods.js',
-    'start':  newCmdMethod(true,  name),
-    'close':  newCmdMethod(false, name)
+    'setup': 'methods.js',
+    'start': newTestCmdMethod(true, name),
+    'close': newTestCmdMethod(false, name)
   });
 }
 
@@ -100,21 +205,26 @@ function testSubmethod(submethod) {
   /** @type {string} */
   var name;
 
-  if (!submethod) throw new Error('missing a submethod value');
+  if (!submethod)
+    throw new Error('invalid missing submethod');
 
-  method = METHOD.test(submethod) && submethod.replace(METHOD, '$1');
+  method = METHOD.test(submethod)
+    ? submethod.replace(METHOD, '$1')
+    : submethod;
 
-  file = 'test/methods/' + method + '/' + submethod + '.js';
+  file = submethod + '.js';
+  file = resolvePath(REPO_DIR, 'test/methods', method, file);
 
-  if ( !is.file(file) ) throw new RangeError( errMsg('submethod') );
+  if ( !isFile(file) )
+    throw new RangeError('invalid submethod (must be a valid vitals submethod)');
 
   name = 'vitals.' + submethod;
   runTestCmd({
     'submethod': submethod,
-    'method':    method,
-    'setup':     'methods.js',
-    'start':     newCmdMethod(true,  name),
-    'close':     newCmdMethod(false, name)
+    'method': method,
+    'setup': 'methods.js',
+    'start': newTestCmdMethod(true, name),
+    'close': newTestCmdMethod(false, name)
   });
 }
 
@@ -125,8 +235,8 @@ function testSubmethod(submethod) {
 function testMethods() {
   runTestCmd({
     'setup': 'methods.js',
-    'start': newCmdMethod(true,  'vitals'),
-    'close': newCmdMethod(false, 'vitals')
+    'start': newTestCmdMethod(true, 'vitals'),
+    'close': newTestCmdMethod(false, 'vitals')
   });
 }
 
@@ -142,17 +252,19 @@ function testSection(section, callback) {
   /** @type {string} */
   var name;
 
-  file = 'src/sections/' + section + '.js';
+  file = section + '.js';
+  file = resolvePath(REPO_DIR, 'src/sections', file);
 
-  if ( !is.file(file) ) throw new RangeError( errMsg('section') );
+  if ( !isFile(file) )
+    throw new RangeError('invalid section (must be a valid vitals section)');
 
   name = 'vitals ' + section;
   runTestCmd({
     'reporter': 'dotty',
-    'section':  section === 'all' ? '' : section,
-    'setup':    'sections/' + section,
-    'start':    newCmdMethod(true,  name),
-    'close':    newCmdMethod(false, name, callback)
+    'section': (section === 'all') ? '' : section,
+    'setup': 'sections/' + section,
+    'start': newTestCmdMethod(true, name),
+    'close': newTestCmdMethod(false, name, callback)
   });
 }
 
@@ -186,25 +298,4 @@ function testBrowser() {
   sections = getSections('fs');
   test = buildTest(sections, newBrowserTest);
   test();
-}
-
-/**
- * @private
- * @param {string} section
- * @param {?function=} callback
- * @return {function}
- */
-function newSectionTest(section, callback) {
-  return function sectionTest() {
-    testSection(section, callback);
-  };
-}
-
-/**
- * @private
- * @param {string} part - "section" or "method"
- * @return {string}
- */
-function errMsg(part) {
-  return 'invalid value (must be a valid vitals ' + part + ')';
 }
