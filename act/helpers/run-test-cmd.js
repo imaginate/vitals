@@ -233,12 +233,16 @@ function mkTestFiles(base, section, deep) {
     return [ base ];
 
   inSection = mkSectionTest(section);
-  allFiles = getFilepaths(base, true);
+  allFiles = getFilepaths(base, {
+    deep: true,
+    full: true
+  });
   files = [];
+
   len = allFiles.length;
   i = -1;
   while ( isLT(++i, len) ) {
-    file = base + allFiles[i];
+    file = allFiles[i];
     if ( inSection(file) )
       files.push(file);
   }
