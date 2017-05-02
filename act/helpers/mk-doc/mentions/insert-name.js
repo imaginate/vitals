@@ -68,10 +68,11 @@ var isValid = require('./is-valid.js');
 
 /**
  * @private
+ * @param {string} ref
  * @param {string} id
  * @return {string}
  */
-var parseID = require('./parse-name-id.js');
+var parseID = require('./parse-id.js');
 
 /**
  * @private
@@ -107,9 +108,9 @@ var trimRef = require('./trim-ref.js');
 function insertName(tag, ref) {
 
   /** @type {string} */
-  var name;
-  /** @type {string} */
   var id;
+
+  id = '';
 
   if ( hasID(ref) ) {
     id = trimRef(ref);
@@ -125,11 +126,7 @@ function insertName(tag, ref) {
   if ( !hasProp(DATA, ref) )
     throw new Error('undefined reference id `' + ref + '`');
 
-  name = DATA[ref];
-  if (!!id)
-    name += parseID(id);
-
-  return name;
+  return DATA[ref] + parseID(ref, id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
