@@ -179,14 +179,13 @@ function getFiles(pwd, full, isValidFilename) {
  * @param {string} prepend
  * @param {function(string): boolean} isValidFilename
  * @param {function(string): boolean} isValidDirname
+ * @param {!Array<string>=} files
  * @return {!Array<string>}
  */
-function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname) {
+function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname, files) {
 
   /** @type {!Array<string>} */
   var paths;
-  /** @type {!Array<string>} */
-  var files;
   /** @type {string} */
   var path;
   /** @type {string} */
@@ -199,7 +198,9 @@ function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname) {
   pwd = cleanDirpath(pwd);
   prepend = prepend && cleanDirpath(prepend);
 
-  files = [];
+  if (!files)
+    files = [];
+
   paths = readPaths(pwd);
   len = paths.length;
   i = -1;
@@ -211,8 +212,10 @@ function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname) {
         files.push(prepend + name);
     }
     else if ( isDirectory(path) ) {
-      if ( isValidDirname(name) )
-        getFilesDeep(path, prepend + name, isValidFilename);
+      if ( isValidDirname(name) ) {
+        name = prepend + name;
+        getFilesDeep(path, name, isValidFilename, isValidDirname, files);
+      }
     }
   }
   return files;
