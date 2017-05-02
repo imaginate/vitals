@@ -39,6 +39,13 @@ var IS = require('../../is.js');
 
 /**
  * @private
+ * @param {string} id
+ * @return {string}
+ */
+var addPrefix = require('./add-prefix.js');
+
+/**
+ * @private
  * @param {string} ref
  * @return {boolean}
  */
@@ -65,13 +72,6 @@ var isString = IS.string;
  * @return {boolean}
  */
 var isValid = require('./is-valid.js');
-
-/**
- * @private
- * @param {string} id
- * @return {string}
- */
-var parseID = require('./parse-url-id.js');
 
 /**
  * @private
@@ -107,9 +107,9 @@ var trimRef = require('./trim-ref.js');
 function insertUrl(tag, ref) {
 
   /** @type {string} */
-  var url;
-  /** @type {string} */
   var id;
+
+  id = '';
 
   if ( hasID(ref) ) {
     id = trimRef(ref);
@@ -125,11 +125,7 @@ function insertUrl(tag, ref) {
   if ( !hasProp(DATA, ref) )
     throw new Error('undefined reference id `' + ref + '`');
 
-  url = DATA[ref];
-  if (!!id)
-    url += parseID(id);
-
-  return url;
+  return DATA[ref] + addPrefix(id);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
