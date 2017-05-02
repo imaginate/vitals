@@ -118,7 +118,7 @@ module.exports = function resolvePath(path) {
   else if ( isString(path) )
     path = _resolvePath(cwd, path);
   else if ( !isStrings(path) )
-    throw new TypeError('invalid `path` type (must be one array of strings or a string)');
+    throw new TypeError('invalid `path` type (must be an array of strings or a string)');
   else {
     if ( !isArray(path) )
       path = sliceArray(path);
