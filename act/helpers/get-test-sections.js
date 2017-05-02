@@ -11,63 +11,153 @@
 
 'use strict';
 
-var is = require('./is');
-var fs = require('fs');
-
-var BASE = './test/setup/sections';
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {string=} invalid - The invalid sections.
+ * @private
+ * @const {!Object<string, function>}
+ */
+var IS = require('./is.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// HELPERS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string} dirpath
+ * @param {?Object|boolean=} opts
+ *   If a `boolean` then it is `opts.deep`.
+ * @param {?boolean=} opts.deep = `false`
+ *   Make a recursive search for valid filenames.
+ * @param {?boolean=} opts.full = `false`
+ *   Return absolute filepaths instead of relative.
+ * @param {?RegExp=} opts.valid
+ *   An alias for `opts.validFiles`.
+ * @param {?RegExp=} opts.invalid
+ *   An alias for `opts.invalidFiles`.
+ * @param {?RegExp=} opts.validFiles = `null`
+ *   A pattern for matching valid filenames. If `null` is given then no check is
+ *   performed.
+ * @param {?RegExp=} opts.invalidFiles = `null`
+ *   A pattern for matching invalid filenames. If `null` is given then no check
+ *   is performed.
+ * @param {?RegExp=} opts.validDirs = `null`
+ *   Only used when `opts.deep` is `true`. A pattern for matching valid dirnames.
+ *   If `null` is given then no check is performed.
+ * @param {?RegExp=} opts.invalidDirs = `/^\.git|\.bak|node_modules|vendor|tmp|logs?$/`
+ *   Only used when `opts.deep` is `true`. A pattern for matching invalid
+ *   dirnames. If `null` is given then no check is performed.
+ * @return {!Array<string>}
+ */
+var getFilepaths = require('./get-filepaths.js');
+
+/**
+ * @private
+ * @param {number} val1
+ * @param {number} val2
+ * @return {boolean}
+ */
+var isLT = IS.lessThan;
+
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('./resolve-path.js');
+
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimFileExtJS = require('./trim-file-ext.js').construct('.js');
+
+////////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @const {string}
+ */
+var REPO_DIR = require('./get-repo-root.js')();
+
+/**
+ * @private
+ * @const {string}
+ */
+var TEST_SECTION_DIR = resolvePath(REPO_DIR, './test/setup/sections');
+
+////////////////////////////////////////////////////////////////////////////////
+// METHODS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @private
+ * @param {string=} invalid
+ * @return {function(string): boolean}
+ */
+function mkSectionCheck(invalid) {
+
+  if (!invalid)
+    return function isValidSection(section) {
+      return true;
+    };
+
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var INVALID = new RegExp(invalid);
+
+  return function isValidSection(section) {
+    return !INVALID.test(section);
+  };
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @public
+ * @param {string=} invalid
+ *   The invalid sections.
  * @return {!Array<string>}
  */
 module.exports = function getTestSections(invalid) {
 
-  /** @type {!Array<string>} */
-  var filepaths;
-  /** @type {string} */
-  var filepath;
+  /** @type {function(string): boolean} */
+  var isValidSection;
   /** @type {!Array<string>} */
   var sections;
   /** @type {string} */
   var section;
-  /** @type {function(string): boolean} */
-  var isValid;
+  /** @type {!Array<string>} */
+  var files;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  filepaths = fs.readdirSync(BASE);
+  isValidSection = mkSectionCheck(invalid);
+  files = getFilepaths(TEST_SECTION_DIR, {
+    deep: false,
+    full: false,
+    valid: /\.js$/
+  });
   sections = [];
-  isValid = mkCheck(invalid);
-  len = filepaths.length;
+
+  len = files.length;
   i = -1;
-  while (++i < len) {
-    filepath = filepaths[i];
-    section  = cutFileExt(filepath);
-    filepath = BASE + '/' + filepath;
-    if ( is.file(filepath) && isValid(section) ) sections.push(section);
+  while ( isLT(++i, len) ) {
+    section = trimFileExtJS(files[i]);
+    if ( isValidSection(section) )
+      sections.push(section);
   }
   return sections;
 };
-
-/**
- * @private
- * @param {string=} invalid
- * @return {function}
- */
-function mkCheck(invalid) {
-  invalid = invalid && new RegExp(invalid);
-  return invalid
-    ? function isValid(section) { return !invalid.test(section); }
-    : function isValid(section) { return true; };
-}
-
-/**
- * @private
- * @param {string} filepath
- * @return {string}
- */
-function cutFileExt(filepath) {
-  return filepath.replace(/\.js$/, '');
-}
