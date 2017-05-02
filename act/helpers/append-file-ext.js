@@ -162,7 +162,7 @@ module.exports.construct = function newAppendFileExt(ext) {
    * @param {string} path
    * @return {string}
    */
-  return appendFileExt(path) {
+  return function appendFileExt(path) {
 
     /** @type {string} */
     var name;

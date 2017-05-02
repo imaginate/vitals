@@ -157,7 +157,7 @@ module.exports.construct = function newTrimFileExt(ext) {
    * @param {string} path
    * @return {string}
    */
-  return trimFileExt(path) {
+  return function trimFileExt(path) {
 
     /** @type {string} */
     var name;
