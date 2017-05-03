@@ -405,36 +405,52 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes properties from an object/array and returns the object.
+   * Removes properties from an `object`, `array`, or `function` and returns the
+   * amended #source.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {...*} vals - If only one val is provided and it is an array it is
-   *   considered an array of vals. Details are as follows (per source type):
-   *   - object source:
-   *     -- leading val is RegExp: This method will delete all properties with
-   *       keys that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *       each val. If any following vals are not a RegExp they are converted
-   *       to a string.
-   *     -- leading val is string: This method will delete all properties where
-   *       `key === val`. All vals are converted to a string.
-   *     -- all other cases: This method will delete all properties where
-   *       `value === val`. 
-   *   - array source:
-   *     -- all vals are numbers: This method will splice from the source each
-   *       corresponding index.
-   *     -- all other cases: This method will splice from the source all
-   *       properties where `value === val`.
-   * @return {!(Object|function|Array)}
+   * @param {(!Object|function|!Array)} source
+   * @param {...*} val
+   *   If only one `array` #val is provided, it is considered an `array` of
+   *   values. All other details are as follows (per #source type):
+   *   - *`!Object|function`*!$
+   *     - **The leading #val is a `RegExp`**!$
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a @has#pattern test) any #val. If a #val is not a
+   *       `RegExp`, it is converted into a `string` before a test is ran.
+   *     - **The leading #val is a `string`**!$
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a [strict equality][equal] test) any #val. If a #val is
+   *       not a `string`, it is converted into a `string` before a comparison
+   *       is made.
+   *     - **All other situations**!$
+   *       This method will [delete][delete] all properties with a value that
+   *       matches (via a [strict equality][equal] test) any #val.
+   *   - *`!Array`*!$
+   *     - **Every #val is a `number`**!$
+   *       This method will [splice][splice] from the #source each property with
+   *       an index that matches (via a [strict equality][equal] test) any #val.
+   *     - **All other situations**!$
+   *       This method will [splice][splice] from the #source all properties
+   *       with a value that matches (via a [strict equality][equal] test) any
+   *       #val.
+   * @return {(!Object|function|!Array)}
+   *   The amended #source.
    */
-  cut.properties = function cutProperties(source, vals) {
+  cut.properties = function cutProperties(source, val) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'properties');
-    if (arguments.length < 2) throw _error('No val defined', 'properties');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'properties');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'properties');
 
-    source = _is.args(source) ? sliceArr(source) : source;
-    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-    return _is.arr(vals) ? _cutProps(source, vals) : _cutProp(source, vals);
+    if ( _is.args(source) )
+      source = sliceArr(source);
+    if (arguments.length > 2)
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _cutProps(source, val)
+      : _cutProp(source, val);
   };
   // define shorthand
   cut.props = cut.properties;
