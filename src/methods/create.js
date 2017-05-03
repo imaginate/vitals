@@ -112,19 +112,21 @@ var create = (function createPrivateScope() {
 
   /**
    * @private
-   * @param {Object} proto
+   * @param {?Object} proto
    * @return {!Object}
    */
-  var _ObjectCreate = Object.create || function ObjectCreate(proto) {
+  var _ObjectCreate = 'create' in Object && _is.func(Object.create)
+    ? Object.create
+    : function ObjectCreate(proto) {
 
-    /** @type {!Object} */
-    var obj;
+        /** @type {!Object} */
+        var obj;
 
-    _Object.prototype = proto;
-    obj = new _Object();
-    _Object.prototype = null;
-    return obj;
-  };
+        _Object.prototype = proto;
+        obj = new _Object();
+        _Object.prototype = null;
+        return obj;
+      };
 
   /**
    * @private
