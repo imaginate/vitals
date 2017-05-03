@@ -52,6 +52,7 @@ var cut = (function cutPrivateScope() {
    * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
    * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+   * @ref [type]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
    * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
@@ -320,22 +321,27 @@ var cut = (function cutPrivateScope() {
   cut.i = cut.index;
 
   /**
-   * Removes all properties from an object/array with a value that matches a
-   *   given type and returns the object. This method uses [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
-   *   to complete type checks.
+   * Removes properties by their value's [data type][type] from an `object`,
+   * `function`, or `array` and returns the amended #source. @is#main is used
+   * to complete the type checks.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {string} type - The type to check for. Refer to [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
-   *   for acceptable options.
-   * @return {!(Object|function|Array)}
+   * @param {(!Object|function|!Array)} source
+   * @param {string} type
+   *   All properties with a value that match #type (via a @is#main test) will
+   *   be [deleted][delete]. Refer to @is#main for all valid #type options.
+   * @return {(!Object|function|!Array)}
+   *   The amended #source.
    */
   cut.type = function cutType(source, type) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'type');
-    if ( !_is.str(type)    ) throw _error.type('type',   'type');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'type');
+    if ( !_is.str(type) )
+      throw _error.type('type', 'type');
 
-    source = _is.args(source) ? sliceArr(source) : source;
+    if ( _is.args(source) )
+      source = sliceArr(source);
 
     if ( _is.empty(source) ) {
       is(type, ''); // run once to catch invalid types
