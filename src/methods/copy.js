@@ -98,21 +98,25 @@ var copy = (function copyPrivateScope() {
   copy.obj = copy.object;
 
   /**
-   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) an array.
-   *   Note that [vitals.slice.array](https://github.com/imaginate/vitals/wiki/vitals.slice#slicearray)
-   *   only copies the indexed properties while [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray)
-   *   copies all of the properties.
+   * Makes a [copy][clone] of an `array` or array-like `object`. Note that
+   * @slice#array only copies the indexed properties while @copy#array copies
+   * all of the properties.
    *
    * @public
-   * @param {!Object} obj
-   * @param {boolean=} deep
+   * @param {(!Array|!Object)} obj
+   *   Must be an `array` or array-like `object`.
+   * @param {boolean=} deep = `false`
+   *   Whether to recursively copy property values.
    * @return {!Array}
    */
   copy.array = function copyArray(obj, deep) {
 
-    if ( !_is.obj(obj)        ) throw _error.type('obj',        'array');
-    if ( !_is.num(obj.length) ) throw _error.type('obj.length', 'array');
-    if ( !_is.un.bool(deep)   ) throw _error.type('deep',       'array');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'array');
+    if ( !_is.num(obj.length) )
+      throw _error.type('obj.length', 'array');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep', 'array');
 
     return _copyArr(obj, deep);
   };
