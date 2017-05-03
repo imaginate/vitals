@@ -43,10 +43,12 @@ var copy = (function copyPrivateScope() {
 
   /**
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
-   * @ref [length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   * @ref [es3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
-   * @ref [es5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
+   * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
+   * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
+   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+   * @ref [regex-global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
    */
 
   /**
@@ -134,8 +136,8 @@ var copy = (function copyPrivateScope() {
    * @public
    * @param {!RegExp} regex
    * @param {boolean=} forceGlobal = `undefined`
-   *   Override the [global setting][global] for the returned `RegExp`. If
-   *   `undefined` the original value from #regex is used.
+   *   Override the [global setting][regex-global] for the returned `RegExp`.
+   *   If `undefined` the original value from #regex is used.
    * @return {!RegExp}
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
@@ -153,10 +155,11 @@ var copy = (function copyPrivateScope() {
 
   /**
    * Makes a [copy][clone] of a `function`. Note that all properties will be
-   * transferred except for the [length property][length] which will be set to
-   * `0`. Also note that `vitals.copy.function` is not valid in [ES3][es3] and
-   * even some [ES5][es5] browser environments. Use `vitals.copy.func` for
-   * browser safety.
+   * transferred except for the [length property][func-length] which will be set
+   * to `0` and the [name property][func-name] which will be set to `"funcCopy"`
+   * for [unminified][minify] `vitals` sources. Also note that
+   * `vitals.copy.function` is not valid in [ES3][ecma3] and some [ES5][ecma5]
+   * browser environments. Use `vitals.copy.func` for browser safety.
    *
    * @public
    * @param {function} func
@@ -191,7 +194,9 @@ var copy = (function copyPrivateScope() {
    * @return {!Object}
    */
   function _copyObj(obj, deep) {
-    return deep ? _mergeDeep({}, obj) : merge({}, obj);
+    return deep
+      ? _mergeDeep({}, obj)
+      : merge({}, obj);
   }
 
   /**
@@ -206,7 +211,9 @@ var copy = (function copyPrivateScope() {
     var arr;
 
     arr = new Array(obj.length);
-    return deep ? _mergeDeep(arr, obj) : merge(arr, obj);
+    return deep
+      ? _mergeDeep(arr, obj)
+      : merge(arr, obj);
   }
 
   /**
@@ -225,7 +232,9 @@ var copy = (function copyPrivateScope() {
     source = _escape(regex.source);
     flags = _setupFlags(regex, forceGlobal);
 
-    return flags ? new RegExp(source, flags) : new RegExp(source);
+    return flags
+      ? new RegExp(source, flags)
+      : new RegExp(source);
   }
 
   /**
@@ -237,12 +246,14 @@ var copy = (function copyPrivateScope() {
   function _copyFunc(func, deep) {
 
     /** @type {function} */
-    var copiedFunc;
+    var funcCopy;
 
-    copiedFunc = function copiedFunction() {
+    funcCopy = function funcCopy() {
       return func.apply(null, arguments);
     };
-    return deep ? _mergeDeep(copiedFunc, func) : merge(copiedFunc, func);
+    return deep
+      ? _mergeDeep(funcCopy, func)
+      : merge(funcCopy, func);
   }
 
   //////////////////////////////////////////////////////////
@@ -258,23 +269,40 @@ var copy = (function copyPrivateScope() {
   var _escape = (function() {
 
     /** @type {?RegExp} */
-    var pattern = /\n/.source !== '\\n' ? /\\/g : null;
+    var pattern;
 
+    pattern = /\n/.source !== '\\n'
+      ? /\\/g
+      : null;
     return pattern
-      ? function _escape(source) { return source.replace(pattern, '\\\\'); }
-      : function _escape(source) { return source; };
+      ? function _escape(source) {
+          return source.replace(pattern, '\\\\');
+        }
+      : function _escape(source) {
+          return source;
+        };
   })();
 
   /**
    * @private
-   * @type {!Object}
-   * @const
+   * @const {!Object}
    */
-  var FLAGS = merge({
-    ignoreCase: 'i',
-    multiline:  'm',
-    global:     'g'
-  }, 'sticky' in RegExp.prototype ? { sticky: 'y' } : null);
+  var FLAGS = (function() {
+
+    /** @type {!Object} */
+    var flags;
+
+    flags = {
+      'ignoreCase': 'i',
+      'multiline': 'm',
+      'global': 'g'
+    };
+
+    if ('sticky' in RegExp.prototype)
+      flags.sticky = 'y';
+
+    return flags;
+  })();
 
   /**
    * @private
@@ -291,12 +319,12 @@ var copy = (function copyPrivateScope() {
 
     flags = '';
     for (key in FLAGS) {
-      if ( own(FLAGS, key) && regex[key] ) {
+      if ( own(FLAGS, key) && regex[key] )
         flags += FLAGS[key];
-      }
     }
 
-    if ( _is.undefined(forceGlobal) ) return flags;
+    if ( _is.undefined(forceGlobal) )
+      return flags;
 
     return inStr(flags, 'g')
       ? forceGlobal
@@ -313,9 +341,9 @@ var copy = (function copyPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} dest
-   * @param {!(Object|function)} source
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} dest
+   * @param {(!Object|function)} source
+   * @return {(!Object|function)}
    */
   function _mergeDeep(dest, source) {
 
@@ -323,9 +351,8 @@ var copy = (function copyPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) ) {
+      if ( own(source, key) )
         dest[key] = copy(source[key], true);
-      }
     }
     return dest;
   }
