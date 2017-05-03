@@ -52,7 +52,7 @@ var amend = (function amendPrivateScope() {
    *
    * @public
    * @param {!Object} obj
-   * @param {!(Object<string, *>|Array<string>|string)} props
+   * @param {(!Object<string, *>|!Array<string>|string)} props
    *   The details are as follows (per #props type):
    *   - *`!Object<string, *>`*!$
    *     For each `key => value` pair use the property's name for the `key`, and
@@ -160,42 +160,52 @@ var amend = (function amendPrivateScope() {
   }
 
   /**
-   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
-   *   that only updates the descriptors of existing properties.
+   * A shortcut for [Object.defineProperties][define-props] that only updates
+   * the descriptors of existing properties.
    *
    * @public
    * @param {!Object} obj
-   * @param {!(Object<string, !Object>|Array<string>|string)} props - Details
-   *   for the props param are as follows (per props type):
-   *   - object: Must be `propName => propDescriptor` pairs.
-   *   - array:  An array of key names to update.
-   *   - string: Converted to an array of key names using one of the following
-   *     values as the separator (values listed in order of rank):
-   *     -- `", "`
-   *     -- `","`
-   *     -- `"|"`
-   *     -- `" "`
-   * @param {!Object=} descriptor - Only use (and required) if an array or
-   *   string of keys is given for the props param.
+   * @param {(!Object<string, !Object>|!Array<string>|string)} props
+   *   The details are as follows (per #props type):
+   *   - *`!Object<string, !Object>`*!$
+   *     For each `key => value` pair use the property's name for the `key`, and
+   *     the property's [descriptor][descriptor] for its `value`.
+   *   - *`!Array<string>`*!$
+   *     For each element of the `array` define a property name.
+   *   - *`string`*!$
+   *     Should be a list of property names. It gets converted to an `array` of
+   *     property names using one of the following values as the separator
+   *     (values listed in order of rank):
+   *     - `", "`
+   *     - `","`
+   *     - `"|"`
+   *     - `" "`
+   * @param {!Object=} descriptor
+   *   Only define #descriptor (and then required) if an `array` or `string` of
+   *   property names is given for #props.
    * @return {!Object}
    */
   amend.config = function amendConfig(obj, props, descriptor) {
 
-    if ( !_is.obj(obj) ) throw _error.type('obj', 'config');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'config');
 
-    if ( _is.str(props) ) props = splitKeys(props);
+    if ( _is.str(props) )
+      props = splitKeys(props);
 
-    if ( !_is.obj(props) ) throw _error.type('props', 'config');
+    if ( !_is.obj(props) )
+      throw _error.type('props', 'config');
 
     if ( _is.arr(props) ) {
-      if ( !_is.obj(descriptor) ) throw _error.type('descriptor', 'config');
+      if ( !_is.obj(descriptor) )
+        throw _error.type('descriptor', 'config');
       props = _setupConfigs(props, descriptor);
     }
-    else if ( !is('objMap', props) ) throw _error.type('props', 'config');
+    else if ( !is('objMap', props) )
+      throw _error.type('props', 'config');
 
-    if ( !_hasKeys(obj, props) ) {
+    if ( !_hasKeys(obj, props) )
       throw _error('A given prop was not defined in the obj', 'config');
-    }
 
     return _amendConfigs(obj, props);
   };
