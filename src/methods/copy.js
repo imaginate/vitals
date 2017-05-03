@@ -46,15 +46,16 @@ var copy = (function copyPrivateScope() {
    */
 
   /**
-   * Make a [copy][clone] of any value. Note that for `array` values @slice only
+   * Makes a [copy][clone] of any value. Note that for `array` values @slice 
    * only copies the indexed properties while @copy copies all of the
    * properties.
    *
    * @public
    * @param {*} val
    *   The value to copy.
-   * @param {boolean=} deep
-   *   Whether to recursively copy property values for objects or functions.
+   * @param {boolean=} deep = `false`
+   *   Whether to recursively copy property values for an `object` or
+   *   `function`.
    * @return {*}
    */
   function copy(val, deep) {
@@ -76,17 +77,20 @@ var copy = (function copyPrivateScope() {
   }
 
   /**
-   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) an object.
+   * Makes a [copy][clone] of an `object`.
    *
    * @public
    * @param {!Object} obj
-   * @param {boolean=} deep
+   * @param {boolean=} deep = `false`
+   *   Whether to recursively copy property values.
    * @return {!Object}
    */
   copy.object = function copyObject(obj, deep) {
 
-    if ( !_is.obj(obj)      ) throw _error.type('obj',  'object');
-    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'object');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep', 'object');
 
     return _copyObj(obj, deep);
   };
