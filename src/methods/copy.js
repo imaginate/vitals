@@ -300,6 +300,8 @@ var copy = (function copyPrivateScope() {
 
     if ('sticky' in RegExp.prototype)
       flags.sticky = 'y';
+    if ('unicode' in RegExp.prototype)
+      flags.unicode = 'u';
 
     return flags;
   })();
