@@ -261,18 +261,24 @@ var cut = (function cutPrivateScope() {
   cut.prop = cut.property;
 
   /**
-   * Removes a property by key from an object and returns the object.
+   * Removes a property by key name from an `object` or `function` and returns
+   * the amended #source.
    *
    * @public
-   * @param {!(Object|function)} source
-   * @param {*} key - If the key is not a string it is converted to a string.
-   *   If the key exists in the source object it is deleted.
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} source
+   * @param {*} key
+   *   If a property exists in #source with #key for its key name, it is
+   *   [deleted][delete]. If #key is not a `string`, it is converted to a
+   *   `string` before the #source is checked for #key.
+   * @return {(!Object|function)}
+   *   The amended #source.
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'key');
-    if (arguments.length < 2) throw _error('No key defined', 'key');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'key');
+    if (arguments.length < 2)
+      throw _error('No key defined', 'key');
 
     return _cutKey(source, key);
   };
