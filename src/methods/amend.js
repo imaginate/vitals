@@ -290,8 +290,8 @@ var amend = (function amendPrivateScope() {
   amend.prop = amend.property;
 
   /**
-   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
-   *   that only updates the descriptor of an existing property.
+   * A shortcut for [Object.defineProperty][define-prop] that only updates the
+   * [descriptor][descriptor] of an existing property.
    *
    * @public
    * @param {!Object} obj
@@ -301,13 +301,15 @@ var amend = (function amendPrivateScope() {
    */
   amend.property.config = function amendPropertyConfig(obj, key, descriptor) {
 
-    if ( !_is.obj(obj)       ) throw _error.type('obj',       'property.config');
-    if ( !_is.str(key)       ) throw _error.type('key',       'property.config');
-    if ( !_is.obj(descriptor)) throw _error.type('descriptor','property.config');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'property.config');
+    if ( !_is.str(key) )
+      throw _error.type('key', 'property.config');
+    if ( !_is.obj(descriptor) )
+      throw _error.type('descriptor', 'property.config');
 
-    if ( !own(obj, key) ) {
+    if ( !own(obj, key) )
       throw _error('The key was not defined in the obj', 'property.config');
-    }
 
     return _amendConfig(obj, key, descriptor);
   };
