@@ -530,23 +530,38 @@ var cut = (function cutPrivateScope() {
   cut.ii = cut.indexes;
 
   /**
-   * Removes all properties from an object/array with a value and returns the
-   *   object.
+   * Removes properties by value from an `object`, `function`, or `array` and
+   * returns the amended #source.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {...*} vals - If only one val is provided and it is an array it is
-   *   considered an array of vals.
-   * @return {!(Object|function|Array)}
+   * @param {(!Object|function|!Array)} source
+   * @param {...*} val
+   *   If only one `array` #val is provided, it is considered an `array` of
+   *   values. All other details are as follows (per #source type):
+   *   - *`!Object|function`*!$
+   *     This method will [delete][delete] all properties with a value that
+   *     matches (via a [strict equality][equal] test) any #val.
+   *   - *`!Array`*!$
+   *     This method will [splice][splice] from the #source all properties
+   *     with a value that matches (via a [strict equality][equal] test) any
+   *     #val.
+   * @return {(!Object|function|!Array)}
+   *   The amended #source.
    */
-  cut.values = function cutValues(source, vals) {
+  cut.values = function cutValues(source, val) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'value');
-    if (arguments.length < 2) throw _error('No val defined', 'value');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'value');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? sliceArr(source) : source;
-    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-    return _is.arr(vals) ? _cutVals(source, vals) : _cutVal(source, vals);
+    if ( _is.args(source) )
+      source = sliceArr(source);
+    if (arguments.length > 2)
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _cutVals(source, val)
+      : _cutVal(source, val);
   };
   // define shorthand
   cut.vals = cut.values;
