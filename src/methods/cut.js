@@ -567,24 +567,30 @@ var cut = (function cutPrivateScope() {
   cut.vals = cut.values;
 
   /**
-   * Removes patterns from a string and returns the amended string.
+   * Removes patterns from a `string` and returns the amended #source.
    *
    * @public
    * @param {string} source
-   * @param {...*} patterns - If only one pattern is provided and it is an array
-   *   it is considered an array of patterns. If a pattern is not a string or
-   *   RegExp it is converted to a string.
+   * @param {...*} pattern
+   *   If only one `array` #pattern is provided, it is considered an `array` of
+   *   patterns. Each `substring` of characters that matches any #pattern is
+   *   removed from the #source. If a #pattern is not a `RegExp` or `string`, it
+   *   is converted into a `string` before checking the #source for any matches.
    * @return {string}
+   *   The amended #source.
    */
-  cut.patterns = function cutPatterns(source, patterns) {
+  cut.patterns = function cutPatterns(source, pattern) {
 
-    if ( !_is.str(source) ) throw _error.type('source', 'patterns');
-    if (arguments.length < 2) throw _error('No pattern defined', 'patterns');
+    if ( !_is.str(source) )
+      throw _error.type('source', 'patterns');
+    if (arguments.length < 2)
+      throw _error('No pattern defined', 'patterns');
 
-    patterns = arguments.length > 2 ? sliceArr(arguments, 1) : patterns;
-    return _is.arr(patterns)
-      ? _cutPatterns(source, patterns)
-      : _cutPattern(source, patterns);
+    if (arguments.length > 2)
+      pattern = sliceArr(arguments, 1);
+    return _is.arr(pattern)
+      ? _cutPatterns(source, pattern)
+      : _cutPattern(source, pattern);
   };
 
   //////////////////////////////////////////////////////////
