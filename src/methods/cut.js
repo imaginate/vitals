@@ -456,22 +456,31 @@ var cut = (function cutPrivateScope() {
   cut.props = cut.properties;
 
   /**
-   * Removes properties by key from an object and returns the object.
+   * Removes properties by key name from an `object` or `function` and returns
+   * the amended #source.
    *
    * @public
-   * @param {!(Object|function)} source
-   * @param {...*} keys - If only one key is provided and it is an array it is
-   *   considered an array of keys. If a key is not a string it is converted to
-   *   a string. If the key exists in the source object it is deleted.
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} source
+   * @param {...*} key
+   *   If only one `array` #key is provided, it is considered an `array` of
+   *   keys. If a property exists in #source with any #key for its key name, it
+   *   is [deleted][delete]. If a #key is not a `string`, it is converted into a
+   *   `string` before the #source is checked.
+   * @return {(!Object|function)}
+   *   The amended #source.
    */
-  cut.keys = function cutKeys(source, keys) {
+  cut.keys = function cutKeys(source, key) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
-    if (arguments.length < 2) throw _error('No key defined', 'keys');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'keys');
+    if (arguments.length < 2)
+      throw _error('No key defined', 'keys');
 
-    keys = arguments.length > 2 ? sliceArr(arguments, 1) : keys;
-    return _is.arr(keys) ? _cutKeys(source, keys) : _cutKey(source, keys);
+    if (arguments.length > 2)
+      key = sliceArr(arguments, 1);
+    return _is.arr(key)
+      ? _cutKeys(source, key)
+      : _cutKey(source, key);
   };
 
   /**
