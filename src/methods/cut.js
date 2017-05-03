@@ -599,9 +599,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {*} val
-   * @return {!(Object|function|Array)}
+   * @return {(!Object|function|!Array)}
    */
   function _cutProp(source, val) {
     return _is.arr(source)
@@ -615,9 +615,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {!Array<*>} vals
-   * @return {!(Object|function|Array)}
+   * @return {(!Object|function|!Array)}
    */
   function _cutProps(source, vals) {
     return _is.arr(source)
@@ -631,9 +631,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {*} key
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _cutKey(source, key) {
     delete source[key];
@@ -642,9 +642,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {!Array} keys
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _cutKeys(source, keys) {
 
@@ -655,7 +655,8 @@ var cut = (function cutPrivateScope() {
 
     len = keys.length;
     i = -1;
-    while (++i < len) delete source[ keys[i] ];
+    while (++i < len)
+      delete source[ keys[i] ];
     return source;
   }
 
@@ -672,24 +673,29 @@ var cut = (function cutPrivateScope() {
     var len;
 
     len = source.length;
-    key = key < 0 ? len + key : key;
+    if (key < 0)
+      key = len + key;
 
-    if (key >= len) return source;
+    if (key >= len)
+      return source;
 
     if ( _is.undefined(toKey) ) {
-      if (key < 0) return source;
+      if (key < 0)
+        return source;
       source.splice(key, 1);
       return source;
     }
 
-    key = key < 0 ? 0 : key;
+    if (key < 0)
+      key = 0;
     toKey = toKey > len
       ? len
       : toKey < 0
         ? len + toKey
         : toKey;
 
-    if (key >= toKey) return source;
+    if (key >= toKey)
+      return source;
 
     source.splice(key, toKey - key);
     return source;
@@ -707,9 +713,9 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {string} type
-   * @return {!(Object|function|Array)}
+   * @return {(!Object|function|!Array)}
    */
   function _cutType(source, type) {
     return _is.arr(source)
@@ -719,19 +725,21 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {*} val
-   * @return {!(Object|function|Array)}
+   * @return {(!Object|function|!Array)}
    */
   function _cutVal(source, val) {
-    return _is.arr(source) ? _spliceVal(source, val) : _deleteVal(source, val);
+    return _is.arr(source)
+      ? _spliceVal(source, val)
+      : _deleteVal(source, val);
   }
 
   /**
    * @private
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {!Array<*>} vals
-   * @return {!(Object|function|Array)}
+   * @return {(!Object|function|!Array)}
    */
   function _cutVals(source, vals) {
     return _is.arr(source)
@@ -769,9 +777,8 @@ var cut = (function cutPrivateScope() {
 
     len = patterns.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       source = _cutPattern(source, patterns[i]);
-    }
     return source;
   }
 
@@ -781,37 +788,38 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {*} key
    * @param {boolean=} useMatch
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _deleteKey(source, key, useMatch) {
 
     /** @type {!RegExp} */
     var pattern;
 
-    useMatch = _is.undefined(useMatch) ? _is.regex(key) : useMatch;
+    if ( _is.undefined(useMatch) )
+      useMatch = _is.regex(key);
 
     if (!useMatch) {
-      if ( own(source, key) ) delete source[key];
+      if ( own(source, key) )
+        delete source[key];
       return source;
     }
 
     pattern = key;
     for (key in source) {
-      if ( own(source, key) && match(key, pattern) ) {
+      if ( own(source, key) && match(key, pattern) )
         delete source[key];
-      }
     }
     return source;
   }
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {!Array} keys
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _deleteKeys(source, keys) {
 
@@ -825,17 +833,16 @@ var cut = (function cutPrivateScope() {
     useMatch = _is.regex( keys[0] );
     len = keys.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       source = _deleteKey(source, keys[i], useMatch);
-    }
     return source;
   }
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _deleteVal(source, val) {
 
@@ -843,9 +850,8 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) && source[key] === val ) {
+      if ( own(source, key) && source[key] === val )
         delete source[key];
-      }
     }
     return source;
   }
@@ -862,16 +868,17 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) && is(type, source[key]) ) delete source[key];
+      if ( own(source, key) && is(type, source[key]) )
+        delete source[key];
     }
     return source;
   }
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {!Array} vals
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _deleteVals(source, vals) {
 
@@ -882,9 +889,8 @@ var cut = (function cutPrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       source = _deleteVal(source, vals[i]);
-    }
     return source;
   }
 
@@ -904,9 +910,11 @@ var cut = (function cutPrivateScope() {
     var len;
 
     len = source.length;
-    key = key < 0 ? len + key : key;
+    if (key < 0)
+      key = len + key;
 
-    if (key < 0 || key >= len) return source;
+    if (key < 0 || key >= len)
+      return source;
 
     source.splice(key, 1);
     return source;
@@ -929,9 +937,11 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (!source.length || !keys.length) return source;
+    if (!source.length || !keys.length)
+      return source;
 
-    if (keys.length < 2) return _spliceKey(source, keys[0]);
+    if (keys.length < 2)
+      return _spliceKey(source, keys[0]);
 
     sorted = _sortIndexes(keys, source.length);
     i = sorted.first.length;
@@ -956,7 +966,8 @@ var cut = (function cutPrivateScope() {
 
     i = source.length;
     while (i--) {
-      if (source[i] === val) source.splice(i, 1);
+      if (source[i] === val)
+        source.splice(i, 1);
     }
     return source;
   }
@@ -974,7 +985,8 @@ var cut = (function cutPrivateScope() {
 
     i = source.length;
     while (i--) {
-      if ( is(type, source[i]) ) source.splice(i, 1);
+      if ( is(type, source[i]) )
+        source.splice(i, 1);
     }
     return source;
   }
@@ -1017,10 +1029,10 @@ var cut = (function cutPrivateScope() {
 
   /**
    * @private
-   * @param {!(Object|function)} source
+   * @param {(!Object|function)} source
    * @param {function} filter
-   * @param {Object=} thisArg
-   * @return {!(Object|function)}
+   * @param {?Object=} thisArg
+   * @return {(!Object|function)}
    */
   function _filterObj(source, filter, thisArg) {
 
@@ -1029,28 +1041,36 @@ var cut = (function cutPrivateScope() {
     /** @type {string} */
     var key;
 
-    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    obj = filter.length > 2 ? copy(source) : source;
+    if ( !_is.undefined(thisArg) )
+      filter = _bind(filter, thisArg);
+    obj = filter.length > 2
+      ? copy(source)
+      : source;
     switch (filter.length) {
       case 0:
-      for (key in obj) {
-        if ( own(obj, key) && !filter() ) delete source[key];
-      }
-      break;
+        for (key in obj) {
+          if ( own(obj, key) && !filter() )
+            delete source[key];
+        }
+        break;
       case 1:
-      for (key in obj) {
-        if ( own(obj, key) && !filter(obj[key]) ) delete source[key];
-      }
-      break;
+        for (key in obj) {
+          if ( own(obj, key) && !filter(obj[key]) )
+            delete source[key];
+        }
+        break;
       case 2:
-      for (key in obj) {
-        if ( own(obj, key) && !filter(obj[key], key) ) delete source[key];
-      }
-      break;
+        for (key in obj) {
+          if ( own(obj, key) && !filter(obj[key], key) )
+            delete source[key];
+        }
+        break;
       default:
-      for (key in obj) {
-        if ( own(obj, key) && !filter(obj[key], key, obj) ) delete source[key];
-      }
+        for (key in obj) {
+          if ( own(obj, key) && !filter(obj[key], key, obj) )
+            delete source[key];
+        }
+        break;
     }
     return source;
   }
@@ -1059,7 +1079,7 @@ var cut = (function cutPrivateScope() {
    * @private
    * @param {!Array} source
    * @param {function} filter
-   * @param {Object=} thisArg
+   * @param {?Object=} thisArg
    * @return {!Array}
    */
   function _filterArr(source, filter, thisArg) {
@@ -1069,14 +1089,37 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    filter = _is.undefined(thisArg) ? filter : _bind(filter, thisArg);
-    arr = filter.length > 2 ? copy.arr(source) : source;
+    if ( !_is.undefined(thisArg) )
+      filter = _bind(filter, thisArg);
+    arr = filter.length > 2
+      ? copy.arr(source)
+      : source;
     i = arr.length;
     switch (filter.length) {
-      case 0:  while (i--) filter() || source.splice(i, 1);              break;
-      case 1:  while (i--) filter(arr[i]) || source.splice(i, 1);        break;
-      case 2:  while (i--) filter(arr[i], i) || source.splice(i, 1);     break;
-      default: while (i--) filter(arr[i], i, arr) || source.splice(i, 1);
+      case 0:
+        while (i--) {
+          if ( !filter() )
+            source.splice(i, 1);
+        }
+        break;
+      case 1:
+        while (i--) {
+          if ( !filter(arr[i]) )
+            source.splice(i, 1);
+        }
+        break;
+      case 2:
+        while (i--) {
+          if ( !filter(arr[i], i) )
+            source.splice(i, 1);
+        }
+        break;
+      default:
+        while (i--) {
+          if ( !filter(arr[i], i, arr) )
+            source.splice(i, 1);
+        }
+        break;
     }
     return source;
   }
@@ -1086,7 +1129,7 @@ var cut = (function cutPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * @typedef {!{
+   * @typedef {{
    *   first: !Array<number>,
    *   last:  !Array<number>
    * }} SortedIndexes
@@ -1122,15 +1165,15 @@ var cut = (function cutPrivateScope() {
 
       // push 1st index
       index = parse(indexes[i], sourceLen);
-      while (index === -1 && ++i < len) {
+      while (index === -1 && ++i < len)
         index = parse(indexes[i], sourceLen);
-      }
       push(index);
 
       // push remaining indexes
       while (++i < len) {
         index = parse(indexes[i], sourceLen);
-        if (index !== -1) sort(index, 0, last.length);
+        if (index !== -1)
+          sort(index, 0, last.length);
       }
 
       return result();
@@ -1165,7 +1208,7 @@ var cut = (function cutPrivateScope() {
      */
     function setup() {
       first = [];
-      last  = [];
+      last = [];
     }
 
     /**
@@ -1183,11 +1226,15 @@ var cut = (function cutPrivateScope() {
      * @private
      * @param {number} index
      * @param {number} len
-     * @return {number} If invalid index is given -1 is returned.
+     * @return {number}
+     *   If invalid #index is given `-1` is returned.
      */
     function parse(index, len) {
-      index = index < 0 ? len + index : index;
-      return index < 0 || index >= len ? -1 : index;
+      if (index < 0)
+        index = len + index;
+      return index < 0 || index >= len
+        ? -1
+        : index;
     }
 
     /**
@@ -1243,8 +1290,10 @@ var cut = (function cutPrivateScope() {
 
       mid = (left + right) >>> 1;
       min = first[mid];
-      if (index < min) comparePrev(index, left, mid);
-      else if (index > last[mid]) compareNext(index, mid, right);
+      if (index < min)
+        comparePrev(index, left, mid);
+      else if (index > last[mid])
+        compareNext(index, mid, right);
     }
 
     /**
@@ -1264,8 +1313,10 @@ var cut = (function cutPrivateScope() {
 
       min = first[mid];
       if (!mid) {
-        if (index === --min) first[mid] = index;
-        else unshift(index);
+        if (index === --min)
+          first[mid] = index;
+        else
+          unshift(index);
         return;
       }
       prev = mid - 1;
@@ -1275,13 +1326,17 @@ var cut = (function cutPrivateScope() {
           last[prev] = last[mid];
           remove(mid);
         }
-        else first[mid] = index;
+        else
+          first[mid] = index;
       }
       else if (index > max) {
-        if (index === ++max) last[prev] = index;
-        else insert(index, mid);
+        if (index === ++max)
+          last[prev] = index;
+        else
+          insert(index, mid);
       }
-      else sort(index, left, prev);
+      else
+        sort(index, left, prev);
     }
 
     /**
@@ -1302,8 +1357,10 @@ var cut = (function cutPrivateScope() {
       next = mid + 1;
       max = last[mid];
       if (next === last.length) {
-        if (index === ++max) last[mid] = index;
-        else push(index);
+        if (index === ++max)
+          last[mid] = index;
+        else
+          push(index);
         return;
       }
       min = first[next];
@@ -1312,13 +1369,17 @@ var cut = (function cutPrivateScope() {
           last[mid] = last[next];
           remove(next);
         }
-        else last[mid] = index;
+        else
+          last[mid] = index;
       }
       else if (index < min) {
-        if (index === --min) first[next] = index;
-        else insert(index, next);
+        if (index === --min)
+          first[next] = index;
+        else
+          insert(index, next);
       }
-      else sort(index, next, right);
+      else
+        sort(index, next, right);
     }
 
     // END OF INDEX SORT PRIVATE SCOPE
@@ -1332,17 +1393,23 @@ var cut = (function cutPrivateScope() {
   /**
    * @private
    * @param {function} func
-   * @param {Object} thisArg
+   * @param {?Object} thisArg
    * @return {function} 
    */
   function _bind(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function filter() { return func.call(thisArg); };
+        return function filter() {
+          return func.call(thisArg);
+        };
       case 1:
-      return function filter(val) { return func.call(thisArg, val); };
+        return function filter(val) {
+          return func.call(thisArg, val);
+        };
       case 2:
-      return function filter(val, key) { return func.call(thisArg, val, key); };
+        return function filter(val, key) {
+          return func.call(thisArg, val, key);
+        };
     }
     return function filter(val, key, obj) {
       return func.call(thisArg, val, key, obj);
