@@ -352,20 +352,31 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes all properties from an object/array with a value and returns the
-   *   object.
+   * Removes properties by value from an `object`, `function`, or `array` and
+   * returns the amended #source.
    *
    * @public
-   * @param {!(Object|function|Array)} source
+   * @param {(!Object|function|!Array)} source
    * @param {*} val
-   * @return {!(Object|function|Array)}
+   *   All details are as follows (per #source type):
+   *   - *`!Object|function`*!$
+   *     This method will [delete][delete] all properties with a value that
+   *     matches (via a [strict equality][equal] test) #val.
+   *   - *`!Array`*!$
+   *     This method will [splice][splice] from the #source all properties
+   *     with a value that matches (via a [strict equality][equal] test) #val.
+   * @return {(!Object|function|!Array)}
+   *   The amended #source.
    */
   cut.value = function cutValue(source, val) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'value');
-    if (arguments.length < 2) throw _error('No val defined', 'value');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'value');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'value');
 
-    source = _is.args(source) ? sliceArr(source) : source;
+    if ( _is.args(source) )
+      source = sliceArr(source);
     return _cutVal(source, val);
   };
   // define shorthand
