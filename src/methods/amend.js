@@ -41,15 +41,15 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * @ref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
    * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
    * @ref [define-prop]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
+   * @ref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
    */
 
   /**
    * A shortcut for [Object.defineProperties][define-props] that includes easier
-   * value assignment, strong type assignment, and more flexible default
-   * descriptor options.
+   * property value assignment, strong type declarations, and flexible default
+   * [descriptor][descriptor] options.
    *
    * @public
    * @param {!Object} obj
@@ -318,7 +318,7 @@ var amend = (function amendPrivateScope() {
 
   /**
    * A shortcut for [Object.defineProperties][define-props] that includes easier
-   * value assignment, strong type assignment, and more flexible default
+   * property value assignment, strong type declarations, and flexible default
    * [descriptor][descriptor] options.
    *
    * @public
