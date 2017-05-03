@@ -54,6 +54,7 @@ var cut = (function cutPrivateScope() {
    * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
    * @ref [delete]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete)
    * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
    * @ref [splice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
@@ -284,24 +285,35 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes a property by index from an array and returns the array. If an
-   *   array-like object is supplied it is sliced before removing the property.
+   * Removes properties by index from an `array` or array-like `object` and
+   * returns the amended #source. If an array-like `object` is supplied, it is
+   * copied via [slice][slice] (i.e. converted to an `array`) before removing
+   * any properties.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {number} index - The index to remove.
-   * @param {number=} toIndex - If defined all indexes from index to toIndex
-   *   (not including toIndex) are removed.
+   * @param {(!Object|function|!Array)} source
+   * @param {number} index
+   *   The property index to [splice][splice] from #source.
+   * @param {number=} toIndex
+   *   If defined all property indexes from #index to #toIndex (not including
+   *   #toIndex) are [spliced][splice] from #source.
    * @return {!Array}
+   *   The amended #source or when an array-like `object` is defined for the
+   *   #source, an amended copy (via [slice][slice]) of #source.
    */
   cut.index = function cutIndex(source, index, toIndex) {
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'index');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'index');
-    if ( !_is.num(index)         ) throw _error.type('index',         'index');
-    if ( !_is.un.num(toIndex)    ) throw _error.type('toIndex',       'index');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'index');
+    if ( !_is.num(source.length) )
+      throw _error.type('source.length', 'index');
+    if ( !_is.num(index) )
+      throw _error.type('index', 'index');
+    if ( !_is.un.num(toIndex) )
+      throw _error.type('toIndex', 'index');
 
-    source = _is.arr(source) ? source : sliceArr(source);
+    if ( !_is.arr(source) )
+      source = sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
