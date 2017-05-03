@@ -54,6 +54,7 @@ var cut = (function cutPrivateScope() {
    * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+   * @ref [delete]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete)
    * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
    * @ref [splice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
    * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
@@ -71,17 +72,18 @@ var cut = (function cutPrivateScope() {
    *   values. All other details are as follows (per #source type):
    *   - *`!Object|function`*!$
    *     - **The leading #val is a `RegExp`**!$
-   *       This method will delete all properties with a key that matches (via a
-   *       @has#pattern test) any #val. If a #val is not a `RegExp`, it is
-   *       converted to a `string` before a comparison is made.
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a @has#pattern test) any #val. If a #val is not a
+   *       `RegExp`, it is converted to a `string` before a test is ran.
    *     - **The leading #val is a `string`**!$
-   *       This method will delete all properties with a key that matches (via a
-   *       [strict equality][equal] test) any #val. If a #val is not a `string`,
-   *       it is converted to a `string` before a comparison is made.
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a [strict equality][equal] test) any #val. If a #val
+   *       is not a `string`, it is converted to a `string` before a comparison
+   *       is made.
    *     - **The leading #val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the property is deleted). It has the following optional
-   *       parameters:
+   *       `false` the property is [deleted][delete]). It has the following
+   *       optional parameters:
    *       - **value** *`*`*
    *       - **key** *`string`*
    *       - **source** *`!Object|function`*
@@ -91,8 +93,8 @@ var cut = (function cutPrivateScope() {
    *       third parameter so you can safely assume all references to the
    *       #source are its original values).
    *     - **All other situations**!$
-   *       This method will delete all properties with a value that matches (via
-   *       a [strict equality][equal] test) any #val.
+   *       This method will [delete][delete] all properties with a value that
+   *       matches (via a [strict equality][equal] test) any #val.
    *   - *`!Array`*!$
    *     - **Every #val is a `number`**!$
    *       This method will [splice][splice] from the #source each property with
@@ -133,17 +135,17 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|function|!Array|string)}
    *   The amended #source.
    */
-  function cut(source, vals, thisArg) {
+  function cut(source, val, thisArg) {
 
     if (arguments.length < 2)
       throw _error('No val defined');
 
     if ( _is.str(source) ) {
       if (arguments.length > 2)
-        vals = sliceArr(arguments, 1);
-      return _is.arr(vals)
-        ? _cutPatterns(source, vals)
-        : _cutPattern(source, vals);
+        val = sliceArr(arguments, 1);
+      return _is.arr(val)
+        ? _cutPatterns(source, val)
+        : _cutPattern(source, val);
     }
 
     if ( !_is._obj(source) )
@@ -152,68 +154,102 @@ var cut = (function cutPrivateScope() {
     if ( _is.args(source) )
       source = sliceArr(source);
 
-    if ( _is.func(vals) ) {
+    if ( _is.func(val) ) {
 
       if ( !_is.nil.un.obj(thisArg) )
         throw _error.type('thisArg');
 
       return _is.arr(source)
-        ? _filterArr(source, vals, thisArg)
-        : _filterObj(source, vals, thisArg);
+        ? _filterArr(source, val, thisArg)
+        : _filterObj(source, val, thisArg);
     }
 
     if (arguments.length > 2)
-      vals = sliceArr(arguments, 1);
-    return _is.arr(vals)
-      ? _cutProps(source, vals)
-      : _cutProp(source, vals);
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _cutProps(source, val)
+      : _cutProp(source, val);
   }
 
   /**
-   * Removes a property from an object/array and returns the object.
+   * Removes a property from an `object`, `array`, or `function` and returns the
+   * amended #source.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {*} val - The details are as follows (per source type):
-   *   - object source:
-   *     -- val is RegExp: This method will delete all properties with a key
-   *       that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *       the val.
-   *     -- val is string: This method will delete all properties where
-   *       `key === val`.
-   *     -- val is function: The val is considered a filter function (i.e. if it
-   *       returns false the property is deleted). It has the optional params -
-   *       value, key, source. Note this method lazily clones the source based
-   *       on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *       (i.e. if you alter the source object within the filter ensure to
-   *       define the filter's third param so you can safely assume all
-   *       references to the source are its original values).
-   *     -- all other cases: This method will delete all properties where
-   *       `value === val`.
-   *   - array source:
-   *     -- val is number: This method will splice the index from the source.
-   *     -- val is function: The val is considered a filter function (i.e. if it
-   *       returns false the property is spliced from the source). It has the
-   *       optional params - value, index, source. Note this method lazily
-   *       clones the source based on the filter's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *       (i.e. if you alter the source object within the filter ensure to
-   *       define the filter's third param so you can safely assume all
-   *       references to the source are its original values).
-   *     -- all other cases: This method will splice from the source all
-   *       properties where `value === val`.
-   * @param {Object=} thisArg - If val is a filter function and thisArg is
-   *   defined the filter is bound to its value.
-   * @return {!(Object|function|Array)}
+   * @param {(!Object|function|!Array)} source
+   * @param {*} val
+   *   All details are as follows (per #source type):
+   *   - *`!Object|function`*!$
+   *     - **#val is a `RegExp`**!$
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a @has#pattern test) #val.
+   *     - **#val is a `string`**!$
+   *       This method will [delete][delete] all properties with a key that
+   *       matches (via a [strict equality][equal] test) #val.
+   *     - **#val is a `function`**!$
+   *       The #val is considered a filter `function` (i.e. if it returns
+   *       `false` the property is [deleted][delete]). It has the following
+   *       optional parameters:
+   *       - **value** *`*`*
+   *       - **key** *`string`*
+   *       - **source** *`!Object|function`*
+   *       Note that this method lazily [clones][clone] the #source based on the
+   *       filter's [length property][func-length] (i.e. if you alter the
+   *       #source `object` within the filter make sure you define the filter's
+   *       third parameter so you can safely assume all references to the
+   *       #source are its original values).
+   *     - **All other situations**!$
+   *       This method will [delete][delete] all properties with a value that
+   *       matches (via a [strict equality][equal] test) #val.
+   *   - *`!Array`*!$
+   *     - **#val is a `number`**!$
+   *       This method will [splice][splice] from the #source each property with
+   *       an index that matches (via a [strict equality][equal] test) #val.
+   *     - **#val is a `function`**!$
+   *       The #val is considered a filter `function` (i.e. if it returns
+   *       `false` the property is [spliced][splice] from the #source). It has
+   *       the following optional parameters:
+   *       - **value** *`*`*
+   *       - **index** *`number`*
+   *       - **source** *`!Array`*
+   *       Note that this method lazily [clones][clone] the #source based on the
+   *       filter's [length property][func-length] (i.e. if you alter the
+   *       #source `array` within the filter make sure you define the filter's
+   *       third parameter so you can safely assume all references to the
+   *       #source are its original values).
+   *     - **All other situations**!$
+   *       This method will [splice][splice] from the #source all properties
+   *       with a value that matches (via a [strict equality][equal] test) #val.
+   * @param {?Object=} thisArg
+   *   Only applicable when a filter `function` is defined for #val. If #thisArg
+   *   is defined, the filter `function` is bound to its value. Note that the
+   *   native [Function.prototype.bind][bind] is not used to bind the filter
+   *   `function`. Instead the filter `function` is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   filter `function` with #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the filter `function` (unless
+   *   more than three parameters were defined for the filter `function` as the
+   *   wrapper has a max value of `3`) and the [name property][func-name] value
+   *   of `"filter"` (unless you are using a [minified][minify] version of
+   *   `vitals`).
+   * @return {(!Object|function|!Array)}
+   *   The amended #source.
    */
   cut.property = function cutProperty(source, val, thisArg) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'property');
-    if (arguments.length < 2) throw _error('No val defined', 'property');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'property');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'property');
 
-    source = _is.args(source) ? sliceArr(source) : source;
+    if ( _is.args(source) )
+     source = sliceArr(source);
 
     if ( _is.func(val) ) {
-      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'property');
+
+      if ( !_is.nil.un.obj(thisArg) )
+        throw _error.type('thisArg', 'property');
+
       return _is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
