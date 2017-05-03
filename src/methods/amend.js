@@ -41,9 +41,14 @@ var amend = (function amendPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
-   * that includes easier value assignment, strong type assignment, and more
-   * flexible default descriptor options.
+   * @ref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
+   * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+   */
+
+  /**
+   * A shortcut for [Object.defineProperties][define-props] that includes easier
+   * value assignment, strong type assignment, and more flexible default
+   * descriptor options.
    *
    * @public
    * @param {!Object} obj
@@ -51,8 +56,7 @@ var amend = (function amendPrivateScope() {
    *   The details are as follows (per #props type):
    *   - *`!Object<string, *>`*!$
    *     For each `key => value` pair use the property's name for the `key`, and
-   *     the property's [descriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
-   *     or new value for its `value`.
+   *     the property's [descriptor][descriptor] or new value for its `value`.
    *   - *`!Array<string>`*!$
    *     For each element of the `array` define a property name.
    *   - *`string`*!$
@@ -68,11 +72,10 @@ var amend = (function amendPrivateScope() {
    *   property names is given for #props. #val sets the value of each
    *   property in #props regardless of #descriptor settings.
    * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   The new [descriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
-   *   for each property in #props unless a [descriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
-   *   is used for a #props `value`.
+   *   The new [descriptor][descriptor] for each property in #props unless a
+   *   [descriptor][descriptor] is used for a #props `value`.
    * @param {string=} strongType
-   *   If defined all new properties are assigned an [accessor descriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+   *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function
    *   (unless overridden in a #props `value`) that throws an error if @is#main
    *   returns `false` for a new property `value`. See the below snippet for an
@@ -85,7 +88,7 @@ var amend = (function amendPrivateScope() {
    *   };
    *   ```
    * @param {function(*, *): *=} setter
-   *   If defined all new properties are assigned an [accessor descriptor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+   *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function 
    *   (unless overridden in a #props `value`) that sets the property to the
    *   value returned by #setter. The #setter function will receive two params,
