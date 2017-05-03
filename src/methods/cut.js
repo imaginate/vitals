@@ -484,32 +484,47 @@ var cut = (function cutPrivateScope() {
   };
 
   /**
-   * Removes properties by index from an array and returns the array. If an
-   *   array-like object is supplied it is sliced before completing the cut.
+   * Removes properties by index from an `array` or array-like `object` and
+   * returns the amended #source. If an array-like `object` is supplied, it is
+   * copied via [slice][slice] (i.e. converted to an `array`) before removing
+   * any properties.
    *
    * @public
-   * @param {!(Object|function|Array)} source
-   * @param {...number} indexes - If only one index is provided and it is an
-   *   array it is considered an array of indexes. The indexes to remove.
+   * @param {(!Object|function|!Array)} source
+   * @param {(!Array<number>|...number)} index
+   *   If only one `array` #index is provided, it is considered an `array` of
+   *   indexes. If a property with any #index exists in #source, it is [spliced][splice]
+   *   from #source.
    * @return {!Array}
+   *   The amended #source or when an array-like `object` is defined for the
+   *   #source, an amended copy (via [slice][slice]) of #source.
    */
-  cut.indexes = function cutIndexes(source, indexes) {
+  cut.indexes = function cutIndexes(source, index) {
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
-    if (arguments.length < 2) throw _error('No index defined', 'indexes');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'indexes');
+    if ( !_is.num(source.length) )
+      throw _error.type('source.length', 'indexes');
+    if (arguments.length < 2)
+      throw _error('No index defined', 'indexes');
 
-    source = _is.arr(source) ? source : sliceArr(source);
-    indexes = arguments.length > 2 ? sliceArr(arguments, 1) : indexes;
+    if ( !_is.arr(source) )
+      source = sliceArr(source);
+    if (arguments.length > 2)
+      index = sliceArr(arguments, 1);
 
-    if ( !_is.arr(indexes) ) {
-      if ( !_is.num(indexes) ) throw _error.type('index', 'indexes');
-      return _cutIndex(source, indexes);
+    if ( !_is.arr(index) ) {
+
+      if ( !_is.num(index) )
+        throw _error.type('index', 'indexes');
+
+      return _cutIndex(source, index);
     }
 
-    if ( !is('!nums', indexes) ) throw _error.type('index', 'indexes');
+    if ( !is('!nums', index) )
+      throw _error.type('index', 'indexes');
 
-    return _cutIndexes(source, indexes);
+    return _cutIndexes(source, index);
   };
   // define shorthand
   cut.ii = cut.indexes;
