@@ -383,18 +383,23 @@ var cut = (function cutPrivateScope() {
   cut.val = cut.value;
 
   /**
-   * Removes a pattern from a string and returns the amended string.
+   * Removes a pattern from a `string` and returns the amended #source.
    *
    * @public
    * @param {string} source
-   * @param {*} pattern - If pattern is not a string or RegExp it is converted
-   *   to a string.
+   * @param {*} pattern
+   *   Each `substring` of characters that matches #pattern is removed from the
+   *   #source. If #pattern is not a `RegExp` or `string`, it is converted into
+   *   a `string` before checking the #source for any matches.
    * @return {string}
+   *   The amended #source.
    */
   cut.pattern = function cutPattern(source, pattern) {
 
-    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
-    if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
+    if ( !_is.str(source) )
+      throw _error.type('source', 'pattern');
+    if (arguments.length < 2)
+      throw _error('No pattern defined', 'pattern');
 
     return _cutPattern(source, pattern);
   };
