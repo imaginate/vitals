@@ -43,6 +43,7 @@ var copy = (function copyPrivateScope() {
 
   /**
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+   * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
    */
 
   /**
@@ -125,17 +126,21 @@ var copy = (function copyPrivateScope() {
   copy.args = copy.array;
 
   /**
-   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) a `RegExp`.
+   * Makes a [copy][clone] of a `RegExp`.
    *
    * @public
    * @param {!RegExp} regex
-   * @param {boolean=} forceGlobal
+   * @param {boolean=} forceGlobal = `undefined`
+   *   Override the [global setting][global] for the returned `RegExp`. If
+   *   `undefined` the original value from #regex is used.
    * @return {!RegExp}
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
-    if ( !_is.regex(regex)         ) throw _error.type('regex',       'regexp');
-    if ( !_is.un.bool(forceGlobal) ) throw _error.type('forceGlobal', 'regexp');
+    if ( !_is.regex(regex) )
+      throw _error.type('regex', 'regexp');
+    if ( !_is.un.bool(forceGlobal) )
+      throw _error.type('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
