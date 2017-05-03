@@ -44,6 +44,9 @@ var copy = (function copyPrivateScope() {
   /**
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+   * @ref [length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   * @ref [es3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
+   * @ref [es5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
    */
 
   /**
@@ -149,22 +152,24 @@ var copy = (function copyPrivateScope() {
   copy.regex = copy.regexp;
 
   /**
-   * [Clones](https://en.wikipedia.org/wiki/Cloning_(programming)) a function
-   *   (i.e. creates a new function with all properties from the old function).
-   *   Note that the copied function's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   will be set to `0`. Also note that `vitals.copy.function` is not valid in
-   *   ES3 and some ES5 browser environments. Use `vitals.copy.func` for browser
-   *   safety.
+   * Makes a [copy][clone] of a `function`. Note that all properties will be
+   * transferred except for the [length property][length] which will be set to
+   * `0`. Also note that `vitals.copy.function` is not valid in [ES3][es3] and
+   * even some [ES5][es5] browser environments. Use `vitals.copy.func` for
+   * browser safety.
    *
    * @public
    * @param {function} func
-   * @param {boolean=} deep
+   * @param {boolean=} deep = `false`
+   *   Whether to recursively copy property values.
    * @return {function}
    */
   copy.func = function copyFunction(func, deep) {
 
-    if ( !_is.func(func)    ) throw _error.type('func', 'function');
-    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'function');
+    if ( !_is.func(func) )
+      throw _error.type('func', 'function');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep', 'function');
 
     return _copyFunc(func, deep);
   };
