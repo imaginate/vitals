@@ -317,48 +317,58 @@ var amend = (function amendPrivateScope() {
   amend.prop.config = amend.property.config;
 
   /**
-   * A shortcut for [Object.defineProperties](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
-   *   that includes easier value assignment, strong type assignment, and more
-   *   flexible default descriptor options.
+   * A shortcut for [Object.defineProperties][define-props] that includes easier
+   * value assignment, strong type assignment, and more flexible default
+   * [descriptor][descriptor] options.
    *
    * @public
    * @param {!Object} obj
-   * @param {!(Object<string, *>|Array<string>|string)} props - The details for
-   *   the props param are as follows (per props type):
-   *   - object: Must be `propName => propVal` or `propName => propDescriptor`.
-   *   - array:  An array of key names to define.
-   *   - string: Converted to an array of key names using one of the following
-   *     values as the separator (values listed in order of rank):
-   *     -- `", "`
-   *     -- `","`
-   *     -- `"|"`
-   *     -- `" "`
-   * @param {*=} val - Only use (and required) if an array or string of keys is
-   *   given for the props param. This param defines the value assigned for all
-   *   keys regardless of descriptor type.
-   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
-   *   The default descriptor values for each prop.
-   * @param {string=} strongType - If defined all new properties are assigned
-   *   an accessor descriptor (unless assigned a data descriptor in the props
-   *   param) that includes a setter (unless assigned a setter in the props
-   *   param) that throws an error if the new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
-   *   type test. The setter is as follows:
+   * @param {(!Object<string, *>|!Array<string>|string)} props
+   *   The details are as follows (per #props type):
+   *   - *`!Object<string, *>`*!$
+   *     For each `key => value` pair use the property's name for the `key`, and
+   *     the property's [descriptor][descriptor] or new value for its `value`.
+   *   - *`!Array<string>`*!$
+   *     For each element of the `array` define a property name.
+   *   - *`string`*!$
+   *     Should be a list of property names. It gets converted to an `array` of
+   *     property names using one of the following values as the separator
+   *     (values listed in order of rank):
+   *     - `", "`
+   *     - `","`
+   *     - `"|"`
+   *     - `" "`
+   * @param {*=} val
+   *   Only define #val (and then required) if an `array` or `string` of
+   *   property names is given for #props. #val sets the value of each
+   *   property in #props regardless of #descriptor settings.
+   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
+   *   The new [descriptor][descriptor] for each property in #props unless a
+   *   [descriptor][descriptor] is used for a #props `value`.
+   * @param {string=} strongType
+   *   If defined all new properties are assigned an [accessor descriptor][descriptor]
+   *   (unless overridden in a #props `value`) that includes a `set` function
+   *   (unless overridden in a #props `value`) that throws an error if @is#main
+   *   returns `false` for a new property `value`. See the below snippet for an
+   *   example #strongType `set` function.
    *   ```
-   *   prop.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *   descriptor.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) )
+   *       throw new TypeError("...");
    *     value = newVal;
    *   };
    *   ```
-   * @param {function(*, *): *=} setter - If defined all new properties are
-   *   assigned an accessor descriptor (unless assigned a data descriptor in the
-   *   props param) that includes a setter (unless assigned a setter in the
-   *   props param) that sets the property to the value returned by this setter.
-   *   Note that this setter function will receive two params, the new value and
-   *   the current value. Also note that if the strongType param is defined this
-   *   setter will not get called until the new value passes the type test.
+   * @param {function(*, *): *=} setter
+   *   If defined all new properties are assigned an [accessor descriptor][descriptor]
+   *   (unless overridden in a #props `value`) that includes a `set` function 
+   *   (unless overridden in a #props `value`) that sets the property to the
+   *   value returned by #setter. The #setter function will receive two params,
+   *   the new value and the current value. If #strongType is defined #setter
+   *   will not get called until the new value passes the @is#main test.
    *   ```
-   *   prop.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *   descriptor.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) )
+   *       throw new TypeError("...");
    *     value = setter(newVal, value);
    *   };
    *   ```
@@ -373,16 +383,20 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !_is.obj(obj) ) throw _error.type('obj', 'properties');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'properties');
 
-    if ( _is.str(props) ) props = splitKeys(props);
+    if ( _is.str(props) )
+      props = splitKeys(props);
 
-    if ( !_is.obj(props) ) throw _error.type('props', 'properties');
+    if ( !_is.obj(props) )
+      throw _error.type('props', 'properties');
 
     isArr = _is.arr(props);
     len = arguments.length;
 
-    if (isArr && len < 3) throw _error('No val defined', 'properties');
+    if (isArr && len < 3)
+      throw _error('No val defined', 'properties');
 
     if (!isArr && len > 2) {
       setter = strongType;
@@ -399,17 +413,18 @@ var amend = (function amendPrivateScope() {
       setter = args[2];
     }
 
-    if ( !is('!obj=', descriptor)) throw _error.type('descriptor','properties');
-    if ( !is('str=',  strongType)) throw _error.type('strongType','properties');
-    if ( !is('func=', setter)    ) throw _error.type('setter',    'properties');
+    if ( !is('!obj=', descriptor) )
+      throw _error.type('descriptor', 'properties');
+    if ( !is('str=', strongType) )
+      throw _error.type('strongType', 'properties');
+    if ( !is('func=', setter) )
+      throw _error.type('setter', 'properties');
 
     if (strongType) {
-      if ( isArr && !is(strongType + '=', val) ) {
+      if ( isArr && !is(strongType + '=', val) )
         throw _error('The val param is not a valid strongType', 'properties');
-      }
-      if ( !isArr && !_strongTypeCheckProps(strongType, props) ) {
+      if ( !isArr && !_strongTypeCheckProps(strongType, props) )
         throw _error('A props value was not a valid strongType', 'properties');
-      }
     }
 
     return _amendProps(obj, props, val, descriptor, strongType, setter);
