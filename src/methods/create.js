@@ -34,16 +34,20 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * A shortcut for [Object.create](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
-   *   that includes easier value assignment, strong type assignment, and more
-   *   flexible default descriptor options. Note that this method uses
-   *   [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend) for
-   *   assigning properties to the new object. See [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
-   *   for documentation about the property params.
+   * @ref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+   * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+   */
+
+  /**
+   * A shortcut for [Object.create][create] that includes easier property value
+   * assignment, strong type declarations, and flexible default [descriptor][descriptor]
+   * options. Note that this method uses @amend#main for assigning properties to
+   * the new `object`. See @amend#main for detailed documentation on all of the
+   * available options.
    *
    * @public
-   * @param {Object} proto
-   * @param {!(Object<string, *>|Array<string>|string)} props
+   * @param {?Object} proto
+   * @param {(!Object<string, *>|!Array<string>|string)} props
    * @param {*=} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
@@ -55,7 +59,8 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !_is.nil.obj(proto) ) throw _error.type('proto');
+    if ( !_is.nil.obj(proto) )
+      throw _error.type('proto');
 
     if (arguments.length > 1) {
       args = sliceArr(arguments);
