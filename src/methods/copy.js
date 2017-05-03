@@ -42,20 +42,27 @@ var copy = (function copyPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * Get a [copy](https://en.wikipedia.org/wiki/Cloning_(programming)) of any
-   *   value. Note that for array values [vitals.slice](https://github.com/imaginate/vitals/wiki/vitals.slice)
-   *   only copies the indexed properties while [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
-   *   copies all of the properties.
+   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+   */
+
+  /**
+   * Make a [copy][clone] of any value. Note that for `array` values @slice only
+   * only copies the indexed properties while @copy copies all of the
+   * properties.
    *
    * @public
    * @param {*} val
+   *   The value to copy.
    * @param {boolean=} deep
+   *   Whether to recursively copy property values for objects or functions.
    * @return {*}
    */
   function copy(val, deep) {
 
-    if (!arguments.length) throw _error('Missing a val');
-    if ( !_is.un.bool(deep) ) throw _error.type('deep');
+    if (arguments.length < 1)
+      throw _error('Missing a val');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep');
 
     return !_is._obj(val)
       ? val
