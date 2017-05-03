@@ -43,6 +43,7 @@ var amend = (function amendPrivateScope() {
   /**
    * @ref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
    * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+   * @ref [define-prop]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
    */
 
   /**
@@ -211,32 +212,36 @@ var amend = (function amendPrivateScope() {
   };
 
   /**
-   * A shortcut for [Object.defineProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty).
+   * A shortcut for [Object.defineProperty][define-prop].
    *
    * @public
    * @param {!Object} obj
    * @param {string} key
-   * @param {*=} val - A val is required if a descriptor is not supplied.
-   * @param {!Object=} descriptor - [default= { writable: true, enumerable: true, configurable: true }]
-   * @param {string=} strongType - If defined the new property is assigned
-   *   an accessor descriptor that includes a setter that throws an error if the
-   *   new property value fails a [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
-   *   type test. The setter is as follows:
+   * @param {*=} val
+   *   #val is required if #descriptor is not defined.
+   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
+   * @param {string=} strongType
+   *   If defined the new property is assigned an [accessor descriptor][descriptor]
+   *   that includes a `set` function that throws an error if @is#main returns
+   *   `false` for a new property `value`. See the below snippet for an example
+   *   #strongType `set` function.
    *   ```
-   *   prop.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *   descriptor.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) )
+   *       throw new TypeError("...");
    *     value = newVal;
    *   };
    *   ```
-   * @param {function(*, *): *=} setter - If defined the new property is
-   *   assigned an accessor descriptor that includes a setter that sets the
-   *   property to the value returned by this setter method. The setter method
-   *   will receive two params, the new value and the current value. If a
-   *   strongType is defined this setter will not get called until the new value
-   *   passes the type test.
+   * @param {function(*, *): *=} setter
+   *   If defined the new property is assigned an [accessor descriptor][descriptor]
+   *   that includes a `set` function that sets the property to the value
+   *   returned by #setter. The #setter function will receive two params, the
+   *   new value and the current value. If #strongType is defined #setter will
+   *   not get called until the new value passes the @is#main test.
    *   ```
-   *   prop.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) ) throw new TypeError("...");
+   *   descriptor.set = function set(newVal) {
+   *     if ( !vitals.is(strongType, newVal) )
+   *       throw new TypeError("...");
    *     value = setter(newVal, value);
    *   };
    *   ```
@@ -249,12 +254,15 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !_is.obj(obj) ) throw _error.type('obj', 'property');
-    if ( !_is.str(key) ) throw _error.type('key', 'property');
+    if ( !_is.obj(obj) )
+      throw _error.type('obj', 'property');
+    if ( !_is.str(key) )
+      throw _error.type('key', 'property');
 
     len = arguments.length;
 
-    if (len < 3) throw _error('No val or descriptor defined', 'property');
+    if (len < 3)
+      throw _error('No val or descriptor defined', 'property');
 
     if (len > 2 && len < 6) {
       args = _parseProp(len, val, descriptor, strongType, setter);
@@ -264,16 +272,17 @@ var amend = (function amendPrivateScope() {
       setter = args[3];
     }
 
-    if ( !is('!obj=', descriptor) ) throw _error.type('descriptor', 'property');
-    if ( !is('str=',  strongType) ) throw _error.type('strongType', 'property');
-    if ( !is('func=', setter)     ) throw _error.type('setter',     'property');
+    if ( !is('!obj=', descriptor) )
+      throw _error.type('descriptor', 'property');
+    if ( !is('str=', strongType) )
+      throw _error.type('strongType', 'property');
+    if ( !is('func=', setter) )
+      throw _error.type('setter', 'property');
 
-    if ( strongType && !is(strongType + '=', val) ) {
+    if ( strongType && !is(strongType + '=', val) )
       throw _error('The val param is not a valid strongType', 'property');
-    }
-    if ( descriptor && (strongType || setter) && own(descriptor, 'writable') ){
+    if ( descriptor && (strongType || setter) && own(descriptor, 'writable') )
       throw _error('A data descriptor may not be used with a strongType/setter', 'property');
-    }
 
     return _amendProp(obj, key, val, descriptor, strongType, setter);
   };
