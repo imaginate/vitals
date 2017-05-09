@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: copy
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS COPY
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -21,10 +18,9 @@ var merge = require('./helpers/merge.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: copy
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS COPY
+//////////////////////////////////////////////////////////////////////////////
 
 var copy = (function copyPrivateScope() {
 
@@ -41,7 +37,7 @@ var copy = (function copyPrivateScope() {
   //   compatibility with older browser environments.
   //////////////////////////////////////////////////////////
 
-  /**
+  /* {{{2 Copy References
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
    * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
@@ -51,6 +47,8 @@ var copy = (function copyPrivateScope() {
    * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
    */
 
+  /// {{{2
+  /// @method copy
   /**
    * Makes a [copy][clone] of any value. Note that for `array` values @slice 
    * only copies the indexed properties while @copy copies all of the
@@ -82,6 +80,9 @@ var copy = (function copyPrivateScope() {
             : _copyObj(val, deep);  
   }
 
+  /// {{{2
+  /// @method copy.object
+  /// @alias copy.obj
   /**
    * Makes a [copy][clone] of an `object`.
    *
@@ -103,6 +104,10 @@ var copy = (function copyPrivateScope() {
   // define shorthand
   copy.obj = copy.object;
 
+  /// {{{2
+  /// @method copy.array
+  /// @alias copy.arr
+  /// @alias copy.args
   /**
    * Makes a [copy][clone] of an `array` or array-like `object`. Note that
    * @slice#array only copies the indexed properties while @copy#array copies
@@ -130,6 +135,10 @@ var copy = (function copyPrivateScope() {
   copy.arr = copy.array;
   copy.args = copy.array;
 
+  /// {{{2
+  /// @method copy.regexp
+  /// @alias copy.regex
+  /// @alias copy.re
   /**
    * Makes a [copy][clone] of a `RegExp`.
    *
@@ -153,11 +162,15 @@ var copy = (function copyPrivateScope() {
   copy.re = copy.regexp;
   copy.regex = copy.regexp;
 
+  /// {{{2
+  /// @method copy.func
+  /// @alias copy.function
+  /// @alias copy.fn
   /**
    * Makes a [copy][clone] of a `function`. Note that all properties will be
-   * transferred except for the [length property][func-length] which will be set
-   * to `0` and the [name property][func-name] which will be set to `"funcCopy"`
-   * for [unminified][minify] `vitals` sources. Also note that
+   * transferred except for the [length property][func-length] which will be
+   * set to `0` and the [name property][func-name] which will be set to
+   * `"funcCopy"` for [unminified][minify] `vitals` sources. Also note that
    * `vitals.copy.function` is not valid in [ES3][ecma3] and some [ES5][ecma5]
    * browser environments. Use `vitals.copy.func` for browser safety.
    *
@@ -183,10 +196,12 @@ var copy = (function copyPrivateScope() {
   }
   catch (e) {}
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // COPY HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _copyObj
   /**
    * @private
    * @param {!Object} obj
@@ -199,6 +214,8 @@ var copy = (function copyPrivateScope() {
       : merge({}, obj);
   }
 
+  /// {{{3
+  /// @func _copyArr
   /**
    * @private
    * @param {!Object} obj
@@ -216,6 +233,8 @@ var copy = (function copyPrivateScope() {
       : merge(arr, obj);
   }
 
+  /// {{{3
+  /// @func _copyRegex
   /**
    * @private
    * @param {!RegExp} regex
@@ -237,6 +256,8 @@ var copy = (function copyPrivateScope() {
       : new RegExp(source);
   }
 
+  /// {{{3
+  /// @func _copyFunc
   /**
    * @private
    * @param {function} func
@@ -256,12 +277,15 @@ var copy = (function copyPrivateScope() {
       : merge(funcCopy, func);
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE PROPERTIES - COPY.REGEXP
+  ///////////////////////////////////////////////////// {{{2
+  // COPY HELPERS - REGEXP
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _escape
   /**
-   * Returns a properly escaped RegExp.prototype.source.
+   * Returns a properly escaped `RegExp.prototype.source`.
+   *
    * @private
    * @param {string} source
    * @return {string}
@@ -283,6 +307,8 @@ var copy = (function copyPrivateScope() {
         };
   })();
 
+  /// {{{3
+  /// @const FLAGS
   /**
    * @private
    * @const {!Object}
@@ -306,6 +332,8 @@ var copy = (function copyPrivateScope() {
     return flags;
   })();
 
+  /// {{{3
+  /// @func _setupFlags
   /**
    * @private
    * @param {!RegExp} regex
@@ -337,10 +365,12 @@ var copy = (function copyPrivateScope() {
         : flags;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // COPY HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _mergeDeep
   /**
    * @private
    * @param {(!Object|function)} dest
@@ -359,16 +389,20 @@ var copy = (function copyPrivateScope() {
     return dest;
   }
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('copy');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR COPY
   return copy;
 })();
-
+/// }}}1
 
 module.exports = copy;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
