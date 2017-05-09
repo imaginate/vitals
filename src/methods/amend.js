@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: amend
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS AMEND
+ * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
  * @see [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -23,10 +20,9 @@ var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 var is = require('./is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: amend
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS AMEND
+//////////////////////////////////////////////////////////////////////////////
 
 var amend = (function amendPrivateScope() {
 
@@ -40,29 +36,32 @@ var amend = (function amendPrivateScope() {
   // - amend.properties.config (amend.props.config)
   //////////////////////////////////////////////////////////
 
-  /**
+  /* {{{2 Amend References
    * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
    * @ref [define-prop]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
    * @ref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
    */
 
+  /// {{{2
+  /// @method amend
   /**
-   * A shortcut for [Object.defineProperties][define-props] that includes easier
-   * property value assignment, strong type declarations, and flexible default
-   * [descriptor][descriptor] options.
+   * A shortcut for [Object.defineProperties][define-props] that includes
+   * easier property value assignment, strong type declarations, and flexible
+   * default [descriptor][descriptor] options.
    *
    * @public
    * @param {!Object} obj
    * @param {(!Object<string, *>|!Array<string>|string)} props
    *   The details are as follows (per #props type):
    *   - *`!Object<string, *>`*!$
-   *     For each `key => value` pair use the property's name for the `key`, and
-   *     the property's [descriptor][descriptor] or new value for its `value`.
+   *     For each `key => value` pair use the property's name for the `key`,
+   *     and the property's [descriptor][descriptor] or new value for its
+   *     `value`.
    *   - *`!Array<string>`*!$
    *     For each element of the `array` define a property name.
    *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array` of
-   *     property names using one of the following values as the separator
+   *     Should be a list of property names. It gets converted to an `array`
+   *     of property names using one of the following values as the separator
    *     (values listed in order of rank):
    *     - `", "`
    *     - `","`
@@ -78,9 +77,9 @@ var amend = (function amendPrivateScope() {
    * @param {string=} strongType
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function
-   *   (unless overridden in a #props `value`) that throws an error if @is#main
-   *   returns `false` for a new property `value`. See the below snippet for an
-   *   example #strongType `set` function.
+   *   (unless overridden in a #props `value`) that throws an error if
+   *   @is#main returns `false` for a new property `value`. See the below
+   *   snippet for an example #strongType `set` function.
    *   ```
    *   descriptor.set = function set(newVal) {
    *     if ( !vitals.is(strongType, newVal) )
@@ -92,9 +91,10 @@ var amend = (function amendPrivateScope() {
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function 
    *   (unless overridden in a #props `value`) that sets the property to the
-   *   value returned by #setter. The #setter function will receive two params,
-   *   the new value and the current value. If #strongType is defined #setter
-   *   will not get called until the new value passes the @is#main test.
+   *   value returned by #setter. The #setter function will receive two
+   *   params, the new value and the current value. If #strongType is defined
+   *   #setter will not get called until the new value passes the @is#main
+   *   test.
    *   ```
    *   descriptor.set = function set(newVal) {
    *     if ( !vitals.is(strongType, newVal) )
@@ -160,6 +160,8 @@ var amend = (function amendPrivateScope() {
     return _amendProps(obj, props, val, descriptor, strongType, setter);
   }
 
+  /// {{{2
+  /// @method amend.config
   /**
    * A shortcut for [Object.defineProperties][define-props] that only updates
    * the descriptors of existing properties.
@@ -169,21 +171,21 @@ var amend = (function amendPrivateScope() {
    * @param {(!Object<string, !Object>|!Array<string>|string)} props
    *   The details are as follows (per #props type):
    *   - *`!Object<string, !Object>`*!$
-   *     For each `key => value` pair use the property's name for the `key`, and
-   *     the property's [descriptor][descriptor] for its `value`.
+   *     For each `key => value` pair use the property's name for the `key`,
+   *     and the property's [descriptor][descriptor] for its `value`.
    *   - *`!Array<string>`*!$
    *     For each element of the `array` define a property name.
    *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array` of
-   *     property names using one of the following values as the separator
+   *     Should be a list of property names. It gets converted to an `array`
+   *     of property names using one of the following values as the separator
    *     (values listed in order of rank):
    *     - `", "`
    *     - `","`
    *     - `"|"`
    *     - `" "`
    * @param {!Object=} descriptor
-   *   Only define #descriptor (and then required) if an `array` or `string` of
-   *   property names is given for #props.
+   *   Only define #descriptor (and then required) if an `array` or `string`
+   *   of property names is given for #props.
    * @return {!Object}
    */
   amend.config = function amendConfig(obj, props, descriptor) {
@@ -211,6 +213,9 @@ var amend = (function amendPrivateScope() {
     return _amendConfigs(obj, props);
   };
 
+  /// {{{2
+  /// @method amend.property
+  /// @alias amend.prop
   /**
    * A shortcut for [Object.defineProperty][define-prop].
    *
@@ -223,8 +228,8 @@ var amend = (function amendPrivateScope() {
    * @param {string=} strongType
    *   If defined the new property is assigned an [accessor descriptor][descriptor]
    *   that includes a `set` function that throws an error if @is#main returns
-   *   `false` for a new property `value`. See the below snippet for an example
-   *   #strongType `set` function.
+   *   `false` for a new property `value`. See the below snippet for an
+   *   example #strongType `set` function.
    *   ```
    *   descriptor.set = function set(newVal) {
    *     if ( !vitals.is(strongType, newVal) )
@@ -289,6 +294,9 @@ var amend = (function amendPrivateScope() {
   // define shorthand
   amend.prop = amend.property;
 
+  /// {{{2
+  /// @method amend.property.config
+  /// @alias amend.prop.config
   /**
    * A shortcut for [Object.defineProperty][define-prop] that only updates the
    * [descriptor][descriptor] of an existing property.
@@ -316,23 +324,27 @@ var amend = (function amendPrivateScope() {
   // define shorthand
   amend.prop.config = amend.property.config;
 
+  /// {{{2
+  /// @method amend.properties
+  /// @alias amend.props
   /**
-   * A shortcut for [Object.defineProperties][define-props] that includes easier
-   * property value assignment, strong type declarations, and flexible default
-   * [descriptor][descriptor] options.
+   * A shortcut for [Object.defineProperties][define-props] that includes
+   * easier property value assignment, strong type declarations, and flexible
+   * default [descriptor][descriptor] options.
    *
    * @public
    * @param {!Object} obj
    * @param {(!Object<string, *>|!Array<string>|string)} props
    *   The details are as follows (per #props type):
    *   - *`!Object<string, *>`*!$
-   *     For each `key => value` pair use the property's name for the `key`, and
-   *     the property's [descriptor][descriptor] or new value for its `value`.
+   *     For each `key => value` pair use the property's name for the `key`,
+   *     and the property's [descriptor][descriptor] or new value for its
+   *     `value`.
    *   - *`!Array<string>`*!$
    *     For each element of the `array` define a property name.
    *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array` of
-   *     property names using one of the following values as the separator
+   *     Should be a list of property names. It gets converted to an `array`
+   *     of property names using one of the following values as the separator
    *     (values listed in order of rank):
    *     - `", "`
    *     - `","`
@@ -348,9 +360,9 @@ var amend = (function amendPrivateScope() {
    * @param {string=} strongType
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function
-   *   (unless overridden in a #props `value`) that throws an error if @is#main
-   *   returns `false` for a new property `value`. See the below snippet for an
-   *   example #strongType `set` function.
+   *   (unless overridden in a #props `value`) that throws an error if
+   *   @is#main returns `false` for a new property `value`. See the below
+   *   snippet for an example #strongType `set` function.
    *   ```
    *   descriptor.set = function set(newVal) {
    *     if ( !vitals.is(strongType, newVal) )
@@ -362,9 +374,10 @@ var amend = (function amendPrivateScope() {
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function 
    *   (unless overridden in a #props `value`) that sets the property to the
-   *   value returned by #setter. The #setter function will receive two params,
-   *   the new value and the current value. If #strongType is defined #setter
-   *   will not get called until the new value passes the @is#main test.
+   *   value returned by #setter. The #setter function will receive two
+   *   params, the new value and the current value. If #strongType is defined
+   *   #setter will not get called until the new value passes the @is#main
+   *   test.
    *   ```
    *   descriptor.set = function set(newVal) {
    *     if ( !vitals.is(strongType, newVal) )
@@ -432,6 +445,9 @@ var amend = (function amendPrivateScope() {
   // define shorthand
   amend.props = amend.properties;
 
+  /// {{{2
+  /// @method amend.properties.config
+  /// @alias amend.props.config
   /**
    * A shortcut for [Object.defineProperties][define-props] that only updates
    * the [descriptors][descriptor] of existing properties.
@@ -441,21 +457,21 @@ var amend = (function amendPrivateScope() {
    * @param {(!Object<string, !Object>|!Array<string>|string)} props
    *   The details are as follows (per #props type):
    *   - *`!Object<string, !Object>`*!$
-   *     For each `key => value` pair use the property's name for the `key`, and
-   *     the property's [descriptor][descriptor] for its `value`.
+   *     For each `key => value` pair use the property's name for the `key`,
+   *     and the property's [descriptor][descriptor] for its `value`.
    *   - *`!Array<string>`*!$
    *     For each element of the `array` define a property name.
    *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array` of
-   *     property names using one of the following values as the separator
+   *     Should be a list of property names. It gets converted to an `array`
+   *     of property names using one of the following values as the separator
    *     (values listed in order of rank):
    *     - `", "`
    *     - `","`
    *     - `"|"`
    *     - `" "`
    * @param {!Object=} descriptor
-   *   Only define #descriptor (and then required) if an `array` or `string` of
-   *   property names is given for #props.
+   *   Only define #descriptor (and then required) if an `array` or `string`
+   *   of property names is given for #props.
    * @return {!Object}
    */
   amend.properties.config = function amendPropertiesConfig(obj, props, descriptor) {
@@ -485,10 +501,12 @@ var amend = (function amendPrivateScope() {
   // define shorthand
   amend.props.config = amend.properties.config;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN ARG PARSING
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - PARAMETER PARSERS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _parseProp
   /**
    * @private
    * @param {number} len
@@ -533,6 +551,8 @@ var amend = (function amendPrivateScope() {
     return [ val, descriptor, strongType, setter ];
   }
 
+  /// {{{3
+  /// @func _parseProps
   /**
    * @private
    * @param {number} len
@@ -571,6 +591,8 @@ var amend = (function amendPrivateScope() {
     return [ descriptor, strongType, setter ];
   }
 
+  /// {{{3
+  /// @func _strongTypeCheckProps
   /**
    * @private
    * @param {string} strongType
@@ -600,10 +622,12 @@ var amend = (function amendPrivateScope() {
     return true;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _amendProp
   /**
    * @private
    * @param {!Object} obj
@@ -629,6 +653,8 @@ var amend = (function amendPrivateScope() {
     return _ObjectDefineProperty(obj, key, descriptor);
   }
 
+  /// {{{3
+  /// @func _amendProps
   /**
    * @private
    * @param {!Object} obj
@@ -655,6 +681,8 @@ var amend = (function amendPrivateScope() {
     return _ObjectDefineProperties(obj, props);
   }
 
+  /// {{{3
+  /// @func _amendConfig
   /**
    * @private
    * @param {!Object} obj
@@ -666,6 +694,8 @@ var amend = (function amendPrivateScope() {
     return _ObjectDefineProperty(obj, key, descriptor);
   }
 
+  /// {{{3
+  /// @func _amendConfigs
   /**
    * @private
    * @param {!Object} obj
@@ -676,10 +706,12 @@ var amend = (function amendPrivateScope() {
     return _ObjectDefineProperties(obj, props);
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - PROPERTIES SETUP
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - PROPERTY SETUP
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _setupProps
   /**
    * @private
    * @param {!Object} props
@@ -701,6 +733,8 @@ var amend = (function amendPrivateScope() {
     return newProps;
   }
 
+  /// {{{3
+  /// @func _setupPropsWithSetter
   /**
    * @private
    * @param {!Object} props
@@ -724,6 +758,8 @@ var amend = (function amendPrivateScope() {
     return newProps;
   }
 
+  /// {{{3
+  /// @func _setupPropsByKey
   /**
    * @private
    * @param {!Array<string>} keys
@@ -756,6 +792,8 @@ var amend = (function amendPrivateScope() {
     return props;
   }
 
+  /// {{{3
+  /// @func _setupPropsByKeyWithSetter
   /**
    * @private
    * @param {!Array<string>} keys
@@ -783,6 +821,8 @@ var amend = (function amendPrivateScope() {
     return props;
   }
 
+  /// {{{3
+  /// @func _setupConfigs
   /**
    * @private
    * @param {!Array} keys
@@ -807,16 +847,20 @@ var amend = (function amendPrivateScope() {
     return props;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE PROPERTIES - DESCRIPTORS SETUP
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - DESCRIPTOR SETUP
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const INVALID_STRONG_TYPE
   /**
    * @private
    * @const {string}
    */
   var INVALID_STRONG_TYPE = 'Invalid type for object property value.';
 
+  /// {{{3
+  /// @func _setupDescriptor
   /**
    * @private
    * @param {*} val
@@ -835,6 +879,8 @@ var amend = (function amendPrivateScope() {
     return merge(prop, val);
   }
 
+  /// {{{3
+  /// @func _setupDescriptorWithSetter
   /**
    * @private
    * @param {*} val
@@ -862,6 +908,8 @@ var amend = (function amendPrivateScope() {
     return prop;
   }
 
+  /// {{{3
+  /// @func _setupDescriptorByKey
   /**
    * @private
    * @param {*} val
@@ -878,6 +926,8 @@ var amend = (function amendPrivateScope() {
     return prop;
   }
 
+  /// {{{3
+  /// @func _setupDescriptorByKeyWithSetter
   /**
    * @private
    * @param {*} val
@@ -896,6 +946,8 @@ var amend = (function amendPrivateScope() {
     return prop;
   }
 
+  /// {{{3
+  /// @func _setupGetSet
   /**
    * @private
    * @param {*} val
@@ -938,10 +990,12 @@ var amend = (function amendPrivateScope() {
     return descriptor;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - DESCRIPTORS HELPERS
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - DESCRIPTOR HELPERS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const DATA_DESCRIPTOR
   /**
    * @private
    * @const {!Object}
@@ -952,6 +1006,8 @@ var amend = (function amendPrivateScope() {
     configurable: true
   };
 
+  /// {{{3
+  /// @const ACCESSOR_DESCRIPTOR
   /**
    * @private
    * @const {!Object}
@@ -961,6 +1017,8 @@ var amend = (function amendPrivateScope() {
     configurable: true
   };
 
+  /// {{{3
+  /// @const DESCRIPTOR_PROPS
   /**
    * @private
    * @const {!Object}
@@ -974,6 +1032,8 @@ var amend = (function amendPrivateScope() {
     configurable: true
   };
 
+  /// {{{3
+  /// @func _isDescriptor
   /**
    * @private
    * @param {!Object} obj
@@ -994,6 +1054,8 @@ var amend = (function amendPrivateScope() {
     return true;
   }
 
+  /// {{{3
+  /// @func _isData
   /**
    * @private
    * @param {Object} obj
@@ -1003,6 +1065,8 @@ var amend = (function amendPrivateScope() {
     return own(obj, 'value') || own(obj, 'writable');
   }
 
+  /// {{{3
+  /// @func _isAccessor
   /**
    * @private
    * @param {Object} obj
@@ -1012,6 +1076,8 @@ var amend = (function amendPrivateScope() {
     return own(obj, 'get') || own(obj, 'set');
   }
 
+  /// {{{3
+  /// @func _getDescriptor
   /**
    * @private
    * @param {Object} descriptor
@@ -1040,6 +1106,8 @@ var amend = (function amendPrivateScope() {
     return merge(defaultDescriptor, descriptor);
   }
 
+  /// {{{3
+  /// @func _cloneAccessor
   /**
    * @private
    * @param {!Object} descriptor
@@ -1060,6 +1128,8 @@ var amend = (function amendPrivateScope() {
     return accessor;
   }
 
+  /// {{{3
+  /// @func _getStrongType
   /**
    * @private
    * @param {string=} strongType
@@ -1071,10 +1141,12 @@ var amend = (function amendPrivateScope() {
     };
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - OBJECT.DEFINE_PROPERTIES POLYFILLS
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - OBJECT POLYFILLS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const HAS_DEFINE_PROPS
   /**
    * @private
    * @const {boolean}
@@ -1108,6 +1180,8 @@ var amend = (function amendPrivateScope() {
     return obj.prop === obj;
   })();
 
+  /// {{{3
+  /// @func _ObjectDefineProperty
   /**
    * @private
    * @param {!Object} obj
@@ -1124,6 +1198,8 @@ var amend = (function amendPrivateScope() {
         return obj;
       };
 
+  /// {{{3
+  /// @func _ObjectDefineProperties
   /**
    * @private
    * @param {!Object} obj
@@ -1150,10 +1226,12 @@ var amend = (function amendPrivateScope() {
         return obj;
       };
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _hasKeys
   /**
    * @private
    * @param {!Object} source
@@ -1172,16 +1250,20 @@ var amend = (function amendPrivateScope() {
     return true;
   }
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('amend');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR AMEND
   return amend;
 })();
-
+/// }}}1
 
 module.exports = amend;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
