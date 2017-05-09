@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: create
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS CREATE
+ * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
  * @see [vitals.create](https://github.com/imaginate/vitals/wiki/vitals.create)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -21,9 +18,9 @@ var amend = require('./amend.js');
 var _is = require('./helpers/is.js');
 
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: create
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS CREATE
+//////////////////////////////////////////////////////////////////////////////
 
 var create = (function createPrivateScope() {
 
@@ -33,17 +30,19 @@ var create = (function createPrivateScope() {
   // - create.object (create.obj)
   //////////////////////////////////////////////////////////
 
-  /**
+  /* {{{2 Create References
    * @ref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
    * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
    */
 
+  /// {{{2
+  /// @method create
   /**
-   * A shortcut for [Object.create][create] that includes easier property value
-   * assignment, strong type declarations, and flexible default [descriptor][descriptor]
-   * options. Note that this method uses @amend#main for assigning properties to
-   * the new `object`. See @amend#main for detailed documentation on all of the
-   * available options.
+   * A shortcut for [Object.create][create] that includes easier property
+   * value assignment, strong type declarations, and flexible default [descriptor][descriptor]
+   * options. Note that this method uses @amend#main for assigning properties
+   * to the new `object`. See @amend#main for detailed documentation on all of
+   * the available options.
    *
    * @public
    * @param {?Object} proto
@@ -71,12 +70,15 @@ var create = (function createPrivateScope() {
     return _ObjectCreate(proto);
   }
 
+  /// {{{2
+  /// @method create.object
+  /// @alias create.obj
   /**
-   * A shortcut for [Object.create][create] that includes easier property value
-   * assignment, strong type declarations, and flexible default [descriptor][descriptor]
-   * options. Note that this method uses @amend#main for assigning properties to
-   * the new `object`. See @amend#main for detailed documentation on all of the
-   * available options.
+   * A shortcut for [Object.create][create] that includes easier property
+   * value assignment, strong type declarations, and flexible default [descriptor][descriptor]
+   * options. Note that this method uses @amend#main for assigning properties
+   * to the new `object`. See @amend#main for detailed documentation on all of
+   * the available options.
    *
    * @public
    * @param {?Object} proto
@@ -106,10 +108,12 @@ var create = (function createPrivateScope() {
   // define shorthand
   create.obj = create.object;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - OBJECT.CREATE POLYFILL
+  ///////////////////////////////////////////////////// {{{2
+  // CREATE HELPERS - OBJECT.CREATE POLYFILL
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _ObjectCreate
   /**
    * @private
    * @param {?Object} proto
@@ -128,26 +132,32 @@ var create = (function createPrivateScope() {
         return obj;
       };
 
+  /// {{{3
+  /// @func _Object
   /**
    * @private
    * @constructor
    */
   function _Object(){}
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // CREATE HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('create');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR CREATE
   return create;
 })();
-
+/// }}}1
 
 module.exports = create;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
