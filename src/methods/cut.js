@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: cut
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS CUT
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.cut](https://github.com/imaginate/vitals/wiki/vitals.cut)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -24,10 +21,9 @@ var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 var is = require('./is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: cut
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS CUT
+//////////////////////////////////////////////////////////////////////////////
 
 var cut = (function cutPrivateScope() {
 
@@ -47,7 +43,7 @@ var cut = (function cutPrivateScope() {
   // - cut.patterns
   //////////////////////////////////////////////////////////
 
-  /**
+  /* {{{2 Cut References
    * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
    * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
@@ -63,6 +59,8 @@ var cut = (function cutPrivateScope() {
    * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    */
 
+  /// {{{2
+  /// @method cut
   /**
    * Removes properties from an `object`, `array`, or `function` or characters
    * from a `string` and returns the amended #source.
@@ -80,8 +78,8 @@ var cut = (function cutPrivateScope() {
    *     - **The leading #val is a `string`**!$
    *       This method will [delete][delete] all properties with a key that
    *       matches (via a [strict equality][equal] test) any #val. If a #val
-   *       is not a `string`, it is converted to a `string` before a comparison
-   *       is made.
+   *       is not a `string`, it is converted to a `string` before a
+   *       comparison is made.
    *     - **The leading #val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
    *       `false` the property is [deleted][delete]). It has the following
@@ -89,18 +87,19 @@ var cut = (function cutPrivateScope() {
    *       - **value** *`*`*
    *       - **key** *`string`*
    *       - **source** *`!Object|function`*
-   *       Note that this method lazily [clones][clone] the #source based on the
-   *       filter's [length property][func-length] (i.e. if you alter the
-   *       #source `object` within the filter make sure you define the filter's
-   *       third parameter so you can safely assume all references to the
-   *       #source are its original values).
+   *       Note that this method lazily [clones][clone] the #source based on
+   *       the filter's [length property][func-length] (i.e. if you alter the
+   *       #source `object` within the filter make sure you define the
+   *       filter's third parameter so you can safely assume all references to
+   *       the #source are its original values).
    *     - **All other situations**!$
    *       This method will [delete][delete] all properties with a value that
    *       matches (via a [strict equality][equal] test) any #val.
    *   - *`!Array`*!$
    *     - **Every #val is a `number`**!$
-   *       This method will [splice][splice] from the #source each property with
-   *       an index that matches (via a [strict equality][equal] test) any #val.
+   *       This method will [splice][splice] from the #source each property
+   *       with an index that matches (via a [strict equality][equal] test)
+   *       any #val.
    *     - **The leading #val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
    *       `false` the property is [spliced][splice] from the #source). It has
@@ -108,8 +107,8 @@ var cut = (function cutPrivateScope() {
    *       - **value** *`*`*
    *       - **index** *`number`*
    *       - **source** *`!Array`*
-   *       Note that this method lazily [clones][clone] the #source based on the
-   *       filter's [length property][func-length] (i.e. if you alter the
+   *       Note that this method lazily [clones][clone] the #source based on
+   *       the filter's [length property][func-length] (i.e. if you alter the
    *       #source `array` within the filter make sure you define the filter's
    *       third parameter so you can safely assume all references to the
    *       #source are its original values).
@@ -119,21 +118,22 @@ var cut = (function cutPrivateScope() {
    *       #val.
    *   - *`string`*!$
    *     Each `substring` of characters that matches any #val is removed from
-   *     the #source. Each #val that is not a `RegExp` or `string` is converted
-   *     to a `string` before checking the #source for any matches.
+   *     the #source. Each #val that is not a `RegExp` or `string` is
+   *     converted to a `string` before checking the #source for any matches.
    * @param {?Object=} thisArg
    *   Only applicable when a filter `function` is defined for #val (i.e. the
-   *   #source must be an `object`, `function`, or `array`, and the leading #val
-   *   must be a `function`). If #thisArg is defined, the filter `function` is
-   *   bound to its value. Note that the native [Function.prototype.bind][bind]
-   *   is not used to bind the filter `function`. Instead the filter `function`
-   *   is wrapped with a regular new [Function][func] that uses
-   *   [Function.prototype.call][call] to call the filter `function` with
-   *   #thisArg. The new wrapper `function` has the same [length property][func-length]
-   *   value as the filter `function` (unless more than three parameters were
-   *   defined for the filter `function` as the wrapper has a max value of `3`)
-   *   and the [name property][func-name] value of `"filter"` (unless you are
-   *   using a [minified][minify] version of `vitals`).
+   *   #source must be an `object`, `function`, or `array`, and the leading
+   *   #val must be a `function`). If #thisArg is defined, the filter
+   *   `function` is bound to its value. Note that the native
+   *   [Function.prototype.bind][bind] is not used to bind the filter
+   *   `function`. Instead the filter `function` is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   filter `function` with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the filter `function`
+   *   (unless more than three parameters were defined for the filter
+   *   `function` as the wrapper has a max value of `3`) and the
+   *   [name property][func-name] value of `"filter"` (unless you are using a
+   *   [minified][minify] version of `vitals`).
    * @return {(!Object|function|!Array|string)}
    *   The amended #source.
    */
@@ -173,9 +173,12 @@ var cut = (function cutPrivateScope() {
       : _cutProp(source, val);
   }
 
+  /// {{{2
+  /// @method cut.property
+  /// @alias cut.prop
   /**
-   * Removes a property from an `object`, `array`, or `function` and returns the
-   * amended #source.
+   * Removes a property from an `object`, `array`, or `function` and returns
+   * the amended #source.
    *
    * @public
    * @param {(!Object|function|!Array)} source
@@ -195,18 +198,19 @@ var cut = (function cutPrivateScope() {
    *       - **value** *`*`*
    *       - **key** *`string`*
    *       - **source** *`!Object|function`*
-   *       Note that this method lazily [clones][clone] the #source based on the
-   *       filter's [length property][func-length] (i.e. if you alter the
-   *       #source `object` within the filter make sure you define the filter's
-   *       third parameter so you can safely assume all references to the
-   *       #source are its original values).
+   *       Note that this method lazily [clones][clone] the #source based on
+   *       the filter's [length property][func-length] (i.e. if you alter the
+   *       #source `object` within the filter make sure you define the
+   *       filter's third parameter so you can safely assume all references to
+   *       the #source are its original values).
    *     - **All other situations**!$
    *       This method will [delete][delete] all properties with a value that
    *       matches (via a [strict equality][equal] test) #val.
    *   - *`!Array`*!$
    *     - **#val is a `number`**!$
-   *       This method will [splice][splice] from the #source each property with
-   *       an index that matches (via a [strict equality][equal] test) #val.
+   *       This method will [splice][splice] from the #source each property
+   *       with an index that matches (via a [strict equality][equal] test)
+   *       #val.
    *     - **#val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
    *       `false` the property is [spliced][splice] from the #source). It has
@@ -214,26 +218,27 @@ var cut = (function cutPrivateScope() {
    *       - **value** *`*`*
    *       - **index** *`number`*
    *       - **source** *`!Array`*
-   *       Note that this method lazily [clones][clone] the #source based on the
-   *       filter's [length property][func-length] (i.e. if you alter the
+   *       Note that this method lazily [clones][clone] the #source based on
+   *       the filter's [length property][func-length] (i.e. if you alter the
    *       #source `array` within the filter make sure you define the filter's
    *       third parameter so you can safely assume all references to the
    *       #source are its original values).
    *     - **All other situations**!$
    *       This method will [splice][splice] from the #source all properties
-   *       with a value that matches (via a [strict equality][equal] test) #val.
+   *       with a value that matches (via a [strict equality][equal] test)
+   *       #val.
    * @param {?Object=} thisArg
-   *   Only applicable when a filter `function` is defined for #val. If #thisArg
-   *   is defined, the filter `function` is bound to its value. Note that the
-   *   native [Function.prototype.bind][bind] is not used to bind the filter
-   *   `function`. Instead the filter `function` is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   filter `function` with #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the filter `function` (unless
-   *   more than three parameters were defined for the filter `function` as the
-   *   wrapper has a max value of `3`) and the [name property][func-name] value
-   *   of `"filter"` (unless you are using a [minified][minify] version of
-   *   `vitals`).
+   *   Only applicable when a filter `function` is defined for #val. If
+   *   #thisArg is defined, the filter `function` is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is not used to bind the
+   *   filter `function`. Instead the filter `function` is wrapped with a
+   *   regular new [Function][func] that uses [Function.prototype.call][call]
+   *   to call the filter `function` with #thisArg. The new wrapper `function`
+   *   has the same [length property][func-length] value as the filter
+   *   `function` (unless more than three parameters were defined for the
+   *   filter `function` as the wrapper has a max value of `3`) and the
+   *   [name property][func-name] value of `"filter"` (unless you are using a
+   *   [minified][minify] version of `vitals`).
    * @return {(!Object|function|!Array)}
    *   The amended #source.
    */
@@ -262,6 +267,8 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.prop = cut.property;
 
+  /// {{{2
+  /// @method cut.key
   /**
    * Removes a property by key name from an `object` or `function` and returns
    * the amended #source.
@@ -285,6 +292,9 @@ var cut = (function cutPrivateScope() {
     return _cutKey(source, key);
   };
 
+  /// {{{2
+  /// @method cut.index
+  /// @alias cut.i
   /**
    * Removes properties by index from an `array` or array-like `object` and
    * returns the amended #source. If an array-like `object` is supplied, it is
@@ -320,6 +330,8 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.i = cut.index;
 
+  /// {{{2
+  /// @method cut.type
   /**
    * Removes properties by their value's [data type][type] from an `object`,
    * `function`, or `array` and returns the amended #source. @is#main is used
@@ -351,6 +363,9 @@ var cut = (function cutPrivateScope() {
     return _cutType(source, type);
   };
 
+  /// {{{2
+  /// @method cut.value
+  /// @alias cut.val
   /**
    * Removes properties by value from an `object`, `function`, or `array` and
    * returns the amended #source.
@@ -382,15 +397,17 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.val = cut.value;
 
+  /// {{{2
+  /// @method cut.pattern
   /**
    * Removes a pattern from a `string` and returns the amended #source.
    *
    * @public
    * @param {string} source
    * @param {*} pattern
-   *   Each `substring` of characters that matches #pattern is removed from the
-   *   #source. If #pattern is not a `RegExp` or `string`, it is converted into
-   *   a `string` before checking the #source for any matches.
+   *   Each `substring` of characters that matches #pattern is removed from
+   *   the #source. If #pattern is not a `RegExp` or `string`, it is converted
+   *   into a `string` before checking the #source for any matches.
    * @return {string}
    *   The amended #source.
    */
@@ -404,9 +421,12 @@ var cut = (function cutPrivateScope() {
     return _cutPattern(source, pattern);
   };
 
+  /// {{{2
+  /// @method cut.properties
+  /// @alias cut.props
   /**
-   * Removes properties from an `object`, `array`, or `function` and returns the
-   * amended #source.
+   * Removes properties from an `object`, `array`, or `function` and returns
+   * the amended #source.
    *
    * @public
    * @param {(!Object|function|!Array)} source
@@ -455,6 +475,8 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.props = cut.properties;
 
+  /// {{{2
+  /// @method cut.keys
   /**
    * Removes properties by key name from an `object` or `function` and returns
    * the amended #source.
@@ -463,9 +485,9 @@ var cut = (function cutPrivateScope() {
    * @param {(!Object|function)} source
    * @param {...*} key
    *   If only one `array` #key is provided, it is considered an `array` of
-   *   keys. If a property exists in #source with any #key for its key name, it
-   *   is [deleted][delete]. If a #key is not a `string`, it is converted into a
-   *   `string` before the #source is checked.
+   *   keys. If a property exists in #source with any #key for its key name,
+   *   it is [deleted][delete]. If a #key is not a `string`, it is converted
+   *   into a `string` before the #source is checked.
    * @return {(!Object|function)}
    *   The amended #source.
    */
@@ -483,6 +505,9 @@ var cut = (function cutPrivateScope() {
       : _cutKey(source, key);
   };
 
+  /// {{{2
+  /// @method cut.indexes
+  /// @alias cut.ii
   /**
    * Removes properties by index from an `array` or array-like `object` and
    * returns the amended #source. If an array-like `object` is supplied, it is
@@ -493,8 +518,8 @@ var cut = (function cutPrivateScope() {
    * @param {(!Object|function|!Array)} source
    * @param {(!Array<number>|...number)} index
    *   If only one `array` #index is provided, it is considered an `array` of
-   *   indexes. If a property with any #index exists in #source, it is [spliced][splice]
-   *   from #source.
+   *   indexes. If a property with any #index exists in #source, it is
+   *   [spliced][splice] from #source.
    * @return {!Array}
    *   The amended #source or when an array-like `object` is defined for the
    *   #source, an amended copy (via [slice][slice]) of #source.
@@ -529,6 +554,9 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.ii = cut.indexes;
 
+  /// {{{2
+  /// @method cut.values
+  /// @alias cut.vals
   /**
    * Removes properties by value from an `object`, `function`, or `array` and
    * returns the amended #source.
@@ -566,16 +594,19 @@ var cut = (function cutPrivateScope() {
   // define shorthand
   cut.vals = cut.values;
 
+  /// {{{2
+  /// @method cut.patterns
   /**
    * Removes patterns from a `string` and returns the amended #source.
    *
    * @public
    * @param {string} source
    * @param {...*} pattern
-   *   If only one `array` #pattern is provided, it is considered an `array` of
-   *   patterns. Each `substring` of characters that matches any #pattern is
-   *   removed from the #source. If a #pattern is not a `RegExp` or `string`, it
-   *   is converted into a `string` before checking the #source for any matches.
+   *   If only one `array` #pattern is provided, it is considered an `array`
+   *   of patterns. Each `substring` of characters that matches any #pattern
+   *   is removed from the #source. If a #pattern is not a `RegExp` or
+   *   `string`, it is converted into a `string` before checking the #source
+   *   for any matches.
    * @return {string}
    *   The amended #source.
    */
@@ -593,10 +624,12 @@ var cut = (function cutPrivateScope() {
       : _cutPattern(source, pattern);
   };
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _cutProp
   /**
    * @private
    * @param {(!Object|function|!Array)} source
@@ -613,6 +646,8 @@ var cut = (function cutPrivateScope() {
         : _deleteVal(source, val);
   }
 
+  /// {{{3
+  /// @func _cutProps
   /**
    * @private
    * @param {(!Object|function|!Array)} source
@@ -629,6 +664,8 @@ var cut = (function cutPrivateScope() {
         : _deleteVals(source, vals);
   }
 
+  /// {{{3
+  /// @func _cutKey
   /**
    * @private
    * @param {(!Object|function)} source
@@ -640,6 +677,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _cutKeys
   /**
    * @private
    * @param {(!Object|function)} source
@@ -660,6 +699,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _cutIndex
   /**
    * @private
    * @param {!Array} source
@@ -701,6 +742,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _cutIndexes
   /**
    * @private
    * @param {!Array} source
@@ -711,6 +754,8 @@ var cut = (function cutPrivateScope() {
     return _spliceKeys(source, keys);
   }
 
+  /// {{{3
+  /// @func _cutType
   /**
    * @private
    * @param {(!Object|function|!Array)} source
@@ -723,6 +768,8 @@ var cut = (function cutPrivateScope() {
       : _deleteValByType(source, type);
   }
 
+  /// {{{3
+  /// @func _cutVal
   /**
    * @private
    * @param {(!Object|function|!Array)} source
@@ -735,6 +782,8 @@ var cut = (function cutPrivateScope() {
       : _deleteVal(source, val);
   }
 
+  /// {{{3
+  /// @func _cutVals
   /**
    * @private
    * @param {(!Object|function|!Array)} source
@@ -747,6 +796,8 @@ var cut = (function cutPrivateScope() {
       : _deleteVals(source, vals);
   }
 
+  /// {{{3
+  /// @func _cutPattern
   /**
    * @private
    * @param {string} source
@@ -762,6 +813,8 @@ var cut = (function cutPrivateScope() {
     return source.replace(pattern, '');
   }
 
+  /// {{{3
+  /// @func _cutPatterns
   /**
    * @private
    * @param {string} source
@@ -782,10 +835,12 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - DELETE
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - DELETE
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _deleteKey
   /**
    * @private
    * @param {(!Object|function)} source
@@ -815,6 +870,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _deleteKeys
   /**
    * @private
    * @param {(!Object|function)} source
@@ -838,6 +895,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _deleteVal
   /**
    * @private
    * @param {(!Object|function)} source
@@ -856,6 +915,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _deleteValByType
   /**
    * @private
    * @param {(!Object|function)} source
@@ -874,6 +935,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _deleteVals
   /**
    * @private
    * @param {(!Object|function)} source
@@ -894,10 +957,12 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - SPLICE
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - SPLICE
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _spliceKey
   /**
    * @private
    * @param {!Array} source
@@ -920,6 +985,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _spliceKeys
   /**
    * @private
    * @param {!Array} source
@@ -953,6 +1020,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _spliceVal
   /**
    * @private
    * @param {!Array} source
@@ -972,6 +1041,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _spliceValByType
   /**
    * @private
    * @param {!Array} source
@@ -991,6 +1062,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _spliceVals
   /**
    * @private
    * @param {!Array} source
@@ -1023,10 +1096,12 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - FILTER
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - FILTER
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _filterObj
   /**
    * @private
    * @param {(!Object|function)} source
@@ -1075,6 +1150,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
+  /// {{{3
+  /// @func _filterArr
   /**
    * @private
    * @param {!Array} source
@@ -1124,8 +1201,8 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - SORT
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - SORT
   //////////////////////////////////////////////////////////
 
   /**
@@ -1135,6 +1212,8 @@ var cut = (function cutPrivateScope() {
    * }} SortedIndexes
    */
 
+  /// {{{3
+  /// @func _sortIndexes
   /**
    * @private
    * @param {!Array<number>} indexes
@@ -1143,6 +1222,8 @@ var cut = (function cutPrivateScope() {
    */
   var _sortIndexes = (function() {
 
+    /// {{{4
+    /// @func sortIndexes
     /**
      * @private
      * @param {!Array<number>} indexes
@@ -1179,7 +1260,7 @@ var cut = (function cutPrivateScope() {
       return result();
     }
 
-    //////////////////////////////
+    ///////////////////////// {{{4
     // SORT MEMBERS
     // - FIRST
     // - LAST
@@ -1189,7 +1270,7 @@ var cut = (function cutPrivateScope() {
     /** @type {!Array<number>} */
     var last;
 
-    //////////////////////////////
+    ///////////////////////// {{{4
     // SORT METHODS
     // - SETUP
     // - RESULT
@@ -1202,6 +1283,8 @@ var cut = (function cutPrivateScope() {
     // - COMPARE PREV
     // - COMPARE NEXT
 
+    /// {{{5
+    /// @func setup
     /**
      * @private
      * @type {function}
@@ -1211,6 +1294,8 @@ var cut = (function cutPrivateScope() {
       last = [];
     }
 
+    /// {{{5
+    /// @func result
     /**
      * @private
      * @return {!SortedIndexes}
@@ -1222,6 +1307,8 @@ var cut = (function cutPrivateScope() {
       };
     }
 
+    /// {{{5
+    /// @func parse
     /**
      * @private
      * @param {number} index
@@ -1237,6 +1324,8 @@ var cut = (function cutPrivateScope() {
         : index;
     }
 
+    /// {{{5
+    /// @func push
     /**
      * @private
      * @param {number} index
@@ -1246,6 +1335,8 @@ var cut = (function cutPrivateScope() {
       last.push(index);
     }
 
+    /// {{{5
+    /// @func unshift
     /**
      * @private
      * @param {number} index
@@ -1255,6 +1346,8 @@ var cut = (function cutPrivateScope() {
       last.unshift(index);
     }
 
+    /// {{{5
+    /// @func insert
     /**
      * @private
      * @param {number} index
@@ -1265,6 +1358,8 @@ var cut = (function cutPrivateScope() {
       last.splice(pos, 0, index);
     }
 
+    /// {{{5
+    /// @func remove
     /**
      * @private
      * @param {number} index
@@ -1275,6 +1370,8 @@ var cut = (function cutPrivateScope() {
       last.splice(pos, 1);
     }
 
+    /// {{{5
+    /// @func sort
     /**
      * @private
      * @param {number} index
@@ -1296,6 +1393,8 @@ var cut = (function cutPrivateScope() {
         compareNext(index, mid, right);
     }
 
+    /// {{{5
+    /// @func comparePrev
     /**
      * @private
      * @param {number} index
@@ -1339,6 +1438,8 @@ var cut = (function cutPrivateScope() {
         sort(index, left, prev);
     }
 
+    /// {{{5
+    /// @func compareNext
     /**
      * @private
      * @param {number} index
@@ -1382,14 +1483,17 @@ var cut = (function cutPrivateScope() {
         sort(index, next, right);
     }
 
+    /// }}}4
     // END OF INDEX SORT PRIVATE SCOPE
     return sortIndexes;
   })();
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // CUT HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _bind
   /**
    * @private
    * @param {function} func
@@ -1416,16 +1520,20 @@ var cut = (function cutPrivateScope() {
     };
   }
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('cut');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR CUT
   return cut;
 })();
-
+/// }}}1
 
 module.exports = cut;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
