@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: fill
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS FILL
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.fill](https://github.com/imaginate/vitals/wiki/vitals.fill)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -20,10 +17,9 @@ var splitKeys = require('./helpers/split-keys.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: fill
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS FILL
+//////////////////////////////////////////////////////////////////////////////
 
 var fill = (function fillPrivateScope() {
 
@@ -35,52 +31,75 @@ var fill = (function fillPrivateScope() {
   // - fill.string (fill.str)
   //////////////////////////////////////////////////////////
 
+  /* {{{2
+   * @ref []:()
+   */
+
+  /// {{{2
+  /// @method fill
   /**
-   * Fills an array, object, or string with specified values.
+   * Fills an `array`, `object`, or `string` with specified values.
    *
    * @public
-   * @param {?(Array|Object|function|number)} source - If source is a number
-   *   returns a new string filled with the value x times.
-   * @param {(!Array|string)=} keys - Only use with an object/function source.
-   *   If defined it is considered an array of keys that will limit the fill
-   *   action. If a string is defined it is converted to an array using one of
-   *   the values in the following list for the separator (values listed in
+   * @param {(?Array|?Object|function|number)} source
+   *   If the #source is a `number`, @fill returns a new `string` filled with
+   *   the `string` conversion of #val the #source `number` of times.
+   * @param {(!Array|string)=} keys
+   *   Only use with an `object` or `function` #source. If defined, #keys is
+   *   considered an `array` of keys that will limit the fill action. If a
+   *   `string` is defined for #keys, it is converted to an `array` using one
+   *   of the values in the following list for the separator (values listed in
    *   order of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
-   * @param {*} val - The value to fill the array, object, or string with.
-   * @param {number=} start - [default= 0] Only for use with source arrays.
-   * @param {number=} end - [default= source.length] Only for use with source
-   *   arrays.
-   * @return {?(Array|Object|function|string)}
+   * @param {*} val
+   *   The value to fill the `array`, `object`, or `string` with.
+   * @param {number=} start = `0`
+   *   Only use with an `array` #source. It will limit the #source indexes
+   *   filled with the #val.
+   * @param {number=} end = `source.length`
+   *   Only use with an `array` #source. It will limit the #source indexes
+   *   filled with the #val.
+   * @return {(?Array|?Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
 
-    if (arguments.length < 2) throw _error('No val defined');
+    if (arguments.length < 2)
+      throw _error('No val defined');
 
-    if ( _is.nil(source) ) return null;
+    if ( _is.nil(source) )
+      return null;
 
     if ( _is.num(source) ) {
       val = keys;
       return _fillStr(source, val);
     }
 
-    if ( !_is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) )
+      throw _error.type('source');
 
     if ( _is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
-      if ( !_is.un.num(start) ) throw _error.type('start');
-      if ( !_is.un.num(end)   ) throw _error.type('end');
+
+      if ( !_is.un.num(start) )
+        throw _error.type('start');
+      if ( !_is.un.num(end) )
+        throw _error.type('end');
+
       return _fillArr(source, val, start, end);
     }
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? splitKeys(keys) : keys;
-      if ( !_is.arr(keys) ) throw _error.type('keys');
+      if ( _is.str(keys) )
+        keys = splitKeys(keys);
+
+      if ( !_is.arr(keys) )
+        throw _error.type('keys');
+
       return _fillKeys(source, keys, val);
     }
 
