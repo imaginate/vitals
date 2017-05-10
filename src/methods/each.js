@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: each
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS EACH
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.each](https://github.com/imaginate/vitals/wiki/vitals.each)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -21,10 +18,9 @@ var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: each
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS EACH
+//////////////////////////////////////////////////////////////////////////////
 
 var each = (function eachPrivateScope() {
 
@@ -36,65 +32,122 @@ var each = (function eachPrivateScope() {
   // - each.cycle  (each.time)
   //////////////////////////////////////////////////////////
 
+  /* {{{2
+   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+   */
+
+  /// {{{2
+  /// @method each
   /**
-   * A shortcut for iterating over object maps, arrays, or cycles.
+   * A shortcut for iterating over `object` and `array` properties or a
+   * defined number of cycles.
    *
    * @public
-   * @param {!(Object|function|Array|number|string)} source - Details per type:
-   *   - object source: Iterates over all properties in random order.
-   *   - array source:  Iterates over all indexed properties from 0 to length.
-   *   - number source: Iterates over all cycles.
-   *   - string source: Converted to an array source using one of the following
-   *     list of values for the separator (values listed in order of rank):
-   *     -- `", "`
-   *     -- `","`
-   *     -- `"|"`
-   *     -- `" "`
-   * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
-   *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
-   * @return {(Object|function|Array|undefined)}
+   * @param {(!Object|function|!Array|number|string)} source
+   *   The details are as follows (per #source type):
+   *   - *`!Object|function`*!$
+   *     Iterates over all properties in random order.
+   *   - *`!Array`*!$
+   *     Iterates over all indexed properties from `0` to `length`.
+   *   - *`number`*!$
+   *     Iterates over the `number` of cycles.
+   *   - *`string`*!$
+   *     Converted to an `array` #source using one of the following list of
+   *     values for the separator (values listed in order of rank):
+   *     - `", "`
+   *     - `","`
+   *     - `"|"`
+   *     - `" "`
+   * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee
+   *   It has the optional params:
+   *   - **value** *`*`*
+   *   - **key** or **index** *`string|number`*
+   *   - **source** *`!Object|function|!Array`*
+   *   Note this method lazily [clones][clone] the #source based on the
+   *   iteratee's [length property][func-length] (i.e. if you alter the
+   *   #source `object` within the #iteratee make sure you define the
+   *   iteratee's third parameter so you can safely assume all references to
+   *   the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
+   *   the native [Function.prototype.bind][bind] is not used to bind the
+   *   #iteratee. Instead the #iteratee is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   #iteratee with #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the #iteratee (unless more than
+   *   three parameters were defined for the #iteratee as the wrapper has a
+   *   max value of `3`) and the [name property][func-name] value of
+   *   `"iteratee"` (unless you are using a [minified][minify] version of
+   *   `vitals`).
+   * @return {(?Object|function|?Array|undefined)}
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+    if ( !_is.func(iteratee) )
+      throw _error.type('iteratee');
+    if ( !_is.nil.un.obj(thisArg) )
+      throw _error.type('thisArg');
 
-    if ( _is.num(source) ) return _eachCycle(source, iteratee, thisArg);
+    if ( _is.num(source) )
+      return _eachCycle(source, iteratee, thisArg);
 
-    if ( _is.str(source) ) source = splitKeys(source);
+    if ( _is.str(source) )
+      source = splitKeys(source);
 
-    if ( !_is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) )
+      throw _error.type('source');
 
     return _is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
 
+  /// {{{2
+  /// @method each.object
+  /// @alias each.obj
   /**
-   * A shortcut for iterating over object maps.
+   * A shortcut for iterating over `object` properties.
    *
    * @public
-   * @param {!(Object|function)} source
-   * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
-   *   must be a function with the optional params - value, key, source. Note
-   *   this method lazily clones the source based on the iteratee's
-   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} source
+   * @param {function(*=, string=, (!Object|function)=)} iteratee
+   *   It has the optional params:
+   *   - **value** *`*`*
+   *   - **key** *`string`*
+   *   - **source** *`!Object|function`*
+   *   Note this method lazily [clones][clone] the #source based on the
+   *   iteratee's [length property][func-length] (i.e. if you alter the
+   *   #source `object` within the #iteratee make sure you define the
+   *   iteratee's third parameter so you can safely assume all references to
+   *   the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
+   *   the native [Function.prototype.bind][bind] is not used to bind the
+   *   #iteratee. Instead the #iteratee is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   #iteratee with #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the #iteratee (unless more than
+   *   three parameters were defined for the #iteratee as the wrapper has a
+   *   max value of `3`) and the [name property][func-name] value of
+   *   `"iteratee"` (unless you are using a [minified][minify] version of
+   *   `vitals`).
+   * @return {(!Object|function)}
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'object');
+    if ( !_is.func(iteratee) )
+      throw _error.type('iteratee', 'object');
+    if ( !_is.nil.un.obj(thisArg) )
+      throw _error.type('thisArg', 'object');
 
     return _eachObj(source, iteratee, thisArg);
   };
