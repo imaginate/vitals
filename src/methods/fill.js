@@ -107,30 +107,41 @@ var fill = (function fillPrivateScope() {
     return _fillObj(source, val);
   }
 
+  /// {{{2
+  /// @method fill.object
+  /// @alias fill.obj
   /**
-   * Fills an existing object/function with specified keys and values.
+   * Fills an existing `object` or `function` with specified keys and values.
    *
    * @public
    * @param {(!Object|function)} obj
-   * @param {(!Array|string)=} keys - If defined it is considered an array of
-   *   keys that will limit the fill action. If a string is defined it is
-   *   converted to an array using one of the values in the following list for
-   *   the separator (values listed in order of rank):
+   * @param {(!Array|string)=} keys
+   *   If defined, #keys is considered an `array` of keys that will limit the
+   *   fill action. If a `string` is defined for #keys, it is converted to an
+   *   `array` using one of the values in the following list for the separator
+   *   (values listed in order of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
    * @param {*} val
+   *   The value to fill the `object` or `function` with.
    * @return {(!Object|function)}
    */
   fill.object = function fillObject(obj, keys, val) {
 
-    if ( !_is._obj(obj) ) throw _error.type('obj', 'object');
-    if (arguments.length < 2) throw _error('No val defined', 'object');
+    if ( !_is._obj(obj) )
+      throw _error.type('obj', 'object');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'object');
 
     if (arguments.length > 2) {
-      keys = _is.str(keys) ? splitKeys(keys) : keys;
-      if ( !_is.arr(keys) ) throw _error.type('keys', 'object');
+      if ( _is.str(keys) )
+        keys = splitKeys(keys);
+
+      if ( !_is.arr(keys) )
+        throw _error.type('keys', 'object');
+
       return _fillKeys(obj, keys, val);
     }
 
