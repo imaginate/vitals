@@ -213,19 +213,40 @@ var each = (function eachPrivateScope() {
   // define shorthand
   each.arr = each.array;
 
+  /// {{{2
+  /// @method each.cycle
+  /// @alias each.time
   /**
-   * A shortcut for iterating over a set number of cycles.
+   * A shortcut for iterating over a set `number` of cycles.
    *
    * @public
    * @param {number} count
    * @param {function(number=)} iteratee
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
+   *   It has the optional parameter:
+   *   - **cycle** *`number`*
+   *   Note that the cycle parameter is zero-based (i.e. the first cycle is
+   *   `0`).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
+   *   the native [Function.prototype.bind][bind] is not used to bind the
+   *   #iteratee. Instead the #iteratee is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   #iteratee with #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the #iteratee (unless more than
+   *   three parameters were defined for the #iteratee as the wrapper has a
+   *   max value of `3`) and the [name property][func-name] value of
+   *   `"iteratee"` (unless you are using a [minified][minify] version of
+   *   `vitals`).
+   * @return {undefined}
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !_is.num(count)          ) throw _error.type('count',    'cycle');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'cycle');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'cycle');
+    if ( !_is.num(count) )
+      throw _error.type('count', 'cycle');
+    if ( !_is.func(iteratee) )
+      throw _error.type('iteratee', 'cycle');
+    if ( !_is.nil.un.obj(thisArg) )
+      throw _error.type('thisArg', 'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
   };
