@@ -38,6 +38,7 @@ var each = (function eachPrivateScope() {
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
    * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
    * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
    * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
    * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
@@ -154,34 +155,58 @@ var each = (function eachPrivateScope() {
   // define shorthand
   each.obj = each.object;
 
+  /// {{{2
+  /// @method each.array
+  /// @alias each.arr
   /**
-   * A shortcut for iterating over array-like objects.
+   * A shortcut for iterating over the indexed properties of an `array` or
+   * array-like `object`.
    *
    * @public
-   * @param {!(Object|function|string)} source - If source is a string it is
-   *   converted to an array using one of the following list of values for the
-   *   separator (values listed in order of rank):
+   * @param {(!Object|function|!Array|string)} source
+   *   If #source is a `string`, it is converted to an `array` using one of
+   *   the following list of values for the separator (values listed in order
+   *   of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
-   * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
-   *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
-   * @return {!(Object|function|Array)}
+   * @param {function(*=, number=, !Array=)} iteratee
+   *   It has the optional params:
+   *   - **value** *`*`*
+   *   - **index** *`number`*
+   *   - **source** *`!Array`*
+   *   Note this method lazily [slices][slice] the #source based on the
+   *   iteratee's [length property][func-length] (i.e. if you alter the
+   *   #source `array` within the #iteratee make sure you define the
+   *   iteratee's third parameter so you can safely assume all references to
+   *   the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
+   *   the native [Function.prototype.bind][bind] is not used to bind the
+   *   #iteratee. Instead the #iteratee is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] to call the
+   *   #iteratee with #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the #iteratee (unless more than
+   *   three parameters were defined for the #iteratee as the wrapper has a
+   *   max value of `3`) and the [name property][func-name] value of
+   *   `"iteratee"` (unless you are using a [minified][minify] version of
+   *   `vitals`).
+   * @return {(!Object|function|!Array)}
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = splitKeys(source);
+    if ( _is.str(source) )
+      source = splitKeys(source);
 
-    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'array');
+    if ( !_is.num(source.length) )
+      throw _error.type('source.length', 'array');
+    if ( !_is.func(iteratee) )
+      throw _error.type('iteratee', 'array');
+    if ( !_is.nil.un.obj(thisArg) )
+      throw _error.type('thisArg', 'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
