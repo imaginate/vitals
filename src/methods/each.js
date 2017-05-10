@@ -176,9 +176,9 @@ var each = (function eachPrivateScope() {
    *   - **value** *`*`*
    *   - **index** *`number`*
    *   - **source** *`!Array`*
-   *   Note this method lazily [slices][slice] the #source based on the
-   *   iteratee's [length property][func-length] (i.e. if you alter the
-   *   #source `array` within the #iteratee make sure you define the
+   *   Note this method lazily [clones][clone] the #source with @copy#array
+   *   based on the iteratee's [length property][func-length] (i.e. if you
+   *   alter the #source `array` within the #iteratee make sure you define the
    *   iteratee's third parameter so you can safely assume all references to
    *   the #source are its original values).
    * @param {?Object=} thisArg
@@ -253,39 +253,66 @@ var each = (function eachPrivateScope() {
   // define shorthand
   each.time = each.cycle;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // EACH HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _eachObj
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} obj
+   * @param {function(*, string=, (!Object|function)=)} iteratee
+   * @param {?Object=} thisArg
+   * @return {(!Object|function)}
    */
   function _eachObj(obj, iteratee, thisArg) {
 
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      obj = copy(obj);
+    if ( !_is.undefined(thisArg) )
+      iteratee = _bind(iteratee, thisArg);
+
     switch (iteratee.length) {
-      case 0: for (key in obj) own(obj, key) && iteratee();              break;
-      case 1: for (key in obj) own(obj, key) && iteratee(obj[key]);      break;
-      case 2: for (key in obj) own(obj, key) && iteratee(obj[key], key); break;
-     default: for (key in obj) own(obj, key) && iteratee(obj[key], key, obj);
+      case 0:
+        for (key in obj) {
+          if ( own(obj, key) )
+            iteratee();
+        }
+        break;
+      case 1:
+        for (key in obj) {
+          if ( own(obj, key) )
+            iteratee(obj[key]);
+        }
+        break;
+      case 2:
+        for (key in obj) {
+          if ( own(obj, key) )
+            iteratee(obj[key], key);
+        }
+        break;
+     default:
+       for (key in obj) {
+         if ( own(obj, key) )
+           iteratee(obj[key], key, obj);
+       }
+       break;
     }
     return obj;
   }
 
+  /// {{{3
+  /// @func _eachArr
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function|!Array)} obj
    * @param {function(*, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
-   * @return {!(Object|function)}
+   * @param {?Object=} thisArg
+   * @return {(!Object|function|!Array)}
    */
   function _eachArr(obj, iteratee, thisArg) {
 
@@ -294,74 +321,108 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      obj = copy.arr(obj);
+    if ( !_is.undefined(thisArg) )
+      iteratee = _bind(iteratee, thisArg);
+
     len = obj.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) iteratee();              break;
-      case 1:  while (++i < len) iteratee(obj[i]);        break;
-      case 2:  while (++i < len) iteratee(obj[i], i);     break;
-      default: while (++i < len) iteratee(obj[i], i, obj);
+      case 0:
+        while (++i < len)
+          iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          iteratee(obj[i]);
+        break;
+      case 2:
+        while (++i < len)
+          iteratee(obj[i], i);
+        break;
+      default:
+        while (++i < len)
+          iteratee(obj[i], i, obj);
+        break;
     }
     return obj;
   }
 
+  /// {{{3
+  /// @func _eachCycle
   /**
    * @private
    * @param {number} count
    * @param {function} iteratee
-   * @param {Object=} thisArg
+   * @param {?Object=} thisArg
+   * @return {undefined}
    */
   function _eachCycle(count, iteratee, thisArg) {
 
     /** @type {number} */
     var i;
 
-    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if ( !_is.undefined(thisArg) )
+      iteratee = _bind(iteratee, thisArg);
+
     if (iteratee.length) {
       i = 0;
-      while(count--) iteratee(i++);
+      while(count--)
+        iteratee(i++);
     }
     else {
-      while(count--) iteratee();
+      while(count--)
+        iteratee();
     }
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // EACH HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _bind
   /**
    * @private
    * @param {function} func
-   * @param {Object} thisArg
+   * @param {?Object} thisArg
    * @return {function} 
    */
   function _bind(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function iteratee() { func.call(thisArg); };
+        return function iteratee() {
+          func.call(thisArg);
+        };
       case 1:
-      return function iteratee(val) { func.call(thisArg, val); };
+        return function iteratee(val) {
+          func.call(thisArg, val);
+        };
       case 2:
-      return function iteratee(val, key) { func.call(thisArg, val, key); };
+        return function iteratee(val, key) {
+          func.call(thisArg, val, key);
+        };
     }
     return function iteratee(val, key, obj) {
       func.call(thisArg, val, key, obj);
     };
   }
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('each');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR EACH
   return each;
 })();
-
+/// }}}1
 
 module.exports = each;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
