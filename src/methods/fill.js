@@ -31,7 +31,7 @@ var fill = (function fillPrivateScope() {
   // - fill.string (fill.str)
   //////////////////////////////////////////////////////////
 
-  /* {{{2
+  /* {{{2 Fill References
    * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
    * @ref [str-func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
@@ -226,15 +226,17 @@ var fill = (function fillPrivateScope() {
   // define shorthand
   fill.str = fill.string;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // FILL HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _fillObj
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fillObj(obj, val) {
 
@@ -242,19 +244,20 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( own(obj, key) ) {
+      if ( own(obj, key) )
         obj[key] = val;
-      }
     }
     return obj;
   }
 
+  /// {{{3
+  /// @func _fillKeys
   /**
    * @private
-   * @param {!(Object|function)} obj
+   * @param {(!Object|function)} obj
    * @param {!Array} keys
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fillKeys(obj, keys, val) {
 
@@ -265,18 +268,19 @@ var fill = (function fillPrivateScope() {
 
     len = keys.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       obj[ keys[i] ] = val;
-    }
     return obj;
   }
 
+  /// {{{3
+  /// @func _fillArr
   /**
    * @private
    * @param {!Array} arr
    * @param {*} val
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= arr.length]
+   * @param {number=} start = `0`
+   * @param {number=} end = `arr.length`
    * @return {!Array}
    */
   function _fillArr(arr, val, start, end) {
@@ -287,23 +291,33 @@ var fill = (function fillPrivateScope() {
     var i;
 
     len = arr.length;
-    start = start || 0;
-    start = start < 0 ? len + start : start;
-    start = start < 0 ? 0 : start;
-    end = end || len;
-    end = end > len
-      ? len : end < 0
-        ? len + end : end;
 
-    if (start >= end) return arr;
+    if ( _is.undefined(start) )
+      start = 0;
+    if ( _is.undefined(end) )
+      end = len;
+
+    if (start < 0)
+      start += len;
+    if (start < 0)
+      start = 0;
+
+    if (end > len)
+      end = len;
+    else if (end < 0)
+      end += len;
+
+    if (start >= end)
+      return arr;
 
     i = start - 1;
-    while (++i < end) {
+    while (++i < end)
       arr[i] = val;
-    }
     return arr;
   }
 
+  /// {{{3
+  /// @func _fillStr
   /**
    * @private
    * @param {number} count
@@ -315,32 +329,34 @@ var fill = (function fillPrivateScope() {
     /** @type {string} */
     var str;
 
-    count = count < 0 ? 0 : count;
-
-    if (!count) return '';
+    if (count < 1)
+      return '';
 
     val = String(val);
     str = '';
-    while (count--) {
+    while (count--)
       str += val;
-    }
     return str;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // FILL HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('fill');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR FILL
   return fill;
 })();
-
+/// }}}1
 
 module.exports = fill;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
