@@ -91,10 +91,12 @@ var freeze = (function freezePrivateScope() {
   // define shorthand
   freeze.obj = freeze.object;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE PROPERTIES - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // FREEZE HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _deepFreeze
   /**
    * @private
    * @param {(!Object|function)} obj
@@ -106,17 +108,18 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( own(obj, key) && _is._obj( obj[key] ) ) {
-        _deepFreeze( obj[key] );
-      }
+      if ( own(obj, key) && _is._obj(obj[key]) )
+        _deepFreeze(obj[key]);
     }
     return _ObjectFreeze(obj);
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - OBJECT.FREEZE POLYFILL
+  ///////////////////////////////////////////////////// {{{2
+  // FREEZE HELPERS - OBJECT.FREEZE POLYFILL
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _ObjectFreeze
   /**
    * @private
    * @param {(!Object|function)} obj
@@ -124,33 +127,47 @@ var freeze = (function freezePrivateScope() {
    */
   var _ObjectFreeze = (function() {
 
-    if (!Object.freeze) return function freeze(obj) { return obj; };
+    /** @type {function} */
+    var objectFreeze;
+
+    if ( !('freeze' in Object) || !_is.func(Object.freeze) )
+      return function freeze(obj) {
+        return obj;
+      };
+
+    objectFreeze = Object.freeze;
 
     try {
-      Object.freeze(function(){});
-      return Object.freeze;
+      objectFreeze(function(){});
+      return objectFreeze;
     }
     catch (e) {
       return function freeze(obj) {
-        return _is.func(obj) ? obj : Object.freeze(obj);
+        return _is.func(obj)
+          ? obj
+          : objectFreeze(obj);
       };
     }
   })();
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // FREEZE HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('freeze');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR FREEZE
   return freeze;
 })();
-
+/// }}}1
 
 module.exports = freeze;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
