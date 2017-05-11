@@ -37,6 +37,7 @@ var fuse = (function fusePrivateScope() {
   /* {{{2 Fuse References
    * @ref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
    * @ref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
+   * @ref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
    */
 
   /// {{{2
@@ -151,47 +152,61 @@ var fuse = (function fusePrivateScope() {
   // define shorthand
   fuse.val = fuse.value;
 
+  /// {{{2
+  /// @method fuse.value.start
+  /// @alias fuse.value.top
+  /// @alias fuse.val.start
+  /// @alias fuse.val.top
   /**
-   * Appends properties and combines strings to the start of their destination.
+   * Appends to the #dest beginning properties for an `object`, `function`, or
+   * `array` or strings for a `string`.
    *
    * @public
-   * @param {!(Object|function|Array|string)} dest
-   * @param {...*} vals - Details per dest type:
-   *   - object: All vals are converted to strings and appended as new keys (if
-   *     the key exists on the dest the property's value remains unchanged).
-   *   - array: All vals are unshifted to the dest.
-   *   - string: All vals are converted to strings and appended to the beginning
-   *     of the dest.
-   * @return {!(Object|function|Array|string)}
+   * @param {(!Object|function|!Array|string)} dest
+   * @param {...*} val
+   *   The details are as follows (per #dest type):
+   *   - *`!Object|function`*!$
+   *     Each #val is converted to a `string` and appended as a new property
+   *     key to the #dest (if the key exists in the #dest, the property's
+   *     value remains unchanged).
+   *   - *`!Array`*!$
+   *     Each #val is [unshifted][unshift] to the #dest.
+   *   - *`string`*!$
+   *     Each #val is converted to a `string` and appended to the beginning of
+   *     the #dest.
+   * @return {(!Object|function|!Array|string)}
    */
-  fuse.value.start = function fuseValueStart(dest, vals) {
+  fuse.value.start = function fuseValueStart(dest, val) {
 
-    if (arguments.length < 2) throw _error('No val defined', 'value.start');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'value.start');
 
     if ( _is.str(dest) ) {
-      if (arguments.length < 3) return _fuseStrTop(dest, vals);
-      vals = sliceArr(arguments, 1);
-      return _fuseStrsTop(dest, vals);
+      if (arguments.length < 3)
+        return _fuseStrTop(dest, val);
+      val = sliceArr(arguments, 1);
+      return _fuseStrsTop(dest, val);
     }
 
-    if ( !_is._obj(dest) ) throw _error.type('dest', 'value.start');
+    if ( !_is._obj(dest) )
+      throw _error.type('dest', 'value.start');
 
-    dest = _is.args(dest) ? sliceArr(dest) : dest;
+    if ( _is.args(dest) )
+      dest = sliceArr(dest);
 
-    if (arguments.length < 3) {
+    if (arguments.length < 3)
       return _is.arr(dest)
-        ? _fuseArrValTop(dest, vals)
-        : _fuseObjValTop(dest, vals);
-    }
+        ? _fuseArrValTop(dest, val)
+        : _fuseObjValTop(dest, val);
 
-    vals = sliceArr(arguments, 1);
+    val = sliceArr(arguments, 1);
     return _is.arr(dest)
-      ? _fuseArrsValTop(dest, vals)
-      : _fuseObjsValTop(dest, vals);
+      ? _fuseArrsValTop(dest, val)
+      : _fuseObjsValTop(dest, val);
   };
   // define shorthand
-  fuse.val.start = fuse.value.start;
   fuse.value.top = fuse.value.start;
+  fuse.val.start = fuse.value.start;
   fuse.val.top = fuse.value.start;
 
   /**
