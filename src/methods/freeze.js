@@ -60,22 +60,33 @@ var freeze = (function freezePrivateScope() {
       : _ObjectFreeze(obj);
   }
 
+  /// {{{2
+  /// @method freeze.object
+  /// @alias freeze.obj
   /**
-   * Freezes an object with optional deep freeze.
+   * [Freezes][freeze] an `object` or `function` with the option to
+   * recursively [freeze][freeze] its properties. Note that incompatible
+   * interpreters are polyfilled to avoid failures in older environments.
    *
    * @public
-   * @param {(Object|?function)} obj
+   * @param {(?Object|?function)} obj
    * @param {boolean=} deep
-   * @return {(Object|?function)}
+   *   Whether to recursively [freeze][freeze] the #obj properties.
+   * @return {(?Object|?function)}
    */
   freeze.object = function freezeObject(obj, deep) {
 
-    if ( _is.nil(obj) ) return null;
+    if ( _is.nil(obj) )
+      return null;
 
-    if ( !_is._obj(obj)     ) throw _error.type('obj',  'object');
-    if ( !_is.un.bool(deep) ) throw _error.type('deep', 'object');
+    if ( !_is._obj(obj) )
+      throw _error.type('obj', 'object');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep', 'object');
 
-    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
+    return deep
+      ? _deepFreeze(obj)
+      : _ObjectFreeze(obj);
   };
   // define shorthand
   freeze.obj = freeze.object;
