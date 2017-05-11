@@ -324,27 +324,36 @@ var fuse = (function fusePrivateScope() {
   // define shorthand
   fuse.str = fuse.string;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // FUSE HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _fuseObj
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|function)} dest
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fuseObj(dest, val) {
-    if ( _is._obj(val) ) return merge(dest, val);
-    if ( !_is.nil(val) ) dest[val] = undefined;
+
+    if ( _is._obj(val) )
+      return merge(dest, val);
+
+    if ( !_is.nil(val) )
+      dest[val] = undefined;
+
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseObjs
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|function)} dest
    * @param {!Array<*>} vals
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fuseObjs(dest, vals) {
 
@@ -355,12 +364,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       dest = _fuseObj(dest, vals[i]);
-    }
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseObjVal
   /**
    * @private
    * @param {!(Object|function)} dest
@@ -372,11 +382,13 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseObjsVal
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|function)} dest
    * @param {!Array<*>} vals
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fuseObjsVal(dest, vals) {
 
@@ -396,22 +408,29 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseObjValTop
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|function)} dest
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fuseObjValTop(dest, val) {
-    if ( !own(dest, val) ) dest[val] = undefined;
+
+    if ( !own(dest, val) )
+      dest[val] = undefined;
+
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseObjsValTop
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|function)} dest
    * @param {!Array<*>} vals
-   * @return {!(Object|function)}
+   * @return {(!Object|function)}
    */
   function _fuseObjsValTop(dest, vals) {
 
@@ -422,12 +441,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       dest = _fuseObjValTop(dest, vals[i]);
-    }
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArr
   /**
    * @private
    * @param {!Array} dest
@@ -435,11 +455,18 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArr(dest, val) {
-    if ( _is.arr(val) ) return dest.concat(val);
-    if ( !_is.nil(val) ) dest.push(val);
+
+    if ( _is.arr(val) )
+      return dest.concat(val);
+
+    if ( !_is.nil(val) )
+      dest.push(val);
+
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArrs
   /**
    * @private
    * @param {!Array} dest
@@ -455,12 +482,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       dest = _fuseArr(dest, vals[i]);
-    }
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArrVal
   /**
    * @private
    * @param {!Array} dest
@@ -472,6 +500,8 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArrsVal
   /**
    * @private
    * @param {!Array} dest
@@ -487,12 +517,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
-      dest.push( vals[i] );
-    }
+    while (++i < len)
+      dest.push(vals[i]);
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArrValTop
   /**
    * @private
    * @param {!Array} dest
@@ -504,6 +535,8 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseArrsValTop
   /**
    * @private
    * @param {!Array} dest
@@ -519,12 +552,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
-      dest.unshift( vals[i] );
-    }
+    while (++i < len)
+      dest.unshift(vals[i]);
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseStr
   /**
    * @private
    * @param {string} dest
@@ -535,6 +569,8 @@ var fuse = (function fusePrivateScope() {
     return dest + val;
   }
 
+  /// {{{3
+  /// @func _fuseStrs
   /**
    * @private
    * @param {string} dest
@@ -550,12 +586,13 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       dest += vals[i];
-    }
     return dest;
   }
 
+  /// {{{3
+  /// @func _fuseStrTop
   /**
    * @private
    * @param {string} dest
@@ -566,6 +603,8 @@ var fuse = (function fusePrivateScope() {
     return val + dest;
   }
 
+  /// {{{3
+  /// @func _fuseStrsTop
   /**
    * @private
    * @param {string} dest
@@ -581,26 +620,29 @@ var fuse = (function fusePrivateScope() {
 
     len = vals.length;
     i = -1;
-    while (++i < len) {
+    while (++i < len)
       dest = vals[i] + dest;
-    }
     return dest;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // FUSE HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('fuse');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR FUSE
   return fuse;
 })();
-
+/// }}}1
 
 module.exports = fuse;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
