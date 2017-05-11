@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: freeze
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS FREEZE
+ * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
  * @see [vitals.freeze](https://github.com/imaginate/vitals/wiki/vitals.freeze)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -19,10 +16,9 @@ var newErrorMaker = require('./helpers/new-error-maker.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: freeze
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS FREEZE
+//////////////////////////////////////////////////////////////////////////////
 
 var freeze = (function freezePrivateScope() {
 
@@ -32,22 +28,36 @@ var freeze = (function freezePrivateScope() {
   // - freeze.object (freeze.obj)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Freeze References
+   * @ref [freeze]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+   */
+
+  /// {{{2
+  /// @method freeze
   /**
-   * Freezes an object with optional deep freeze.
+   * [Freezes][freeze] an `object` or `function` with the option to
+   * recursively [freeze][freeze] its properties. Note that incompatible
+   * interpreters are polyfilled to avoid failures in older environments.
    *
    * @public
-   * @param {(Object|?function)} obj
+   * @param {(?Object|?function)} obj
    * @param {boolean=} deep
-   * @return {(Object|?function)}
+   *   Whether to recursively [freeze][freeze] the #obj properties.
+   * @return {(?Object|?function)}
    */
   function freeze(obj, deep) {
 
-    if ( _is.nil(obj) ) return null;
+    if ( _is.nil(obj) )
+      return null;
 
-    if ( !_is._obj(obj)     ) throw _error.type('obj');
-    if ( !_is.un.bool(deep) ) throw _error.type('deep');
+    if ( !_is._obj(obj) )
+      throw _error.type('obj');
+    if ( !_is.un.bool(deep) )
+      throw _error.type('deep');
 
-    return deep ? _deepFreeze(obj) : _ObjectFreeze(obj);
+    return deep
+      ? _deepFreeze(obj)
+      : _ObjectFreeze(obj);
   }
 
   /**
