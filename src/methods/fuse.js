@@ -36,6 +36,7 @@ var fuse = (function fusePrivateScope() {
 
   /* {{{2 Fuse References
    * @ref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
+   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
    * @ref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
    * @ref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
    */
@@ -47,7 +48,9 @@ var fuse = (function fusePrivateScope() {
    * objects and arrays, and combines strings.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} dest
+   * @param {(!Object|function|!Array|!Arguments|string)} dest
+   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
+   *   `array` before any values are appended.
    * @param {...*} val
    *   All rules for #dest are shown in order of priority. The details are as
    *   follows (per #dest type):
@@ -108,7 +111,9 @@ var fuse = (function fusePrivateScope() {
    * a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} dest
+   * @param {(!Object|function|!Array|!Arguments|string)} dest
+   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
+   *   `array` before any values are appended.
    * @param {...*} val
    *   The details are as follows (per #dest type):
    *   - *`!Object|function`*!$
@@ -162,7 +167,9 @@ var fuse = (function fusePrivateScope() {
    * `array` or strings for a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} dest
+   * @param {(!Object|function|!Array|!Arguments|string)} dest
+   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
+   *   `array` before any values are appended.
    * @param {...*} val
    *   The details are as follows (per #dest type):
    *   - *`!Object|function`*!$
@@ -249,30 +256,42 @@ var fuse = (function fusePrivateScope() {
   // define shorthand
   fuse.obj = fuse.object;
 
+  /// {{{2
+  /// @method fuse.array
+  /// @alias fuse.arr
   /**
-   * Appends values to an array and concatenates arrays.
+   * [Pushes][push] values and [concatenates][concat] arrays to an `array`.
    *
    * @public
-   * @param {!Array} dest
-   * @param {...*} vals - Details per val type:
-   *   - null:  All null vals are skipped.
-   *   - array: All array vals are concatenated to the dest.
-   *   - other: All other vals are pushed to the dest array.
+   * @param {(!Array|!Arguments)} dest
+   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
+   *   `array` before any values are appended.
+   * @param {...*} val
+   *   The details are as follows in order of priority (per #val type):
+   *   - *`null`*!$
+   *     The #val is skipped.
+   *   - *`!Array`*!$
+   *     The #val is [concatenated][concat] to the #dest.
+   *   - *`*`*!$
+   *     The #val is [pushed][push] to the #dest.
    * @return {!Array}
    */
-  fuse.array = function fuseArray(dest, vals) {
+  fuse.array = function fuseArray(dest, val) {
 
-    if ( !_is._arr(dest) ) throw _error.type('dest', 'array');
-    if (arguments.length < 2) throw _error('No val defined', 'array');
+    if ( !_is._arr(dest) )
+      throw _error.type('dest', 'array');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'array');
 
-    dest = _is.args(dest) ? sliceArr(dest) : dest;
+    if ( _is.args(dest) )
+      dest = sliceArr(dest);
 
     if (arguments.length > 2) {
-      vals = sliceArr(arguments, 1);
-      return _fuseArrs(dest, vals);
+      val = sliceArr(arguments, 1);
+      return _fuseArrs(dest, val);
     }
 
-    return _fuseArr(dest, vals);
+    return _fuseArr(dest, val);
   };
   // define shorthand
   fuse.arr = fuse.array;
