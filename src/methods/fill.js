@@ -33,6 +33,8 @@ var fill = (function fillPrivateScope() {
 
   /* {{{2
    * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+   * @ref [str-func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+   * @ref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
    */
 
   /// {{{2
@@ -198,18 +200,26 @@ var fill = (function fillPrivateScope() {
   // define shorthand
   fill.arr = fill.array;
 
+  /// {{{2
+  /// @method fill.string
+  /// @alias fill.str
   /**
-   * Fills a new string with specified values.
+   * Fills a new `string` with specified values.
    *
    * @public
    * @param {number} count
-   * @param {*} val - All val types are converted to string via `String(val)`.
+   *   The [length][str-length] of the new `string`.
+   * @param {*} val
+   *   The value to fill the new `string` with. Any #val that is not a
+   *   `string` is converted to a `string` with [String()][str-func].
    * @return {string}
    */
   fill.string = function fillString(count, val) {
 
-    if ( !_is.num(count) ) throw _error.type('count', 'string');
-    if (arguments.length < 2) throw _error('No val defined', 'string');
+    if ( !_is.num(count) )
+      throw _error.type('count', 'string');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'string');
 
     return _fillStr(count, val);
   };
