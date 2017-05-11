@@ -32,7 +32,7 @@ var fill = (function fillPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2
-   * @ref []:()
+   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
    */
 
   /// {{{2
@@ -57,11 +57,15 @@ var fill = (function fillPrivateScope() {
    * @param {*} val
    *   The value to fill the `array`, `object`, or `string` with.
    * @param {number=} start = `0`
-   *   Only use with an `array` #source. It will limit the #source indexes
-   *   filled with the #val.
+   *   Only use with an `array` #source. It begins the range of indexes in the
+   *   #source that are filled with the #val. If negative, the #start value is
+   *   added to the #source [length][arr-length]. The #start index `number` is
+   *   included in the range of filled properties if it exists.
    * @param {number=} end = `source.length`
-   *   Only use with an `array` #source. It will limit the #source indexes
-   *   filled with the #val.
+   *   Only use with an `array` #source. It ends the range of indexes in the
+   *   #source that are filled with the #val. If negative, the #end value is
+   *   added to the #source [length][arr-length]. The #end index `number` is
+   *   **not** included in the range of filled properties if it exists.
    * @return {(?Array|?Object|function|string)}
    */
   function fill(source, keys, val, start, end) {
@@ -151,25 +155,43 @@ var fill = (function fillPrivateScope() {
   // define shorthand
   fill.obj = fill.object;
 
+  /// {{{2
+  /// @method fill.array
+  /// @alias fill.arr
   /**
-   * Fills an existing or new array with specified values.
+   * Fills an existing or new `array` with specified values.
    *
    * @public
-   * @param {(!Array|number)} arr - If number makes new array with arr length.
+   * @param {(!Array|number)} source
+   *   If #source is a `number`, it makes a new `array` for #source using the
+   *   #source `number` for the [array's length][arr-length].
    * @param {*} val
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= arr.length]
+   *   The value to fill the #source `array` with.
+   * @param {number=} start = `0`
+   *   Begins the range of indexes in the #source that are filled with the
+   *   #val. If negative, the #start value is added to the #source
+   *   [length][arr-length]. The #start index `number` is included in the
+   *   range of filled properties if it exists.
+   * @param {number=} end = `arr.length`
+   *   Ends the range of indexes in the #source that are filled with the #val.
+   *   If negative, the #end value is added to the #source
+   *   [length][arr-length]. The #end index `number` is **not** included in
+   *   the range of filled properties if it exists.
    * @return {!Array}
    */
   fill.array = function fillArray(arr, val, start, end) {
 
-    arr = _is.num(arr) ? new Array(arr) : arr;
+    if ( _is.num(arr) )
+      arr = new Array(arr);
 
-    if (arguments.length < 2) throw _error('No val defined', 'array');
-
-    if ( !_is.arr(arr)      ) throw _error.type('arr',   'array');
-    if ( !_is.un.num(start) ) throw _error.type('start', 'array');
-    if ( !_is.un.num(end)   ) throw _error.type('end',   'array');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'array');
+    if ( !_is.arr(arr) )
+      throw _error.type('arr', 'array');
+    if ( !_is.un.num(start) )
+      throw _error.type('start', 'array');
+    if ( !_is.un.num(end) )
+      throw _error.type('end', 'array');
 
     return _fillArr(arr, val, start, end);
   };
