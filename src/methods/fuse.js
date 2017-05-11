@@ -99,39 +99,54 @@ var fuse = (function fusePrivateScope() {
       : _fuseObj(dest, val);
   }
 
+  /// {{{2
+  /// @method fuse.value
+  /// @alias fuse.val
   /**
-   * Appends properties and combines strings.
+   * Appends properties to an `object`, `function`, or `array` or strings to
+   * a `string`.
    *
    * @public
-   * @param {!(Object|function|Array|string)} dest
-   * @param {...*} vals - Details per dest type:
-   *   - object: All vals are converted to strings and appended as new keys (if
-   *     the key exists on the dest the property's value is replaced with
-   *     undefined).
-   *   - array: All vals are pushed to the dest.
-   *   - string: All vals are converted to strings and appended to the dest.
-   * @return {!(Object|function|Array|string)}
+   * @param {(!Object|function|!Array|string)} dest
+   * @param {...*} val
+   *   The details are as follows (per #dest type):
+   *   - *`!Object|function`*!$
+   *     Each #val is converted to a `string` and appended as a new property
+   *     key to the #dest (if the key exists in the #dest, the property's
+   *     value is reset to `undefined`).
+   *   - *`!Array`*!$
+   *     Each #val is [pushed][push] to the #dest.
+   *   - *`string`*!$
+   *     Each #val is converted to a `string` and appended to the #dest.
+   * @return {(!Object|function|!Array|string)}
    */
-  fuse.value = function fuseValue(dest, vals) {
+  fuse.value = function fuseValue(dest, val) {
 
-    if (arguments.length < 2) throw _error('No val defined', 'value');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'value');
 
     if ( _is.str(dest) ) {
-      if (arguments.length < 3) return _fuseStr(dest, vals);
-      vals = sliceArr(arguments, 1);
-      return _fuseStrs(dest, vals);
+      if (arguments.length < 3)
+        return _fuseStr(dest, val);
+      val = sliceArr(arguments, 1);
+      return _fuseStrs(dest, val);
     }
 
-    if ( !_is._obj(dest) ) throw _error.type('dest', 'value');
+    if ( !_is._obj(dest) )
+      throw _error.type('dest', 'value');
 
-    dest = _is.args(dest) ? sliceArr(dest) : dest;
+    if ( _is.args(dest) )
+      dest = sliceArr(dest);
 
-    if (arguments.length < 3) {
-      return _is.arr(dest) ? _fuseArrVal(dest, vals) : _fuseObjVal(dest, vals);
-    }
+    if (arguments.length < 3)
+      return _is.arr(dest)
+        ? _fuseArrVal(dest, val)
+        : _fuseObjVal(dest, val);
 
-    vals = sliceArr(arguments, 1);
-    return _is.arr(dest) ? _fuseArrsVal(dest, vals) : _fuseObjsVal(dest, vals);
+    val = sliceArr(arguments, 1);
+    return _is.arr(dest)
+      ? _fuseArrsVal(dest, val)
+      : _fuseObjsVal(dest, val);
   };
   // define shorthand
   fuse.val = fuse.value;
