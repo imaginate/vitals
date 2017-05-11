@@ -28,7 +28,7 @@ var fuse = (function fusePrivateScope() {
   // PUBLIC METHODS
   // - fuse
   // - fuse.value       (fuse.val)
-  // - fuse.value.start (fuse.value.top)
+  // - fuse.value.start (fuse.value.top|fuse.val.start|fuse.val.top)
   // - fuse.object      (fuse.obj)
   // - fuse.array       (fuse.arr)
   // - fuse.string      (fuse.str)
