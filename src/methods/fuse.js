@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: fuse
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS FUSE
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.fuse](https://github.com/imaginate/vitals/wiki/vitals.fuse)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -21,10 +18,9 @@ var merge = require('./helpers/merge.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: fuse
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS FUSE
+//////////////////////////////////////////////////////////////////////////////
 
 var fuse = (function fusePrivateScope() {
 
@@ -38,48 +34,69 @@ var fuse = (function fusePrivateScope() {
   // - fuse.string      (fuse.str)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Fuse References
+   * @ref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
+   * @ref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
+   */
+
+  /// {{{2
+  /// @method fuse
   /**
-   * Merges objects, concatenates arrays, appends properties, and combines
-   *   strings.
+   * Merges objects, [concatenates][concat] arrays, appends properties to
+   * objects and arrays, and combines strings.
    *
    * @public
-   * @param {!(Object|function|Array|string)} dest
-   * @param {...*} vals - All rules occur in order of appearance. For object and
-   *   array dest types `null` is skipped. Remaining details per dest type:
-   *   - object: If only one val is provided and it is an array it is considered
-   *     an array of vals. Object vals are merged with the dest. All other
-   *     values are converted to strings and appended as new keys (if the key
-   *     exists on the dest the property's value is replaced with undefined).
-   *   - array: Array vals are concatenated to the dest. All other values are
-   *     pushed to the dest.
-   *   - string: If only one val is provided and it is an array it is considered
-   *     an array of vals. All non-string vals are converted to strings and
-   *     appended to the dest.
-   * @return {!(Object|function|Array|string)}
+   * @param {(!Object|function|!Array|string)} dest
+   * @param {...*} val
+   *   All rules for #dest are shown in order of priority. The details are as
+   *   follows (per #dest type):
+   *   - *`!Object|function`*!$
+   *     If only one `array` #val is provided, it is considered an `array` of
+   *     values. Each `null` #val is skipped. Each `object` or `function` #val
+   *     is merged with the #dest. All other values are converted to a
+   *     `string` and appended as a new property key (if the key exists in the
+   *     #dest, the property's value is reset to `undefined`).
+   *   - *`!Array`*!$
+   *     Each `null` #val is skipped. Each `array` #val is [concatenated][concat]
+   *     to the #dest. All other values are [pushed][push] to the #dest.
+   *   - *`string`*!$
+   *     If only one `array` #val is provided, it is considered an `array` of
+   *     values. Each #val is converted to a `string` and appended to the
+   *     #dest.
+   * @return {(!Object|function|!Array|string)}
    */
-  function fuse(dest, vals) {
+  function fuse(dest, val) {
 
-    if (arguments.length < 2) throw _error('No val defined');
+    if (arguments.length < 2)
+      throw _error('No val defined');
 
     if ( _is.str(dest) ) {
-      vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-      return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+      if (arguments.length > 2)
+        val = sliceArr(arguments, 1);
+      return _is.arr(val)
+        ? _fuseStrs(dest, val)
+        : _fuseStr(dest, val);
     }
 
-    if ( !_is._obj(dest) ) throw _error.type('dest');
+    if ( !_is._obj(dest) )
+      throw _error.type('dest');
 
-    dest = _is.args(dest) ? sliceArr(dest) : dest;
+    if ( _is.args(dest) )
+      dest = sliceArr(dest);
 
     if ( _is.arr(dest) ) {
       if (arguments.length > 2) {
-        vals = sliceArr(arguments, 1);
-        return _fuseArrs(dest, vals);
+        val = sliceArr(arguments, 1);
+        return _fuseArrs(dest, val);
       }
-      return _fuseArr(dest, vals);
+      return _fuseArr(dest, val);
     }
 
-    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    if (arguments.length > 2)
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _fuseObjs(dest, val)
+      : _fuseObj(dest, val);
   }
 
   /**
