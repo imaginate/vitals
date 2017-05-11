@@ -209,27 +209,42 @@ var fuse = (function fusePrivateScope() {
   fuse.val.start = fuse.value.start;
   fuse.val.top = fuse.value.start;
 
+  /// {{{2
+  /// @method fuse.object
+  /// @alias fuse.obj
   /**
-   * Appends properties/keys to an object.
+   * Appends and merges properties to an `object` or `function`.
    *
    * @public
-   * @param {!(Object|function)} dest
-   * @param {...*} vals - Any vals that are `null` are skipped. All other vals
-   *   that are not objects are converted to a string and appended as new keys
-   *   (if the key exists on the dest the key's value is replaced with
-   *   undefined). If only one val is provided and it is an array then it is
-   *   considered an array of vals. All object vals are merged with the dest
-   *   (if the key exists on the dest the key's value is with replaced with the
-   *   value from the merged object).
-   * @return {!(Object|function)}
+   * @param {(!Object|function)} dest
+   * @param {...*} val
+   *   If only one `array` #val is provided, it is considered an `array` of
+   *   values. The remaining details are as follows in order of priority (per
+   *   #val type):
+   *   - *`null`*!$
+   *     The #val is skipped.
+   *   - *`!Object|function`*!$
+   *     The #val is merged with the #dest. If a key exists in the #val and
+   *     #dest the #dest property's value is with replaced with the #val
+   *     property's value.
+   *   - *`*`*!$
+   *     The #val is converted to a `string` and appended to the #dest as a
+   *     new property key (if the key exists in the #dest, the property's
+   *     value is reset to `undefined`).
+   * @return {(!Object|function)}
    */
-  fuse.object = function fuseObject(dest, vals) {
+  fuse.object = function fuseObject(dest, val) {
 
-    if ( !_is._obj(dest) ) throw _error.type('dest', 'object');
-    if (arguments.length < 2) throw _error('No val defined', 'object');
+    if ( !_is._obj(dest) )
+      throw _error.type('dest', 'object');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'object');
 
-    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-    return _is.arr(vals) ? _fuseObjs(dest, vals) : _fuseObj(dest, vals);
+    if (arguments.length > 2)
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _fuseObjs(dest, val)
+      : _fuseObj(dest, val);
   };
   // define shorthand
   fuse.obj = fuse.object;
