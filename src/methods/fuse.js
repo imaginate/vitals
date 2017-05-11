@@ -296,21 +296,30 @@ var fuse = (function fusePrivateScope() {
   // define shorthand
   fuse.arr = fuse.array;
 
+  /// {{{2
+  /// @method fuse.string
+  /// @alias fuse.str
   /**
-   * Appends strings to a string.
+   * Appends strings to a `string`.
    *
    * @public
    * @param {string} dest
-   * @param {...*} vals - All non-string vals are converted to strings.
+   * @param {...*} val
+   *   Each #val is converted to a `string`.
    * @return {string}
    */
-  fuse.string = function fuseString(dest, vals) {
+  fuse.string = function fuseString(dest, val) {
 
-    if ( !_is.str(dest) ) throw _error.type('dest', 'string');
-    if (arguments.length < 2) throw _error('No val defined', 'string');
+    if ( !_is.str(dest) )
+      throw _error.type('dest', 'string');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'string');
 
-    vals = arguments.length > 2 ? sliceArr(arguments, 1) : vals;
-    return _is.arr(vals) ? _fuseStrs(dest, vals) : _fuseStr(dest, vals);
+    if (arguments.length > 2)
+      val = sliceArr(arguments, 1);
+    return _is.arr(val)
+      ? _fuseStrs(dest, val)
+      : _fuseStr(dest, val);
   };
   // define shorthand
   fuse.str = fuse.string;
