@@ -32,7 +32,7 @@ var each = (function eachPrivateScope() {
   // - each.cycle  (each.time)
   //////////////////////////////////////////////////////////
 
-  /* {{{2
+  /* {{{2 Each References
    * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
    * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
