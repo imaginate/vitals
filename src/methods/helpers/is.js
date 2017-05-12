@@ -260,13 +260,13 @@ var _is = (function _isPrivateScope() {
     if (!val) return true;
 
     // handle functions
-    if (typeof val === 'function') return !val.length;
+    if (typeof val === 'function') return val.length === 0;
 
     // handle non-empty primitives
     if (typeof val !== 'object') return false;
 
     // handle arrays
-    if (toStr.call(val) === '[object Array]') return !val.length;
+    if (toStr.call(val) === '[object Array]') return val.length === 0;
 
     // handle all other objects
     for (key in val) {
