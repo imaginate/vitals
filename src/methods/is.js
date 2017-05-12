@@ -71,7 +71,7 @@ var is = (function isPrivateScope() {
    * @ref [unde]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
    * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
    * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
-   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
    * @ref [regex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
    * @ref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
    * @ref [str-prim]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#Distinction_between_string_primitives_and_String_objects)
@@ -532,21 +532,28 @@ var is = (function isPrivateScope() {
   /// @method is.error
   /// @alias is.err
   /**
-   * Checks if a value(s) is an `Error` instance.
+   * Checks if a value or many values are an instance of the [Error][error]
+   * `object` types.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.error = function isError(val) {
+  is['error'] = function isError(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'error');
-      case 1:  return _is.err(val);
-      default: return _are(arguments, _is.err);
+      case 0:
+        throw _error('Missing a val', 'error');
+      case 1:
+        return _is.err(val);
+      default:
+        return _are(arguments, _is.err);
     }
   };
   // define shorthand
-  is.err = is.error;
+  is['err'] = is.error;
 
   /// {{{2
   /// @method is.args
