@@ -63,6 +63,7 @@ var is = (function isPrivateScope() {
    * @ref [num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
    * @ref [obj]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
    * @ref [args]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
+   * @ref [date]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
    * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Normal_objects_and_functions)
    * @ref [null]:(https://developer.mozilla.org/en-US/docs/Glossary/null)
@@ -506,17 +507,24 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.date
   /**
-   * Checks if a value(s) is a `Date` instance.
+   * Checks if a value or many values are an instance of the [Date][date]
+   * `object` type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.date = function isDate(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'date');
-      case 1:  return _is.date(val);
-      default: return _are(arguments, _is.date);
+      case 0:
+        throw _error('Missing a val', 'date');
+      case 1:
+        return _is.date(val);
+      default:
+        return _are(arguments, _is.date);
     }
   };
 
