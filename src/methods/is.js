@@ -62,6 +62,7 @@ var is = (function isPrivateScope() {
    * @ref [nan]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
    * @ref [num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
    * @ref [obj]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
    * @ref [args]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
    * @ref [date]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
    * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
@@ -76,6 +77,8 @@ var is = (function isPrivateScope() {
    * @ref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
    * @ref [str-prim]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#Distinction_between_string_primitives_and_String_objects)
    * @ref [bool-desc]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean#Description)
+   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    */
 
   /// {{{2
@@ -636,26 +639,43 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.empty
   /**
-   * Checks if a value(s) is considered empty.
+   * Checks if a value or many values are considered empty. The definition of
+   * empty is defined as follows in order of priority (per #val data type):
+   * - *`null`*!$
+   *   `null` is considered empty.
+   * - *`undefined`*!$
+   *   `undefined` is considered empty.
+   * - *`number`*!$
+   *   Only `0` and `NaN` are considered empty.
+   * - *`string`*!$
+   *   Only `""` is considered empty.
+   * - *`boolean`*!$
+   *   Only `false` is considered empty.
+   * - *`function`*!$
+   *   The [length property][func-length] must be `0` to be considered empty.
+   * - *`!Array`*!$
+   *   The [length property][arr-length] must be `0` to be considered empty.
+   * - *`!Object`*!$
+   *   The `object` must [own][own] at least one property to be considered
+   *   empty.
+   * - *`*`*!$
+   *   All other data types are **not** considered empty.
    *
    * @public
    * @param {...*} val
-   * @return {boolean} Returns `false` if value is one of the following:
-   *   ```
-   *   0, "", {}, [], null, undefined, false, NaN, function(){...}
-   *   ```
-   *   Note that for functions this method checks whether it has any defined
-   *   params:
-   *   ```
-   *   function empty(){}
-   *   function notEmpty(param){}
-   *   ```
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
    */
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'empty');
-      case 1:  return _is.empty(val);
-      default: return _are(arguments, _is.empty);
+      case 0:
+        throw _error('Missing a val', 'empty');
+      case 1:
+        return _is.empty(val);
+      default:
+        return _are(arguments, _is.empty);
     }
   };
 
