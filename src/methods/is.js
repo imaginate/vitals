@@ -12,9 +12,9 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS IS
@@ -107,9 +107,9 @@ var is = (function isPrivateScope() {
     var checks;
 
     if (arguments.length < 2)
-      throw _error('No type or val');
-    if ( !_is._str(types) )
-      throw _error.type('types');
+      throw $err('No type or val');
+    if ( !$is._str(types) )
+      throw $typeErr('types');
 
     if ( _hasSpecial('*', types) )
       return true;
@@ -117,7 +117,7 @@ var is = (function isPrivateScope() {
     checks = _getChecks(types);
 
     if (!checks)
-      throw _error.range('types', DOCS);
+      throw $rangeErr('types', DOCS);
 
     nullable = _getNullable(types);
     return arguments.length > 2
@@ -141,11 +141,11 @@ var is = (function isPrivateScope() {
   is['null'] = function isNull(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'null');
+        throw $err('Missing a val', 'null');
       case 1:
-        return _is.nil(val);
+        return $is.nil(val);
       default:
-        return _are(arguments, _is.nil);
+        return _are(arguments, $is.nil);
     }
   };
   // define shorthand
@@ -166,11 +166,11 @@ var is = (function isPrivateScope() {
   is['undefined'] = function isUndefined(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'undefined');
+        throw $err('Missing a val', 'undefined');
       case 1:
-        return _is.undefined(val);
+        return $is.none(val);
       default:
-        return _are(arguments, _is.undefined);
+        return _are(arguments, $is.none);
     }
   };
 
@@ -191,15 +191,15 @@ var is = (function isPrivateScope() {
   is['boolean'] = function isBoolean(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'boolean');
+        throw $err('Missing a val', 'boolean');
       case 1:
-        return _is.bool(val);
+        return $is.bool(val);
       default:
-        return _are(arguments, _is.bool);
+        return _are(arguments, $is.bool);
     }
   };
   // define shorthand
-  is['bool'] = is['boolean'];
+  is.bool = is['boolean'];
 
   /// {{{2
   /// @method is.string
@@ -218,15 +218,15 @@ var is = (function isPrivateScope() {
   is['string'] = function isString(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'string');
+        throw $err('Missing a val', 'string');
       case 1:
-        return _is.str(val);
+        return $is.str(val);
       default:
-        return _are(arguments, _is.str);
+        return _are(arguments, $is.str);
     }
   };
   // define shorthand
-  is.str = is.string;
+  is.str = is['string'];
 
   /// {{{2
   /// @method is._string
@@ -245,11 +245,11 @@ var is = (function isPrivateScope() {
   is._string = function isNonEmptyString(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', '_string');
+        throw $err('Missing a val', '_string');
       case 1:
-        return _is._str(val);
+        return $is._str(val);
       default:
-        return _are(arguments, _is._str);
+        return _are(arguments, $is._str);
     }
   };
   // define shorthand
@@ -269,18 +269,18 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['number'] = function isNumber(val) {
+  is.number = function isNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'number');
+        throw $err('Missing a val', 'number');
       case 1:
-        return _is.num(val);
+        return $is.num(val);
       default:
-        return _are(arguments, _is.num);
+        return _are(arguments, $is.num);
     }
   };
   // define shorthand
-  is['num'] = is.number;
+  is.num = is.number;
 
   /// {{{2
   /// @method is._number
@@ -299,11 +299,11 @@ var is = (function isPrivateScope() {
   is._number = function isNonZeroNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', '_number');
+        throw $err('Missing a val', '_number');
       case 1:
-        return _is._num(val);
+        return $is._num(val);
       default:
-        return _are(arguments, _is._num);
+        return _are(arguments, $is._num);
     }
   };
   // define shorthand
@@ -324,11 +324,11 @@ var is = (function isPrivateScope() {
   is.nan = function isNan(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'nan');
+        throw $err('Missing a val', 'nan');
       case 1:
-        return _is.nan(val);
+        return $is.nan(val);
       default:
-        return _are(arguments, _is.nan);
+        return _are(arguments, $is.nan);
     }
   };
 
@@ -348,15 +348,15 @@ var is = (function isPrivateScope() {
   is['object'] = function isObject(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'object');
+        throw $err('Missing a val', 'object');
       case 1:
-        return _is.obj(val);
+        return $is.obj(val);
       default:
-        return _are(arguments, _is.obj);
+        return _are(arguments, $is.obj);
     }
   };
   // define shorthand
-  is.obj = is.object;
+  is.obj = is['object'];
 
   /// {{{2
   /// @method is._object
@@ -380,11 +380,11 @@ var is = (function isPrivateScope() {
   is._object = function isObjectOrFunction(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', '_object');
+        throw $err('Missing a val', '_object');
       case 1:
-        return _is._obj(val);
+        return $is._obj(val);
       default:
-        return _are(arguments, _is._obj);
+        return _are(arguments, $is._obj);
     }
   };
   // define shorthand
@@ -410,11 +410,11 @@ var is = (function isPrivateScope() {
   is.func = function isFunction(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'function');
+        throw $err('Missing a val', 'function');
       case 1:
-        return _is.func(val);
+        return $is.fun(val);
       default:
-        return _are(arguments, _is.func);
+        return _are(arguments, $is.fun);
     }
   };
   // define shorthand
@@ -438,18 +438,18 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['array'] = function isArray(val) {
+  is.array = function isArray(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'array');
+        throw $err('Missing a val', 'array');
       case 1:
-        return _is.arr(val);
+        return $is.arr(val);
       default:
-        return _are(arguments, _is.arr);
+        return _are(arguments, $is.arr);
     }
   };
   // define shorthand
-  is['arr'] = is.array;
+  is.arr = is.array;
 
   /// {{{2
   /// @method is._array
@@ -468,11 +468,11 @@ var is = (function isPrivateScope() {
   is._array = function isArrayOrArguments(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', '_array');
+        throw $err('Missing a val', '_array');
       case 1:
-        return _is._arr(val);
+        return $is._arr(val);
       default:
-        return _are(arguments, _is._arr);
+        return _are(arguments, $is._arr);
     }
   };
   // define shorthand
@@ -496,11 +496,11 @@ var is = (function isPrivateScope() {
   is.regexp = function isRegExp(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'regexp');
+        throw $err('Missing a val', 'regexp');
       case 1:
-        return _is.regex(val);
+        return $is.regx(val);
       default:
-        return _are(arguments, _is.regex);
+        return _are(arguments, $is.regx);
     }
   };
   // define shorthand
@@ -523,11 +523,11 @@ var is = (function isPrivateScope() {
   is.date = function isDate(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'date');
+        throw $err('Missing a val', 'date');
       case 1:
-        return _is.date(val);
+        return $is.date(val);
       default:
-        return _are(arguments, _is.date);
+        return _are(arguments, $is.date);
     }
   };
 
@@ -545,18 +545,18 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['error'] = function isError(val) {
+  is.error = function isError(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'error');
+        throw $err('Missing a val', 'error');
       case 1:
-        return _is.err(val);
+        return $is.err(val);
       default:
-        return _are(arguments, _is.err);
+        return _are(arguments, $is.err);
     }
   };
   // define shorthand
-  is['err'] = is.error;
+  is.err = is.error;
 
   /// {{{2
   /// @method is.args
@@ -574,11 +574,11 @@ var is = (function isPrivateScope() {
   is.args = function isArguments(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'args');
+        throw $err('Missing a val', 'args');
       case 1:
-        return _is.args(val);
+        return $is.args(val);
       default:
-        return _are(arguments, _is.args);
+        return _are(arguments, $is.args);
     }
   };
 
@@ -599,11 +599,11 @@ var is = (function isPrivateScope() {
   is.document = function isDocument(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'document');
+        throw $err('Missing a val', 'document');
       case 1:
-        return _is.doc(val);
+        return $is.doc(val);
       default:
-        return _are(arguments, _is.doc);
+        return _are(arguments, $is.doc);
     }
   };
   // define shorthand
@@ -626,11 +626,11 @@ var is = (function isPrivateScope() {
   is.element = function isElement(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'element');
+        throw $err('Missing a val', 'element');
       case 1:
-        return _is.elem(val);
+        return $is.elem(val);
       default:
-        return _are(arguments, _is.elem);
+        return _are(arguments, $is.elem);
     }
   };
   // define shorthand
@@ -671,11 +671,11 @@ var is = (function isPrivateScope() {
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'empty');
+        throw $err('Missing a val', 'empty');
       case 1:
-        return _is.empty(val);
+        return $is.empty(val);
       default:
-        return _are(arguments, _is.empty);
+        return _are(arguments, $is.empty);
     }
   };
 
@@ -694,7 +694,7 @@ var is = (function isPrivateScope() {
   is.frozen = function isFrozen(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'frozen');
+        throw $err('Missing a val', 'frozen');
       case 1:
         return _isFrozen(val);
       default:
@@ -718,7 +718,7 @@ var is = (function isPrivateScope() {
   is.whole = function isWholeNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'whole');
+        throw $err('Missing a val', 'whole');
       case 1:
         return _isWhole(val);
       default:
@@ -742,7 +742,7 @@ var is = (function isPrivateScope() {
   is.odd = function isOddNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'odd');
+        throw $err('Missing a val', 'odd');
       case 1:
         return _isOdd(val);
       default:
@@ -766,7 +766,7 @@ var is = (function isPrivateScope() {
   is.even = function isEvenNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw _error('Missing a val', 'even');
+        throw $err('Missing a val', 'even');
       case 1:
         return _isEven(val);
       default:
@@ -783,7 +783,7 @@ var is = (function isPrivateScope() {
   /**
    * @private
    * @param {!Arguments} vals
-   * @param {function} check
+   * @param {!function} check
    * @return {boolean}
    */
   function _are(vals, check) {
@@ -793,7 +793,8 @@ var is = (function isPrivateScope() {
 
     i = vals.length;
     while (i--) {
-      if ( !check(vals[i]) ) return false;
+      if ( !check(vals[i]) )
+        return false;
     }
     return true;
   }
@@ -806,16 +807,18 @@ var is = (function isPrivateScope() {
   /// @func _isFrozen
   /**
    * @private
-   * @param {(Object|?function)} val
+   * @param {(?Object|?function)} val
    * @return {boolean}
    */
   function _isFrozen(val) {
 
-    if ( _is.nil(val) ) return false;
+    if ( $is.nil(val) )
+      return false;
 
-    if ( !_is._obj(val) ) throw _error.type('val', 'frozen');
+    if ( !$is._obj(val) )
+      throw $typeErr('val', 'frozen');
 
-    return _is.frozen(val);
+    return $is.frozen(val);
   }
 
   /// {{{3
@@ -827,9 +830,10 @@ var is = (function isPrivateScope() {
    */
   function _isWhole(val) {
 
-    if ( !_is.num(val) ) throw _error.type('val', 'whole');
+    if ( !$is.num(val) )
+      throw $typeErr('val', 'whole');
 
-    return _is.whole(val);
+    return $is.whole(val);
   }
 
   /// {{{3
@@ -841,10 +845,12 @@ var is = (function isPrivateScope() {
    */
   function _isOdd(val) {
 
-    if ( !_is.num(val) ) throw _error.type('val', 'odd');
-    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'odd');
+    if ( !$is.num(val) )
+      throw $typeErr('val', 'odd');
+    if ( !$is.whole(val) )
+      throw $rangeErr('val', 'whole numbers', 'odd');
 
-    return _is.odd(val);
+    return $is.odd(val);
   }
 
   /// {{{3
@@ -856,10 +862,12 @@ var is = (function isPrivateScope() {
    */
   function _isEven(val) {
 
-    if ( !_is.num(val) ) throw _error.type('val', 'even');
-    if ( !_is.whole(val) ) throw _error.range('val', 'whole numbers', 'even');
+    if ( !$is.num(val) )
+      throw $typeErr('val', 'even');
+    if ( !$is.whole(val) )
+      throw $rangeErr('val', 'whole numbers', 'even');
 
-    return _is.even(val);
+    return $is.even(val);
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -870,7 +878,7 @@ var is = (function isPrivateScope() {
   /// @func _checkVal
   /**
    * @private
-   * @param {!Array<function>} checks
+   * @param {!Array<!function>} checks
    * @param {*} val
    * @param {boolean=} nullable
    * @return {boolean}
@@ -882,7 +890,8 @@ var is = (function isPrivateScope() {
 
     i = checks.length;
     while (i--) {
-      if ( checks[i](val, nullable) ) return true;
+      if ( checks[i](val, nullable) )
+        return true;
     }
     return false;
   }
@@ -891,7 +900,7 @@ var is = (function isPrivateScope() {
   /// @func _checkVals
   /**
    * @private
-   * @param {!Array<function>} checks
+   * @param {!Array<!function>} checks
    * @param {!Arguments} vals
    * @param {boolean=} nullable
    * @return {boolean}
@@ -903,7 +912,8 @@ var is = (function isPrivateScope() {
 
     i = vals.length;
     while (--i) {
-      if ( !_checkVal(checks, vals[i], nullable) ) return false;
+      if ( !_checkVal(checks, vals[i], nullable) )
+        return false;
     }
     return true;
   }
@@ -913,7 +923,7 @@ var is = (function isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /**
-   * @typedef {!Object<string, function(*, boolean=): boolean>} DataTypes
+   * @typedef {!Object<string, !function(*, boolean=): boolean>} DataTypes
    */
 
   /// {{{3
@@ -925,64 +935,84 @@ var is = (function isPrivateScope() {
   var TYPES = (function() {
 
     /**
-     * @type {DataTypes}
+     * @type {!DataTypes}
      */
-    var _types = {};
+    var $types = {};
 
     /// {{{4
     /// @func addTypes
     /**
-     * Adds types to the _types hash map with a check method that evaluates
-     *   nullable properties and invokes their type section's method.
+     * Adds types to the *$types* hash map with a check method that evaluates
+     * nullable properties and invokes their type section's method.
+     *
      * @private
-     * @param {string} section - The category for the types.
-     * @param {!Object<string, function(*): boolean>} types - Each type's
-     *   "key => value" pair should be expressed as "typeName => checkMethod".
-     * @param {boolean=} nullable - The type's default nullable value. Defaults
-     *   to true if not set.
-     * @return {DataTypes}
+     * @param {string} section
+     *   The category for the types.
+     * @param {!Object<string, !function(*): boolean>} types
+     *   Each property should use a type's name for its key and method for its
+     *   value.
+     * @param {boolean=} nullableDefault = `true`
+     *   The default nullable value for each type in #types.
      */
-    function addTypes(section, types, nullable) {
+    function addTypes(section, types, nullableDefault) {
 
       /** @type {string} */
       var type;
 
       for (type in types) {
-        if( own(types, type) ) addType(section, type, types[type], nullable);
+        if( $own(types, type) )
+          addType(section, type, types[type], nullableDefault);
       }
-      return _types;
     }
 
     /// {{{4
     /// @func addType
     /**
-     * Adds type to the _types hash map with a check method that evaluates
-     *   nullable properties and invokes its type section's method.
+     * Adds a type to the *$types* hash map with a check method that evaluates
+     * nullable properties and invokes its type section's method.
+     *
      * @private
-     * @param {string} section - The type's category.
-     * @param {string} type - The type's name.
-     * @param {function(*): boolean} check - The type's check method.
-     * @param {boolean=} nullable - The type's default nullable value. Defaults
-     *   to true if not set.
-     * @return {DataTypes}
+     * @param {string} section
+     *   The type's category.
+     * @param {string} type
+     *   The type's name.
+     * @param {!function(*): boolean} check
+     *   The type's check method.
+     * @param {boolean=} nullableDefault = `true`
+     *   The type's default nullable value.
      */
-    function addType(section, type, check, nullable) {
-      check = own(addType, section) ? addType[section](check) : check;
-      nullable = nullable !== false;
-      _types['_' + type] = function(val, _nullable) {
-        _nullable = _is.bool(_nullable) ? _nullable : nullable;
-        return _is.nil(val) ? _nullable : check(val);
-      };
-      return _types;
+    function addType(section, type, check, nullableDefault) {
+
+      if ( $own(addType, section) )
+        check = addType[section](check);
+
+      nullableDefault = nullableDefault !== false;
+
+      /**
+       * @param {*} val
+       * @param {boolean=} nullable = `nullableDefault`
+       * @return {boolean}
+       */
+      function typeCheck(val, nullable) {
+
+        if ( !$is.bool(nullable) )
+          nullable = nullableDefault;
+
+        return $is.nil(val)
+          ? nullable
+          : check(val);
+      }
+
+      $types['_' + type] = typeCheck;
     }
 
     /// {{{4
     /// @func addShortcuts
     /**
-     * Adds the type shortcuts to the _types hash map.
+     * Adds the type shortcuts to the *$types* hash map.
+     *
      * @private
      * @param {!Object<string, string>} shortcuts
-     * @return {DataTypes}
      */
     function addShortcuts(shortcuts) {
 
@@ -992,139 +1022,152 @@ var is = (function isPrivateScope() {
       var type;
 
       for (shortcut in shortcuts) {
-        if( own(shortcuts, shortcut) ) {
+        if( $own(shortcuts, shortcut) ) {
           type = '_' + shortcuts[shortcut];
           shortcut = '_' + shortcut;
-          _types[shortcut] = _types[type];
+          $types[shortcut] = $types[type];
         }
       }
-      return _types;
     }
 
     /// {{{4
-    /// @func addType.arrays
+    /// @func addArrayType
     /**
      * @private
-     * @param {function(*): boolean} eachCheck - The check method for each of
-     *   the array's values.
-     * @return {function(*): boolean} The array type's check method.
+     * @param {!function(*): boolean} eachCheck
+     *   The check method for each of an array's property values.
+     * @return {!function(*): boolean}
+     *   The check method for the `array` type.
      */
-    addType.arrays = function(eachCheck) {
+    function addArrayType(eachCheck) {
 
-      /** @type {function(*): boolean} */
-      return function check(arr) {
+      /**
+       * @param {*} val
+       * @return {boolean}
+       */
+      return function check(val) {
 
         /** @type {number} */
         var i;
 
-        if ( !_is.arr(arr) ) return false;
+        if ( !$is.arr(val) )
+          return false;
 
-        i = arr.length;
+        i = val.length;
         while (i--) {
-          if ( !eachCheck(arr[i]) ) return false;
+          if ( !eachCheck(val[i]) )
+            return false;
         }
         return true;
       };
-    };
+    }
+    addType.arrays = addArrayType;
 
     /// {{{4
-    /// @func addType.maps
+    /// @func addMapType
     /**
      * @private
-     * @param {function(*): boolean} eachCheck - The check method for each of
-     *   the hash map's properties.
-     * @return {function(*): boolean} The hash map type's check method.
+     * @param {!function(*): boolean} eachCheck
+     *   The check method for each of an hash map's property values.
+     * @return {!function(*): boolean}
+     *   The check method for the `object` or `function` hash map type.
      */
-    addType.maps = function(eachCheck) {
+    function addMapType(eachCheck) {
 
-      /** @type {function(*): boolean} */
-      return function check(obj) {
+      /**
+       * @param {*} val
+       * @return {boolean}
+       */
+      return function check(val) {
 
         /** @type {string} */
-        var prop;
+        var key;
 
-        if ( !_is.obj(obj) ) return false;
+        if ( !$is.obj(val) )
+          return false;
 
-        for (prop in obj) {
-          if( own(obj, prop) && !eachCheck(obj[prop]) ) return false;
+        for (key in val) {
+          if( $own(val, key) && !eachCheck(val[key]) )
+            return false;
         }
         return true;
       };
-    };
+    }
+    addType.maps = addMapType;
 
     ///////////////////////// {{{4
     // ADD TYPES
     //////////////////////////////
 
     /// {{{5 Add Primitives
-    _types = addTypes('primitives', {
-      'undefined': _is.undefined,
-      'boolean':   _is.bool,
-      'string':    _is.str,
-      'number':    _is.num,
-      'nan':       _is.nan
+    addTypes('primitives', {
+      'undefined': $is.none,
+      'boolean':   $is.bool,
+      'string':    $is.str,
+      'number':    $is.num,
+      'nan':       $is.nan
     }, false);
-    _types = addType('primitives', 'null', _is.nil);
+    addType('primitives', 'null', $is.nil);
 
     /// {{{5 Add JS Objects
-    _types = addTypes('js_objects', {
-      'object': _is.obj,
-      'regexp': _is.regex,
-      'array':  _is.arr,
-      'date':   _is.date,
-      'error':  _is.err
+    addTypes('js_objects', {
+      'object': $is.obj,
+      'regexp': $is.regx,
+      'array':  $is.arr,
+      'error':  $is.err,
+      'date':   $is.date
     });
-    _types = addType('js_objects', 'arguments', _is.args);
-    _types = addType('js_objects', 'function', _is.func, false);
+    addType('js_objects', 'arguments', $is.args);
+    addType('js_objects', 'function', $is.fun, false);
 
     /// {{{5 Add DOM Objects
-    _types = addTypes('dom_objects', {
-      'element':  _is.elem,
-      'document': _is.doc
+    addTypes('dom_objects', {
+      'element':  $is.elem,
+      'document': $is.doc
     });
 
     /// {{{5 Add Others
-    _types = addType('others', 'empty', _is.empty);
+    addType('others', 'empty', $is.empty);
 
     /// {{{5 Add Arrays
-    _types = addTypes('arrays', {
-      'nulls':     _is.nil,
-      'booleans':  _is.bool,
-      'strings':   _is.str,
-      'numbers':   _is.num,
-      'nans':      _is.nan,
-      'objects':   _is.obj,
-      'functions': _is.func,
-      'regexps':   _is.regex,
-      'arrays':    _is.arr,
-      'dates':     _is.date,
-      'errors':    _is.err,
-      'elements':  _is.elem,
-      'documents': _is.doc
+    addTypes('arrays', {
+      'nulls':     $is.nil,
+      'booleans':  $is.bool,
+      'strings':   $is.str,
+      'numbers':   $is.num,
+      'nans':      $is.nan,
+      'objects':   $is.obj,
+      'functions': $is.fun,
+      'regexps':   $is.regx,
+      'arrays':    $is.arr,
+      'dates':     $is.date,
+      'errors':    $is.err,
+      'elements':  $is.elem,
+      'documents': $is.doc
     });
 
     /// {{{5 Add Maps
-    _types = addTypes('maps', {
-      'nullmap':     _is.nil,
-      'booleanmap':  _is.bool,
-      'stringmap':   _is.str,
-      'numbermap':   _is.num,
-      'nanmap':      _is.nan,
-      'objectmap':   _is.obj,
-      'functionmap': _is.func,
-      'regexpmap':   _is.regex,
-      'arraymap':    _is.arr,
-      'datemap':     _is.date,
-      'errormap':    _is.err,
-      'elementmap':  _is.elem,
-      'documentmap': _is.doc
+    addTypes('maps', {
+      'nullmap':     $is.nil,
+      'booleanmap':  $is.bool,
+      'stringmap':   $is.str,
+      'numbermap':   $is.num,
+      'nanmap':      $is.nan,
+      'objectmap':   $is.obj,
+      'functionmap': $is.func,
+      'regexpmap':   $is.regex,
+      'arraymap':    $is.arr,
+      'datemap':     $is.date,
+      'errormap':    $is.err,
+      'elementmap':  $is.elem,
+      'documentmap': $is.doc
     });
 
     ///////////////////////// {{{4
     // ADD SHORTCUTS
     //////////////////////////////
 
-    _types = addShortcuts({
+    addShortcuts({
 
       /// {{{5 Add Primitives
       nil:  'null',
@@ -1179,12 +1222,22 @@ var is = (function isPrivateScope() {
 
     /// }}}4
     // END OF TYPES PRIVATE SCOPE
-    return _types;
+    return $types;
   })();
 
   ///////////////////////////////////////////////////// {{{2
   // IS HELPERS - PARSING
   //////////////////////////////////////////////////////////
+
+  /**
+   * @typedef {{
+   *   '|': !function(string): boolean,
+   *   '!': !function(string): boolean,
+   *   '?': !function(string): boolean,
+   *   '=': !function(string): boolean,
+   *   '*': !function(string): boolean
+   * }} SpecialTests
+   */
 
   /// {{{3
   /// @const ALL_SPECIALS
@@ -1198,17 +1251,109 @@ var is = (function isPrivateScope() {
   /// @const SPECIALS
   /**
    * @private
-   * @const {!Object<string, function(string): boolean>}
+   * @const {!SpecialTests}
    */
-  var SPECIALS = (function(pipe, exPoint, quesMark, equals, asterisk) {
+  var SPECIALS = (function() {
+
+    /// {{{4
+    /// @const PIPE
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var PIPE = /\|/;
+
+    /// {{{4
+    /// @const EX_POINT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var EX_POINT = /\!/;
+
+    /// {{{4
+    /// @const QUEST_MARK
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var QUEST_MARK = /\?/;
+
+    /// {{{4
+    /// @const EQ_SIGN
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var EQ_SIGN = /\=/;
+
+    /// {{{4
+    /// @const ANY_GLOB
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var ANY_GLOB = /\*|any/;
+
+    /// {{{4
+    /// @func hasPipe
+    /**
+     * @param {string} val
+     * @return {boolean}
+     */
+    function hasPipe(val) {
+      return PIPE.test(val);
+    }
+
+    /// {{{4
+    /// @func hasExPoint
+    /**
+     * @param {string} val
+     * @return {boolean}
+     */
+    function hasExPoint(val) {
+      return EX_POINT.test(val);
+    }
+
+    /// {{{4
+    /// @func hasQuestMark
+    /**
+     * @param {string} val
+     * @return {boolean}
+     */
+    function hasQuestMark(val) {
+      return QUEST_MARK.test(val);
+    }
+
+    /// {{{4
+    /// @func hasEqSign
+    /**
+     * @param {string} val
+     * @return {boolean}
+     */
+    function hasEqSign(val) {
+      return EQ_SIGN.test(val);
+    }
+
+    /// {{{4
+    /// @func hasAnyGlob
+    /**
+     * @param {string} val
+     * @return {boolean}
+     */
+    function hasAnyGlob(val) {
+      return ANY_GLOB.test(val);
+    }
+
+    /** @const {!SpecialTests} */
     return {
-      '|': function(str) { return pipe.test(str);     },
-      '!': function(str) { return exPoint.test(str);  },
-      '?': function(str) { return quesMark.test(str); },
-      '=': function(str) { return equals.test(str);   },
-      '*': function(str) { return asterisk.test(str); }
+      '|': hasPipe,
+      '!': hasExPoint,
+      '?': hasQuestMark,
+      '=': hasEqSign,
+      '*': hasAnyGlob
     };
-  })(/\|/, /\!/, /\?/, /\=/, /\*|any/);
+  })();
 
   /// {{{3
   /// @func _hasSpecial
@@ -1227,18 +1372,19 @@ var is = (function isPrivateScope() {
   /**
    * @private
    * @param {string} types
-   * @return {Array<function>}
+   * @return {?Array<!function>}
    */
   function _getChecks(types) {
 
-    /** @type {Array<function>} */
+    /** @type {?Array<!function>} */
     var checks;
     /** @type {string} */
     var type;
     /** @type {number} */
     var i;
 
-    if ( _hasSpecial('=', types) ) types += '|undefined';
+    if ( _hasSpecial('=', types) )
+      types += '|undefined';
 
     types = types.toLowerCase();
     types = types.replace(ALL_SPECIALS, '');
@@ -1247,20 +1393,25 @@ var is = (function isPrivateScope() {
     i = checks.length;
     while (i--) {
       type = '_' + checks[i];
-      if ( !own(TYPES, type) ) return null;
+      if ( !$own(TYPES, type) )
+        return null;
       checks[i] = TYPES[type];
     }
 
-    return checks.length ? checks : null;
+    return checks.length
+      ? checks
+      : null;
   }
 
   /// {{{3
   /// @func _getNullable
   /**
-   * Method checks whether "!" or "?" exists in the types.
+   * Method checks whether `"!"` or `"?"` exists in the #types `string`.
+   *
    * @private
    * @param {string} types
-   * @return {(undefined|boolean)} If undefined no override exists.
+   * @return {(undefined|boolean)}
+   *   If `undefined` no override exists.
    */
   function _getNullable(types) {
 
@@ -1273,21 +1424,17 @@ var is = (function isPrivateScope() {
 
     ensure = _hasSpecial('?', types);
     negate = _hasSpecial('!', types);
-    override = ensure && negate ? false : ensure || negate;
-    return override ? !negate && ensure : undefined;
+    override = ensure && negate
+      ? false
+      : ensure || negate;
+    return override
+      ? !negate && ensure
+      : NONE;
   }
 
   ///////////////////////////////////////////////////// {{{2
   // IS HELPERS - MISC
   //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @func _error
-  /**
-   * @private
-   * @type {!ErrorAid}
-   */
-  var _error = newErrorMaker('is');
 
   /// {{{3
   /// @const DOCS
@@ -1296,6 +1443,45 @@ var is = (function isPrivateScope() {
    * @const {string}
    */
   var DOCS = 'https://github.com/imaginate/vitals/wiki/vitals.is-types';
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('is');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR IS
