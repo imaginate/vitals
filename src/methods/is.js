@@ -135,17 +135,23 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.undefined
   /**
-   * Checks if a value(s) is `undefined`.
+   * Checks if a value or many values is `undefined`.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.undefined = function isUndefined(val) {
+  is['undefined'] = function isUndefined(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'undefined');
-      case 1:  return _is.undefined(val);
-      default: return _are(arguments, _is.undefined);
+      case 0:
+        throw _error('Missing a val', 'undefined');
+      case 1:
+        return _is.undefined(val);
+      default:
+        return _are(arguments, _is.undefined);
     }
   };
 
