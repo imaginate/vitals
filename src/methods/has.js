@@ -112,24 +112,43 @@ var has = (function hasPrivateScope() {
   }
 
   /// {{{2
+  /// @method has.key
   /**
-   * Checks if an object owns a property.
+   * Checks if an `object` or `function` [owns][own] a property.
    *
    * @public
-   * @param {(Object|?function)} source
-   * @param {*} key - Details (per source type):
-   *   - object: The key is converted to a string, and the object is checked for
-   *     a matching key via [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
-   *   - null: Regardless of key `false` is returned.
+   * @param {(?Object|?function)} source
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method automatically returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own].
+   * @param {*} key
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     The value of #key does not matter and is not used.
+   *   - *`!Object|function`*!$
+   *     The #key is passed **without** any conversions to
+   *     [Object.prototype.hasOwnProperty][own].
    * @return {boolean}
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method automatically returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own].
    */
   has.key = function hasKey(source, key) {
 
-    if (arguments.length < 2) throw _error('No key defined', 'key');
+    if (arguments.length < 2)
+      throw _error('No key defined', 'key');
 
-    if ( _is.nil(source) ) return false;
+    if ( _is.nil(source) )
+      return false;
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'key');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'key');
 
     return own(source, key);
   };
