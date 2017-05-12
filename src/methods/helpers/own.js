@@ -1,35 +1,32 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: own
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * OWN HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: own
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{2
+// OWN HELPER
+//////////////////////////////////////////////////////////////////////////////
 
 var own = (function ownPrivateScope() {
 
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
+  /* {{{3 Own References
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
    */
-  var hasOwn = Object.prototype.hasOwnProperty;
 
+  /// {{{3
+  /// @func own
   /**
-   * @param {(Object|?function)} source
+   * A safe way to call [Object.prototype.hasOwnProperty][own].
+   *
+   * @param {(?Object|?function)} source
    * @param {*} key
    * @return {boolean}
    */
@@ -37,10 +34,25 @@ var own = (function ownPrivateScope() {
     return !!source && hasOwn.call(source, key);
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: own
+  ///////////////////////////////////////////////////// {{{3
+  // OWN HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func hasOwn
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var hasOwn = Object.prototype.hasOwnProperty;
+
+  /// }}}3
+  // END OF PRIVATE SCOPE FOR OWN
   return own;
 })();
-
+/// }}}2
 
 module.exports = own;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
