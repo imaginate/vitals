@@ -753,17 +753,24 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.even
   /**
-   * Checks if a number(s) is even.
+   * Checks if a [number][num] is even. All even numbers less than one (e.g.
+   * `evenNumber <= 0`) will return `true`.
    *
    * @public
-   * @param {...number} val - Each val must be a whole number.
+   * @param {...number} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must be an even `number` to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.even = function isEvenNumber(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'even');
-      case 1:  return _isEven(val);
-      default: return _are(arguments, _isEven);
+      case 0:
+        throw _error('Missing a val', 'even');
+      case 1:
+        return _isEven(val);
+      default:
+        return _are(arguments, _isEven);
     }
   };
 
