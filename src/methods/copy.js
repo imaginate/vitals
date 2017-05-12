@@ -12,11 +12,11 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var inStr = require('./helpers/in-str.js');
-var merge = require('./helpers/merge.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $inStr = require('./helpers/in-str.js');
+var $merge = require('./helpers/$merge.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS COPY
@@ -66,17 +66,17 @@ var copy = (function copyPrivateScope() {
   function copy(val, deep) {
 
     if (arguments.length < 1)
-      throw _error('Missing a val');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep');
+      throw $err('Missing a val');
+    if ( !$is.un.bool(deep) )
+      throw $typeErr('deep');
 
-    return !_is._obj(val)
+    return !$is._obj(val)
       ? val
-      : _is.func(val)
+      : $is.fun(val)
         ? _copyFunc(val, deep)
-        : _is._arr(val)
+        : $is._arr(val)
           ? _copyArr(val, deep)
-          : _is.regex(val)
+          : $is.regx(val)
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
@@ -95,10 +95,10 @@ var copy = (function copyPrivateScope() {
    */
   copy.object = function copyObject(obj, deep) {
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'object');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep', 'object');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'object');
+    if ( !$is.un.bool(deep) )
+      throw $typeErr('deep', 'object');
 
     return _copyObj(obj, deep);
   };
@@ -123,12 +123,12 @@ var copy = (function copyPrivateScope() {
    */
   copy.array = function copyArray(obj, deep) {
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'array');
-    if ( !_is.num(obj.length) )
-      throw _error.type('obj.length', 'array');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep', 'array');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'array');
+    if ( !$is.num(obj.length) )
+      throw $typeErr('obj.length', 'array');
+    if ( !$is.un.bool(deep) )
+      throw $typeErr('deep', 'array');
 
     return _copyArr(obj, deep);
   };
@@ -152,10 +152,10 @@ var copy = (function copyPrivateScope() {
    */
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
-    if ( !_is.regex(regex) )
-      throw _error.type('regex', 'regexp');
-    if ( !_is.un.bool(forceGlobal) )
-      throw _error.type('forceGlobal', 'regexp');
+    if ( !$is.regx(regex) )
+      throw $typeErr('regex', 'regexp');
+    if ( !$is.un.bool(forceGlobal) )
+      throw $typeErr('forceGlobal', 'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
@@ -177,17 +177,17 @@ var copy = (function copyPrivateScope() {
    * browser and platform safety.
    *
    * @public
-   * @param {function} func
+   * @param {!function} func
    * @param {boolean=} deep = `false`
    *   Whether to recursively copy property values.
-   * @return {function}
+   * @return {!function}
    */
   copy.func = function copyFunction(func, deep) {
 
-    if ( !_is.func(func) )
-      throw _error.type('func', 'function');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep', 'function');
+    if ( !$is.fun(func) )
+      throw $typeErr('func', 'function');
+    if ( !$is.un.bool(deep) )
+      throw $typeErr('deep', 'function');
 
     return _copyFunc(func, deep);
   };
@@ -213,7 +213,7 @@ var copy = (function copyPrivateScope() {
   function _copyObj(obj, deep) {
     return deep
       ? _mergeDeep({}, obj)
-      : merge({}, obj);
+      : $merge({}, obj);
   }
 
   /// {{{3
@@ -232,7 +232,7 @@ var copy = (function copyPrivateScope() {
     arr = new Array(obj.length);
     return deep
       ? _mergeDeep(arr, obj)
-      : merge(arr, obj);
+      : $merge(arr, obj);
   }
 
   /// {{{3
@@ -262,13 +262,13 @@ var copy = (function copyPrivateScope() {
   /// @func _copyFunc
   /**
    * @private
-   * @param {function} func
+   * @param {!function} func
    * @param {boolean=} deep
-   * @return {function}
+   * @return {!function}
    */
   function _copyFunc(func, deep) {
 
-    /** @type {function} */
+    /** @type {!function} */
     var funcCopy;
 
     funcCopy = function funcCopy() {
@@ -276,7 +276,7 @@ var copy = (function copyPrivateScope() {
     };
     return deep
       ? _mergeDeep(funcCopy, func)
-      : merge(funcCopy, func);
+      : $merge(funcCopy, func);
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -351,14 +351,14 @@ var copy = (function copyPrivateScope() {
 
     flags = '';
     for (key in FLAGS) {
-      if ( own(FLAGS, key) && regex[key] )
+      if ( $own(FLAGS, key) && regex[key] )
         flags += FLAGS[key];
     }
 
-    if ( _is.undefined(forceGlobal) )
+    if ( $is.none(forceGlobal) )
       return flags;
 
-    return inStr(flags, 'g')
+    return $inStr(flags, 'g')
       ? forceGlobal
         ? flags
         : flags.replace('g', '')
@@ -375,9 +375,9 @@ var copy = (function copyPrivateScope() {
   /// @func _mergeDeep
   /**
    * @private
-   * @param {(!Object|function)} dest
-   * @param {(!Object|function)} source
-   * @return {(!Object|function)}
+   * @param {(!Object|!function)} dest
+   * @param {(!Object|!function)} source
+   * @return {(!Object|!function)}
    */
   function _mergeDeep(dest, source) {
 
@@ -385,19 +385,50 @@ var copy = (function copyPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) )
+      if ( $own(source, key) )
         dest[key] = copy(source[key], true);
     }
     return dest;
   }
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('copy');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('copy');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR COPY
