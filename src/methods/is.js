@@ -264,17 +264,24 @@ var is = (function isPrivateScope() {
   /// @method is._number
   /// @alias is._num
   /**
-   * Checks if a value(s) is a number and not `0`.
+   * Checks if a value or many values are a primitive `number` data type and
+   * not `0`.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is._number = function isNonZeroNumber(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', '_number');
-      case 1:  return _is._num(val);
-      default: return _are(arguments, _is._num);
+      case 0:
+        throw _error('Missing a val', '_number');
+      case 1:
+        return _is._num(val);
+      default:
+        return _are(arguments, _is._num);
     }
   };
   // define shorthand
