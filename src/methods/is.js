@@ -71,6 +71,7 @@ var is = (function isPrivateScope() {
    * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
    * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
    * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+   * @ref [regex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
    * @ref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
    * @ref [str-prim]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#Distinction_between_string_primitives_and_String_objects)
    * @ref [bool-desc]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean#Description)
@@ -478,17 +479,24 @@ var is = (function isPrivateScope() {
   /// @alias is.regex
   /// @alias is.re
   /**
-   * Checks if a value(s) is a `RegExp` instance.
+   * Checks if a value or many values are an instance of the [RegExp][regex]
+   * `object` type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.regexp = function isRegExp(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'regexp');
-      case 1:  return _is.regex(val);
-      default: return _are(arguments, _is.regex);
+      case 0:
+        throw _error('Missing a val', 'regexp');
+      case 1:
+        return _is.regex(val);
+      default:
+        return _are(arguments, _is.regex);
     }
   };
   // define shorthand
