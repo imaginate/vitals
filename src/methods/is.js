@@ -450,17 +450,24 @@ var is = (function isPrivateScope() {
   /// @method is._array
   /// @alias is._arr
   /**
-   * Checks if a value(s) is an `Array` or `Arguments` instance.
+   * Checks if a value or many values are an instance of the [array][arr] or
+   * [arguments][args] `object` types.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is._array = function isArrayOrArguments(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', '_array');
-      case 1:  return _is._arr(val);
-      default: return _are(arguments, _is._arr);
+      case 0:
+        throw _error('Missing a val', '_array');
+      case 1:
+        return _is._arr(val);
+      default:
+        return _are(arguments, _is._arr);
     }
   };
   // define shorthand
