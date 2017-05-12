@@ -558,17 +558,24 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.args
   /**
-   * Checks if a value(s) is an `Arguments` instance.
+   * Checks if a value or many values are an instance of the [arguments][args]
+   * `object` type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.args = function isArguments(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'args');
-      case 1:  return _is.args(val);
-      default: return _are(arguments, _is.args);
+      case 0:
+        throw _error('Missing a val', 'args');
+      case 1:
+        return _is.args(val);
+      default:
+        return _are(arguments, _is.args);
     }
   };
 
