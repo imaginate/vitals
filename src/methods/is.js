@@ -51,9 +51,9 @@ var is = (function isPrivateScope() {
   // - is.even
   //
   // * Note that `vitals.is.function` will fail in all ES3
-  //   browser and other platform environments and even some
-  //   ES5. Use `vitals.is.func` for compatibility with older
-  //   browser and other platform environments.
+  //   and some ES5 browser and other platform environments.
+  //   Use `vitals.is.func` for compatibility with older
+  //   environments.
   //////////////////////////////////////////////////////////
 
   /* {{{2 Is References

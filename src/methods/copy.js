@@ -32,9 +32,10 @@ var copy = (function copyPrivateScope() {
   // - copy.regexp (copy.re|copy.regex)
   // - copy.func   (copy.fn|copy.function*)
   //
-  // * Note that copy.function will fail in all ES3 browser
-  //   environments and even some ES5. Use copy.func for
-  //   compatibility with older browser environments.
+  // * Note that `vitals.copy.function` will fail in all ES3
+  //   and some ES5 browser and other platform environments.
+  //   Use `vitals.copy.func` for compatibility with older
+  //   environments.
   //////////////////////////////////////////////////////////
 
   /* {{{2 Copy References
@@ -172,7 +173,8 @@ var copy = (function copyPrivateScope() {
    * set to `0` and the [name property][func-name] which will be set to
    * `"funcCopy"` for [unminified][minify] `vitals` sources. Also note that
    * `vitals.copy.function` is not valid in [ES3][ecma3] and some [ES5][ecma5]
-   * browser environments. Use `vitals.copy.func` for browser safety.
+   * browser and other platform environments. Use `vitals.copy.func` for
+   * browser and platform safety.
    *
    * @public
    * @param {function} func
