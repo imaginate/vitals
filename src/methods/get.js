@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: get
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS GET
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.get](https://github.com/imaginate/vitals/wiki/vitals.get)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -21,10 +18,9 @@ var own = require('./helpers/own.js');
 var copy = require('./copy.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: get
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS GET
+//////////////////////////////////////////////////////////////////////////////
 
 var get = (function getPrivateScope() {
 
@@ -38,35 +34,65 @@ var get = (function getPrivateScope() {
   // - get.values       (get.vals)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Get References
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+   */
+
+  /// {{{2
+  /// @method get
   /**
-   * Gets keys, indexes, values, or substrings from an object, array, or string.
+   * Retrieves keys and values from an `object` or `function`, indexes and
+   * values from an `array`, or indexes and substrings from a `string`.
    *
    * @public
-   * @param {!(Object|function|Array|string)} source - If no val param is
-   *   defined this method will return the following values (per source type):
-   *   - object: array of own keys
-   *   - array:  array of indexes
-   *   - string: an error (i.e. a val is required for string sources)
-   * @param {*=} val - For a `RegExp` val and object/string source this method
-   *   will return the following values (per source type):
-   *   - object: an array of source values where the key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *     the val
-   *   - string: an array of substrings that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *     the val
-   *   Otherwise this method will return the following values (per source type):
-   *   - object: an array of source keys where the `value === val`
-   *   - array:  an array of source indexes where the `value === val`
-   *   - string: an array of starting indexes where `substring === String(val)`
+   * @param {(!Object|function|!Array|string)} source
+   *   If no #val is defined, the following rules apply in order of priority
+   *   (per #source type):
+   *   - *`!Object|function`*!$
+   *     This method returns an `array` of all of the [owned][own] property
+   *     key names in the #source.
+   *   - *`!Array`*!$
+   *     This method returns an `array` of all of the indexes in the #source.
+   *   - *`string`*!$
+   *     This method throws an [Error][error] because a #val must be defined.
+   * @param {*=} val
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`!Object|function`*!$
+   *     If the #val is a `RegExp` this method returns an `array` of the
+   *     [owned][own] property values in the #source where the key name
+   *     matches (via a @has#pattern test) the #val. Otherwise it returns an
+   *     `array` of the [owned][own] property key names in the #source where
+   *     the value matches (via a [strict equality][equal] test) the #val.
+   *   - *`!Array`*!$
+   *     This method returns an `array` of the indexes in the #source where
+   *     the property value matches (via a [strict equality][equal] test) the
+   *     #val.
+   *   - *`string`*!$
+   *     If the #val is a `RegExp` this method returns an `array` of each
+   *     `substring` in the #source that matches (via a @has#pattern test) the
+   *     #val. Otherwise the #val is converted into a `string` with
+   *     [String()][string], and this method returns an `array` of the
+   *     starting indexes in the #source where a `substring` matches (via a
+   *     [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   function get(source, val) {
 
     if ( _is.str(source) ) {
-      if (arguments.length < 2) throw _error('No val defined');
-      return _is.regex(val) ? _strVals(source, val) : _strIndexes(source, val);
+
+      if (arguments.length < 2)
+        throw _error('No val defined');
+
+      return _is.regex(val)
+        ? _strVals(source, val)
+        : _strIndexes(source, val);
     }
 
-    if ( !_is._obj(source) ) throw _error.type('source');
+    if ( !_is._obj(source) )
+      throw _error.type('source');
 
     return arguments.length < 2
       ? _is._arr(source)
