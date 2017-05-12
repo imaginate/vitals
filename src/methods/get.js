@@ -45,16 +45,17 @@ var get = (function getPrivateScope() {
   /// @method get
   /**
    * Retrieves keys and values from an `object` or `function`, indexes and
-   * values from an `array`, or indexes and substrings from a `string`.
+   * values from an `array` or `arguments` instance, or indexes and substrings
+   * from a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} source
+   * @param {(!Object|function|!Array|!Arguments|string)} source
    *   If no #val is defined, the following rules apply in order of priority
    *   (per #source type):
    *   - *`!Object|function`*!$
    *     This method returns an `array` of all of the [owned][own] property
    *     key names in the #source.
-   *   - *`!Array`*!$
+   *   - *`!Array|!Arguments`*!$
    *     This method returns an `array` of all of the indexes in the #source.
    *   - *`string`*!$
    *     This method throws an [Error][error] because a #val must be defined.
@@ -66,7 +67,7 @@ var get = (function getPrivateScope() {
    *     matches (via a @has#pattern test) the #val. Otherwise it returns an
    *     `array` of the [owned][own] property key names in the #source where
    *     the value matches (via a [strict equality][equal] test) the #val.
-   *   - *`!Array`*!$
+   *   - *`!Array|!Arguments`*!$
    *     This method returns an `array` of the indexes in the #source where
    *     the property value matches (via a [strict equality][equal] test) the
    *     #val.
