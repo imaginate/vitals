@@ -1,80 +1,124 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: match
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * MATCH HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: match
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{2
+// MATCH HELPER
+//////////////////////////////////////////////////////////////////////////////
 
 var match = (function matchPrivateScope() {
 
+  /* {{{3
+   * @ref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
+   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+   */
+
+  /// {{{3
+  /// @func match
   /**
-   * A shortcut for `String.prototype.includes` and `RegExp.prototype.test`.
+   * A cross-platform shortcut for [String.prototype.includes][includes] and
+   * [RegExp.prototype.test][test].
+   *
    * @param {string} source
    * @param {*} pattern
    * @return {boolean}
    */
   function match(source, pattern) {
-    return isRegex(pattern)
-      ? pattern.test(source)
-      : inStr(source, pattern);
+
+    if ( isRegExp(pattern) )
+      return pattern.test(source);
+
+    pattern = toStr(pattern);
+    return !source
+      ? !pattern
+      : !pattern
+        ? true
+        : inStr(source, pattern);
   }
 
+  ///////////////////////////////////////////////////// {{{3
+  // MATCH HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func hasIncludes
+  /**
+   * Checks if [String.prototype.includes][includes] exists.
+   *
+   * @private
+   * @return {boolean}
+   */
+  function hasIncludes() {
+    return 'includes' in String.prototype
+      && typeof String.prototype.includes === 'function';
+  }
+
+  /// {{{4
+  /// @func inStr
   /**
    * @private
-   * @return {string}
+   * @param {string} source
+   * @param {string} substr
+   * @return {boolean}
    */
-  var toStr = Object.prototype.toString;
+  var inStr = hasIncludes()
+    ? function inStr(source, substr) {
+        return source.includes(substr);
+      }
+    : function inStr(source, substr) {
+        return source.indexOf(substr) !== -1;
+      };
 
+  /// {{{4
+  /// @func isRegExp
   /**
    * @private
    * @param {*} val
    * @return {boolean}
    */
-  function isRegex(val) {
-    return !!val && typeof val === 'object' && toStr.call(val) === '[object RegExp]';
+  function isRegExp(val) {
+    return !!val
+      && typeof val === 'object'
+      && objToStr.call(val) === '[object RegExp]';
   }
 
+  /// {{{4
+  /// @func objToStr
   /**
    * @private
-   * @param {string} source
-   * @param {string} str
-   * @return {boolean}
+   * @this {!Object}
+   * @return {string}
    */
-  var baseInStr = !!String.prototype.includes
-    ? function baseInStr(source, str) { return source.includes(str); }
-    : function baseInStr(source, str) { return source.indexOf(str) !== -1; };
+  var objToStr = Object.prototype.toString;
 
+  /// {{{4
+  /// @func toStr
   /**
    * @private
-   * @param {string} source
-   * @param {*} str
-   * @return {boolean}
+   * @param {*} val
+   * @return {string}
    */
-  function inStr(source, str) {
-    str = String(str);
-    if (!source) return !str;
-    if (!str) return true;
-    return baseInStr(source, str);
+  function toStr(val) {
+    return typeof val === 'string'
+      ? val
+      : String(val);
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: match
+  /// }}}3
+  // END OF PRIVATE SCOPE FOR MATCH
   return match;
 })();
-
+/// }}}2
 
 module.exports = match;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
