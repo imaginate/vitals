@@ -67,30 +67,46 @@ var has = (function hasPrivateScope() {
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
-   *     This method checks for a matching property value in the #source.
+   *     This method checks each indexed property in the #source for one
+   *     matching value.
    *   - *`string`*!$
-   *     This method checks for a matching substring in the #source.
+   *     If the #val is a `RegExp`, this method returns the result of a call
+   *     to [RegExp.prototype.test][test] on the #source. Otherwise it returns
+   *     the result of a call to [String.prototype.includes][includes] or for
+   *     older platforms a [strict equality][equal] test for a non-negative
+   *     index result from [String.prototype.indexOf][indexOf] (i.e.
+   *     `return source.indexOf(alteredVal) !== -1;`).
    * @param {*} val
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
-   *     The value of #val does not matter. This method automatically returns
-   *     `false`.
+   *     The value of #val does not matter and is not used.
    *   - *`!Object|function`*!$
    *     The #val is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own]. The result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own] is returned.
+   *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one value
-   *     that matches (via a [strict equality][equal] test) the #val.
+   *     The #val is **not** altered. A [strict equality][equal] test against
+   *     the #val is used to evaluate each indexed property value.
+   *   - *`string`*!$
+   *     If the #val is **not** a `RegExp`, it is converted into a `string`
+   *     via [String()][string] before [String.prototype.includes][includes]
+   *     or [String.prototype.indexOf][indexOf] is called.
+   * @return {boolean}
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own].
+   *   - *`!Array|!Arguments`*!$
+   *     This method checks each indexed property in the #source for one
+   *     matching value.
    *   - *`string`*!$
    *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise the #val
-   *     is converted into a `string` with [String()][string], and
-   *     this method returns the result of a call to
-   *     [String.prototype.includes][includes] or for older platforms a
-   *     [strict equality][equal] test for a non-negative (i.e. `-1`) index
-   *     result of a call to [String.prototype.indexOf][indexOf].
-   * @return {boolean}
+   *     to [RegExp.prototype.test][test] on the #source. Otherwise it returns
+   *     the result of a call to [String.prototype.includes][includes] or for
+   *     older platforms a [strict equality][equal] test for a non-negative
+   *     index result from [String.prototype.indexOf][indexOf] (i.e.
+   *     `return source.indexOf(alteredVal) !== -1;`).
    */
   function has(source, val) {
 
@@ -134,7 +150,7 @@ var has = (function hasPrivateScope() {
    * @return {boolean}
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
-   *     This method automatically returns `false`.
+   *     This method returns `false`.
    *   - *`!Object|function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
