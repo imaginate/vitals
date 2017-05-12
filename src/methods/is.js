@@ -664,7 +664,7 @@ var is = (function isPrivateScope() {
    * @public
    * @param {...*} val
    *   The value to evaluate. If more than one #val is provided every #val
-   *   must pass the type check to return `true`.
+   *   must be empty to return `true`.
    * @return {boolean}
    *   The evaluation result.
    */
@@ -682,17 +682,23 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.frozen
   /**
-   * Checks if a value(s) is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen).
+   * Checks if an `object` or `function` is [frozen][frozen].
    *
    * @public
-   * @param {...(Object|?function)} val
+   * @param {...(?Object|?function)} source
+   *   If more than one #source is provided every #source must be
+   *   [frozen][frozen] to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.frozen = function isFrozen(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'frozen');
-      case 1:  return _isFrozen(val);
-      default: return _are(arguments, _isFrozen);
+      case 0:
+        throw _error('Missing a val', 'frozen');
+      case 1:
+        return _isFrozen(val);
+      default:
+        return _are(arguments, _isFrozen);
     }
   };
 
