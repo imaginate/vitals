@@ -52,36 +52,63 @@ var has = (function hasPrivateScope() {
    */
 
   /// {{{2
+  /// @method has
   /**
-   * Checks if an object owns a property, if an array has a value, or a string
-   *   has a pattern or substring.
+   * Checks if an `object` or `function` [owns][own] a property, if an `array`
+   * or `arguments` instance contains a value, or a `string` matches a pattern
+   * or contains a substring.
    *
    * @public
-   * @param {?(Object|function|string|Array)} source
-   * @param {*} val - Details (per source type):
-   *   - object: The val is converted to a string, and the object is checked for
-   *     a matching key via [Object.prototype.hasOwnProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty).
-   *   - array: The array is checked for a matching indexed value via
-   *     `val === value`.
-   *   - string: If a `RegExp` val is provided the string source is tested for a
-   *     matching pattern via [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
-   *     Otherwise the val is converted to a string, and the source string is
-   *     checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   *     or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
-   *   - null: Regardless of val `false` is returned.
+   * @param {(?Object|?function|?Array|?Arguments|?string)} source
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method automatically returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own].
+   *   - *`!Array|!Arguments`*!$
+   *     This method checks for a matching property value in the #source.
+   *   - *`string`*!$
+   *     This method checks for a matching substring in the #source.
+   * @param {*} val
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     The value of #val does not matter. This method automatically returns
+   *     `false`.
+   *   - *`!Object|function`*!$
+   *     The #val is passed **without** any conversions to
+   *     [Object.prototype.hasOwnProperty][own]. The result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own] is returned.
+   *   - *`!Array|!Arguments`*!$
+   *     This method checks each indexed property in the #source for one value
+   *     that matches (via a [strict equality][equal] test) the #val.
+   *   - *`string`*!$
+   *     If the #val is a `RegExp`, this method returns the result of a call
+   *     to [RegExp.prototype.test][test] on the #source. Otherwise the #val
+   *     is converted into a `string` with [String()][string], and
+   *     this method returns the result of a call to
+   *     [String.prototype.includes][includes] or for older platforms a
+   *     [strict equality][equal] test for a non-negative (i.e. `-1`) index
+   *     result of a call to [String.prototype.indexOf][indexOf].
    * @return {boolean}
    */
   function has(source, val) {
 
-    if (arguments.length < 2) throw _error('No val defined');
-    
-    if ( _is.nil(source) ) return false;
+    if (arguments.length < 2)
+      throw _error('No val defined');
 
-    if ( _is.str(source) ) return match(source, val);
+    if ( _is.nil(source) )
+      return false;
 
-    if ( !_is._obj(source) ) throw _error.type('source');
+    if ( _is.str(source) )
+      return match(source, val);
 
-    return _is._arr(source) ? inArr(source, val) : own(source, val);
+    if ( !_is._obj(source) )
+      throw _error.type('source');
+
+    return _is._arr(source)
+      ? inArr(source, val)
+      : own(source, val);
   }
 
   /// {{{2
