@@ -324,17 +324,23 @@ var is = (function isPrivateScope() {
   /// @method is.object
   /// @alias is.obj
   /**
-   * Checks if a value(s) is an object.
+   * Checks if a value or many values are an [object][obj] data type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.object = function isObject(val) {
+  is['object'] = function isObject(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'object');
-      case 1:  return _is.obj(val);
-      default: return _are(arguments, _is.obj);
+      case 0:
+        throw _error('Missing a val', 'object');
+      case 1:
+        return _is.obj(val);
+      default:
+        return _are(arguments, _is.obj);
     }
   };
   // define shorthand
