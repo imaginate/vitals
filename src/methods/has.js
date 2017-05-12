@@ -350,10 +350,11 @@ var has = (function hasPrivateScope() {
   catch (e) {}
 
   ///////////////////////////////////////////////////// {{{2
-  // PRIVATE METHODS - GENERAL
+  // HAS HELPERS - MISC
   //////////////////////////////////////////////////////////
 
   /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
