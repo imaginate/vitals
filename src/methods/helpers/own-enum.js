@@ -15,6 +15,12 @@
 // OWN-ENUM HELPER
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ * @param {(?Object|?function)} source
+ * @param {*} key
+ * @return {boolean}
+ */
 var ownEnum = (function ownEnumPrivateScope() {
 
   /* {{{3 OwnEnum References

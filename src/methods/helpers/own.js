@@ -15,6 +15,12 @@
 // OWN HELPER
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ * @param {(?Object|?function)} source
+ * @param {*} key
+ * @return {boolean}
+ */
 var own = (function ownPrivateScope() {
 
   /* {{{3 Own References

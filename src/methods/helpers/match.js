@@ -15,6 +15,12 @@
 // MATCH HELPER
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @private
+ * @param {string} source
+ * @param {*} pattern
+ * @return {boolean}
+ */
 var match = (function matchPrivateScope() {
 
   /* {{{3 Match References
