@@ -54,12 +54,19 @@ var is = (function isPrivateScope() {
   /* {{{2 Is References
    * @ref [doc]:(https://developer.mozilla.org/en-US/docs/Web/API/Document)
    * @ref [nan]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
+   * @ref [num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
+   * @ref [obj]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
    * @ref [args]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
    * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
+   * @ref [null]:(https://developer.mozilla.org/en-US/docs/Glossary/null)
+   * @ref [prim]:(https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
+   * @ref [unde]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
    * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
    * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
    * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
    * @ref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
+   * @ref [str-prim]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#Distinction_between_string_primitives_and_String_objects)
+   * @ref [bool-desc]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean#Description)
    */
 
   /// {{{2
@@ -110,7 +117,7 @@ var is = (function isPrivateScope() {
   /// @method is.null
   /// @alias is.nil
   /**
-   * Checks if a value or many values are `null`.
+   * Checks if a value or many values are [null][null].
    *
    * @public
    * @param {...*} val
@@ -135,7 +142,7 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.undefined
   /**
-   * Checks if a value or many values are `undefined`.
+   * Checks if a value or many values are [undefined][unde].
    *
    * @public
    * @param {...*} val
@@ -159,7 +166,8 @@ var is = (function isPrivateScope() {
   /// @method is.boolean
   /// @alias is.bool
   /**
-   * Checks if a value or many values are a primitive `boolean` data type.
+   * Checks if a value or many values are a [primitive boolean][bool-desc]
+   * data type.
    *
    * @public
    * @param {...*} val
@@ -185,7 +193,8 @@ var is = (function isPrivateScope() {
   /// @method is.string
   /// @alias is.str
   /**
-   * Checks if a value or many values are a primitive `string` data type.
+   * Checks if a value or many values are a [primitive string][str-prim] data
+   * type.
    *
    * @public
    * @param {...*} val
@@ -211,8 +220,8 @@ var is = (function isPrivateScope() {
   /// @method is._string
   /// @alias is._str
   /**
-   * Checks if a value or many values are a primitive `string` data type and
-   * not empty (e.g. `""`).
+   * Checks if a value or many values are a [primitive string][str-prim] data
+   * type and not empty (e.g. `""`).
    *
    * @public
    * @param {...*} val
@@ -238,7 +247,8 @@ var is = (function isPrivateScope() {
   /// @method is.number
   /// @alias is.num
   /**
-   * Checks if a value or many values are a primitive `number` data type.
+   * Checks if a value or many values are a [primitive][prim] [number][num]
+   * data type.
    *
    * @public
    * @param {...*} val
@@ -264,8 +274,8 @@ var is = (function isPrivateScope() {
   /// @method is._number
   /// @alias is._num
   /**
-   * Checks if a value or many values are a primitive `number` data type and
-   * not `0`.
+   * Checks if a value or many values are a [primitive][prim] [number][num]
+   * data type and not `0`.
    *
    * @public
    * @param {...*} val
