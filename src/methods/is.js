@@ -65,7 +65,7 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is
   /**
-   * Checks if a value or many values is a specific data type or types. See
+   * Checks if a value or many values are a specific data type or types. See
    * @is-types for a complete list of the available data types. Note that all
    * `object` types are nullable by default (i.e. `is("object", null)` will
    * return `true`).
@@ -110,7 +110,7 @@ var is = (function isPrivateScope() {
   /// @method is.null
   /// @alias is.nil
   /**
-   * Checks if a value or many values is `null`.
+   * Checks if a value or many values are `null`.
    *
    * @public
    * @param {...*} val
@@ -135,7 +135,7 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.undefined
   /**
-   * Checks if a value or many values is `undefined`.
+   * Checks if a value or many values are `undefined`.
    *
    * @public
    * @param {...*} val
