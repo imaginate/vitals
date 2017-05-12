@@ -227,23 +227,36 @@ var has = (function hasPrivateScope() {
   has.val = has.value;
 
   /// {{{2
+  /// @method has.pattern
   /**
-   * Checks if a string has a pattern or substring.
+   * Checks if a `string` matches a pattern or contains a substring.
    *
    * @public
    * @param {string} source
-   * @param {*} pattern - Details (per pattern type):
-   *   - regex: The string source is tested for a matching pattern via
-   *     [RegExp.prototype.test](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test).
-   *   - non-regex: The pattern is converted to a string, and the source string
-   *     is checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   *     or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
+   *   If the #val is a `RegExp`, this method returns the result of a call to
+   *   [RegExp.prototype.test][test] on the #source. Otherwise it returns the
+   *   result of a call to [String.prototype.includes][includes] or for older
+   *   platforms a [strict equality][equal] test for a non-negative index
+   *   result from [String.prototype.indexOf][indexOf] (i.e.
+   *   `return source.indexOf(alteredVal) !== -1;`).
+   * @param {*} pattern
+   *   If the #pattern is **not** a `RegExp`, it is converted into a `string`
+   *   via [String()][string] before [String.prototype.includes][includes]
+   *   or [String.prototype.indexOf][indexOf] is called.
    * @return {boolean}
+   *   If the #val is a `RegExp`, this method returns the result of a call to
+   *   [RegExp.prototype.test][test] on the #source. Otherwise it returns the
+   *   result of a call to [String.prototype.includes][includes] or for older
+   *   platforms a [strict equality][equal] test for a non-negative index
+   *   result from [String.prototype.indexOf][indexOf] (i.e.
+   *   `return source.indexOf(alteredVal) !== -1;`).
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !_is.str(source) ) throw _error.type('source', 'pattern');
-    if (arguments.length < 2) throw _error('No pattern defined', 'pattern');
+    if ( !_is.str(source) )
+      throw _error.type('source', 'pattern');
+    if (arguments.length < 2)
+      throw _error('No pattern defined', 'pattern');
 
     return match(source, pattern);
   };
