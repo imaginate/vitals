@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: is
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS IS
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -19,10 +16,9 @@ var newErrorMaker = require('./helpers/new-error-maker.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: is
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS IS
+//////////////////////////////////////////////////////////////////////////////
 
 var is = (function isPrivateScope() {
 
@@ -55,6 +51,11 @@ var is = (function isPrivateScope() {
   // - is.even
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Is References
+   */
+
+  /// {{{2
+  /// @method is
   /**
    * Checks if a value(s) is one of the provided types. See the [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
    *   for all available options. Note that all object types are nullable by
@@ -89,6 +90,9 @@ var is = (function isPrivateScope() {
       : _checkVal(checks, val, nullable);
   }
 
+  /// {{{2
+  /// @method is.null
+  /// @alias is.nil
   /**
    * Checks if a value(s) is `null`.
    *
@@ -106,6 +110,8 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.nil = is['null'];
 
+  /// {{{2
+  /// @method is.undefined
   /**
    * Checks if a value(s) is `undefined`.
    *
@@ -121,6 +127,9 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.boolean
+  /// @alias is.bool
   /**
    * Checks if a value(s) is a boolean.
    *
@@ -138,6 +147,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.bool = is['boolean'];
 
+  /// {{{2
+  /// @method is.string
+  /// @alias is.str
   /**
    * Checks if a value(s) is a string.
    *
@@ -155,6 +167,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.str = is.string;
 
+  /// {{{2
+  /// @method is._string
+  /// @alias is._str
   /**
    * Checks if a value(s) is a non-empty string.
    *
@@ -172,6 +187,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is._str = is._string;
 
+  /// {{{2
+  /// @method is.number
+  /// @alias is.num
   /**
    * Checks if a value(s) is a number.
    *
@@ -189,6 +207,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.num = is.number;
 
+  /// {{{2
+  /// @method is._number
+  /// @alias is._num
   /**
    * Checks if a value(s) is a number and not `0`.
    *
@@ -206,6 +227,8 @@ var is = (function isPrivateScope() {
   // define shorthand
   is._num = is._number;
 
+  /// {{{2
+  /// @method is.nan
   /**
    * Checks if a value(s) is `NaN`.
    *
@@ -221,6 +244,9 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.object
+  /// @alias is.obj
   /**
    * Checks if a value(s) is an object.
    *
@@ -238,6 +264,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.obj = is.object;
 
+  /// {{{2
+  /// @method is._object
+  /// @alias is._obj
   /**
    * Checks if a value(s) is an object or function.
    *
@@ -255,6 +284,10 @@ var is = (function isPrivateScope() {
   // define shorthand
   is._obj = is._object;
 
+  /// {{{2
+  /// @method is.func
+  /// @alias is.function
+  /// @alias is.fn
   /**
    * Checks if a value(s) is a function. Note that `vitals.is.function` is not
    *   valid in ES3 and some ES5 browser environments. Use `vitals.is.func` for
@@ -278,6 +311,9 @@ var is = (function isPrivateScope() {
   }
   catch (error) {}
 
+  /// {{{2
+  /// @method is.array
+  /// @alias is.arr
   /**
    * Checks if a value(s) is an `Array` instance.
    *
@@ -295,6 +331,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.arr = is.array;
 
+  /// {{{2
+  /// @method is._array
+  /// @alias is._arr
   /**
    * Checks if a value(s) is an `Array` or `Arguments` instance.
    *
@@ -312,6 +351,10 @@ var is = (function isPrivateScope() {
   // define shorthand
   is._arr = is._array;
 
+  /// {{{2
+  /// @method is.regexp
+  /// @alias is.regex
+  /// @alias is.re
   /**
    * Checks if a value(s) is a `RegExp` instance.
    *
@@ -330,6 +373,8 @@ var is = (function isPrivateScope() {
   is.regex = is.regexp;
   is.re = is.regexp;
 
+  /// {{{2
+  /// @method is.date
   /**
    * Checks if a value(s) is a `Date` instance.
    *
@@ -345,6 +390,9 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.error
+  /// @alias is.err
   /**
    * Checks if a value(s) is an `Error` instance.
    *
@@ -362,6 +410,8 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.err = is.error;
 
+  /// {{{2
+  /// @method is.args
   /**
    * Checks if a value(s) is an `Arguments` instance.
    *
@@ -377,6 +427,9 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.document
+  /// @alias is.doc
   /**
    * Checks if a value(s) is a DOM `Document` instance.
    *
@@ -394,6 +447,9 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.doc = is.document;
 
+  /// {{{2
+  /// @method is.element
+  /// @alias is.elem
   /**
    * Checks if a value(s) is a DOM `Element` instance.
    *
@@ -411,6 +467,8 @@ var is = (function isPrivateScope() {
   // define shorthand
   is.elem = is.element;
 
+  /// {{{2
+  /// @method is.empty
   /**
    * Checks if a value(s) is considered empty.
    *
@@ -435,6 +493,8 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.frozen
   /**
    * Checks if a value(s) is [frozen](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen).
    *
@@ -450,6 +510,8 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.whole
   /**
    * Checks if a number(s) is whole (i.e. has no decimal). Zero and non-decimal
    *   negative numbers will return `true`.
@@ -466,6 +528,8 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.odd
   /**
    * Checks if a number(s) is odd.
    *
@@ -481,6 +545,8 @@ var is = (function isPrivateScope() {
     }
   };
 
+  /// {{{2
+  /// @method is.even
   /**
    * Checks if a number(s) is even.
    *
@@ -496,10 +562,12 @@ var is = (function isPrivateScope() {
     }
   };
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - ARE
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - ARE
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _are
   /**
    * @private
    * @param {!Arguments} vals
@@ -518,10 +586,12 @@ var is = (function isPrivateScope() {
     return true;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - IS
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - IS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _isFrozen
   /**
    * @private
    * @param {(Object|?function)} val
@@ -536,6 +606,8 @@ var is = (function isPrivateScope() {
     return _is.frozen(val);
   }
 
+  /// {{{3
+  /// @func _isWhole
   /**
    * @private
    * @param {number} val
@@ -548,6 +620,8 @@ var is = (function isPrivateScope() {
     return _is.whole(val);
   }
 
+  /// {{{3
+  /// @func _isOdd
   /**
    * @private
    * @param {number} val
@@ -561,6 +635,8 @@ var is = (function isPrivateScope() {
     return _is.odd(val);
   }
 
+  /// {{{3
+  /// @func _isEven
   /**
    * @private
    * @param {number} val
@@ -574,10 +650,12 @@ var is = (function isPrivateScope() {
     return _is.even(val);
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - CHECKS
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - CHECKS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _checkVal
   /**
    * @private
    * @param {!Array<function>} checks
@@ -597,6 +675,8 @@ var is = (function isPrivateScope() {
     return false;
   }
 
+  /// {{{3
+  /// @func _checkVals
   /**
    * @private
    * @param {!Array<function>} checks
@@ -616,17 +696,19 @@ var is = (function isPrivateScope() {
     return true;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - TYPES
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - TYPES
   //////////////////////////////////////////////////////////
 
   /**
    * @typedef {!Object<string, function(*, boolean=): boolean>} DataTypes
    */
 
+  /// {{{3
+  /// @const TYPES
   /**
    * @private
-   * @type {DataTypes}
+   * @const {!DataTypes}
    */
   var TYPES = (function() {
 
@@ -635,6 +717,8 @@ var is = (function isPrivateScope() {
      */
     var _types = {};
 
+    /// {{{4
+    /// @func addTypes
     /**
      * Adds types to the _types hash map with a check method that evaluates
      *   nullable properties and invokes their type section's method.
@@ -657,6 +741,8 @@ var is = (function isPrivateScope() {
       return _types;
     }
 
+    /// {{{4
+    /// @func addType
     /**
      * Adds type to the _types hash map with a check method that evaluates
      *   nullable properties and invokes its type section's method.
@@ -678,6 +764,8 @@ var is = (function isPrivateScope() {
       return _types;
     }
 
+    /// {{{4
+    /// @func addShortcuts
     /**
      * Adds the type shortcuts to the _types hash map.
      * @private
@@ -701,6 +789,8 @@ var is = (function isPrivateScope() {
       return _types;
     }
 
+    /// {{{4
+    /// @func addType.arrays
     /**
      * @private
      * @param {function(*): boolean} eachCheck - The check method for each of
@@ -725,6 +815,8 @@ var is = (function isPrivateScope() {
       };
     };
 
+    /// {{{4
+    /// @func addType.maps
     /**
      * @private
      * @param {function(*): boolean} eachCheck - The check method for each of
@@ -748,6 +840,11 @@ var is = (function isPrivateScope() {
       };
     };
 
+    ///////////////////////// {{{4
+    // ADD TYPES
+    //////////////////////////////
+
+    /// {{{5 Add Primitives
     _types = addTypes('primitives', {
       'undefined': _is.undefined,
       'boolean':   _is.bool,
@@ -757,6 +854,7 @@ var is = (function isPrivateScope() {
     }, false);
     _types = addType('primitives', 'null', _is.nil);
 
+    /// {{{5 Add JS Objects
     _types = addTypes('js_objects', {
       'object': _is.obj,
       'regexp': _is.regex,
@@ -767,13 +865,16 @@ var is = (function isPrivateScope() {
     _types = addType('js_objects', 'arguments', _is.args);
     _types = addType('js_objects', 'function', _is.func, false);
 
+    /// {{{5 Add DOM Objects
     _types = addTypes('dom_objects', {
       'element':  _is.elem,
       'document': _is.doc
     });
 
+    /// {{{5 Add Others
     _types = addType('others', 'empty', _is.empty);
 
+    /// {{{5 Add Arrays
     _types = addTypes('arrays', {
       'nulls':     _is.nil,
       'booleans':  _is.bool,
@@ -790,6 +891,7 @@ var is = (function isPrivateScope() {
       'documents': _is.doc
     });
 
+    /// {{{5 Add Maps
     _types = addTypes('maps', {
       'nullmap':     _is.nil,
       'booleanmap':  _is.bool,
@@ -806,14 +908,19 @@ var is = (function isPrivateScope() {
       'documentmap': _is.doc
     });
 
+    ///////////////////////// {{{4
+    // ADD SHORTCUTS
+    //////////////////////////////
+
     _types = addShortcuts({
-      // primitives
+
+      /// {{{5 Add Primitives
       nil:  'null',
       bool: 'boolean',
       str:  'string',
       num:  'number',
 
-      // js objects
+      /// {{{5 Add JS Objects
       obj:   'object',
       func:  'function',
       fn:    'function',
@@ -823,11 +930,11 @@ var is = (function isPrivateScope() {
       err:   'error',
       args:  'arguments',
 
-      // dom objects
+      /// {{{5 Add DOM Objects
       elem: 'element',
       doc:  'document',
 
-      // arrays
+      /// {{{5 Add Arrays
       nils:   'nulls',
       strs:   'strings',
       nums:   'numbers',
@@ -842,7 +949,7 @@ var is = (function isPrivateScope() {
       elems:  'elements',
       docs:   'documents',
 
-      // maps
+      /// {{{5 Add Maps
       nilmap:   'nullmap',
       strmap:   'stringmap',
       nummap:   'numbermap',
@@ -858,22 +965,28 @@ var is = (function isPrivateScope() {
       docmap:   'documentmap'
     });
 
+    /// }}}4
+    // END OF TYPES PRIVATE SCOPE
     return _types;
   })();
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - PARSING
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - PARSING
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const ALL_SPECIALS
   /**
    * @private
    * @type {!RegExp}
    */
   var ALL_SPECIALS = /[^a-z\|]/g;
 
+  /// {{{3
+  /// @const SPECIALS
   /**
    * @private
-   * @type {!Object<string, function(string): boolean>}
+   * @const {!Object<string, function(string): boolean>}
    */
   var SPECIALS = (function(pipe, exPoint, quesMark, equals, asterisk) {
     return {
@@ -885,6 +998,8 @@ var is = (function isPrivateScope() {
     };
   })(/\|/, /\!/, /\?/, /\=/, /\*|any/);
 
+  /// {{{3
+  /// @func _hasSpecial
   /**
    * @private
    * @param {string} special
@@ -895,6 +1010,8 @@ var is = (function isPrivateScope() {
     return SPECIALS[special](types);
   }
 
+  /// {{{3
+  /// @func _getChecks
   /**
    * @private
    * @param {string} types
@@ -925,6 +1042,8 @@ var is = (function isPrivateScope() {
     return checks.length ? checks : null;
   }
 
+  /// {{{3
+  /// @func _getNullable
   /**
    * Method checks whether "!" or "?" exists in the types.
    * @private
@@ -946,26 +1065,32 @@ var is = (function isPrivateScope() {
     return override ? !negate && ensure : undefined;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('is');
 
+  /// {{{3
+  /// @const DOCS
   /**
    * @private
-   * @type {string}
+   * @const {string}
    */
   var DOCS = 'https://github.com/imaginate/vitals/wiki/vitals.is-types';
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR IS
   return is;
 })();
-
+/// }}}1
 
 module.exports = is;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
