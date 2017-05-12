@@ -1,16 +1,13 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: has
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS HAS
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.has](https://github.com/imaginate/vitals/wiki/vitals.has)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
@@ -24,10 +21,9 @@ var match = require('./helpers/match.js');
 var own = require('./helpers/own.js');
 var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: has
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS HAS
+//////////////////////////////////////////////////////////////////////////////
 
 var has = (function hasPrivateScope() {
 
@@ -44,6 +40,10 @@ var has = (function hasPrivateScope() {
   //   environments.
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Has References
+   */
+
+  /// {{{2
   /**
    * Checks if an object owns a property, if an array has a value, or a string
    *   has a pattern or substring.
@@ -76,6 +76,7 @@ var has = (function hasPrivateScope() {
     return _is._arr(source) ? inArr(source, val) : own(source, val);
   }
 
+  /// {{{2
   /**
    * Checks if an object owns a property.
    *
@@ -98,6 +99,7 @@ var has = (function hasPrivateScope() {
     return own(source, key);
   };
 
+  /// {{{2
   /**
    * Checks if an object or array has a value.
    *
@@ -123,6 +125,7 @@ var has = (function hasPrivateScope() {
   // define shorthand
   has.val = has.value;
 
+  /// {{{2
   /**
    * Checks if a string has a pattern or substring.
    *
@@ -144,6 +147,7 @@ var has = (function hasPrivateScope() {
     return match(source, pattern);
   };
 
+  /// {{{2
   /**
    * Checks if a string has a substring.
    *
@@ -164,6 +168,7 @@ var has = (function hasPrivateScope() {
   // define shorthand
   has.substr = has.substring;
 
+  /// {{{2
   /**
    * Checks if an enumerable property exists in an object.
    *
@@ -191,20 +196,23 @@ var has = (function hasPrivateScope() {
   }
   catch (e) {}
 
-  //////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////// {{{2
   // PRIVATE METHODS - GENERAL
   //////////////////////////////////////////////////////////
 
+  /// {{{3
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('has');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR HAS
   return has;
 })();
-
+/// }}}1
 
 module.exports = has;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
