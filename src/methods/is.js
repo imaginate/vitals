@@ -583,17 +583,24 @@ var is = (function isPrivateScope() {
   /// @method is.document
   /// @alias is.doc
   /**
-   * Checks if a value(s) is a DOM `Document` instance.
+   * Checks if a value or many values are an instance of the
+   * [DOM Document][doc] `object` type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.document = function isDocument(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'document');
-      case 1:  return _is.doc(val);
-      default: return _are(arguments, _is.doc);
+      case 0:
+        throw _error('Missing a val', 'document');
+      case 1:
+        return _is.doc(val);
+      default:
+        return _are(arguments, _is.doc);
     }
   };
   // define shorthand
