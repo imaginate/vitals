@@ -72,11 +72,11 @@ var get = (function getPrivateScope() {
    *     the property value matches (via a [strict equality][equal] test) the
    *     #val.
    *   - *`string`*!$
-   *     If the #val is a `RegExp` this method returns an `array` of each
-   *     `substring` in the #source that matches (via a @has#pattern test) the
+   *     If the #val is a `RegExp` this method returns an `array` of every
+   *     substring in the #source that matches (via a @has#pattern test) the
    *     #val. Otherwise the #val is converted into a `string` with
    *     [String()][string], and this method returns an `array` of the
-   *     starting indexes in the #source where a `substring` matches (via a
+   *     starting indexes in the #source where a substring matches (via a
    *     [strict equality][equal] test) the #val.
    * @return {!Array}
    */
@@ -208,7 +208,7 @@ var get = (function getPrivateScope() {
    *   - *`string`*!$
    *     If the #val is **not** a `RegExp`, it is converted into a `string`
    *     with [String()][string]. This method will then return an `array` of
-   *     the starting indexes in the #source where a `substring` matches (via
+   *     the starting indexes in the #source where a substring matches (via
    *     a @has#pattern test) the #val.
    * @return {!Array}
    */
@@ -283,287 +283,338 @@ var get = (function getPrivateScope() {
   // define shorthand
   get.vals = get.values;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GET OBJECT DETAILS
+  ///////////////////////////////////////////////////// {{{2
+  // GET HELPERS - OBJECT
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _allKeys
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|function)} src
    * @return {!Array<string>}
    */
-  function _allKeys(obj) {
+  function _allKeys(src) {
 
     /** @type {!Array<string>} */
-    var arr;
+    var keys;
     /** @type {string} */
     var key;
 
-    arr = [];
-    for (key in obj) own(obj, key) && arr.push(key);
-    return arr;
+    keys = [];
+    for (key in src) {
+      if ( own(src, key) )
+        keys.push(key);
+    }
+    return keys;
   }
 
+  /// {{{3
+  /// @func _byKeyKeys
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|function)} src
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _byKeyKeys(obj, pattern) {
+  function _byKeyKeys(src, pattern) {
 
     /** @type {!Array<string>} */
-    var arr;
+    var keys;
     /** @type {string} */
     var key;
 
-    pattern = _is.regex(pattern) ? pattern : String(pattern);
-    arr = [];
-    for (key in obj) own(obj, key) && match(key, pattern) && arr.push(key);
-    return arr;
+    if ( !_is.regex(pattern) && !_is.str(pattern) )
+      pattern = String(pattern);
+
+    keys = [];
+    for (key in src) {
+      if ( own(src, key) && match(key, pattern) )
+        keys.push(key);
+    }
+    return keys;
   }
 
+  /// {{{3
+  /// @func _byValKeys
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|function)} src
    * @param {*} val
    * @return {!Array<string>}
    */
-  function _byValKeys(obj, val) {
+  function _byValKeys(src, val) {
 
     /** @type {!Array<string>} */
-    var arr;
+    var keys;
     /** @type {string} */
     var key;
 
-    arr = [];
-    for (key in obj) own(obj, key) && obj[key] === val && arr.push(key);
-    return arr;
+    keys = [];
+    for (key in src) {
+      if ( own(src, key) && (src[key] === val) )
+        keys.push(key);
+    }
+    return keys;
   }
 
+  /// {{{3
+  /// @func _allObjVals
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|function)} src
    * @return {!Array<*>}
    */
-  function _allObjVals(obj) {
+  function _allObjVals(src) {
 
     /** @type {!Array<*>} */
-    var arr;
+    var vals;
     /** @type {string} */
     var key;
 
-    arr = [];
-    for (key in obj) own(obj, key) && arr.push( obj[key] );
-    return arr;
+    vals = [];
+    for (key in src) {
+      if ( own(src, key) )
+        vals.push(src[key]);
+    }
+    return vals;
   }
 
+  /// {{{3
+  /// @func _byKeyObjVals
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|function)} src
    * @param {*} pattern
    * @return {!Array<*>}
    */
-  function _byKeyObjVals(obj, pattern) {
+  function _byKeyObjVals(src, pattern) {
 
     /** @type {!Array<*>} */
-    var arr;
+    var vals;
     /** @type {string} */
     var key;
 
-    pattern = _is.regex(pattern) ? pattern : String(pattern);
-    arr = [];
-    for (key in obj) {
-      own(obj, key) && match(key, pattern) && arr.push( obj[key] );
+    if ( !_is.regex(pattern) && !_is.str(pattern) )
+      pattern = String(pattern);
+
+    vals = [];
+    for (key in src) {
+      if ( own(src, key) && match(key, pattern) )
+        vals.push(src[key]);
     }
-    return arr;
+    return vals;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GET ARRAY DETAILS
+  ///////////////////////////////////////////////////// {{{2
+  // GET HELPERS - ARRAY
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _allIndexes
   /**
    * @private
-   * @param {!Object} obj
+   * @param {(!Array|!Arguments|!Object|function)} src
    * @return {!Array<number>}
    */
-  function _allIndexes(obj) {
+  function _allIndexes(src) {
 
     /** @type {!Array<number>} */
-    var arr;
+    var indexes;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    len = obj.length;
-    arr = new Array(len);
+    len = src.length;
+    indexes = new Array(len);
     i = -1;
-    while (++i < len) arr[i] = i;
-    return arr;
+    while (++i < len)
+      indexes[i] = i;
+    return indexes;
   }
 
+  /// {{{3
+  /// @func _byValIndexes
   /**
    * @private
-   * @param {!Object} obj
+   * @param {(!Array|!Arguments|!Object|function)} src
    * @param {*} val
    * @return {!Array<number>}
    */
-  function _byValIndexes(obj, val) {
+  function _byValIndexes(src, val) {
 
     /** @type {!Array<number>} */
-    var arr;
+    var indexes;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    len = obj.length;
-    arr = [];
+    indexes = [];
+    len = src.length;
     i = -1;
-    while (++i < len) obj[i] === val && arr.push(i);
-    return arr;
+    while (++i < len) {
+      if (src[i] === val)
+        indexes.push(i);
+    }
+    return indexes;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GET STRING DETAILS
+  ///////////////////////////////////////////////////// {{{2
+  // GET HELPERS - STRING
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _strIndexes
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {*} pattern
    * @return {!Array<number>}
    */
-  function _strIndexes(str, pattern) {
-    return match(str, pattern)
-      ? _is.regex(pattern)
-        ? _byRegexStrKeys(str, pattern)
-        : _byStrStrKeys(str, pattern)
-      : [];
+  function _strIndexes(src, pattern) {
+    return _is.regex(pattern)
+      ? _byRegexStrIndexes(src, pattern)
+      : _byStrStrIndexes(src, pattern);
   }
 
+  /// {{{3
+  /// @func _strVals
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _strVals(str, pattern) {
-    return match(str, pattern)
-      ? _is.regex(pattern)
-        ? _byRegexStrVals(str, pattern)
-        : _byStrStrVals(str, pattern)
-      : [];
+  function _strVals(src, pattern) {
+    return _is.regex(pattern)
+      ? _byRegexStrVals(src, pattern)
+      : _byStrStrVals(src, pattern);
   }
 
+  /// {{{3
+  /// @func _byRegexStrIndexes
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {!RegExp} pattern
    * @return {!Array<number>}
    */
-  function _byRegexStrKeys(str, pattern) {
+  function _byRegexStrIndexes(src, pattern) {
 
     /** @type {!Array<number>} */
-    var arr;
-    /** @type {Object} */
-    var obj;
+    var indexes;
+    /** @type {(?Array|?Object)} */
+    var result;
 
     pattern = copy.regex(pattern, true);
-    arr = [];
-    obj = pattern.exec(str);
-    while (obj) {
-      arr.push(obj.index);
-      obj = pattern.exec(str);
+    indexes = [];
+    result = pattern.exec(src);
+    while (result) {
+      indexes.push(result.index);
+      result = pattern.exec(src);
     }
-    return arr;
+    return indexes;
   }
 
+  /// {{{3
+  /// @func _byStrStrIndexes
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {*} pattern
    * @return {!Array<number>}
    */
-  function _byStrStrKeys(str, pattern) {
+  function _byStrStrIndexes(src, pattern) {
 
     /** @type {!Array<number>} */
-    var arr;
+    var indexes;
     /** @type {number} */
     var i;
 
-    pattern = String(pattern);
-    arr = [];
-    i = str.indexOf(pattern);
+    if ( !_is.str(pattern) )
+      pattern = String(pattern);
+
+    indexes = [];
+    i = src.indexOf(pattern);
     while (i !== -1) {
-      arr.push(i);
-      i = str.indexOf(pattern, ++i);
+      indexes.push(i);
+      i = src.indexOf(pattern, ++i);
     }
-    return arr;
+    return indexes;
   }
 
+  /// {{{3
+  /// @func _byRegexStrVals
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {!RegExp} pattern
    * @return {!Array<string>}
    */
-  function _byRegexStrVals(str, pattern) {
+  function _byRegexStrVals(src, pattern) {
 
+    /** @type {(?Array|?Object)} */
+    var result;
     /** @type {!Array<string>} */
-    var arr;
-    /** @type {Object} */
-    var obj;
+    var vals;
 
     pattern = copy.regex(pattern, true);
-    arr = [];
-    obj = pattern.exec(str);
-    while (obj) {
-      arr.push( obj[0] );
-      obj = pattern.exec(str);
+    vals = [];
+    result = pattern.exec(src);
+    while (result) {
+      vals.push(result[0]);
+      result = pattern.exec(src);
     }
-    return arr;
+    return vals;
   }
 
+  /// {{{3
+  /// @func _byStrStrVals
   /**
    * @private
-   * @param {string} str
+   * @param {string} src
    * @param {*} pattern
    * @return {!Array<string>}
    */
-  function _byStrStrVals(str, pattern) {
+  function _byStrStrVals(src, pattern) {
 
     /** @type {!Array<string>} */
-    var arr;
+    var vals;
     /** @type {number} */
     var i;
 
-    pattern = String(pattern);
-    arr = [];
-    i = str.indexOf(pattern);
+    if ( !_is.str(pattern) )
+      pattern = String(pattern);
+
+    vals = [];
+    i = src.indexOf(pattern);
     while (i !== -1) {
-      arr.push(pattern);
-      i = str.indexOf(pattern, ++i);
+      vals.push(pattern);
+      i = src.indexOf(pattern, ++i);
     }
-    return arr;
+    return vals;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // GET HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _error
   /**
    * @private
    * @type {!ErrorAid}
    */
   var _error = newErrorMaker('get');
 
-  //////////////////////////////////////////////////////////
+  /// }}}2
   // END OF PRIVATE SCOPE FOR GET
   return get;
 })();
-
+/// }}}1
 
 module.exports = get;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
