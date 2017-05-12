@@ -159,21 +159,27 @@ var is = (function isPrivateScope() {
   /// @method is.boolean
   /// @alias is.bool
   /**
-   * Checks if a value(s) is a boolean.
+   * Checks if a value or many values are a `boolean` data type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is['boolean'] = function isBoolean(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'boolean');
-      case 1:  return _is.bool(val);
-      default: return _are(arguments, _is.bool);
+      case 0:
+        throw _error('Missing a val', 'boolean');
+      case 1:
+        return _is.bool(val);
+      default:
+        return _are(arguments, _is.bool);
     }
   };
   // define shorthand
-  is.bool = is['boolean'];
+  is['bool'] = is['boolean'];
 
   /// {{{2
   /// @method is.string
