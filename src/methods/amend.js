@@ -12,12 +12,12 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var cloneObj = require('./helpers/clone-obj.js');
-var merge = require('./helpers/merge.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $cloneObj = require('./helpers/clone-obj.js');
+var $merge = require('./helpers/merge.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var is = require('./is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
@@ -87,7 +87,7 @@ var amend = (function amendPrivateScope() {
    *     value = newVal;
    *   };
    *   ```
-   * @param {function(*, *): *=} setter
+   * @param {!function(*, *): *=} setter
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function 
    *   (unless overridden in a #props `value`) that sets the property to the
@@ -113,26 +113,26 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj');
 
-    if ( _is.str(props) )
-      props = splitKeys(props);
+    if ( $is.str(props) )
+      props = $splitKeys(props);
 
-    if ( !_is.obj(props) )
-      throw _error.type('props');
+    if ( !$is.obj(props) )
+      throw $typeErr('props');
 
-    isArr = _is.arr(props);
+    isArr = $is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3)
-      throw _error('No val defined');
+      throw $err('No val defined');
 
     if (!isArr && len > 2) {
       setter = strongType;
       strongType = descriptor;
       descriptor = val;
-      val = undefined;
+      val = NONE;
       ++len; // increase len for a valid _parseProps call
     }
 
@@ -144,17 +144,17 @@ var amend = (function amendPrivateScope() {
     }
 
     if ( !is('!obj=', descriptor) )
-      throw _error.type('descriptor');
+      throw $typeErr('descriptor');
     if ( !is('str=', strongType) )
-      throw _error.type('strongType');
+      throw $typeErr('strongType');
     if ( !is('func=', setter) )
-      throw _error.type('setter');
+      throw $typeErr('setter');
 
     if (strongType) {
       if ( isArr && !is(strongType + '=', val) )
-        throw _error('The val param is not a valid strongType');
+        throw $err('The val param is not a valid strongType');
       if ( !isArr && !_strongTypeCheckProps(strongType, props) )
-        throw _error('A props value was not a valid strongType');
+        throw $err('A props value was not a valid strongType');
     }
 
     return _amendProps(obj, props, val, descriptor, strongType, setter);
@@ -190,25 +190,25 @@ var amend = (function amendPrivateScope() {
    */
   amend.config = function amendConfig(obj, props, descriptor) {
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'config');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'config');
 
-    if ( _is.str(props) )
-      props = splitKeys(props);
+    if ( $is.str(props) )
+      props = $splitKeys(props);
 
-    if ( !_is.obj(props) )
-      throw _error.type('props', 'config');
+    if ( !$is.obj(props) )
+      throw $typeErr('props', 'config');
 
-    if ( _is.arr(props) ) {
-      if ( !_is.obj(descriptor) )
-        throw _error.type('descriptor', 'config');
+    if ( $is.arr(props) ) {
+      if ( !$is.obj(descriptor) )
+        throw $typeErr('descriptor', 'config');
       props = _setupConfigs(props, descriptor);
     }
     else if ( !is('objMap', props) )
-      throw _error.type('props', 'config');
+      throw $typeErr('props', 'config');
 
     if ( !_hasKeys(obj, props) )
-      throw _error('A given prop was not defined in the obj', 'config');
+      throw $err('A given prop was not defined in the obj', 'config');
 
     return _amendConfigs(obj, props);
   };
@@ -237,7 +237,7 @@ var amend = (function amendPrivateScope() {
    *     value = newVal;
    *   };
    *   ```
-   * @param {function(*, *): *=} setter
+   * @param {!function(*, *): *=} setter
    *   If defined the new property is assigned an [accessor descriptor][descriptor]
    *   that includes a `set` function that sets the property to the value
    *   returned by #setter. The #setter function will receive two params, the
@@ -259,15 +259,15 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'property');
-    if ( !_is.str(key) )
-      throw _error.type('key', 'property');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'property');
+    if ( !$is.str(key) )
+      throw $typeErr('key', 'property');
 
     len = arguments.length;
 
     if (len < 3)
-      throw _error('No val or descriptor defined', 'property');
+      throw $err('No val or descriptor defined', 'property');
 
     if (len > 2 && len < 6) {
       args = _parseProp(len, val, descriptor, strongType, setter);
@@ -278,16 +278,16 @@ var amend = (function amendPrivateScope() {
     }
 
     if ( !is('!obj=', descriptor) )
-      throw _error.type('descriptor', 'property');
+      throw $typeErr('descriptor', 'property');
     if ( !is('str=', strongType) )
-      throw _error.type('strongType', 'property');
+      throw $typeErr('strongType', 'property');
     if ( !is('func=', setter) )
-      throw _error.type('setter', 'property');
+      throw $typeErr('setter', 'property');
 
     if ( strongType && !is(strongType + '=', val) )
-      throw _error('The val param is not a valid strongType', 'property');
-    if ( descriptor && (strongType || setter) && own(descriptor, 'writable') )
-      throw _error('A data descriptor may not be used with a strongType/setter', 'property');
+      throw $err('The val param is not a valid strongType', 'property');
+    if ( descriptor && (strongType || setter) && $own(descriptor, 'writable') )
+      throw $err('A data descriptor may not be used with a strongType/setter', 'property');
 
     return _amendProp(obj, key, val, descriptor, strongType, setter);
   };
@@ -309,15 +309,15 @@ var amend = (function amendPrivateScope() {
    */
   amend.property.config = function amendPropertyConfig(obj, key, descriptor) {
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'property.config');
-    if ( !_is.str(key) )
-      throw _error.type('key', 'property.config');
-    if ( !_is.obj(descriptor) )
-      throw _error.type('descriptor', 'property.config');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'property.config');
+    if ( !$is.str(key) )
+      throw $typeErr('key', 'property.config');
+    if ( !$is.obj(descriptor) )
+      throw $typeErr('descriptor', 'property.config');
 
-    if ( !own(obj, key) )
-      throw _error('The key was not defined in the obj', 'property.config');
+    if ( !$own(obj, key) )
+      throw $err('The key was not defined in the obj', 'property.config');
 
     return _amendConfig(obj, key, descriptor);
   };
@@ -370,7 +370,7 @@ var amend = (function amendPrivateScope() {
    *     value = newVal;
    *   };
    *   ```
-   * @param {function(*, *): *=} setter
+   * @param {!function(*, *): *=} setter
    *   If defined all new properties are assigned an [accessor descriptor][descriptor]
    *   (unless overridden in a #props `value`) that includes a `set` function 
    *   (unless overridden in a #props `value`) that sets the property to the
@@ -396,26 +396,26 @@ var amend = (function amendPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'properties');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'properties');
 
-    if ( _is.str(props) )
-      props = splitKeys(props);
+    if ( $is.str(props) )
+      props = $splitKeys(props);
 
-    if ( !_is.obj(props) )
-      throw _error.type('props', 'properties');
+    if ( !$is.obj(props) )
+      throw $typeErr('props', 'properties');
 
-    isArr = _is.arr(props);
+    isArr = $is.arr(props);
     len = arguments.length;
 
     if (isArr && len < 3)
-      throw _error('No val defined', 'properties');
+      throw $err('No val defined', 'properties');
 
     if (!isArr && len > 2) {
       setter = strongType;
       strongType = descriptor;
       descriptor = val;
-      val = undefined;
+      val = NONE;
       ++len; // increase len for a valid _parseProps call
     }
 
@@ -427,17 +427,17 @@ var amend = (function amendPrivateScope() {
     }
 
     if ( !is('!obj=', descriptor) )
-      throw _error.type('descriptor', 'properties');
+      throw $typeErr('descriptor', 'properties');
     if ( !is('str=', strongType) )
-      throw _error.type('strongType', 'properties');
+      throw $typeErr('strongType', 'properties');
     if ( !is('func=', setter) )
-      throw _error.type('setter', 'properties');
+      throw $typeErr('setter', 'properties');
 
     if (strongType) {
       if ( isArr && !is(strongType + '=', val) )
-        throw _error('The val param is not a valid strongType', 'properties');
+        throw $err('The val param is not a valid strongType', 'properties');
       if ( !isArr && !_strongTypeCheckProps(strongType, props) )
-        throw _error('A props value was not a valid strongType', 'properties');
+        throw $err('A props value was not a valid strongType', 'properties');
     }
 
     return _amendProps(obj, props, val, descriptor, strongType, setter);
@@ -476,25 +476,25 @@ var amend = (function amendPrivateScope() {
    */
   amend.properties.config = function amendPropertiesConfig(obj, props, descriptor) {
 
-    if ( !_is.obj(obj) )
-      throw _error.type('obj', 'properties.config');
+    if ( !$is.obj(obj) )
+      throw $typeErr('obj', 'properties.config');
 
-    if ( _is.str(props) )
-      props = splitKeys(props);
+    if ( $is.str(props) )
+      props = $splitKeys(props);
 
-    if ( !_is.obj(props) )
-      throw _error.type('props', 'properties.config');
+    if ( !$is.obj(props) )
+      throw $typeErr('props', 'properties.config');
 
-    if ( _is.arr(props) ) {
-      if ( !_is.obj(descriptor) )
-        throw _error.type('descriptor', 'properties.config');
+    if ( $is.arr(props) ) {
+      if ( !$is.obj(descriptor) )
+        throw $typeErr('descriptor', 'properties.config');
       props = _setupConfigs(props, descriptor);
     }
     else if ( !is('objMap', props) )
-      throw _error.type('props', 'properties.config');
+      throw $typeErr('props', 'properties.config');
 
     if ( !_hasKeys(obj, props) )
-      throw _error('A given prop was not defined in the obj', 'properties.config');
+      throw $err('A given prop was not defined in the obj', 'properties.config');
 
     return _amendConfigs(obj, props);
   };
@@ -513,7 +513,7 @@ var amend = (function amendPrivateScope() {
    * @param {*=} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function(*, *): *=} setter
+   * @param {!function(*, *): *=} setter
    * @return {!Array}
    */
   function _parseProp(len, val, descriptor, strongType, setter) {
@@ -521,29 +521,29 @@ var amend = (function amendPrivateScope() {
     switch (len) {
 
       case 4:
-        if ( _is.str(descriptor) ) {
+        if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          descriptor = undefined;
+          descriptor = NONE;
         }
-        else if ( _is.func(descriptor) ) {
+        else if ( $is.fun(descriptor) ) {
           setter = descriptor;
-          descriptor = undefined;
+          descriptor = NONE;
         }
         break;
 
       case 5:
-        if ( _is.func(strongType) ) {
+        if ( $is.fun(strongType) ) {
           setter = strongType;
-          strongType = undefined;
-          if ( _is.str(descriptor) ) {
+          strongType = NONE;
+          if ( $is.str(descriptor) ) {
             strongType = descriptor;
-            descriptor = undefined;
+            descriptor = NONE;
           }
         }
         break;
     }
 
-    if ( _is.obj(val) && _isDescriptor(val) ) {
+    if ( $is.obj(val) && _isDescriptor(val) ) {
       descriptor = val;
       val = descriptor.value;
     }
@@ -558,7 +558,7 @@ var amend = (function amendPrivateScope() {
    * @param {number} len
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function(*, *): *=} setter
+   * @param {!function(*, *): *=} setter
    * @return {!Array}
    */
   function _parseProps(len, descriptor, strongType, setter) {
@@ -566,23 +566,23 @@ var amend = (function amendPrivateScope() {
     switch (len) {
 
       case 4:
-        if ( _is.str(descriptor) ) {
+        if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          descriptor = undefined;
+          descriptor = NONE;
         }
-        else if ( _is.func(descriptor) ) {
+        else if ( $is.fun(descriptor) ) {
           setter = descriptor;
-          descriptor = undefined;
+          descriptor = NONE;
         }
         break;
 
       case 5:
-        if ( _is.func(strongType) ) {
+        if ( $is.fun(strongType) ) {
           setter = strongType;
-          strongType = undefined;
-          if ( _is.str(descriptor) ) {
+          strongType = NONE;
+          if ( $is.str(descriptor) ) {
             strongType = descriptor;
-            descriptor = undefined;
+            descriptor = NONE;
           }
         }
         break;
@@ -608,10 +608,10 @@ var amend = (function amendPrivateScope() {
 
     strongType += '=';
     for (key in props) {
-      if ( own(props, key) ) {
+      if ( $own(props, key) ) {
         val = props[key];
-        if ( _is.obj(val) && _isDescriptor(val) ) {
-          if ( own(val, 'writable') )
+        if ( $is.obj(val) && _isDescriptor(val) ) {
+          if ( $own(val, 'writable') )
             continue;
           val = val.value;
         }
@@ -635,7 +635,7 @@ var amend = (function amendPrivateScope() {
    * @param {*=} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function=} setter
+   * @param {!function=} setter
    * @return {!Object}
    */
   function _amendProp(obj, key, val, descriptor, strongType, setter) {
@@ -647,7 +647,7 @@ var amend = (function amendPrivateScope() {
     descriptor = strongType || setter
       ? _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter)
       : _isAccessor(descriptor)
-        ? cloneObj(descriptor)
+        ? $cloneObj(descriptor)
         : _setupDescriptorByKey(val, descriptor);
 
     return _ObjectDefineProperty(obj, key, descriptor);
@@ -662,7 +662,7 @@ var amend = (function amendPrivateScope() {
    * @param {*} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function=} setter
+   * @param {!function=} setter
    * @return {!Object}
    */
   function _amendProps(obj, props, val, descriptor, strongType, setter) {
@@ -670,7 +670,7 @@ var amend = (function amendPrivateScope() {
     descriptor = descriptor || null;
     descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
     strongType = _getStrongType(strongType);
-    props = _is.arr(props)
+    props = $is.arr(props)
       ? strongType || setter
         ? _setupPropsByKeyWithSetter(props, val, descriptor, strongType, setter)
         : _setupPropsByKey(props, val, descriptor)
@@ -727,7 +727,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( own(props, key) )
+      if ( $own(props, key) )
         newProps[key] = _setupDescriptor(props[key], descriptor);
     }
     return newProps;
@@ -739,8 +739,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {!Object} props
    * @param {!Object} descriptor
-   * @param {function} strongType
-   * @param {function} setter
+   * @param {!function} strongType
+   * @param {!function} setter
    * @return {!Object}
    */
   function _setupPropsWithSetter(props, descriptor, strongType, setter) {
@@ -752,7 +752,7 @@ var amend = (function amendPrivateScope() {
 
     newProps = {};
     for (key in props) {
-      if ( own(props, key) )
+      if ( $own(props, key) )
         newProps[key] = _setupDescriptorWithSetter(props[key], descriptor, strongType, setter);
     }
     return newProps;
@@ -769,7 +769,7 @@ var amend = (function amendPrivateScope() {
    */
   function _setupPropsByKey(keys, val, descriptor) {
 
-    /** @type {function} */
+    /** @type {!function} */
     var setupDesc;
     /** @type {!Object} */
     var props;
@@ -780,7 +780,7 @@ var amend = (function amendPrivateScope() {
 
     setupDesc = _isAccessor(descriptor)
       ? function setupDesc(val, desc) {
-          return cloneObj(desc);
+          return $cloneObj(desc);
         }
       : _setupDescriptorByKey;
     props = {};
@@ -799,8 +799,8 @@ var amend = (function amendPrivateScope() {
    * @param {!Array<string>} keys
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function} strongType
-   * @param {function} setter
+   * @param {!function} strongType
+   * @param {!function} setter
    * @return {!Object}
    */
   function _setupPropsByKeyWithSetter(keys, val, descriptor, strongType, setter) {
@@ -872,11 +872,11 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = cloneObj(descriptor);
+    prop = $cloneObj(descriptor);
     val = _isDescriptor(val)
       ? val
       : { value: val };
-    return merge(prop, val);
+    return $merge(prop, val);
   }
 
   /// {{{3
@@ -885,8 +885,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function=} strongType
-   * @param {function=} setter
+   * @param {!function=} strongType
+   * @param {!function=} setter
    * @return {!Object}
    */
   function _setupDescriptorWithSetter(val, descriptor, strongType, setter) {
@@ -894,11 +894,11 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = cloneObj(descriptor);
+    prop = $cloneObj(descriptor);
 
     if ( _isDescriptor(val) ) {
-      prop = merge(prop, val);
-      if ( own(prop, 'writable') || _isAccessor(prop) )
+      prop = $merge(prop, val);
+      if ( $own(prop, 'writable') || _isAccessor(prop) )
         return prop;
       val = prop.value;
       prop = _cloneAccessor(prop);
@@ -921,7 +921,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = cloneObj(descriptor);
+    prop = $cloneObj(descriptor);
     prop.value = val;
     return prop;
   }
@@ -932,8 +932,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function=} strongType
-   * @param {function=} setter
+   * @param {!function=} strongType
+   * @param {!function=} setter
    * @return {!Object}
    */
   function _setupDescriptorByKeyWithSetter(val, descriptor, strongType, setter) {
@@ -941,7 +941,7 @@ var amend = (function amendPrivateScope() {
     /** @type {!Object} */
     var prop;
 
-    prop = cloneObj(descriptor);
+    prop = $cloneObj(descriptor);
     prop = _setupGetSet(val, prop, strongType, setter);
     return prop;
   }
@@ -952,8 +952,8 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {*} val
    * @param {!Object} descriptor
-   * @param {function=} strongType
-   * @param {function=} setter
+   * @param {!function=} strongType
+   * @param {!function=} setter
    * @return {!Object}
    */
   function _setupGetSet(val, descriptor, strongType, setter) {
@@ -1044,11 +1044,11 @@ var amend = (function amendPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !_is.obj(obj) )
+    if ( !$is.obj(obj) )
       return false;
 
     for (key in obj) {
-      if ( own(obj, key) && !own(DESCRIPTOR_PROPS, key) )
+      if ( $own(obj, key) && !$own(DESCRIPTOR_PROPS, key) )
         return false;
     }
     return true;
@@ -1062,7 +1062,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isData(obj) {
-    return own(obj, 'value') || own(obj, 'writable');
+    return $own(obj, 'value') || $own(obj, 'writable');
   }
 
   /// {{{3
@@ -1073,7 +1073,7 @@ var amend = (function amendPrivateScope() {
    * @return {boolean}
    */
   function _isAccessor(obj) {
-    return own(obj, 'get') || own(obj, 'set');
+    return $own(obj, 'get') || $own(obj, 'set');
   }
 
   /// {{{3
@@ -1091,9 +1091,9 @@ var amend = (function amendPrivateScope() {
 
     if ( hasSetter && _isData(descriptor) ) {
       defaultDescriptor = {};
-      if ( _is.bool( descriptor.enumerable ) )
+      if ( $is.bool( descriptor.enumerable ) )
         defaultDescriptor.enumerable = descriptor.enumerable;
-      if ( _is.bool( descriptor.configurable ) )
+      if ( $is.bool( descriptor.configurable ) )
         defaultDescriptor.configurable = descriptor.configurable;
       descriptor = defaultDescriptor;
     }
@@ -1101,9 +1101,9 @@ var amend = (function amendPrivateScope() {
     defaultDescriptor = hasSetter || _isAccessor(descriptor)
       ? ACCESSOR_DESCRIPTOR
       : DATA_DESCRIPTOR;
-    defaultDescriptor = cloneObj(defaultDescriptor);
+    defaultDescriptor = $cloneObj(defaultDescriptor);
 
-    return merge(defaultDescriptor, descriptor);
+    return $merge(defaultDescriptor, descriptor);
   }
 
   /// {{{3
@@ -1122,7 +1122,7 @@ var amend = (function amendPrivateScope() {
 
     accessor = {};
     for (key in descriptor) {
-      if ( own(descriptor, key) && key !== 'value' )
+      if ( $own(descriptor, key) && key !== 'value' )
         accessor[key] = descriptor[key];
     }
     return accessor;
@@ -1133,7 +1133,7 @@ var amend = (function amendPrivateScope() {
   /**
    * @private
    * @param {string=} strongType
-   * @return {(function|undefined)}
+   * @return {(!function|undefined)}
    */
   function _getStrongType(strongType) {
     return strongType && function strongTypeCheck(newVal) {
@@ -1192,7 +1192,7 @@ var amend = (function amendPrivateScope() {
   var _ObjectDefineProperty = HAS_DEFINE_PROPS
     ? Object.defineProperty
     : function ObjectDefineProperty(obj, key, descriptor) {
-        obj[key] = own(descriptor, 'get')
+        obj[key] = $own(descriptor, 'get')
           ? descriptor.get()
           : descriptor.value;
         return obj;
@@ -1216,9 +1216,9 @@ var amend = (function amendPrivateScope() {
         var key;
 
         for (key in props) {
-          if ( own(props, key) ) {
+          if ( $own(props, key) ) {
             prop = props[key];
-            obj[key] = own(prop, 'get')
+            obj[key] = $own(prop, 'get')
               ? prop.get()
               : prop.value;
           }
@@ -1244,19 +1244,50 @@ var amend = (function amendPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( own(obj, key) && !own(source, key) )
+      if ( $own(obj, key) && !$own(source, key) )
         return false;
     }
     return true;
   }
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('amend');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('amend');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} method
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {string} param
+   * @param {string=} valid
+   * @param {string=} method
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR AMEND
