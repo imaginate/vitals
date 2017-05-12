@@ -52,6 +52,14 @@ var is = (function isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Is References
+   * @ref [doc]:(https://developer.mozilla.org/en-US/docs/Web/API/Document)
+   * @ref [nan]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
+   * @ref [args]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
+   * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
+   * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
+   * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
+   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+   * @ref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
    */
 
   /// {{{2
