@@ -290,17 +290,23 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.nan
   /**
-   * Checks if a value(s) is `NaN`.
+   * Checks if a value or many values are [NaN][nan].
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.nan = function isNan(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'nan');
-      case 1:  return _is.nan(val);
-      default: return _are(arguments, _is.nan);
+      case 0:
+        throw _error('Missing a val', 'nan');
+      case 1:
+        return _is.nan(val);
+      default:
+        return _are(arguments, _is.nan);
     }
   };
 
