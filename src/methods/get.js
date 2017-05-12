@@ -105,21 +105,27 @@ var get = (function getPrivateScope() {
           : _byValKeys(source, val);
   }
 
+  /// {{{2
+  /// @method get.keys
   /**
-   * Gets an array of keys from an object.
+   * Retrieves keys from an `object` or `function`.
    *
    * @public
-   * @param {(!Object|function)} source - If no val param is defined this method
-   *   will return an array of all an object's own keys.
-   * @param {*=} val - This method will return an array of source keys where the
-   *   key [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *   the val if the val is a `RegExp`. Otherwise this method will return an
-   *   array of source keys where the `value === String(val)`.
+   * @param {(!Object|function)} source
+   *   If no #val is defined, this method returns an `array` of all of the
+   *   [owned][own] property key names in the #source.
+   * @param {*=} val
+   *   If the #val is a `RegExp` this method returns an `array` of the
+   *   [owned][own] property key names in the #source where the key name
+   *   matches (via a @has#pattern test) the #val. Otherwise it returns an
+   *   `array` of the [owned][own] property key names in the #source where
+   *   the value matches (via a [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   get.keys = function getKeys(source, val) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'keys');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'keys');
 
     return arguments.length < 2
       ? _allKeys(source)
