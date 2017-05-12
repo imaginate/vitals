@@ -705,18 +705,24 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.whole
   /**
-   * Checks if a number(s) is whole (i.e. has no decimal). Zero and non-decimal
-   *   negative numbers will return `true`.
+   * Checks if a [number][num] is whole (i.e. has no fractional portion). All
+   * whole numbers less than one (e.g. `wholeNumber <= 0`) will return `true`.
    *
    * @public
    * @param {...number} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must be a valid whole `number` to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.whole = function isWholeNumber(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'whole');
-      case 1:  return _isWhole(val);
-      default: return _are(arguments, _isWhole);
+      case 0:
+        throw _error('Missing a val', 'whole');
+      case 1:
+        return _isWhole(val);
+      default:
+        return _are(arguments, _isWhole);
     }
   };
 
