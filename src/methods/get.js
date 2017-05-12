@@ -137,29 +137,35 @@ var get = (function getPrivateScope() {
   /// {{{2
   /// @method get.keys.byKey
   /**
-   * Retrieves keys from an `object` or `function` that have matching key
-   * names. Note that @has#pattern is used to test key name matches.
+   * Retrieves [owned][own] property key names from an `object` or `function`
+   * that have a matching key name. Note that @has#pattern is used to find key
+   * name matches.
    *
    * @public
    * @param {(!Object|function)} source
-   * @param {*} pattern
-   *   If the #pattern is not a `RegExp`, it is converted into a `string` with
-   *   [String()][string] before @has#pattern is called to check for property
-   *   key name matches in the #source.
+   * @param {*} key
+   *   If the #key is not a `RegExp`, it is converted into a `string` with
+   *   [String()][string] before @has#pattern is called to check for any
+   *   property key name matches in the #source.
    * @return {!Array<string>}
    */
-  get.keys.byKey = function getKeysByKey(source, pattern) {
+  get.keys.byKey = function getKeysByKey(source, key) {
 
     if ( !_is._obj(source) )
       throw _error.type('source', 'keys.byKey');
     if (arguments.length < 2)
-      throw _error('No pattern defined', 'keys.byKey');
+      throw _error('No key defined', 'keys.byKey');
 
-    return _byKeyKeys(source, pattern);
+    return _byKeyKeys(source, key);
   };
 
+  /// {{{2
+  /// @method get.keys.byValue
+  /// @alias get.keys.byVal
   /**
-   * Gets an array of keys from an object where the `value === val`.
+   * Retrieves [owned][own] property key names from an `object` or `function`
+   * that have a matching property value. Note that a [strict equality][equal]
+   * test is used to find matches.
    *
    * @public
    * @param {(!Object|function)} source
@@ -168,8 +174,10 @@ var get = (function getPrivateScope() {
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byValue');
-    if (arguments.length < 2) throw _error('No val defined', 'keys.byValue');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'keys.byValue');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'keys.byValue');
 
     return _byValKeys(source, val);
   };
