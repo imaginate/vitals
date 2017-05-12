@@ -134,20 +134,26 @@ var get = (function getPrivateScope() {
         : _byValKeys(source, val);
   };
 
+  /// {{{2
+  /// @method get.keys.byKey
   /**
-   * Gets an array of keys from an object that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *   a pattern.
+   * Retrieves keys from an `object` or `function` that have matching key
+   * names. Note that @has#pattern is used to test key name matches.
    *
    * @public
    * @param {(!Object|function)} source
-   * @param {*} pattern - If pattern is not a `RegExp` or string it is converted
-   *   to a string.
+   * @param {*} pattern
+   *   If the #pattern is not a `RegExp`, it is converted into a `string` with
+   *   [String()][string] before @has#pattern is called to check for property
+   *   key name matches in the #source.
    * @return {!Array<string>}
    */
   get.keys.byKey = function getKeysByKey(source, pattern) {
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'keys.byKey');
-    if (arguments.length < 2) throw _error('No pattern defined', 'keys.byKey');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'keys.byKey');
+    if (arguments.length < 2)
+      throw _error('No pattern defined', 'keys.byKey');
 
     return _byKeyKeys(source, pattern);
   };
