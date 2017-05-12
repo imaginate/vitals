@@ -58,6 +58,7 @@ var is = (function isPrivateScope() {
    * @ref [obj]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Objects)
    * @ref [args]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments)
    * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
+   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Normal_objects_and_functions)
    * @ref [null]:(https://developer.mozilla.org/en-US/docs/Glossary/null)
    * @ref [prim]:(https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
    * @ref [unde]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
@@ -350,6 +351,15 @@ var is = (function isPrivateScope() {
   /// @method is._object
   /// @alias is._obj
   /**
+   * Checks if a value or many values are an [object][obj] or [function][func]
+   * data type.
+   *
+   * @public
+   * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
    * Checks if a value(s) is an object or function.
    *
    * @public
@@ -358,9 +368,12 @@ var is = (function isPrivateScope() {
    */
   is._object = function isObjectOrFunction(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', '_object');
-      case 1:  return _is._obj(val);
-      default: return _are(arguments, _is._obj);
+      case 0:
+        throw _error('Missing a val', '_object');
+      case 1:
+        return _is._obj(val);
+      default:
+        return _are(arguments, _is._obj);
     }
   };
   // define shorthand
