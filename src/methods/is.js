@@ -185,17 +185,23 @@ var is = (function isPrivateScope() {
   /// @method is.string
   /// @alias is.str
   /**
-   * Checks if a value(s) is a string.
+   * Checks if a value or many values are a `string` data type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.string = function isString(val) {
+  is['string'] = function isString(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'string');
-      case 1:  return _is.str(val);
-      default: return _are(arguments, _is.str);
+      case 0:
+        throw _error('Missing a val', 'string');
+      case 1:
+        return _is.str(val);
+      default:
+        return _are(arguments, _is.str);
     }
   };
   // define shorthand
