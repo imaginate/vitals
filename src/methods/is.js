@@ -65,32 +65,40 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is
   /**
-   * Checks if a value(s) is one of the provided types. See the [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
-   *   for all available options. Note that all object types are nullable by
-   *   default (i.e. `null` will return `true`).
+   * Checks if a value or many values is a specific data type or types. See
+   * @is-types for a complete list of the available data types. Note that all
+   * `object` types are nullable by default (i.e. `is("object", null)` will
+   * return `true`).
    *
    * @public
-   * @param {string} types - The valid data types. See the [type docs](https://github.com/imaginate/vitals/wiki/vitals.is-types)
-   *   for all options.
-   * @param {...*} val - The value to evaluate. If multiple values are
-   *   provided all must pass the type check to return true.
-   * @return {boolean} The evaluation result.
+   * @param {string} types
+   *   The valid data types. See @is-types for a complete list of the
+   *   available data types.
+   * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
    */
   function is(types, val) {
 
     /** @type {string} */
     var nullable;
-    /** @type {Array<function>} */
+    /** @type {?Array<function>} */
     var checks;
 
-    if (arguments.length < 2) throw _error('No type or val');
-    if ( !_is._str(types) ) throw _error.type('types');
+    if (arguments.length < 2)
+      throw _error('No type or val');
+    if ( !_is._str(types) )
+      throw _error.type('types');
 
-    if ( _hasSpecial('*', types) ) return true;
+    if ( _hasSpecial('*', types) )
+      return true;
 
     checks = _getChecks(types);
 
-    if (!checks) throw _error.range('types', DOCS);
+    if (!checks)
+      throw _error.range('types', DOCS);
 
     nullable = _getNullable(types);
     return arguments.length > 2
