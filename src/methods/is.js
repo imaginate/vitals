@@ -57,6 +57,7 @@ var is = (function isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Is References
+   * @ref [arr]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Indexed_collections_Arrays_and_typed_Arrays)
    * @ref [doc]:(https://developer.mozilla.org/en-US/docs/Web/API/Document)
    * @ref [nan]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
    * @ref [num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
@@ -422,21 +423,28 @@ var is = (function isPrivateScope() {
   /// @method is.array
   /// @alias is.arr
   /**
-   * Checks if a value(s) is an `Array` instance.
+   * Checks if a value or many values are an instance of the [array][arr]
+   * `object` type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.array = function isArray(val) {
+  is['array'] = function isArray(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'array');
-      case 1:  return _is.arr(val);
-      default: return _are(arguments, _is.arr);
+      case 0:
+        throw _error('Missing a val', 'array');
+      case 1:
+        return _is.arr(val);
+      default:
+        return _are(arguments, _is.arr);
     }
   };
   // define shorthand
-  is.arr = is.array;
+  is['arr'] = is.array;
 
   /// {{{2
   /// @method is._array
