@@ -35,7 +35,7 @@ var is = (function isPrivateScope() {
   // - is.nan
   // - is.object    (is.obj)
   // - is._object   (is._obj)
-  // - is.func      (is.function|is.fn)
+  // - is.func      (is.fn|is.function*)
   // - is.array     (is.arr)
   // - is._array    (is._arr)
   // - is.regexp    (is.regex|is.re)
@@ -49,6 +49,11 @@ var is = (function isPrivateScope() {
   // - is.whole
   // - is.odd
   // - is.even
+  //
+  // * Note that `vitals.is.function` will fail in all ES3
+  //   browser and other platform environments and even some
+  //   ES5. Use `vitals.is.func` for compatibility with older
+  //   browser and other platform environments.
   //////////////////////////////////////////////////////////
 
   /* {{{2 Is References
@@ -381,30 +386,37 @@ var is = (function isPrivateScope() {
 
   /// {{{2
   /// @method is.func
-  /// @alias is.function
   /// @alias is.fn
+  /// @alias is.function*
   /**
-   * Checks if a value(s) is a function. Note that `vitals.is.function` is not
-   *   valid in ES3 and some ES5 browser environments. Use `vitals.is.func` for
-   *   browser safety.
+   * Checks if a value or many values are a [function][func] data type. Note
+   * that `vitals.is.function` is not valid in [ES3][ecma3] and some
+   * [ES5][ecma5] browser and other platform environments. Use
+   * `vitals.is.func` for browser and platform safety.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.func = function isFunction(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'function');
-      case 1:  return _is.func(val);
-      default: return _are(arguments, _is.func);
+      case 0:
+        throw _error('Missing a val', 'function');
+      case 1:
+        return _is.func(val);
+      default:
+        return _are(arguments, _is.func);
     }
   };
   // define shorthand
-  is.fn = is.func;
+  is['fn'] = is.func;
   try {
     is['function'] = is.func;
   }
-  catch (error) {}
+  catch (e) {}
 
   /// {{{2
   /// @method is.array
