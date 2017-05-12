@@ -238,7 +238,7 @@ var has = (function hasPrivateScope() {
    *   result of a call to [String.prototype.includes][includes] or for older
    *   platforms a [strict equality][equal] test for a non-negative index
    *   result from [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredVal) !== -1;`).
+   *   `return source.indexOf(alteredPattern) !== -1;`).
    * @param {*} pattern
    *   If the #pattern is **not** a `RegExp`, it is converted into a `string`
    *   via [String()][string] before [String.prototype.includes][includes]
@@ -249,7 +249,7 @@ var has = (function hasPrivateScope() {
    *   result of a call to [String.prototype.includes][includes] or for older
    *   platforms a [strict equality][equal] test for a non-negative index
    *   result from [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredVal) !== -1;`).
+   *   `return source.indexOf(alteredPattern) !== -1;`).
    */
   has.pattern = function hasPattern(source, pattern) {
 
@@ -262,20 +262,35 @@ var has = (function hasPrivateScope() {
   };
 
   /// {{{2
+  /// @method has.substring
+  /// @alias has.substr
   /**
-   * Checks if a string has a substring.
+   * Checks if a `string` contains a substring.
    *
    * @public
    * @param {string} source
-   * @param {*} val - The val is converted to a string, and the source string
-   *   is checked for a matching substring via [String.prototype.includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   *   or [String.prototype.indexOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf).
+   *   This method returns the result of a call to
+   *   [String.prototype.includes][includes] or for older platforms a
+   *   [strict equality][equal] test for a non-negative index result from
+   *   [String.prototype.indexOf][indexOf] (i.e.
+   *   `return source.indexOf(alteredVal) !== -1;`).
+   * @param {*} val
+   *   The #val is converted into a `string` via [String()][string] before
+   *   [String.prototype.includes][includes] or
+   *   [String.prototype.indexOf][indexOf] is called.
    * @return {boolean}
+   *   This method returns the result of a call to
+   *   [String.prototype.includes][includes] or for older platforms a
+   *   [strict equality][equal] test for a non-negative index result from
+   *   [String.prototype.indexOf][indexOf] (i.e.
+   *   `return source.indexOf(alteredVal) !== -1;`).
    */
   has.substring = function hasSubstring(source, val) {
 
-    if ( !_is.str(source) ) throw _error.type('source', 'substring');
-    if (arguments.length < 2) throw _error('No val defined', 'substring');
+    if ( !_is.str(source) )
+      throw _error.type('source', 'substring');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'substring');
 
     return inStr(source, val);
   };
