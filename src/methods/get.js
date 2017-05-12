@@ -184,30 +184,47 @@ var get = (function getPrivateScope() {
   // define shorthand
   get.keys.byVal = get.keys.byValue;
 
+  /// {{{2
+  /// @method get.indexes
+  /// @alias get.ii
   /**
-   * Gets an array of indexes from an array or string by value/pattern.
+   * Retrieves property indexes from an `array`, array-like `object`, or
+   * `string`.
    *
    * @public
-   * @param {(!Object|string)} source - If no val param is defined this method
-   *   will return an array of all an array's indexes or throw an error if the
-   *   source is a string.
-   * @param {*=} val - This method returns the indexes by one of the following
-   *   (per source type):
-   *   - array:  Return an array of indexes where the `value === val`.
-   *   - string: A non-regex val is converted to a string and then an array of
-   *     starting indexes that [match](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-   *     the val are returned.
+   * @param {(!Array|!Arguments|!Object|function|string)} source
+   *   If no #val is defined, the following rules apply (per #source type):
+   *   - *`!Array|!Arguments|!Object|function`*!$
+   *     This method returns an `array` of all of the indexes in the #source.
+   *   - *`string`*!$
+   *     This method throws an [Error][error] because a #val must be defined.
+   * @param {*=} val
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`!Array|!Arguments|!Object|function`*!$
+   *     This method returns an `array` of the indexes in the #source where
+   *     the property value matches (via a [strict equality][equal] test) the
+   *     #val.
+   *   - *`string`*!$
+   *     If the #val is **not** a `RegExp`, it is converted into a `string`
+   *     with [String()][string]. This method will then return an `array` of
+   *     the starting indexes in the #source where a `substring` matches (via
+   *     a @has#pattern test) the #val.
    * @return {!Array}
    */
   get.indexes = function getIndexes(source, val) {
 
     if ( _is.str(source) ) {
-      if (arguments.length < 2) throw _error('No val defined', 'indexes');
+
+      if (arguments.length < 2)
+        throw _error('No val defined', 'indexes');
+
       return _strIndexes(source, val);
     }
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'indexes');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'indexes');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'indexes');
+    if ( !_is.num(source.length) )
+      throw _error.type('source.length', 'indexes');
 
     return arguments.length < 2
       ? _allIndexes(source)
