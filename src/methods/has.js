@@ -170,27 +170,58 @@ var has = (function hasPrivateScope() {
   };
 
   /// {{{2
+  /// @method has.value
+  /// @alias has.val
   /**
-   * Checks if an object or array has a value.
+   * Checks if an `object` or `function` [owned][own] property or an `array`
+   * or `arguments` indexed property has a value.
    *
    * @public
-   * @param {(Object|?function)} source
-   * @param {*} val - Details (per source type):
-   *   - object: The object is checked for a matching val via `val === value`.
-   *   - array: The array is checked for a matching indexed value via
-   *     `val === value`.
-   *   - null: Regardless of val `false` is returned.
+   * @param {(?Object|?function|?Array|?Arguments)} source
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method automatically returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method checks each [owned][own] property in the #source for one
+   *     matching value.
+   *   - *`!Array|!Arguments`*!$
+   *     This method checks each indexed property in the #source for one
+   *     matching value.
+   * @param {*} val
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     The value of #val does not matter and is not used.
+   *   - *`!Object|function`*!$
+   *     The #val is **not** altered. A [strict equality][equal] test against
+   *     the #val is used to evaluate each [owned][own] property value.
+   *   - *`!Array|!Arguments`*!$
+   *     The #val is **not** altered. A [strict equality][equal] test against
+   *     the #val is used to evaluate each indexed property value.
    * @return {boolean}
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method checks each [owned][own] property in the #source for one
+   *     matching value.
+   *   - *`!Array|!Arguments`*!$
+   *     This method checks each indexed property in the #source for one
+   *     matching value.
    */
   has.value = function hasValue(source, val) {
 
-    if (arguments.length < 2) throw _error('No val defined', 'value');
+    if (arguments.length < 2)
+      throw _error('No val defined', 'value');
 
-    if ( _is.nil(source) ) return false;
+    if ( _is.nil(source) )
+      return false;
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'value');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'value');
 
-    return _is._arr(source) ? inArr(source, val) : inObj(source, val);
+    return _is._arr(source)
+      ? inArr(source, val)
+      : inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
