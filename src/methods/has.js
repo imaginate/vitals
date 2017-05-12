@@ -298,24 +298,48 @@ var has = (function hasPrivateScope() {
   has.substr = has.substring;
 
   /// {{{2
+  /// @method has.enumerable
+  /// @alias has.enum
   /**
-   * Checks if an enumerable property exists in an object.
+   * Checks if an `object` or `function` [owns][own] an [enumerable][isEnum]
+   * property.
    *
    * @public
-   * @param {(Object|?function)} source
-   * @param {*} key - Details (per source type):
-   *   - object: The key is converted to a string, and the object is checked for
-   *     a matching key via [Object.prototype.propertyIsEnumerable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable).
-   *   - null: Regardless of key `false` is returned.
+   * @param {(?Object|?function)} source
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method automatically returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own] and
+   *     [Object.prototype.propertyIsEnumerable][isEnum].
+   * @param {*} key
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     The value of #key does not matter and is not used.
+   *   - *`!Object|function`*!$
+   *     The #key is passed **without** any conversions to
+   *     [Object.prototype.hasOwnProperty][own] and
+   *     [Object.prototype.propertyIsEnumerable][isEnum].
    * @return {boolean}
+   *   The following rules apply in order of priority (per #source type):
+   *   - *`null`*!$
+   *     This method returns `false`.
+   *   - *`!Object|function`*!$
+   *     This method returns the result of a safe call to
+   *     [Object.prototype.hasOwnProperty][own] and
+   *     [Object.prototype.propertyIsEnumerable][isEnum].
    */
   has.enumerable = function hasEnumerable(source, key) {
 
-    if (arguments.length < 2) throw _error('No key defined', 'enumerable');
+    if (arguments.length < 2)
+      throw _error('No key defined', 'enumerable');
 
-    if ( _is.nil(source) ) return false;
+    if ( _is.nil(source) )
+      return false;
 
-    if ( !_is._obj(source) ) throw _error.type('source', 'enumerable');
+    if ( !_is._obj(source) )
+      throw _error.type('source', 'enumerable');
 
     return ownEnum(source, key);
   };
