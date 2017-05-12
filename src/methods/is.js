@@ -110,17 +110,23 @@ var is = (function isPrivateScope() {
   /// @method is.null
   /// @alias is.nil
   /**
-   * Checks if a value(s) is `null`.
+   * Checks if a value or many values is `null`.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is['null'] = function isNull(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'null');
-      case 1:  return _is.nil(val);
-      default: return _are(arguments, _is.nil);
+      case 0:
+        throw _error('Missing a val', 'null');
+      case 1:
+        return _is.nil(val);
+      default:
+        return _are(arguments, _is.nil);
     }
   };
   // define shorthand
