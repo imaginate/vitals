@@ -159,7 +159,7 @@ var is = (function isPrivateScope() {
   /// @method is.boolean
   /// @alias is.bool
   /**
-   * Checks if a value or many values are a `boolean` data type.
+   * Checks if a value or many values are a primitive `boolean` data type.
    *
    * @public
    * @param {...*} val
@@ -185,7 +185,7 @@ var is = (function isPrivateScope() {
   /// @method is.string
   /// @alias is.str
   /**
-   * Checks if a value or many values are a `string` data type.
+   * Checks if a value or many values are a primitive `string` data type.
    *
    * @public
    * @param {...*} val
@@ -211,17 +211,24 @@ var is = (function isPrivateScope() {
   /// @method is._string
   /// @alias is._str
   /**
-   * Checks if a value(s) is a non-empty string.
+   * Checks if a value or many values are a primitive `string` data type and
+   * not empty (e.g. `""`).
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is._string = function isNonEmptyString(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', '_string');
-      case 1:  return _is._str(val);
-      default: return _are(arguments, _is._str);
+      case 0:
+        throw _error('Missing a val', '_string');
+      case 1:
+        return _is._str(val);
+      default:
+        return _are(arguments, _is._str);
     }
   };
   // define shorthand
