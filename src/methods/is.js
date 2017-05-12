@@ -238,21 +238,27 @@ var is = (function isPrivateScope() {
   /// @method is.number
   /// @alias is.num
   /**
-   * Checks if a value(s) is a number.
+   * Checks if a value or many values are a primitive `number` data type.
    *
    * @public
    * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must pass the type check to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
-  is.number = function isNumber(val) {
+  is['number'] = function isNumber(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'number');
-      case 1:  return _is.num(val);
-      default: return _are(arguments, _is.num);
+      case 0:
+        throw _error('Missing a val', 'number');
+      case 1:
+        return _is.num(val);
+      default:
+        return _are(arguments, _is.num);
     }
   };
   // define shorthand
-  is.num = is.number;
+  is['num'] = is.number;
 
   /// {{{2
   /// @method is._number
