@@ -729,17 +729,24 @@ var is = (function isPrivateScope() {
   /// {{{2
   /// @method is.odd
   /**
-   * Checks if a number(s) is odd.
+   * Checks if a [number][num] is odd. All odd numbers less than zero (e.g.
+   * `oddNumber < 0`) will return `true`.
    *
    * @public
-   * @param {...number} val - Each val must be a whole number.
+   * @param {...number} val
+   *   The value to evaluate. If more than one #val is provided every #val
+   *   must be an odd `number` to return `true`.
    * @return {boolean}
+   *   The evaluation result.
    */
   is.odd = function isOddNumber(val) {
     switch (arguments.length) {
-      case 0:  throw _error('Missing a val', 'odd');
-      case 1:  return _isOdd(val);
-      default: return _are(arguments, _isOdd);
+      case 0:
+        throw _error('Missing a val', 'odd');
+      case 1:
+        return _isOdd(val);
+      default:
+        return _are(arguments, _isOdd);
     }
   };
 
