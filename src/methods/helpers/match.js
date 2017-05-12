@@ -17,7 +17,7 @@
 
 var match = (function matchPrivateScope() {
 
-  /* {{{3
+  /* {{{3 Match References
    * @ref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
    * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
    */
