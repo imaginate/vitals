@@ -23,18 +23,58 @@ module.exports = $newErrorMaker;
  *   A vitals method.
  * @return {!Function}
  */
-function $newErrorMaker(main) {
+var $newErrorMaker = (function $newErrorMakerPrivateScope() {
 
-  /// {{{3
-  /// @const MAIN
+  ///////////////////////////////////////////////////// {{{3
+  // $NEW-ERROR-MAKER HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @const OPEN_HASH
   /**
    * @private
-   * @const {string}
+   * @const {!RegExp}
    */
-  var MAIN = 'vitals.' + main;
+  var OPEN_HASH = /^#/;
 
-  /// {{{3
-  /// @func cleanError
+  /// {{{4
+  /// @const OPEN_VITALS
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var OPEN_VITALS = /^vitals\./;
+
+  /// {{{4
+  /// @func _prepMainMethod
+  /**
+   * @private
+   * @param {string} name
+   * @return {string}
+   */
+  function _prepMainMethod(name) {
+    name = name.replace(OPEN_VITALS, '');
+    return 'vitals.' + name;
+  }
+
+  /// {{{4
+  /// @func _prepParam
+  /**
+   * @private
+   * @param {string} name
+   * @return {string}
+   */
+  function _prepParam(name) {
+
+    if (!name)
+      return '';
+
+    name = name.replace(OPEN_HASH, '');
+    return '#' + name;
+  }
+
+  /// {{{4
+  /// @func _setErrorProps
   /**
    * @private
    * @param {!Error} err
@@ -42,94 +82,122 @@ function $newErrorMaker(main) {
    * @param {string} msg
    * @return {!Error} 
    */
-  function errorMark(err, name, msg) {
+  function _setErrorProps(err, name, msg) {
     err.__vitals = true;
     err.vitals = true;
     err.name = name;
+    switch (name) {
+      case 'TypeError':
+        err.__type = true;
+        err.type = true;
+        break;
+      case 'RangeError':
+        err.__range = true;
+        err.range = true;
+        break;
+    }
     err.message = msg;
     err.msg = msg;
     return err;
   }
 
-  /// {{{3
-  /// @func error
+  ///////////////////////////////////////////////////// {{{3
+  // $NEW-ERROR-MAKER METHOD
+  //////////////////////////////////////////////////////////
+
   /**
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
+   * @param {string} mainMethod
+   * @return {!Function}
    */
-  function error(msg, method) {
+  return function $newErrorMaker(mainMethod) {
 
-    /** @type {!Error} */
-    var err;
+    /// {{{4
+    /// @const MAIN
+    /**
+     * @private
+     * @const {string}
+     */
+    var MAIN = _prepMainMethod(mainMethod);
 
-    method = method
-      ? MAIN
-      : MAIN + '.' + method;
-    msg += ' for ' + method + ' call.';
-    err = new Error(msg);
-    return cleanError(err, 'Error', msg);
-  }
+    /// {{{4
+    /// @func _prepMethod
+    /**
+     * @private
+     * @param {(string|undefined)} method
+     * @return {string} 
+     */
+    function _prepMethod(method) {
+      method = method
+        ? MAIN
+        : MAIN + '.' + method;
+      return '`' + method + '`';
+    }
 
-  /// {{{3
-  /// @func typeError
-  /**
-   * @param {string} param
-   * @param {string=} method
-   * @return {!TypeError} 
-   */
-  function typeError(param, method) {
+    /// {{{4
+    /// @func error
+    /**
+     * @param {!Error} err
+     * @param {string} msg
+     * @param {string=} method
+     * @return {!Error} 
+     */
+    function error(err, msg, method) {
+      method = _prepMethod(method);
+      msg += ' for ' + method + ' call';
+      return _setErrorProps(err, 'Error', msg);
+    }
 
-    /** @type {!TypeError} */
-    var err;
-    /** @type {string} */
-    var msg;
+    /// {{{4
+    /// @func typeError
+    /**
+     * @param {!TypeError} err
+     * @param {string} param
+     * @param {string=} method
+     * @return {!TypeError} 
+     */
+    function typeError(err, param, method) {
 
-    param += ' param';
-    method = method
-      ? MAIN
-      : MAIN + '.' + method;
-    msg = 'Invalid ' + param + ' in ' + method + ' call.';
-    err = new TypeError(msg);
-    return cleanError(err, 'TypeError', msg);
-  }
+      /** @type {string} */
+      var msg;
 
-  /// {{{3
-  /// @func rangeError
-  /**
-   * @param {string} param
-   * @param {string=} valid
-   * @param {string=} method
-   * @return {!RangeError} 
-   */
-  function rangeError(param, valid, method) {
+      param = _prepParam(param);
+      method = _prepMethod(method);
+      msg = 'invalid ' + param + ' data type for ' + method + ' call';
+      return _setErrorProps(err, 'TypeError', msg);
+    }
 
-    /** @type {!RangeError} */
-    var err;
-    /** @type {string} */
-    var msg;
+    /// {{{4
+    /// @func rangeError
+    /**
+     * @param {!RangeError} err
+     * @param {string} param
+     * @param {string=} valid
+     * @param {string=} method
+     * @return {!RangeError} 
+     */
+    function rangeError(err, param, valid, method) {
 
-    param += ' param';
-    method = method
-      ? MAIN
-      : MAIN + '.' + method;
-    msg = 'The '+ param +' was out-of-range for a '+ method +' call.';
-    if (valid)
-      msg += ' The valid options are: ' + valid;
-    err = new RangeError(msg);
-    return cleanError(err, 'RangeError', msg);
-  }
-  /// }}}3
+      /** @type {string} */
+      var msg;
 
-  /** @type {!Function} */
-  var errorMaker;
+      param = _prepParam(param);
+      method = _prepMethod(method);
+      msg = 'out-of-range ' + param + ' for ' + method + ' call';
+      if (valid)
+        msg += '\nvalid options:\n' + valid;
+      return _setErrorProps(err, 'RangeError', msg);
+    }
+    /// }}}4
 
-  errorMaker = error;
-  errorMaker.type = typeError;
-  errorMaker.range = rangeError;
+    /** @type {!Function} */
+    var errorMaker;
 
-  return errorMaker;
-}
+    errorMaker = error;
+    errorMaker.type = typeError;
+    errorMaker.range = rangeError;
+    return errorMaker;
+  };
+})();
 /// }}}2
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
