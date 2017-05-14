@@ -194,6 +194,7 @@ var $is = (function _isPrivateScope() {
   /// @func objToStr
   /**
    * @private
+   * @this {!Object}
    * @return {string}
    */
   var objToStr = Object.prototype.toString;
