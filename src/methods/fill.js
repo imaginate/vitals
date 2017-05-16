@@ -12,10 +12,11 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $isNone = require('./helpers/is-none.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS FILL
@@ -43,7 +44,7 @@ var fill = (function fillPrivateScope() {
    * Fills an `array`, `object`, or `string` with specified values.
    *
    * @public
-   * @param {(?Array|?Object|function|number)} source
+   * @param {(?Array|?Object|?Function|?number)} source
    *   If the #source is a `number`, @fill returns a new `string` filled with
    *   the `string` conversion of #val the #source `number` of times.
    * @param {(!Array|string)=} keys
@@ -68,43 +69,44 @@ var fill = (function fillPrivateScope() {
    *   #source that are filled with the #val. If negative, the #end value is
    *   added to the #source [length][arr-length]. The #end index `number` is
    *   **not** included in the range of filled properties if it exists.
-   * @return {(?Array|?Object|function|string)}
+   * @return {(?Array|?Object|?Function|?string)}
    */
   function fill(source, keys, val, start, end) {
 
     if (arguments.length < 2)
-      throw _error('No val defined');
+      throw $err(new Error, 'no #val defined');
 
-    if ( _is.nil(source) )
+    if ( $is.nil(source) )
       return null;
 
-    if ( _is.num(source) ) {
+    if ( $is.num(source) ) {
       val = keys;
       return _fillStr(source, val);
     }
 
-    if ( !_is._obj(source) )
-      throw _error.type('source');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '?Array|?Object|?Function|?number');
 
-    if ( _is.arr(source) ) {
+    if ( $is.arr(source) ) {
       end = start;
       start = val;
       val = keys;
 
-      if ( !_is.un.num(start) )
-        throw _error.type('start');
-      if ( !_is.un.num(end) )
-        throw _error.type('end');
+      if ( !$isNone.num(start) )
+        throw $typeErr(new TypeError, 'start', start, 'number=');
+      if ( !$isNone.num(end) )
+        throw $typeErr(new TypeError, 'end', end, 'number=');
 
       return _fillArr(source, val, start, end);
     }
 
     if (arguments.length > 2) {
-      if ( _is.str(keys) )
-        keys = splitKeys(keys);
+      if ( $is.str(keys) )
+        keys = $splitKeys(keys);
 
-      if ( !_is.arr(keys) )
-        throw _error.type('keys');
+      if ( !$is.arr(keys) )
+        throw $typeErr(new TypeError, 'keys', keys, '(!Array|string)=');
 
       return _fillKeys(source, keys, val);
     }
@@ -120,7 +122,7 @@ var fill = (function fillPrivateScope() {
    * Fills an existing `object` or `function` with specified keys and values.
    *
    * @public
-   * @param {(!Object|function)} obj
+   * @param {(!Object|!Function)} source
    * @param {(!Array|string)=} keys
    *   If defined, #keys is considered an `array` of keys that will limit the
    *   fill action. If a `string` is defined for #keys, it is converted to an
@@ -132,27 +134,29 @@ var fill = (function fillPrivateScope() {
    *   - `" "`
    * @param {*} val
    *   The value to fill the `object` or `function` with.
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
-  fill.object = function fillObject(obj, keys, val) {
+  fill.object = function fillObject(source, keys, val) {
 
-    if ( !_is._obj(obj) )
-      throw _error.type('obj', 'object');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'object');
     if (arguments.length < 2)
-      throw _error('No val defined', 'object');
+      throw $err(new Error, 'no #val defined', 'object');
 
     if (arguments.length > 2) {
-      if ( _is.str(keys) )
-        keys = splitKeys(keys);
+      if ( $is.str(keys) )
+        keys = $splitKeys(keys);
 
-      if ( !_is.arr(keys) )
-        throw _error.type('keys', 'object');
+      if ( !$is.arr(keys) )
+        throw $typeErr(new TypeError, 'keys', keys, '(!Array|string)=',
+          'object');
 
-      return _fillKeys(obj, keys, val);
+      return _fillKeys(source, keys, val);
     }
 
     val = keys;
-    return _fillObj(obj, val);
+    return _fillObj(source, val);
   };
   // define shorthand
   fill.obj = fill.object;
@@ -181,21 +185,22 @@ var fill = (function fillPrivateScope() {
    *   the range of filled properties if it exists.
    * @return {!Array}
    */
-  fill.array = function fillArray(arr, val, start, end) {
+  fill.array = function fillArray(source, val, start, end) {
 
-    if ( _is.num(arr) )
-      arr = new Array(arr);
+    if ( $is.num(source) )
+      source = new Array(source);
 
     if (arguments.length < 2)
-      throw _error('No val defined', 'array');
-    if ( !_is.arr(arr) )
-      throw _error.type('arr', 'array');
-    if ( !_is.un.num(start) )
-      throw _error.type('start', 'array');
-    if ( !_is.un.num(end) )
-      throw _error.type('end', 'array');
+      throw $err(new Error, 'no #val defined', 'array');
+    if ( !$is.arr(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Array|number',
+        'array');
+    if ( !$isNone.num(start) )
+      throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
+    if ( !$isNone.num(end) )
+      throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
 
-    return _fillArr(arr, val, start, end);
+    return _fillArr(source, val, start, end);
   };
   // define shorthand
   fill.arr = fill.array;
@@ -216,10 +221,10 @@ var fill = (function fillPrivateScope() {
    */
   fill.string = function fillString(count, val) {
 
-    if ( !_is.num(count) )
-      throw _error.type('count', 'string');
+    if ( !$is.num(count) )
+      throw $typeErr(new TypeError, 'count', count, 'number', 'string');
     if (arguments.length < 2)
-      throw _error('No val defined', 'string');
+      throw $err(new Error, 'no #val defined', 'string');
 
     return _fillStr(count, val);
   };
@@ -234,9 +239,9 @@ var fill = (function fillPrivateScope() {
   /// @func _fillObj
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|!Function)} obj
    * @param {*} val
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fillObj(obj, val) {
 
@@ -244,7 +249,7 @@ var fill = (function fillPrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( own(obj, key) )
+      if ( $own(obj, key) )
         obj[key] = val;
     }
     return obj;
@@ -254,10 +259,10 @@ var fill = (function fillPrivateScope() {
   /// @func _fillKeys
   /**
    * @private
-   * @param {(!Object|function)} obj
+   * @param {(!Object|!Function)} obj
    * @param {!Array} keys
    * @param {*} val
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fillKeys(obj, keys, val) {
 
@@ -292,9 +297,9 @@ var fill = (function fillPrivateScope() {
 
     len = arr.length;
 
-    if ( _is.undefined(start) )
+    if ( $is.none(start) )
       start = 0;
-    if ( _is.undefined(end) )
+    if ( $is.none(end) )
       end = len;
 
     if (start < 0)
@@ -344,12 +349,50 @@ var fill = (function fillPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('fill');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('fill');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR FILL
