@@ -12,13 +12,14 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var sliceArr = require('./helpers/slice-arr.js');
-var escape = require('./helpers/escape.js');
-var match = require('./helpers/match.js');
-var own = require('./helpers/own.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
+var $sliceArr = require('./helpers/slice-arr.js');
+var $escape = require('./helpers/escape.js');
+var $match = require('./helpers/match.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
-var _is = require('./helpers/is.js');
 var is = require('./is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
@@ -66,11 +67,11 @@ var cut = (function cutPrivateScope() {
    * from a `string` and returns the amended #source.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} source
+   * @param {(!Object|!Function|!Array|string)} source
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     - **The leading #val is a `RegExp`**!$
    *       This method will [delete][delete] all properties with a key that
    *       matches (via a @has#pattern test) any #val. If a #val is not a
@@ -86,7 +87,7 @@ var cut = (function cutPrivateScope() {
    *       optional parameters:
    *       - **value** *`*`*
    *       - **key** *`string`*
-   *       - **source** *`!Object|function`*
+   *       - **source** *`!Object|!Function`*
    *       Note that this method lazily [clones][clone] the #source based on
    *       the filter's [length property][func-length] (i.e. if you alter the
    *       #source `object` within the filter make sure you define the
@@ -134,41 +135,42 @@ var cut = (function cutPrivateScope() {
    *   `function` as the wrapper has a max value of `3`) and the
    *   [name property][func-name] value of `"filter"` (unless you are using a
    *   [minified][minify] version of `vitals`).
-   * @return {(!Object|function|!Array|string)}
+   * @return {(!Object|!Function|!Array|string)}
    *   The amended #source.
    */
   function cut(source, val, thisArg) {
 
     if (arguments.length < 2)
-      throw _error('No val defined');
+      throw $err(new Error, 'no #val defined');
 
-    if ( _is.str(source) ) {
+    if ( $is.str(source) ) {
       if (arguments.length > 2)
-        val = sliceArr(arguments, 1);
-      return _is.arr(val)
+        val = $sliceArr(arguments, 1);
+      return $is.arr(val)
         ? _cutPatterns(source, val)
         : _cutPattern(source, val);
     }
 
-    if ( !_is._obj(source) )
-      throw _error.type('source');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!function|!Array|string');
 
-    if ( _is.args(source) )
-      source = sliceArr(source);
+    if ( $is.args(source) )
+      source = $sliceArr(source);
 
-    if ( _is.func(val) ) {
+    if ( $is.fun(val) ) {
 
-      if ( !_is.nil.un.obj(thisArg) )
-        throw _error.type('thisArg');
+      if ( !$isNilNone.obj(thisArg) )
+        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
-      return _is.arr(source)
+      return $is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
     }
 
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _cutProps(source, val)
       : _cutProp(source, val);
   }
@@ -181,10 +183,10 @@ var cut = (function cutPrivateScope() {
    * the amended #source.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {*} val
    *   All details are as follows (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     - **#val is a `RegExp`**!$
    *       This method will [delete][delete] all properties with a key that
    *       matches (via a @has#pattern test) #val.
@@ -197,7 +199,7 @@ var cut = (function cutPrivateScope() {
    *       optional parameters:
    *       - **value** *`*`*
    *       - **key** *`string`*
-   *       - **source** *`!Object|function`*
+   *       - **source** *`!Object|!Function`*
    *       Note that this method lazily [clones][clone] the #source based on
    *       the filter's [length property][func-length] (i.e. if you alter the
    *       #source `object` within the filter make sure you define the
@@ -239,25 +241,27 @@ var cut = (function cutPrivateScope() {
    *   filter `function` as the wrapper has a max value of `3`) and the
    *   [name property][func-name] value of `"filter"` (unless you are using a
    *   [minified][minify] version of `vitals`).
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   cut.property = function cutProperty(source, val, thisArg) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'property');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!function|!Array', 'property');
     if (arguments.length < 2)
-      throw _error('No val defined', 'property');
+      throw $err(new Error, 'no #val defined', 'property');
 
-    if ( _is.args(source) )
-     source = sliceArr(source);
+    if ( $is.args(source) )
+     source = $sliceArr(source);
 
-    if ( _is.func(val) ) {
+    if ( $is.fun(val) ) {
 
-      if ( !_is.nil.un.obj(thisArg) )
-        throw _error.type('thisArg', 'property');
+      if ( !$isNilNone.obj(thisArg) )
+        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+          'property');
 
-      return _is.arr(source)
+      return $is.arr(source)
         ? _filterArr(source, val, thisArg)
         : _filterObj(source, val, thisArg);
     }
@@ -274,20 +278,21 @@ var cut = (function cutPrivateScope() {
    * the amended #source.
    *
    * @public
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} key
    *   If a property exists in #source with #key for its key name, it is
    *   [deleted][delete]. If #key is not a `string`, it is converted to a
    *   `string` before the #source is checked for #key.
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    *   The amended #source.
    */
   cut.key = function cutKey(source, key) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'key');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'key');
     if (arguments.length < 2)
-      throw _error('No key defined', 'key');
+      throw $err(new Error, 'no #key defined', 'key');
 
     return _cutKey(source, key);
   };
@@ -302,7 +307,7 @@ var cut = (function cutPrivateScope() {
    * any properties.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Array|!Arguments|!Object|!Function)} source
    * @param {number} index
    *   The property index to [splice][splice] from #source.
    * @param {number=} toIndex
@@ -314,17 +319,19 @@ var cut = (function cutPrivateScope() {
    */
   cut.index = function cutIndex(source, index, toIndex) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'index');
-    if ( !_is.num(source.length) )
-      throw _error.type('source.length', 'index');
-    if ( !_is.num(index) )
-      throw _error.type('index', 'index');
-    if ( !_is.un.num(toIndex) )
-      throw _error.type('toIndex', 'index');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function', 'index');
+    if ( !$is.num(source.length) )
+      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
+        'index');
+    if ( !$is.num(index) )
+      throw $typeErr(new TypeError, 'index', index, 'number', 'index');
+    if ( !$isNone.num(toIndex) )
+      throw $typeErr(new TypeError, 'toIndex', toIndex, 'number=', 'index');
 
-    if ( !_is.arr(source) )
-      source = sliceArr(source);
+    if ( !$is.arr(source) )
+      source = $sliceArr(source);
     return _cutIndex(source, index, toIndex);
   };
   // define shorthand
@@ -338,24 +345,25 @@ var cut = (function cutPrivateScope() {
    * to complete the type checks.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {string} type
    *   All properties with a value that match #type (via a @is#main test) will
    *   be [deleted][delete]. Refer to @is#main for all valid #type options.
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   cut.type = function cutType(source, type) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'type');
-    if ( !_is.str(type) )
-      throw _error.type('type', 'type');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array', 'type');
+    if ( !$is.str(type) )
+      throw $typeErr(new TypeError, 'type', type, 'string', 'type');
 
-    if ( _is.args(source) )
-      source = sliceArr(source);
+    if ( $is.args(source) )
+      source = $sliceArr(source);
 
-    if ( _is.empty(source) ) {
+    if ( $is.empty(source) ) {
       is(type, ''); // run once to catch invalid types
       return source;
     }
@@ -371,27 +379,28 @@ var cut = (function cutPrivateScope() {
    * returns the amended #source.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {*} val
    *   All details are as follows (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method will [delete][delete] all properties with a value that
    *     matches (via a [strict equality][equal] test) #val.
    *   - *`!Array`*!$
    *     This method will [splice][splice] from the #source all properties
    *     with a value that matches (via a [strict equality][equal] test) #val.
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   cut.value = function cutValue(source, val) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'value');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array', 'value');
     if (arguments.length < 2)
-      throw _error('No val defined', 'value');
+      throw $err(new Error, 'no #val defined', 'value');
 
-    if ( _is.args(source) )
-      source = sliceArr(source);
+    if ( $is.args(source) )
+      source = $sliceArr(source);
     return _cutVal(source, val);
   };
   // define shorthand
@@ -413,10 +422,10 @@ var cut = (function cutPrivateScope() {
    */
   cut.pattern = function cutPattern(source, pattern) {
 
-    if ( !_is.str(source) )
-      throw _error.type('source', 'pattern');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'pattern');
     if (arguments.length < 2)
-      throw _error('No pattern defined', 'pattern');
+      throw $err(new Error, 'no #pattern defined', 'pattern');
 
     return _cutPattern(source, pattern);
   };
@@ -429,46 +438,48 @@ var cut = (function cutPrivateScope() {
    * the amended #source.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     - **The leading #val is a `RegExp`**!$
    *       This method will [delete][delete] all properties with a key that
    *       matches (via a @has#pattern test) any #val. If a #val is not a
    *       `RegExp`, it is converted into a `string` before a test is ran.
    *     - **The leading #val is a `string`**!$
    *       This method will [delete][delete] all properties with a key that
-   *       matches (via a [strict equality][equal] test) any #val. If a #val is
-   *       not a `string`, it is converted into a `string` before a comparison
-   *       is made.
+   *       matches (via a [strict equality][equal] test) any #val. If a #val
+   *       is not a `string`, it is converted into a `string` before a
+   *       comparison is made.
    *     - **All other situations**!$
    *       This method will [delete][delete] all properties with a value that
    *       matches (via a [strict equality][equal] test) any #val.
    *   - *`!Array`*!$
    *     - **Every #val is a `number`**!$
-   *       This method will [splice][splice] from the #source each property with
-   *       an index that matches (via a [strict equality][equal] test) any #val.
+   *       This method will [splice][splice] from the #source each property
+   *       with an index that matches (via a [strict equality][equal] test)
+   *       any #val.
    *     - **All other situations**!$
    *       This method will [splice][splice] from the #source all properties
    *       with a value that matches (via a [strict equality][equal] test) any
    *       #val.
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   cut.properties = function cutProperties(source, val) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'properties');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array', 'properties');
     if (arguments.length < 2)
-      throw _error('No val defined', 'properties');
+      throw $err(new Error, 'no #val defined', 'properties');
 
-    if ( _is.args(source) )
-      source = sliceArr(source);
+    if ( $is.args(source) )
+      source = $sliceArr(source);
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _cutProps(source, val)
       : _cutProp(source, val);
   };
@@ -482,25 +493,26 @@ var cut = (function cutPrivateScope() {
    * the amended #source.
    *
    * @public
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {...*} key
    *   If only one `array` #key is provided, it is considered an `array` of
    *   keys. If a property exists in #source with any #key for its key name,
    *   it is [deleted][delete]. If a #key is not a `string`, it is converted
    *   into a `string` before the #source is checked.
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    *   The amended #source.
    */
   cut.keys = function cutKeys(source, key) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'keys');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'keys');
     if (arguments.length < 2)
-      throw _error('No key defined', 'keys');
+      throw $err(new Error, 'no #key defined', 'keys');
 
     if (arguments.length > 2)
-      key = sliceArr(arguments, 1);
-    return _is.arr(key)
+      key = $sliceArr(arguments, 1);
+    return $is.arr(key)
       ? _cutKeys(source, key)
       : _cutKey(source, key);
   };
@@ -515,7 +527,7 @@ var cut = (function cutPrivateScope() {
    * any properties.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Array|!Arguments|!Object|!Function)} source
    * @param {(!Array<number>|...number)} index
    *   If only one `array` #index is provided, it is considered an `array` of
    *   indexes. If a property with any #index exists in #source, it is
@@ -526,28 +538,32 @@ var cut = (function cutPrivateScope() {
    */
   cut.indexes = function cutIndexes(source, index) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'indexes');
-    if ( !_is.num(source.length) )
-      throw _error.type('source.length', 'indexes');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function', 'indexes');
+    if ( !$is.num(source.length) )
+      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
+        'indexes');
     if (arguments.length < 2)
-      throw _error('No index defined', 'indexes');
+      throw $err(new Error, 'no #index defined', 'indexes');
 
-    if ( !_is.arr(source) )
-      source = sliceArr(source);
+    if ( !$is.arr(source) )
+      source = $sliceArr(source);
     if (arguments.length > 2)
-      index = sliceArr(arguments, 1);
+      index = $sliceArr(arguments, 1);
 
-    if ( !_is.arr(index) ) {
+    if ( !$is.arr(index) ) {
 
-      if ( !_is.num(index) )
-        throw _error.type('index', 'indexes');
+      if ( !$is.num(index) )
+        throw $typeErr(new TypeError, 'index', index,
+          '(!Array<number>|...number)', 'indexes');
 
       return _cutIndex(source, index);
     }
 
     if ( !is('!nums', index) )
-      throw _error.type('index', 'indexes');
+      throw $typeErr(new TypeError, 'index', index,
+        '(!Array<number>|...number)', 'indexes');
 
     return _cutIndexes(source, index);
   };
@@ -562,7 +578,7 @@ var cut = (function cutPrivateScope() {
    * returns the amended #source.
    *
    * @public
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
@@ -573,21 +589,22 @@ var cut = (function cutPrivateScope() {
    *     This method will [splice][splice] from the #source all properties
    *     with a value that matches (via a [strict equality][equal] test) any
    *     #val.
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   cut.values = function cutValues(source, val) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'value');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array', 'value');
     if (arguments.length < 2)
-      throw _error('No val defined', 'value');
+      throw $err(new Error, 'no #val defined', 'value');
 
-    if ( _is.args(source) )
-      source = sliceArr(source);
+    if ( $is.args(source) )
+      source = $sliceArr(source);
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _cutVals(source, val)
       : _cutVal(source, val);
   };
@@ -612,14 +629,14 @@ var cut = (function cutPrivateScope() {
    */
   cut.patterns = function cutPatterns(source, pattern) {
 
-    if ( !_is.str(source) )
-      throw _error.type('source', 'patterns');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'patterns');
     if (arguments.length < 2)
-      throw _error('No pattern defined', 'patterns');
+      throw $err(new Error, 'no #pattern defined', 'patterns');
 
     if (arguments.length > 2)
-      pattern = sliceArr(arguments, 1);
-    return _is.arr(pattern)
+      pattern = $sliceArr(arguments, 1);
+    return $is.arr(pattern)
       ? _cutPatterns(source, pattern)
       : _cutPattern(source, pattern);
   };
@@ -632,13 +649,13 @@ var cut = (function cutPrivateScope() {
   /// @func _cutProp
   /**
    * @private
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {*} val
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _cutProp(source, val) {
-    return _is.arr(source)
-      ? _is.num(val)
+    return $is.arr(source)
+      ? $is.num(val)
         ? _spliceKey(source, val)
         : _spliceVal(source, val)
       : is('!str|regex', val)
@@ -650,12 +667,12 @@ var cut = (function cutPrivateScope() {
   /// @func _cutProps
   /**
    * @private
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {!Array<*>} vals
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _cutProps(source, vals) {
-    return _is.arr(source)
+    return $is.arr(source)
       ? is('nums', vals)
         ? _spliceKeys(source, vals)
         : _spliceVals(source, vals)
@@ -668,9 +685,9 @@ var cut = (function cutPrivateScope() {
   /// @func _cutKey
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} key
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _cutKey(source, key) {
     delete source[key];
@@ -681,9 +698,9 @@ var cut = (function cutPrivateScope() {
   /// @func _cutKeys
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {!Array} keys
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _cutKeys(source, keys) {
 
@@ -720,7 +737,7 @@ var cut = (function cutPrivateScope() {
     if (key >= len)
       return source;
 
-    if ( _is.undefined(toKey) ) {
+    if ( $is.undefined(toKey) ) {
       if (key < 0)
         return source;
       source.splice(key, 1);
@@ -758,12 +775,12 @@ var cut = (function cutPrivateScope() {
   /// @func _cutType
   /**
    * @private
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {string} type
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _cutType(source, type) {
-    return _is.arr(source)
+    return $is.arr(source)
       ? _spliceValByType(source, type)
       : _deleteValByType(source, type);
   }
@@ -772,12 +789,12 @@ var cut = (function cutPrivateScope() {
   /// @func _cutVal
   /**
    * @private
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {*} val
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _cutVal(source, val) {
-    return _is.arr(source)
+    return $is.arr(source)
       ? _spliceVal(source, val)
       : _deleteVal(source, val);
   }
@@ -786,12 +803,12 @@ var cut = (function cutPrivateScope() {
   /// @func _cutVals
   /**
    * @private
-   * @param {(!Object|function|!Array)} source
+   * @param {(!Object|!Function|!Array)} source
    * @param {!Array<*>} vals
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _cutVals(source, vals) {
-    return _is.arr(source)
+    return $is.arr(source)
       ? _spliceVals(source, vals)
       : _deleteVals(source, vals);
   }
@@ -805,9 +822,9 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    */
   function _cutPattern(source, pattern) {
-    if ( !_is.regex(pattern) ) {
+    if ( !$is.regx(pattern) ) {
       pattern = String(pattern);
-      pattern = escape(pattern);
+      pattern = $escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
     return source.replace(pattern, '');
@@ -843,28 +860,28 @@ var cut = (function cutPrivateScope() {
   /// @func _deleteKey
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} key
    * @param {boolean=} useMatch
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _deleteKey(source, key, useMatch) {
 
     /** @type {!RegExp} */
     var pattern;
 
-    if ( _is.undefined(useMatch) )
-      useMatch = _is.regex(key);
+    if ( $is.none(useMatch) )
+      useMatch = $is.regx(key);
 
     if (!useMatch) {
-      if ( own(source, key) )
+      if ( $own(source, key) )
         delete source[key];
       return source;
     }
 
     pattern = key;
     for (key in source) {
-      if ( own(source, key) && match(key, pattern) )
+      if ( $own(source, key) && $match(key, pattern) )
         delete source[key];
     }
     return source;
@@ -874,9 +891,9 @@ var cut = (function cutPrivateScope() {
   /// @func _deleteKeys
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {!Array} keys
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _deleteKeys(source, keys) {
 
@@ -887,7 +904,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    useMatch = _is.regex( keys[0] );
+    useMatch = $is.regx(keys[0]);
     len = keys.length;
     i = -1;
     while (++i < len)
@@ -899,9 +916,9 @@ var cut = (function cutPrivateScope() {
   /// @func _deleteVal
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} val
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _deleteVal(source, val) {
 
@@ -909,7 +926,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) && source[key] === val )
+      if ( $own(source, key) && source[key] === val )
         delete source[key];
     }
     return source;
@@ -919,9 +936,9 @@ var cut = (function cutPrivateScope() {
   /// @func _deleteValByType
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {string} type
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _deleteValByType(source, type) {
 
@@ -929,7 +946,7 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( own(source, key) && is(type, source[key]) )
+      if ( $own(source, key) && is(type, source[key]) )
         delete source[key];
     }
     return source;
@@ -939,9 +956,9 @@ var cut = (function cutPrivateScope() {
   /// @func _deleteVals
   /**
    * @private
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {!Array} vals
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _deleteVals(source, vals) {
 
@@ -1104,10 +1121,10 @@ var cut = (function cutPrivateScope() {
   /// @func _filterObj
   /**
    * @private
-   * @param {(!Object|function)} source
-   * @param {function} filter
+   * @param {(!Object|!Function)} source
+   * @param {!function} filter
    * @param {?Object=} thisArg
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _filterObj(source, filter, thisArg) {
 
@@ -1116,7 +1133,7 @@ var cut = (function cutPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !_is.undefined(thisArg) )
+    if ( !$is.none(thisArg) )
       filter = _bind(filter, thisArg);
     obj = filter.length > 2
       ? copy(source)
@@ -1124,25 +1141,25 @@ var cut = (function cutPrivateScope() {
     switch (filter.length) {
       case 0:
         for (key in obj) {
-          if ( own(obj, key) && !filter() )
+          if ( $own(obj, key) && !filter() )
             delete source[key];
         }
         break;
       case 1:
         for (key in obj) {
-          if ( own(obj, key) && !filter(obj[key]) )
+          if ( $own(obj, key) && !filter(obj[key]) )
             delete source[key];
         }
         break;
       case 2:
         for (key in obj) {
-          if ( own(obj, key) && !filter(obj[key], key) )
+          if ( $own(obj, key) && !filter(obj[key], key) )
             delete source[key];
         }
         break;
       default:
         for (key in obj) {
-          if ( own(obj, key) && !filter(obj[key], key, obj) )
+          if ( $own(obj, key) && !filter(obj[key], key, obj) )
             delete source[key];
         }
         break;
@@ -1155,7 +1172,7 @@ var cut = (function cutPrivateScope() {
   /**
    * @private
    * @param {!Array} source
-   * @param {function} filter
+   * @param {!function} filter
    * @param {?Object=} thisArg
    * @return {!Array}
    */
@@ -1166,7 +1183,7 @@ var cut = (function cutPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !_is.undefined(thisArg) )
+    if ( !$is.none(thisArg) )
       filter = _bind(filter, thisArg);
     arr = filter.length > 2
       ? copy.arr(source)
@@ -1287,7 +1304,7 @@ var cut = (function cutPrivateScope() {
     /// @func setup
     /**
      * @private
-     * @type {function}
+     * @type {!function}
      */
     function setup() {
       first = [];
@@ -1496,9 +1513,9 @@ var cut = (function cutPrivateScope() {
   /// @func _bind
   /**
    * @private
-   * @param {function} func
+   * @param {!function} func
    * @param {?Object} thisArg
-   * @return {function} 
+   * @return {!function} 
    */
   function _bind(func, thisArg) {
     switch (func.length) {
@@ -1521,12 +1538,50 @@ var cut = (function cutPrivateScope() {
   }
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('cut');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('cut');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR CUT
