@@ -12,11 +12,12 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var own = require('./helpers/own.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
-var _is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS EACH
@@ -51,9 +52,9 @@ var each = (function eachPrivateScope() {
    * defined number of cycles.
    *
    * @public
-   * @param {(!Object|function|!Array|number|string)} source
+   * @param {(!Object|!Function|!Array|number|string)} source
    *   The details are as follows (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     Iterates over all properties in random order.
    *   - *`!Array`*!$
    *     Iterates over all indexed properties from `0` to `length`.
@@ -66,11 +67,11 @@ var each = (function eachPrivateScope() {
    *     - `","`
    *     - `"|"`
    *     - `" "`
-   * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee
+   * @param {!function(*=, (string|number)=, (!Object|!Function)=)} iteratee
    *   It has the optional params:
    *   - **value** *`*`*
    *   - **key** or **index** *`string|number`*
-   *   - **source** *`!Object|function|!Array`*
+   *   - **source** *`!Object|!Function|!Array`*
    *   Note this method lazily [clones][clone] the #source based on the
    *   iteratee's [length property][func-length] (i.e. if you alter the
    *   #source `object` within the #iteratee make sure you define the
@@ -87,25 +88,25 @@ var each = (function eachPrivateScope() {
    *   max value of `3`) and the [name property][func-name] value of
    *   `"iteratee"` (unless you are using a [minified][minify] version of
    *   `vitals`).
-   * @return {(?Object|function|?Array|undefined)}
+   * @return {(?Object|?Function|?Array|?undefined)}
    */
   function each(source, iteratee, thisArg) {
 
-    if ( !_is.func(iteratee) )
-      throw _error.type('iteratee');
-    if ( !_is.nil.un.obj(thisArg) )
-      throw _error.type('thisArg');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg');
 
-    if ( _is.num(source) )
+    if ( $is.num(source) )
       return _eachCycle(source, iteratee, thisArg);
 
-    if ( _is.str(source) )
-      source = splitKeys(source);
+    if ( $is.str(source) )
+      source = $splitKeys(source);
 
-    if ( !_is._obj(source) )
-      throw _error.type('source');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source');
 
-    return _is._arr(source)
+    return $is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
@@ -117,12 +118,12 @@ var each = (function eachPrivateScope() {
    * A shortcut for iterating over `object` properties.
    *
    * @public
-   * @param {(!Object|function)} source
-   * @param {function(*=, string=, (!Object|function)=)} iteratee
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=)} iteratee
    *   It has the optional params:
    *   - **value** *`*`*
    *   - **key** *`string`*
-   *   - **source** *`!Object|function`*
+   *   - **source** *`!Object|!Function`*
    *   Note this method lazily [clones][clone] the #source based on the
    *   iteratee's [length property][func-length] (i.e. if you alter the
    *   #source `object` within the #iteratee make sure you define the
@@ -139,16 +140,18 @@ var each = (function eachPrivateScope() {
    *   max value of `3`) and the [name property][func-name] value of
    *   `"iteratee"` (unless you are using a [minified][minify] version of
    *   `vitals`).
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   each.object = function eachObject(source, iteratee, thisArg) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'object');
-    if ( !_is.func(iteratee) )
-      throw _error.type('iteratee', 'object');
-    if ( !_is.nil.un.obj(thisArg) )
-      throw _error.type('thisArg', 'object');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'object');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, string=, (!Object|!Function)=)', 'object');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
 
     return _eachObj(source, iteratee, thisArg);
   };
@@ -163,7 +166,7 @@ var each = (function eachPrivateScope() {
    * array-like `object`.
    *
    * @public
-   * @param {(!Object|function|!Array|string)} source
+   * @param {(!Array|!Arguments|!Object|!Function|string)} source
    *   If #source is a `string`, it is converted to an `array` using one of
    *   the following list of values for the separator (values listed in order
    *   of rank):
@@ -171,7 +174,7 @@ var each = (function eachPrivateScope() {
    *   - `","`
    *   - `"|"`
    *   - `" "`
-   * @param {function(*=, number=, !Array=)} iteratee
+   * @param {!function(*=, number=, !Array=)} iteratee
    *   It has the optional params:
    *   - **value** *`*`*
    *   - **index** *`number`*
@@ -192,21 +195,24 @@ var each = (function eachPrivateScope() {
    *   max value of `3`) and the [name property][func-name] value of
    *   `"iteratee"` (unless you are using a [minified][minify] version of
    *   `vitals`).
-   * @return {(!Object|function|!Array)}
+   * @return {(!Array|!Arguments|!Object|!Function)}
    */
   each.array = function eachArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) )
-      source = splitKeys(source);
+    if ( $is.str(source) )
+      source = $splitKeys(source);
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'array');
-    if ( !_is.num(source.length) )
-      throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee) )
-      throw _error.type('iteratee', 'array');
-    if ( !_is.nil.un.obj(thisArg) )
-      throw _error.type('thisArg', 'array');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function|string', 'array');
+    if ( !$is.num(source.length) )
+      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
+        'array');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, number=, !Array=)', 'array');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
 
     return _eachArr(source, iteratee, thisArg);
   };
@@ -221,7 +227,7 @@ var each = (function eachPrivateScope() {
    *
    * @public
    * @param {number} count
-   * @param {function(number=)} iteratee
+   * @param {!function(number=)} iteratee
    *   It has the optional parameter:
    *   - **cycle** *`number`*
    *   Note that the cycle parameter is zero-based (i.e. the first cycle is
@@ -241,12 +247,13 @@ var each = (function eachPrivateScope() {
    */
   each.cycle = function eachCycle(count, iteratee, thisArg) {
 
-    if ( !_is.num(count) )
-      throw _error.type('count', 'cycle');
-    if ( !_is.func(iteratee) )
-      throw _error.type('iteratee', 'cycle');
-    if ( !_is.nil.un.obj(thisArg) )
-      throw _error.type('thisArg', 'cycle');
+    if ( !$is.num(count) )
+      throw $typeErr(new TypeError, 'count', count, 'number', 'cycle');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(number=)', 'cycle');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'cycle');
 
     return _eachCycle(count, iteratee, thisArg);
   };
@@ -261,10 +268,10 @@ var each = (function eachPrivateScope() {
   /// @func _eachObj
   /**
    * @private
-   * @param {(!Object|function)} obj
-   * @param {function(*, string=, (!Object|function)=)} iteratee
+   * @param {(!Object|!Function)} obj
+   * @param {!function(*, string=, (!Object|!Function)=)} iteratee
    * @param {?Object=} thisArg
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _eachObj(obj, iteratee, thisArg) {
 
@@ -273,31 +280,31 @@ var each = (function eachPrivateScope() {
 
     if (iteratee.length > 2)
       obj = copy(obj);
-    if ( !_is.undefined(thisArg) )
+    if ( !$is.none(thisArg) )
       iteratee = _bind(iteratee, thisArg);
 
     switch (iteratee.length) {
       case 0:
         for (key in obj) {
-          if ( own(obj, key) )
+          if ( $own(obj, key) )
             iteratee();
         }
         break;
       case 1:
         for (key in obj) {
-          if ( own(obj, key) )
+          if ( $own(obj, key) )
             iteratee(obj[key]);
         }
         break;
       case 2:
         for (key in obj) {
-          if ( own(obj, key) )
+          if ( $own(obj, key) )
             iteratee(obj[key], key);
         }
         break;
      default:
        for (key in obj) {
-         if ( own(obj, key) )
+         if ( $own(obj, key) )
            iteratee(obj[key], key, obj);
        }
        break;
@@ -309,10 +316,10 @@ var each = (function eachPrivateScope() {
   /// @func _eachArr
   /**
    * @private
-   * @param {(!Object|function|!Array)} obj
-   * @param {function(*, number=, !Array=)} iteratee
+   * @param {(!Object|!Function|!Array)} obj
+   * @param {!function(*, number=, !Array=)} iteratee
    * @param {?Object=} thisArg
-   * @return {(!Object|function|!Array)}
+   * @return {(!Object|!Function|!Array)}
    */
   function _eachArr(obj, iteratee, thisArg) {
 
@@ -323,7 +330,7 @@ var each = (function eachPrivateScope() {
 
     if (iteratee.length > 2)
       obj = copy.arr(obj);
-    if ( !_is.undefined(thisArg) )
+    if ( !$is.none(thisArg) )
       iteratee = _bind(iteratee, thisArg);
 
     len = obj.length;
@@ -354,7 +361,7 @@ var each = (function eachPrivateScope() {
   /**
    * @private
    * @param {number} count
-   * @param {function} iteratee
+   * @param {!function} iteratee
    * @param {?Object=} thisArg
    * @return {undefined}
    */
@@ -363,7 +370,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !_is.undefined(thisArg) )
+    if ( !$is.none(thisArg) )
       iteratee = _bind(iteratee, thisArg);
 
     if (iteratee.length) {
@@ -385,9 +392,9 @@ var each = (function eachPrivateScope() {
   /// @func _bind
   /**
    * @private
-   * @param {function} func
+   * @param {!function} func
    * @param {?Object} thisArg
-   * @return {function} 
+   * @return {!function} 
    */
   function _bind(func, thisArg) {
     switch (func.length) {
@@ -410,12 +417,50 @@ var each = (function eachPrivateScope() {
   }
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('each');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('each');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR EACH
