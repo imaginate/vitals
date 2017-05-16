@@ -13,6 +13,7 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNone = require('./helpers/is-none.js');
 var $inStr = require('./helpers/in-str.js');
 var $merge = require('./helpers/$merge.js');
 var $own = require('./helpers/own.js');
@@ -66,9 +67,9 @@ var copy = (function copyPrivateScope() {
   function copy(val, deep) {
 
     if (arguments.length < 1)
-      throw $err('Missing a val');
-    if ( !$is.un.bool(deep) )
-      throw $typeErr('deep');
+      throw $err(new Error, 'no #val defined');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
 
     return !$is._obj(val)
       ? val
@@ -96,9 +97,9 @@ var copy = (function copyPrivateScope() {
   copy.object = function copyObject(obj, deep) {
 
     if ( !$is.obj(obj) )
-      throw $typeErr('obj', 'object');
-    if ( !$is.un.bool(deep) )
-      throw $typeErr('deep', 'object');
+      throw $typeErr(new TypeError, 'obj', obj, '!Object', 'object');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
     return _copyObj(obj, deep);
   };
@@ -124,11 +125,12 @@ var copy = (function copyPrivateScope() {
   copy.array = function copyArray(obj, deep) {
 
     if ( !$is.obj(obj) )
-      throw $typeErr('obj', 'array');
+      throw $typeErr(new TypeError, 'obj', obj, '!Array|!Object', 'array');
     if ( !$is.num(obj.length) )
-      throw $typeErr('obj.length', 'array');
-    if ( !$is.un.bool(deep) )
-      throw $typeErr('deep', 'array');
+      throw $typeErr(new TypeError, 'obj.length', obj.length, 'number',
+        'array');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
 
     return _copyArr(obj, deep);
   };
@@ -153,9 +155,10 @@ var copy = (function copyPrivateScope() {
   copy.regexp = function copyRegexp(regex, forceGlobal) {
 
     if ( !$is.regx(regex) )
-      throw $typeErr('regex', 'regexp');
-    if ( !$is.un.bool(forceGlobal) )
-      throw $typeErr('forceGlobal', 'regexp');
+      throw $typeErr(new TypeError, 'regex', regex, '!RegExp', 'regexp');
+    if ( !$isNone.bool(forceGlobal) )
+      throw $typeErr(new TypeError, 'forceGlobal', forceGlobal, 'boolean=',
+        'regexp');
 
     return _copyRegex(regex, forceGlobal);
   };
@@ -185,9 +188,9 @@ var copy = (function copyPrivateScope() {
   copy.func = function copyFunction(func, deep) {
 
     if ( !$is.fun(func) )
-      throw $typeErr('func', 'function');
-    if ( !$is.un.bool(deep) )
-      throw $typeErr('deep', 'function');
+      throw $typeErr(new TypeError, 'func', func, '!function', 'function');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'function');
 
     return _copyFunc(func, deep);
   };
@@ -403,6 +406,7 @@ var copy = (function copyPrivateScope() {
   /// @func $err
   /**
    * @private
+   * @param {!Error} err
    * @param {string} msg
    * @param {string=} method
    * @return {!Error} 
@@ -413,8 +417,11 @@ var copy = (function copyPrivateScope() {
   /// @func $typeErr
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
    * @return {!TypeError} 
    */
   var $typeErr = $err.type;
@@ -423,9 +430,12 @@ var copy = (function copyPrivateScope() {
   /// @func $rangeErr
   /**
    * @private
-   * @param {string} param
-   * @param {string=} valid
-   * @param {string=} method
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
    * @return {!RangeError} 
    */
   var $rangeErr = $err.range;
