@@ -103,13 +103,15 @@ var is = (function isPrivateScope() {
 
     /** @type {string} */
     var nullable;
-    /** @type {?Array<function>} */
+    /** @type {?Array<!function>} */
     var checks;
 
     if (arguments.length < 2)
-      throw $err('No type or val');
-    if ( !$is._str(types) )
-      throw $typeErr('types');
+      throw $err(new Error, 'no #types or #val defined');
+    if ( !$is.str(types) )
+      throw $typeErr(new TypeError, 'types', types, 'string');
+    if ( !types )
+      throw $err(new Error, 'invalid empty #types `string`');
 
     if ( _hasSpecial('*', types) )
       return true;
@@ -117,7 +119,8 @@ var is = (function isPrivateScope() {
     checks = _getChecks(types);
 
     if (!checks)
-      throw $rangeErr('types', DOCS);
+      throw $rangeErr(new RangeError, 'types',
+        'https://github.com/imaginate/vitals/wiki/vitals.is-types');
 
     nullable = _getNullable(types);
     return arguments.length > 2
@@ -141,7 +144,7 @@ var is = (function isPrivateScope() {
   is['null'] = function isNull(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'null');
+        throw $err(new Error, 'no #val defined', 'null');
       case 1:
         return $is.nil(val);
       default:
@@ -166,7 +169,7 @@ var is = (function isPrivateScope() {
   is['undefined'] = function isUndefined(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'undefined');
+        throw $err(new Error, 'no #val defined', 'undefined');
       case 1:
         return $is.none(val);
       default:
@@ -191,7 +194,7 @@ var is = (function isPrivateScope() {
   is['boolean'] = function isBoolean(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'boolean');
+        throw $err(new Error, 'no #val defined', 'boolean');
       case 1:
         return $is.bool(val);
       default:
@@ -218,7 +221,7 @@ var is = (function isPrivateScope() {
   is['string'] = function isString(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'string');
+        throw $err(new Error, 'no #val defined', 'string');
       case 1:
         return $is.str(val);
       default:
@@ -245,7 +248,7 @@ var is = (function isPrivateScope() {
   is._string = function isNonEmptyString(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', '_string');
+        throw $err(new Error, 'no #val defined', '_string');
       case 1:
         return $is._str(val);
       default:
@@ -272,7 +275,7 @@ var is = (function isPrivateScope() {
   is.number = function isNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'number');
+        throw $err(new Error, 'no #val defined', 'number');
       case 1:
         return $is.num(val);
       default:
@@ -299,7 +302,7 @@ var is = (function isPrivateScope() {
   is._number = function isNonZeroNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', '_number');
+        throw $err(new Error, 'no #val defined', '_number');
       case 1:
         return $is._num(val);
       default:
@@ -324,7 +327,7 @@ var is = (function isPrivateScope() {
   is.nan = function isNan(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'nan');
+        throw $err(new Error, 'no #val defined', 'nan');
       case 1:
         return $is.nan(val);
       default:
@@ -348,7 +351,7 @@ var is = (function isPrivateScope() {
   is['object'] = function isObject(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'object');
+        throw $err(new Error, 'no #val defined', 'object');
       case 1:
         return $is.obj(val);
       default:
@@ -380,7 +383,7 @@ var is = (function isPrivateScope() {
   is._object = function isObjectOrFunction(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', '_object');
+        throw $err(new Error, 'no #val defined', '_object');
       case 1:
         return $is._obj(val);
       default:
@@ -410,7 +413,7 @@ var is = (function isPrivateScope() {
   is.func = function isFunction(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'function');
+        throw $err(new Error, 'no #val defined', 'function');
       case 1:
         return $is.fun(val);
       default:
@@ -441,7 +444,7 @@ var is = (function isPrivateScope() {
   is.array = function isArray(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'array');
+        throw $err(new Error, 'no #val defined', 'array');
       case 1:
         return $is.arr(val);
       default:
@@ -468,7 +471,7 @@ var is = (function isPrivateScope() {
   is._array = function isArrayOrArguments(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', '_array');
+        throw $err(new Error, 'no #val defined', '_array');
       case 1:
         return $is._arr(val);
       default:
@@ -496,7 +499,7 @@ var is = (function isPrivateScope() {
   is.regexp = function isRegExp(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'regexp');
+        throw $err(new Error, 'no #val defined', 'regexp');
       case 1:
         return $is.regx(val);
       default:
@@ -523,7 +526,7 @@ var is = (function isPrivateScope() {
   is.date = function isDate(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'date');
+        throw $err(new Error, 'no #val defined', 'date');
       case 1:
         return $is.date(val);
       default:
@@ -548,7 +551,7 @@ var is = (function isPrivateScope() {
   is.error = function isError(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'error');
+        throw $err(new Error, 'no #val defined', 'error');
       case 1:
         return $is.err(val);
       default:
@@ -574,7 +577,7 @@ var is = (function isPrivateScope() {
   is.args = function isArguments(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'args');
+        throw $err(new Error, 'no #val defined', 'args');
       case 1:
         return $is.args(val);
       default:
@@ -599,7 +602,7 @@ var is = (function isPrivateScope() {
   is.document = function isDocument(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'document');
+        throw $err(new Error, 'no #val defined', 'document');
       case 1:
         return $is.doc(val);
       default:
@@ -626,7 +629,7 @@ var is = (function isPrivateScope() {
   is.element = function isElement(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'element');
+        throw $err(new Error, 'no #val defined', 'element');
       case 1:
         return $is.elem(val);
       default:
@@ -671,7 +674,7 @@ var is = (function isPrivateScope() {
   is.empty = function isEmpty(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'empty');
+        throw $err(new Error, 'no #val defined', 'empty');
       case 1:
         return $is.empty(val);
       default:
@@ -685,7 +688,7 @@ var is = (function isPrivateScope() {
    * Checks if an `object` or `function` is [frozen][frozen].
    *
    * @public
-   * @param {...(?Object|?function)} source
+   * @param {...(?Object|?Function)} source
    *   If more than one #source is provided every #source must be
    *   [frozen][frozen] to return `true`.
    * @return {boolean}
@@ -694,7 +697,7 @@ var is = (function isPrivateScope() {
   is.frozen = function isFrozen(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'frozen');
+        throw $err(new Error, 'no #val defined', 'frozen');
       case 1:
         return _isFrozen(val);
       default:
@@ -718,7 +721,7 @@ var is = (function isPrivateScope() {
   is.whole = function isWholeNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'whole');
+        throw $err(new Error, 'no #val defined', 'whole');
       case 1:
         return _isWhole(val);
       default:
@@ -742,7 +745,7 @@ var is = (function isPrivateScope() {
   is.odd = function isOddNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'odd');
+        throw $err(new Error, 'no #val defined', 'odd');
       case 1:
         return _isOdd(val);
       default:
@@ -766,7 +769,7 @@ var is = (function isPrivateScope() {
   is.even = function isEvenNumber(val) {
     switch (arguments.length) {
       case 0:
-        throw $err('Missing a val', 'even');
+        throw $err(new Error, 'no #val defined', 'even');
       case 1:
         return _isEven(val);
       default:
@@ -783,7 +786,7 @@ var is = (function isPrivateScope() {
   /**
    * @private
    * @param {!Arguments} vals
-   * @param {!function} check
+   * @param {!function(*): boolean} check
    * @return {boolean}
    */
   function _are(vals, check) {
@@ -807,7 +810,7 @@ var is = (function isPrivateScope() {
   /// @func _isFrozen
   /**
    * @private
-   * @param {(?Object|?function)} val
+   * @param {(?Object|?Function)} val
    * @return {boolean}
    */
   function _isFrozen(val) {
@@ -816,7 +819,8 @@ var is = (function isPrivateScope() {
       return false;
 
     if ( !$is._obj(val) )
-      throw $typeErr('val', 'frozen');
+      throw $typeErr(new TypeError, 'val', val, '?Object|?Function',
+        'frozen');
 
     return $is.frozen(val);
   }
@@ -831,7 +835,7 @@ var is = (function isPrivateScope() {
   function _isWhole(val) {
 
     if ( !$is.num(val) )
-      throw $typeErr('val', 'whole');
+      throw $typeErr(new TypeError, 'val', val, 'number', 'whole');
 
     return $is.whole(val);
   }
@@ -846,9 +850,9 @@ var is = (function isPrivateScope() {
   function _isOdd(val) {
 
     if ( !$is.num(val) )
-      throw $typeErr('val', 'odd');
+      throw $typeErr(new TypeError, 'val', val, 'number', 'odd');
     if ( !$is.whole(val) )
-      throw $rangeErr('val', 'whole numbers', 'odd');
+      throw $rangeErr(new RangeError, 'val', '-?[0-9]+', 'odd');
 
     return $is.odd(val);
   }
@@ -863,9 +867,9 @@ var is = (function isPrivateScope() {
   function _isEven(val) {
 
     if ( !$is.num(val) )
-      throw $typeErr('val', 'even');
+      throw $typeErr(new TypeError, 'val', val, 'number', 'even');
     if ( !$is.whole(val) )
-      throw $rangeErr('val', 'whole numbers', 'even');
+      throw $rangeErr(new RangeError, 'val', '-?[0-9]+', 'even');
 
     return $is.even(val);
   }
@@ -1437,14 +1441,6 @@ var is = (function isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @const DOCS
-  /**
-   * @private
-   * @const {string}
-   */
-  var DOCS = 'https://github.com/imaginate/vitals/wiki/vitals.is-types';
-
-  /// {{{3
   /// @const NONE
   /**
    * @private
@@ -1456,6 +1452,7 @@ var is = (function isPrivateScope() {
   /// @func $err
   /**
    * @private
+   * @param {!Error} err
    * @param {string} msg
    * @param {string=} method
    * @return {!Error} 
@@ -1466,8 +1463,11 @@ var is = (function isPrivateScope() {
   /// @func $typeErr
   /**
    * @private
-   * @param {string} param
-   * @param {string=} method
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
    * @return {!TypeError} 
    */
   var $typeErr = $err.type;
@@ -1476,9 +1476,12 @@ var is = (function isPrivateScope() {
   /// @func $rangeErr
   /**
    * @private
-   * @param {string} param
-   * @param {string=} valid
-   * @param {string=} method
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
    * @return {!RangeError} 
    */
   var $rangeErr = $err.range;
