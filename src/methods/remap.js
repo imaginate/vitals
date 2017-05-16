@@ -1,31 +1,27 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: remap
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS REMAP
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.remap](https://github.com/imaginate/vitals/wiki/vitals.remap)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var escape = require('./helpers/escape.js');
-var own = require('./helpers/own.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $escape = require('./helpers/escape.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
-var _is = require('./helpers/is.js');
 
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: remap
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS REMAP
+//////////////////////////////////////////////////////////////////////////////
 
 var remap = (function remapPrivateScope() {
 
@@ -37,6 +33,11 @@ var remap = (function remapPrivateScope() {
   // - remap.string (remap.str)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Remap References
+   */
+
+  /// {{{2
+  /// @method remap
   /**
    * A shortcut for making a new object/array/string by invoking an action over
    *   the values of an existing object/array/string.
@@ -69,24 +70,27 @@ var remap = (function remapPrivateScope() {
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( _is.str(source) ) {
+    if ( $is.str(source) ) {
       if (arguments.length < 2) throw _error('No iteratee defined');
       if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+      if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !_is._obj(source)        ) throw _error.type('source');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+    if ( !$is._obj(source)        ) throw _error.type('source');
+    if ( !$is.func(iteratee)      ) throw _error.type('iteratee');
+    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
 
-    return _is._arr(source)
+    return $is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
 
+  /// {{{2
+  /// @method remap.object
+  /// @alias remap.obj
   /**
    * A shortcut for making a new object with the same keys and new values by
    *   invoking an action over the values of an existing object.
@@ -106,15 +110,18 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !_is._obj(source)        ) throw _error.type('source',   'object');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !$is._obj(source)        ) throw _error.type('source',   'object');
+    if ( !$is.func(iteratee)      ) throw _error.type('iteratee', 'object');
+    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
   // define shorthand
   remap.obj = remap.object;
 
+  /// {{{2
+  /// @method remap.array
+  /// @alias remap.arr
   /**
    * A shortcut for making a new array by invoking an action over the values of
    *   an existing array-like object.
@@ -139,18 +146,21 @@ var remap = (function remapPrivateScope() {
    */
   remap.array = function remapArray(source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = splitKeys(source);
+    if ( $is.str(source) ) source = $splitKeys(source);
 
-    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
+    if ( !$is._obj(source)        ) throw _error.type('source',        'array');
+    if ( !$is.num(source.length)  ) throw _error.type('source.length', 'array');
+    if ( !$is.func(iteratee)      ) throw _error.type('iteratee',      'array');
+    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
   // define shorthand
   remap.arr = remap.array;
 
+  /// {{{2
+  /// @method remap.string
+  /// @alias remap.str
   /**
    * A shortcut for [String.prototype.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
    *   that defaults to global replacements instead of only the first.
@@ -169,18 +179,20 @@ var remap = (function remapPrivateScope() {
 
     if (arguments.length < 2) throw _error('No pattern defined',     'string');
     if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !_is.str(source)         ) throw _error.type('source',  'string');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
+    if ( !$is.str(source)         ) throw _error.type('source',  'string');
+    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
   // define shorthand
   remap.str = remap.string;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // REMAP HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _remapObj
   /**
    * @private
    * @param {!(Object|function)} source
@@ -197,31 +209,33 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
     source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = $is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     switch (iteratee.length) {
       case 0:
       for (key in source) {
-        if ( own(source, key) ) obj[key] = iteratee();
+        if ( $own(source, key) ) obj[key] = iteratee();
       }
       break;
       case 1:
       for (key in source) {
-        if ( own(source, key) ) obj[key] = iteratee(source[key]);
+        if ( $own(source, key) ) obj[key] = iteratee(source[key]);
       }
       break;
       case 2:
       for (key in source) {
-        if ( own(source, key) ) obj[key] = iteratee(source[key], key);
+        if ( $own(source, key) ) obj[key] = iteratee(source[key], key);
       }
       break;
       default:
       for (key in source) {
-        if ( own(source, key) ) obj[key] = iteratee(source[key], key, source);
+        if ( $own(source, key) ) obj[key] = iteratee(source[key], key, source);
       }
     }
     return obj;
   }
 
+  /// {{{3
+  /// @func _remapArr
   /**
    * @private
    * @param {!(Object|function)} source
@@ -239,7 +253,7 @@ var remap = (function remapPrivateScope() {
     var i;
 
     source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    iteratee = $is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
     len = source.length;
     arr = new Array(len);
     i = -1;
@@ -252,6 +266,8 @@ var remap = (function remapPrivateScope() {
     return arr;
   }
 
+  /// {{{3
+  /// @func _remapStr
   /**
    * @private
    * @param {string} source
@@ -264,14 +280,14 @@ var remap = (function remapPrivateScope() {
 
     if (!source) return source;
 
-    if ( !_is.regex(pattern) ) {
+    if ( !$is.regex(pattern) ) {
       pattern = String(pattern);
-      pattern = escape(pattern);
+      pattern = $escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
 
-    replacement = _is.func(replacement)
-      ? _is.undefined(thisArg)
+    replacement = $is.func(replacement)
+      ? $is.undefined(thisArg)
         ? replacement
         : _bindR(replacement, thisArg)
       : String(replacement);
@@ -279,10 +295,12 @@ var remap = (function remapPrivateScope() {
     return source.replace(pattern, replacement);
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // REMAP HELPERS - MISC
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _bindI
   /**
    * @private
    * @param {function} func
@@ -303,6 +321,8 @@ var remap = (function remapPrivateScope() {
     };
   }
 
+  /// {{{3
+  /// @func _bindR
   /**
    * @private
    * @param {function} func
@@ -335,16 +355,58 @@ var remap = (function remapPrivateScope() {
     };
   }
 
+  /// {{{3
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('remap');
+  var NONE = (function(){})();
 
-  //////////////////////////////////////////////////////////
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('remap');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
+
+  /// }}}2
   // END OF PRIVATE SCOPE FOR REMAP
   return remap;
 })();
-
+/// }}}1
 
 module.exports = remap;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
