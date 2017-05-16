@@ -12,14 +12,14 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var ownEnum = require('./helpers/own-enum.js');
-var inObj = require('./helpers/in-obj.js');
-var inArr = require('./helpers/in-arr.js');
-var inStr = require('./helpers/in-str.js');
-var match = require('./helpers/match.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $ownEnum = require('./helpers/own-enum.js');
+var $inArr = require('./helpers/in-arr.js');
+var $inObj = require('./helpers/in-obj.js');
+var $inStr = require('./helpers/in-str.js');
+var $match = require('./helpers/match.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS HAS
@@ -59,11 +59,11 @@ var has = (function hasPrivateScope() {
    * or contains a substring.
    *
    * @public
-   * @param {(?Object|?function|?Array|?Arguments|?string)} source
+   * @param {(?Object|?Function|?Array|?Arguments|?string)} source
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method automatically returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
@@ -80,7 +80,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     The value of #val does not matter and is not used.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     The #val is passed **without** any conversions to
    *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
@@ -94,7 +94,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
@@ -111,20 +111,21 @@ var has = (function hasPrivateScope() {
   function has(source, val) {
 
     if (arguments.length < 2)
-      throw _error('No val defined');
+      throw $err(new Error, 'no #val defined');
 
-    if ( _is.nil(source) )
+    if ( $is.nil(source) )
       return false;
 
-    if ( _is.str(source) )
-      return match(source, val);
+    if ( $is.str(source) )
+      return $match(source, val);
 
-    if ( !_is._obj(source) )
-      throw _error.type('source');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '?Object|?Function|?Array|?Arguments|?string');
 
-    return _is._arr(source)
-      ? inArr(source, val)
-      : own(source, val);
+    return $is._arr(source)
+      ? $inArr(source, val)
+      : $own(source, val);
   }
 
   /// {{{2
@@ -133,40 +134,41 @@ var has = (function hasPrivateScope() {
    * Checks if an `object` or `function` [owns][own] a property.
    *
    * @public
-   * @param {(?Object|?function)} source
+   * @param {(?Object|?Function)} source
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method automatically returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    * @param {*} key
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     The value of #key does not matter and is not used.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     The #key is passed **without** any conversions to
    *     [Object.prototype.hasOwnProperty][own].
    * @return {boolean}
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    */
   has.key = function hasKey(source, key) {
 
     if (arguments.length < 2)
-      throw _error('No key defined', 'key');
+      throw $err(new Error, 'no #key defined', 'key');
 
-    if ( _is.nil(source) )
+    if ( $is.nil(source) )
       return false;
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'key');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '?Object|?Function',
+        'key');
 
-    return own(source, key);
+    return $own(source, key);
   };
 
   /// {{{2
@@ -177,11 +179,11 @@ var has = (function hasPrivateScope() {
    * or `arguments` indexed property has a value.
    *
    * @public
-   * @param {(?Object|?function|?Array|?Arguments)} source
+   * @param {(?Object|?Function|?Array|?Arguments)} source
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method automatically returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method checks each [owned][own] property in the #source for one
    *     matching value.
    *   - *`!Array|!Arguments`*!$
@@ -191,7 +193,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     The value of #val does not matter and is not used.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     The #val is **not** altered. A [strict equality][equal] test against
    *     the #val is used to evaluate each [owned][own] property value.
    *   - *`!Array|!Arguments`*!$
@@ -201,7 +203,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method checks each [owned][own] property in the #source for one
    *     matching value.
    *   - *`!Array|!Arguments`*!$
@@ -211,17 +213,18 @@ var has = (function hasPrivateScope() {
   has.value = function hasValue(source, val) {
 
     if (arguments.length < 2)
-      throw _error('No val defined', 'value');
+      throw $err(new Error, 'no #val defined', 'value');
 
-    if ( _is.nil(source) )
+    if ( $is.nil(source) )
       return false;
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'value');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '?Object|?Function|?Array|?Arguments', 'value');
 
-    return _is._arr(source)
-      ? inArr(source, val)
-      : inObj(source, val);
+    return $is._arr(source)
+      ? $inArr(source, val)
+      : $inObj(source, val);
   };
   // define shorthand
   has.val = has.value;
@@ -253,12 +256,12 @@ var has = (function hasPrivateScope() {
    */
   has.pattern = function hasPattern(source, pattern) {
 
-    if ( !_is.str(source) )
-      throw _error.type('source', 'pattern');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'pattern');
     if (arguments.length < 2)
-      throw _error('No pattern defined', 'pattern');
+      throw $err(new Error, 'no #pattern defined', 'pattern');
 
-    return match(source, pattern);
+    return $match(source, pattern);
   };
 
   /// {{{2
@@ -287,12 +290,12 @@ var has = (function hasPrivateScope() {
    */
   has.substring = function hasSubstring(source, val) {
 
-    if ( !_is.str(source) )
-      throw _error.type('source', 'substring');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'substring');
     if (arguments.length < 2)
-      throw _error('No val defined', 'substring');
+      throw $err(new Error, 'no #val defined', 'substring');
 
-    return inStr(source, val);
+    return $inStr(source, val);
   };
   // define shorthand
   has.substr = has.substring;
@@ -305,11 +308,11 @@ var has = (function hasPrivateScope() {
    * property.
    *
    * @public
-   * @param {(?Object|?function)} source
+   * @param {(?Object|?Function)} source
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method automatically returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][isEnum].
@@ -317,7 +320,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     The value of #key does not matter and is not used.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     The #key is passed **without** any conversions to
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][isEnum].
@@ -325,7 +328,7 @@ var has = (function hasPrivateScope() {
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
    *     This method returns `false`.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][isEnum].
@@ -333,15 +336,16 @@ var has = (function hasPrivateScope() {
   has.enumerable = function hasEnumerable(source, key) {
 
     if (arguments.length < 2)
-      throw _error('No key defined', 'enumerable');
+      throw $err(new Error, 'no #key defined', 'enumerable');
 
-    if ( _is.nil(source) )
+    if ( $is.nil(source) )
       return false;
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'enumerable');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '?Object|?Function',
+        'enumerable');
 
-    return ownEnum(source, key);
+    return $ownEnum(source, key);
   };
   // define shorthand
   try {
@@ -354,12 +358,50 @@ var has = (function hasPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('has');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('has');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR HAS
