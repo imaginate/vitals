@@ -12,11 +12,11 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var sliceArr = require('./helpers/slice-arr.js');
-var merge = require('./helpers/merge.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $sliceArr = require('./helpers/slice-arr.js');
+var $merge = require('./helpers/merge.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS FUSE
@@ -48,57 +48,59 @@ var fuse = (function fusePrivateScope() {
    * objects and arrays, and combines strings.
    *
    * @public
-   * @param {(!Object|function|!Array|!Arguments|string)} dest
+   * @param {(!Object|!Function|!Array|!Arguments|string)} dest
    *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
    *   `array` before any values are appended.
    * @param {...*} val
    *   All rules for #dest are shown in order of priority. The details are as
    *   follows (per #dest type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     If only one `array` #val is provided, it is considered an `array` of
    *     values. Each `null` #val is skipped. Each `object` or `function` #val
    *     is merged with the #dest. All other values are converted to a
    *     `string` and appended as a new property key (if the key exists in the
    *     #dest, the property's value is reset to `undefined`).
-   *   - *`!Array`*!$
-   *     Each `null` #val is skipped. Each `array` #val is [concatenated][concat]
-   *     to the #dest. All other values are [pushed][push] to the #dest.
+   *   - *`!Array|!Arguments`*!$
+   *     Each `null` #val is skipped. Each `array` #val is
+   *     [concatenated][concat] to the #dest. All other values are
+   *     [pushed][push] to the #dest.
    *   - *`string`*!$
    *     If only one `array` #val is provided, it is considered an `array` of
    *     values. Each #val is converted to a `string` and appended to the
    *     #dest.
-   * @return {(!Object|function|!Array|string)}
+   * @return {(!Object|!Function|!Array|string)}
    */
   function fuse(dest, val) {
 
     if (arguments.length < 2)
-      throw _error('No val defined');
+      throw $err(new Error, 'no #val defined');
 
-    if ( _is.str(dest) ) {
+    if ( $is.str(dest) ) {
       if (arguments.length > 2)
-        val = sliceArr(arguments, 1);
-      return _is.arr(val)
+        val = $sliceArr(arguments, 1);
+      return $is.arr(val)
         ? _fuseStrs(dest, val)
         : _fuseStr(dest, val);
     }
 
-    if ( !_is._obj(dest) )
-      throw _error.type('dest');
+    if ( !$is._obj(dest) )
+      throw $typeErr(new TypeError, 'dest', dest,
+        '!Object|!Function|!Array|!Arguments|string');
 
-    if ( _is.args(dest) )
-      dest = sliceArr(dest);
+    if ( $is.args(dest) )
+      dest = $sliceArr(dest);
 
-    if ( _is.arr(dest) ) {
+    if ( $is.arr(dest) ) {
       if (arguments.length > 2) {
-        val = sliceArr(arguments, 1);
+        val = $sliceArr(arguments, 1);
         return _fuseArrs(dest, val);
       }
       return _fuseArr(dest, val);
     }
 
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _fuseObjs(dest, val)
       : _fuseObj(dest, val);
   }
@@ -111,46 +113,47 @@ var fuse = (function fusePrivateScope() {
    * a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|!Arguments|string)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
+   * @param {(!Object|!Function|!Array|!Arguments|string)} dest
+   *   If #dest is an `arguments` instance, it is [sliced][slice] into an
    *   `array` before any values are appended.
    * @param {...*} val
    *   The details are as follows (per #dest type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     Each #val is converted to a `string` and appended as a new property
    *     key to the #dest (if the key exists in the #dest, the property's
    *     value is reset to `undefined`).
-   *   - *`!Array`*!$
+   *   - *`!Array|!Arguments`*!$
    *     Each #val is [pushed][push] to the #dest.
    *   - *`string`*!$
    *     Each #val is converted to a `string` and appended to the #dest.
-   * @return {(!Object|function|!Array|string)}
+   * @return {(!Object|!Function|!Array|string)}
    */
   fuse.value = function fuseValue(dest, val) {
 
     if (arguments.length < 2)
-      throw _error('No val defined', 'value');
+      throw $err(new Error, 'no #val defined', 'value');
 
-    if ( _is.str(dest) ) {
+    if ( $is.str(dest) ) {
       if (arguments.length < 3)
         return _fuseStr(dest, val);
-      val = sliceArr(arguments, 1);
+      val = $sliceArr(arguments, 1);
       return _fuseStrs(dest, val);
     }
 
-    if ( !_is._obj(dest) )
-      throw _error.type('dest', 'value');
+    if ( !$is._obj(dest) )
+      throw $typeErr(new TypeError, 'dest', dest,
+        '!Object|!Function|!Array|!Arguments|string', 'value');
 
-    if ( _is.args(dest) )
-      dest = sliceArr(dest);
+    if ( $is.args(dest) )
+      dest = $sliceArr(dest);
 
     if (arguments.length < 3)
-      return _is.arr(dest)
+      return $is.arr(dest)
         ? _fuseArrVal(dest, val)
         : _fuseObjVal(dest, val);
 
-    val = sliceArr(arguments, 1);
-    return _is.arr(dest)
+    val = $sliceArr(arguments, 1);
+    return $is.arr(dest)
       ? _fuseArrsVal(dest, val)
       : _fuseObjsVal(dest, val);
   };
@@ -167,47 +170,48 @@ var fuse = (function fusePrivateScope() {
    * `array` or strings for a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|!Arguments|string)} dest
+   * @param {(!Object|!Function|!Array|!Arguments|string)} dest
    *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
    *   `array` before any values are appended.
    * @param {...*} val
    *   The details are as follows (per #dest type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     Each #val is converted to a `string` and appended as a new property
    *     key to the #dest (if the key exists in the #dest, the property's
    *     value remains unchanged).
-   *   - *`!Array`*!$
+   *   - *`!Array|!Arguments`*!$
    *     Each #val is [unshifted][unshift] to the #dest.
    *   - *`string`*!$
    *     Each #val is converted to a `string` and appended to the beginning of
    *     the #dest.
-   * @return {(!Object|function|!Array|string)}
+   * @return {(!Object|!Function|!Array|string)}
    */
   fuse.value.start = function fuseValueStart(dest, val) {
 
     if (arguments.length < 2)
-      throw _error('No val defined', 'value.start');
+      throw $err(new Error, 'no #val defined', 'value.start');
 
-    if ( _is.str(dest) ) {
+    if ( $is.str(dest) ) {
       if (arguments.length < 3)
         return _fuseStrTop(dest, val);
-      val = sliceArr(arguments, 1);
+      val = $sliceArr(arguments, 1);
       return _fuseStrsTop(dest, val);
     }
 
-    if ( !_is._obj(dest) )
-      throw _error.type('dest', 'value.start');
+    if ( !$is._obj(dest) )
+      throw $typeErr(new TypeError, 'dest', dest,
+        '!Object|!Function|!Array|!Arguments|string', 'value.start');
 
-    if ( _is.args(dest) )
-      dest = sliceArr(dest);
+    if ( $is.args(dest) )
+      dest = $sliceArr(dest);
 
     if (arguments.length < 3)
-      return _is.arr(dest)
+      return $is.arr(dest)
         ? _fuseArrValTop(dest, val)
         : _fuseObjValTop(dest, val);
 
-    val = sliceArr(arguments, 1);
-    return _is.arr(dest)
+    val = $sliceArr(arguments, 1);
+    return $is.arr(dest)
       ? _fuseArrsValTop(dest, val)
       : _fuseObjsValTop(dest, val);
   };
@@ -223,14 +227,14 @@ var fuse = (function fusePrivateScope() {
    * Appends and merges properties to an `object` or `function`.
    *
    * @public
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. The remaining details are as follows in order of priority (per
    *   #val type):
    *   - *`null`*!$
    *     The #val is skipped.
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     The #val is merged with the #dest. If a key exists in the #val and
    *     #dest the #dest property's value is with replaced with the #val
    *     property's value.
@@ -238,18 +242,19 @@ var fuse = (function fusePrivateScope() {
    *     The #val is converted to a `string` and appended to the #dest as a
    *     new property key (if the key exists in the #dest, the property's
    *     value is reset to `undefined`).
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   fuse.object = function fuseObject(dest, val) {
 
-    if ( !_is._obj(dest) )
-      throw _error.type('dest', 'object');
+    if ( !$is._obj(dest) )
+      throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
+        'object');
     if (arguments.length < 2)
-      throw _error('No val defined', 'object');
+      throw $err(new Error, 'no #val defined', 'object');
 
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _fuseObjs(dest, val)
       : _fuseObj(dest, val);
   };
@@ -278,16 +283,17 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.array = function fuseArray(dest, val) {
 
-    if ( !_is._arr(dest) )
-      throw _error.type('dest', 'array');
+    if ( !$is._arr(dest) )
+      throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
+        'array');
     if (arguments.length < 2)
-      throw _error('No val defined', 'array');
+      throw $err(new Error, 'no #val defined', 'array');
 
-    if ( _is.args(dest) )
-      dest = sliceArr(dest);
+    if ( $is.args(dest) )
+      dest = $sliceArr(dest);
 
     if (arguments.length > 2) {
-      val = sliceArr(arguments, 1);
+      val = $sliceArr(arguments, 1);
       return _fuseArrs(dest, val);
     }
 
@@ -310,14 +316,14 @@ var fuse = (function fusePrivateScope() {
    */
   fuse.string = function fuseString(dest, val) {
 
-    if ( !_is.str(dest) )
-      throw _error.type('dest', 'string');
+    if ( !$is.str(dest) )
+      throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
     if (arguments.length < 2)
-      throw _error('No val defined', 'string');
+      throw $err(new Error, 'no #val defined', 'string');
 
     if (arguments.length > 2)
-      val = sliceArr(arguments, 1);
-    return _is.arr(val)
+      val = $sliceArr(arguments, 1);
+    return $is.arr(val)
       ? _fuseStrs(dest, val)
       : _fuseStr(dest, val);
   };
@@ -332,17 +338,17 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObj
   /**
    * @private
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {*} val
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObj(dest, val) {
 
-    if ( _is._obj(val) )
-      return merge(dest, val);
+    if ( $is._obj(val) )
+      return $merge(dest, val);
 
-    if ( !_is.nil(val) )
-      dest[val] = undefined;
+    if ( !$is.nil(val) )
+      dest[val] = NONE;
 
     return dest;
   }
@@ -351,9 +357,9 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObjs
   /**
    * @private
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {!Array<*>} vals
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObjs(dest, vals) {
 
@@ -373,12 +379,12 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObjVal
   /**
    * @private
-   * @param {!(Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {*} val
-   * @return {!(Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObjVal(dest, val) {
-    dest[val] = undefined;
+    dest[val] = NONE;
     return dest;
   }
 
@@ -386,9 +392,9 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObjsVal
   /**
    * @private
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {!Array<*>} vals
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObjsVal(dest, vals) {
 
@@ -403,7 +409,7 @@ var fuse = (function fusePrivateScope() {
     i = -1;
     while (++i < len) {
       val = vals[i];
-      dest[val] = undefined;
+      dest[val] = NONE;
     }
     return dest;
   }
@@ -412,14 +418,14 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObjValTop
   /**
    * @private
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {*} val
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObjValTop(dest, val) {
 
-    if ( !own(dest, val) )
-      dest[val] = undefined;
+    if ( !$own(dest, val) )
+      dest[val] = NONE;
 
     return dest;
   }
@@ -428,9 +434,9 @@ var fuse = (function fusePrivateScope() {
   /// @func _fuseObjsValTop
   /**
    * @private
-   * @param {(!Object|function)} dest
+   * @param {(!Object|!Function)} dest
    * @param {!Array<*>} vals
-   * @return {(!Object|function)}
+   * @return {(!Object|!Function)}
    */
   function _fuseObjsValTop(dest, vals) {
 
@@ -456,10 +462,10 @@ var fuse = (function fusePrivateScope() {
    */
   function _fuseArr(dest, val) {
 
-    if ( _is.arr(val) )
+    if ( $is.arr(val) )
       return dest.concat(val);
 
-    if ( !_is.nil(val) )
+    if ( !$is.nil(val) )
       dest.push(val);
 
     return dest;
@@ -630,12 +636,50 @@ var fuse = (function fusePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('fuse');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('fuse');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR FUSE
