@@ -12,9 +12,10 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var own = require('./helpers/own.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNone = require('./helpers/is-none.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS FREEZE
@@ -40,20 +41,20 @@ var freeze = (function freezePrivateScope() {
    * interpreters are polyfilled to avoid failures in older environments.
    *
    * @public
-   * @param {(?Object|?function)} obj
+   * @param {(?Object|?Function)} obj
    * @param {boolean=} deep
    *   Whether to recursively [freeze][freeze] the #obj properties.
-   * @return {(?Object|?function)}
+   * @return {(?Object|?Function)}
    */
   function freeze(obj, deep) {
 
-    if ( _is.nil(obj) )
+    if ( $is.nil(obj) )
       return null;
 
-    if ( !_is._obj(obj) )
-      throw _error.type('obj');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep');
+    if ( !$is._obj(obj) )
+      throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
 
     return deep
       ? _deepFreeze(obj)
@@ -69,20 +70,21 @@ var freeze = (function freezePrivateScope() {
    * interpreters are polyfilled to avoid failures in older environments.
    *
    * @public
-   * @param {(?Object|?function)} obj
+   * @param {(?Object|?Function)} obj
    * @param {boolean=} deep
    *   Whether to recursively [freeze][freeze] the #obj properties.
-   * @return {(?Object|?function)}
+   * @return {(?Object|?Function)}
    */
   freeze.object = function freezeObject(obj, deep) {
 
-    if ( _is.nil(obj) )
+    if ( $is.nil(obj) )
       return null;
 
-    if ( !_is._obj(obj) )
-      throw _error.type('obj', 'object');
-    if ( !_is.un.bool(deep) )
-      throw _error.type('deep', 'object');
+    if ( !$is._obj(obj) )
+      throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+        'object');
+    if ( !$isNone.bool(deep) )
+      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
     return deep
       ? _deepFreeze(obj)
@@ -99,8 +101,8 @@ var freeze = (function freezePrivateScope() {
   /// @func _deepFreeze
   /**
    * @private
-   * @param {(!Object|function)} obj
-   * @return {(!Object|function)}
+   * @param {(!Object|!Function)} obj
+   * @return {(!Object|!Function)}
    */
   function _deepFreeze(obj, noFreeze) {
 
@@ -108,7 +110,7 @@ var freeze = (function freezePrivateScope() {
     var key;
 
     for (key in obj) {
-      if ( own(obj, key) && _is._obj(obj[key]) )
+      if ( $own(obj, key) && $is._obj(obj[key]) )
         _deepFreeze(obj[key]);
     }
     return _ObjectFreeze(obj);
@@ -122,15 +124,15 @@ var freeze = (function freezePrivateScope() {
   /// @func _ObjectFreeze
   /**
    * @private
-   * @param {(!Object|function)} obj
-   * @return {(!Object|function)}
+   * @param {(!Object|!Function)} obj
+   * @return {(!Object|!Function)}
    */
   var _ObjectFreeze = (function() {
 
-    /** @type {function} */
+    /** @type {!function} */
     var objectFreeze;
 
-    if ( !('freeze' in Object) || !_is.func(Object.freeze) )
+    if ( !('freeze' in Object) || !$is.fun(Object.freeze) )
       return function freeze(obj) {
         return obj;
       };
@@ -143,7 +145,7 @@ var freeze = (function freezePrivateScope() {
     }
     catch (e) {
       return function freeze(obj) {
-        return _is.func(obj)
+        return $is.fun(obj)
           ? obj
           : objectFreeze(obj);
       };
@@ -155,12 +157,50 @@ var freeze = (function freezePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('freeze');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('freeze');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR FREEZE
