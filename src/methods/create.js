@@ -12,10 +12,11 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var sliceArr = require('./helpers/slice-arr.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $sliceArr = require('./helpers/slice-arr.js');
+var $isNil = require('./helpers/is-nil.js');
+var $is = require('./helpers/is.js');
 var amend = require('./amend.js');
-var _is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS CREATE
@@ -38,10 +39,10 @@ var create = (function createPrivateScope() {
   /// @method create
   /**
    * A shortcut for [Object.create][create] that includes easier property
-   * value assignment, strong type declarations, and flexible default [descriptor][descriptor]
-   * options. Note that this method uses @amend#main for assigning properties
-   * to the new `object`. See @amend#main for detailed documentation on all of
-   * the available options.
+   * value assignment, strong type declarations, and flexible default
+   * [descriptor][descriptor] options. Note that this method uses @amend#main
+   * for assigning properties to the new `object`. See @amend#main for
+   * detailed documentation on all of the available options.
    *
    * @public
    * @param {?Object} proto
@@ -49,7 +50,7 @@ var create = (function createPrivateScope() {
    * @param {*=} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function(*, *): *=} setter
+   * @param {(!function(*, *): *)=} setter
    * @return {!Object}
    */
   function create(proto, props, val, descriptor, strongType, setter) {
@@ -57,8 +58,8 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !_is.nil.obj(proto) )
-      throw _error.type('proto');
+    if ( !$isNil.obj(proto) )
+      throw $typeErr(new TypeError, 'proto', proto, '?Object');
 
     if (arguments.length > 1) {
       args = sliceArr(arguments);
@@ -74,10 +75,10 @@ var create = (function createPrivateScope() {
   /// @alias create.obj
   /**
    * A shortcut for [Object.create][create] that includes easier property
-   * value assignment, strong type declarations, and flexible default [descriptor][descriptor]
-   * options. Note that this method uses @amend#main for assigning properties
-   * to the new `object`. See @amend#main for detailed documentation on all of
-   * the available options.
+   * value assignment, strong type declarations, and flexible default
+   * [descriptor][descriptor] options. Note that this method uses @amend#main
+   * for assigning properties to the new `object`. See @amend#main for
+   * detailed documentation on all of the available options.
    *
    * @public
    * @param {?Object} proto
@@ -85,16 +86,17 @@ var create = (function createPrivateScope() {
    * @param {*=} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
-   * @param {function(*, *): *=} setter
+   * @param {(!function(*, *): *)=} setter
    * @return {!Object}
    */
-  create.object = function createObject(proto, props, val, descriptor, strongType, setter) {
+  create.object = function createObject(
+    proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
 
-    if ( !_is.nil.obj(proto) )
-      throw _error.type('proto', 'object');
+    if ( !$isNil.obj(proto) )
+      throw $typeErr(new TypeError, 'proto', proto, '?Object', 'object');
 
     if (arguments.length > 1) {
       args = sliceArr(arguments);
@@ -144,12 +146,50 @@ var create = (function createPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('create');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('create');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR CREATE
