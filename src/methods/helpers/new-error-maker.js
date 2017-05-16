@@ -26,7 +26,7 @@ module.exports = $newErrorMaker;
 var $newErrorMaker = (function $newErrorMakerPrivateScope() {
 
   ///////////////////////////////////////////////////// {{{3
-  // $NEW-ERROR-MAKER HELPERS
+  // $NEW-ERROR-MAKER HELPERS - TO-STRING
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -52,22 +52,6 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
    * @const {!RegExp}
    */
   var LAST_SEP = /,\n$/;
-
-  /// {{{4
-  /// @const OPEN_HASH
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var OPEN_HASH = /^#/;
-
-  /// {{{4
-  /// @const OPEN_VITALS
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var OPEN_VITALS = /^vitals\./;
 
   /// {{{4
   /// @func _arrToStr
@@ -149,6 +133,8 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
       : 'UnknownObjectType';
   }
 
+  /// {{{4
+  /// @func _keyToStr
   /**
    * @private
    * @param {*} key
@@ -200,31 +186,6 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
   }
 
   /// {{{4
-  /// @func _mkOptions
-  /**
-   * @private
-   * @param {!Array} opts
-   * @return {string}
-   */
-  function _mkOptions(opts) {
-
-    /** @type {string} */
-    var result;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    result = '';
-
-    len = opts.length;
-    i = -1;
-    while (++i < len)
-      result += '\n- `' + _toStr(opts[i]) + '`';
-    return result;
-  }
-
-  /// {{{4
   /// @func _objToStr
   /**
    * @private
@@ -269,34 +230,6 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
   }
 
   /// {{{4
-  /// @func _prepMainMethod
-  /**
-   * @private
-   * @param {string} name
-   * @return {string}
-   */
-  function _prepMainMethod(name) {
-    name = name.replace(OPEN_VITALS, '');
-    return 'vitals.' + name;
-  }
-
-  /// {{{4
-  /// @func _prepParam
-  /**
-   * @private
-   * @param {string} name
-   * @return {string}
-   */
-  function _prepParam(name) {
-
-    if (!name)
-      return '';
-
-    name = name.replace(OPEN_HASH, '');
-    return '#' + name;
-  }
-
-  /// {{{4
   /// @func _primToStr
   /**
    * @private
@@ -323,6 +256,107 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
       return '"' + _escStr(val) + '"';
 
     return String(val);
+  }
+
+  /// {{{4
+  /// @func _toStr
+  /**
+   * @private
+   * @param {*} val
+   * @param {number=} depth
+   * @return {string}
+   */
+  function _toStr(val, depth) {
+    depth = depth || 0;
+    return $is._obj(val)
+      ? $is.regx(val)
+        ? val.toString();
+        : _mapToStr(val, depth)
+      : _primToStr(val);
+  }
+
+  ///////////////////////////////////////////////////// {{{3
+  // $NEW-ERROR-MAKER HELPERS - MISC
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @const OPEN_HASH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var OPEN_HASH = /^#/;
+
+  /// {{{4
+  /// @const OPEN_VITALS
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var OPEN_VITALS = /^vitals\./;
+
+  /// {{{4
+  /// @const STRICT
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var STRICT = /^\!/;
+
+  /// {{{4
+  /// @func _mkOptions
+  /**
+   * @private
+   * @param {!Array} opts
+   * @return {string}
+   */
+  function _mkOptions(opts) {
+
+    /** @type {string} */
+    var result;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    result = '';
+
+    len = opts.length;
+    i = -1;
+    while (++i < len)
+      result += '\n- `' + _toStr(opts[i]) + '`';
+    return result;
+  }
+
+  /// {{{4
+  /// @func _prepMainMethod
+  /**
+   * @private
+   * @param {string} name
+   * @return {string}
+   */
+  function _prepMainMethod(name) {
+    name = name.replace(OPEN_VITALS, '');
+    return 'vitals.' + name;
+  }
+
+  /// {{{4
+  /// @func _prepParam
+  /**
+   * @private
+   * @param {string} name
+   * @return {string}
+   */
+  function _prepParam(name) {
+
+    if (!name)
+      return '';
+
+    if ( STRICT.test(name) )
+      return name.replace(STRICT, '');
+
+    name = name.replace(OPEN_HASH, '');
+    return '#' + name;
   }
 
   /// {{{4
@@ -354,23 +388,6 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     if (arguments.length > 3)
       err.val = val;
     return err;
-  }
-
-  /// {{{4
-  /// @func _toStr
-  /**
-   * @private
-   * @param {*} val
-   * @param {number=} depth
-   * @return {string}
-   */
-  function _toStr(val, depth) {
-    depth = depth || 0;
-    return $is._obj(val)
-      ? $is.regx(val)
-        ? val.toString();
-        : _mapToStr(val, depth)
-      : _primToStr(val);
   }
 
   ///////////////////////////////////////////////////// {{{3
@@ -488,6 +505,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     errorMaker.range = rangeError;
     return errorMaker;
   };
+  /// }}}3
 })();
 /// }}}2
 
