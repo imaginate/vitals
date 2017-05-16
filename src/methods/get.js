@@ -12,11 +12,11 @@
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var match = require('./helpers/match.js');
-var own = require('./helpers/own.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $match = require('./helpers/match.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
-var _is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS GET
@@ -49,10 +49,10 @@ var get = (function getPrivateScope() {
    * from a `string`.
    *
    * @public
-   * @param {(!Object|function|!Array|!Arguments|string)} source
+   * @param {(!Object|!Function|!Array|!Arguments|string)} source
    *   If no #val is defined, the following rules apply in order of priority
    *   (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns an `array` of all of the [owned][own] property
    *     key names in the #source.
    *   - *`!Array|!Arguments`*!$
@@ -61,7 +61,7 @@ var get = (function getPrivateScope() {
    *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
    *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     If the #val is a `RegExp` this method returns an `array` of the
    *     [owned][own] property values in the #source where the key name
    *     matches (via a @has#pattern test) the #val. Otherwise it returns an
@@ -82,26 +82,27 @@ var get = (function getPrivateScope() {
    */
   function get(source, val) {
 
-    if ( _is.str(source) ) {
+    if ( $is.str(source) ) {
 
       if (arguments.length < 2)
-        throw _error('No val defined');
+        throw $err(new Error, 'no #val defined');
 
-      return _is.regex(val)
+      return $is.regx(val)
         ? _strVals(source, val)
         : _strIndexes(source, val);
     }
 
-    if ( !_is._obj(source) )
-      throw _error.type('source');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array|!Arguments|string');
 
     return arguments.length < 2
-      ? _is._arr(source)
+      ? $is._arr(source)
         ? _allIndexes(source)
         : _allKeys(source)
-      : _is._arr(source)
+      : $is._arr(source)
         ? _byValIndexes(source, val)
-        : _is.regex(val)
+        : $is.regx(val)
           ? _byKeyObjVals(source, val)
           : _byValKeys(source, val);
   }
@@ -112,7 +113,7 @@ var get = (function getPrivateScope() {
    * Retrieves keys from an `object` or `function`.
    *
    * @public
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    *   If no #val is defined, this method returns an `array` of all of the
    *   [owned][own] property key names in the #source.
    * @param {*=} val
@@ -125,12 +126,13 @@ var get = (function getPrivateScope() {
    */
   get.keys = function getKeys(source, val) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'keys');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'keys');
 
     return arguments.length < 2
       ? _allKeys(source)
-      : _is.regex(val)
+      : $is.regx(val)
         ? _byKeyKeys(source, val)
         : _byValKeys(source, val);
   };
@@ -143,7 +145,7 @@ var get = (function getPrivateScope() {
    * name matches.
    *
    * @public
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} key
    *   If the #key is not a `RegExp`, it is converted into a `string` with
    *   [String()][string] before @has#pattern is called to check for any
@@ -152,10 +154,11 @@ var get = (function getPrivateScope() {
    */
   get.keys.byKey = function getKeysByKey(source, key) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'keys.byKey');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'keys.byKey');
     if (arguments.length < 2)
-      throw _error('No key defined', 'keys.byKey');
+      throw $err(new Error, 'no #key defined', 'keys.byKey');
 
     return _byKeyKeys(source, key);
   };
@@ -169,16 +172,17 @@ var get = (function getPrivateScope() {
    * test is used to find matches.
    *
    * @public
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} val
    * @return {!Array}
    */
   get.keys.byValue = function getKeysByValue(source, val) {
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'keys.byValue');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'keys.byValue');
     if (arguments.length < 2)
-      throw _error('No val defined', 'keys.byValue');
+      throw $err(new Error, 'no #val defined', 'keys.byValue');
 
     return _byValKeys(source, val);
   };
@@ -193,15 +197,15 @@ var get = (function getPrivateScope() {
    * `string`.
    *
    * @public
-   * @param {(!Array|!Arguments|!Object|function|string)} source
+   * @param {(!Array|!Arguments|!Object|!Function|string)} source
    *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Array|!Arguments|!Object|function`*!$
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
    *     This method returns an `array` of all of the indexes in the #source.
    *   - *`string`*!$
    *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
    *   The following rules apply in order of priority (per #source type):
-   *   - *`!Array|!Arguments|!Object|function`*!$
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
    *     This method returns an `array` of the indexes in the #source where
    *     the property value matches (via a [strict equality][equal] test) the
    *     #val.
@@ -214,18 +218,20 @@ var get = (function getPrivateScope() {
    */
   get.indexes = function getIndexes(source, val) {
 
-    if ( _is.str(source) ) {
+    if ( $is.str(source) ) {
 
       if (arguments.length < 2)
-        throw _error('No val defined', 'indexes');
+        throw $err(new Error, 'no #val defined', 'indexes');
 
       return _strIndexes(source, val);
     }
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'indexes');
-    if ( !_is.num(source.length) )
-      throw _error.type('source.length', 'indexes');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function|string', 'indexes');
+    if ( !$is.num(source.length) )
+      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
+        'indexes');
 
     return arguments.length < 2
       ? _allIndexes(source)
@@ -242,16 +248,16 @@ var get = (function getPrivateScope() {
    * from a `string`.
    *
    * @public
-   * @param {(!Object|function|string)} source
+   * @param {(!Object|!Function|string)} source
    *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     This method returns an `array` of all of the [owned][own] property
    *     values in the #source.
    *   - *`string`*!$
    *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
    *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|function`*!$
+   *   - *`!Object|!Function`*!$
    *     If the #val is **not** a `RegExp`, it is converted into a `string`
    *     with [String()][string]. This method will then return an `array` of
    *     the [owned][own] property values where the key name matches (via a
@@ -265,16 +271,17 @@ var get = (function getPrivateScope() {
    */
   get.values = function getValues(source, val) {
 
-    if ( _is.str(source) ) {
+    if ( $is.str(source) ) {
 
       if (arguments.length < 2)
-        throw _error('No val defined', 'values');
+        throw $err(new Error, 'no #val defined', 'values');
 
       return _strVals(source, val);
     }
 
-    if ( !_is._obj(source) )
-      throw _error.type('source', 'values');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|string', 'values');
 
     return arguments.length < 2
       ? _allObjVals(source)
@@ -291,7 +298,7 @@ var get = (function getPrivateScope() {
   /// @func _allKeys
   /**
    * @private
-   * @param {(!Object|function)} src
+   * @param {(!Object|!Function)} src
    * @return {!Array<string>}
    */
   function _allKeys(src) {
@@ -303,7 +310,7 @@ var get = (function getPrivateScope() {
 
     keys = [];
     for (key in src) {
-      if ( own(src, key) )
+      if ( $own(src, key) )
         keys.push(key);
     }
     return keys;
@@ -313,7 +320,7 @@ var get = (function getPrivateScope() {
   /// @func _byKeyKeys
   /**
    * @private
-   * @param {(!Object|function)} src
+   * @param {(!Object|!Function)} src
    * @param {*} pattern
    * @return {!Array<string>}
    */
@@ -324,12 +331,12 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !_is.regex(pattern) && !_is.str(pattern) )
+    if ( !$is.regx(pattern) && !$is.str(pattern) )
       pattern = String(pattern);
 
     keys = [];
     for (key in src) {
-      if ( own(src, key) && match(key, pattern) )
+      if ( $own(src, key) && $match(key, pattern) )
         keys.push(key);
     }
     return keys;
@@ -339,7 +346,7 @@ var get = (function getPrivateScope() {
   /// @func _byValKeys
   /**
    * @private
-   * @param {(!Object|function)} src
+   * @param {(!Object|!Function)} src
    * @param {*} val
    * @return {!Array<string>}
    */
@@ -352,7 +359,7 @@ var get = (function getPrivateScope() {
 
     keys = [];
     for (key in src) {
-      if ( own(src, key) && (src[key] === val) )
+      if ( $own(src, key) && (src[key] === val) )
         keys.push(key);
     }
     return keys;
@@ -362,7 +369,7 @@ var get = (function getPrivateScope() {
   /// @func _allObjVals
   /**
    * @private
-   * @param {(!Object|function)} src
+   * @param {(!Object|!Function)} src
    * @return {!Array<*>}
    */
   function _allObjVals(src) {
@@ -374,7 +381,7 @@ var get = (function getPrivateScope() {
 
     vals = [];
     for (key in src) {
-      if ( own(src, key) )
+      if ( $own(src, key) )
         vals.push(src[key]);
     }
     return vals;
@@ -384,7 +391,7 @@ var get = (function getPrivateScope() {
   /// @func _byKeyObjVals
   /**
    * @private
-   * @param {(!Object|function)} src
+   * @param {(!Object|!Function)} src
    * @param {*} pattern
    * @return {!Array<*>}
    */
@@ -395,12 +402,12 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !_is.regex(pattern) && !_is.str(pattern) )
+    if ( !$is.regx(pattern) && !$is.str(pattern) )
       pattern = String(pattern);
 
     vals = [];
     for (key in src) {
-      if ( own(src, key) && match(key, pattern) )
+      if ( $own(src, key) && $match(key, pattern) )
         vals.push(src[key]);
     }
     return vals;
@@ -414,7 +421,7 @@ var get = (function getPrivateScope() {
   /// @func _allIndexes
   /**
    * @private
-   * @param {(!Array|!Arguments|!Object|function)} src
+   * @param {(!Array|!Arguments|!Object|!Function)} src
    * @return {!Array<number>}
    */
   function _allIndexes(src) {
@@ -438,7 +445,7 @@ var get = (function getPrivateScope() {
   /// @func _byValIndexes
   /**
    * @private
-   * @param {(!Array|!Arguments|!Object|function)} src
+   * @param {(!Array|!Arguments|!Object|!Function)} src
    * @param {*} val
    * @return {!Array<number>}
    */
@@ -474,7 +481,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<number>}
    */
   function _strIndexes(src, pattern) {
-    return _is.regex(pattern)
+    return $is.regx(pattern)
       ? _byRegexStrIndexes(src, pattern)
       : _byStrStrIndexes(src, pattern);
   }
@@ -488,7 +495,7 @@ var get = (function getPrivateScope() {
    * @return {!Array<string>}
    */
   function _strVals(src, pattern) {
-    return _is.regex(pattern)
+    return $is.regx(pattern)
       ? _byRegexStrVals(src, pattern)
       : _byStrStrVals(src, pattern);
   }
@@ -533,7 +540,7 @@ var get = (function getPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !_is.str(pattern) )
+    if ( !$is.str(pattern) )
       pattern = String(pattern);
 
     indexes = [];
@@ -585,7 +592,7 @@ var get = (function getPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !_is.str(pattern) )
+    if ( !$is.str(pattern) )
       pattern = String(pattern);
 
     vals = [];
@@ -602,12 +609,50 @@ var get = (function getPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _error
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('get');
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = $newErrorMaker('get');
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = $err.type;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = $err.range;
 
   /// }}}2
   // END OF PRIVATE SCOPE FOR GET
