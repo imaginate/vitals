@@ -128,11 +128,11 @@ var remap = (function remapPrivateScope() {
     if ( $is.str(source) ) {
 
       if (arguments.length < 2)
-        throw _error('no #iteratee defined');
+        throw $err(new Error, 'no #iteratee defined');
       if (arguments.length < 3)
-        throw _error('no #replacement defined');
+        throw $err(new Error, 'no #replacement defined');
       if ( !$isNilNone.obj(thisArg) )
-        throw _error.type('thisArg');
+        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
       return _remapStr(source, iteratee, replacement, thisArg);
     }
@@ -140,11 +140,13 @@ var remap = (function remapPrivateScope() {
     thisArg = replacement;
 
     if ( !$is._obj(source) )
-      throw _error.type('source');
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array|!Arguments|string');
     if ( !$is.fun(iteratee) )
-      throw _error.type('iteratee');
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, (string|number)=, (!Object|!Function|!Array)=)');
     if ( !$isNilNone.obj(thisArg) )
-      throw _error.type('thisArg');
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
     return $is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
@@ -173,9 +175,9 @@ var remap = (function remapPrivateScope() {
    */
   remap.object = function remapObject(source, iteratee, thisArg) {
 
-    if ( !$is._obj(source)        ) throw _error.type('source',   'object');
-    if ( !$is.func(iteratee)      ) throw _error.type('iteratee', 'object');
-    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !$is._obj(source)        ) throw $typeErr(new TypeError, 'source', source, '!Object|!Function', 'object');
+    if ( !$is.func(iteratee)      ) throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(*=, string=, (!Object|!Function)=)', 'object');
+    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
 
     return _remapObj(source, iteratee, thisArg);
   };
@@ -211,10 +213,10 @@ var remap = (function remapPrivateScope() {
 
     if ( $is.str(source) ) source = $splitKeys(source);
 
-    if ( !$is._obj(source)        ) throw _error.type('source',        'array');
-    if ( !$is.num(source.length)  ) throw _error.type('source.length', 'array');
-    if ( !$is.func(iteratee)      ) throw _error.type('iteratee',      'array');
-    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
+    if ( !$is._obj(source)        ) throw $typeErr(new TypeError, 'source', source, '!Array|!Arguments|!Object|!Function|string', 'array');
+    if ( !$is.num(source.length)  ) throw $typeErr(new TypeError, 'source.length', source.length, 'number', 'array');
+    if ( !$is.func(iteratee)      ) throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(*=, number=, !Array=)', 'array');
+    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
 
     return _remapArr(source, iteratee, thisArg);
   };
@@ -240,10 +242,10 @@ var remap = (function remapPrivateScope() {
    */
   remap.string = function remapString(source, pattern, replacement, thisArg) {
 
-    if (arguments.length < 2) throw _error('No pattern defined',     'string');
-    if (arguments.length < 3) throw _error('No replacement defined', 'string');
-    if ( !$is.str(source)         ) throw _error.type('source',  'string');
-    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'string');
+    if (arguments.length < 2) throw $err(new Error, 'no #pattern defined', 'string');
+    if (arguments.length < 3) throw $err(new Error, 'no #replacement defined', 'string');
+    if ( !$is.str(source)         ) throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
   };
