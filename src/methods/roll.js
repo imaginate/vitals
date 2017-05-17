@@ -328,52 +328,131 @@ var roll = (function rollPrivateScope() {
   /// {{{2
   /// @method roll.down
   /**
-   * A shortcut for deriving a difference by iterating over object maps, arrays,
-   *   or cycles.
+   * A shortcut for deriving a reduced total by subtracting each value
+   * returned by an #iteratee `function` call over each [owned][own] property
+   * of an `object` or `function`, each indexed property of an `array` or
+   * `arguments`, or each `number` of cycles.
    *
    * @public
-   * @param {*=} base - If defined it is the base value. Note that for number
-   *   sources (i.e. cycles) a base is required.
-   * @param {!(Object|function|Array|number)} source - Details per type:
-   *   - object source: Iterates over all properties in random order.
-   *   - array source:  Iterates over all indexed properties from 0 to length.
-   *   - number source: Iterates over all cycles.
-   * @param {function(*=, (string|number)=, !(Object|function)=)} iteratee - It
-   *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
+   * @param {*=} base
+   *   If a #base is defined, it is the initial total. Note that for a
+   *   `number` #source (i.e. cycles) a #base is required.
+   * @param {(!Object|!Function|!Array|!Arguments|number)} source
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     This method will carry (i.e. iterate or roll) over every [owned][own]
+   *     property in random order the difference of the #base (if defined) and
+   *     each value returned by every #iteratee call.
+   *   - *`!Array|!Arguments`*!$
+   *     This method will carry (i.e. iterate or roll) over every indexed
+   *     property starting with `0` and ending at `source.length` the
+   *     difference of the #base (if defined) and each value returned by every
+   *     #iteratee call.
+   *   - *`number`*!$
+   *     This method will carry (i.e. iterate or roll) over every `number` of
+   *     cycles starting with `0` and ending at `source` the difference of the
+   *     #base and each value returned by every #iteratee call.
+   * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **key** *`string`*
+   *     - **source** *`!Object|!Function`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#main based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`!Array|!Arguments`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **index** *`number`*
+   *     - **source** *`!Array`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#array based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`number`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **currentCycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first
+   *       *currentCycle* value is `0`).
+   *     - **totalCycles** *`number`*!$
+   *       The unchanged #source value.
+   * @param {?Object=} thisArg
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function|!Array|!Arguments`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than three parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `3`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   *   - *`number`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than two parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `2`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
    * @return {*}
    */
-  roll.down = function rollDown(base, source, iteratee, thisArg) {
+  function rollDown(base, source, iteratee, thisArg) {
 
     /** @type {boolean} */
     var hasBase;
 
-    if (arguments.length < 2) throw $err(new Error, 'No source or iteratee defined','down');
-  
-    if (arguments.length === 2) {
-      iteratee = source;
-      source = base;
+    switch (arguments.length) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'down');
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'down');
+      case 2:
+        iteratee = source;
+        source = base;
+        hasBase = false;
+        break;
+      case 3:
+        if ( !$is.fun(iteratee) ) {
+          thisArg = iteratee;
+          iteratee = source;
+          source = base;
+          hasBase = false;
+          break;
+        }
+      default:
+        hasBase = true;
+        break;
     }
-    else if ( arguments.length === 3 && !$is.fun(iteratee) ) {
-      thisArg = iteratee;
-      iteratee = source;
-      source = base;
-    }
-    else hasBase = true;
 
-    if ( !$is.fun(iteratee)      ) throw $typeErr(new TypeError, 'iteratee', 'down');
-    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg',  'down');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+        '*=, (string|number)=, (!Object|!Function|!Array)=): *', 'down');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'down');
 
     if ( $is.num(source) ) {
-      if (!hasBase) throw $err(new Error, 'No base defined', 'down');
+
+      if (!hasBase)
+        throw $err(new Error, 'no #base defined (' +
+          '#base is required with a `number` #source)', 'down');
+
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
-    if ( !$is._obj(source) ) throw $typeErr(new TypeError, 'source', 'down');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array|!Arguments|number', 'down');
 
     return $is._arr(source)
       ? hasBase
@@ -382,7 +461,8 @@ var roll = (function rollPrivateScope() {
       : hasBase
         ? _rollBaseObjDown(base, source, iteratee, thisArg)
         : _rollObjDown(source, iteratee, thisArg);
-  };
+  }
+  roll['down'] = rollDown;
 
   ///////////////////////////////////////////////////// {{{2
   // ROLL HELPERS - OBJECT
