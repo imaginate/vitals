@@ -340,9 +340,9 @@ var remap = (function remapPrivateScope() {
   /// @func _remapObj
   /**
    * @private
-   * @param {!(Object|function)} source
-   * @param {function(*, string=, !(Object|function)=)=} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {!Object}
    */
   function _remapObj(source, iteratee, thisArg) {
@@ -353,28 +353,37 @@ var remap = (function remapPrivateScope() {
     var key;
 
     obj = {};
-    source = iteratee.length > 2 ? copy(source) : source;
-    iteratee = $is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+
+    if (iteratee.length > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindIteratee(iteratee, thisArg);
+
     switch (iteratee.length) {
       case 0:
-      for (key in source) {
-        if ( $own(source, key) ) obj[key] = iteratee();
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            obj[key] = iteratee();
+        }
+        break;
       case 1:
-      for (key in source) {
-        if ( $own(source, key) ) obj[key] = iteratee(source[key]);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            obj[key] = iteratee(source[key]);
+        }
+        break;
       case 2:
-      for (key in source) {
-        if ( $own(source, key) ) obj[key] = iteratee(source[key], key);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            obj[key] = iteratee(source[key], key);
+        }
+        break;
       default:
-      for (key in source) {
-        if ( $own(source, key) ) obj[key] = iteratee(source[key], key, source);
-      }
+        for (key in source) {
+          if ( $own(source, key) )
+            obj[key] = iteratee(source[key], key, source);
+        }
+        break;
     }
     return obj;
   }
@@ -383,9 +392,9 @@ var remap = (function remapPrivateScope() {
   /// @func _remapArr
   /**
    * @private
-   * @param {!(Object|function)} source
-   * @param {function(*, number=, !Array=)=} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {!Array}
    */
   function _remapArr(source, iteratee, thisArg) {
@@ -397,16 +406,31 @@ var remap = (function remapPrivateScope() {
     /** @type {number} */
     var i;
 
-    source = iteratee.length > 2 ? copy.arr(source) : source;
-    iteratee = $is.undefined(thisArg) ? iteratee : _bindI(iteratee, thisArg);
+    if (iteratee.length > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindIteratee(iteratee, thisArg);
+
     len = source.length;
     arr = new Array(len);
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) arr[i] = iteratee();              break;
-      case 1:  while (++i < len) arr[i] = iteratee(source[i]);     break;
-      case 2:  while (++i < len) arr[i] = iteratee(source[i], i);  break;
-      default: while (++i < len) arr[i] = iteratee(source[i], i, source);
+      case 0:
+        while (++i < len)
+          arr[i] = iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          arr[i] = iteratee(source[i]);
+        break;
+      case 2:
+        while (++i < len)
+          arr[i] = iteratee(source[i], i);
+        break;
+      default:
+        while (++i < len)
+          arr[i] = iteratee(source[i], i, source);
+        break;
     }
     return arr;
   }
@@ -418,24 +442,29 @@ var remap = (function remapPrivateScope() {
    * @param {string} source
    * @param {*} pattern
    * @param {*} replacement
-   * @param {Object=} thisArg
+   * @param {?Object=} thisArg
    * @return {string}
    */
   function _remapStr(source, pattern, replacement, thisArg) {
 
-    if (!source) return source;
+    if (!source)
+      return source;
 
-    if ( !$is.regex(pattern) ) {
-      pattern = String(pattern);
+    if ( !$is.regx(pattern) ) {
+      if ( !$is.str(pattern) )
+        pattern = String(pattern);
+      else if (!pattern)
+        return source;
       pattern = $escape(pattern);
       pattern = new RegExp(pattern, 'g');
     }
 
-    replacement = $is.func(replacement)
-      ? $is.undefined(thisArg)
-        ? replacement
-        : _bindR(replacement, thisArg)
-      : String(replacement);
+    if ( $is.fun(replacement) ) {
+      if ( !$is.none(thisArg) )
+        replacement = _bindReplacement(replacement, thisArg);
+    }
+    else if ( !$is.str(replacement) )
+      replacement = String(replacement);
 
     return source.replace(pattern, replacement);
   }
@@ -445,36 +474,42 @@ var remap = (function remapPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _bindI
+  /// @func _bindIteratee
   /**
    * @private
-   * @param {function} func
-   * @param {Object} thisArg
-   * @return {function} 
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
    */
-  function _bindI(func, thisArg) {
+  function _bindIteratee(func, thisArg) {
     switch (func.length) {
       case 0:
-      return function iteratee() { return func.call(thisArg); };
+        return function iteratee() {
+          return func.call(thisArg);
+        };
       case 1:
-      return function iteratee(val) { return func.call(thisArg, val); };
+        return function iteratee(value) {
+          return func.call(thisArg, value);
+        };
       case 2:
-      return function iteratee(val, key) { return func.call(thisArg,val,key); };
+        return function iteratee(value, key) {
+          return func.call(thisArg, value, key);
+        };
     }
-    return function iteratee(val, key, obj) {
-      return func.call(thisArg, val, key, obj);
+    return function iteratee(value, key, source) {
+      return func.call(thisArg, value, key, source);
     };
   }
 
   /// {{{3
-  /// @func _bindR
+  /// @func _bindReplacement
   /**
    * @private
    * @param {!function} func
    * @param {?Object} thisArg
    * @return {!function}
    */
-  function _bindR(func, thisArg) {
+  function _bindReplacement(func, thisArg) {
     switch (func.length) {
       case 0:
         return function replacement() {
