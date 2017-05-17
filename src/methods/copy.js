@@ -23,6 +23,11 @@ var $is = require('./helpers/is.js');
 // VITALS COPY
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var copy = (function copyPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -94,7 +99,7 @@ var copy = (function copyPrivateScope() {
    *   Whether to recursively copy property values.
    * @return {!Object}
    */
-  copy.object = function copyObject(obj, deep) {
+  function copyObject(obj, deep) {
 
     if ( !$is.obj(obj) )
       throw $typeErr(new TypeError, 'obj', obj, '!Object', 'object');
@@ -102,9 +107,9 @@ var copy = (function copyPrivateScope() {
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
     return _copyObj(obj, deep);
-  };
-  // define shorthand
-  copy.obj = copy.object;
+  }
+  copy['object'] = copyObject;
+  copy['obj'] = copyObject;
 
   /// {{{2
   /// @method copy.array
@@ -122,7 +127,7 @@ var copy = (function copyPrivateScope() {
    *   Whether to recursively copy property values.
    * @return {!Array}
    */
-  copy.array = function copyArray(obj, deep) {
+  function copyArray(obj, deep) {
 
     if ( !$is.obj(obj) )
       throw $typeErr(new TypeError, 'obj', obj, '!Array|!Object', 'array');
@@ -133,10 +138,10 @@ var copy = (function copyPrivateScope() {
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
 
     return _copyArr(obj, deep);
-  };
-  // define shorthand
-  copy.arr = copy.array;
-  copy.args = copy.array;
+  }
+  copy['array'] = copyArray;
+  copy['arr'] = copyArray;
+  copy['args'] = copyArray;
 
   /// {{{2
   /// @method copy.regexp
@@ -152,7 +157,7 @@ var copy = (function copyPrivateScope() {
    *   If `undefined` the original value from #regex is used.
    * @return {!RegExp}
    */
-  copy.regexp = function copyRegexp(regex, forceGlobal) {
+  function copyRegexp(regex, forceGlobal) {
 
     if ( !$is.regx(regex) )
       throw $typeErr(new TypeError, 'regex', regex, '!RegExp', 'regexp');
@@ -161,10 +166,10 @@ var copy = (function copyPrivateScope() {
         'regexp');
 
     return _copyRegex(regex, forceGlobal);
-  };
-  // define shorthand
-  copy.re = copy.regexp;
-  copy.regex = copy.regexp;
+  }
+  copy['regexp'] = copyRegexp;
+  copy['re'] = copyRegexp;
+  copy['regex'] = copyRegexp;
 
   /// {{{2
   /// @method copy.func
@@ -185,7 +190,7 @@ var copy = (function copyPrivateScope() {
    *   Whether to recursively copy property values.
    * @return {!function}
    */
-  copy.func = function copyFunction(func, deep) {
+  function copyFunction(func, deep) {
 
     if ( !$is.fun(func) )
       throw $typeErr(new TypeError, 'func', func, '!function', 'function');
@@ -193,11 +198,11 @@ var copy = (function copyPrivateScope() {
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'function');
 
     return _copyFunc(func, deep);
-  };
-  // define shorthand
+  }
+  copy['func'] = copyFunction;
   try {
-    copy.fn = copy.func;
-    copy.function = copy.func;
+    copy['fn'] = copyFunction;
+    copy['function'] = copyFunction;
   }
   catch (e) {}
 
@@ -253,7 +258,7 @@ var copy = (function copyPrivateScope() {
     /** @type {string} */
     var flags;
 
-    source = _escape(regex.source);
+    source = _escape(regex['source']);
     flags = _setupFlags(regex, forceGlobal);
 
     return flags
@@ -300,7 +305,7 @@ var copy = (function copyPrivateScope() {
     /** @type {?RegExp} */
     var pattern;
 
-    pattern = /\n/.source !== '\\n'
+    pattern = /\n/['source'] !== '\\n'
       ? /\\/g
       : null;
     return pattern
@@ -316,11 +321,15 @@ var copy = (function copyPrivateScope() {
   /// @const FLAGS
   /**
    * @private
-   * @const {!Object}
+   * @const {!Object<string, string>}
+   * @dict
    */
   var FLAGS = (function() {
 
-    /** @type {!Object} */
+    /**
+     * @type {!Object<string, string>}
+     * @dict
+     */
     var flags;
 
     flags = {
@@ -330,9 +339,9 @@ var copy = (function copyPrivateScope() {
     };
 
     if ('sticky' in RegExp.prototype)
-      flags.sticky = 'y';
+      flags['sticky'] = 'y';
     if ('unicode' in RegExp.prototype)
-      flags.unicode = 'u';
+      flags['unicode'] = 'u';
 
     return flags;
   })();
@@ -378,9 +387,9 @@ var copy = (function copyPrivateScope() {
   /// @func _mergeDeep
   /**
    * @private
-   * @param {(!Object|!function)} dest
-   * @param {(!Object|!function)} source
-   * @return {(!Object|!function)}
+   * @param {(!Object|!Function)} dest
+   * @param {(!Object|!Function)} source
+   * @return {(!Object|!Function)}
    */
   function _mergeDeep(dest, source) {
 
