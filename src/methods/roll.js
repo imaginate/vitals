@@ -13,6 +13,7 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
