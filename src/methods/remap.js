@@ -62,8 +62,9 @@ var remap = (function remapPrivateScope() {
    * @param {*} iteratee
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
-   *     The #iteratee must be a `function`. It can have the following
-   *     optional parameters:
+   *     The #iteratee must be a `function`. The value returned from each call
+   *     to the #iteratee is set as the property value for the new `object`.
+   *     The #iteratee can have the following optional parameters:
    *     - **value** *`*`*
    *     - **key** *`string`*
    *     - **source** *`!Object|!Function`*
@@ -73,8 +74,9 @@ var remap = (function remapPrivateScope() {
    *     sure you define all three parameters for the #iteratee so you can
    *     safely assume all references to the #source are its original values).
    *   - *`!Array|!Arguments`*!$
-   *     The #iteratee must be a `function`. It can have the following
-   *     optional parameters:
+   *     The #iteratee must be a `function`. The value returned from each call
+   *     to the #iteratee is set as the property value for the new `array`.
+   *     The #iteratee can have the following optional parameters:
    *     - **value** *`*`*
    *     - **index** *`number`*
    *     - **source** *`!Array`*
@@ -144,7 +146,7 @@ var remap = (function remapPrivateScope() {
         '!Object|!Function|!Array|!Arguments|string');
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(*=, (string|number)=, (!Object|!Function|!Array)=)');
+        '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
     if ( !$isNilNone.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
@@ -157,32 +159,53 @@ var remap = (function remapPrivateScope() {
   /// @method remap.object
   /// @alias remap.obj
   /**
-   * A shortcut for making a new object with the same keys and new values by
-   *   invoking an action over the values of an existing object.
+   * A shortcut for making a new `object` with the same [owned][own] property
+   * key names as an existing `object` or `function` and new values set by
+   * invoking an action with an #iteratee `function` upon each [owned][own]
+   * property of the existing 'object`.
    *
    * @public
-   * @param {!(Object|function)} source
-   * @param {function(*=, string=, !(Object|function)=)} iteratee - The iteratee
-   *   must be a function with the optional params - value, key, source. Note
-   *   this method lazily clones the source based on the iteratee's
-   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If thisArg is supplied the iteratee is bound to
-   *   its value.
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   *   The #iteratee must be a `function`. The value returned from each call
+   *   to the #iteratee is set as the property value for the new `object`.
+   *   The #iteratee can have the following optional parameters:
+   *   - **value** *`*`*
+   *   - **key** *`string`*
+   *   - **source** *`!Object|!Function`*
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#main based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
    * @return {!Object} 
    */
-  remap.object = function remapObject(source, iteratee, thisArg) {
+  function remapObject(source, iteratee, thisArg) {
 
-    if ( !$is._obj(source)        ) throw $typeErr(new TypeError, 'source', source, '!Object|!Function', 'object');
-    if ( !$is.func(iteratee)      ) throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(*=, string=, (!Object|!Function)=)', 'object');
-    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'object');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, string=, (!Object|!Function)=): *', 'object');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
 
     return _remapObj(source, iteratee, thisArg);
-  };
-  // define shorthand
-  remap.obj = remap.object;
+  }
+  remap['object'] = remapObject;
+  remap['obj'] = remapObject;
 
   /// {{{2
   /// @method remap.array
