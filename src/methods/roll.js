@@ -76,8 +76,8 @@ var roll = (function rollPrivateScope() {
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **previousValue** *`*`*
-   *     - **currentValue** *`*`*
+   *     - **prevValue** *`*`*
+   *     - **propValue** *`*`*
    *     - **key** *`string`*
    *     - **source** *`!Object|!Function`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -87,8 +87,8 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`!Array|!Arguments`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **previousValue** *`*`*
-   *     - **currentValue** *`*`*
+   *     - **prevValue** *`*`*
+   *     - **propValue** *`*`*
    *     - **index** *`number`*
    *     - **source** *`!Array`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -98,11 +98,11 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`number`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **previousValue** *`*`*
-   *     - **currentCycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first
-   *       *currentCycle* value is `0`).
-   *     - **totalCycles** *`number`*!$
+   *     - **prevValue** *`*`*
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   *     - **cycles** *`number`*!$
    *       The unchanged #source value.
    * @param {?Object=} thisArg
    *   The details are as follows (per #source type):
@@ -217,7 +217,7 @@ var roll = (function rollPrivateScope() {
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
+   *     - **propValue** *`*`*
    *     - **key** *`string`*
    *     - **source** *`!Object|!Function`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -227,7 +227,7 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`!Array|!Arguments`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
+   *     - **propValue** *`*`*
    *     - **index** *`number`*
    *     - **source** *`!Array`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -237,10 +237,10 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`number`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **currentCycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first
-   *       *currentCycle* value is `0`).
-   *     - **totalCycles** *`number`*!$
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   *     - **cycles** *`number`*!$
    *       The unchanged #source value.
    * @param {?Object=} thisArg
    *   The details are as follows (per #source type):
@@ -356,7 +356,7 @@ var roll = (function rollPrivateScope() {
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
+   *     - **propValue** *`*`*
    *     - **key** *`string`*
    *     - **source** *`!Object|!Function`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -366,7 +366,7 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`!Array|!Arguments`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
+   *     - **propValue** *`*`*
    *     - **index** *`number`*
    *     - **source** *`!Array`*
    *     Note that this method lazily [clones][clone] the #source with
@@ -376,10 +376,10 @@ var roll = (function rollPrivateScope() {
    *     safely assume all references to the #source are its original values).
    *   - *`number`*!$
    *     The #iteratee can have the following optional parameters:
-   *     - **currentCycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first
-   *       *currentCycle* value is `0`).
-   *     - **totalCycles** *`number`*!$
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   *     - **cycles** *`number`*!$
    *       The unchanged #source value.
    * @param {?Object=} thisArg
    *   The details are as follows (per #source type):
@@ -472,67 +472,78 @@ var roll = (function rollPrivateScope() {
   /// @func _rollObj
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, *, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, *=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollObj(obj, iteratee, thisArg) {
+  function _rollObj(source, iteratee, thisArg) {
 
+    /** @type {boolean} */
+    var loaded;
     /** @type {*} */
     var result;
     /** @type {string} */
     var key;
-    /** @type {boolean} */
-    var z;
 
-    obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 3)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindPrevMap(iteratee, thisArg);
+
+    loaded = false;
+    result = NONE;
+
     switch (iteratee.length) {
       case 0:
       case 1: 
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result = iteratee(result);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result = iteratee(result);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result = iteratee(result, obj[key]);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result = iteratee(result, source[key]);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 3:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result = iteratee(result, obj[key], key);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result = iteratee(result, source[key], key);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result = iteratee(result, obj[key], key, obj);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result = iteratee(result, source[key], key, source);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
+        break;
     }
     return result;
   }
@@ -542,39 +553,47 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, *, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, *=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseObj(result, obj, iteratee, thisArg) {
+  function _rollBaseObj(result, source, iteratee, thisArg) {
 
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 3 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 3)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindPrevMap(iteratee, thisArg);
+
     switch (iteratee.length) {
       case 0:
       case 1: 
-      for (key in obj) {
-        if ( $own(obj, key) ) result = iteratee(result);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result = iteratee(result);
+        }
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) result = iteratee(result, obj[key]);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result = iteratee(result, source[key]);
+        }
+        break;
       case 3:
-      for (key in obj) {
-        if ( $own(obj, key) ) result = iteratee(result, obj[key], key);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result = iteratee(result, source[key], key);
+        }
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) result = iteratee(result, obj[key], key, obj);
-      }
+        for (key in source) {
+          if ( $own(source, key) )
+            result = iteratee(result, source[key], key, source);
+        }
+        break;
     }
     return result;
   }
@@ -583,66 +602,77 @@ var roll = (function rollPrivateScope() {
   /// @func _rollObjUp
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollObjUp(obj, iteratee, thisArg) {
+  function _rollObjUp(source, iteratee, thisArg) {
 
+    /** @type {boolean} */
+    var loaded;
     /** @type {*} */
     var result;
     /** @type {string} */
     var key;
-    /** @type {boolean} */
-    var z;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    loaded = false;
+    result = NONE;
+
     switch (iteratee.length) {
       case 0:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result += iteratee();
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result += iteratee();
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 1:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result += iteratee(obj[key]);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result += iteratee(source[key]);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result += iteratee(obj[key], key);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result += iteratee(source[key], key);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result += iteratee(obj[key], key, obj);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result += iteratee(source[key], key, source);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
+        break;
     }
     return result;
   }
@@ -652,38 +682,46 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseObjUp(result, obj, iteratee, thisArg) {
+  function _rollBaseObjUp(result, source, iteratee, thisArg) {
 
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
     switch (iteratee.length) {
       case 0:
-      for (key in obj) {
-        if ( $own(obj, key) ) result += iteratee();
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result += iteratee();
+        }
+        break;
       case 1:
-      for (key in obj) {
-        if ( $own(obj, key) ) result += iteratee(obj[key]);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result += iteratee(source[key]);
+        }
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) result += iteratee(obj[key], key);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result += iteratee(source[key], key);
+        }
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) result += iteratee(obj[key], key, obj);
-      }
+        for (key in source) {
+          if ( $own(source, key) )
+            result += iteratee(source[key], key, source);
+        }
+        break;
     }
     return result;
   }
@@ -692,66 +730,77 @@ var roll = (function rollPrivateScope() {
   /// @func _rollObjDown
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollObjDown(obj, iteratee, thisArg) {
+  function _rollObjDown(source, iteratee, thisArg) {
 
+    /** @type {boolean} */
+    var loaded;
     /** @type {*} */
     var result;
     /** @type {string} */
     var key;
-    /** @type {boolean} */
-    var z;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    loaded = false;
+    result = NONE;
+
     switch (iteratee.length) {
       case 0:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result -= iteratee();
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result -= iteratee();
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 1:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result -= iteratee(obj[key]);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result -= iteratee(source[key]);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result -= iteratee(obj[key], key);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result -= iteratee(source[key], key);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
-      break;
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (z) result -= iteratee(obj[key], key, obj);
-          else {
-            result = obj[key];
-            z = true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (loaded)
+              result -= iteratee(source[key], key, source);
+            else {
+              result = source[key];
+              loaded = true;
+            }
           }
         }
-      }
+        break;
     }
     return result;
   }
@@ -761,38 +810,46 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseObjDown(result, obj, iteratee, thisArg) {
+  function _rollBaseObjDown(result, source, iteratee, thisArg) {
 
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee.length > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
     switch (iteratee.length) {
-      case 0: 
-      for (key in obj) {
-        if ( $own(obj, key) ) result -= iteratee();
-      }
-      break;
+      case 0:
+        for (key in source) {
+          if ( $own(source, key) )
+            result -= iteratee();
+        }
+        break;
       case 1:
-      for (key in obj) {
-        if ( $own(obj, key) ) result -= iteratee(obj[key]);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result -= iteratee(source[key]);
+        }
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) result -= iteratee(obj[key], key);
-      }
-      break;
+        for (key in source) {
+          if ( $own(source, key) )
+            result -= iteratee(source[key], key);
+        }
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) result -= iteratee(obj[key], key, obj);
-      }
+        for (key in source) {
+          if ( $own(source, key) )
+            result -= iteratee(source[key], key, source);
+        }
+        break;
     }
     return result;
   }
@@ -805,12 +862,12 @@ var roll = (function rollPrivateScope() {
   /// @func _rollArr
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, *, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, *=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollArr(obj, iteratee, thisArg) {
+  function _rollArr(source, iteratee, thisArg) {
 
     /** @type {*} */
     var result;
@@ -819,17 +876,35 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    result = obj[0];
-    len = obj.length;
+    if (iteratee.length > 3)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindPrevMap(iteratee, thisArg);
+
+    len = source.length;
+    result = len > 0
+      ? source[0]
+      : NONE;
     i = 0;
+
     switch (iteratee.length) {
       case 0:
-      case 1:  while (++i < len) result = iteratee(result);               break;
-      case 2:  while (++i < len) result = iteratee(result, obj[i]);       break;
-      case 3:  while (++i < len) result = iteratee(result, obj[i], i);    break;
-      default: while (++i < len) result = iteratee(result, obj[i], i, obj);
+      case 1:
+        while (++i < len)
+          result = iteratee(result);
+        break;
+      case 2:
+        while (++i < len)
+          result = iteratee(result, source[i]);
+        break;
+      case 3:
+        while (++i < len)
+          result = iteratee(result, source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result = iteratee(result, source[i], i, source);
+        break;
     }
     return result;
   }
@@ -839,28 +914,43 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, *=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseArr(result, obj, iteratee, thisArg) {
+  function _rollBaseArr(result, source, iteratee, thisArg) {
 
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 3 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    len = obj.length;
+    if (iteratee.length > 3)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindPrevMap(iteratee, thisArg);
+
+    len = source.length;
     i = -1;
     switch (iteratee.length) {
       case 0:
-      case 1:  while (++i < len) result = iteratee(result);               break;
-      case 2:  while (++i < len) result = iteratee(result, obj[i]);       break;
-      case 3:  while (++i < len) result = iteratee(result, obj[i], i);    break;
-      default: while (++i < len) result = iteratee(result, obj[i], i, obj);
+      case 1:
+        while (++i < len)
+          result = iteratee(result);
+        break;
+      case 2:
+        while (++i < len)
+          result = iteratee(result, source[i]);
+        break;
+      case 3:
+        while (++i < len)
+          result = iteratee(result, source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result = iteratee(result, source[i], i, source);
+        break;
     }
     return result;
   }
@@ -869,12 +959,12 @@ var roll = (function rollPrivateScope() {
   /// @func _rollArrUp
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, *, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollArrUp(obj, iteratee, thisArg) {
+  function _rollArrUp(source, iteratee, thisArg) {
 
     /** @type {*} */
     var result;
@@ -883,16 +973,34 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    result = obj[0];
-    len = obj.length;
+    if (iteratee.length > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    len = source.length;
+    result = len > 0
+      ? source[0]
+      : NONE;
     i = 0;
+
     switch (iteratee.length) {
-      case 0:  while (++i < len) result += iteratee();              break;
-      case 1:  while (++i < len) result += iteratee(obj[i]);        break;
-      case 2:  while (++i < len) result += iteratee(obj[i], i);     break;
-      default: while (++i < len) result += iteratee(obj[i], i, obj);
+      case 0:
+        while (++i < len)
+          result += iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          result += iteratee(source[i]);
+        break;
+      case 2:
+        while (++i < len)
+          result += iteratee(source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result += iteratee(source[i], i, source);
+        break;
     }
     return result;
   }
@@ -902,27 +1010,42 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseArrUp(result, obj, iteratee, thisArg) {
+  function _rollBaseArrUp(result, source, iteratee, thisArg) {
 
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    len = obj.length;
+    if (iteratee.length > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    len = source.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) result += iteratee();              break;
-      case 1:  while (++i < len) result += iteratee(obj[i]);        break;
-      case 2:  while (++i < len) result += iteratee(obj[i], i);     break;
-      default: while (++i < len) result += iteratee(obj[i], i, obj);
+      case 0:
+        while (++i < len)
+          result += iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          result += iteratee(source[i]);
+        break;
+      case 2:
+        while (++i < len)
+          result += iteratee(source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result += iteratee(source[i], i, source);
+        break;
     }
     return result;
   }
@@ -931,12 +1054,12 @@ var roll = (function rollPrivateScope() {
   /// @func _rollArrDown
   /**
    * @private
-   * @param {!(Object|function)} obj
-   * @param {function(*, *, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollArrDown(obj, iteratee, thisArg) {
+  function _rollArrDown(source, iteratee, thisArg) {
 
     /** @type {*} */
     var result;
@@ -945,16 +1068,34 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    result = obj[0];
-    len = obj.length;
+    if (iteratee.length > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    len = source.length;
+    result = len > 0
+      ? source[0]
+      : NONE;
     i = 0;
+
     switch (iteratee.length) {
-      case 0:  while (++i < len) result -= iteratee();              break;
-      case 1:  while (++i < len) result -= iteratee(obj[i]);        break;
-      case 2:  while (++i < len) result -= iteratee(obj[i], i);     break;
-      default: while (++i < len) result -= iteratee(obj[i], i, obj);
+      case 0:
+        while (++i < len)
+          result -= iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          result -= iteratee(source[i]);
+        break;
+      case 2:
+        while (++i < len)
+          result -= iteratee(source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result -= iteratee(source[i], i, source);
+        break;
     }
     return result;
   }
@@ -964,27 +1105,42 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {!(Object|function)} obj
-   * @param {function(*, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollBaseArrDown(result, obj, iteratee, thisArg) {
+  function _rollBaseArrDown(result, source, iteratee, thisArg) {
 
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    len = obj.length;
+    if (iteratee.length > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    len = source.length;
     i = -1;
     switch (iteratee.length) {
-      case 0:  while (++i < len) result -= iteratee();              break;
-      case 1:  while (++i < len) result -= iteratee(obj[i]);        break;
-      case 2:  while (++i < len) result -= iteratee(obj[i], i);     break;
-      default: while (++i < len) result -= iteratee(obj[i], i, obj);
+      case 0:
+        while (++i < len)
+          result -= iteratee();
+        break;
+      case 1:
+        while (++i < len)
+          result -= iteratee(source[i]);
+        break;
+      case 2:
+        while (++i < len)
+          result -= iteratee(source[i], i);
+        break;
+      default:
+        while (++i < len)
+          result -= iteratee(source[i], i, source);
+        break;
     }
     return result;
   }
@@ -998,23 +1154,41 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {number} count
-   * @param {function} iteratee
-   * @param {Object=} thisArg
+   * @param {number} cycles
+   * @param {!function(*=, number=, number=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollCycle(result, count, iteratee, thisArg) {
+  function _rollCycle(result, cycles, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var count;
+    /** @type {number} */
+    var cycle;
 
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    if (iteratee.length > 1) {
-      i = 0;
-      while(count--) result = iteratee(result, i++);
-    }
-    else {
-      while(count--) result = iteratee(result);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindPrevCycle(iteratee, thisArg);
+
+    count = cycles > 0
+      ? cycles
+      : 0;
+
+    switch (iteratee.length) {
+      case 0:
+      case 1:
+        while(count--)
+          result = iteratee(result);
+        break;
+      case 2:
+        cycle = 0;
+        while(count--)
+          result = iteratee(result, cycle++);
+        break;
+      default:
+        cycle = 0;
+        while(count--)
+          result = iteratee(result, cycle++, cycles);
+        break;
     }
     return result;
   }
@@ -1024,23 +1198,40 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {number} count
-   * @param {function} iteratee
-   * @param {Object=} thisArg
+   * @param {number} cycles
+   * @param {!function(number=, number=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollCycleUp(result, count, iteratee, thisArg) {
+  function _rollCycleUp(result, cycles, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var count;
+    /** @type {number} */
+    var cycle;
 
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    if (iteratee.length) {
-      i = 0;
-      while(count--) result += iteratee(i++);
-    }
-    else {
-      while(count--) result += iteratee();
+    if ( !$is.none(thisArg) )
+      iteratee = _bindCycle(iteratee, thisArg);
+
+    count = cycles > 0
+      ? cycles
+      : 0;
+
+    switch (iteratee.length) {
+      case 0:
+        while(count--)
+          result += iteratee();
+        break;
+      case 1:
+        cycle = 0;
+        while(count--)
+          result += iteratee(cycle++);
+        break;
+      default:
+        cycle = 0;
+        while(count--)
+          result += iteratee(cycle++, cycles);
+        break;
     }
     return result;
   }
@@ -1050,54 +1241,163 @@ var roll = (function rollPrivateScope() {
   /**
    * @private
    * @param {*} result
-   * @param {number} count
-   * @param {function} iteratee
-   * @param {Object=} thisArg
+   * @param {number} cycles
+   * @param {!function(number=, number=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {*}
    */
-  function _rollCycleDown(result, count, iteratee, thisArg) {
+  function _rollCycleDown(result, cycles, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var count;
+    /** @type {number} */
+    var cycle;
 
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    if (iteratee.length) {
-      i = 0;
-      while(count--) result -= iteratee(i++);
-    }
-    else {
-      while(count--) result -= iteratee();
+    if ( !$is.none(thisArg) )
+      iteratee = _bindCycle(iteratee, thisArg);
+
+    count = cycles > 0
+      ? cycles
+      : 0;
+
+    switch (iteratee.length) {
+      case 0:
+        while(count--)
+          result -= iteratee();
+        break;
+      case 1:
+        cycle = 0;
+        while(count--)
+          result -= iteratee(cycle++);
+        break;
+      default:
+        cycle = 0;
+        while(count--)
+          result -= iteratee(cycle++, cycles);
+        break;
     }
     return result;
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - MISC
+  // ROLL HELPERS - BIND
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @func _bind
+  /// @func _bindMap
   /**
    * @private
    * @param {!function} func
    * @param {?Object} thisArg
    * @return {!function} 
    */
-  function _bind(func, thisArg) {
+  function _bindMap(func, thisArg) {
     switch (func.length) {
-      case 0: return function iteratee() { return func.call(thisArg); };
-      case 1: return function iteratee(val) { return func.call(thisArg, val); };
-      case 2: return function iteratee(val1, val2) {
-        return func.call(thisArg, val1, val2);
-      };
-      case 3: return function iteratee(val1, val2, val3) {
-        return func.call(thisArg, val1, val2, val3);
-      };
+      case 0:
+        return function iteratee() {
+          return func.call(thisArg);
+        };
+      case 1:
+        return function iteratee(propValue) {
+          return func.call(thisArg, propValue);
+        };
+      case 2:
+        return function iteratee(propValue, key) {
+          return func.call(thisArg, propValue, key);
+        };
     }
-    return function iteratee(prev, curr, key, obj) {
-      return func.call(thisArg, prev, curr, key, obj);
+    return function iteratee(propValue, key, source) {
+      return func.call(thisArg, propValue, key, source);
     };
   }
+
+  /// {{{3
+  /// @func _bindPrevMap
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindPrevMap(func, thisArg) {
+    switch (func.length) {
+      case 0:
+        return function iteratee() {
+          return func.call(thisArg);
+        };
+      case 1:
+        return function iteratee(prevValue) {
+          return func.call(thisArg, prevValue);
+        };
+      case 2:
+        return function iteratee(prevValue, propValue) {
+          return func.call(thisArg, prevValue, propValue);
+        };
+      case 3:
+        return function iteratee(prevValue, propValue, key) {
+          return func.call(thisArg, prevValue, propValue, key);
+        };
+    }
+    return function iteratee(prevValue, propValue, key, source) {
+      return func.call(thisArg, prevValue, propValue, key, source);
+    };
+  }
+
+  /// {{{3
+  /// @func _bindCycle
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindCycle(func, thisArg) {
+    switch (func.length) {
+      case 0:
+        return function iteratee() {
+          return func.call(thisArg);
+        };
+      case 1:
+        return function iteratee(cycle) {
+          return func.call(thisArg, cycle);
+        };
+    }
+    return function iteratee(cycle, cycles) {
+      return func.call(thisArg, cycle, cycles);
+    };
+  }
+
+  /// {{{3
+  /// @func _bindPrevCycle
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindPrevCycle(func, thisArg) {
+    switch (func.length) {
+      case 0:
+        return function iteratee() {
+          return func.call(thisArg);
+        };
+      case 1:
+        return function iteratee(prevValue) {
+          return func.call(thisArg, prevValue);
+        };
+      case 2:
+        return function iteratee(prevValue, cycle) {
+          return func.call(thisArg, prevValue, cycle);
+        };
+    }
+    return function iteratee(prevValue, cycle, cycles) {
+      return func.call(thisArg, prevValue, cycle, cycles);
+    };
+  }
+
+  ///////////////////////////////////////////////////// {{{2
+  // ROLL HELPERS - MISC
+  //////////////////////////////////////////////////////////
 
   /// {{{3
   /// @const NONE
