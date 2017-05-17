@@ -162,7 +162,7 @@ var remap = (function remapPrivateScope() {
    * A shortcut for making a new `object` with the same [owned][own] property
    * key names as an existing `object` or `function` and new values set by
    * invoking an action with an #iteratee `function` upon each [owned][own]
-   * property of the existing 'object`.
+   * property of the existing `object`.
    *
    * @public
    * @param {(!Object|!Function)} source
@@ -211,40 +211,67 @@ var remap = (function remapPrivateScope() {
   /// @method remap.array
   /// @alias remap.arr
   /**
-   * A shortcut for making a new array by invoking an action over the values of
-   *   an existing array-like object.
+   * A shortcut for making a new `array` with the same [length][arr-length] of
+   * indexed properties as an existing `array` or array-like `object` and with
+   * new property values set by invoking an action with an #iteratee
+   * `function` upon each indexed property of the existing `array` or
+   * `object`.
    *
    * @public
-   * @param {(!Object|function|string)} source - If source is a string it is
-   *   converted to an array using one of the following values as the separator
-   *   (values listed in order of rank):
+   * @param {(!Array|!Arguments|!Object|!Function|string)} source
+   *   If the #source is a `string`, it is converted into an `array` using one
+   *   of the following values as the separator (values listed in order of
+   *   rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
-   * @param {function(*=, number=, !Array=)=} iteratee - The iteratee must be a
-   *   function with the optional params - value, index, source. Note this
-   *   method lazily slices the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If thisArg is supplied the iteratee is bound to
-   *   its value.
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   *   The #iteratee must be a `function`. The value returned from each call
+   *   to the #iteratee is set as the property value for the new `array`.
+   *   The #iteratee can have the following optional parameters:
+   *   - **value** *`*`*
+   *   - **index** *`number`*
+   *   - **source** *`!Array`*
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#array based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
    * @return {!Array}
    */
-  remap.array = function remapArray(source, iteratee, thisArg) {
+  function remapArray(source, iteratee, thisArg) {
 
-    if ( $is.str(source) ) source = $splitKeys(source);
+    if ( $is.str(source) )
+      source = $splitKeys(source);
 
-    if ( !$is._obj(source)        ) throw $typeErr(new TypeError, 'source', source, '!Array|!Arguments|!Object|!Function|string', 'array');
-    if ( !$is.num(source.length)  ) throw $typeErr(new TypeError, 'source.length', source.length, 'number', 'array');
-    if ( !$is.func(iteratee)      ) throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(*=, number=, !Array=)', 'array');
-    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function|string', 'array');
+    if ( !$is.num(source.length) )
+      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
+        'array');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, number=, !Array=): *', 'array');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
 
     return _remapArr(source, iteratee, thisArg);
-  };
-  // define shorthand
-  remap.arr = remap.array;
+  }
+  remap['array'] = remapArray;
+  remap['arr'] = remapArray;
 
   /// {{{2
   /// @method remap.string
