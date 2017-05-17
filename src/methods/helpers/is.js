@@ -14,45 +14,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 /**
- * @typedef {{
- *   nil:    !function(*): boolean,
- *   none:   !function(*): boolean,
- *   bool:   !function(*): boolean,
- *   str:    !function(*): boolean,
- *   _str:   !function(*): boolean,
- *   num:    !function(*): boolean,
- *   _num:   !function(*): boolean,
- *   nan:    !function(*): boolean,
- *   obj:    !function(*): boolean,
- *   _obj:   !function(*): boolean,
- *   fun:    !function(*): boolean,
- *   arr:    !function(*): boolean,
- *   _arr:   !function(*): boolean,
- *   regx:   !function(*): boolean,
- *   date:   !function(*): boolean,
- *   err:    !function(*): boolean,
- *   args:   !function(*): boolean,
- *   doc:    !function(*): boolean,
- *   elem:   !function(*): boolean,
- *   empty:  !function(*): boolean,
- *   eol:    !function(string): boolean,
- *   frozen: !function((!Object|!Function)): boolean,
- *   whole:  !function(number): boolean,
- *   odd:    !function(number): boolean,
- *   even:   !function(number): boolean
- * }} IsHelp
- */
-
-/**
  * @private
- * @const {!IsHelp}
+ * @const {!Object<string, !function>}
+ * @struct
  */
 var $is = (function _isPrivateScope() {
 
   /// {{{3
   /// @const IS
   /**
-   * @const {!IsHelp}
+   * @const {!Object<string, !function>}
+   * @struct
    */
   var IS = {
 
@@ -366,7 +338,7 @@ var $is = (function _isPrivateScope() {
    * @return {boolean}
    */
   function isDomDocument(val) {
-    return isObject(val) && val.nodeType === 9;
+    return isObject(val) && val['nodeType'] === 9;
   }
 
   /// {{{4
@@ -376,7 +348,7 @@ var $is = (function _isPrivateScope() {
    * @return {boolean}
    */
   function isDomElement(val) {
-    return isObject(val) && val.nodeType === 1;
+    return isObject(val) && val['nodeType'] === 1;
   }
 
   ///////////////////////////////////////////////////// {{{3
