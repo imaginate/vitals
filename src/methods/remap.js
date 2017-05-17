@@ -43,9 +43,11 @@ var remap = (function remapPrivateScope() {
    * @ref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
    * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
    * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
+   * @ref [lastIndex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
    * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
    * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    */
@@ -277,30 +279,57 @@ var remap = (function remapPrivateScope() {
   /// @method remap.string
   /// @alias remap.str
   /**
-   * A shortcut for [String.prototype.replace](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace)
-   *   that defaults to global replacements instead of only the first.
+   * A shortcut for replacing each matching `substring` with a new `substring`
+   * within a #source `string`.
    *
    * @public
    * @param {string} source
-   * @param {*} pattern - If not a RegExp the pattern is converted to a string.
-   * @param {*} replacement - If not a string or function the replacement is
-   *   converted to a string. For details about using replacement functions see
-   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
-   * @param {Object=} thisArg - If thisArg is supplied the replacement function
-   *   is bound to its value.
+   * @param {*} pattern
+   *   The #pattern must be a `substring` pattern to search for within the
+   *   #source. If the #pattern is **not** a `RegExp`, it is converted into
+   *   a `string` with [String()][string] before running a search on the
+   *   #source for any matches. Note that a `string` #pattern will replace all
+   *   of the `substring` matches in the #source (i.e. not just the first). To
+   *   replace only one match use a `RegExp` #pattern that does not have the
+   *   [global flag][global] set, a `RegExp` #pattern with an altered
+   *   [lastIndex property][lastIndex], or a `function` #replacement that uses
+   *   your own logic to decide whether to replace each #pattern occurrence.
+   * @param {*} replacement
+   *   If the #replacement is **not** a `function`, it is converted into a
+   *   `string` with [String()][string]. If the #replacement is a `function`,
+   *   it operates the same as any `function` parameter specified for
+   *   [String.prototype.replace][replace].
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined and the #replacement is a `function`, the
+   *   #replacement is bound to its value. Note that the native
+   *   [Function.prototype.bind][bind] is **not** used to bind the
+   *   #replacement. Instead the #replacement is wrapped with a regular new
+   *   [Function][func] that uses [Function.prototype.call][call] or when
+   *   seven or more parameters are defined for the #replacement,
+   *   [Function.prototype.apply][apply] to call the #replacement with
+   *   #thisArg. The new wrapper `function` has the same
+   *   [length property][func-length] value as the #replacement (unless
+   *   more than seven parameters were defined for the #replacement as the
+   *   wrapper has a max length of `7`) and the [name property][func-name]
+   *   value of `"replacement"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
    * @return {string}
    */
-  remap.string = function remapString(source, pattern, replacement, thisArg) {
+  function remapString(source, pattern, replacement, thisArg) {
 
-    if (arguments.length < 2) throw $err(new Error, 'no #pattern defined', 'string');
-    if (arguments.length < 3) throw $err(new Error, 'no #replacement defined', 'string');
-    if ( !$is.str(source)         ) throw $typeErr(new TypeError, 'source', source, 'string', 'string');
-    if ( !$is.nil.un.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'string');
+    if (arguments.length < 2)
+      throw $err(new Error, 'no #pattern defined', 'string');
+    if (arguments.length < 3)
+      throw $err(new Error, 'no #replacement defined', 'string');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'string');
 
     return _remapStr(source, pattern, replacement, thisArg);
-  };
-  // define shorthand
-  remap.str = remap.string;
+  }
+  remap['string'] = remapString;
+  remap['str'] = remapString;
 
   ///////////////////////////////////////////////////// {{{2
   // REMAP HELPERS - MAIN
