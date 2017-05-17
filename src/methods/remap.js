@@ -13,6 +13,7 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $escape = require('./helpers/escape.js');
 var $own = require('./helpers/own.js');
@@ -34,13 +35,17 @@ var remap = (function remapPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Remap References
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
    * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
    * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
    * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+   * @ref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
    * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
    * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+   * @ref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
    * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
    * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    */
@@ -48,49 +53,98 @@ var remap = (function remapPrivateScope() {
   /// {{{2
   /// @method remap
   /**
-   * A shortcut for making a new object/array/string by invoking an action over
-   *   the values of an existing object/array/string.
+   * A shortcut for making a new `object`, `array`, or `string` by invoking an
+   * action over each [owned][own] `object` or `function` property, indexed
+   * `array` or `arguments` property, or matched `substring` pattern.
    *
    * @public
-   * @param {!(Object|function|Array|string)} source
-   * @param {*} iteratee - Details per source type:
-   *   - object: The iteratee must be a function with the optional params -
-   *     value, key, source. Note this method lazily clones the source based on
-   *     the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *     (i.e. if you alter the source object within the iteratee ensure to
-   *     define the iteratee's third param so you can safely assume all
-   *     references to the source are its original values).
-   *   - array: The iteratee must be a function with the optional params -
-   *     value, index, source. Note this method lazily slices the source based
-   *     on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *     (i.e. if you alter the source object within the iteratee ensure to
-   *     define the iteratee's third param so you can safely assume all
-   *     references to the source are its original values).
-   *   - string: The iteratee must be a pattern to search for within the
-   *     source. If the pattern is not a string or RegExp it will be converted
-   *     to a string.
-   * @param {*=} replacement - Only use (and required) with string sources. If
-   *   not a string or function the replacement is converted to a string. For
-   *   details about using replacement functions see the
-   *   [String.prototype.replace function param](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter).
-   * @param {Object=} thisArg - If thisArg is supplied the iteratee or
-   *   replacement function is bound to its value.
-   * @return {!(Object|function|Array|string)}
+   * @param {(!Object|!Function|!Array|!Arguments|string)} source
+   * @param {*} iteratee
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     The #iteratee must be a `function`. It can have the following
+   *     optional parameters:
+   *     - **value** *`*`*
+   *     - **key** *`string`*
+   *     - **source** *`!Object|!Function`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#main based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`!Array|!Arguments`*!$
+   *     The #iteratee must be a `function`. It can have the following
+   *     optional parameters:
+   *     - **value** *`*`*
+   *     - **index** *`number`*
+   *     - **source** *`!Array`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#array based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`string`*!$
+   *     The #iteratee must be a `substring` pattern to search for within the
+   *     #source. If the #iteratee is **not** a `RegExp`, it is converted into
+   *     a `string` with [String()][string] before running a search on the
+   *     #source for any matches.
+   * @param {*=} replacement
+   *   Only allowed (and then required) when the #source is a `string`. If it
+   *   is **not** a `function` the #replacement is converted into a `string`
+   *   with [String()][string]. If the #replacement is a `function`, it
+   *   operates the same as any `function` parameter specified for
+   *   [String.prototype.replace][replace].
+   * @param {?Object=} thisArg
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function|!Array|!Arguments`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than three parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `3`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   *   - *`string`*!$
+   *     If #thisArg is defined and the #replacement is a `function`, the
+   *     #replacement is bound to its value. Note that the native
+   *     [Function.prototype.bind][bind] is **not** used to bind the
+   *     #replacement. Instead the #replacement is wrapped with a regular new
+   *     [Function][func] that uses [Function.prototype.call][call] or when
+   *     seven or more parameters are defined for the #replacement,
+   *     [Function.prototype.apply][apply] to call the #replacement with
+   *     #thisArg. The new wrapper `function` has the same
+   *     [length property][func-length] value as the #replacement (unless
+   *     more than seven parameters were defined for the #replacement as the
+   *     wrapper has a max length of `7`) and the [name property][func-name]
+   *     value of `"replacement"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   * @return {(!Object|!Array|string)}
    */
   function remap(source, iteratee, replacement, thisArg) {
 
     if ( $is.str(source) ) {
-      if (arguments.length < 2) throw _error('No iteratee defined');
-      if (arguments.length < 3) throw _error('No replacement defined');
-      if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+
+      if (arguments.length < 2)
+        throw _error('no #iteratee defined');
+      if (arguments.length < 3)
+        throw _error('no #replacement defined');
+      if ( !$isNilNone.obj(thisArg) )
+        throw _error.type('thisArg');
+
       return _remapStr(source, iteratee, replacement, thisArg);
     }
 
     thisArg = replacement;
 
-    if ( !$is._obj(source)        ) throw _error.type('source');
-    if ( !$is.func(iteratee)      ) throw _error.type('iteratee');
-    if ( !$is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+    if ( !$is._obj(source) )
+      throw _error.type('source');
+    if ( !$is.fun(iteratee) )
+      throw _error.type('iteratee');
+    if ( !$isNilNone.obj(thisArg) )
+      throw _error.type('thisArg');
 
     return $is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
@@ -334,32 +388,42 @@ var remap = (function remapPrivateScope() {
   /// @func _bindR
   /**
    * @private
-   * @param {function} func
-   * @param {Object} thisArg
-   * @return {function} 
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function}
    */
   function _bindR(func, thisArg) {
     switch (func.length) {
-      case 0: return function replacement() {
-        return func.call(thisArg);
-      };
-      case 1: return function replacement(match) {
-        return func.call(thisArg, match);
-      };
-      case 2: return function replacement(match, p1) {
-        return func.call(thisArg, match, p1);
-      };
-      case 3: return function replacement(match, p1, p2) {
-        return func.call(thisArg, match, p1, p2);
-      };
-      case 4: return function replacement(match, p1, p2, p3) {
-        return func.call(thisArg, match, p1, p2, p3);
-      };
-      case 5: return function replacement(match, p1, p2, p3, p4) {
-        return func.call(thisArg, match, p1, p2, p3, p4);
-      };
+      case 0:
+        return function replacement() {
+          return func.call(thisArg);
+        };
+      case 1:
+        return function replacement(match) {
+          return func.call(thisArg, match);
+        };
+      case 2:
+        return function replacement(match, offset) {
+          return func.call(thisArg, match, offset);
+        };
+      case 3:
+        return function replacement(match, offset, source) {
+          return func.call(thisArg, match, offset, source);
+        };
+      case 4:
+        return function replacement(match, p1, offset, source) {
+          return func.call(thisArg, match, p1, offset, source);
+        };
+      case 5:
+        return function replacement(match, p1, p2, offset, source) {
+          return func.call(thisArg, match, p1, p2, offset, source);
+        };
+      case 6:
+        return function replacement(match, p1, p2, p3, offset, source) {
+          return func.call(thisArg, match, p1, p2, p3, offset, source);
+        };
     }
-    return function replacement() {
+    return function replacement(match, p1, p2, p3, p4, offset, source) {
       return func.apply(thisArg, arguments);
     };
   }
