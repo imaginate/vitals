@@ -24,6 +24,11 @@ var is = require('./is.js');
 // VITALS AMEND
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var amend = (function amendPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -194,7 +199,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  amend.config = function amendConfig(source, props, descriptor) {
+  function amendConfig(source, props, descriptor) {
 
     if ( !$is.obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object', 'config');
@@ -223,7 +228,8 @@ var amend = (function amendPrivateScope() {
         'did not exist in the #source', 'config');
 
     return _amendConfigs(source, props);
-  };
+  }
+  amend['config'] = amendConfig;
 
   /// {{{2
   /// @method amend.property
@@ -266,8 +272,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  amend.property = function amendProperty(
-    source, key, val, descriptor, strongType, setter) {
+  function amendProperty(source, key, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
@@ -311,9 +316,9 @@ var amend = (function amendPrivateScope() {
         '#strongType or #setter', 'property');
 
     return _amendProp(source, key, val, descriptor, strongType, setter);
-  };
-  // define shorthand
-  amend.prop = amend.property;
+  }
+  amend['property'] = amendProperty;
+  amend['prop'] = amendProperty;
 
   /// {{{2
   /// @method amend.property.config
@@ -329,8 +334,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  amend.property.config = function amendPropertyConfig(
-    source, key, descriptor) {
+  function amendPropertyConfig(source, key, descriptor) {
 
     if ( !$is.obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object',
@@ -345,9 +349,9 @@ var amend = (function amendPrivateScope() {
         'property.config');
 
     return _amendConfig(source, key, descriptor);
-  };
-  // define shorthand
-  amend.prop.config = amend.property.config;
+  }
+  amend['property']['config'] = amendPropertyConfig;
+  amend['prop']['config'] = amendPropertyConfig;
 
   /// {{{2
   /// @method amend.properties
@@ -414,7 +418,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  amend.properties = function amendProperties(
+  function amendProperties(
     source, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
@@ -476,9 +480,9 @@ var amend = (function amendPrivateScope() {
     }
 
     return _amendProps(source, props, val, descriptor, strongType, setter);
-  };
-  // define shorthand
-  amend.props = amend.properties;
+  }
+  amend['properties'] = amendProperties;
+  amend['props'] = amendProperties;
 
   /// {{{2
   /// @method amend.properties.config
@@ -510,8 +514,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  amend.properties.config = function amendPropertiesConfig(
-    source, props, descriptor) {
+  function amendPropertiesConfig(source, props, descriptor) {
 
     if ( !$is.obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object',
@@ -543,9 +546,9 @@ var amend = (function amendPrivateScope() {
         'did not exist in the #source', 'properties.config');
 
     return _amendConfigs(source, props);
-  };
-  // define shorthand
-  amend.props.config = amend.properties.config;
+  }
+  amend['properties']['config'] = amendPropertiesConfig;
+  amend['props']['config'] = amendPropertiesConfig;
 
   ///////////////////////////////////////////////////// {{{2
   // AMEND HELPERS - PARAMETER PARSERS
@@ -659,7 +662,7 @@ var amend = (function amendPrivateScope() {
         if ( $is.obj(val) && _isDescriptor(val) ) {
           if ( $own(val, 'writable') )
             continue;
-          val = val.value;
+          val = val['value'];
         }
         if ( !is(strongType, val) )
           return false;
@@ -917,7 +920,7 @@ var amend = (function amendPrivateScope() {
     prop = $cloneObj(descriptor);
     val = _isDescriptor(val)
       ? val
-      : { value: val };
+      : { 'value': val };
     return $merge(prop, val);
   }
 
@@ -942,7 +945,7 @@ var amend = (function amendPrivateScope() {
       prop = $merge(prop, val);
       if ( $own(prop, 'writable') || _isAccessor(prop) )
         return prop;
-      val = prop.value;
+      val = prop['value'];
       prop = _cloneAccessor(prop);
     }
 
@@ -964,7 +967,7 @@ var amend = (function amendPrivateScope() {
     var prop;
 
     prop = $cloneObj(descriptor);
-    prop.value = val;
+    prop['value'] = val;
     return prop;
   }
 
@@ -998,13 +1001,13 @@ var amend = (function amendPrivateScope() {
    * @return {!TypeError}
    */
   function _mkStrongError(err, msg) {
-    err.__setter = true;
-    err.setter = true;
-    err.__type = true;
-    err.type = true;
-    err.name = 'TypeError';
-    err.message = msg;
-    err.msg = msg;
+    err['__setter'] = true;
+    err['setter'] = true;
+    err['__type'] = true;
+    err['type'] = true;
+    err['name'] = 'TypeError';
+    err['message'] = msg;
+    err['msg'] = msg;
     return err;
   }
 
@@ -1019,10 +1022,10 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    */
   function _setupGetSet(val, descriptor, strongType, setter) {
-    descriptor.get = function get() {
+    descriptor['get'] = function get() {
       return val;
     };
-    descriptor.set = strongType && setter
+    descriptor['set'] = strongType && setter
       ? function set(newVal) {
           if ( !strongType(newVal) )
             throw _mkStrongError(new TypeError,
@@ -1050,45 +1053,48 @@ var amend = (function amendPrivateScope() {
   /// @const DATA_DESCRIPTOR
   /**
    * @private
-   * @const {!Object}
+   * @const {!Object<string, boolean>}
+   * @dict
    */
   var DATA_DESCRIPTOR = {
-    writable: true,
-    enumerable: true,
-    configurable: true
+    'writable': true,
+    'enumerable': true,
+    'configurable': true
   };
 
   /// {{{3
   /// @const ACCESSOR_DESCRIPTOR
   /**
    * @private
-   * @const {!Object}
+   * @const {!Object<string, boolean>}
+   * @dict
    */
   var ACCESSOR_DESCRIPTOR = {
-    enumerable: true,
-    configurable: true
+    'enumerable': true,
+    'configurable': true
   };
 
   /// {{{3
   /// @const DESCRIPTOR_PROPS
   /**
    * @private
-   * @const {!Object}
+   * @const {!Object<string, boolean>}
+   * @dict
    */
   var DESCRIPTOR_PROPS = {
-    get: true,
-    set: true,
-    value: true,
-    writable: true,
-    enumerable: true,
-    configurable: true
+    'get': true,
+    'set': true,
+    'value': true,
+    'writable': true,
+    'enumerable': true,
+    'configurable': true
   };
 
   /// {{{3
   /// @func _isDescriptor
   /**
    * @private
-   * @param {!Object} obj
+   * @param {?Object} obj
    * @return {boolean}
    */
   function _isDescriptor(obj) {
@@ -1110,7 +1116,7 @@ var amend = (function amendPrivateScope() {
   /// @func _isData
   /**
    * @private
-   * @param {Object} obj
+   * @param {?Object} obj
    * @return {boolean}
    */
   function _isData(obj) {
@@ -1121,7 +1127,7 @@ var amend = (function amendPrivateScope() {
   /// @func _isAccessor
   /**
    * @private
-   * @param {Object} obj
+   * @param {?Object} obj
    * @return {boolean}
    */
   function _isAccessor(obj) {
@@ -1132,7 +1138,7 @@ var amend = (function amendPrivateScope() {
   /// @func _getDescriptor
   /**
    * @private
-   * @param {Object} descriptor
+   * @param {?Object} descriptor
    * @param {boolean=} hasSetter
    * @return {!Object}
    */
@@ -1143,10 +1149,10 @@ var amend = (function amendPrivateScope() {
 
     if ( hasSetter && _isData(descriptor) ) {
       defaultDescriptor = {};
-      if ( $is.bool( descriptor.enumerable ) )
-        defaultDescriptor.enumerable = descriptor.enumerable;
-      if ( $is.bool( descriptor.configurable ) )
-        defaultDescriptor.configurable = descriptor.configurable;
+      if ( $is.bool(descriptor['enumerable']) )
+        defaultDescriptor['enumerable'] = descriptor['enumerable'];
+      if ( $is.bool(descriptor['configurable']) )
+        defaultDescriptor['configurable'] = descriptor['configurable'];
       descriptor = defaultDescriptor;
     }
 
@@ -1214,8 +1220,8 @@ var amend = (function amendPrivateScope() {
 
     obj = {};
     descriptor = {
-      enumerable: false,
-      value: obj
+      'enumerable': false,
+      'value': obj
     };
 
     try {
@@ -1229,7 +1235,7 @@ var amend = (function amendPrivateScope() {
       return false;
     }
 
-    return obj.prop === obj;
+    return obj['prop'] === obj;
   })();
 
   /// {{{3
@@ -1245,8 +1251,8 @@ var amend = (function amendPrivateScope() {
     ? Object.defineProperty
     : function ObjectDefineProperty(obj, key, descriptor) {
         obj[key] = $own(descriptor, 'get')
-          ? descriptor.get()
-          : descriptor.value;
+          ? descriptor['get']()
+          : descriptor['value'];
         return obj;
       };
 
@@ -1271,8 +1277,8 @@ var amend = (function amendPrivateScope() {
           if ( $own(props, key) ) {
             prop = props[key];
             obj[key] = $own(prop, 'get')
-              ? prop.get()
-              : prop.value;
+              ? prop['get']()
+              : prop['value'];
           }
         }
         return obj;
