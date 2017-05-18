@@ -22,6 +22,11 @@ var amend = require('./amend.js');
 // VITALS CREATE
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var create = (function createPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -62,7 +67,7 @@ var create = (function createPrivateScope() {
       throw $typeErr(new TypeError, 'proto', proto, '?Object');
 
     if (arguments.length > 1) {
-      args = sliceArr(arguments);
+      args = $sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     }
@@ -89,8 +94,7 @@ var create = (function createPrivateScope() {
    * @param {(!function(*, *): *)=} setter
    * @return {!Object}
    */
-  create.object = function createObject(
-    proto, props, val, descriptor, strongType, setter) {
+  function createObject(proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
     var args;
@@ -99,15 +103,15 @@ var create = (function createPrivateScope() {
       throw $typeErr(new TypeError, 'proto', proto, '?Object', 'object');
 
     if (arguments.length > 1) {
-      args = sliceArr(arguments);
+      args = $sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
       return amend.apply(null, args);
     } 
 
     return _ObjectCreate(proto);
   }
-  // define shorthand
-  create.obj = create.object;
+  create['object'] = createObject;
+  create['obj'] = createObject;
 
   ///////////////////////////////////////////////////// {{{2
   // CREATE HELPERS - OBJECT.CREATE POLYFILL
