@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS IS
+ * VITALS.IS
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -17,9 +17,14 @@ var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS IS
+// VITALS.IS
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var is = (function isPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -67,9 +72,9 @@ var is = (function isPrivateScope() {
    * @ref [date]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date)
    * @ref [elem]:(https://developer.mozilla.org/en-US/docs/Web/API/Element)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Normal_objects_and_functions)
+   * @ref [none]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
    * @ref [null]:(https://developer.mozilla.org/en-US/docs/Glossary/null)
    * @ref [prim]:(https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
-   * @ref [unde]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
    * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
    * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
    * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
@@ -105,9 +110,22 @@ var is = (function isPrivateScope() {
     var nullable;
     /** @type {?Array<!function>} */
     var checks;
+    /** @type {boolean} */
+    var vals;
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #types or #val defined');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #types defined');
+      case 1:
+        throw $err(new Error, 'no #val defined');
+      case 2:
+        vals = false;
+        break;
+      default:
+        vals = true;
+        break;
+    }
+
     if ( !$is.str(types) )
       throw $typeErr(new TypeError, 'types', types, 'string');
     if ( !types )
@@ -123,7 +141,7 @@ var is = (function isPrivateScope() {
         'https://github.com/imaginate/vitals/wiki/vitals.is-types');
 
     nullable = _getNullable(types);
-    return arguments.length > 2
+    return vals
       ? _checkVals(checks, arguments, nullable)
       : _checkVal(checks, val, nullable);
   }
@@ -141,8 +159,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['null'] = function isNull(val) {
-    switch (arguments.length) {
+  function isNull(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'null');
       case 1:
@@ -150,14 +168,14 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.nil);
     }
-  };
-  // define shorthand
-  is.nil = is['null'];
+  }
+  is['null'] = isNull;
+  is['nil'] = isNull;
 
   /// {{{2
   /// @method is.undefined
   /**
-   * Checks if a value or many values are [undefined][unde].
+   * Checks if a value or many values are [undefined][none].
    *
    * @public
    * @param {...*} val
@@ -166,8 +184,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['undefined'] = function isUndefined(val) {
-    switch (arguments.length) {
+  function isUndefined(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'undefined');
       case 1:
@@ -175,7 +193,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.none);
     }
-  };
+  }
+  is['undefined'] = isUndefined;
 
   /// {{{2
   /// @method is.boolean
@@ -191,8 +210,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['boolean'] = function isBoolean(val) {
-    switch (arguments.length) {
+  function isBoolean(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'boolean');
       case 1:
@@ -200,9 +219,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.bool);
     }
-  };
-  // define shorthand
-  is.bool = is['boolean'];
+  }
+  is['boolean'] = isBoolean;
+  is['bool'] = isBoolean;
 
   /// {{{2
   /// @method is.string
@@ -218,8 +237,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['string'] = function isString(val) {
-    switch (arguments.length) {
+  function isString(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'string');
       case 1:
@@ -227,9 +246,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.str);
     }
-  };
-  // define shorthand
-  is.str = is['string'];
+  }
+  is['string'] = isString;
+  is['str'] = isString;
 
   /// {{{2
   /// @method is._string
@@ -245,8 +264,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is._string = function isNonEmptyString(val) {
-    switch (arguments.length) {
+  function isNonEmptyString(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', '_string');
       case 1:
@@ -254,9 +273,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is._str);
     }
-  };
-  // define shorthand
-  is._str = is._string;
+  }
+  is['_string'] = isNonEmptyString;
+  is['_str'] = isNonEmptyString;
 
   /// {{{2
   /// @method is.number
@@ -272,8 +291,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.number = function isNumber(val) {
-    switch (arguments.length) {
+  function isNumber(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'number');
       case 1:
@@ -281,9 +300,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.num);
     }
-  };
-  // define shorthand
-  is.num = is.number;
+  }
+  is['number'] = isNumber;
+  is['num'] = isNumber;
 
   /// {{{2
   /// @method is._number
@@ -299,8 +318,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is._number = function isNonZeroNumber(val) {
-    switch (arguments.length) {
+  function isNonZeroNumber(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', '_number');
       case 1:
@@ -308,9 +327,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is._num);
     }
-  };
-  // define shorthand
-  is._num = is._number;
+  }
+  is['_number'] = isNonZeroNumber;
+  is['_num'] = isNonZeroNumber;
 
   /// {{{2
   /// @method is.nan
@@ -324,8 +343,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.nan = function isNan(val) {
-    switch (arguments.length) {
+  function isNan(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'nan');
       case 1:
@@ -333,7 +352,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.nan);
     }
-  };
+  }
+  is['nan'] = isNan;
 
   /// {{{2
   /// @method is.object
@@ -348,8 +368,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is['object'] = function isObject(val) {
-    switch (arguments.length) {
+  function isObject(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'object');
       case 1:
@@ -357,9 +377,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.obj);
     }
-  };
-  // define shorthand
-  is.obj = is['object'];
+  }
+  is['object'] = isObject;
+  is['obj'] = isObject;
 
   /// {{{2
   /// @method is._object
@@ -380,8 +400,8 @@ var is = (function isPrivateScope() {
    * @param {...*} val
    * @return {boolean}
    */
-  is._object = function isObjectOrFunction(val) {
-    switch (arguments.length) {
+  function isObjectOrFunction(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', '_object');
       case 1:
@@ -389,9 +409,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is._obj);
     }
-  };
-  // define shorthand
-  is._obj = is._object;
+  }
+  is['_object'] = isObjectOrFunction;
+  is['_obj'] = isObjectOrFunction;
 
   /// {{{2
   /// @method is.func
@@ -410,8 +430,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.func = function isFunction(val) {
-    switch (arguments.length) {
+  function isFunction(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'function');
       case 1:
@@ -419,11 +439,11 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.fun);
     }
-  };
-  // define shorthand
-  is['fn'] = is.func;
+  }
+  is['func'] = isFunction;
   try {
-    is['function'] = is.func;
+    is['fn'] = isFunction;
+    is['function'] = isFunction;
   }
   catch (e) {}
 
@@ -441,8 +461,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.array = function isArray(val) {
-    switch (arguments.length) {
+  function isArray(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'array');
       case 1:
@@ -450,9 +470,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.arr);
     }
-  };
-  // define shorthand
-  is.arr = is.array;
+  }
+  is['array'] = isArray;
+  is['arr'] = isArray;
 
   /// {{{2
   /// @method is._array
@@ -468,8 +488,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is._array = function isArrayOrArguments(val) {
-    switch (arguments.length) {
+  function isArrayOrArguments(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', '_array');
       case 1:
@@ -477,9 +497,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is._arr);
     }
-  };
-  // define shorthand
-  is._arr = is._array;
+  }
+  is['_array'] = isArrayOrArguments;
+  is['_arr'] = isArrayOrArguments;
 
   /// {{{2
   /// @method is.regexp
@@ -496,8 +516,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.regexp = function isRegExp(val) {
-    switch (arguments.length) {
+  function isRegExp(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'regexp');
       case 1:
@@ -505,10 +525,10 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.regx);
     }
-  };
-  // define shorthand
-  is.regex = is.regexp;
-  is.re = is.regexp;
+  }
+  is['regexp'] = isRegExp;
+  is['regex'] = isRegExp;
+  is['re'] = isRegExp;
 
   /// {{{2
   /// @method is.date
@@ -523,8 +543,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.date = function isDate(val) {
-    switch (arguments.length) {
+  function isDate(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'date');
       case 1:
@@ -532,7 +552,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.date);
     }
-  };
+  }
+  is['date'] = isDate;
 
   /// {{{2
   /// @method is.error
@@ -548,8 +569,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.error = function isError(val) {
-    switch (arguments.length) {
+  function isError(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'error');
       case 1:
@@ -557,9 +578,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.err);
     }
-  };
-  // define shorthand
-  is.err = is.error;
+  }
+  is['error'] = isError;
+  is['err'] = isError;
 
   /// {{{2
   /// @method is.args
@@ -574,8 +595,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.args = function isArguments(val) {
-    switch (arguments.length) {
+  function isArguments(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'args');
       case 1:
@@ -583,7 +604,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.args);
     }
-  };
+  }
+  is['args'] = isArguments;
 
   /// {{{2
   /// @method is.document
@@ -599,8 +621,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.document = function isDocument(val) {
-    switch (arguments.length) {
+  function isDocument(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'document');
       case 1:
@@ -608,9 +630,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.doc);
     }
-  };
-  // define shorthand
-  is.doc = is.document;
+  }
+  is['document'] = isDocument;
+  is['doc'] = isDocument;
 
   /// {{{2
   /// @method is.element
@@ -626,8 +648,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.element = function isElement(val) {
-    switch (arguments.length) {
+  function isElement(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'element');
       case 1:
@@ -635,9 +657,9 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.elem);
     }
-  };
-  // define shorthand
-  is.elem = is.element;
+  }
+  is['element'] = isElement;
+  is['elem'] = isElement;
 
   /// {{{2
   /// @method is.empty
@@ -671,8 +693,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.empty = function isEmpty(val) {
-    switch (arguments.length) {
+  function isEmpty(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'empty');
       case 1:
@@ -680,7 +702,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, $is.empty);
     }
-  };
+  }
+  is['empty'] = isEmpty;
 
   /// {{{2
   /// @method is.frozen
@@ -694,8 +717,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.frozen = function isFrozen(val) {
-    switch (arguments.length) {
+  function isFrozen(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'frozen');
       case 1:
@@ -703,7 +726,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, _isFrozen);
     }
-  };
+  }
+  is['frozen'] = isFrozen;
 
   /// {{{2
   /// @method is.whole
@@ -718,8 +742,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.whole = function isWholeNumber(val) {
-    switch (arguments.length) {
+  function isWholeNumber(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'whole');
       case 1:
@@ -727,7 +751,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, _isWhole);
     }
-  };
+  }
+  is['whole'] = isWholeNumber;
 
   /// {{{2
   /// @method is.odd
@@ -742,8 +767,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.odd = function isOddNumber(val) {
-    switch (arguments.length) {
+  function isOddNumber(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'odd');
       case 1:
@@ -751,7 +776,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, _isOdd);
     }
-  };
+  }
+  is['odd'] = isOddNumber;
 
   /// {{{2
   /// @method is.even
@@ -766,8 +792,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  is.even = function isEvenNumber(val) {
-    switch (arguments.length) {
+  function isEvenNumber(val) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #val defined', 'even');
       case 1:
@@ -775,7 +801,8 @@ var is = (function isPrivateScope() {
       default:
         return _are(arguments, _isEven);
     }
-  };
+  }
+  is['even'] = isEvenNumber;
 
   ///////////////////////////////////////////////////// {{{2
   // IS HELPERS - ARE
@@ -794,7 +821,7 @@ var is = (function isPrivateScope() {
     /** @type {number} */
     var i;
 
-    i = vals.length;
+    i = vals['length'];
     while (i--) {
       if ( !check(vals[i]) )
         return false;
@@ -892,7 +919,7 @@ var is = (function isPrivateScope() {
     /** @type {number} */
     var i;
 
-    i = checks.length;
+    i = checks['length'];
     while (i--) {
       if ( checks[i](val, nullable) )
         return true;
@@ -914,7 +941,7 @@ var is = (function isPrivateScope() {
     /** @type {number} */
     var i;
 
-    i = vals.length;
+    i = vals['length'];
     while (--i) {
       if ( !_checkVal(checks, vals[i], nullable) )
         return false;
@@ -926,20 +953,18 @@ var is = (function isPrivateScope() {
   // IS HELPERS - TYPES
   //////////////////////////////////////////////////////////
 
-  /**
-   * @typedef {!Object<string, !function(*, boolean=): boolean>} DataTypes
-   */
-
   /// {{{3
   /// @const TYPES
   /**
    * @private
-   * @const {!DataTypes}
+   * @const {!Object<string, !function(*, boolean=): boolean>}
+   * @dict
    */
-  var TYPES = (function() {
+  var TYPES = (function _isTypesPrivateScope() {
 
     /**
-     * @type {!DataTypes}
+     * @type {!Object<string, !function(*, boolean=): boolean>}
+     * @dict
      */
     var $types = {};
 
@@ -957,6 +982,7 @@ var is = (function isPrivateScope() {
      *   value.
      * @param {boolean=} nullableDefault = `true`
      *   The default nullable value for each type in #types.
+     * @return {void}
      */
     function addTypes(section, types, nullableDefault) {
 
@@ -984,6 +1010,7 @@ var is = (function isPrivateScope() {
      *   The type's check method.
      * @param {boolean=} nullableDefault = `true`
      *   The type's default nullable value.
+     * @return {void}
      */
     function addType(section, type, check, nullableDefault) {
 
@@ -1017,6 +1044,7 @@ var is = (function isPrivateScope() {
      *
      * @private
      * @param {!Object<string, string>} shortcuts
+     * @return {void}
      */
     function addShortcuts(shortcuts) {
 
@@ -1049,7 +1077,7 @@ var is = (function isPrivateScope() {
        * @param {*} val
        * @return {boolean}
        */
-      return function check(val) {
+      function check(val) {
 
         /** @type {number} */
         var i;
@@ -1057,15 +1085,17 @@ var is = (function isPrivateScope() {
         if ( !$is.arr(val) )
           return false;
 
-        i = val.length;
+        i = val['length'];
         while (i--) {
           if ( !eachCheck(val[i]) )
             return false;
         }
         return true;
-      };
+      }
+
+      return check;
     }
-    addType.arrays = addArrayType;
+    addType['arrays'] = addArrayType;
 
     /// {{{4
     /// @func addMapType
@@ -1082,7 +1112,7 @@ var is = (function isPrivateScope() {
        * @param {*} val
        * @return {boolean}
        */
-      return function check(val) {
+      function check(val) {
 
         /** @type {string} */
         var key;
@@ -1095,9 +1125,11 @@ var is = (function isPrivateScope() {
             return false;
         }
         return true;
-      };
+      }
+
+      return check;
     }
-    addType.maps = addMapType;
+    addType['maps'] = addMapType;
 
     ///////////////////////// {{{4
     // ADD TYPES
@@ -1174,74 +1206,64 @@ var is = (function isPrivateScope() {
     addShortcuts({
 
       /// {{{5 Add Primitives
-      nil:  'null',
-      bool: 'boolean',
-      str:  'string',
-      num:  'number',
+      'nil':  'null',
+      'bool': 'boolean',
+      'str':  'string',
+      'num':  'number',
 
       /// {{{5 Add JS Objects
-      obj:   'object',
-      func:  'function',
-      fn:    'function',
-      regex: 'regexp',
-      re:    'regexp',
-      arr:   'array',
-      err:   'error',
-      args:  'arguments',
+      'obj':   'object',
+      'func':  'function',
+      'fn':    'function',
+      'regex': 'regexp',
+      're':    'regexp',
+      'arr':   'array',
+      'err':   'error',
+      'args':  'arguments',
 
       /// {{{5 Add DOM Objects
-      elem: 'element',
-      doc:  'document',
+      'elem': 'element',
+      'doc':  'document',
 
       /// {{{5 Add Arrays
-      nils:   'nulls',
-      strs:   'strings',
-      nums:   'numbers',
-      bools:  'booleans',
-      objs:   'objects',
-      funcs:  'functions',
-      fns:    'functions',
-      regexs: 'regexps',
-      res:    'regexps',
-      arrs:   'arrays',
-      errs:   'errors',
-      elems:  'elements',
-      docs:   'documents',
+      'nils':   'nulls',
+      'strs':   'strings',
+      'nums':   'numbers',
+      'bools':  'booleans',
+      'objs':   'objects',
+      'funcs':  'functions',
+      'fns':    'functions',
+      'regexs': 'regexps',
+      'res':    'regexps',
+      'arrs':   'arrays',
+      'errs':   'errors',
+      'elems':  'elements',
+      'docs':   'documents',
 
       /// {{{5 Add Maps
-      nilmap:   'nullmap',
-      strmap:   'stringmap',
-      nummap:   'numbermap',
-      boolmap:  'booleanmap',
-      objmap:   'objectmap',
-      funcmap:  'functionmap',
-      fnmap:    'functionmap',
-      regexmap: 'regexpmap',
-      remap:    'regexpmap',
-      arrmap:   'arraymap',
-      errmap:   'errormap',
-      elemmap:  'elementmap',
-      docmap:   'documentmap'
+      'nilmap':   'nullmap',
+      'strmap':   'stringmap',
+      'nummap':   'numbermap',
+      'boolmap':  'booleanmap',
+      'objmap':   'objectmap',
+      'funcmap':  'functionmap',
+      'fnmap':    'functionmap',
+      'regexmap': 'regexpmap',
+      'remap':    'regexpmap',
+      'arrmap':   'arraymap',
+      'errmap':   'errormap',
+      'elemmap':  'elementmap',
+      'docmap':   'documentmap'
     });
-
     /// }}}4
-    // END OF TYPES PRIVATE SCOPE
+
+    // END OF PRIVATE SCOPE FOR IS TYPES
     return $types;
   })();
 
   ///////////////////////////////////////////////////// {{{2
   // IS HELPERS - PARSING
   //////////////////////////////////////////////////////////
-
-  /**
-   * @typedef {{
-   *   '|': !function(string): boolean,
-   *   '!': !function(string): boolean,
-   *   '?': !function(string): boolean,
-   *   '=': !function(string): boolean,
-   *   '*': !function(string): boolean
-   * }} SpecialTests
-   */
 
   /// {{{3
   /// @const ALL_SPECIALS
@@ -1255,9 +1277,10 @@ var is = (function isPrivateScope() {
   /// @const SPECIALS
   /**
    * @private
-   * @const {!SpecialTests}
+   * @const {!Object<string, !function(string): boolean>}
+   * @dict
    */
-  var SPECIALS = (function() {
+  var SPECIALS = (function _isSpecialsPrivateScope() {
 
     /// {{{4
     /// @const PIPE
@@ -1306,7 +1329,7 @@ var is = (function isPrivateScope() {
      * @return {boolean}
      */
     function hasPipe(val) {
-      return PIPE.test(val);
+      return PIPE['test'](val);
     }
 
     /// {{{4
@@ -1316,7 +1339,7 @@ var is = (function isPrivateScope() {
      * @return {boolean}
      */
     function hasExPoint(val) {
-      return EX_POINT.test(val);
+      return EX_POINT['test'](val);
     }
 
     /// {{{4
@@ -1326,7 +1349,7 @@ var is = (function isPrivateScope() {
      * @return {boolean}
      */
     function hasQuestMark(val) {
-      return QUEST_MARK.test(val);
+      return QUEST_MARK['test'](val);
     }
 
     /// {{{4
@@ -1336,7 +1359,7 @@ var is = (function isPrivateScope() {
      * @return {boolean}
      */
     function hasEqSign(val) {
-      return EQ_SIGN.test(val);
+      return EQ_SIGN['test'](val);
     }
 
     /// {{{4
@@ -1346,17 +1369,26 @@ var is = (function isPrivateScope() {
      * @return {boolean}
      */
     function hasAnyGlob(val) {
-      return ANY_GLOB.test(val);
+      return ANY_GLOB['test'](val);
     }
 
-    /** @const {!SpecialTests} */
-    return {
+    /// {{{4
+    /// @const SPECIALS
+    /**
+     * @const {!Object<string, !function(string): boolean>}
+     * @dict
+     */
+    var SPECIALS = {
       '|': hasPipe,
       '!': hasExPoint,
       '?': hasQuestMark,
       '=': hasEqSign,
       '*': hasAnyGlob
     };
+    /// }}}4
+
+    // END OF PRIVATE SCOPE FOR IS SPECIALS
+    return SPECIALS;
   })();
 
   /// {{{3
@@ -1390,11 +1422,11 @@ var is = (function isPrivateScope() {
     if ( _hasSpecial('=', types) )
       types += '|undefined';
 
-    types = types.toLowerCase();
-    types = types.replace(ALL_SPECIALS, '');
-    checks = types.split('|');
+    types = types['toLowerCase']();
+    types = types['replace'](ALL_SPECIALS, '');
+    checks = types['split']('|');
 
-    i = checks.length;
+    i = checks['length'];
     while (i--) {
       type = '_' + checks[i];
       if ( !$own(TYPES, type) )
@@ -1402,7 +1434,7 @@ var is = (function isPrivateScope() {
       checks[i] = TYPES[type];
     }
 
-    return checks.length
+    return checks['length']
       ? checks
       : null;
   }
@@ -1437,7 +1469,7 @@ var is = (function isPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // IS HELPERS - MISC
+  // IS HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -1448,6 +1480,19 @@ var is = (function isPrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // IS HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('is');
+
   /// {{{3
   /// @func $err
   /**
@@ -1457,7 +1502,7 @@ var is = (function isPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('is');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -1470,7 +1515,7 @@ var is = (function isPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -1484,10 +1529,10 @@ var is = (function isPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR IS
+
+  // END OF PRIVATE SCOPE FOR VITALS.IS
   return is;
 })();
 /// }}}1
