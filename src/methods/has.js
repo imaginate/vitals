@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS HAS
+ * VITALS.HAS
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -22,9 +22,14 @@ var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS HAS
+// VITALS.HAS
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var has = (function hasPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -110,8 +115,12 @@ var has = (function hasPrivateScope() {
    */
   function has(source, val) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
+      case 1:
+        throw $err(new Error, 'no #val defined');
+    }
 
     if ( $is.nil(source) )
       return false;
@@ -156,10 +165,14 @@ var has = (function hasPrivateScope() {
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    */
-  has.key = function hasKey(source, key) {
+  function hasKey(source, key) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #key defined', 'key');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'key');
+      case 1:
+        throw $err(new Error, 'no #key defined', 'key');
+    }
 
     if ( $is.nil(source) )
       return false;
@@ -169,7 +182,8 @@ var has = (function hasPrivateScope() {
         'key');
 
     return $own(source, key);
-  };
+  }
+  has['key'] = hasKey;
 
   /// {{{2
   /// @method has.value
@@ -210,10 +224,14 @@ var has = (function hasPrivateScope() {
    *     This method checks each indexed property in the #source for one
    *     matching value.
    */
-  has.value = function hasValue(source, val) {
+  function hasValue(source, val) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'value');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'value');
+      case 1:
+        throw $err(new Error, 'no #val defined', 'value');
+    }
 
     if ( $is.nil(source) )
       return false;
@@ -225,9 +243,9 @@ var has = (function hasPrivateScope() {
     return $is._arr(source)
       ? $inArr(source, val)
       : $inObj(source, val);
-  };
-  // define shorthand
-  has.val = has.value;
+  }
+  has['value'] = hasValue;
+  has['val'] = hasValue;
 
   /// {{{2
   /// @method has.pattern
@@ -254,15 +272,21 @@ var has = (function hasPrivateScope() {
    *   result from [String.prototype.indexOf][indexOf] (i.e.
    *   `return source.indexOf(alteredPattern) !== -1;`).
    */
-  has.pattern = function hasPattern(source, pattern) {
+  function hasPattern(source, pattern) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'pattern');
+      case 1:
+        throw $err(new Error, 'no #pattern defined', 'pattern');
+    }
 
     if ( !$is.str(source) )
       throw $typeErr(new TypeError, 'source', source, 'string', 'pattern');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #pattern defined', 'pattern');
 
     return $match(source, pattern);
-  };
+  }
+  has['pattern'] = hasPattern;
 
   /// {{{2
   /// @method has.substring
@@ -288,17 +312,22 @@ var has = (function hasPrivateScope() {
    *   [String.prototype.indexOf][indexOf] (i.e.
    *   `return source.indexOf(alteredVal) !== -1;`).
    */
-  has.substring = function hasSubstring(source, val) {
+  function hasSubstring(source, val) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'substring');
+      case 1:
+        throw $err(new Error, 'no #val defined', 'substring');
+    }
 
     if ( !$is.str(source) )
       throw $typeErr(new TypeError, 'source', source, 'string', 'substring');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'substring');
 
     return $inStr(source, val);
-  };
-  // define shorthand
-  has.substr = has.substring;
+  }
+  has['substring'] = hasSubstring;
+  has['substr'] = hasSubstring;
 
   /// {{{2
   /// @method has.enumerable
@@ -333,10 +362,14 @@ var has = (function hasPrivateScope() {
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][isEnum].
    */
-  has.enumerable = function hasEnumerable(source, key) {
+  function hasEnumerable(source, key) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #key defined', 'enumerable');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'enumerable');
+      case 1:
+        throw $err(new Error, 'no #key defined', 'enumerable');
+    }
 
     if ( $is.nil(source) )
       return false;
@@ -346,15 +379,15 @@ var has = (function hasPrivateScope() {
         'enumerable');
 
     return $ownEnum(source, key);
-  };
-  // define shorthand
+  }
+  has['enumerable'] = hasEnumerable;
   try {
-    has.enum = has.enumerable;
+    has['enum'] = hasEnumerable;
   }
   catch (e) {}
 
   ///////////////////////////////////////////////////// {{{2
-  // HAS HELPERS - MISC
+  // HAS HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -365,6 +398,19 @@ var has = (function hasPrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // HAS HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('has');
+
   /// {{{3
   /// @func $err
   /**
@@ -374,7 +420,7 @@ var has = (function hasPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('has');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -387,7 +433,7 @@ var has = (function hasPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -401,10 +447,10 @@ var has = (function hasPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR HAS
+
+  // END OF PRIVATE SCOPE FOR VITALS.HAS
   return has;
 })();
 /// }}}1
