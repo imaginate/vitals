@@ -19,9 +19,9 @@ module.exports = $newErrorMaker;
 
 /**
  * @private
- * @param {string} main
+ * @param {string} mainMethod
  *   A vitals method.
- * @return {!Function}
+ * @return {!Object<string, !function>}
  */
 var $newErrorMaker = (function $newErrorMakerPrivateScope() {
 
@@ -79,13 +79,13 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     depth += 1;
 
     result = '[\n';
-    len = val.length;
+    len = val['length'];
     i = -1;
     while (++i < len) {
       result += indent + i + ': ';
       result += _toStr(val[i], depth) + ',\n';
     }
-    result = result.replace(LAST_SEP, '\n');
+    result = result['replace'](LAST_SEP, '\n');
     return result + ']';
   }
 
@@ -97,14 +97,14 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
    * @return {string}
    */
   function _escStr(val) {
-    val = val.replace(/\\/g, '\\\\');
-    val = val.replace(/\n/g, '\\n');
-    val = val.replace(/\r/g, '\\r');
-    val = val.replace(/\t/g, '\\t');
-    val = val.replace(/\v/g, '\\v');
-    val = val.replace(/\0/g, '\\0');
-    val = val.replace(/\b/g, '\\b');
-    val = val.replace(/\f/g, '\\f');
+    val = val['replace'](/\\/g, '\\\\');
+    val = val['replace'](/\n/g, '\\n');
+    val = val['replace'](/\r/g, '\\r');
+    val = val['replace'](/\t/g, '\\t');
+    val = val['replace'](/\v/g, '\\v');
+    val = val['replace'](/\0/g, '\\0');
+    val = val['replace'](/\b/g, '\\b');
+    val = val['replace'](/\f/g, '\\f');
     return val;
   }
 
@@ -122,14 +122,14 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
 
     if ( $is.fun(val) ) {
       type = 'Function';
-      if (val.name)
-        type += '(' + val.name + ')';
+      if (val['name'])
+        type += '(' + val['name'] + ')';
       return type;
     }
 
-    type = _objToStr.call(val);
-    return MAP_TYPE.test(type)
-      ? type.replace(MAP_TYPE, '$1')
+    type = _objToStr['call'](val);
+    return MAP_TYPE['test'](type)
+      ? type['replace'](MAP_TYPE, '$1')
       : 'UnknownObjectType';
   }
 
@@ -192,7 +192,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
    * @this {!Object}
    * @return {string}
    */
-  var _objToStr = Object.prototype.toString;
+  var _objToStr = Object['prototype']['toString'];
 
   /// {{{4
   /// @func _ownToStr
@@ -225,7 +225,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
         result += _toStr(val[key], depth) + ',\n';
       }
     }
-    result = result.replace(LAST_SEP, '\n');
+    result = result['replace'](LAST_SEP, '\n');
     return result + '}';
   }
 
@@ -270,7 +270,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     depth = depth || 0;
     return $is._obj(val)
       ? $is.regx(val)
-        ? val.toString();
+        ? val['toString']();
         : _mapToStr(val, depth)
       : _primToStr(val);
   }
@@ -321,7 +321,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
 
     result = '';
 
-    len = opts.length;
+    len = opts['length'];
     i = -1;
     while (++i < len)
       result += '\n- `' + _toStr(opts[i]) + '`';
@@ -336,7 +336,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
    * @return {string}
    */
   function _prepMainMethod(name) {
-    name = name.replace(OPEN_VITALS, '');
+    name = name['replace'](OPEN_VITALS, '');
     return 'vitals.' + name;
   }
 
@@ -352,10 +352,10 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     if (!name)
       return '';
 
-    if ( STRICT.test(name) )
-      return name.replace(STRICT, '');
+    if ( STRICT['test'](name) )
+      return name['replace'](STRICT, '');
 
-    name = name.replace(OPEN_HASH, '');
+    name = name['replace'](OPEN_HASH, '');
     return '#' + name;
   }
 
@@ -367,38 +367,52 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
    * @param {string} name
    * @param {string} msg
    * @param {*=} val
-   * @return {!Error} 
+   * @return {!Error}
    */
   function _setErrorProps(err, name, msg, val) {
-    err.__vitals = true;
-    err.vitals = true;
-    err.name = name;
+    err['__vitals'] = true;
+    err['vitals'] = true;
+    err['name'] = name;
     switch (name) {
       case 'TypeError':
-        err.__type = true;
-        err.type = true;
+        err['__type'] = true;
+        err['type'] = true;
         break;
       case 'RangeError':
-        err.__range = true;
-        err.range = true;
+        err['__range'] = true;
+        err['range'] = true;
         break;
     }
-    err.message = msg;
-    err.msg = msg;
-    if (arguments.length > 3)
-      err.val = val;
+    err['message'] = msg;
+    err['msg'] = msg;
+    if (arguments.length > 3) {
+      err['value'] = val;
+      err['val'] = val;
+    }
     return err;
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // $NEW-ERROR-MAKER METHOD
+  // $NEW-ERROR-MAKER CONSTRUCTOR
   //////////////////////////////////////////////////////////
 
   /**
    * @param {string} mainMethod
-   * @return {!Function}
+   * @return {!Object<string, !function>}
    */
-  return function $newErrorMaker(mainMethod) {
+  function $newErrorMaker(mainMethod) {
+
+    /// {{{4
+    /// @const ERROR_MAKER
+    /**
+     * @const {!Object<string, !function>}
+     * @struct
+     */
+    var ERROR_MAKER = {
+      error: error,
+      typeError: typeError,
+      rangeError: rangeError
+    };
 
     /// {{{4
     /// @const MAIN
@@ -497,15 +511,13 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
     }
     /// }}}4
 
-    /** @type {!Function} */
-    var errorMaker;
-
-    errorMaker = error;
-    errorMaker.type = typeError;
-    errorMaker.range = rangeError;
-    return errorMaker;
-  };
+    // END OF $NEW-ERROR-MAKER CONSTRUCTOR
+    return ERROR_MAKER;
+  }
   /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $NEW-ERROR-MAKER
+  return $newErrorMaker;
 })();
 /// }}}2
 
