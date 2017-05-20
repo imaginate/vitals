@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS COPY
+ * VITALS.COPY
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -20,7 +20,7 @@ var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS COPY
+// VITALS.COPY
 //////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -71,7 +71,7 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
-    if (arguments.length < 1)
+    if (arguments['length'] < 1)
       throw $err(new Error, 'no #val defined');
     if ( !$isNone.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
@@ -129,13 +129,20 @@ var copy = (function copyPrivateScope() {
    */
   function copyArray(obj, deep) {
 
+    /** @type {number} */
+    var len;
+
     if ( !$is.obj(obj) )
       throw $typeErr(new TypeError, 'obj', obj, '!Array|!Object', 'array');
-    if ( !$is.num(obj.length) )
-      throw $typeErr(new TypeError, 'obj.length', obj.length, 'number',
-        'array');
     if ( !$isNone.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
+
+    len = obj['length'];
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'obj.length', len, 'number', 'array');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #obj.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'array');
 
     return _copyArr(obj, deep);
   }
@@ -237,7 +244,7 @@ var copy = (function copyPrivateScope() {
     /** @type {!Array} */
     var arr;
 
-    arr = new Array(obj.length);
+    arr = new Array(obj['length']);
     return deep
       ? _mergeDeep(arr, obj)
       : $merge(arr, obj);
@@ -280,7 +287,7 @@ var copy = (function copyPrivateScope() {
     var funcCopy;
 
     funcCopy = function funcCopy() {
-      return func.apply(null, arguments);
+      return func['apply'](null, arguments);
     };
     return deep
       ? _mergeDeep(funcCopy, func)
@@ -310,7 +317,7 @@ var copy = (function copyPrivateScope() {
       : null;
     return pattern
       ? function _escape(source) {
-          return source.replace(pattern, '\\\\');
+          return source['replace'](pattern, '\\\\');
         }
       : function _escape(source) {
           return source;
@@ -324,7 +331,7 @@ var copy = (function copyPrivateScope() {
    * @const {!Object<string, string>}
    * @dict
    */
-  var FLAGS = (function() {
+  var FLAGS = (function _RegExpFlagsPrivateScope() {
 
     /**
      * @type {!Object<string, string>}
@@ -332,15 +339,21 @@ var copy = (function copyPrivateScope() {
      */
     var flags;
 
-    flags = {
-      'ignoreCase': 'i',
-      'multiline': 'm',
-      'global': 'g'
-    };
+    /**
+     * @private
+     * @const {!Object<string, string>}
+     * @dict
+     */
+    var PROTO = RegExp['prototype'];
 
-    if ('sticky' in RegExp.prototype)
+    flags = {};
+    flags['ignoreCase'] = 'i';
+    flags['multiline'] = 'm';
+    flags['global'] = 'g';
+
+    if ('sticky' in PROTO)
       flags['sticky'] = 'y';
-    if ('unicode' in RegExp.prototype)
+    if ('unicode' in PROTO)
       flags['unicode'] = 'u';
 
     return flags;
@@ -373,15 +386,23 @@ var copy = (function copyPrivateScope() {
     return $inStr(flags, 'g')
       ? forceGlobal
         ? flags
-        : flags.replace('g', '')
+        : flags['replace']('g', '')
       : forceGlobal
         ? flags + 'g'
         : flags;
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // COPY HELPERS - MISC
+  // COPY HELPERS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
 
   /// {{{3
   /// @func _mergeDeep
@@ -403,13 +424,18 @@ var copy = (function copyPrivateScope() {
     return dest;
   }
 
+  ///////////////////////////////////////////////////// {{{2
+  // COPY HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
   /// {{{3
-  /// @const NONE
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @const {undefined}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var NONE = (function(){})();
+  var ERROR_MAKER = $newErrorMaker('copy');
 
   /// {{{3
   /// @func $err
@@ -420,7 +446,7 @@ var copy = (function copyPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('copy');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -433,7 +459,7 @@ var copy = (function copyPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -447,10 +473,10 @@ var copy = (function copyPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR COPY
+
+  // END OF PRIVATE SCOPE FOR VITALS.COPY
   return copy;
 })();
 /// }}}1
