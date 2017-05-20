@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS AMEND
+ * VITALS.AMEND
  * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
@@ -21,7 +21,7 @@ var $is = require('./helpers/is.js');
 var is = require('./is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS AMEND
+// VITALS.AMEND
 //////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -131,7 +131,7 @@ var amend = (function amendPrivateScope() {
         '!Object<string, *>|!Array<string>|string');
 
     isArr = $is.arr(props);
-    len = arguments.length;
+    len = arguments['length'];
 
     if (isArr && len < 3)
       throw $err(new Error, 'no #val defined');
@@ -284,7 +284,7 @@ var amend = (function amendPrivateScope() {
     if ( !$is.str(key) )
       throw $typeErr(new TypeError, 'key', key, 'string', 'property');
 
-    len = arguments.length;
+    len = arguments['length'];
 
     if (len < 3)
       throw $err(new Error, 'no #val or #descriptor defined', 'property');
@@ -440,7 +440,7 @@ var amend = (function amendPrivateScope() {
         '!Object<string, *>|!Array<string>|string', 'properties');
 
     isArr = $is.arr(props);
-    len = arguments.length;
+    len = arguments['length'];
 
     if (isArr && len < 3)
       throw $err(new Error, 'no #val defined', 'properties');
@@ -594,7 +594,7 @@ var amend = (function amendPrivateScope() {
 
     if ( $is.obj(val) && _isDescriptor(val) ) {
       descriptor = val;
-      val = descriptor.value;
+      val = descriptor['value'];
     }
 
     return [ val, descriptor, strongType, setter ];
@@ -836,7 +836,7 @@ var amend = (function amendPrivateScope() {
       : _setupDescriptorByKey;
     props = {};
 
-    len = keys.length;
+    len = keys['length'];
     i = -1;
     while (++i < len)
       props[ keys[i] ] = setupDesc(val, descriptor);
@@ -866,7 +866,7 @@ var amend = (function amendPrivateScope() {
 
     props = {};
 
-    len = keys.length;
+    len = keys['length'];
     i = -1;
     while (++i < len)
       props[ keys[i] ] = _setupDescriptorByKeyWithSetter(
@@ -893,7 +893,7 @@ var amend = (function amendPrivateScope() {
 
     props = {};
 
-    len = keys.length;
+    len = keys['length'];
     i = -1;
     while (++i < len)
       props[ keys[i] ] = desc;
@@ -990,25 +990,6 @@ var amend = (function amendPrivateScope() {
     prop = $cloneObj(descriptor);
     prop = _setupGetSet(val, prop, strongType, setter);
     return prop;
-  }
-
-  /// {{{3
-  /// @func _mkStrongError
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} msg
-   * @return {!TypeError}
-   */
-  function _mkStrongError(err, msg) {
-    err['__setter'] = true;
-    err['setter'] = true;
-    err['__type'] = true;
-    err['type'] = true;
-    err['name'] = 'TypeError';
-    err['message'] = msg;
-    err['msg'] = msg;
-    return err;
   }
 
   /// {{{3
@@ -1209,7 +1190,7 @@ var amend = (function amendPrivateScope() {
    * @private
    * @const {boolean}
    */
-  var HAS_DEFINE_PROPS = !!Object.defineProperties && (function () {
+  var HAS_DEFINE_PROPS = (function _hasDefinePropsPrivateScope() {
 
     /** @type {!Object} */
     var descriptor;
@@ -1218,16 +1199,26 @@ var amend = (function amendPrivateScope() {
     /** @type {string} */
     var key;
 
+    if (!('defineProperties' in Object)
+        || !$is.fun(Object['defineProperties']) )
+      return false;
+
+    if (!('defineProperty' in Object)
+        || !$is.fun(Object['defineProperty']) )
+      return false;
+
+    /** @dict */ 
     obj = {};
-    descriptor = {
-      'enumerable': false,
-      'value': obj
-    };
+    /** @dict */ 
+    descriptor = {};
+
+    descriptor['value'] = obj;
+    descriptor['enumerable'] = false;
 
     try {
-      Object.defineProperty(obj, 'prop', descriptor);
+      Object['defineProperty'](obj, 'key', descriptor);
       for (key in obj) {
-        if (key === 'prop')
+        if (key === 'key')
           return false;
       }
     }
@@ -1235,7 +1226,7 @@ var amend = (function amendPrivateScope() {
       return false;
     }
 
-    return obj['prop'] === obj;
+    return obj['key'] === obj;
   })();
 
   /// {{{3
@@ -1248,7 +1239,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    */
   var _ObjectDefineProperty = HAS_DEFINE_PROPS
-    ? Object.defineProperty
+    ? Object['defineProperty']
     : function ObjectDefineProperty(obj, key, descriptor) {
         obj[key] = $own(descriptor, 'get')
           ? descriptor['get']()
@@ -1265,7 +1256,7 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    */
   var _ObjectDefineProperties = HAS_DEFINE_PROPS
-    ? Object.defineProperties
+    ? Object['defineProperties']
     : function ObjectDefineProperties(obj, props) {
 
         /** @type {!Object} */
@@ -1285,8 +1276,16 @@ var amend = (function amendPrivateScope() {
       };
 
   ///////////////////////////////////////////////////// {{{2
-  // AMEND HELPERS - MISC
+  // AMEND HELPERS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
 
   /// {{{3
   /// @func _hasKeys
@@ -1308,13 +1307,37 @@ var amend = (function amendPrivateScope() {
     return true;
   }
 
+  ///////////////////////////////////////////////////// {{{2
+  // AMEND HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
   /// {{{3
-  /// @const NONE
+  /// @func _mkStrongError
   /**
    * @private
-   * @const {undefined}
+   * @param {!TypeError} err
+   * @param {string} msg
+   * @return {!TypeError}
    */
-  var NONE = (function(){})();
+  function _mkStrongError(err, msg) {
+    err['__setter'] = true;
+    err['setter'] = true;
+    err['__type'] = true;
+    err['type'] = true;
+    err['name'] = 'TypeError';
+    err['message'] = msg;
+    err['msg'] = msg;
+    return err;
+  }
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('amend');
 
   /// {{{3
   /// @func $err
@@ -1325,7 +1348,7 @@ var amend = (function amendPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('amend');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -1338,7 +1361,7 @@ var amend = (function amendPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -1352,10 +1375,10 @@ var amend = (function amendPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR AMEND
+
+  // END OF PRIVATE SCOPE FOR VITALS.AMEND
   return amend;
 })();
 /// }}}1
