@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS ROLL
+ * VITALS.ROLL
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -19,9 +19,14 @@ var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS ROLL
+// VITALS.ROLL
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var roll = (function rollPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -135,7 +140,7 @@ var roll = (function rollPrivateScope() {
     /** @type {boolean} */
     var hasBase;
 
-    switch (arguments.length) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #source defined');
       case 1:
@@ -169,6 +174,9 @@ var roll = (function rollPrivateScope() {
       if (!hasBase)
         throw $err(new Error, 'no #base defined (' +
           '#base is required with a `number` #source)');
+      if ( !$is.whole(source) )
+        throw $err(new Error, 'invalid #source `number` (' +
+          'must be whole `number`)');
 
       return _rollCycle(base, source, iteratee, thisArg);
     }
@@ -273,7 +281,7 @@ var roll = (function rollPrivateScope() {
     /** @type {boolean} */
     var hasBase;
 
-    switch (arguments.length) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #source defined', 'up');
       case 1:
@@ -307,6 +315,9 @@ var roll = (function rollPrivateScope() {
       if (!hasBase)
         throw $err(new Error, 'no #base defined (' +
           '#base is required with a `number` #source)', 'up');
+      if ( !$is.whole(source) )
+        throw $err(new Error, 'invalid #source `number` (' +
+          'must be whole `number`)', 'up');
 
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
@@ -412,7 +423,7 @@ var roll = (function rollPrivateScope() {
     /** @type {boolean} */
     var hasBase;
 
-    switch (arguments.length) {
+    switch (arguments['length']) {
       case 0:
         throw $err(new Error, 'no #source defined', 'down');
       case 1:
@@ -446,6 +457,9 @@ var roll = (function rollPrivateScope() {
       if (!hasBase)
         throw $err(new Error, 'no #base defined (' +
           '#base is required with a `number` #source)', 'down');
+      if ( !$is.whole(source) )
+        throw $err(new Error, 'invalid #source `number` (' +
+          'must be whole `number`)', 'down');
 
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
@@ -486,7 +500,7 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 3)
+    if (iteratee['length'] > 3)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
@@ -494,7 +508,7 @@ var roll = (function rollPrivateScope() {
     loaded = false;
     result = NONE;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
       case 1: 
         for (key in source) {
@@ -545,6 +559,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -563,12 +578,12 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 3)
+    if (iteratee['length'] > 3)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
       case 1: 
         for (key in source) {
@@ -595,6 +610,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -616,7 +632,7 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
@@ -624,7 +640,7 @@ var roll = (function rollPrivateScope() {
     loaded = false;
     result = NONE;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         for (key in source) {
           if ( $own(source, key) ) {
@@ -674,6 +690,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -692,12 +709,12 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         for (key in source) {
           if ( $own(source, key) )
@@ -723,6 +740,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -744,7 +762,7 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
@@ -752,7 +770,7 @@ var roll = (function rollPrivateScope() {
     loaded = false;
     result = NONE;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         for (key in source) {
           if ( $own(source, key) ) {
@@ -802,6 +820,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -820,12 +839,12 @@ var roll = (function rollPrivateScope() {
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         for (key in source) {
           if ( $own(source, key) )
@@ -851,6 +870,7 @@ var roll = (function rollPrivateScope() {
         }
         break;
     }
+
     return result;
   }
 
@@ -876,18 +896,18 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 3)
+    if (iteratee['length'] > 3)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     result = len > 0
       ? source[0]
       : NONE;
     i = 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
       case 1:
         while (++i < len)
@@ -906,6 +926,7 @@ var roll = (function rollPrivateScope() {
           result = iteratee(result, source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -926,14 +947,15 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 3)
+    if (iteratee['length'] > 3)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     i = -1;
-    switch (iteratee.length) {
+
+    switch (iteratee['length']) {
       case 0:
       case 1:
         while (++i < len)
@@ -952,6 +974,7 @@ var roll = (function rollPrivateScope() {
           result = iteratee(result, source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -973,18 +996,18 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     result = len > 0
       ? source[0]
       : NONE;
     i = 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           result += iteratee();
@@ -1002,6 +1025,7 @@ var roll = (function rollPrivateScope() {
           result += iteratee(source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -1022,14 +1046,15 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     i = -1;
-    switch (iteratee.length) {
+
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           result += iteratee();
@@ -1047,6 +1072,7 @@ var roll = (function rollPrivateScope() {
           result += iteratee(source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -1068,18 +1094,18 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     result = len > 0
       ? source[0]
       : NONE;
     i = 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           result -= iteratee();
@@ -1097,6 +1123,7 @@ var roll = (function rollPrivateScope() {
           result -= iteratee(source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -1117,14 +1144,15 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     i = -1;
-    switch (iteratee.length) {
+
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           result -= iteratee();
@@ -1142,6 +1170,7 @@ var roll = (function rollPrivateScope() {
           result -= iteratee(source[i], i, source);
         break;
     }
+
     return result;
   }
 
@@ -1173,7 +1202,7 @@ var roll = (function rollPrivateScope() {
       ? cycles
       : 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
       case 1:
         while(count--)
@@ -1190,6 +1219,7 @@ var roll = (function rollPrivateScope() {
           result = iteratee(result, cycle++, cycles);
         break;
     }
+
     return result;
   }
 
@@ -1217,7 +1247,7 @@ var roll = (function rollPrivateScope() {
       ? cycles
       : 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         while(count--)
           result += iteratee();
@@ -1233,6 +1263,7 @@ var roll = (function rollPrivateScope() {
           result += iteratee(cycle++, cycles);
         break;
     }
+
     return result;
   }
 
@@ -1260,7 +1291,7 @@ var roll = (function rollPrivateScope() {
       ? cycles
       : 0;
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         while(count--)
           result -= iteratee();
@@ -1276,6 +1307,7 @@ var roll = (function rollPrivateScope() {
           result -= iteratee(cycle++, cycles);
         break;
     }
+
     return result;
   }
 
@@ -1292,22 +1324,22 @@ var roll = (function rollPrivateScope() {
    * @return {!function} 
    */
   function _bindMap(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function iteratee() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function iteratee(propValue) {
-          return func.call(thisArg, propValue);
+          return func['call'](thisArg, propValue);
         };
       case 2:
         return function iteratee(propValue, key) {
-          return func.call(thisArg, propValue, key);
+          return func['call'](thisArg, propValue, key);
         };
     }
     return function iteratee(propValue, key, source) {
-      return func.call(thisArg, propValue, key, source);
+      return func['call'](thisArg, propValue, key, source);
     };
   }
 
@@ -1320,26 +1352,26 @@ var roll = (function rollPrivateScope() {
    * @return {!function} 
    */
   function _bindPrevMap(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function iteratee() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function iteratee(prevValue) {
-          return func.call(thisArg, prevValue);
+          return func['call'](thisArg, prevValue);
         };
       case 2:
         return function iteratee(prevValue, propValue) {
-          return func.call(thisArg, prevValue, propValue);
+          return func['call'](thisArg, prevValue, propValue);
         };
       case 3:
         return function iteratee(prevValue, propValue, key) {
-          return func.call(thisArg, prevValue, propValue, key);
+          return func['call'](thisArg, prevValue, propValue, key);
         };
     }
     return function iteratee(prevValue, propValue, key, source) {
-      return func.call(thisArg, prevValue, propValue, key, source);
+      return func['call'](thisArg, prevValue, propValue, key, source);
     };
   }
 
@@ -1352,18 +1384,18 @@ var roll = (function rollPrivateScope() {
    * @return {!function} 
    */
   function _bindCycle(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function iteratee() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function iteratee(cycle) {
-          return func.call(thisArg, cycle);
+          return func['call'](thisArg, cycle);
         };
     }
     return function iteratee(cycle, cycles) {
-      return func.call(thisArg, cycle, cycles);
+      return func['call'](thisArg, cycle, cycles);
     };
   }
 
@@ -1376,27 +1408,27 @@ var roll = (function rollPrivateScope() {
    * @return {!function} 
    */
   function _bindPrevCycle(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function iteratee() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function iteratee(prevValue) {
-          return func.call(thisArg, prevValue);
+          return func['call'](thisArg, prevValue);
         };
       case 2:
         return function iteratee(prevValue, cycle) {
-          return func.call(thisArg, prevValue, cycle);
+          return func['call'](thisArg, prevValue, cycle);
         };
     }
     return function iteratee(prevValue, cycle, cycles) {
-      return func.call(thisArg, prevValue, cycle, cycles);
+      return func['call'](thisArg, prevValue, cycle, cycles);
     };
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - MISC
+  // ROLL HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -1407,6 +1439,19 @@ var roll = (function rollPrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // ROLL HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('roll');
+
   /// {{{3
   /// @func $err
   /**
@@ -1416,7 +1461,7 @@ var roll = (function rollPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('roll');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -1429,7 +1474,7 @@ var roll = (function rollPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -1443,10 +1488,10 @@ var roll = (function rollPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR ROLL
+
+  // END OF PRIVATE SCOPE FOR VITALS.ROLL
   return roll;
 })();
 /// }}}1
