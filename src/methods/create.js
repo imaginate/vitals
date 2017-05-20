@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS CREATE
+ * VITALS.CREATE
  * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
@@ -19,7 +19,7 @@ var $is = require('./helpers/is.js');
 var amend = require('./amend.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS CREATE
+// VITALS.CREATE
 //////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -66,10 +66,10 @@ var create = (function createPrivateScope() {
     if ( !$isNil.obj(proto) )
       throw $typeErr(new TypeError, 'proto', proto, '?Object');
 
-    if (arguments.length > 1) {
+    if (arguments['length'] > 1) {
       args = $sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
-      return amend.apply(null, args);
+      return amend['apply'](null, args);
     }
 
     return _ObjectCreate(proto);
@@ -102,10 +102,10 @@ var create = (function createPrivateScope() {
     if ( !$isNil.obj(proto) )
       throw $typeErr(new TypeError, 'proto', proto, '?Object', 'object');
 
-    if (arguments.length > 1) {
+    if (arguments['length'] > 1) {
       args = $sliceArr(arguments);
       args[0] = _ObjectCreate(proto);
-      return amend.apply(null, args);
+      return amend['apply'](null, args);
     } 
 
     return _ObjectCreate(proto);
@@ -124,38 +124,47 @@ var create = (function createPrivateScope() {
    * @param {?Object} proto
    * @return {!Object}
    */
-  var _ObjectCreate = 'create' in Object && _is.func(Object.create)
-    ? Object.create
-    : function ObjectCreate(proto) {
+  var _ObjectCreate = (function _ObjectCreatePolyfillPrivateScope() {
 
-        /** @type {!Object} */
-        var obj;
+    if ( ('create' in Object) && $is.fun(Object['create']) )
+      return Object['create'];
 
-        _Object.prototype = proto;
-        obj = new _Object();
-        _Object.prototype = null;
-        return obj;
-      };
+    /**
+     * @private
+     * @constructor
+     */
+    function _Object(){}
 
-  /// {{{3
-  /// @func _Object
-  /**
-   * @private
-   * @constructor
-   */
-  function _Object(){}
+    /**
+     * @param {?Object} proto
+     * @return {!Object}
+     */
+    function ObjectCreate(proto) {
+
+      /** @type {!Object} */
+      var obj;
+
+      _Object['prototype'] = proto;
+      obj = new _Object();
+      _Object['prototype'] = null;
+      return obj;
+    }
+
+    return ObjectCreate;
+  })();
 
   ///////////////////////////////////////////////////// {{{2
-  // CREATE HELPERS - MISC
+  // CREATE HELPERS - ERROR MAKERS
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @const NONE
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @const {undefined}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var NONE = (function(){})();
+  var ERROR_MAKER = $newErrorMaker('create');
 
   /// {{{3
   /// @func $err
@@ -166,7 +175,7 @@ var create = (function createPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('create');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -179,7 +188,7 @@ var create = (function createPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -193,10 +202,10 @@ var create = (function createPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR CREATE
+
+  // END OF PRIVATE SCOPE FOR VITALS.CREATE
   return create;
 })();
 /// }}}1
