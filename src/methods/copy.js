@@ -138,6 +138,7 @@ var copy = (function copyPrivateScope() {
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
 
     len = obj['length'];
+
     if ( !$is.num(len) )
       throw $typeErr(new TypeError, 'obj.length', len, 'number', 'array');
     if ( !$is.whole(len) || len < 0 )
