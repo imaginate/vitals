@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS GET
+ * VITALS.GET
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -19,9 +19,14 @@ var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS GET
+// VITALS.GET
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var get = (function getPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -82,29 +87,38 @@ var get = (function getPrivateScope() {
    */
   function get(source, val) {
 
-    if ( $is.str(source) ) {
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
 
-      if (arguments.length < 2)
-        throw $err(new Error, 'no #val defined');
+      case 1:
+        if ( $is.str(source) )
+          throw $err(new Error, 'no #val defined');
 
-      return $is.regx(val)
-        ? _strVals(source, val)
-        : _strIndexes(source, val);
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        return $is._arr(source)
+          ? _allIndexes(source)
+          : _allKeys(source);
+
+      default:
+        if ( $is.str(source) )
+          return $is.regx(val)
+            ? _strVals(source, val)
+            : _strIndexes(source, val);
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        return $is._arr(source)
+          ? _byValIndexes(source, val)
+          : $is.regx(val)
+            ? _byKeyObjVals(source, val)
+            : _byValKeys(source, val);
     }
-
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array|!Arguments|string');
-
-    return arguments.length < 2
-      ? $is._arr(source)
-        ? _allIndexes(source)
-        : _allKeys(source)
-      : $is._arr(source)
-        ? _byValIndexes(source, val)
-        : $is.regx(val)
-          ? _byKeyObjVals(source, val)
-          : _byValKeys(source, val);
   }
 
   /// {{{2
@@ -124,18 +138,30 @@ var get = (function getPrivateScope() {
    *   the value matches (via a [strict equality][equal] test) the #val.
    * @return {!Array}
    */
-  get.keys = function getKeys(source, val) {
+  function getKeys(source, val) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'keys');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'keys');
 
-    return arguments.length < 2
-      ? _allKeys(source)
-      : $is.regx(val)
-        ? _byKeyKeys(source, val)
-        : _byValKeys(source, val);
-  };
+      case 1:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'keys');
+
+        return _allKeys(source);
+
+      default:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'keys');
+
+        return $is.regx(val)
+          ? _byKeyKeys(source, val)
+          : _byValKeys(source, val);
+    }
+  }
+  get['keys'] = getKeys;
 
   /// {{{2
   /// @method get.keys.byKey
@@ -152,16 +178,24 @@ var get = (function getPrivateScope() {
    *   property key name matches in the #source.
    * @return {!Array<string>}
    */
-  get.keys.byKey = function getKeysByKey(source, key) {
+  function getKeysByKey(source, key) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'keys.byKey');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #key defined', 'keys.byKey');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'keys.byKey');
 
-    return _byKeyKeys(source, key);
-  };
+      case 1:
+        throw $err(new Error, 'no #key defined', 'keys.byKey');
+
+      default:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'keys.byKey');
+
+        return _byKeyKeys(source, key);
+    }
+  }
+  get['keys']['byKey'] = getKeysByKey;
 
   /// {{{2
   /// @method get.keys.byValue
@@ -176,18 +210,25 @@ var get = (function getPrivateScope() {
    * @param {*} val
    * @return {!Array}
    */
-  get.keys.byValue = function getKeysByValue(source, val) {
+  function getKeysByValue(source, val) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'keys.byValue');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'keys.byValue');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'keys.byValue');
 
-    return _byValKeys(source, val);
-  };
-  // define shorthand
-  get.keys.byVal = get.keys.byValue;
+      case 1:
+        throw $err(new Error, 'no #val defined', 'keys.byValue');
+
+      default:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'keys.byValue');
+
+        return _byValKeys(source, val);
+    }
+  }
+  get['keys']['byValue'] = getKeysByValue;
+  get['keys']['byVal'] = getKeysByValue;
 
   /// {{{2
   /// @method get.indexes
@@ -216,29 +257,55 @@ var get = (function getPrivateScope() {
    *     a @has#pattern test) the #val.
    * @return {!Array}
    */
-  get.indexes = function getIndexes(source, val) {
+  function getIndexes(source, val) {
 
-    if ( $is.str(source) ) {
+    /** @type {number} */
+    var len;
 
-      if (arguments.length < 2)
-        throw $err(new Error, 'no #val defined', 'indexes');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'indexes');
 
-      return _strIndexes(source, val);
+      case 1:
+        if ( $is.str(source) )
+          throw $err(new Error, 'no #val defined', 'indexes');
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Array|!Arguments|!Object|!Function|string', 'indexes');
+
+        len = source['length'];
+
+        if ( !$is.num(len) )
+          throw $typeErr(new TypeError, 'source.length', len, 'number',
+            'indexes');
+        if ( !$is.whole(len) || len < 0 )
+          throw $err(new Error, 'invalid #source.length `number` (' +
+            'must be `0` or a positive whole `number`)', 'indexes');
+
+        return _allIndexes(source);
+
+      default:
+        if ( $is.str(source) )
+          return _strIndexes(source, val);
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Array|!Arguments|!Object|!Function|string', 'indexes');
+
+        len = source['length'];
+
+        if ( !$is.num(len) )
+          throw $typeErr(new TypeError, 'source.length', len, 'number',
+            'indexes');
+        if ( !$is.whole(len) || len < 0 )
+          throw $err(new Error, 'invalid #source.length `number` (' +
+            'must be `0` or a positive whole `number`)', 'indexes');
+
+        return _byValIndexes(source, val);
     }
-
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Array|!Arguments|!Object|!Function|string', 'indexes');
-    if ( !$is.num(source.length) )
-      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
-        'indexes');
-
-    return arguments.length < 2
-      ? _allIndexes(source)
-      : _byValIndexes(source, val);
-  };
-  // define shorthand
-  get.ii = get.indexes;
+  }
+  get['indexes'] = getIndexes;
+  get['ii'] = getIndexes;
 
   /// {{{2
   /// @method get.values
@@ -269,26 +336,34 @@ var get = (function getPrivateScope() {
    *     test) the #val.
    * @return {!Array}
    */
-  get.values = function getValues(source, val) {
+  function getValues(source, val) {
 
-    if ( $is.str(source) ) {
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'values');
 
-      if (arguments.length < 2)
-        throw $err(new Error, 'no #val defined', 'values');
+      case 1:
+        if ( $is.str(source) )
+          throw $err(new Error, 'no #val defined', 'values');
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|string', 'values');
 
-      return _strVals(source, val);
+        return _allObjVals(source);
+
+      default:
+        if ( $is.str(source) )
+          return _strVals(source, val);
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|string', 'values');
+
+        return _byKeyObjVals(source, val);
     }
-
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|string', 'values');
-
-    return arguments.length < 2
-      ? _allObjVals(source)
-      : _byKeyObjVals(source, val);
-  };
-  // define shorthand
-  get.vals = get.values;
+  }
+  get['values'] = getValues;
+  get['vals'] = getValues;
 
   ///////////////////////////////////////////////////// {{{2
   // GET HELPERS - OBJECT
@@ -311,7 +386,7 @@ var get = (function getPrivateScope() {
     keys = [];
     for (key in src) {
       if ( $own(src, key) )
-        keys.push(key);
+        keys['push'](key);
     }
     return keys;
   }
@@ -337,7 +412,7 @@ var get = (function getPrivateScope() {
     keys = [];
     for (key in src) {
       if ( $own(src, key) && $match(key, pattern) )
-        keys.push(key);
+        keys['push'](key);
     }
     return keys;
   }
@@ -360,7 +435,7 @@ var get = (function getPrivateScope() {
     keys = [];
     for (key in src) {
       if ( $own(src, key) && (src[key] === val) )
-        keys.push(key);
+        keys['push'](key);
     }
     return keys;
   }
@@ -382,7 +457,7 @@ var get = (function getPrivateScope() {
     vals = [];
     for (key in src) {
       if ( $own(src, key) )
-        vals.push(src[key]);
+        vals['push'](src[key]);
     }
     return vals;
   }
@@ -408,7 +483,7 @@ var get = (function getPrivateScope() {
     vals = [];
     for (key in src) {
       if ( $own(src, key) && $match(key, pattern) )
-        vals.push(src[key]);
+        vals['push'](src[key]);
     }
     return vals;
   }
@@ -433,7 +508,7 @@ var get = (function getPrivateScope() {
     /** @type {number} */
     var i;
 
-    len = src.length;
+    len = src['length'];
     indexes = new Array(len);
     i = -1;
     while (++i < len)
@@ -459,11 +534,11 @@ var get = (function getPrivateScope() {
     var i;
 
     indexes = [];
-    len = src.length;
+    len = src['length'];
     i = -1;
     while (++i < len) {
       if (src[i] === val)
-        indexes.push(i);
+        indexes['push'](i);
     }
     return indexes;
   }
@@ -515,12 +590,12 @@ var get = (function getPrivateScope() {
     /** @type {(?Array|?Object)} */
     var result;
 
-    pattern = copy.regex(pattern, true);
+    pattern = copy['regexp'](pattern, true);
     indexes = [];
-    result = pattern.exec(src);
+    result = pattern['exec'](src);
     while (result) {
-      indexes.push(result.index);
-      result = pattern.exec(src);
+      indexes['push'](result['index']);
+      result = pattern['exec'](src);
     }
     return indexes;
   }
@@ -544,10 +619,10 @@ var get = (function getPrivateScope() {
       pattern = String(pattern);
 
     indexes = [];
-    i = src.indexOf(pattern);
+    i = src['indexOf'](pattern);
     while (i !== -1) {
-      indexes.push(i);
-      i = src.indexOf(pattern, ++i);
+      indexes['push'](i);
+      i = src['indexOf'](pattern, ++i);
     }
     return indexes;
   }
@@ -567,12 +642,12 @@ var get = (function getPrivateScope() {
     /** @type {!Array<string>} */
     var vals;
 
-    pattern = copy.regex(pattern, true);
+    pattern = copy['regexp'](pattern, true);
     vals = [];
-    result = pattern.exec(src);
+    result = pattern['exec'](src);
     while (result) {
-      vals.push(result[0]);
-      result = pattern.exec(src);
+      vals['push'](result[0]);
+      result = pattern['exec'](src);
     }
     return vals;
   }
@@ -596,16 +671,16 @@ var get = (function getPrivateScope() {
       pattern = String(pattern);
 
     vals = [];
-    i = src.indexOf(pattern);
+    i = src['indexOf'](pattern);
     while (i !== -1) {
-      vals.push(pattern);
-      i = src.indexOf(pattern, ++i);
+      vals['push'](pattern);
+      i = src['indexOf'](pattern, ++i);
     }
     return vals;
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - MISC
+  // GET HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -616,6 +691,19 @@ var get = (function getPrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // GET HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('get');
+
   /// {{{3
   /// @func $err
   /**
@@ -625,7 +713,7 @@ var get = (function getPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('get');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -638,7 +726,7 @@ var get = (function getPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -652,10 +740,10 @@ var get = (function getPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR GET
+
+  // END OF PRIVATE SCOPE FOR VITALS.GET
   return get;
 })();
 /// }}}1
