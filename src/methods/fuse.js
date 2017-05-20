@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS FUSE
+ * VITALS.FUSE
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -19,9 +19,14 @@ var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS FUSE
+// VITALS.FUSE
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var fuse = (function fusePrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -72,37 +77,49 @@ var fuse = (function fusePrivateScope() {
    */
   function fuse(dest, val) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined');
 
-    if ( $is.str(dest) ) {
-      if (arguments.length > 2)
+      case 1:
+        throw $err(new Error, 'no #val defined');
+
+      case 2:
+        if ( $is.str(dest) )
+          return $is.arr(val)
+            ? _fuseStrs(dest, val)
+            : _fuseStr(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArr(dest, val)
+          : $is.arr(val)
+            ? _fuseObjs(dest, val)
+            : _fuseObj(dest, val);
+
+      default:
         val = $sliceArr(arguments, 1);
-      return $is.arr(val)
-        ? _fuseStrs(dest, val)
-        : _fuseStr(dest, val);
+
+        if ( $is.str(dest) )
+          return _fuseStrs(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArrs(dest, val)
+          : _fuseObjs(dest, val);
     }
-
-    if ( !$is._obj(dest) )
-      throw $typeErr(new TypeError, 'dest', dest,
-        '!Object|!Function|!Array|!Arguments|string');
-
-    if ( $is.args(dest) )
-      dest = $sliceArr(dest);
-
-    if ( $is.arr(dest) ) {
-      if (arguments.length > 2) {
-        val = $sliceArr(arguments, 1);
-        return _fuseArrs(dest, val);
-      }
-      return _fuseArr(dest, val);
-    }
-
-    if (arguments.length > 2)
-      val = $sliceArr(arguments, 1);
-    return $is.arr(val)
-      ? _fuseObjs(dest, val)
-      : _fuseObj(dest, val);
   }
 
   /// {{{2
@@ -128,37 +145,50 @@ var fuse = (function fusePrivateScope() {
    *     Each #val is converted to a `string` and appended to the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
-  fuse.value = function fuseValue(dest, val) {
+  function fuseValue(dest, val) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'value');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined', 'value');
 
-    if ( $is.str(dest) ) {
-      if (arguments.length < 3)
-        return _fuseStr(dest, val);
-      val = $sliceArr(arguments, 1);
-      return _fuseStrs(dest, val);
+      case 1:
+        throw $err(new Error, 'no #val defined', 'value');
+
+      case 2:
+        if ( $is.str(dest) )
+          return _fuseStr(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string', 'value');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArrVal(dest, val)
+          : _fuseObjVal(dest, val);
+
+      default:
+        val = $sliceArr(arguments, 1);
+
+        if ( $is.str(dest) )
+          return _fuseStrs(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string', 'value');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArrsVal(dest, val)
+          : _fuseObjsVal(dest, val);
     }
-
-    if ( !$is._obj(dest) )
-      throw $typeErr(new TypeError, 'dest', dest,
-        '!Object|!Function|!Array|!Arguments|string', 'value');
-
-    if ( $is.args(dest) )
-      dest = $sliceArr(dest);
-
-    if (arguments.length < 3)
-      return $is.arr(dest)
-        ? _fuseArrVal(dest, val)
-        : _fuseObjVal(dest, val);
-
-    val = $sliceArr(arguments, 1);
-    return $is.arr(dest)
-      ? _fuseArrsVal(dest, val)
-      : _fuseObjsVal(dest, val);
-  };
-  // define shorthand
-  fuse.val = fuse.value;
+  }
+  fuse['value'] = fuseValue;
+  fuse['val'] = fuseValue;
 
   /// {{{2
   /// @method fuse.value.start
@@ -186,39 +216,52 @@ var fuse = (function fusePrivateScope() {
    *     the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
-  fuse.value.start = function fuseValueStart(dest, val) {
+  function fuseValueStart(dest, val) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'value.start');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined', 'value.start');
 
-    if ( $is.str(dest) ) {
-      if (arguments.length < 3)
-        return _fuseStrTop(dest, val);
-      val = $sliceArr(arguments, 1);
-      return _fuseStrsTop(dest, val);
+      case 1:
+        throw $err(new Error, 'no #val defined', 'value.start');
+
+      case 2:
+        if ( $is.str(dest) )
+          return _fuseStrTop(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string', 'value.start');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArrValTop(dest, val)
+          : _fuseObjValTop(dest, val);
+
+      default:
+        val = $sliceArr(arguments, 1);
+
+        if ( $is.str(dest) )
+          return _fuseStrsTop(dest, val);
+
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest,
+            '!Object|!Function|!Array|!Arguments|string', 'value.start');
+
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+
+        return $is.arr(dest)
+          ? _fuseArrsValTop(dest, val)
+          : _fuseObjsValTop(dest, val);
     }
-
-    if ( !$is._obj(dest) )
-      throw $typeErr(new TypeError, 'dest', dest,
-        '!Object|!Function|!Array|!Arguments|string', 'value.start');
-
-    if ( $is.args(dest) )
-      dest = $sliceArr(dest);
-
-    if (arguments.length < 3)
-      return $is.arr(dest)
-        ? _fuseArrValTop(dest, val)
-        : _fuseObjValTop(dest, val);
-
-    val = $sliceArr(arguments, 1);
-    return $is.arr(dest)
-      ? _fuseArrsValTop(dest, val)
-      : _fuseObjsValTop(dest, val);
-  };
-  // define shorthand
-  fuse.value.top = fuse.value.start;
-  fuse.val.start = fuse.value.start;
-  fuse.val.top = fuse.value.start;
+  }
+  fuse['value']['start'] = fuseValueStart;
+  fuse['value']['top'] = fuseValueStart;
+  fuse['val']['start'] = fuseValueStart;
+  fuse['val']['top'] = fuseValueStart;
 
   /// {{{2
   /// @method fuse.object
@@ -244,22 +287,35 @@ var fuse = (function fusePrivateScope() {
    *     value is reset to `undefined`).
    * @return {(!Object|!Function)}
    */
-  fuse.object = function fuseObject(dest, val) {
+  function fuseObject(dest, val) {
 
-    if ( !$is._obj(dest) )
-      throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
-        'object');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'object');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined', 'object');
 
-    if (arguments.length > 2)
-      val = $sliceArr(arguments, 1);
-    return $is.arr(val)
-      ? _fuseObjs(dest, val)
-      : _fuseObj(dest, val);
-  };
-  // define shorthand
-  fuse.obj = fuse.object;
+      case 1:
+        throw $err(new Error, 'no #val defined', 'object');
+
+      case 2:
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
+            'object');
+
+        return $is.arr(val)
+          ? _fuseObjs(dest, val)
+          : _fuseObj(dest, val);
+
+      default:
+        if ( !$is._obj(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
+            'object');
+
+        val = $sliceArr(arguments, 1);
+        return _fuseObjs(dest, val);
+    }
+  }
+  fuse['object'] = fuseObject;
+  fuse['obj'] = fuseObject;
 
   /// {{{2
   /// @method fuse.array
@@ -281,26 +337,37 @@ var fuse = (function fusePrivateScope() {
    *     The #val is [pushed][push] to the #dest.
    * @return {!Array}
    */
-  fuse.array = function fuseArray(dest, val) {
+  function fuseArray(dest, val) {
 
-    if ( !$is._arr(dest) )
-      throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
-        'array');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'array');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined', 'array');
 
-    if ( $is.args(dest) )
-      dest = $sliceArr(dest);
+      case 1:
+        throw $err(new Error, 'no #val defined', 'array');
 
-    if (arguments.length > 2) {
-      val = $sliceArr(arguments, 1);
-      return _fuseArrs(dest, val);
+      case 2:
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+        else if ( !$is.arr(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
+            'array');
+
+        return _fuseArr(dest, val);
+
+      default:
+        if ( $is.args(dest) )
+          dest = $sliceArr(dest);
+        else if ( !$is.arr(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
+            'array');
+
+        val = $sliceArr(arguments, 1);
+        return _fuseArrs(dest, val);
     }
-
-    return _fuseArr(dest, val);
-  };
-  // define shorthand
-  fuse.arr = fuse.array;
+  }
+  fuse['array'] = fuseArray;
+  fuse['arr'] = fuseArray;
 
   /// {{{2
   /// @method fuse.string
@@ -311,24 +378,37 @@ var fuse = (function fusePrivateScope() {
    * @public
    * @param {string} dest
    * @param {...*} val
-   *   Each #val is converted to a `string`.
+   *   If only one `array` #val is provided, it is considered an `array` of
+   *   values. Each #val is converted to a `string` and appended to the #dest.
    * @return {string}
    */
-  fuse.string = function fuseString(dest, val) {
+  function fuseString(dest, val) {
 
-    if ( !$is.str(dest) )
-      throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #val defined', 'string');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #dest defined', 'string');
 
-    if (arguments.length > 2)
-      val = $sliceArr(arguments, 1);
-    return $is.arr(val)
-      ? _fuseStrs(dest, val)
-      : _fuseStr(dest, val);
-  };
-  // define shorthand
-  fuse.str = fuse.string;
+      case 1:
+        throw $err(new Error, 'no #val defined', 'string');
+
+      case 2:
+        if ( !$is.str(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
+
+        return $is.arr(val)
+          ? _fuseStrs(dest, val)
+          : _fuseStr(dest, val);
+
+      default:
+        if ( !$is.str(dest) )
+          throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
+
+        val = $sliceArr(arguments, 1);
+        return _fuseStrs(dest, val);
+    }
+  }
+  fuse['string'] = fuseString;
+  fuse['str'] = fuseString;
 
   ///////////////////////////////////////////////////// {{{2
   // FUSE HELPERS - MAIN
@@ -368,7 +448,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
       dest = _fuseObj(dest, vals[i]);
@@ -405,7 +485,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len) {
       val = vals[i];
@@ -445,7 +525,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
       dest = _fuseObjValTop(dest, vals[i]);
@@ -463,10 +543,10 @@ var fuse = (function fusePrivateScope() {
   function _fuseArr(dest, val) {
 
     if ( $is.arr(val) )
-      return dest.concat(val);
+      return dest['concat'](val);
 
     if ( !$is.nil(val) )
-      dest.push(val);
+      dest['push'](val);
 
     return dest;
   }
@@ -486,7 +566,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
       dest = _fuseArr(dest, vals[i]);
@@ -502,7 +582,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArrVal(dest, val) {
-    dest.push(val);
+    dest['push'](val);
     return dest;
   }
 
@@ -521,10 +601,10 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
-      dest.push(vals[i]);
+      dest['push'](vals[i]);
     return dest;
   }
 
@@ -537,7 +617,7 @@ var fuse = (function fusePrivateScope() {
    * @return {!Array}
    */
   function _fuseArrValTop(dest, val) {
-    dest.unshift(val);
+    dest['unshift'](val);
     return dest;
   }
 
@@ -556,10 +636,10 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
-      dest.unshift(vals[i]);
+      dest['unshift'](vals[i]);
     return dest;
   }
 
@@ -590,7 +670,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
       dest += vals[i];
@@ -624,7 +704,7 @@ var fuse = (function fusePrivateScope() {
     /** @type {number} */
     var i;
 
-    len = vals.length;
+    len = vals['length'];
     i = -1;
     while (++i < len)
       dest = vals[i] + dest;
@@ -632,7 +712,7 @@ var fuse = (function fusePrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // FUSE HELPERS - MISC
+  // FUSE HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -643,6 +723,19 @@ var fuse = (function fusePrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // FUSE HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('fuse');
+
   /// {{{3
   /// @func $err
   /**
@@ -652,7 +745,7 @@ var fuse = (function fusePrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('fuse');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -665,7 +758,7 @@ var fuse = (function fusePrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -679,10 +772,10 @@ var fuse = (function fusePrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR FUSE
+
+  // END OF PRIVATE SCOPE FOR VITALS.FUSE
   return fuse;
 })();
 /// }}}1
