@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS EACH
+ * VITALS.EACH
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -20,9 +20,14 @@ var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS EACH
+// VITALS.EACH
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var each = (function eachPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -52,14 +57,12 @@ var each = (function eachPrivateScope() {
    * defined number of cycles.
    *
    * @public
-   * @param {(!Object|!Function|!Array|number|string)} source
+   * @param {(!Object|!Function|!Array|!Arguments|string|number)} source
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     Iterates over all properties in random order.
-   *   - *`!Array`*!$
-   *     Iterates over all indexed properties from `0` to `length`.
-   *   - *`number`*!$
-   *     Iterates over the `number` of cycles.
+   *   - *`!Array|!Arguments`*!$
+   *     Iterates over all indexed properties from `0` to `source.length`.
    *   - *`string`*!$
    *     Converted to an `array` #source using one of the following list of
    *     values for the separator (values listed in order of rank):
@@ -67,44 +70,88 @@ var each = (function eachPrivateScope() {
    *     - `","`
    *     - `"|"`
    *     - `" "`
-   * @param {!function(*=, (string|number)=, (!Object|!Function)=)} iteratee
-   *   It has the optional params:
-   *   - **value** *`*`*
-   *   - **key** or **index** *`string|number`*
-   *   - **source** *`!Object|!Function|!Array`*
-   *   Note this method lazily [clones][clone] the #source based on the
-   *   iteratee's [length property][func-length] (i.e. if you alter the
-   *   #source `object` within the #iteratee make sure you define the
-   *   iteratee's third parameter so you can safely assume all references to
-   *   the #source are its original values).
+   *   - *`number`*!$
+   *     Must be a whole `number`. Iterates over the `number` of cycles.
+   * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=)} iteratee
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **key** *`string`*
+   *     - **source** *`!Object|!Function`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#main based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`!Array|!Arguments|string`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **index** *`number`*
+   *     - **source** *`!Array`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#array based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`number`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   *     - **cycles** *`number`*!$
+   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
-   *   the native [Function.prototype.bind][bind] is not used to bind the
-   *   #iteratee. Instead the #iteratee is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   #iteratee with #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #iteratee (unless more than
-   *   three parameters were defined for the #iteratee as the wrapper has a
-   *   max value of `3`) and the [name property][func-name] value of
-   *   `"iteratee"` (unless you are using a [minified][minify] version of
-   *   `vitals`).
-   * @return {(?Object|?Function|?Array|?undefined)}
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function|!Array|!Arguments|string`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than three parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `3`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   *   - *`number`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than two parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `2`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   * @return {(!Object|!Function|!Array|!Arguments|number)}
+   *   The original #source value (unless the #source is a `string` which will
+   *   result in an `array`).
    */
   function each(source, iteratee, thisArg) {
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee');
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, (string|number)=, (!Object|!Function|!Array)=)');
     if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg');
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
-    if ( $is.num(source) )
+    if ( $is.num(source) ) {
+
+      if ( !$is.whole(source) )
+        throw $err(new Error, 'invalid #source `number` (' +
+          'must be whole `number`)');
+
       return _eachCycle(source, iteratee, thisArg);
+    }
 
     if ( $is.str(source) )
       source = $splitKeys(source);
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source');
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array|!Arguments|string|number');
 
     return $is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
@@ -120,29 +167,30 @@ var each = (function eachPrivateScope() {
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=)} iteratee
-   *   It has the optional params:
+   *   The #iteratee can have the following optional parameters:
    *   - **value** *`*`*
    *   - **key** *`string`*
    *   - **source** *`!Object|!Function`*
-   *   Note this method lazily [clones][clone] the #source based on the
-   *   iteratee's [length property][func-length] (i.e. if you alter the
-   *   #source `object` within the #iteratee make sure you define the
-   *   iteratee's third parameter so you can safely assume all references to
-   *   the #source are its original values).
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#main based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
-   *   the native [Function.prototype.bind][bind] is not used to bind the
-   *   #iteratee. Instead the #iteratee is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   #iteratee with #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #iteratee (unless more than
-   *   three parameters were defined for the #iteratee as the wrapper has a
-   *   max value of `3`) and the [name property][func-name] value of
-   *   `"iteratee"` (unless you are using a [minified][minify] version of
-   *   `vitals`).
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
    * @return {(!Object|!Function)}
+   *   The original #source value.
    */
-  each.object = function eachObject(source, iteratee, thisArg) {
+  function eachObject(source, iteratee, thisArg) {
 
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
@@ -154,9 +202,9 @@ var each = (function eachPrivateScope() {
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
 
     return _eachObj(source, iteratee, thisArg);
-  };
-  // define shorthand
-  each.obj = each.object;
+  }
+  each['object'] = eachObject;
+  each['obj'] = eachObject;
 
   /// {{{2
   /// @method each.array
@@ -167,37 +215,42 @@ var each = (function eachPrivateScope() {
    *
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If #source is a `string`, it is converted to an `array` using one of
-   *   the following list of values for the separator (values listed in order
-   *   of rank):
+   *   If the #source is a `string`, it is converted to an `array` using one
+   *   of the following list of values for the separator (values listed in
+   *   order of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
    * @param {!function(*=, number=, !Array=)} iteratee
-   *   It has the optional params:
+   *   The #iteratee can have the following optional parameters:
    *   - **value** *`*`*
    *   - **index** *`number`*
    *   - **source** *`!Array`*
-   *   Note this method lazily [clones][clone] the #source with @copy#array
-   *   based on the iteratee's [length property][func-length] (i.e. if you
-   *   alter the #source `array` within the #iteratee make sure you define the
-   *   iteratee's third parameter so you can safely assume all references to
-   *   the #source are its original values).
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#array based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
-   *   the native [Function.prototype.bind][bind] is not used to bind the
-   *   #iteratee. Instead the #iteratee is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   #iteratee with #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #iteratee (unless more than
-   *   three parameters were defined for the #iteratee as the wrapper has a
-   *   max value of `3`) and the [name property][func-name] value of
-   *   `"iteratee"` (unless you are using a [minified][minify] version of
-   *   `vitals`).
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
    * @return {(!Array|!Arguments|!Object|!Function)}
+   *   The original #source value (unless the #source is a `string` which will
+   *   result in an `array`).
    */
-  each.array = function eachArray(source, iteratee, thisArg) {
+  function eachArray(source, iteratee, thisArg) {
+
+    /** @type {number} */
+    var len;
 
     if ( $is.str(source) )
       source = $splitKeys(source);
@@ -205,19 +258,24 @@ var each = (function eachPrivateScope() {
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source,
         '!Array|!Arguments|!Object|!Function|string', 'array');
-    if ( !$is.num(source.length) )
-      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
-        'array');
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
         '!function(*=, number=, !Array=)', 'array');
     if ( !$isNilNone.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
 
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number', 'array');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'array');
+
     return _eachArr(source, iteratee, thisArg);
-  };
-  // define shorthand
-  each.arr = each.array;
+  }
+  each['array'] = eachArray;
+  each['arr'] = eachArray;
 
   /// {{{2
   /// @method each.cycle
@@ -226,39 +284,46 @@ var each = (function eachPrivateScope() {
    * A shortcut for iterating over a set `number` of cycles.
    *
    * @public
-   * @param {number} count
-   * @param {!function(number=)} iteratee
-   *   It has the optional parameter:
-   *   - **cycle** *`number`*
-   *   Note that the cycle parameter is zero-based (i.e. the first cycle is
-   *   `0`).
+   * @param {number} cycles
+   *   Must be a whole `number`.
+   * @param {!function(number=, number=)} iteratee
+   *   The #iteratee can have the following optional parameters:
+   *   - **cycle** *`number`*!$
+   *     Note that this `number` is zero-based (i.e. the first *cycle* value
+   *     is `0`).
+   *   - **cycles** *`number`*!$
+   *     The unchanged #cycles value.
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note that
-   *   the native [Function.prototype.bind][bind] is not used to bind the
-   *   #iteratee. Instead the #iteratee is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   #iteratee with #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #iteratee (unless more than
-   *   three parameters were defined for the #iteratee as the wrapper has a
-   *   max value of `3`) and the [name property][func-name] value of
-   *   `"iteratee"` (unless you are using a [minified][minify] version of
-   *   `vitals`).
-   * @return {undefined}
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than two parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `2`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
+   * @return {number}
+   *   The original #cycles value.
    */
-  each.cycle = function eachCycle(count, iteratee, thisArg) {
+  function eachCycle(cycles, iteratee, thisArg) {
 
-    if ( !$is.num(count) )
-      throw $typeErr(new TypeError, 'count', count, 'number', 'cycle');
+    if ( !$is.num(cycles) )
+      throw $typeErr(new TypeError, 'cycles', cycles, 'number', 'cycle');
+    if ( !$is.whole(cycles) )
+      throw $err(new Error, 'invalid #cycles `number` (' +
+        'must be whole `number`)', 'cycle');
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(number=)', 'cycle');
+        '!function(number=, number=)', 'cycle');
     if ( !$isNilNone.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'cycle');
 
-    return _eachCycle(count, iteratee, thisArg);
-  };
-  // define shorthand
-  each.time = each.cycle;
+    return _eachCycle(cycles, iteratee, thisArg);
+  }
+  each['cycle'] = eachCycle;
+  each['time'] = eachCycle;
 
   ///////////////////////////////////////////////////// {{{2
   // EACH HELPERS - MAIN
@@ -268,153 +333,151 @@ var each = (function eachPrivateScope() {
   /// @func _eachObj
   /**
    * @private
-   * @param {(!Object|!Function)} obj
+   * @param {(!Object|!Function)} source
    * @param {!function(*, string=, (!Object|!Function)=)} iteratee
    * @param {?Object=} thisArg
    * @return {(!Object|!Function)}
    */
-  function _eachObj(obj, iteratee, thisArg) {
+  function _eachObj(source, iteratee, thisArg) {
 
+    /** @type {(!Object|!Function)} */
+    var src;
     /** @type {string} */
     var key;
 
-    if (iteratee.length > 2)
-      obj = copy(obj);
     if ( !$is.none(thisArg) )
-      iteratee = _bind(iteratee, thisArg);
+      iteratee = _bindMap(iteratee, thisArg);
 
-    switch (iteratee.length) {
+    src = iteratee['length'] > 2
+      ? copy(source)
+      : source;
+
+    switch (iteratee['length']) {
       case 0:
-        for (key in obj) {
-          if ( $own(obj, key) )
+        for (key in src) {
+          if ( $own(src, key) )
             iteratee();
         }
         break;
       case 1:
-        for (key in obj) {
-          if ( $own(obj, key) )
-            iteratee(obj[key]);
+        for (key in src) {
+          if ( $own(src, key) )
+            iteratee(src[key]);
         }
         break;
       case 2:
-        for (key in obj) {
-          if ( $own(obj, key) )
-            iteratee(obj[key], key);
+        for (key in src) {
+          if ( $own(src, key) )
+            iteratee(src[key], key);
         }
         break;
      default:
-       for (key in obj) {
-         if ( $own(obj, key) )
-           iteratee(obj[key], key, obj);
+       for (key in src) {
+         if ( $own(src, key) )
+           iteratee(src[key], key, src);
        }
        break;
     }
-    return obj;
+
+    return source;
   }
 
   /// {{{3
   /// @func _eachArr
   /**
    * @private
-   * @param {(!Object|!Function|!Array)} obj
+   * @param {(!Array|!Arguments|!Object|!Function)} source
    * @param {!function(*, number=, !Array=)} iteratee
    * @param {?Object=} thisArg
-   * @return {(!Object|!Function|!Array)}
+   * @return {(!Array|!Arguments|!Object|!Function)}
    */
-  function _eachArr(obj, iteratee, thisArg) {
+  function _eachArr(source, iteratee, thisArg) {
 
+    /** @type {(!Array|!Arguments|!Object|!Function)} */
+    var src;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
-      obj = copy.arr(obj);
     if ( !$is.none(thisArg) )
-      iteratee = _bind(iteratee, thisArg);
+      iteratee = _bindMap(iteratee, thisArg);
 
-    len = obj.length;
+    src = iteratee['length'] > 2
+      ? copy['array'](source)
+      : source;
+    len = src['length'];
     i = -1;
-    switch (iteratee.length) {
+
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           iteratee();
         break;
       case 1:
         while (++i < len)
-          iteratee(obj[i]);
+          iteratee(src[i]);
         break;
       case 2:
         while (++i < len)
-          iteratee(obj[i], i);
+          iteratee(src[i], i);
         break;
       default:
         while (++i < len)
-          iteratee(obj[i], i, obj);
+          iteratee(src[i], i, src);
         break;
     }
-    return obj;
+
+    return source;
   }
 
   /// {{{3
   /// @func _eachCycle
   /**
    * @private
-   * @param {number} count
+   * @param {number} cycles
    * @param {!function} iteratee
    * @param {?Object=} thisArg
-   * @return {undefined}
+   * @return {number}
    */
-  function _eachCycle(count, iteratee, thisArg) {
+  function _eachCycle(cycles, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var count;
+    /** @type {number} */
+    var cycle;
+
 
     if ( !$is.none(thisArg) )
-      iteratee = _bind(iteratee, thisArg);
+      iteratee = _bindCycle(iteratee, thisArg);
 
-    if (iteratee.length) {
-      i = 0;
-      while(count--)
-        iteratee(i++);
+    count = cycles > 0
+      ? cycles
+      : 0;
+
+    switch (iteratee['length']) {
+      case 0:
+        while(count--)
+          iteratee();
+        break;
+      case 1:
+        cycle = 0;
+        while(count--)
+          iteratee(cycle++);
+        break;
+      default:
+        cycle = 0;
+        while(count--)
+          iteratee(cycle++, cycles);
+        break;
     }
-    else {
-      while(count--)
-        iteratee();
-    }
+
+    return cycles;
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - MISC
+  // EACH HELPERS - GENERAL
   //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @func _bind
-  /**
-   * @private
-   * @param {!function} func
-   * @param {?Object} thisArg
-   * @return {!function} 
-   */
-  function _bind(func, thisArg) {
-    switch (func.length) {
-      case 0:
-        return function iteratee() {
-          func.call(thisArg);
-        };
-      case 1:
-        return function iteratee(val) {
-          func.call(thisArg, val);
-        };
-      case 2:
-        return function iteratee(val, key) {
-          func.call(thisArg, val, key);
-        };
-    }
-    return function iteratee(val, key, obj) {
-      func.call(thisArg, val, key, obj);
-    };
-  }
 
   /// {{{3
   /// @const NONE
@@ -425,6 +488,71 @@ var each = (function eachPrivateScope() {
   var NONE = (function(){})();
 
   /// {{{3
+  /// @func _bindMap
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindMap(func, thisArg) {
+    switch (func['length']) {
+      case 0:
+        return function iteratee() {
+          return func['call'](thisArg);
+        };
+      case 1:
+        return function iteratee(value) {
+          func['call'](thisArg, value);
+        };
+      case 2:
+        return function iteratee(value, key) {
+          func['call'](thisArg, value, key);
+        };
+    }
+    return function iteratee(value, key, source) {
+      func['call'](thisArg, value, key, source);
+    };
+  }
+
+  /// {{{3
+  /// @func _bindCycle
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindCycle(func, thisArg) {
+    switch (func['length']) {
+      case 0:
+        return function iteratee() {
+          return func['call'](thisArg);
+        };
+      case 1:
+        return function iteratee(cycle) {
+          return func['call'](thisArg, cycle);
+        };
+    }
+    return function iteratee(cycle, cycles) {
+      return func['call'](thisArg, cycle, cycles);
+    };
+  }
+
+  ///////////////////////////////////////////////////// {{{2
+  // EACH HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('each');
+
+  /// {{{3
   /// @func $err
   /**
    * @private
@@ -433,7 +561,7 @@ var each = (function eachPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('each');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -446,7 +574,7 @@ var each = (function eachPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -460,10 +588,10 @@ var each = (function eachPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR EACH
+
+  // END OF PRIVATE SCOPE FOR VITALS.EACH
   return each;
 })();
 /// }}}1
