@@ -1541,8 +1541,16 @@ var cut = (function cutPrivateScope() {
   })();
 
   ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - BIND
+  // CUT HELPERS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
 
   /// {{{3
   /// @func _bind
@@ -1571,18 +1579,6 @@ var cut = (function cutPrivateScope() {
       return func['call'](thisArg, val, key, obj);
     };
   }
-
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - NONE
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   ///////////////////////////////////////////////////// {{{2
   // CUT HELPERS - ERROR MAKERS
