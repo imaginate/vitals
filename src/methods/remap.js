@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS REMAP
+ * VITALS.REMAP
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -21,9 +21,14 @@ var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS REMAP
+// VITALS.REMAP
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var remap = (function remapPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -130,32 +135,70 @@ var remap = (function remapPrivateScope() {
    */
   function remap(source, iteratee, replacement, thisArg) {
 
-    if ( $is.str(source) ) {
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
 
-      if (arguments.length < 2)
+      case 1:
         throw $err(new Error, 'no #iteratee defined');
-      if (arguments.length < 3)
-        throw $err(new Error, 'no #replacement defined');
-      if ( !$isNilNone.obj(thisArg) )
-        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
-      return _remapStr(source, iteratee, replacement, thisArg);
+      case 2:
+        if ( $is.str(source) )
+          throw $err(new Error, 'no #replacement defined');
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+           '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
+
+        return $is._arr(source)
+          ? _remapArr(source, iteratee, NONE)
+          : _remapObj(source, iteratee, NONE);
+
+      case 3:
+        if ( $is.str(source) )
+          return _remapStr(source, iteratee, replacement, NONE);
+
+        thisArg = replacement;
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+           '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+
+        return $is._arr(source)
+          ? _remapArr(source, iteratee, thisArg)
+          : _remapObj(source, iteratee, thisArg);
+
+      default:
+        if ( $is.str(source) ) {
+          if ( !$isNilNone.obj(thisArg) )
+            throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+
+          return _remapStr(source, iteratee, replacement, thisArg);
+        }
+
+        thisArg = replacement;
+
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+           '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+
+        return $is._arr(source)
+          ? _remapArr(source, iteratee, thisArg)
+          : _remapObj(source, iteratee, thisArg);
     }
-
-    thisArg = replacement;
-
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array|!Arguments|string');
-    if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
-
-    return $is._arr(source)
-      ? _remapArr(source, iteratee, thisArg)
-      : _remapObj(source, iteratee, thisArg);
   }
 
   /// {{{2
@@ -196,16 +239,36 @@ var remap = (function remapPrivateScope() {
    */
   function remapObject(source, iteratee, thisArg) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'object');
-    if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(*=, string=, (!Object|!Function)=): *', 'object');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'object');
 
-    return _remapObj(source, iteratee, thisArg);
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'object');
+
+      case 2:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'object');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+            '!function(*=, string=, (!Object|!Function)=): *', 'object');
+
+        return _remapObj(source, iteratee, NONE);
+
+      default:
+        if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+            'object');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+            '!function(*=, string=, (!Object|!Function)=): *', 'object');
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'object');
+
+        return _remapObj(source, iteratee, thisArg);
+    }
   }
   remap['object'] = remapObject;
   remap['obj'] = remapObject;
@@ -256,22 +319,61 @@ var remap = (function remapPrivateScope() {
    */
   function remapArray(source, iteratee, thisArg) {
 
-    if ( $is.str(source) )
-      source = $splitKeys(source);
+    /** @type {number} */
+    var len;
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Array|!Arguments|!Object|!Function|string', 'array');
-    if ( !$is.num(source.length) )
-      throw $typeErr(new TypeError, 'source.length', source.length, 'number',
-        'array');
-    if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(*=, number=, !Array=): *', 'array');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'array');
 
-    return _remapArr(source, iteratee, thisArg);
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'array');
+
+      case 2:
+        if ( $is.str(source) )
+          source = $splitKeys(source);
+        else if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Array|!Arguments|!Object|!Function|string', 'array');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+            '!function(*=, number=, !Array=): *', 'array');
+
+        len = source['length'];
+
+        if ( !$is.num(len) )
+          throw $typeErr(new TypeError, 'source.length', len, 'number',
+            'array');
+        if ( !$is.whole(len) || len < 0 )
+          throw $err(new Error, 'invalid #source.length `number` (' +
+            'must be `0` or a positive whole `number`)', 'array');
+
+        return _remapArr(source, iteratee, NONE);
+
+      default:
+        if ( $is.str(source) )
+          source = $splitKeys(source);
+        else if ( !$is._obj(source) )
+          throw $typeErr(new TypeError, 'source', source,
+            '!Array|!Arguments|!Object|!Function|string', 'array');
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee,
+            '!function(*=, number=, !Array=): *', 'array');
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'array');
+
+        len = source['length'];
+
+        if ( !$is.num(len) )
+          throw $typeErr(new TypeError, 'source.length', len, 'number',
+            'array');
+        if ( !$is.whole(len) || len < 0 )
+          throw $err(new Error, 'invalid #source.length `number` (' +
+            'must be `0` or a positive whole `number`)', 'array');
+
+        return _remapArr(source, iteratee, thisArg);
+    }
   }
   remap['array'] = remapArray;
   remap['arr'] = remapArray;
@@ -318,16 +420,31 @@ var remap = (function remapPrivateScope() {
    */
   function remapString(source, pattern, replacement, thisArg) {
 
-    if (arguments.length < 2)
-      throw $err(new Error, 'no #pattern defined', 'string');
-    if (arguments.length < 3)
-      throw $err(new Error, 'no #replacement defined', 'string');
-    if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'string');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'string');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'string');
 
-    return _remapStr(source, pattern, replacement, thisArg);
+      case 1:
+        throw $err(new Error, 'no #pattern defined', 'string');
+
+      case 2:
+        throw $err(new Error, 'no #replacement defined', 'string');
+
+      case 3:
+        if ( !$is.str(source) )
+          throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+
+        return _remapStr(source, pattern, replacement, NONE);
+
+      default:
+        if ( !$is.str(source) )
+          throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'string');
+
+        return _remapStr(source, pattern, replacement, thisArg);
+    }
   }
   remap['string'] = remapString;
   remap['str'] = remapString;
@@ -354,12 +471,12 @@ var remap = (function remapPrivateScope() {
 
     obj = {};
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy(source);
     if ( !$is.none(thisArg) )
       iteratee = _bindIteratee(iteratee, thisArg);
 
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
         for (key in source) {
           if ( $own(source, key) )
@@ -385,6 +502,7 @@ var remap = (function remapPrivateScope() {
         }
         break;
     }
+
     return obj;
   }
 
@@ -406,15 +524,16 @@ var remap = (function remapPrivateScope() {
     /** @type {number} */
     var i;
 
-    if (iteratee.length > 2)
+    if (iteratee['length'] > 2)
       source = copy['array'](source);
     if ( !$is.none(thisArg) )
       iteratee = _bindIteratee(iteratee, thisArg);
 
-    len = source.length;
+    len = source['length'];
     arr = new Array(len);
     i = -1;
-    switch (iteratee.length) {
+
+    switch (iteratee['length']) {
       case 0:
         while (++i < len)
           arr[i] = iteratee();
@@ -432,6 +551,7 @@ var remap = (function remapPrivateScope() {
           arr[i] = iteratee(source[i], i, source);
         break;
     }
+
     return arr;
   }
 
@@ -466,12 +586,20 @@ var remap = (function remapPrivateScope() {
     else if ( !$is.str(replacement) )
       replacement = String(replacement);
 
-    return source.replace(pattern, replacement);
+    return source['replace'](pattern, replacement);
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // REMAP HELPERS - MISC
+  // REMAP HELPERS - GENERAL
   //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
 
   /// {{{3
   /// @func _bindIteratee
@@ -482,22 +610,22 @@ var remap = (function remapPrivateScope() {
    * @return {!function} 
    */
   function _bindIteratee(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function iteratee() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function iteratee(value) {
-          return func.call(thisArg, value);
+          return func['call'](thisArg, value);
         };
       case 2:
         return function iteratee(value, key) {
-          return func.call(thisArg, value, key);
+          return func['call'](thisArg, value, key);
         };
     }
     return function iteratee(value, key, source) {
-      return func.call(thisArg, value, key, source);
+      return func['call'](thisArg, value, key, source);
     };
   }
 
@@ -510,48 +638,53 @@ var remap = (function remapPrivateScope() {
    * @return {!function}
    */
   function _bindReplacement(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
         return function replacement() {
-          return func.call(thisArg);
+          return func['call'](thisArg);
         };
       case 1:
         return function replacement(match) {
-          return func.call(thisArg, match);
+          return func['call'](thisArg, match);
         };
       case 2:
         return function replacement(match, offset) {
-          return func.call(thisArg, match, offset);
+          return func['call'](thisArg, match, offset);
         };
       case 3:
         return function replacement(match, offset, source) {
-          return func.call(thisArg, match, offset, source);
+          return func['call'](thisArg, match, offset, source);
         };
       case 4:
         return function replacement(match, p1, offset, source) {
-          return func.call(thisArg, match, p1, offset, source);
+          return func['call'](thisArg, match, p1, offset, source);
         };
       case 5:
         return function replacement(match, p1, p2, offset, source) {
-          return func.call(thisArg, match, p1, p2, offset, source);
+          return func['call'](thisArg, match, p1, p2, offset, source);
         };
       case 6:
         return function replacement(match, p1, p2, p3, offset, source) {
-          return func.call(thisArg, match, p1, p2, p3, offset, source);
+          return func['call'](thisArg, match, p1, p2, p3, offset, source);
         };
     }
     return function replacement(match, p1, p2, p3, p4, offset, source) {
-      return func.apply(thisArg, arguments);
+      return func['apply'](thisArg, arguments);
     };
   }
 
+  ///////////////////////////////////////////////////// {{{2
+  // REMAP HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
   /// {{{3
-  /// @const NONE
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @const {undefined}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var NONE = (function(){})();
+  var ERROR_MAKER = $newErrorMaker('remap');
 
   /// {{{3
   /// @func $err
@@ -562,7 +695,7 @@ var remap = (function remapPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('remap');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -575,7 +708,7 @@ var remap = (function remapPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -589,10 +722,10 @@ var remap = (function remapPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR REMAP
+
+  // END OF PRIVATE SCOPE FOR VITALS.REMAP
   return remap;
 })();
 /// }}}1
