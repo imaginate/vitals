@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS FILL
+ * VITALS.FILL
  * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
@@ -14,14 +14,18 @@
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $splitKeys = require('./helpers/split-keys.js');
-var $isNone = require('./helpers/is-none.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS FILL
+// VITALS.FILL
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var fill = (function fillPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -73,7 +77,7 @@ var fill = (function fillPrivateScope() {
    */
   function fill(source, keys, val, start, end) {
 
-    if (arguments.length < 2)
+    if (arguments['length'] < 2)
       throw $err(new Error, 'no #val defined');
 
     if ( $is.nil(source) )
@@ -93,15 +97,26 @@ var fill = (function fillPrivateScope() {
       start = val;
       val = keys;
 
-      if ( !$isNone.num(start) )
+      if ( $is.num(start) ) {
+        if ( !$is.whole(start) )
+          throw $err(new Error, 'invalid #start `number` (' +
+            'must be whole `number`)');
+      }
+      else if ( !$is.none(start) )
         throw $typeErr(new TypeError, 'start', start, 'number=');
-      if ( !$isNone.num(end) )
+
+      if ( $is.num(end) ) {
+        if ( !$is.whole(end) )
+          throw $err(new Error, 'invalid #end `number` (' +
+            'must be whole `number`)');
+      }
+      else if ( !$is.none(end) )
         throw $typeErr(new TypeError, 'end', end, 'number=');
 
       return _fillArr(source, val, start, end);
     }
 
-    if (arguments.length > 2) {
+    if (arguments['length'] > 2) {
       if ( $is.str(keys) )
         keys = $splitKeys(keys);
 
@@ -136,15 +151,15 @@ var fill = (function fillPrivateScope() {
    *   The value to fill the `object` or `function` with.
    * @return {(!Object|!Function)}
    */
-  fill.object = function fillObject(source, keys, val) {
+  function fillObject(source, keys, val) {
 
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
         'object');
-    if (arguments.length < 2)
+    if (arguments['length'] < 2)
       throw $err(new Error, 'no #val defined', 'object');
 
-    if (arguments.length > 2) {
+    if (arguments['length'] > 2) {
       if ( $is.str(keys) )
         keys = $splitKeys(keys);
 
@@ -157,9 +172,9 @@ var fill = (function fillPrivateScope() {
 
     val = keys;
     return _fillObj(source, val);
-  };
-  // define shorthand
-  fill.obj = fill.object;
+  }
+  fill['object'] = fillObject;
+  fill['obj'] = fillObject;
 
   /// {{{2
   /// @method fill.array
@@ -185,25 +200,37 @@ var fill = (function fillPrivateScope() {
    *   the range of filled properties if it exists.
    * @return {!Array}
    */
-  fill.array = function fillArray(source, val, start, end) {
+  function fillArray(source, val, start, end) {
 
     if ( $is.num(source) )
       source = new Array(source);
 
-    if (arguments.length < 2)
+    if (arguments['length'] < 2)
       throw $err(new Error, 'no #val defined', 'array');
     if ( !$is.arr(source) )
       throw $typeErr(new TypeError, 'source', source, '!Array|number',
         'array');
-    if ( !$isNone.num(start) )
+
+    if ( $is.num(start) ) {
+      if ( !$is.whole(start) )
+        throw $err(new Error, 'invalid #start `number` (' +
+          'must be whole `number`)', 'array');
+    }
+    else if ( !$is.none(start) )
       throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
-    if ( !$isNone.num(end) )
+
+    if ( $is.num(end) ) {
+      if ( !$is.whole(end) )
+        throw $err(new Error, 'invalid #end `number` (' +
+          'must be whole `number`)', 'array');
+    }
+    else if ( !$is.none(end) )
       throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
 
     return _fillArr(source, val, start, end);
-  };
-  // define shorthand
-  fill.arr = fill.array;
+  }
+  fill['array'] = fillArray;
+  fill['arr'] = fillArray;
 
   /// {{{2
   /// @method fill.string
@@ -219,17 +246,20 @@ var fill = (function fillPrivateScope() {
    *   `string` is converted to a `string` with [String()][str-func].
    * @return {string}
    */
-  fill.string = function fillString(count, val) {
+  function fillString(count, val) {
 
     if ( !$is.num(count) )
       throw $typeErr(new TypeError, 'count', count, 'number', 'string');
-    if (arguments.length < 2)
+    if ( !$is.whole(count) )
+      throw $err(new Error, 'invalid #count `number` (' +
+        'must be whole `number`)', 'string');
+    if (arguments['length'] < 2)
       throw $err(new Error, 'no #val defined', 'string');
 
     return _fillStr(count, val);
-  };
-  // define shorthand
-  fill.str = fill.string;
+  }
+  fill['string'] = fillString;
+  fill['str'] = fillString;
 
   ///////////////////////////////////////////////////// {{{2
   // FILL HELPERS - MAIN
@@ -271,7 +301,7 @@ var fill = (function fillPrivateScope() {
     /** @type {number} */
     var i;
 
-    len = keys.length;
+    len = keys['length'];
     i = -1;
     while (++i < len)
       obj[ keys[i] ] = val;
@@ -295,7 +325,7 @@ var fill = (function fillPrivateScope() {
     /** @type {number} */
     var i;
 
-    len = arr.length;
+    len = arr['length'];
 
     if ( $is.none(start) )
       start = 0;
@@ -345,7 +375,7 @@ var fill = (function fillPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // FILL HELPERS - MISC
+  // FILL HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -356,6 +386,19 @@ var fill = (function fillPrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // FILL HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('fill');
+
   /// {{{3
   /// @func $err
   /**
@@ -365,7 +408,7 @@ var fill = (function fillPrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('fill');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -378,7 +421,7 @@ var fill = (function fillPrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -392,10 +435,10 @@ var fill = (function fillPrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR FILL
+
+  // END OF PRIVATE SCOPE FOR VITALS.FILL
   return fill;
 })();
 /// }}}1
