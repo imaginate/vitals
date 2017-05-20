@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * VITALS FREEZE
+ * VITALS.FREEZE
  * ---------------------------------------------------------------------------
  * @section strict
  * @version 4.1.3
@@ -18,9 +18,14 @@ var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS FREEZE
+// VITALS.FREEZE
 //////////////////////////////////////////////////////////////////////////////
 
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var freeze = (function freezePrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -75,7 +80,7 @@ var freeze = (function freezePrivateScope() {
    *   Whether to recursively [freeze][freeze] the #obj properties.
    * @return {(?Object|?Function)}
    */
-  freeze.object = function freezeObject(obj, deep) {
+  function freezeObject(obj, deep) {
 
     if ( $is.nil(obj) )
       return null;
@@ -89,9 +94,9 @@ var freeze = (function freezePrivateScope() {
     return deep
       ? _deepFreeze(obj)
       : _ObjectFreeze(obj);
-  };
-  // define shorthand
-  freeze.obj = freeze.object;
+  }
+  freeze['object'] = freezeObject;
+  freeze['obj'] = freezeObject;
 
   ///////////////////////////////////////////////////// {{{2
   // FREEZE HELPERS - MAIN
@@ -127,17 +132,17 @@ var freeze = (function freezePrivateScope() {
    * @param {(!Object|!Function)} obj
    * @return {(!Object|!Function)}
    */
-  var _ObjectFreeze = (function() {
+  var _ObjectFreeze = (function _ObjectFreezePolyfillPrivateScope() {
 
     /** @type {!function} */
     var objectFreeze;
 
-    if ( !('freeze' in Object) || !$is.fun(Object.freeze) )
+    if ( !('freeze' in Object) || !$is.fun(Object['freeze']) )
       return function freeze(obj) {
         return obj;
       };
 
-    objectFreeze = Object.freeze;
+    objectFreeze = Object['freeze'];
 
     try {
       objectFreeze(function(){});
@@ -153,7 +158,7 @@ var freeze = (function freezePrivateScope() {
   })();
 
   ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - MISC
+  // FREEZE HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
   /// {{{3
@@ -164,6 +169,19 @@ var freeze = (function freezePrivateScope() {
    */
   var NONE = (function(){})();
 
+  ///////////////////////////////////////////////////// {{{2
+  // FREEZE HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('freeze');
+
   /// {{{3
   /// @func $err
   /**
@@ -173,7 +191,7 @@ var freeze = (function freezePrivateScope() {
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = $newErrorMaker('freeze');
+  var $err = ERROR_MAKER.error;
 
   /// {{{3
   /// @func $typeErr
@@ -186,7 +204,7 @@ var freeze = (function freezePrivateScope() {
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = $err.type;
+  var $typeErr = ERROR_MAKER.typeError;
 
   /// {{{3
   /// @func $rangeErr
@@ -200,10 +218,10 @@ var freeze = (function freezePrivateScope() {
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = $err.range;
-
+  var $rangeErr = ERROR_MAKER.rangeError;
   /// }}}2
-  // END OF PRIVATE SCOPE FOR FREEZE
+
+  // END OF PRIVATE SCOPE FOR VITALS.FREEZE
   return freeze;
 })();
 /// }}}1
