@@ -325,19 +325,28 @@ var cut = (function cutPrivateScope() {
    */
   function cutIndex(source, index, toIndex) {
 
+    /** @type {number} */
+    var len;
+
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source,
         '!Array|!Arguments|!Object|!Function', 'index');
-    if ( !$is.num(source['length']) )
-      throw $typeErr(new TypeError, 'source.length', source['length'],
-        'number', 'index'); 
     if ( !$is.num(index) )
       throw $typeErr(new TypeError, 'index', index, 'number', 'index');
     if ( !$isNone.num(toIndex) )
       throw $typeErr(new TypeError, 'toIndex', toIndex, 'number=', 'index');
 
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number', 'index');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'index');
+
     if ( !$is.arr(source) )
       source = $sliceArr(source);
+
     return _cutIndex(source, index, toIndex);
   }
   cut['index'] = cutIndex;
@@ -547,18 +556,30 @@ var cut = (function cutPrivateScope() {
    */
   function cutIndexes(source, index) {
 
+    /** @type {number} */
+    var len;
+
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source,
         '!Array|!Arguments|!Object|!Function', 'indexes');
-    if ( !$is.num(source['length']) )
-      throw $typeErr(new TypeError, 'source.length', source['length'],
-        'number', 'indexes');
-    if (arguments['length'] < 2)
+
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number',
+        'indexes');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'indexes');
+
+    len = arguments['length'];
+
+    if (len < 2)
       throw $err(new Error, 'no #index defined', 'indexes');
 
     if ( !$is.arr(source) )
       source = $sliceArr(source);
-    if (arguments['length'] > 2)
+    if (len > 2)
       index = $sliceArr(arguments, 1);
 
     if ( !$is.arr(index) ) {
