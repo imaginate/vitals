@@ -53,17 +53,33 @@ var freeze = (function freezePrivateScope() {
    */
   function freeze(obj, deep) {
 
-    if ( $is.nil(obj) )
-      return null;
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #obj defined');
 
-    if ( !$is._obj(obj) )
-      throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
-    if ( !$isNone.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
+      case 1:
+        if ( $is.nil(obj) )
+          return null;
 
-    return deep
-      ? _deepFreeze(obj)
-      : _ObjectFreeze(obj);
+        if ( !$is._obj(obj) )
+          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+
+        return _freeze(obj);
+
+      default:
+        if ( !$isNone.bool(deep) )
+          throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
+
+        if ( $is.nil(obj) )
+          return null;
+
+        if ( !$is._obj(obj) )
+          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+
+        return deep
+          ? _deepFreeze(obj)
+          : _freeze(obj);
+    }
   }
 
   /// {{{2
@@ -82,44 +98,38 @@ var freeze = (function freezePrivateScope() {
    */
   function freezeObject(obj, deep) {
 
-    if ( $is.nil(obj) )
-      return null;
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #obj defined', 'object');
 
-    if ( !$is._obj(obj) )
-      throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
-        'object');
-    if ( !$isNone.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
+      case 1:
+        if ( $is.nil(obj) )
+          return null;
 
-    return deep
-      ? _deepFreeze(obj)
-      : _ObjectFreeze(obj);
+        if ( !$is._obj(obj) )
+          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+            'object');
+
+        return _freeze(obj);
+
+      default:
+        if ( !$isNone.bool(deep) )
+          throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
+
+        if ( $is.nil(obj) )
+          return null;
+
+        if ( !$is._obj(obj) )
+          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+            'object');
+
+        return deep
+          ? _deepFreeze(obj)
+          : _freeze(obj);
+    }
   }
   freeze['object'] = freezeObject;
   freeze['obj'] = freezeObject;
-
-  ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - MAIN
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @func _deepFreeze
-  /**
-   * @private
-   * @param {(!Object|!Function)} obj
-   * @return {(!Object|!Function)}
-   */
-  function _deepFreeze(obj, noFreeze) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in obj) {
-      if ( $own(obj, key) && $is._obj(obj[key]) )
-        _deepFreeze(obj[key]);
-    }
-    return _ObjectFreeze(obj);
-  }
 
   ///////////////////////////////////////////////////// {{{2
   // FREEZE HELPERS - OBJECT.FREEZE POLYFILL
@@ -158,16 +168,37 @@ var freeze = (function freezePrivateScope() {
   })();
 
   ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - GENERAL
+  // FREEZE HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @const NONE
+  /// @func _freeze
   /**
    * @private
-   * @const {undefined}
+   * @param {(!Object|!Function)} obj
+   * @return {(!Object|!Function)}
    */
-  var NONE = (function(){})();
+  var _freeze = _ObjectFreeze;
+
+  /// {{{3
+  /// @func _deepFreeze
+  /**
+   * @private
+   * @param {(!Object|!Function)} obj
+   * @return {(!Object|!Function)}
+   */
+  function _deepFreeze(obj) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in obj) {
+      if ( $own(obj, key) && $is._obj(obj[key]) )
+        _deepFreeze(obj[key]);
+    }
+
+    return _freeze(obj);
+  }
 
   ///////////////////////////////////////////////////// {{{2
   // FREEZE HELPERS - ERROR MAKERS
