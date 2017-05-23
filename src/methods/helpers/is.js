@@ -18,7 +18,7 @@
  * @const {!Object<string, !function>}
  * @struct
  */
-var $is = (function _isPrivateScope() {
+var $is = (function $isPrivateScope() {
 
   /// {{{3
   /// @const IS
