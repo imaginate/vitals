@@ -1,30 +1,32 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: slice
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.SLICE
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.slice](https://github.com/imaginate/vitals/wiki/vitals.slice)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var sliceArr = require('./helpers/slice-arr.js');
-var sliceStr = require('./helpers/slice-str.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $sliceArr = require('./helpers/slice-arr.js');
+var $sliceStr = require('./helpers/slice-str.js');
+var $isNone = require('./helpers/is-none.js');
+var $is = require('./helpers/is.js');
 
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS.SLICE
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: slice
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var slice = (function slicePrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -34,9 +36,16 @@ var slice = (function slicePrivateScope() {
   // - slice.string (slice.str)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Slice References
+   * @ref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   * @ref [str-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice)
+   */
+
+  /// {{{2
+  /// @method slice
   /**
-   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   *   and [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   * A shortcut for [Array.prototype.slice][arr-slice] and
+   * [String.prototype.slice][str-slice].
    *
    * @public
    * @param {?(Object|Array|function|string)} source
@@ -46,21 +55,24 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    if ( !_is.un.num(start) ) throw _error.type('start');
-    if ( !_is.un.num(end)   ) throw _error.type('end');
+    if ( !$isNone.num(start) ) throw $typeErr(new TypeError, 'start');
+    if ( !$isNone.num(end)   ) throw $typeErr(new TypeError, 'end');
 
-    if ( _is.nil(source) ) return null;
+    if ( $is.nil(source) ) return null;
 
-    if ( _is.str(source) ) return sliceStr(source, start, end);
+    if ( $is.str(source) ) return $sliceStr(source, start, end);
 
-    if ( !_is._obj(source)       ) throw _error.type('source');
-    if ( !_is.num(source.length) ) throw _error.type('source.length');
+    if ( !$is._obj(source)       ) throw $typeErr(new TypeError, 'source');
+    if ( !$is.num(source.length) ) throw $typeErr(new TypeError, 'source.length');
 
-    return sliceArr(source, start, end);
+    return $sliceArr(source, start, end);
   }
 
+  /// {{{2
+  /// @method slice.array
+  /// @alias slice.arr
   /**
-   * A shortcut for [Array.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice).
+   * A shortcut for [Array.prototype.slice][arr-slice].
    *
    * @public
    * @param {?(Object|Array|function)} source
@@ -70,18 +82,21 @@ var slice = (function slicePrivateScope() {
    */
   slice.array = function sliceArray(source, start, end) {
 
-    if ( !_is._obj(source)       ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length) ) throw _error.type('source.length', 'array');
-    if ( !_is.un.num(start)      ) throw _error.type('start',         'array');
-    if ( !_is.un.num(end)        ) throw _error.type('end',           'array');
+    if ( !$is._obj(source)       ) throw $typeErr(new TypeError, 'source',        'array');
+    if ( !$is.num(source.length) ) throw $typeErr(new TypeError, 'source.length', 'array');
+    if ( !$isNone.num(start)      ) throw $typeErr(new TypeError, 'start',         'array');
+    if ( !$isNone.num(end)        ) throw $typeErr(new TypeError, 'end',           'array');
 
-    return sliceArr(source, start, end);
+    return $sliceArr(source, start, end);
   };
   // define shorthand
   slice.arr = slice.array;
 
+  /// {{{2
+  /// @method slice.string
+  /// @alias slice.str
   /**
-   * A shortcut for [String.prototype.slice](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice).
+   * A shortcut for [String.prototype.slice][str-slice].
    *
    * @public
    * @param {string} str
@@ -91,29 +106,72 @@ var slice = (function slicePrivateScope() {
    */
   slice.string = function sliceString(str, start, end) {
 
-    if ( !_is.str(str)      ) throw _error.type('str',   'string');
-    if ( !_is.un.num(start) ) throw _error.type('start', 'string');
-    if ( !_is.un.num(end)   ) throw _error.type('end',   'string');
+    if ( !$is.str(str)      ) throw $typeErr(new TypeError, 'str',   'string');
+    if ( !$isNone.num(start) ) throw $typeErr(new TypeError, 'start', 'string');
+    if ( !$isNone.num(end)   ) throw $typeErr(new TypeError, 'end',   'string');
 
-    return sliceStr(str, start, end);
+    return $sliceStr(str, start, end);
   };
   // define shorthand
   slice.str = slice.string;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // SLICE HELPERS - ERROR MAKERS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var _error = newErrorMaker('slice');
+  var ERROR_MAKER = $newErrorMaker('slice');
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR SLICE
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = ERROR_MAKER.error;
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = ERROR_MAKER.typeError;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = ERROR_MAKER.rangeError;
+  /// }}}2
+
+  // END OF PRIVATE SCOPE FOR VITALS.SLICE
   return slice;
 })();
-
+/// }}}1
 
 module.exports = slice;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
