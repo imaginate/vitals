@@ -160,21 +160,7 @@ var remap = (function remapPrivateScope() {
       case 3:
         if ( $is.str(source) )
           return _remapStr(source, iteratee, replacement, NONE);
-
-        thisArg = replacement;
-
-        if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
-            '!Object|!Function|!Array|!Arguments|string');
-        if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
-           '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
-        if ( !$isNilNone.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
-
-        return $is._arr(source)
-          ? _remapArr(source, iteratee, thisArg)
-          : _remapObj(source, iteratee, thisArg);
+        break;
 
       default:
         if ( $is.str(source) ) {
@@ -183,22 +169,23 @@ var remap = (function remapPrivateScope() {
 
           return _remapStr(source, iteratee, replacement, thisArg);
         }
-
-        thisArg = replacement;
-
-        if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
-            '!Object|!Function|!Array|!Arguments|string');
-        if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
-           '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
-        if ( !$isNilNone.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
-
-        return $is._arr(source)
-          ? _remapArr(source, iteratee, thisArg)
-          : _remapObj(source, iteratee, thisArg);
+        break;
     }
+
+    thisArg = replacement;
+
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Object|!Function|!Array|!Arguments|string');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
+    if ( !$isNilNone.obj(thisArg) )
+      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+
+    return $is._arr(source)
+      ? _remapArr(source, iteratee, thisArg)
+      : _remapObj(source, iteratee, thisArg);
   }
 
   /// {{{2
