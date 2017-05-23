@@ -58,7 +58,9 @@ var $is = (function _isPrivateScope() {
     eol:   isEndOfLine,
 
     // object states
+    extend: isExtensible,
     frozen: isFrozen,
+    sealed: isSealed,
 
     // number states
     whole: isWholeNumber,
@@ -444,30 +446,88 @@ var $is = (function _isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{4
+  /// @func isExtensible
+  /**
+   * @param {(!Object|!function)} src
+   * @return {boolean}
+   */
+  var isExtensible = (function $isExtensiblePolyfillPrivateScope() {
+
+    /** @type {!function(!Object): boolean} */
+    var objectIsExtensible;
+
+    if ( !('isExtensible' in Object) || !isFunction(Object['isExtensible']) )
+      return function isExtensible(src) {
+        return false;
+      };
+
+    objectIsExtensible = Object['isExtensible'];
+
+    try {
+      objectIsExtensible(function(){});
+      return objectIsExtensible;
+    }
+    catch (e) {
+      return function isExtensible(src) {
+        return typeof src === 'object' && objectIsExtensible(src);
+      };
+    }
+  })();
+
+  /// {{{4
   /// @func isFrozen
   /**
    * @param {(!Object|!function)} src
    * @return {boolean}
    */
-  var isFrozen = (function() {
+  var isFrozen = (function $isFrozenPolyfillPrivateScope() {
 
     /** @type {!function(!Object): boolean} */
-    var ObjIsFrozen;
+    var objectIsFrozen;
 
-    if ( !('isFrozen' in Object) || !isFunction(Object.isFrozen) )
+    if ( !('isFrozen' in Object) || !isFunction(Object['isFrozen']) )
       return function isFrozen(src) {
         return false;
       };
 
-    ObjIsFrozen = Object.isFrozen;
+    objectIsFrozen = Object['isFrozen'];
 
     try {
-      Object.isFrozen(function(){});
-      return Object.isFrozen;
+      objectIsFrozen(function(){});
+      return objectIsFrozen;
     }
     catch (e) {
       return function isFrozen(src) {
-        return typeof src === 'object' && ObjIsFrozen(src);
+        return typeof src === 'object' && objectIsFrozen(src);
+      };
+    }
+  })();
+
+  /// {{{4
+  /// @func isSealed
+  /**
+   * @param {(!Object|!function)} src
+   * @return {boolean}
+   */
+  var isSealed = (function $isSealedPolyfillPrivateScope() {
+
+    /** @type {!function(!Object): boolean} */
+    var objectIsSealed;
+
+    if ( !('isSealed' in Object) || !isFunction(Object['isSealed']) )
+      return function isSealed(src) {
+        return false;
+      };
+
+    objectIsSealed = Object['isSealed'];
+
+    try {
+      objectIsSealed(function(){});
+      return objectIsSealed;
+    }
+    catch (e) {
+      return function isSealed(src) {
+        return typeof src === 'object' && objectIsSealed(src);
       };
     }
   })();
