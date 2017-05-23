@@ -37,33 +37,107 @@ var slice = (function slicePrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Slice References
+   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
    * @ref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
    * @ref [str-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice)
+   * @ref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
    */
 
   /// {{{2
   /// @method slice
   /**
-   * A shortcut for [Array.prototype.slice][arr-slice] and
+   * Makes a shallow [copy][clone] of specified indexed properties for an
+   * `array` or array-like `object` or indexed characters for a `string`. Note
+   * that @copy#array should be used to [copy][clone] all (not only indexed)
+   * properties or to deep [copy][clone] an `array` or array-like `object`.
+   * This method operates like a cross-platform safe shortcut for
+   * [Array.prototype.slice][arr-slice] and
    * [String.prototype.slice][str-slice].
    *
    * @public
-   * @param {?(Object|Array|function|string)} source
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= source.length]
-   * @return {?(Array|string)}
+   * @param {(?Array|?Arguments|?Object|?Function|?string)} source
+   *   The details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     This method [slices][arr-slice] the #source.
+   *   - *`string`*!$
+   *     This method [slices][str-slice] the #source.
+   *   - *`null`*!$
+   *     This method returns `null`.
+   * @param {number=} start = `0`
+   *   The #start details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     Begins the range of indexes in the #source that are [copied][clone].
+   *     If the #start `number` is negative, it is added to the #source
+   *     [length][arr-length]. The #start index `number` is included in the
+   *     [copied][clone] properties if it exists.
+   *   - *`string`*!$
+   *     Begins the range of indexes in the #source that are [copied][clone].
+   *     If the #start `number` is negative, it is added to the #source
+   *     [length][str-length]. The #start index `number` is included in the
+   *     [copied][clone] characters if it exists.
+   *   - *`null`*!$
+   *     The #start value is not used.
+   * @param {number=} end = `source.length`
+   *   The #end details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     Ends the range of indexes in the #source that are [copied][clone]. If
+   *     the #end `number` is negative, it is added to the #source
+   *     [length][arr-length]. The #end index `number` is **not** included in
+   *     the [copied][clone] properties if it exists.
+   *   - *`string`*!$
+   *     Ends the range of indexes in the #source that are [copied][clone]. If
+   *     the #end `number` is negative, it is added to the #source
+   *     [length][str-length]. The #end index `number` is **not** included in
+   *     the [copied][clone] characters if it exists.
+   *   - *`null`*!$
+   *     The #end value is not used.
+   * @return {(?Array|?string)}
+   *   The return details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     This method returns the new [copied][clone] `array`.
+   *   - *`string`*!$
+   *     This method returns the new [copied][clone] `string`.
+   *   - *`null`*!$
+   *     This method returns `null`.
    */
   function slice(source, start, end) {
 
-    if ( !$isNone.num(start) ) throw $typeErr(new TypeError, 'start');
-    if ( !$isNone.num(end)   ) throw $typeErr(new TypeError, 'end');
+    /** @type {number} */
+    var len;
 
-    if ( $is.nil(source) ) return null;
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
+      case 1:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=');
+        break;
+      default:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=');
+        if ( !$isNone.num(end) )
+          throw $typeErr(new TypeError, 'end', end, 'number=');
+        break;
+    }
 
-    if ( $is.str(source) ) return $sliceStr(source, start, end);
+    if ( $is.nil(source) )
+      return null;
 
-    if ( !$is._obj(source)       ) throw $typeErr(new TypeError, 'source');
-    if ( !$is.num(source.length) ) throw $typeErr(new TypeError, 'source.length');
+    if ( $is.str(source) )
+      return $sliceStr(source, start, end);
+
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '?Array|?Arguments|?Object|?Function|?string');
+
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)');
 
     return $sliceArr(source, start, end);
   }
@@ -72,48 +146,133 @@ var slice = (function slicePrivateScope() {
   /// @method slice.array
   /// @alias slice.arr
   /**
-   * A shortcut for [Array.prototype.slice][arr-slice].
+   * Makes a shallow [copy][clone] of specified indexed properties for an
+   * `array` or array-like `object`. Note that @copy#array should be used to
+   * [copy][clone] all (not only indexed) properties or to deep [copy][clone]
+   * the #source. This method operates like a cross-platform safe shortcut for
+   * [Array.prototype.slice][arr-slice].
    *
    * @public
-   * @param {?(Object|Array|function)} source
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= source.length]
-   * @return {!Array}
+   * @param {(?Array|?Arguments|?Object|?Function)} source
+   *   The details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     This method [slices][arr-slice] the #source.
+   *   - *`null`*!$
+   *     This method returns `null`.
+   * @param {number=} start = `0`
+   *   The #start details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     Begins the range of indexes in the #source that are [copied][clone].
+   *     If the #start `number` is negative, it is added to the #source
+   *     [length][arr-length]. The #start index `number` is included in the
+   *     [copied][clone] properties if it exists.
+   *   - *`null`*!$
+   *     The #start value is not used.
+   * @param {number=} end = `source.length`
+   *   The #end details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     Ends the range of indexes in the #source that are [copied][clone]. If
+   *     the #end `number` is negative, it is added to the #source
+   *     [length][arr-length]. The #end index `number` is **not** included in
+   *     the [copied][clone] properties if it exists.
+   *   - *`null`*!$
+   *     The #end value is not used.
+   * @return {?Array}
+   *   The return details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     This method returns the new [copied][clone] `array`.
+   *   - *`null`*!$
+   *     This method returns `null`.
    */
-  slice.array = function sliceArray(source, start, end) {
+  function sliceArray(source, start, end) {
 
-    if ( !$is._obj(source)       ) throw $typeErr(new TypeError, 'source',        'array');
-    if ( !$is.num(source.length) ) throw $typeErr(new TypeError, 'source.length', 'array');
-    if ( !$isNone.num(start)      ) throw $typeErr(new TypeError, 'start',         'array');
-    if ( !$isNone.num(end)        ) throw $typeErr(new TypeError, 'end',           'array');
+    /** @type {number} */
+    var len;
+
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'array');
+      case 1:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
+        break;
+      default:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
+        if ( !$isNone.num(end) )
+          throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
+        break;
+    }
+
+    if ( $is.nil(source) )
+      return null;
+
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '?Array|?Arguments|?Object|?Function', 'array');
+
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number', 'array');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'array');
 
     return $sliceArr(source, start, end);
-  };
-  // define shorthand
-  slice.arr = slice.array;
+  }
+  slice['array'] = sliceArray;
+  slice['arr'] = sliceArray;
+
 
   /// {{{2
   /// @method slice.string
   /// @alias slice.str
   /**
-   * A shortcut for [String.prototype.slice][str-slice].
+   * Makes a [copy][clone] of a specified range of indexed characters in a
+   * `string`. This method operates like a cross-platform safe shortcut for
+   * [String.prototype.slice][str-slice].
    *
    * @public
-   * @param {string} str
-   * @param {number=} start - [default= 0]
-   * @param {number=} end - [default= str.length]
+   * @param {string} source
+   *   This method [slices][str-slice] the #source.
+   * @param {number=} start = `0`
+   *   Begins the range of indexes in the #source that are [copied][clone].
+   *   If the #start `number` is negative, it is added to the #source
+   *   [length][str-length]. The #start index `number` is included in the
+   *   [copied][clone] characters if it exists.
+   * @param {number=} end = `source.length`
+   *   Ends the range of indexes in the #source that are [copied][clone]. If
+   *   the #end `number` is negative, it is added to the #source
+   *   [length][str-length]. The #end index `number` is **not** included in
+   *   the [copied][clone] characters if it exists.
    * @return {string}
+   *   This method returns the new [copied][clone] `string`.
    */
-  slice.string = function sliceString(str, start, end) {
+  function sliceString(source, start, end) {
 
-    if ( !$is.str(str)      ) throw $typeErr(new TypeError, 'str',   'string');
-    if ( !$isNone.num(start) ) throw $typeErr(new TypeError, 'start', 'string');
-    if ( !$isNone.num(end)   ) throw $typeErr(new TypeError, 'end',   'string');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'string');
+      case 1:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
+        break;
+      default:
+        if ( !$isNone.num(start) )
+          throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
+        if ( !$isNone.num(end) )
+          throw $typeErr(new TypeError, 'end', end, 'number=', 'string');
+        break;
+    }
 
-    return $sliceStr(str, start, end);
-  };
-  // define shorthand
-  slice.str = slice.string;
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+
+    return $sliceStr(source, start, end);
+  }
+  slice['string'] = sliceString;
+  slice['str'] = sliceString;
 
   ///////////////////////////////////////////////////// {{{2
   // SLICE HELPERS - ERROR MAKERS
