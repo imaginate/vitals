@@ -47,6 +47,7 @@ var to = (function toPrivateScope() {
    * @ref [number]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
    * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
+   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
    */
 
   /// {{{2 to
@@ -173,16 +174,22 @@ var to = (function toPrivateScope() {
   /// @method to.array
   /// @alias to.arr
   /**
-   * Converts a value to an array.
+   * Converts a `string` or `number` into an `array`.
    *
    * @public
    * @param {(string|number)} val
-   *   Details per val type:
-   *   - string: [String.prototype.split][split] is called on the string.
-   *   - number: A new array of val length is returned.
+   *   The #val details are as follows (per #val type):
+   *   - *`string`*!$
+   *     [String.prototype.split][split] is called on the #val.
+   *   - *`number`*!$
+   *     A new `array` with #val [length][arr-length] is created.
    * @param {*=} separator
-   *   Only used with a string val. If no separator is defined one of the
-   *   following values is used (values listed in order of rank):
+   *   Only allowed for use if the #val is a `string`. The #separator is used
+   *   to [split][split] the `string` into `array` properties. If the
+   *   #separator is defined and is not a `RegExp`, it is converted into a
+   *   `string` with [String][string]. If the #separator is **not** defined,
+   *   one of the following values is used to [split][split] the `string`
+   *   (values listed in order of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
@@ -191,16 +198,34 @@ var to = (function toPrivateScope() {
    */
   function toArray(val, separator) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a val', 'array');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #val defined', 'array');
+      case 1:
+        if ( $is.num(val) )
+          return new Array(val);
 
-    if ( $is.num(val) ) return new Array(val);
+        if ( !$is.str(val) )
+          throw $typeErr(new TypeError, 'val', val, 'string|number', 'array');
 
-    if ( !$is.str(val) ) throw $typeErr(new TypeError, 'val', 'array');
+        return $splitKeys(val);
+    }
 
-    if ( $is.none(separator) ) return $splitKeys(val);
+    if ( $is.num(val) ) {
+      if ( !$is.none(separator) )
+        throw $err(new Error, 'invalid #separator defined (' +
+          'only allowed with a `string` #val)', 'array');
 
-    separator = $is.regx(separator) ? separator : String(separator);
-    return val.split(separator);
+      return new Array(val);
+    }
+
+    if ( !$is.str(val) )
+      throw $typeErr(new TypeError, 'val', val, 'string|number', 'array');
+
+    if ( !$is.regx(separator) && !$is.str(separator) )
+      separator = String(separator);
+
+    return val['split'](separator);
   }
   to['array'] = toArray;
   to['arr'] = toArray;
