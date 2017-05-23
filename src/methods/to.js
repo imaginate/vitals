@@ -14,7 +14,6 @@
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $splitKeys = require('./helpers/split-keys.js');
-var $isNone = require('./helpers/is-none.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
