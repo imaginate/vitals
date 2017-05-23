@@ -153,7 +153,7 @@ var to = (function toPrivateScope() {
   /// @method to.boolean
   /// @alias to.bool
   /**
-   * Converts a value to a boolean.
+   * Converts any value into a `boolean`.
    *
    * @public
    * @param {*} val
@@ -161,7 +161,8 @@ var to = (function toPrivateScope() {
    */
   function toBoolean(val) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a val', 'boolean');
+    if (arguments['length'] < 1)
+      throw $err(new Error, 'no #val defined', 'boolean');
 
     return !!val;
   }
