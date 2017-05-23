@@ -40,7 +40,9 @@ var to = (function toPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 To References
+   * @ref [join]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
    * @ref [split]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
    */
 
@@ -56,21 +58,39 @@ var to = (function toPrivateScope() {
   /// @method to.string
   /// @alias to.str
   /**
-   * Converts a value to a string.
+   * Converts any value to a `string` with [String][string] or optionally, for
+   * an `array` #val, [Array.prototype.join][join].
    *
    * @public
    * @param {*} val
-   * @param {string=} joiner
-   *   Only valid if an array val is used.
+   * @param {string=} separator
+   *   Only allowed for use if the #val is an `array`. If the #separator is
+   *   defined, [Array.prototype.join][join] is called on the #val using the
+   *   #separator value to join each indexed property.
    * @return {string}
    */
-  function toString(val, joiner) {
+  function toString(val, separator) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a val', 'string');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #val defined', 'string');
+      case 1:
+        return $is.str(val)
+          ? val
+          : String(val);
+    }
 
-    if ( !$isNone.str(joiner) ) throw $typeErr(new TypeError, 'joiner', 'string');
+    if ( $is.none(separator) )
+      return String(val);
 
-    return $is.arr(val) && $is.str(joiner) ? val.join(joiner) : String(val);
+    if ( !$is.arr(val) )
+      throw $err(new Error, 'invalid #separator defined (' +
+        'only allowed with an `array` #val)', 'string');
+    if ( !$is.str(separator) )
+      throw $typeErr(new TypeError, 'separator', separator, 'string=',
+        'string');
+
+    return val['join'](separator);
   }
   to['string'] = toString;
   to['str'] = toString;
