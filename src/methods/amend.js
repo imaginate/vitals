@@ -15,6 +15,7 @@
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $cloneObj = require('./helpers/clone-obj.js');
+var $isNone = require('./helpers/is-none.js');
 var $merge = require('./helpers/merge.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
@@ -114,60 +115,170 @@ var amend = (function amendPrivateScope() {
   function amend(source, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
-    var isArr;
-    /** @type {!Array} */
-    var args;
-    /** @type {number} */
-    var len;
+    var byKey;
 
-    if ( !$is.obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
 
-    if ( $is.str(props) )
-      props = $splitKeys(props);
+      case 1:
+        throw $err(new Error, 'no #props defined');
 
-    if ( !$is.obj(props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, *>|!Array<string>|string');
+      case 2:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object');
 
-    isArr = $is.arr(props);
-    len = arguments['length'];
+        if ( $is.str(props) )
+          props = $splitKeys(props);
 
-    if (isArr && len < 3)
-      throw $err(new Error, 'no #val defined');
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string');
 
-    if (!isArr && len > 2) {
-      setter = strongType;
-      strongType = descriptor;
-      descriptor = val;
-      val = NONE;
-      ++len; // increase len for a valid _parseProps call
+        if ( $is.arr(props) )
+          throw $err(new Error, 'no #val defined');
+
+        return _amendProps(source, props, NONE, NONE, NONE);
+
+      case 3:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string');
+
+        byKey = $is.arr(props);
+
+        if (byKey)
+          return _amendPropsByKey(source, props, val, NONE, NONE, NONE);
+
+        descriptor = val;
+        strongType = NONE;
+        setter = NONE;
+
+        if ( $is.str(descriptor) ) {
+          strongType = descriptor;
+          descriptor = NONE;
+        }
+        else if ( $is.fun(descriptor) ) {
+          setter = descriptor;
+          descriptor = NONE;
+        }
+        break;
+
+      case 4:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string');
+
+        byKey = $is.arr(props);
+
+        if (byKey) {
+          if ( $is.str(descriptor) ) {
+            strongType = descriptor;
+            descriptor = NONE;
+          }
+          else if ( $is.fun(descriptor) ) {
+            setter = descriptor;
+            descriptor = NONE;
+          }
+        }
+        else {
+          strongType = descriptor;
+          descriptor = val;
+          setter = NONE;
+          if ( $is.fun(strongType) ) {
+            setter = strongType;
+            strongType = NONE;
+            if ( $is.str(descriptor) ) {
+              strongType = descriptor;
+              descriptor = NONE;
+            }
+          }
+        }
+        break;
+
+      case 5:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string');
+
+        byKey = $is.arr(props);
+
+        if (byKey) {
+          if ( $is.fun(strongType) ) {
+            setter = strongType;
+            strongType = NONE;
+            if ( $is.str(descriptor) ) {
+              strongType = descriptor;
+              descriptor = NONE;
+            }
+          }
+        }
+        else {
+          setter = strongType;
+          strongType = descriptor;
+          descriptor = val;
+        }
+        break;
+
+      default:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string');
+
+        byKey = $is.arr(props);
+
+        if (!byKey) {
+          setter = strongType;
+          strongType = descriptor;
+          descriptor = val;
+        }
+        break;
     }
 
-    if (len === 4 || len === 5) {
-      args = _parseProps(len, descriptor, strongType, setter);
-      descriptor = args[0];
-      strongType = args[1];
-      setter = args[2];
-    }
-
-    if ( !is('!obj=', descriptor) )
+    if ( !$isNone.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=');
-    if ( !is('str=', strongType) )
+    if ( !$isNone.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=');
-    if ( !is('func=', setter) )
-      throw $typeErr(new TypeError, 'setter', setter,
-        '(!function(*, *): *)=');
+    if ( !$isNone.fun(setter) )
+      throw $typeErr(new TypeError, 'setter', setter,'(!function(*, *): *)=');
 
     if (strongType) {
-      if ( isArr && !is(strongType + '=', val) )
-        throw $typeErr(new TypeError, 'val', val, strongType + '=');
-      if ( !isArr && !_strongTypeCheckProps(strongType, props) )
+      if (byKey) {
+        if ( !is(strongType + '=', val) )
+          throw $typeErr(new TypeError, 'val', val, strongType + '=');
+      }
+      else if ( !_strongTypeCheckProps(strongType, props) )
         throw $typeErr(new TypeError, 'props property value', props,
           strongType);
     }
 
-    return _amendProps(source, props, val, descriptor, strongType, setter);
+    return byKey
+      ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
+      : _amendProps(source, props, descriptor, strongType, setter);
   }
 
   /// {{{2
@@ -201,33 +312,59 @@ var amend = (function amendPrivateScope() {
    */
   function amendConfig(source, props, descriptor) {
 
-    if ( !$is.obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object', 'config');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'config');
 
-    if ( $is.str(props) )
-      props = $splitKeys(props);
+      case 1:
+        throw $err(new Error, 'no #props defined', 'config');
 
-    if ( !$is.obj(props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, !Object>|!Array<string>|string', 'config');
+      case 2:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object','config');
 
-    if ( $is.arr(props) ) {
+        if ( $is.str(props) )
+          props = $splitKeys(props);
 
-      if ( !$is.obj(descriptor) )
-        throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
-          'config');
+        if ( $is.arr(props) )
+          throw $err(new Error, 'no #descriptor defined', 'config');
+        if ( !is('!objMap', props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string', 'config');
+        if ( !_hasKeys(source, props) )
+          throw $err(new Error, 'at least one property key name in the ' +
+            '#props did not exist in the #source', 'config');
 
-      props = _setupConfigs(props, descriptor);
+        return _amendConfigs(source, props);
+
+      default:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object','config');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string', 'config');
+
+        if ( $is.arr(props) ) {
+          if ( !$is.obj(descriptor) )
+            throw $typeErr(new TypeError, 'descriptor', descriptor,
+              '!Object=', 'config');
+
+          props = _setupConfigs(props, descriptor);
+        }
+        else if ( !is('!objMap', props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string', 'config');
+
+        if ( !_hasKeys(source, props) )
+          throw $err(new Error, 'at least one property key name in the ' +
+            '#props did not exist in the #source', 'config');
+
+        return _amendConfigs(source, props);
     }
-    else if ( !is('objMap', props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, !Object>|!Array<string>|string', 'config');
-
-    if ( !_hasKeys(source, props) )
-      throw $err(new Error, 'at least one property key name in the #props ' +
-        'did not exist in the #source', 'config');
-
-    return _amendConfigs(source, props);
   }
   amend['config'] = amendConfig;
 
@@ -274,40 +411,73 @@ var amend = (function amendPrivateScope() {
    */
   function amendProperty(source, key, val, descriptor, strongType, setter) {
 
-    /** @type {!Array} */
-    var args;
-    /** @type {number} */
-    var len;
+    /** @type {boolean} */
+    var byKey;
+
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'property');
+
+      case 1:
+        throw $err(new Error, 'no #key defined', 'property');
+
+      case 2:
+        throw $err(new Error, 'no #val or #descriptor defined', 'property');
+
+      case 3:
+        if ( $is.obj(val) && _isDescriptor(val) ) {
+          descriptor = val;
+          val = descriptor['value'];
+        }
+        break;
+
+      case 4:
+        if ( $is.str(descriptor) ) {
+          strongType = descriptor;
+          descriptor = NONE;
+        }
+        else if ( $is.fun(descriptor) ) {
+          setter = descriptor;
+          descriptor = NONE;
+        }
+
+        if ( $is.obj(val) && _isDescriptor(val) ) {
+          descriptor = val;
+          val = descriptor['value'];
+        }
+        break;
+
+      case 5:
+        if ( $is.fun(strongType) ) {
+          setter = strongType;
+          strongType = NONE;
+          if ( $is.str(descriptor) ) {
+            strongType = descriptor;
+            descriptor = NONE;
+          }
+        }
+
+        if ( $is.obj(val) && _isDescriptor(val) ) {
+          descriptor = val;
+          val = descriptor['value'];
+        }
+        break;
+    }
 
     if ( !$is.obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object', 'property');
     if ( !$is.str(key) )
       throw $typeErr(new TypeError, 'key', key, 'string', 'property');
-
-    len = arguments['length'];
-
-    if (len < 3)
-      throw $err(new Error, 'no #val or #descriptor defined', 'property');
-
-    if (len > 2 && len < 6) {
-      args = _parseProp(len, val, descriptor, strongType, setter);
-      val = args[0];
-      descriptor = args[1];
-      strongType = args[2];
-      setter = args[3];
-    }
-
-    if ( !is('!obj=', descriptor) )
+    if ( !$isNone.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
         'property');
-    if ( !is('str=', strongType) )
+    if ( !$isNone.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=',
         'property');
-    if ( !is('func=', setter) )
+    if ( !$isNone.fun(setter) )
       throw $typeErr(new TypeError, 'setter', setter, '(!function(*, *): *)=',
         'property');
-
-    if ( strongType && !is(strongType + '=', val) )
+    if ( !!strongType && !is(strongType + '=', val) )
       throw $typeErr(new TypeError, 'val', val, strongType + '=', 'property');
     if (descriptor
         && (strongType || setter)
@@ -335,6 +505,15 @@ var amend = (function amendPrivateScope() {
    *   The amended #source.
    */
   function amendPropertyConfig(source, key, descriptor) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'property.config');
+      case 1:
+        throw $err(new Error, 'no #key defined', 'property.config');
+      case 2:
+        throw $err(new Error, 'no #descriptor defined', 'property.config');
+    }
 
     if ( !$is.obj(source) )
       throw $typeErr(new TypeError, 'source', source, '!Object',
@@ -422,64 +601,179 @@ var amend = (function amendPrivateScope() {
     source, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
-    var isArr;
-    /** @type {!Array} */
-    var args;
-    /** @type {number} */
-    var len;
+    var byKey;
 
-    if ( !$is.obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object',
-        'properties');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'properties');
 
-    if ( $is.str(props) )
-      props = $splitKeys(props);
+      case 1:
+        throw $err(new Error, 'no #props defined', 'properties');
 
-    if ( !$is.obj(props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, *>|!Array<string>|string', 'properties');
+      case 2:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties');
 
-    isArr = $is.arr(props);
-    len = arguments['length'];
+        if ( $is.str(props) )
+          props = $splitKeys(props);
 
-    if (isArr && len < 3)
-      throw $err(new Error, 'no #val defined', 'properties');
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string', 'properties');
 
-    if (!isArr && len > 2) {
-      setter = strongType;
-      strongType = descriptor;
-      descriptor = val;
-      val = NONE;
-      ++len; // increase len for a valid _parseProps call
+        if ( $is.arr(props) )
+          throw $err(new Error, 'no #val defined', 'properties');
+
+        return _amendProps(source, props, NONE, NONE, NONE);
+
+      case 3:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string', 'properties');
+
+        byKey = $is.arr(props);
+
+        if (byKey)
+          return _amendPropsByKey(source, props, val, NONE, NONE, NONE);
+
+        descriptor = val;
+        strongType = NONE;
+        setter = NONE;
+
+        if ( $is.str(descriptor) ) {
+          strongType = descriptor;
+          descriptor = NONE;
+        }
+        else if ( $is.fun(descriptor) ) {
+          setter = descriptor;
+          descriptor = NONE;
+        }
+        break;
+
+      case 4:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string', 'properties');
+
+        byKey = $is.arr(props);
+
+        if (byKey) {
+          if ( $is.str(descriptor) ) {
+            strongType = descriptor;
+            descriptor = NONE;
+          }
+          else if ( $is.fun(descriptor) ) {
+            setter = descriptor;
+            descriptor = NONE;
+          }
+        }
+        else {
+          strongType = descriptor;
+          descriptor = val;
+          setter = NONE;
+          if ( $is.fun(strongType) ) {
+            setter = strongType;
+            strongType = NONE;
+            if ( $is.str(descriptor) ) {
+              strongType = descriptor;
+              descriptor = NONE;
+            }
+          }
+        }
+        break;
+
+      case 5:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string', 'properties');
+
+        byKey = $is.arr(props);
+
+        if (byKey) {
+          if ( $is.fun(strongType) ) {
+            setter = strongType;
+            strongType = NONE;
+            if ( $is.str(descriptor) ) {
+              strongType = descriptor;
+              descriptor = NONE;
+            }
+          }
+        }
+        else {
+          setter = strongType;
+          strongType = descriptor;
+          descriptor = val;
+        }
+        break;
+
+      default:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, *>|!Array<string>|string', 'properties');
+
+        byKey = $is.arr(props);
+
+        if (!byKey) {
+          setter = strongType;
+          strongType = descriptor;
+          descriptor = val;
+        }
+        break;
     }
 
-    if (len === 4 || len === 5) {
-      args = _parseProps(len, descriptor, strongType, setter);
-      descriptor = args[0];
-      strongType = args[1];
-      setter = args[2];
-    }
-
-    if ( !is('!obj=', descriptor) )
+    if ( !$isNone.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
         'properties');
-    if ( !is('str=', strongType) )
+    if ( !$isNone.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=',
         'properties');
-    if ( !is('func=', setter) )
+    if ( !$isNone.fun(setter) )
       throw $typeErr(new TypeError, 'setter', setter, '(!function(*, *): *)=',
         'properties');
 
     if (strongType) {
-      if ( isArr && !is(strongType + '=', val) )
-        throw $typeErr(new TypeError, 'val', val, strongType + '=',
-          'properties');
-      if ( !isArr && !_strongTypeCheckProps(strongType, props) )
+      if (byKey) {
+        if ( !is(strongType + '=', val) )
+          throw $typeErr(new TypeError, 'val', val, strongType + '=',
+            'properties');
+      }
+      else if ( !_strongTypeCheckProps(strongType, props) )
         throw $typeErr(new TypeError, 'props property value', props,
           strongType, 'properties');
     }
 
-    return _amendProps(source, props, val, descriptor, strongType, setter);
+    return byKey
+      ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
+      : _amendProps(source, props, descriptor, strongType, setter);
   }
   amend['properties'] = amendProperties;
   amend['props'] = amendProperties;
@@ -516,160 +810,67 @@ var amend = (function amendPrivateScope() {
    */
   function amendPropertiesConfig(source, props, descriptor) {
 
-    if ( !$is.obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object',
-        'properties.config');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'properties.config');
 
-    if ( $is.str(props) )
-      props = $splitKeys(props);
+      case 1:
+        throw $err(new Error, 'no #props defined', 'properties.config');
 
-    if ( !$is.obj(props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, !Object>|!Array<string>|string',
-        'properties.config');
+      case 2:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties.config');
 
-    if ( $is.arr(props) ) {
+        if ( $is.str(props) )
+          props = $splitKeys(props);
 
-      if ( !$is.obj(descriptor) )
-        throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
-          'properties.config');
+        if ( $is.arr(props) )
+          throw $err(new Error, 'no #descriptor defined','properties.config');
+        if ( !is('!objMap', props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string',
+            'properties.config');
+        if ( !_hasKeys(source, props) )
+          throw $err(new Error, 'at least one property key name in the ' +
+            '#props did not exist in the #source', 'properties.config');
 
-      props = _setupConfigs(props, descriptor);
+        return _amendConfigs(source, props);
+
+      default:
+        if ( !$is.obj(source) )
+          throw $typeErr(new TypeError, 'source', source, '!Object',
+            'properties.config');
+
+        if ( $is.str(props) )
+          props = $splitKeys(props);
+
+        if ( !$is.obj(props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string',
+            'properties.config');
+
+        if ( $is.arr(props) ) {
+          if ( !$is.obj(descriptor) )
+            throw $typeErr(new TypeError, 'descriptor', descriptor,
+              '!Object=', 'properties.config');
+
+          props = _setupConfigs(props, descriptor);
+        }
+        else if ( !is('!objMap', props) )
+          throw $typeErr(new TypeError, 'props', props,
+            '!Object<string, !Object>|!Array<string>|string',
+            'properties.config');
+
+        if ( !_hasKeys(source, props) )
+          throw $err(new Error, 'at least one property key name in the ' +
+            '#props did not exist in the #source', 'properties.config');
+
+        return _amendConfigs(source, props);
     }
-    else if ( !is('objMap', props) )
-      throw $typeErr(new TypeError, 'props', props,
-        '!Object<string, !Object>|!Array<string>|string',
-        'properties.config');
-
-    if ( !_hasKeys(source, props) )
-      throw $err(new Error, 'at least one property key name in the #props ' +
-        'did not exist in the #source', 'properties.config');
-
-    return _amendConfigs(source, props);
   }
   amend['properties']['config'] = amendPropertiesConfig;
   amend['props']['config'] = amendPropertiesConfig;
-
-  ///////////////////////////////////////////////////// {{{2
-  // AMEND HELPERS - PARAMETER PARSERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @func _parseProp
-  /**
-   * @private
-   * @param {number} len
-   * @param {*=} val
-   * @param {!Object=} descriptor
-   * @param {string=} strongType
-   * @param {!function(*, *): *=} setter
-   * @return {!Array}
-   */
-  function _parseProp(len, val, descriptor, strongType, setter) {
-
-    switch (len) {
-
-      case 4:
-        if ( $is.str(descriptor) ) {
-          strongType = descriptor;
-          descriptor = NONE;
-        }
-        else if ( $is.fun(descriptor) ) {
-          setter = descriptor;
-          descriptor = NONE;
-        }
-        break;
-
-      case 5:
-        if ( $is.fun(strongType) ) {
-          setter = strongType;
-          strongType = NONE;
-          if ( $is.str(descriptor) ) {
-            strongType = descriptor;
-            descriptor = NONE;
-          }
-        }
-        break;
-    }
-
-    if ( $is.obj(val) && _isDescriptor(val) ) {
-      descriptor = val;
-      val = descriptor['value'];
-    }
-
-    return [ val, descriptor, strongType, setter ];
-  }
-
-  /// {{{3
-  /// @func _parseProps
-  /**
-   * @private
-   * @param {number} len
-   * @param {!Object=} descriptor
-   * @param {string=} strongType
-   * @param {!function(*, *): *=} setter
-   * @return {!Array}
-   */
-  function _parseProps(len, descriptor, strongType, setter) {
-
-    switch (len) {
-
-      case 4:
-        if ( $is.str(descriptor) ) {
-          strongType = descriptor;
-          descriptor = NONE;
-        }
-        else if ( $is.fun(descriptor) ) {
-          setter = descriptor;
-          descriptor = NONE;
-        }
-        break;
-
-      case 5:
-        if ( $is.fun(strongType) ) {
-          setter = strongType;
-          strongType = NONE;
-          if ( $is.str(descriptor) ) {
-            strongType = descriptor;
-            descriptor = NONE;
-          }
-        }
-        break;
-    }
-
-    return [ descriptor, strongType, setter ];
-  }
-
-  /// {{{3
-  /// @func _strongTypeCheckProps
-  /**
-   * @private
-   * @param {string} strongType
-   * @param {!Object} props
-   * @return {boolean}
-   */
-  function _strongTypeCheckProps(strongType, props) {
-
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
-
-    strongType += '=';
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if ( $is.obj(val) && _isDescriptor(val) ) {
-          if ( $own(val, 'writable') )
-            continue;
-          val = val['value'];
-        }
-        if ( !is(strongType, val) )
-          return false;
-      }
-    }
-    return true;
-  }
 
   ///////////////////////////////////////////////////// {{{2
   // AMEND HELPERS - MAIN
@@ -708,26 +909,38 @@ var amend = (function amendPrivateScope() {
    * @private
    * @param {!Object} obj
    * @param {!Object} props
+   * @param {!Object=} descriptor
+   * @param {string=} strongType
+   * @param {!function=} setter
+   * @return {!Object}
+   */
+  function _amendProps(obj, props, descriptor, strongType, setter) {
+    descriptor = _getDescriptor(descriptor || null, !!strongType || !!setter);
+    strongType = _getStrongType(strongType);
+    props = !!strongType || !!setter
+      ? _setupPropsWithSetter(props, descriptor, strongType, setter)
+      : _setupProps(props, descriptor);
+    return _ObjectDefineProperties(obj, props);
+  }
+
+  /// {{{3
+  /// @func _amendPropsByKey
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {!Array} props
    * @param {*} val
    * @param {!Object=} descriptor
    * @param {string=} strongType
    * @param {!function=} setter
    * @return {!Object}
    */
-  function _amendProps(obj, props, val, descriptor, strongType, setter) {
-
-    descriptor = descriptor || null;
-    descriptor = _getDescriptor(descriptor, !!strongType || !!setter);
+  function _amendPropsByKey(obj, props, val, descriptor, strongType, setter) {
+    descriptor = _getDescriptor(descriptor || null, !!strongType || !!setter);
     strongType = _getStrongType(strongType);
-    props = $is.arr(props)
-      ? strongType || setter
-        ? _setupPropsByKeyWithSetter(
-            props, val, descriptor, strongType, setter)
-        : _setupPropsByKey(props, val, descriptor)
-      : strongType || setter
-        ? _setupPropsWithSetter(props, descriptor, strongType, setter)
-        : _setupProps(props, descriptor);
-
+    props = !!strongType || !!setter
+      ? _setupPropsByKeyWithSetter(props, val, descriptor, strongType, setter)
+      : _setupPropsByKey(props, val, descriptor);
     return _ObjectDefineProperties(obj, props);
   }
 
@@ -1303,6 +1516,37 @@ var amend = (function amendPrivateScope() {
     for (key in obj) {
       if ( $own(obj, key) && !$own(source, key) )
         return false;
+    }
+    return true;
+  }
+
+  /// {{{3
+  /// @func _strongTypeCheckProps
+  /**
+   * @private
+   * @param {string} strongType
+   * @param {!Object} props
+   * @return {boolean}
+   */
+  function _strongTypeCheckProps(strongType, props) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    strongType += '=';
+    for (key in props) {
+      if ( $own(props, key) ) {
+        val = props[key];
+        if ( $is.obj(val) && _isDescriptor(val) ) {
+          if ( $own(val, 'writable') )
+            continue;
+          val = val['value'];
+        }
+        if ( !is(strongType, val) )
+          return false;
+      }
     }
     return true;
   }
