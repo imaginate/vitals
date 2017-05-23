@@ -125,7 +125,7 @@ var $is = (function $isPrivateScope() {
    * @this {!Object}
    * @return {string}
    */
-  var objToStr = Object.prototype.toString;
+  var objToStr = Object['prototype']['toString'];
 
   /// {{{4
   /// @func isObject
@@ -174,7 +174,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isArray(val) {
-    return isObject(val) && objToStr.call(val) === '[object Array]';
+    return isObject(val) && objToStr['call'](val) === '[object Array]';
   }
 
   /// {{{4
@@ -189,7 +189,7 @@ var $is = (function $isPrivateScope() {
         if ( !isObject(val) )
           return false;
 
-        switch ( objToStr.call(val) )
+        switch ( objToStr['call'](val) )
           case '[object Array]':
           case '[object Arguments]':
             return true;
@@ -200,7 +200,7 @@ var $is = (function $isPrivateScope() {
     : $HAS_ARGS.POLYFILL
       ? function isArrayOrArguments(val) {
           return isObject(val)
-            && (objToStr.call(val) === '[object Array]' || 'callee' in val);
+            && (objToStr['call'](val) === '[object Array]' ||'callee' in val);
         }
       : isArray;
 
@@ -212,7 +212,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isRegExp(val) {
-    return isObject(val) && objToStr.call(val) === '[object RegExp]';
+    return isObject(val) && objToStr['call'](val) === '[object RegExp]';
   }
 
   /// {{{4
@@ -222,7 +222,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isDate(val) {
-    return isObject(val) && objToStr.call(val) === '[object Date]';
+    return isObject(val) && objToStr['call'](val) === '[object Date]';
   }
 
   /// {{{4
@@ -232,7 +232,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isError(val) {
-    return isObject(val) && objToStr.call(val) === '[object Error]';
+    return isObject(val) && objToStr['call'](val) === '[object Error]';
   }
 
   /// {{{4
@@ -243,7 +243,8 @@ var $is = (function $isPrivateScope() {
    */
   var isArguments = $HAS_ARGS.PRIMARY
     ? function isArguments(val) {
-        return isObject(val) && objToStr.call(val) === '[object Arguments]';
+        return isObject(val)
+          && objToStr['call'](val) === '[object Arguments]';
       }
     : $HAS_ARGS.POLYFILL
       ? function isArguments(val) {
@@ -288,7 +289,7 @@ var $is = (function $isPrivateScope() {
    * @param {*} key
    * @return {boolean}
    */
-  var hasOwn = Object.prototype.hasOwnProperty;
+  var hasOwn = Object['prototype']['hasOwnProperty'];
 
   /// {{{4
   /// @func isEmpty
@@ -329,19 +330,19 @@ var $is = (function $isPrivateScope() {
 
     // functions
     if (typeof val === 'function')
-      return val.length === 0;
+      return val['length'] === 0;
 
     // remaining primitives
     if (typeof val !== 'object')
       return false;
 
     // arrays
-    if (objToStr.call(val) === '[object Array]')
-      return val.length === 0;
+    if (objToStr['call'](val) === '[object Array]')
+      return val['length'] === 0;
 
     // remaining objects
     for (key in val) {
-      if ( hasOwn.call(val, key) )
+      if ( hasOwn['call'](val, key) )
         return false;
     }
     return true;
@@ -362,7 +363,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isEndOfLine(val) {
-    return EOL.test(val);
+    return EOL['test'](val);
   }
 
   ///////////////////////////////////////////////////// {{{3
