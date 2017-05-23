@@ -301,18 +301,20 @@ var to = (function toPrivateScope() {
   /// @method to.lowerCase
   /// @alias to.lower
   /**
-   * Converts a string to lower case.
+   * Converts all characters in a `string` to lower case.
    *
    * @public
-   * @param {string} str
+   * @param {string} source
    * @return {string}
    */
-  function toLowerCase(str) {
+  function toLowerCase(source) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a str', 'lowerCase');
-    if ( !$is.str(str) ) throw $typeErr(new TypeError, 'source', 'lowerCase');
+    if (arguments['length'] < 1)
+      throw $err(new Error, 'no #source defined', 'lowerCase');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'lowerCase');
 
-    return str.toLowerCase();
+    return source['toLowerCase']();
   }
   to['lowerCase'] = toLowerCase;
   to['lower'] = toLowerCase;
