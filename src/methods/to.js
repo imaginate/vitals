@@ -279,18 +279,20 @@ var to = (function toPrivateScope() {
   /// @method to.upperCase
   /// @alias to.upper
   /**
-   * Converts a string to upper case.
+   * Converts all characters in a `string` to upper case.
    *
    * @public
-   * @param {string} str
+   * @param {string} source
    * @return {string}
    */
-  function toUpperCase(str) {
+  function toUpperCase(source) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a str', 'upperCase');
-    if ( !$is.str(str) ) throw $typeErr(new TypeError, 'source', 'upperCase');
+    if (arguments['length'] < 1)
+      throw $err(new Error, 'no #source defined', 'upperCase');
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'upperCase');
 
-    return str.toUpperCase();
+    return source['toUpperCase']();
   }
   to['upperCase'] = toUpperCase;
   to['upper'] = toUpperCase;
