@@ -41,7 +41,10 @@ var to = (function toPrivateScope() {
 
   /* {{{2 To References
    * @ref [join]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
+   * @ref [prim]:(https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
+   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
    * @ref [split]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+   * @ref [number]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
    * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
    */
@@ -99,27 +102,47 @@ var to = (function toPrivateScope() {
   /// @method to.number
   /// @alias to.num
   /**
-   * Converts a primitive value to a number.
+   * Converts most [primitive][prim] values to a `number`.
    *
    * @public
    * @param {(?string|?number|?boolean)} val
-   *   Only [valid strings][str2num] allowed.
+   *   If the #val is a `string`, [Number][number] is used to convert it to a
+   *   `number`. Only [valid strings][str2num] are allowed.
    * @return {number}
-   *   `NaN` values will not be returned.
+   *   The return details are as follows (per #val data type):
+   *   - *`boolean`*!$
+   *     This method will return `1` for `true` or `0` for `false`.
+   *   - *`number`*!$
+   *     This method will return the value of #val.
+   *   - *`string`*!$
+   *     This method will return the result from [Number][number] unless it is
+   *     `NaN`. If the result is `NaN`, an [Error][error] will be thrown.
+   *   - *`null`*!$
+   *     This method will return `0`.
    */
   function toNumber(val) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a val', 'number');
+    if (arguments['length'] < 1)
+      throw $err(new Error, 'no #val defined', 'number');
 
-    if ( $is.num(val) ) return val;
-    if ( $is.nil(val) ) return 0;
-    if ( $is.bool(val) ) return val ? 1 : 0;
+    if ( $is.num(val) )
+      return val;
+    if ( $is.nil(val) )
+      return 0;
+    if ( $is.bool(val) )
+      return val
+        ? 1
+        : 0;
 
-    if ( !$is.str(val) ) throw $typeErr(new TypeError, 'val', 'number');
+    if ( !$is.str(val) )
+      throw $typeErr(new TypeError, 'val', val, '?string|?number|?boolean',
+        'number');
 
     val = Number(val);
 
-    if ( $is.nan(val) ) throw $rangeErr(new RangeError, 'val', 'see github.com/imaginate/vitals/wiki/vitals.to#tonumber', 'number');
+    if ( $is.nan(val) )
+      throw $rangeErr(new RangeError, 'val', 'https://github.com/imaginate/' +
+        'vitals/wiki/vitals.to#user-content-number', 'number');
 
     return val;
   }
