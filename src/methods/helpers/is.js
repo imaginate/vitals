@@ -9,6 +9,8 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
+var $HAS_ARGS = require('./has-args.js');
+
 ///////////////////////////////////////////////////////////////////////// {{{2
 // $IS HELPER
 //////////////////////////////////////////////////////////////////////////////
@@ -174,36 +176,6 @@ var $is = (function $isPrivateScope() {
   var objToStr = Object.prototype.toString;
 
   /// {{{4
-  /// @const ARGS1
-  /**
-   * Verify the platform's basic ability to test for `Arguments`.
-   *
-   * @private
-   * @const {boolean}
-   */
-  var ARGS1 = (function() {
-    return objToStr.call(arguments) === '[object Arguments]';
-  })();
-
-  /// {{{4
-  /// @const ARGS2
-  /**
-   * Verify the platform's ability to use a polyfill to test for `Arguments`.
-   *
-   * @private
-   * @const {boolean}
-   */
-  var ARGS2 = (function() {
-    try {
-      'callee' in {};
-    }
-    catch (e) {
-      return false;
-    }
-    return 'callee' in arguments;
-  })();
-
-  /// {{{4
   /// @func isObject
   /**
    * @param {*} val
@@ -259,7 +231,7 @@ var $is = (function $isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  var isArrayOrArguments = ARGS1
+  var isArrayOrArguments = $HAS_ARGS.PRIMARY
     ? function isArrayOrArguments(val) {
 
         if ( !isObject(val) )
@@ -273,7 +245,7 @@ var $is = (function $isPrivateScope() {
             return false;
         }
       }
-    : ARGS2
+    : $HAS_ARGS.POLYFILL
       ? function isArrayOrArguments(val) {
           return isObject(val)
             && (objToStr.call(val) === '[object Array]' || 'callee' in val);
@@ -317,11 +289,11 @@ var $is = (function $isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  var isArguments = ARGS1
+  var isArguments = $HAS_ARGS.PRIMARY
     ? function isArguments(val) {
         return isObject(val) && objToStr.call(val) === '[object Arguments]';
       }
-    : ARGS2
+    : $HAS_ARGS.POLYFILL
       ? function isArguments(val) {
           return isObject(val) && 'callee' in val;
         }
