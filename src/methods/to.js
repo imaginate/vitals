@@ -45,9 +45,11 @@ var to = (function toPrivateScope() {
    * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
    * @ref [split]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
    * @ref [number]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number)
+   * @ref [regexp]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp)
    * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
    * @ref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
    * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+   * @ref [regx-src]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
    */
 
   /// {{{2 to
@@ -235,21 +237,39 @@ var to = (function toPrivateScope() {
   /// @alias to.regex
   /// @alias to.re
   /**
-   * Converts a string to a regex.
+   * Converts a `string` into a `RegExp`.
    *
    * @public
    * @param {string} source
+   *   The [RegExp.prototype.source][regx-src] pattern for the new `RegExp`.
    * @param {string=} flags
+   *   If #flags is defined, it is the [RegExp flags][regexp] to assign to the
+   *   new `RegExp`.
    * @return {!RegExp}
    */
   function toRegExp(source, flags) {
 
-    if (!arguments.length) throw $err(new Error, 'Missing a source', 'regexp');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'regexp');
 
-    if ( !$is.str(source)   ) throw $typeErr(new TypeError, 'source', 'regexp');
-    if ( !$isNone.str(flags) ) throw $typeErr(new TypeError, 'flags',  'regexp');
+      case 1:
+        if ( !$is.str(source) )
+          throw $typeErr(new TypeError, 'source', source, 'string', 'regexp');
 
-    return flags ? new RegExp(source, flags) : new RegExp(source);
+        return new RegExp(source);
+    }
+
+    if ( !$is.str(source) )
+      throw $typeErr(new TypeError, 'source', source, 'string', 'regexp');
+
+    if ( $is.none(flags) )
+      return new RegExp(source);
+
+    if ( !$is.str(flags) )
+      throw $typeErr(new TypeError, 'flags', flags, 'string=', 'regexp');
+
+    return new RegExp(source, flags);
   }
   to['regexp'] = toRegExp;
   to['regex'] = toRegExp;
