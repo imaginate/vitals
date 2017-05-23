@@ -22,56 +22,8 @@ var $HAS_ARGS = require('./has-args.js');
  */
 var $is = (function $isPrivateScope() {
 
-  /// {{{3
-  /// @const IS
-  /**
-   * @const {!Object<string, !function>}
-   * @struct
-   */
-  var IS = {
-
-    // primitives
-    nil:  isNull,
-    none: isUndefined,
-    bool: isBoolean,
-    str:  isString,
-    _str: isNonEmptyString,
-    num:  isNumber,
-    _num: isNonZeroNumber,
-    nan:  isNan,
-
-    // js objects
-    obj:  isObject,
-    _obj: isObjectOrFunction,
-    fun:  isFunction,
-    arr:  isArray,
-    _arr: isArrayOrArguments,
-    regx: isRegExp,
-    date: isDate,
-    err:  isError,
-    args: isArguments,
-
-    // dom objects
-    doc:  isDomDocument,
-    elem: isDomElement,
-
-    // miscellaneous
-    empty: isEmpty,
-    eol:   isEndOfLine,
-
-    // object states
-    extend: isExtensible,
-    frozen: isFrozen,
-    sealed: isSealed,
-
-    // number states
-    whole: isWholeNumber,
-    odd:   isOddNumber,
-    even:  isEvenNumber
-  };
-
   ///////////////////////////////////////////////////// {{{3
-  // PRIMITIVES
+  // $IS METHODS - PRIMITIVES
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -163,7 +115,7 @@ var $is = (function $isPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // JS OBJECTS
+  // $IS METHODS - JS OBJECTS
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -302,7 +254,7 @@ var $is = (function $isPrivateScope() {
         };
 
   ///////////////////////////////////////////////////// {{{3
-  // DOM OBJECTS
+  // $IS METHODS - DOM OBJECTS
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -326,7 +278,7 @@ var $is = (function $isPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // MISCELLANEOUS
+  // $IS METHODS - MISCELLANEOUS
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -414,7 +366,7 @@ var $is = (function $isPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // OBJECT STATES
+  // $IS METHODS - OBJECT STATES
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -505,7 +457,7 @@ var $is = (function $isPrivateScope() {
   })();
 
   ///////////////////////////////////////////////////// {{{3
-  // NUMBER STATES
+  // $IS METHODS - NUMBER STATES
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -538,9 +490,61 @@ var $is = (function $isPrivateScope() {
     return !(val % 2);
   }
 
+  ///////////////////////////////////////////////////// {{{3
+  // $IS SETUP
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @const $IS
+  /**
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var $IS = {
+
+    // primitives
+    nil:  isNull,
+    none: isUndefined,
+    bool: isBoolean,
+    str:  isString,
+    _str: isNonEmptyString,
+    num:  isNumber,
+    _num: isNonZeroNumber,
+    nan:  isNan,
+
+    // js objects
+    obj:  isObject,
+    _obj: isObjectOrFunction,
+    fun:  isFunction,
+    arr:  isArray,
+    _arr: isArrayOrArguments,
+    regx: isRegExp,
+    date: isDate,
+    err:  isError,
+    args: isArguments,
+
+    // dom objects
+    doc:  isDomDocument,
+    elem: isDomElement,
+
+    // miscellaneous
+    empty: isEmpty,
+    eol:   isEndOfLine,
+
+    // object states
+    extend: isExtensible,
+    frozen: isFrozen,
+    sealed: isSealed,
+
+    // number states
+    whole: isWholeNumber,
+    odd:   isOddNumber,
+    even:  isEvenNumber
+  };
   /// }}}3
+
   // END OF PRIVATE SCOPE FOR $IS
-  return IS;
+  return $IS;
 })();
 /// }}}2
 
