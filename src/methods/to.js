@@ -1,29 +1,31 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: to
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.TO
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.to](https://github.com/imaginate/vitals/wiki/vitals.to)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @toright 2016 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var _is = require('./helpers/is.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $isNone = require('./helpers/is-none.js');
+var $is = require('./helpers/is.js');
 
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS.TO
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: to
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * @public
+ * @type {!Object<string, !Function>}
+ * @dict
+ */
 var to = (function toPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -37,54 +39,76 @@ var to = (function toPrivateScope() {
   // - to.lowerCase (to.lower)
   //////////////////////////////////////////////////////////
 
-  /** @type {!Object} */
+  /* {{{2 To References
+   * @ref [split]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
+   * @ref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
+   */
+
+  /// {{{2 to
+  /**
+   * @public
+   * @type {!Object<string, !Function>}
+   * @dict
+   */
   var to = {};
 
+  /// {{{2
+  /// @method to.string
+  /// @alias to.str
   /**
    * Converts a value to a string.
    *
    * @public
    * @param {*} val
-   * @param {string=} joiner - Only valid if an array val is used.
+   * @param {string=} joiner
+   *   Only valid if an array val is used.
    * @return {string}
    */
-  to.string = function toString(val, joiner) {
+  function toString(val, joiner) {
 
-    if (!arguments.length) throw _error('Missing a val', 'string');
+    if (!arguments.length) throw $err(new Error, 'Missing a val', 'string');
 
-    if ( !_is.un.str(joiner) ) throw _error.type('joiner', 'string');
+    if ( !$isNone.str(joiner) ) throw $typeErr(new TypeError, 'joiner', 'string');
 
-    return _is.arr(val) && _is.str(joiner) ? val.join(joiner) : String(val);
-  };
-  // define shorthand
-  to.str = to.string;
+    return $is.arr(val) && $is.str(joiner) ? val.join(joiner) : String(val);
+  }
+  to['string'] = toString;
+  to['str'] = toString;
 
+  /// {{{2
+  /// @method to.number
+  /// @alias to.num
   /**
    * Converts a primitive value to a number.
    *
    * @public
-   * @param {?(string|number|boolean)} val - Only [valid strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
-   *   allowed.
-   * @return {number} `NaN` values will not be returned.
+   * @param {(?string|?number|?boolean)} val
+   *   Only [valid strings][str2num] allowed.
+   * @return {number}
+   *   `NaN` values will not be returned.
    */
-  to.number = function toNumber(val) {
+  function toNumber(val) {
 
-    if (!arguments.length) throw _error('Missing a val', 'number');
+    if (!arguments.length) throw $err(new Error, 'Missing a val', 'number');
 
-    if ( _is.num(val) ) return val;
-    if ( _is.nil.bool(val) ) return val ? 1 : 0;
+    if ( $is.num(val) ) return val;
+    if ( $is.nil(val) ) return 0;
+    if ( $is.bool(val) ) return val ? 1 : 0;
 
-    if ( !_is.str(val) ) throw _error.type('val', 'number');
+    if ( !$is.str(val) ) throw $typeErr(new TypeError, 'val', 'number');
 
     val = Number(val);
 
-    if ( _is.nan(val) ) throw _error.range('val', 'see github.com/imaginate/vitals/wiki/vitals.to#tonumber', 'number');
+    if ( $is.nan(val) ) throw $rangeErr(new RangeError, 'val', 'see github.com/imaginate/vitals/wiki/vitals.to#tonumber', 'number');
 
     return val;
-  };
-  // define shorthand
-  to.num = to.number;
+  }
+  to['number'] = toNumber;
+  to['num'] = toNumber;
 
+  /// {{{2
+  /// @method to.boolean
+  /// @alias to.bool
   /**
    * Converts a value to a boolean.
    *
@@ -92,48 +116,55 @@ var to = (function toPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  to.boolean = function toBoolean(val) {
+  function toBoolean(val) {
 
-    if (!arguments.length) throw _error('Missing a val', 'boolean');
+    if (!arguments.length) throw $err(new Error, 'Missing a val', 'boolean');
 
     return !!val;
-  };
-  // define shorthand
-  to.bool = to.boolean;
+  }
+  to['boolean'] = toBoolean;
+  to['bool'] = toBoolean;
 
+  /// {{{2
+  /// @method to.array
+  /// @alias to.arr
   /**
    * Converts a value to an array.
    *
    * @public
-   * @param {(string|number)} val - Details per val type:
-   *   - string: [String.prototype.split](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split)
-   *     is called on the string.
+   * @param {(string|number)} val
+   *   Details per val type:
+   *   - string: [String.prototype.split][split] is called on the string.
    *   - number: A new array of val length is returned.
-   * @param {*=} separator - Only used with a string val. If no separator is
-   *   defined one of the following values is used (values listed in order of
-   *   rank):
+   * @param {*=} separator
+   *   Only used with a string val. If no separator is defined one of the
+   *   following values is used (values listed in order of rank):
    *   - `", "`
    *   - `","`
    *   - `"|"`
    *   - `" "`
    * @return {!Array}
    */
-  to.array = function toArray(val, separator) {
+  function toArray(val, separator) {
 
-    if (!arguments.length) throw _error('Missing a val', 'array');
+    if (!arguments.length) throw $err(new Error, 'Missing a val', 'array');
 
-    if ( _is.num(val) ) return new Array(val);
+    if ( $is.num(val) ) return new Array(val);
 
-    if ( !_is.str(val) ) throw _error.type('val', 'array');
+    if ( !$is.str(val) ) throw $typeErr(new TypeError, 'val', 'array');
 
-    if ( _is.undefined(separator) ) return splitKeys(val);
+    if ( $is.none(separator) ) return $splitKeys(val);
 
-    separator = _is.regex(separator) ? separator : String(separator);
+    separator = $is.regx(separator) ? separator : String(separator);
     return val.split(separator);
-  };
-  // define shorthand
-  to.arr = to.array;
+  }
+  to['array'] = toArray;
+  to['arr'] = toArray;
 
+  /// {{{2
+  /// @method to.regexp
+  /// @alias to.regex
+  /// @alias to.re
   /**
    * Converts a string to a regex.
    *
@@ -142,19 +173,22 @@ var to = (function toPrivateScope() {
    * @param {string=} flags
    * @return {!RegExp}
    */
-  to.regexp = function toRegExp(source, flags) {
+  function toRegExp(source, flags) {
 
-    if (!arguments.length) throw _error('Missing a source', 'regexp');
+    if (!arguments.length) throw $err(new Error, 'Missing a source', 'regexp');
 
-    if ( !_is.str(source)   ) throw _error.type('source', 'regexp');
-    if ( !_is.un.str(flags) ) throw _error.type('flags',  'regexp');
+    if ( !$is.str(source)   ) throw $typeErr(new TypeError, 'source', 'regexp');
+    if ( !$isNone.str(flags) ) throw $typeErr(new TypeError, 'flags',  'regexp');
 
     return flags ? new RegExp(source, flags) : new RegExp(source);
-  };
-  // define shorthand
-  to.regex = to.regexp;
-  to.re = to.regexp;
+  }
+  to['regexp'] = toRegExp;
+  to['regex'] = toRegExp;
+  to['re'] = toRegExp;
 
+  /// {{{2
+  /// @method to.upperCase
+  /// @alias to.upper
   /**
    * Converts a string to upper case.
    *
@@ -162,16 +196,19 @@ var to = (function toPrivateScope() {
    * @param {string} str
    * @return {string}
    */
-  to.upperCase = function toUpperCase(str) {
+  function toUpperCase(str) {
 
-    if (!arguments.length) throw _error('Missing a str', 'upperCase');
-    if ( !_is.str(str) ) throw _error.type('source', 'upperCase');
+    if (!arguments.length) throw $err(new Error, 'Missing a str', 'upperCase');
+    if ( !$is.str(str) ) throw $typeErr(new TypeError, 'source', 'upperCase');
 
     return str.toUpperCase();
-  };
-  // define shorthand
-  to.upper = to.upperCase;
+  }
+  to['upperCase'] = toUpperCase;
+  to['upper'] = toUpperCase;
 
+  /// {{{2
+  /// @method to.lowerCase
+  /// @alias to.lower
   /**
    * Converts a string to lower case.
    *
@@ -179,30 +216,73 @@ var to = (function toPrivateScope() {
    * @param {string} str
    * @return {string}
    */
-  to.lowerCase = function toLowerCase(str) {
+  function toLowerCase(str) {
 
-    if (!arguments.length) throw _error('Missing a str', 'lowerCase');
-    if ( !_is.str(str) ) throw _error.type('source', 'lowerCase');
+    if (!arguments.length) throw $err(new Error, 'Missing a str', 'lowerCase');
+    if ( !$is.str(str) ) throw $typeErr(new TypeError, 'source', 'lowerCase');
 
     return str.toLowerCase();
-  };
-  // define shorthand
-  to.lower = to.lowerCase;
+  }
+  to['lowerCase'] = toLowerCase;
+  to['lower'] = toLowerCase;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // TO HELPERS - ERROR MAKERS
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var _error = newErrorMaker('to');
+  var ERROR_MAKER = $newErrorMaker('to');
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR TO
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = ERROR_MAKER.error;
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = ERROR_MAKER.typeError;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = ERROR_MAKER.rangeError;
+  /// }}}2
+
+  // END OF PRIVATE SCOPE FOR VITALS.TO
   return to;
 })();
-
+/// }}}1
 
 module.exports = to;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
