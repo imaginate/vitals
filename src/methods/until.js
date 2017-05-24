@@ -1,31 +1,34 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: until
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.UNTIL
+ * ---------------------------------------------------------------------------
  * @section base
  * @version 4.1.3
  * @see [vitals.until](https://github.com/imaginate/vitals/wiki/vitals.until)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var splitKeys = require('./helpers/split-keys.js');
-var own = require('./helpers/own.js');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
+var $splitKeys = require('./helpers/split-keys.js');
+var $isNil = require('./helpers/is-nil.js');
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
-var _is = require('./helpers/is.js');
 
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS.UNTIL
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: until
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var until = (function untilPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -36,6 +39,11 @@ var until = (function untilPrivateScope() {
   // - until.cycle  (until.time)
   //////////////////////////////////////////////////////////
 
+  /* {{{2 Until References
+   */
+
+  /// {{{2
+  /// @method until
   /**
    * A shortcut for iterating over object maps, arrays, or cycles until an end
    *   value is returned.
@@ -66,34 +74,37 @@ var until = (function untilPrivateScope() {
    */
   function until(end, source, iteratee, thisArg) {
 
-    if (arguments.length < 2) throw _error('No end or iteratee defined');
+    if (arguments['length'] < 2) throw $err(new Error, 'No end or iteratee defined');
 
-    if (arguments.length === 2) {
+    if (arguments['length'] === 2) {
       iteratee = source;
-      if ( !_is.func(iteratee) ) throw _error.type('iteratee');
+      if ( !$is.fun(iteratee) ) throw $typeErr(new TypeError, 'iteratee');
       return _untilEnd(end, iteratee);
     }
 
-    if ( arguments.length === 3 && _is.func(source) && _is.nil.obj(iteratee) ) {
+    if ( arguments['length'] === 3 && $is.fun(source) && $isNil.obj(iteratee) ) {
       thisArg = iteratee;
       iteratee = source;
       return _untilEnd(end, iteratee, thisArg);
     }
 
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg');
+    if ( !$is.fun(iteratee)       ) throw $typeErr(new TypeError, 'iteratee');
+    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg');
 
-    if ( _is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
+    if ( $is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
 
-    if ( _is.str(source) ) source = splitKeys(source);
+    if ( $is.str(source) ) source = $splitKeys(source);
 
-    if ( !_is._obj(source) ) throw _error.type('source');
+    if ( !$is._obj(source) ) throw $typeErr(new TypeError, 'source');
 
-    return _is._arr(source)
+    return $is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
 
+  /// {{{2
+  /// @method until.object
+  /// @alias until.obj
   /**
    * A shortcut for iterating over object maps until an end value is returned or
    *   all properties are visited.
@@ -114,17 +125,20 @@ var until = (function untilPrivateScope() {
    *   method will return true. Otherwise if all the properties are visited this
    *   method will return false.
    */
-  until.object = function untilObject(end, obj, iteratee, thisArg) {
+  function untilObject(end, obj, iteratee, thisArg) {
 
-    if ( !_is._obj(obj)           ) throw _error.type('obj',      'object');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee', 'object');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',  'object');
+    if ( !$is._obj(obj)           ) throw $typeErr(new TypeError, 'obj',      'object');
+    if ( !$is.fun(iteratee)       ) throw $typeErr(new TypeError, 'iteratee', 'object');
+    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg',  'object');
 
     return _untilObj(end, obj, iteratee, thisArg);
-  };
-  // define shorthand
-  until.obj = until.object;
+  }
+  until['object'] = untilObject;
+  until['obj'] = untilObject;
 
+  /// {{{2
+  /// @method until.array
+  /// @alias until.arr
   /**
    * A shortcut for iterating over array-like objects until an end value is
    *   returned or all indexed values are visited.
@@ -151,20 +165,23 @@ var until = (function untilPrivateScope() {
    *   method will return true. Otherwise if all the indexed values are visited
    *   this method will return false.
    */
-  until.array = function untilArray(end, source, iteratee, thisArg) {
+  function untilArray(end, source, iteratee, thisArg) {
 
-    if ( _is.str(source) ) source = splitKeys(source);
+    if ( $is.str(source) ) source = $splitKeys(source);
 
-    if ( !_is._obj(source)        ) throw _error.type('source',        'array');
-    if ( !_is.num(source.length)  ) throw _error.type('source.length', 'array');
-    if ( !_is.func(iteratee)      ) throw _error.type('iteratee',      'array');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg',       'array');
+    if ( !$is._obj(source)           ) throw $typeErr(new TypeError, 'source',        'array');
+    if ( !$is.num(source['length'])  ) throw $typeErr(new TypeError, 'source.length', 'array');
+    if ( !$is.fun(iteratee)          ) throw $typeErr(new TypeError, 'iteratee',      'array');
+    if ( !$isNilNone.obj(thisArg)    ) throw $typeErr(new TypeError, 'thisArg',       'array');
 
     return _untilArr(end, source, iteratee, thisArg);
-  };
-  // define shorthand
-  until.arr = until.array;
+  }
+  until['array'] = untilArray;
+  until['arr'] = untilArray;
 
+  /// {{{2
+  /// @method until.cycle
+  /// @alias until.time
   /**
    * A shortcut for invoking an action until an end value is returned or the
    *   number of cycles is reached.
@@ -179,21 +196,23 @@ var until = (function untilPrivateScope() {
    *   method will return true. Otherwise if the number of cycles is reached
    *   this method will return false.
    */
-  until.cycle = function untilCycle(end, count, action, thisArg) {
+  function untilCycle(end, count, action, thisArg) {
 
-    if ( !_is.num(count)          ) throw _error.type('count',   'cycle');
-    if ( !_is.func(action)        ) throw _error.type('action',  'cycle');
-    if ( !_is.nil.un.obj(thisArg) ) throw _error.type('thisArg', 'cycle');
+    if ( !$is.num(count)          ) throw $typeErr(new TypeError, 'count',   'cycle');
+    if ( !$is.fun(action)         ) throw $typeErr(new TypeError, 'action',  'cycle');
+    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', 'cycle');
 
     return _untilCycle(end, count, action, thisArg);
-  };
-  // define shorthand
-  until.time = until.cycle;
+  }
+  until['cycle'] = untilCycle;
+  until['time'] = untilCycle;
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - MAIN
+  ///////////////////////////////////////////////////// {{{2
+  // UNTIL HELPERS - MAIN
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @func _untilEnd
   /**
    * @private
    * @param {*} end
@@ -206,8 +225,8 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
-    if (action.length) {
+    action = $is.none(thisArg) ? action : _bind(action, thisArg);
+    if (action['length']) {
       i = 0;
       while(action(i++) !== end) {}
     }
@@ -217,6 +236,8 @@ var until = (function untilPrivateScope() {
     return true;
   }
 
+  /// {{{3
+  /// @func _untilObj
   /**
    * @private
    * @param {*} end
@@ -230,33 +251,33 @@ var until = (function untilPrivateScope() {
     /** @type {string} */
     var key;
 
-    obj = iteratee.length > 2 ? copy(obj) : obj;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    switch (iteratee.length) {
+    obj = iteratee['length'] > 2 ? copy(obj) : obj;
+    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    switch (iteratee['length']) {
       case 0:
       for (key in obj) {
-        if ( own(obj, key) ) {
+        if ( $own(obj, key) ) {
           if (iteratee() === end) return true;
         }
       }
       break;
       case 1:
       for (key in obj) {
-        if ( own(obj, key) ) {
+        if ( $own(obj, key) ) {
           if (iteratee(obj[key]) === end) return true;
         }
       }
       break;
       case 2:
       for (key in obj) {
-        if ( own(obj, key) ) {
+        if ( $own(obj, key) ) {
           if (iteratee(obj[key], key) === end) return true;
         }
       }
       break;
       default:
       for (key in obj) {
-        if ( own(obj, key) ) {
+        if ( $own(obj, key) ) {
           if (iteratee(obj[key], key, obj) === end) return true;
         }
       }
@@ -264,6 +285,8 @@ var until = (function untilPrivateScope() {
     return false;
   }
 
+  /// {{{3
+  /// @func _untilArr
   /**
    * @private
    * @param {*} end
@@ -279,11 +302,11 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    obj = iteratee.length > 2 ? copy.arr(obj) : obj;
-    iteratee = _is.undefined(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    len = obj.length;
+    obj = iteratee['length'] > 2 ? copy['array'](obj) : obj;
+    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    len = obj['length'];
     i = -1;
-    switch (iteratee.length) {
+    switch (iteratee['length']) {
       case 0:
       while (++i < len) {
         if (iteratee() === end) return true;
@@ -307,6 +330,8 @@ var until = (function untilPrivateScope() {
     return false;
   }
 
+  /// {{{3
+  /// @func _untilCycle
   /**
    * @private
    * @param {*} end
@@ -320,8 +345,8 @@ var until = (function untilPrivateScope() {
     /** @type {number} */
     var i;
 
-    action = _is.undefined(thisArg) ? action : _bind(action, thisArg);
-    if (action.length) {
+    action = $is.none(thisArg) ? action : _bind(action, thisArg);
+    if (action['length']) {
       i = 0;
       while(count--) if (action(i++) === end) return true;
     }
@@ -331,10 +356,20 @@ var until = (function untilPrivateScope() {
     return false;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // UNTIL HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
+
+  /// {{{3
+  /// @func _bind
   /**
    * @private
    * @param {function} func
@@ -342,29 +377,76 @@ var until = (function untilPrivateScope() {
    * @return {function} 
    */
   function _bind(func, thisArg) {
-    switch (func.length) {
+    switch (func['length']) {
       case 0:
-      return function iteratee() { return func.call(thisArg); };
+      return function iteratee() { return func['call'](thisArg); };
       case 1:
-      return function iteratee(val) { return func.call(thisArg, val); };
+      return function iteratee(val) { return func['call'](thisArg, val); };
       case 2:
-      return function iteratee(val, key) { return func.call(thisArg,val,key); };
+      return function iteratee(val, key) { return func['call'](thisArg,val,key); };
     }
     return function iteratee(val, key, obj) {
-      return func.call(thisArg, val, key, obj);
+      return func['call'](thisArg, val, key, obj);
     };
   }
 
+  ///////////////////////////////////////////////////// {{{2
+  // UNTIL HELPERS - ERROR MAKERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const ERROR_MAKER
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {!Object<string, !function>}
+   * @struct
    */
-  var _error = newErrorMaker('until');
+  var ERROR_MAKER = $newErrorMaker('until');
 
-  //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR UNTIL
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = ERROR_MAKER.error;
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = ERROR_MAKER.typeError;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = ERROR_MAKER.rangeError;
+  /// }}}2
+
+  // END OF PRIVATE SCOPE FOR VITALS.UNTIL
   return until;
 })();
-
+/// }}}1
 
 module.exports = until;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
