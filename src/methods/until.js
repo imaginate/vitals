@@ -293,39 +293,88 @@ var until = (function untilPrivateScope() {
   /// @method until.array
   /// @alias until.arr
   /**
-   * A shortcut for iterating over array-like objects until an end value is
-   *   returned or all indexed values are visited.
+   * A shortcut for iterating over indexed `array` or array-like `object` or
+   * `function` properties until a defined #end value is returned or all
+   * indexed properties are visited.
    *
    * @public
-   * @param {*} end - A value that ends the iteration if returned by the
-   *   iteratee.
-   * @param {(!Object|function|string)} source - If source is a string it is
-   *   converted to an array source using one of the following values as the
-   *   separator (values listed in order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
-   * @param {function(*=, number=, !Array=)} iteratee - The iteratee must be a
-   *   function with the optional params - value, index, source. Note this
-   *   method lazily slices (see [vitals.copy.array](https://github.com/imaginate/vitals/wiki/vitals.copy#copyarray))
-   *   the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg
-   * @return {boolean} - If the iteration is terminated by the end value this
-   *   method will return true. Otherwise if all the indexed values are visited
-   *   this method will return false.
+   * @param {*} end
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, the iteration is halted,
+   *   and this method will return `true`.
+   * @param {(!Array|!Arguments|!Object|!Function|string)} source
+   *   The #source details are as follows (per #source type):
+   *   - *`!Array|!Arguments|!Object|!Function`*!$
+   *     Iterates over all indexed properties from `0` to `source.length`
+   *     until an #end match is found or all indexed properties are visited.
+   *   - *`string`*!$
+   *     Converted to an `array` #source using one of the following list of
+   *     values for the separator (values listed in order of rank):
+   *     - `", "`
+   *     - `","`
+   *     - `"|"`
+   *     - `" "`
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   *   The #iteratee can have the following optional parameters:
+   *   - **value** *`*`*
+   *   - **index** *`number`*
+   *   - **source** *`!Array`*
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#array based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
+   * @return {boolean}
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, this method will return
+   *   `true`. Otherwise, it will return `false`.
    */
   function untilArray(end, source, iteratee, thisArg) {
 
-    if ( $is.str(source) ) source = $splitKeys(source);
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #end defined', 'array');
+      case 1:
+        throw $err(new Error, 'no #source defined', 'array');
+      case 2:
+        throw $err(new Error, 'no #iteratee defined', 'array');
+      case 3:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'array');
+        break;
+    }
 
-    if ( !$is._obj(source)           ) throw $typeErr(new TypeError, 'source',        'array');
-    if ( !$is.num(source['length'])  ) throw $typeErr(new TypeError, 'source.length', 'array');
-    if ( !$is.fun(iteratee)          ) throw $typeErr(new TypeError, 'iteratee',      'array');
-    if ( !$isNilNone.obj(thisArg)    ) throw $typeErr(new TypeError, 'thisArg',       'array');
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+        '*=, number=, !Array=): *', 'array');
+
+    if ( $is.str(source) )
+      source = $splitKeys(source);
+    else if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function|string', 'array');
+
+    len = source['length'];
+
+    if ( !$is.num(len) )
+      throw $typeErr(new TypeError, 'source.length', len, 'number', 'array');
+    if ( !$is.whole(len) || len < 0 )
+      throw $err(new Error, 'invalid #source.length `number` (' +
+        'must be `0` or a positive whole `number`)', 'array');
 
     return _untilArr(end, source, iteratee, thisArg);
   }
