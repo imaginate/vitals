@@ -15,7 +15,6 @@
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $isNilNone = require('./helpers/is-nil-none.js');
 var $splitKeys = require('./helpers/split-keys.js');
-var $isNil = require('./helpers/is-nil.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
@@ -460,22 +459,26 @@ var until = (function untilPrivateScope() {
   /**
    * @private
    * @param {*} end
-   * @param {function} action
-   * @param {Object=} thisArg
+   * @param {!function(number=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {boolean}
    */
-  function _untilEnd(end, action, thisArg) {
+  function _untilEnd(end, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var cycle;
 
-    action = $is.none(thisArg) ? action : _bind(action, thisArg);
-    if (action['length']) {
-      i = 0;
-      while(action(i++) !== end) {}
+    if ( !$is.none(thisArg) )
+      iteratee = _bindEnd(iteratee, thisArg);
+
+    if (iteratee['length'] > 0) {
+      cycle = 0;
+      while(iteratee(cycle++) !== end)
+        ;
     }
     else {
-      while(action() !== end) {}
+      while(iteratee() !== end)
+        ;
     }
     return true;
   }
@@ -485,46 +488,54 @@ var until = (function untilPrivateScope() {
   /**
    * @private
    * @param {*} end
-   * @param {!(Object|function)} obj
-   * @param {function(*, string=, !(Object|function)=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Object|!Function)} source
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {boolean}
    */
-  function _untilObj(end, obj, iteratee, thisArg) {
+  function _untilObj(end, source, iteratee, thisArg) {
 
     /** @type {string} */
     var key;
 
-    obj = iteratee['length'] > 2 ? copy(obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
+    if (iteratee['length'] > 2)
+      source = copy(source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
     switch (iteratee['length']) {
       case 0:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (iteratee() === end) return true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (iteratee() === end)
+              return true;
+          }
         }
-      }
-      break;
+        break;
       case 1:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (iteratee(obj[key]) === end) return true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (iteratee(source[key]) === end)
+              return true;
+          }
         }
-      }
-      break;
+        break;
       case 2:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (iteratee(obj[key], key) === end) return true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (iteratee(source[key], key) === end)
+              return true;
+          }
         }
-      }
-      break;
+        break;
       default:
-      for (key in obj) {
-        if ( $own(obj, key) ) {
-          if (iteratee(obj[key], key, obj) === end) return true;
+        for (key in source) {
+          if ( $own(source, key) ) {
+            if (iteratee(source[key], key, source) === end)
+              return true;
+          }
         }
-      }
+        break;
     }
     return false;
   }
@@ -534,42 +545,51 @@ var until = (function untilPrivateScope() {
   /**
    * @private
    * @param {*} end
-   * @param {!(Object|function)} obj
-   * @param {function(*, number=, !Array=)} iteratee
-   * @param {Object=} thisArg
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   * @param {!function(*=, number=, !Array=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {boolean}
    */
-  function _untilArr(end, obj, iteratee, thisArg) {
+  function _untilArr(end, source, iteratee, thisArg) {
 
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    obj = iteratee['length'] > 2 ? copy['array'](obj) : obj;
-    iteratee = $is.none(thisArg) ? iteratee : _bind(iteratee, thisArg);
-    len = obj['length'];
+    if (iteratee['length'] > 2)
+      source = copy['array'](source);
+    if ( !$is.none(thisArg) )
+      iteratee = _bindMap(iteratee, thisArg);
+
+    len = source['length'];
     i = -1;
+
     switch (iteratee['length']) {
       case 0:
-      while (++i < len) {
-        if (iteratee() === end) return true;
-      }
-      break;
+        while (++i < len) {
+          if (iteratee() === end)
+            return true;
+        }
+        break;
       case 1:
-      while (++i < len) {
-        if (iteratee(obj[i]) === end) return true;
-      }
-      break;
+        while (++i < len) {
+          if (iteratee(source[i]) === end)
+            return true;
+        }
+        break;
       case 2:
-      while (++i < len) {
-        if (iteratee(obj[i], i) === end) return true;
-      }
-      break;
+        while (++i < len) {
+          if (iteratee(source[i], i) === end)
+            return true;
+        }
+        break;
       default:
-      while (++i < len) {
-        if (iteratee(obj[i], i, obj) === end) return true;
-      }
+        while (++i < len) {
+          if (iteratee(source[i], i, source) === end)
+            return true;
+        }
+        break;
     }
     return false;
   }
@@ -579,25 +599,125 @@ var until = (function untilPrivateScope() {
   /**
    * @private
    * @param {*} end
-   * @param {number} count
-   * @param {function(number=)} action
-   * @param {Object=} thisArg
+   * @param {number} cycles
+   * @param {!function(number=, number=): *} iteratee
+   * @param {?Object=} thisArg
    * @return {boolean}
    */
-  function _untilCycle(end, count, action, thisArg) {
+  function _untilCycle(end, cycles, iteratee, thisArg) {
 
     /** @type {number} */
-    var i;
+    var count;
+    /** @type {number} */
+    var cycle;
 
-    action = $is.none(thisArg) ? action : _bind(action, thisArg);
-    if (action['length']) {
-      i = 0;
-      while(count--) if (action(i++) === end) return true;
-    }
-    else {
-      while(count--) if (action() === end) return true;
+    if ( !$is.none(thisArg) )
+      iteratee = _bindCycle(iteratee, thisArg);
+
+    count = cycles > 0
+      ? cycles
+      : 0;
+
+    switch (iteratee['length']) {
+      case 0:
+        while(count--) {
+          if (iteratee() === end)
+            return true;
+        }
+        break;
+      case 1:
+        cycle = 0;
+        while(count--) {
+          if (iteratee(cycle++) === end)
+            return true;
+        }
+        break;
+      default:
+        cycle = 0;
+        while(count--) {
+          if (iteratee(cycle++, cycles) === end)
+            return true;
+        }
+        break;
     }
     return false;
+  }
+
+  ///////////////////////////////////////////////////// {{{2
+  // UNTIL HELPERS - BIND
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @func _bindEnd
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindEnd(func, thisArg) {
+
+    return func['length'] < 1
+      ? function iteratee() {
+          return func['call'](thisArg);
+        }
+      : function iteratee(cycle) {
+          return func['call'](thisArg, cycle);
+        };
+  }
+
+  /// {{{3
+  /// @func _bindMap
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindMap(func, thisArg) {
+
+    switch (func['length']) {
+      case 0:
+        return function iteratee() {
+          return func['call'](thisArg);
+        };
+      case 1:
+        return function iteratee(value) {
+          func['call'](thisArg, value);
+        };
+      case 2:
+        return function iteratee(value, key) {
+          func['call'](thisArg, value, key);
+        };
+    }
+    return function iteratee(value, key, source) {
+      func['call'](thisArg, value, key, source);
+    };
+  }
+
+  /// {{{3
+  /// @func _bindCycle
+  /**
+   * @private
+   * @param {!function} func
+   * @param {?Object} thisArg
+   * @return {!function} 
+   */
+  function _bindCycle(func, thisArg) {
+
+    switch (func['length']) {
+      case 0:
+        return function iteratee() {
+          return func['call'](thisArg);
+        };
+      case 1:
+        return function iteratee(cycle) {
+          return func['call'](thisArg, cycle);
+        };
+    }
+    return function iteratee(cycle, cycles) {
+      return func['call'](thisArg, cycle, cycles);
+    };
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -611,28 +731,6 @@ var until = (function untilPrivateScope() {
    * @const {undefined}
    */
   var NONE = (function(){})();
-
-  /// {{{3
-  /// @func _bind
-  /**
-   * @private
-   * @param {function} func
-   * @param {Object} thisArg
-   * @return {function} 
-   */
-  function _bind(func, thisArg) {
-    switch (func['length']) {
-      case 0:
-      return function iteratee() { return func['call'](thisArg); };
-      case 1:
-      return function iteratee(val) { return func['call'](thisArg, val); };
-      case 2:
-      return function iteratee(val, key) { return func['call'](thisArg,val,key); };
-    }
-    return function iteratee(val, key, obj) {
-      return func['call'](thisArg, val, key, obj);
-    };
-  }
 
   ///////////////////////////////////////////////////// {{{2
   // UNTIL HELPERS - ERROR MAKERS
