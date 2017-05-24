@@ -40,62 +40,178 @@ var until = (function untilPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Until References
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+   * @ref [endless]:(https://en.wikipedia.org/wiki/Infinite_loop)
+   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
    */
 
   /// {{{2
   /// @method until
   /**
-   * A shortcut for iterating over object maps, arrays, or cycles until an end
-   *   value is returned.
+   * A shortcut for iterating over [owned][own] `object` properties, indexed
+   * `array` properties, a defined `number` of cycles, or an unlimited
+   * `number` of cycles until a defined #end value is returned or all
+   * properties or cycles have been visited.
    *
    * @public
-   * @param {*} end - A value that ends the iteration if returned by the
-   *   iteratee.
-   * @param {!(Object|function|Array|number|string)=} source - If the source is
-   *   defined the iteration will also stop as follows (per source type):
-   *   - object source: Ends after all properties are visited.
-   *   - array source:  Ends after all indexes are visited.
-   *   - number source: Ends after the count of cycles equals the source.
-   *   - string source: Converted to an array source using one of the following
-   *     values as the separator (values listed in order of rank):
-   *     -- `", "`
-   *     -- `","`
-   *     -- `"|"`
-   *     -- `" "`
-   * @param {function(*=, (string|number)=, (!Object|function)=)} iteratee - It
-   *   has the optional params - value, key/index, source. Note this method
-   *   lazily clones the source based on the iteratee's [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg - If defined the iteratee is bound to this value.
-   * @return {boolean} - This method will return true if the iteratee returns
-   *   the end value or false if the iteratee does not.
+   * @param {*} end
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, the iteration is halted,
+   *   and this method will return `true`.
+   * @param {(!Object|!Function|!Array|!Arguments|string|number|undefined)=} source
+   *   If the #source is **not** defined, this method will call the #iteratee
+   *   until an #end match is found. It is recommended to define a maximum
+   *   `number` of cycles for the #source instead of leaving it `undefined` to
+   *   avoid an [infinite loop][endless] situation. If the #source is defined,
+   *   the details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     Iterates over all [owned][own] properties in random order until an
+   *     #end match is found or all properties are visited.
+   *   - *`!Array|!Arguments`*!$
+   *     Iterates over all indexed properties from `0` to `source.length`
+   *     until an #end match is found or all properties are visited.
+   *   - *`string`*!$
+   *     Converted to an `array` #source using one of the following list of
+   *     values for the separator (values listed in order of rank):
+   *     - `", "`
+   *     - `","`
+   *     - `"|"`
+   *     - `" "`
+   *   - *`number`*!$
+   *     Must be a whole `number`. Iterates over the `number` of cycles until
+   *     an #end match is found or all cycles are completed.
+   * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **key** *`string`*
+   *     - **source** *`!Object|!Function`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#main based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`!Array|!Arguments|string`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **value** *`*`*
+   *     - **index** *`number`*
+   *     - **source** *`!Array`*
+   *     Note that this method lazily [clones][clone] the #source with
+   *     @copy#array based on the #iteratee [length property][func-length]
+   *     (i.e. if you alter any #source property within the #iteratee, make
+   *     sure you define all three parameters for the #iteratee so you can
+   *     safely assume all references to the #source are its original values).
+   *   - *`number`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   *     - **cycles** *`number`*!$
+   *       The unchanged #source value.
+   *   - *`undefined`*!$
+   *     The #iteratee can have the following optional parameters:
+   *     - **cycle** *`number`*!$
+   *       Note that this `number` is zero-based (i.e. the first *cycle* value
+   *       is `0`).
+   * @param {?Object=} thisArg
+   *   The details are as follows (per #source type):
+   *   - *`!Object|!Function|!Array|!Arguments|string`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than three parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `3`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   *   - *`number`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than two parameters were defined for the #iteratee as the
+   *     wrapper has a max length of `2`) and the [name property][func-name]
+   *     value of `"iteratee"` (unless you are using a [minified][minify]
+   *     version of `vitals`).
+   *   - *`undefined`*!$
+   *     If #thisArg is defined, the #iteratee is bound to its value. Note
+   *     that the native [Function.prototype.bind][bind] is **not** used to
+   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *     new [Function][func] that uses [Function.prototype.call][call] to
+   *     call the #iteratee with #thisArg. The new wrapper `function` has the
+   *     same [length property][func-length] value as the #iteratee (unless
+   *     more than one parameter was defined for the #iteratee as the wrapper
+   *     has a max length of `1`) and the [name property][func-name] value of
+   *     `"iteratee"` (unless you are using a [minified][minify] version of
+   *     `vitals`).
+   * @return {boolean}
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, this method will return
+   *   `true`. Otherwise, it will return `false`.
    */
   function until(end, source, iteratee, thisArg) {
 
-    if (arguments['length'] < 2) throw $err(new Error, 'No end or iteratee defined');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #end defined');
 
-    if (arguments['length'] === 2) {
-      iteratee = source;
-      if ( !$is.fun(iteratee) ) throw $typeErr(new TypeError, 'iteratee');
-      return _untilEnd(end, iteratee);
+      case 1:
+        throw $err(new Error, 'no #iteratee defined');
+
+      case 2:
+        iteratee = source;
+
+        if ( !$is.fun(iteratee) )
+          throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+            '*=, (string|number)=, (!Object|!Function|!Array)=): *');
+
+        return _untilEnd(end, iteratee);
+
+      case 3:
+        if ( $is.fun(source) && $isNilNone.obj(iteratee) ) {
+          thisArg = iteratee;
+          iteratee = source;
+          return _untilEnd(end, iteratee, thisArg);
+        }
+        break;
+
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+        break;
     }
 
-    if ( arguments['length'] === 3 && $is.fun(source) && $isNil.obj(iteratee) ) {
-      thisArg = iteratee;
-      iteratee = source;
-      return _untilEnd(end, iteratee, thisArg);
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+        '*=, (string|number)=, (!Object|!Function|!Array)=): *');
+
+    if ( $is.num(source) ) {
+      if ( !$is.whole(source) )
+        throw $err(new Error, 'invalid #source `number` (' +
+          'must be whole `number`)');
+
+      return _untilCycle(end, source, iteratee, thisArg);
     }
 
-    if ( !$is.fun(iteratee)       ) throw $typeErr(new TypeError, 'iteratee');
-    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg');
-
-    if ( $is.num(source) ) return _untilCycle(end, source, iteratee, thisArg);
-
-    if ( $is.str(source) ) source = $splitKeys(source);
-
-    if ( !$is._obj(source) ) throw $typeErr(new TypeError, 'source');
+    if ( $is.str(source) )
+      source = $splitKeys(source);
+    else if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '(!Object|!Function|!Array|!Arguments|string|number)=');
 
     return $is._arr(source)
       ? _untilArr(end, source, iteratee, thisArg)
