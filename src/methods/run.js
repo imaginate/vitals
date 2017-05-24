@@ -1,31 +1,36 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS METHOD: run
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.RUN
+ * ---------------------------------------------------------------------------
  * @section shell
  * @version 4.1.3
  * @see [vitals.run](https://github.com/imaginate/vitals/wiki/vitals.run)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-var newErrorMaker = require('./helpers/new-error-maker.js');
-var normalize = require('./helpers/normalize.js');
-var sliceArr = require('./helpers/slice-arr.js');
-var _is = require('./helpers/is.js');
-var cp = require('child_process');
+var $newErrorMaker = require('./helpers/new-error-maker.js');
+var $isNilNone = require('./helpers/is-nil-none.js');
+var $normalize = require('./helpers/normalize.js');
+var $sliceArr = require('./helpers/slice-arr.js');
+var $isNone = require('./helpers/is-none.js');
+var $spawn = require('child_process')['spawnSync'];
+var $own = require('./helpers/own.js');
+var $is = require('./helpers/is.js');
+var copy = require('./copy.js');
 
+///////////////////////////////////////////////////////////////////////// {{{1
+// VITALS.RUN
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS METHOD: run
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * @public
+ * @const {!Function<string, !Function>}
+ * @dict
+ */
 var run = (function runPrivateScope() {
 
   //////////////////////////////////////////////////////////
@@ -33,41 +38,44 @@ var run = (function runPrivateScope() {
   // - run
   //////////////////////////////////////////////////////////
 
-  /**
-   * @typedef {!{
-   *   pid:    number,
-   *   output: !Array,
-   *   stdout: BuffStr,
-   *   stderr: BuffStr,
-   *   status: number,
-   *   signal: string,
-   *   error:  ?Error
-   * }} SpawnResult
+  /* {{{2 Run References
+   * @ref [spawn]:(https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
    */
 
+  /// {{{2
+  /// @method run
   /**
-   * A shortcut for [child_process.spawnSync](https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
-   *   that returns the stdout. Note that **vitals.run is considered unstable**
-   *   as it does not yet have a test suite. It is also scheduled for a future
-   *   rebuild. Use with caution and if possible help out by [contributing](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)
-   *   some unit tests.
+   * A shortcut for [child_process.spawnSync][spawn] that returns the
+   * contents of `stdout`. Note that @run is **considered unstable** as it
+   * does not yet have a test suite. It is also scheduled for a future rebuild
+   * and may be dropped in a future release. Use with caution and if possible
+   * help out by @contributing some unit tests or sharing your opinion in an
+   * @issue.
    *
    * @public
-   * @param {string} cmd
-   * @param {Object=} opts
-   * @param {?string=} opts.eol - [default= "LF"] The end of line character to
-   *   use when normalizing the result. If opts.eol is `null` or opts.buffer
-   *   is `true` and opts.eol is `undefined` no normalization is completed.
-   *   Optional values:
+   * @param {(!Array|!Arguments|string)} cmd
+   *   If the #cmd is a `string`, it is converted into an `array` using the
+   *   pattern, `/[ \t]+/`, as the separator.
+   * @param {?Object=} opts
+   * @param {?string=} opts.eol = `"LF"`
+   *   The end of line character to use when normalizing the result. If
+   *   #opts.eol is `null` or if #opts.buffer is `true` and #opts.eol is
+   *   `undefined`, no normalization is completed. Following are the `string`
+   *   options available for #opts.eol (note that the options are **not**
+   *   case-sensitive):
    *   - `"LF"`
    *   - `"CR"`
    *   - `"CRLF"`
-   * @param {boolean=} opts.buffer - [default= false] If `true` and stdout is a
-   *   buffer the buffer is returned. Otherwise a string of stdout is returned.
-   * @param {boolean=} opts.catchExit - [default= true] If process is exited
-   *   with an error code an error is logged.
-   * @param {string=} opts.encoding - [default= "utf8"] If opts.buffer is
-   *   `true` and opts.encoding is `undefined` no encoding is set.
+   * @param {boolean=} opts.buffer = `false`
+   *   If #opts.buffer is `true` and the `stdout` result returned from
+   *   [child_process.spawnSync][spawn] is a `Buffer`, the `stdout` `Buffer`
+   *   is returned. Otherwise, the `stdout` result is converted into a
+   *   `string` before it is returned.
+   * @param {boolean=} opts.catchExit = `true`
+   *   If the process is exited with an error code, an error is logged.
+   * @param {string=} opts.encoding = `"utf8"`
+   *   If #opts.buffer is `true` and #opts.encoding is `undefined`, no
+   *   encoding is given to [child_process.spawnSync][spawn].
    * @param {string=} opts.cwd
    * @param {(!Buffer|string)=} opts.input
    * @param {!Object=} opts.env
@@ -80,65 +88,140 @@ var run = (function runPrivateScope() {
    */
   function run(cmd, opts) {
 
-    /** @type {SpawnResult} */
+    /// {{{3 child_process.spawnSync Return Value
+    /*
+     * The `object` returned by [cp.spawnSync][spawn].
+     *
+     * @typedef {{
+     *   pid:    number,
+     *   output: !Array,
+     *   stdout: (!Buffer|string),
+     *   stderr: (!Buffer|string),
+     *   status: number,
+     *   signal: string,
+     *   error:  ?Error
+     * }} SpawnSyncResult
+     */
+    /// }}}3
+
+    /** @type {!Object<string, *>} */
     var result;
+    /** @type {(!Buffer|string)} */
+    var stdout;
+    /** @type {!Array<string>} */
+    var args;
+    /** @type {string} */
+    var bin;
 
-    if ( !_is.str(cmd)         ) throw _error.type('cmd');
-    if ( !_is.nil.un.obj(opts) ) throw _error.type('opts');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #cmd defined');
 
-    if (opts) {
-      if ( !_is.un.bool(opts.buffer)      ) throw _error.type('opts.buffer');
-      if ( !_is.un.bool(opts.catchExit)   ) throw _error.type('opts.catchExit');
-      if ( !_is.nil.un.str(opts.encoding) ) throw _error.type('opts.encoding');
-      if ( !_is.nil.un.str(opts.eol)      ) throw _error.type('opts.eol');
-      if ( opts.eol && !_is.eol(opts.eol) ) throw _error.range('opts.eol', '"LF", "CR", "CRLF"');
+      case 1:
+        /** @dict */
+        opts = copy['object'](OPTS, true);
+        break;
+
+      default:
+        if ( $isNone.nil(opts) ) {
+          /** @dict */
+          opts = copy['object'](OPTS, true);
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw $typeErr(new TypeError, 'opts', opts, '?Object=');
+
+        /** @dict */
+        opts = copy['object'](opts);
+
+        if ( !$own(opts, 'catchExit') || $is.none(opts['catchExit']) )
+          opts['catchExit'] = true;
+        else if ( !$is.bool(opts['catchExit']) )
+          throw $typeErr(new TypeError, 'opts.catchExit', opts['catchExit'],
+            'boolean=');
+
+        if ( !$own(opts, 'buffer') || $is.none(opts['buffer']) )
+          opts['buffer'] = false;
+        else if ( !$is.bool(opts['buffer']) )
+          throw $typeErr(new TypeError, 'opts.buffer', opts['buffer'],
+            'boolean=');
+
+        if ( !$own(opts, 'encoding') || $is.none(opts['encoding']) )
+          opts['encoding'] = opts['buffer']
+            ? NONE
+            : 'utf8';
+        else if ( !$is.str(opts['encoding']) )
+          throw $typeErr(new TypeError, 'opts.encoding', opts['encoding'],
+            'string=');
+        else if ( !opts['encoding'] )
+          throw $err(new Error, 'invalid empty #opts.encoding `string`');
+
+        if ( !$own(opts, 'eol') || $is.none(opts['eol']) )
+          opts['eol'] = opts['buffer']
+            ? null
+            : 'LF';
+        else if ( $is.str(opts['eol']) ) {
+          if ( !$is.eol(opts['eol']) )
+            throw $rangeErr(new RangeError, 'opts.eol', [ 'LF','CR','CRLF' ]);
+
+          opts['eol'] = opts['eol']['toUpperCase']();
+        }
+        else if ( !$is.nil(opts['eol']) )
+          throw $typeErr(new TypeError, 'opts.eol', opts['eol'], '?string=');
+        break;
     }
 
-    cmd = cmd.split(' ');
-    opts = _prepOptions(opts);
-    result = cp.spawnSync(cmd[0], sliceArr(cmd, 1), opts);
+    if ( $is.str(cmd) ) {
+      cmd = cmd['replace'](START_SPACE, '');
+      cmd = cmd['replace'](END_SPACE, '');
+      cmd = cmd['split'](ANY_SPACE);
+    }
+    else if ( $is._arr(cmd) )
+      cmd = $sliceArr(cmd);
+    else
+      throw $typeErr(new TypeError, 'cmd', cmd, '(!Array|!Arguments|string)');
 
-    if (result.error) throw _error('"' + result.error.toString() + '"');
-    if (opts.catchExit !== false && result.status) {
-      throw _error('Failed exit code: ' + _getExitCode(result.status) + ' - ');
+    if (cmd['length'] < 1)
+      throw $err(new Error, 'invalid empty #cmd defined');
+
+    bin = cmd[0];
+    args = $sliceArr(cmd, 1);
+
+    /** @dict */
+    result = $spawn(bin, args, opts);
+
+    if (result['error'])
+      throw $err(new Error, '"' + result['error']['toString']() + '"');
+    if (opts['catchExit'] && result['status'])
+      throw $err(new Error, 'Failed exit code: ' +
+        _getExitCode(result['status']) + ' - ');
+
+    stdout = result['stdout'];
+
+    if ( !$is.str(stdout) ) {
+
+      if (opts['buffer'])
+        return stdout;
+
+      stdout = stdout['toString']();
     }
 
-    if (opts.buffer) {
-      return _is.str(result.stdout) && opts.eol
-        ? normalize(result.stdout, opts.eol)
-        : result.stdout;
-    }
+    if ( $is.str(opts['eol']) )
+      stdout = $normalize(stdout, opts['eol']);
 
-    result.stdout = result.stdout.toString();
-    return opts.eol ? normalize(result.stdout, opts.eol) : result.stdout;
+    return stdout;
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - PREP
+  ///////////////////////////////////////////////////// {{{2
+  // RUN HELPERS - EXIT CODES
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const EXIT_CODES
   /**
    * @private
-   * @param {Object} options
-   * @return {!Object}
-   */
-  function _prepOptions(options) {
-    options = options || {};
-    if (options.buffer) options.eol = options.eol || null;
-    else options.encoding = options.encoding || 'utf8';
-    options.eol = _is.undefined(options.eol) ? 'LF' : options.eol;
-    options.eol = options.eol && options.eol.toUpperCase();
-    return options;
-  }
-
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - EXIT CODES
-  //////////////////////////////////////////////////////////
-
-  /**
-   * @private
-   * @type {!Array}
-   * @const
+   * @const {!Array<string>}
    */
   var EXIT_CODES = [
     'Uncaught Fatal Exception',
@@ -155,30 +238,126 @@ var run = (function runPrivateScope() {
     'Invalid Debug Argument'
   ];
 
+  /// {{{3
+  /// @func _getExitCode
   /**
    * @private
    * @param {number} code
    * @return {string}
    */
   function _getExitCode(code) {
-    if (code >= 128) return code + ' - UNIX Signal Exit';
-    return code + ' - ' + EXIT_CODES[--code];
+    return code >= 128
+      ? code + ' - UNIX Signal Exit'
+      : code + ' - ' + EXIT_CODES[--code];
   }
 
-  //////////////////////////////////////////////////////////
-  // PRIVATE METHODS - GENERAL
+  ///////////////////////////////////////////////////// {{{2
+  // RUN HELPERS - GENERAL
   //////////////////////////////////////////////////////////
 
+  /// {{{3
+  /// @const NONE
   /**
    * @private
-   * @type {!ErrorAid}
+   * @const {undefined}
    */
-  var _error = newErrorMaker('run');
+  var NONE = (function(){})();
 
+  /// {{{3
+  /// @const ANY_SPACE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var ANY_SPACE = /[ \t]+/;
+
+  /// {{{3
+  /// @const START_SPACE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var START_SPACE = /^[ \t]+/;
+
+  /// {{{3
+  /// @const END_SPACE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var END_SPACE = /[ \t]+$/;
+
+  /// {{{3
+  /// @const OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var OPTS = {
+    'eol': 'LF',
+    'buffer': false,
+    'catchExit': true,
+    'encoding': 'utf8'
+  };
+
+  ///////////////////////////////////////////////////// {{{2
+  // RUN HELPERS - ERROR MAKERS
   //////////////////////////////////////////////////////////
-  // END OF PRIVATE SCOPE FOR RUN
+
+  /// {{{3
+  /// @const ERROR_MAKER
+  /**
+   * @private
+   * @const {!Object<string, !function>}
+   * @struct
+   */
+  var ERROR_MAKER = $newErrorMaker('run');
+
+  /// {{{3
+  /// @func $err
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} msg
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var $err = ERROR_MAKER.error;
+
+  /// {{{3
+  /// @func $typeErr
+  /**
+   * @private
+   * @param {!TypeError} err
+   * @param {string} paramName
+   * @param {*} paramVal
+   * @param {string} validTypes
+   * @param {string=} methodName
+   * @return {!TypeError} 
+   */
+  var $typeErr = ERROR_MAKER.typeError;
+
+  /// {{{3
+  /// @func $rangeErr
+  /**
+   * @private
+   * @param {!RangeError} err
+   * @param {string} paramName
+   * @param {(!Array<*>|string|undefined)=} validRange
+   *   An `array` of actual valid options or a `string` stating the valid
+   *   range. If `undefined` this option is skipped.
+   * @param {string=} methodName
+   * @return {!RangeError} 
+   */
+  var $rangeErr = ERROR_MAKER.rangeError;
+  /// }}}2
+
+  // END OF PRIVATE SCOPE FOR VITALS.RUN
   return run;
 })();
-
+/// }}}1
 
 module.exports = run;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
