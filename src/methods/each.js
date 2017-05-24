@@ -493,7 +493,6 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var cycle;
 
-
     if ( !$is.none(thisArg) )
       iteratee = _bindCycle(iteratee, thisArg);
 
@@ -522,16 +521,8 @@ var each = (function eachPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - GENERAL
+  // EACH HELPERS - BIND
   //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   /// {{{3
   /// @func _bindMap
@@ -542,6 +533,7 @@ var each = (function eachPrivateScope() {
    * @return {!function} 
    */
   function _bindMap(func, thisArg) {
+
     switch (func['length']) {
       case 0:
         return function iteratee() {
@@ -570,6 +562,7 @@ var each = (function eachPrivateScope() {
    * @return {!function} 
    */
   function _bindCycle(func, thisArg) {
+
     switch (func['length']) {
       case 0:
         return function iteratee() {
@@ -584,6 +577,18 @@ var each = (function eachPrivateScope() {
       return func['call'](thisArg, cycle, cycles);
     };
   }
+
+  ///////////////////////////////////////////////////// {{{2
+  // EACH HELPERS - GENERAL
+  //////////////////////////////////////////////////////////
+
+  /// {{{3
+  /// @const NONE
+  /**
+   * @private
+   * @const {undefined}
+   */
+  var NONE = (function(){})();
 
   ///////////////////////////////////////////////////// {{{2
   // EACH HELPERS - ERROR MAKERS
