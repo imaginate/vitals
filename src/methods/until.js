@@ -60,7 +60,7 @@ var until = (function untilPrivateScope() {
    * A shortcut for iterating over [owned][own] `object` properties, indexed
    * `array` properties, a defined `number` of cycles, or an unlimited
    * `number` of cycles until a defined #end value is returned or all
-   * properties or cycles have been visited.
+   * properties or cycles are visited.
    *
    * @public
    * @param {*} end
@@ -222,32 +222,69 @@ var until = (function untilPrivateScope() {
   /// @method until.object
   /// @alias until.obj
   /**
-   * A shortcut for iterating over object maps until an end value is returned or
-   *   all properties are visited.
+   * A shortcut for iterating over [owned][own] `object` properties until a
+   * defined #end value is returned or all properties are visited.
    *
    * @public
-   * @param {*} end - A value that ends the iteration if returned by the
-   *   iteratee.
-   * @param {(!Object|function)} obj
-   * @param {function(*=, string=, (!Object|function)=)} iteratee - The iteratee
-   *   must be a function with the optional params - value, key, source. Note
-   *   this method lazily clones the source based on the iteratee's
-   *   [length property](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   *   (i.e. if you alter the source object within the iteratee ensure to define
-   *   the iteratee's third param so you can safely assume all references to the
-   *   source are its original values).
-   * @param {Object=} thisArg
-   * @return {boolean} - If the iteration is terminated by the end value this
-   *   method will return true. Otherwise if all the properties are visited this
-   *   method will return false.
+   * @param {*} end
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, the iteration is halted,
+   *   and this method will return `true`.
+   * @param {(!Object|!Function)} source
+   *   Iterates over the [owned][own] #source properties in random order until
+   *   an #end match is found or all properties are visited.
+   * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
+   *   The #iteratee can have the following optional parameters:
+   *   - **value** *`*`*
+   *   - **key** *`string`*
+   *   - **source** *`!Object|!Function`*
+   *   Note that this method lazily [clones][clone] the #source with
+   *   @copy#main based on the #iteratee [length property][func-length]
+   *   (i.e. if you alter any #source property within the #iteratee, make
+   *   sure you define all three parameters for the #iteratee so you can
+   *   safely assume all references to the #source are its original values).
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than three parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `3`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
+   * @return {boolean}
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, this method will return
+   *   `true`. Otherwise, it will return `false`.
    */
-  function untilObject(end, obj, iteratee, thisArg) {
+  function untilObject(end, source, iteratee, thisArg) {
 
-    if ( !$is._obj(obj)           ) throw $typeErr(new TypeError, 'obj',      'object');
-    if ( !$is.fun(iteratee)       ) throw $typeErr(new TypeError, 'iteratee', 'object');
-    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg',  'object');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #end defined', 'object');
+      case 1:
+        throw $err(new Error, 'no #source defined', 'object');
+      case 2:
+        throw $err(new Error, 'no #iteratee defined', 'object');
+      case 3:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'object');
+        break;
+    }
 
-    return _untilObj(end, obj, iteratee, thisArg);
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+        '*=, string=, (!Object|!Function)=): *', 'object');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '(!Object|!Function)',
+        'object');
+
+    return _untilObj(end, source, iteratee, thisArg);
   }
   until['object'] = untilObject;
   until['obj'] = untilObject;
