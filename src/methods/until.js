@@ -385,26 +385,68 @@ var until = (function untilPrivateScope() {
   /// @method until.cycle
   /// @alias until.time
   /**
-   * A shortcut for invoking an action until an end value is returned or the
-   *   number of cycles is reached.
+   * A shortcut for iterating over a set `number` of cycles until a defined
+   * #end value is returned or all cycles are completed.
    *
    * @public
-   * @param {*} end - A value that ends the iteration if returned by the
-   *   iteratee.
-   * @param {number} count - The number of cycles.
-   * @param {function(number=)} action
-   * @param {Object=} thisArg
-   * @return {boolean} - If the iteration is terminated by the end value this
-   *   method will return true. Otherwise if the number of cycles is reached
-   *   this method will return false.
+   * @param {*} end
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, the iteration is halted,
+   *   and this method will return `true`.
+   * @param {number} cycles
+   *   Must be a whole `number`. Iterates over the `number` of cycles until
+   *   an #end match is found or all cycles are completed.
+   * @param {!function(number=, number=): *} iteratee
+   *   The #iteratee can have the following optional parameters:
+   *   - **cycle** *`number`*!$
+   *     Note that this `number` is zero-based (i.e. the first *cycle* value
+   *     is `0`).
+   *   - **cycles** *`number`*!$
+   *     The unchanged #cycles value.
+   * @param {?Object=} thisArg
+   *   If #thisArg is defined, the #iteratee is bound to its value. Note
+   *   that the native [Function.prototype.bind][bind] is **not** used to
+   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
+   *   new [Function][func] that uses [Function.prototype.call][call] to
+   *   call the #iteratee with #thisArg. The new wrapper `function` has the
+   *   same [length property][func-length] value as the #iteratee (unless
+   *   more than two parameters were defined for the #iteratee as the
+   *   wrapper has a max length of `2`) and the [name property][func-name]
+   *   value of `"iteratee"` (unless you are using a [minified][minify]
+   *   version of `vitals`).
+   * @return {boolean}
+   *   If a value returned by the #iteratee matches (via a
+   *   [strict equality][equal] test) the #end value, this method will return
+   *   `true`. Otherwise, it will return `false`.
    */
-  function untilCycle(end, count, action, thisArg) {
+  function untilCycle(end, cycles, iteratee, thisArg) {
 
-    if ( !$is.num(count)          ) throw $typeErr(new TypeError, 'count',   'cycle');
-    if ( !$is.fun(action)         ) throw $typeErr(new TypeError, 'action',  'cycle');
-    if ( !$isNilNone.obj(thisArg) ) throw $typeErr(new TypeError, 'thisArg', 'cycle');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #end defined', 'cycle');
+      case 1:
+        throw $err(new Error, 'no #cycles defined', 'cycle');
+      case 2:
+        throw $err(new Error, 'no #iteratee defined', 'cycle');
+      case 3:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'cycle');
+        break;
+    }
 
-    return _untilCycle(end, count, action, thisArg);
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(number=, number=): *', 'cycle');
+    if ( !$is.num(cycles) )
+      throw $typeErr(new TypeError, 'cycles', cycles, 'number', 'cycle');
+    if ( !$is.whole(cycles) )
+      throw $err(new Error, 'invalid #cycles `number` (' +
+        'must be whole `number`)', 'cycle');
+
+    return _untilCycle(end, cycles, iteratee, thisArg);
   }
   until['cycle'] = untilCycle;
   until['time'] = untilCycle;
