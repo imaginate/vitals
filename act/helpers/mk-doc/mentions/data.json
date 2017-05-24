@@ -16,7 +16,7 @@
     "get": "vitals.get",
     "has": "vitals.has",
     "is": "vitals.is",
-    "is": "vitals.is type docs",
+    "is-types": "vitals.is type docs",
     "remap": "vitals.remap",
     "roll": "vitals.roll",
     "run": "vitals.run",
@@ -25,7 +25,10 @@
     "slice": "vitals.slice",
     "to": "vitals.to",
     "trim": "vitals.trim",
-    "until": "vitals.until"
+    "until": "vitals.until",
+    "issue": "issue on Github",
+    "contributing": "contributing",
+    "contribute-guide": "vitals contributing guide"
   },
   "METHOD": {
     "amend": true,
@@ -81,6 +84,9 @@
     "slice": "https://github.com/imaginate/vitals/wiki/vitals.slice",
     "to": "https://github.com/imaginate/vitals/wiki/vitals.to",
     "trim": "https://github.com/imaginate/vitals/wiki/vitals.trim",
-    "until": "https://github.com/imaginate/vitals/wiki/vitals.until"
+    "until": "https://github.com/imaginate/vitals/wiki/vitals.until",
+    "issue": "https://github.com/imaginate/vitals/issues",
+    "contributing": "https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md",
+    "contribute-guide": "https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md"
   }
 }
