@@ -39,6 +39,7 @@ var each = (function eachPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /* {{{2 Each References
+   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
    * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
    * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
    * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
@@ -53,14 +54,14 @@ var each = (function eachPrivateScope() {
   /// {{{2
   /// @method each
   /**
-   * A shortcut for iterating over `object` and `array` properties or a
-   * defined number of cycles.
+   * A shortcut for iterating over [owned][own] `object` properties, indexed
+   * `array` properties, or a defined `number` of cycles.
    *
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string|number)} source
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
-   *     Iterates over all properties in random order.
+   *     Iterates over all [owned][own] properties in random order.
    *   - *`!Array|!Arguments`*!$
    *     Iterates over all indexed properties from `0` to `source.length`.
    *   - *`string`*!$
@@ -131,14 +132,24 @@ var each = (function eachPrivateScope() {
    */
   function each(source, iteratee, thisArg) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined');
+      case 1:
+        throw $err(new Error, 'no #iteratee defined');
+      case 2:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+        break;
+    }
+
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
         '!function(*=, (string|number)=, (!Object|!Function|!Array)=)');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
     if ( $is.num(source) ) {
-
       if ( !$is.whole(source) )
         throw $err(new Error, 'invalid #source `number` (' +
           'must be whole `number`)');
@@ -148,8 +159,7 @@ var each = (function eachPrivateScope() {
 
     if ( $is.str(source) )
       source = $splitKeys(source);
-
-    if ( !$is._obj(source) )
+    else if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source,
         '!Object|!Function|!Array|!Arguments|string|number');
 
@@ -162,7 +172,7 @@ var each = (function eachPrivateScope() {
   /// @method each.object
   /// @alias each.obj
   /**
-   * A shortcut for iterating over `object` properties.
+   * A shortcut for iterating over [owned][own] `object` properties.
    *
    * @public
    * @param {(!Object|!Function)} source
@@ -192,14 +202,26 @@ var each = (function eachPrivateScope() {
    */
   function eachObject(source, iteratee, thisArg) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'object');
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'object');
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'object');
+      case 2:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'object');
+        break;
+    }
+
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
         '!function(*=, string=, (!Object|!Function)=)', 'object');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'object');
+    if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+        'object');
 
     return _eachObj(source, iteratee, thisArg);
   }
@@ -210,12 +232,12 @@ var each = (function eachPrivateScope() {
   /// @method each.array
   /// @alias each.arr
   /**
-   * A shortcut for iterating over the indexed properties of an `array` or
-   * array-like `object`.
+   * A shortcut for iterating over all of the indexed properties of an `array`
+   * or array-like `object` or `function`.
    *
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If the #source is a `string`, it is converted to an `array` using one
+   *   If the #source is a `string`, it is converted into an `array` using one
    *   of the following list of values for the separator (values listed in
    *   order of rank):
    *   - `", "`
@@ -252,17 +274,29 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( $is.str(source) )
-      source = $splitKeys(source);
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #source defined', 'array');
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'array');
+      case 2:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'array');
+        break;
+    }
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Array|!Arguments|!Object|!Function|string', 'array');
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
         '!function(*=, number=, !Array=)', 'array');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'array');
+
+    if ( $is.str(source) )
+      source = $splitKeys(source);
+    else if ( !$is._obj(source) )
+      throw $typeErr(new TypeError, 'source', source,
+        '!Array|!Arguments|!Object|!Function|string', 'array');
 
     len = source['length'];
 
@@ -309,16 +343,28 @@ var each = (function eachPrivateScope() {
    */
   function eachCycle(cycles, iteratee, thisArg) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw $err(new Error, 'no #cycles defined', 'cycle');
+      case 1:
+        throw $err(new Error, 'no #iteratee defined', 'cycle');
+      case 2:
+        break;
+      default:
+        if ( !$isNilNone.obj(thisArg) )
+          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+            'cycle');
+        break;
+    }
+
+    if ( !$is.fun(iteratee) )
+      throw $typeErr(new TypeError, 'iteratee', iteratee,
+        '!function(number=, number=)', 'cycle');
     if ( !$is.num(cycles) )
       throw $typeErr(new TypeError, 'cycles', cycles, 'number', 'cycle');
     if ( !$is.whole(cycles) )
       throw $err(new Error, 'invalid #cycles `number` (' +
         'must be whole `number`)', 'cycle');
-    if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
-        '!function(number=, number=)', 'cycle');
-    if ( !$isNilNone.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'cycle');
 
     return _eachCycle(cycles, iteratee, thisArg);
   }
