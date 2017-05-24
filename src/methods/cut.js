@@ -28,7 +28,7 @@ var is = require('./is.js');
 
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @type {!Function<string, !Function>}
  * @dict
  */
 var cut = (function cutPrivateScope() {

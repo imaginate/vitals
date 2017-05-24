@@ -25,7 +25,7 @@ var $is = require('./helpers/is.js');
 
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @type {!Function<string, !Function>}
  * @dict
  */
 var copy = (function copyPrivateScope() {

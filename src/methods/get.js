@@ -24,7 +24,7 @@ var copy = require('./copy.js');
 
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @type {!Function<string, !Function>}
  * @dict
  */
 var get = (function getPrivateScope() {
