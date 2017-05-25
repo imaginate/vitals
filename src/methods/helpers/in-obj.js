@@ -1,53 +1,66 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: inObj
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $IN-OBJ HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $IN-OBJ HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: inObj
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {(!Object|!Function)} source
+ * @param {*} val
+ * @return {boolean}
+ */
+var $inObj = (function $inObjPrivateScope() {
 
-var inObj = (function inObjPrivateScope() {
-
+  /// {{{3
+  /// @func $inObj
   /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var hasOwn = Object.prototype.hasOwnProperty;
-
-  /**
-   * @param {(!Object|function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} val
    * @return {boolean}
    */
-  function inObj(source, val) {
+  function $inObj(source, val) {
 
     /** @type {string} */
     var key;
 
     for (key in source) {
-      if ( hasOwn.call(source, key) && source[key] === val ) return true;
+      if ( _hasOwn['call'](source, key) && source[key] === val )
+        return true;
     }
     return false;
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: inObj
-  return inObj;
+  ///////////////////////////////////////////////////// {{{3
+  // $IN-OBJ HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func _hasOwn
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwn = Object['prototype']['hasOwnProperty'];
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $IN-OBJ
+  return $inObj;
 })();
+/// }}}2
 
+module.exports = $inObj;
 
-module.exports = inObj;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
