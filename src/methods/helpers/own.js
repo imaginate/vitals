@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * OWN HELPER
+ * $OWN HELPER
  * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -12,53 +12,53 @@
 'use strict';
 
 ///////////////////////////////////////////////////////////////////////// {{{2
-// OWN HELPER
+// $OWN HELPER
 //////////////////////////////////////////////////////////////////////////////
 
 /**
  * @private
- * @param {(?Object|?function)} source
+ * @param {(?Object|?Function)} source
  * @param {*} key
  * @return {boolean}
  */
-var own = (function ownPrivateScope() {
+var $own = (function $ownPrivateScope() {
 
-  /* {{{3 Own References
+  /* {{{3 $own References
    * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
    */
 
   /// {{{3
-  /// @func own
+  /// @func $own
   /**
    * A safe way to call [Object.prototype.hasOwnProperty][own].
    *
-   * @param {(?Object|?function)} source
+   * @param {(?Object|?Function)} source
    * @param {*} key
    * @return {boolean}
    */
-  function own(source, key) {
-    return !!source && hasOwn.call(source, key);
+  function $own(source, key) {
+    return !!source && _hasOwn['call'](source, key);
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // OWN HELPERS
+  // $OWN HELPERS
   //////////////////////////////////////////////////////////
 
   /// {{{4
-  /// @func hasOwn
+  /// @func _hasOwn
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var hasOwn = Object.prototype.hasOwnProperty;
-
+  var _hasOwn = Object['prototype']['hasOwnProperty'];
   /// }}}3
-  // END OF PRIVATE SCOPE FOR OWN
-  return own;
+
+  // END OF PRIVATE SCOPE FOR $OWN
+  return $own;
 })();
 /// }}}2
 
-module.exports = own;
+module.exports = $own;
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
