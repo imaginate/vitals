@@ -1,53 +1,66 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: merge
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $MERGE HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $MERGE HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: merge
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {(!Object|!Function)} dest
+ * @param {(!Object|!Function)} source
+ * @return {(!Object|!Function)}
+ */
+var $merge = (function $mergePrivateScope() {
 
-var merge = (function mergePrivateScope() {
-
+  /// {{{3
+  /// @func $merge
   /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
+   * @param {(!Object|!Function)} dest
+   * @param {(!Object|!Function)} source
+   * @return {(!Object|!Function)}
    */
-  var hasOwn = Object.prototype.hasOwnProperty;
-
-  /**
-   * @param {(!Object|function)} dest
-   * @param {(!Object|function)} source
-   * @return {(!Object|function)}
-   */
-  function merge(dest, source) {
+  function $merge(dest, source) {
 
     /** @type {string} */
     var key;
 
     for (key in source) {
-      if ( hasOwn.call(source, key) ) dest[key] = source[key];
+      if ( _hasOwn['call'](source, key) )
+        dest[key] = source[key];
     }
     return dest;
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: merge
-  return merge;
+  ///////////////////////////////////////////////////// {{{3
+  // $MERGE HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func _hasOwn
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwn = Object['prototype']['hasOwnProperty'];
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $MERGE
+  return $merge;
 })();
+/// }}}2
 
+module.exports = $merge;
 
-module.exports = merge;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
