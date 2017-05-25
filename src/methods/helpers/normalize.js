@@ -1,51 +1,68 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: normalize
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $NORMALIZE HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $NORMALIZE HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: normalize
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {string} source
+ * @param {string} eol
+ * @return {string}
+ */
+var $normalize = (function $normalizePrivateScope() {
 
-var normalize = (function normalizePrivateScope() {
-
+  /// {{{3
+  /// @func $normalize
   /**
-   * @private
-   * @type {!Object}
-   * @const
-   */
-  var OPTS = {
-    'CRLF': { 'pattern': /\r?\n|\r\n?/g, 'value': '\r\n' },
-    'CR':   { 'pattern': /\r?\n/g,       'value': '\r'   },
-    'LF':   { 'pattern': /\r\n?/g,       'value': '\n'   }
-  };
-
-  /**
-   * @param {string} str
+   * @param {string} source
    * @param {string} eol
    * @return {string}
    */
-  function normalize(str, eol) {
-    eol = OPTS[eol];
-    return str.replace(eol.pattern, eol.value);
+  function $normalize(source, eol) {
+    return EOL[eol](source);
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: normalize
-  return normalize;
+  ///////////////////////////////////////////////////// {{{3
+  // $NORMALIZE HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @const EOL
+  /**
+   * @private
+   * @const {!Object<string, !function(string): string>}
+   * @dict
+   */
+  var EOL = {
+    'CRLF': function normalizeEolCRLF(source) {
+      return source['replace'](/\r?\n|\r\n?/g, '\r\n');
+    },
+    'CR': function normalizeEolCR(source) {
+      return source['replace'](/\r?\n/g, '\r');
+    },
+    'LF': function normalizeEolLF(source) {
+      return source['replace'](/\r\n?/g, '\n');
+    }
+  };
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $NORMALIZE
+  return $normalize;
 })();
+/// }}}2
 
+module.exports = $normalize;
 
-module.exports = normalize;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
