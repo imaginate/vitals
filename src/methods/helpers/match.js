@@ -23,7 +23,7 @@
  */
 var $match = (function $matchPrivateScope() {
 
-  /* {{{3 Match References
+  /* {{{3 $match References
    * @ref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
    * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
    */
