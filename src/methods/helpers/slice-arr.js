@@ -1,36 +1,31 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: sliceArr
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $SLICE-ARR HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-module.exports = sliceArr;
-
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: sliceArr
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{2
+// $SLICE-ARR HELPER
+//////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {(!Object|function)} source
- * @param {number=} start - [default= 0]
- * @param {number=} end - [default= source.length]
+ * @private
+ * @param {(!Object|!Function)} source
+ * @param {number=} start = `0`
+ * @param {number=} end = `source.length`
  * @return {!Array}
  */
-function sliceArr(source, start, end) {
+function $sliceArr(source, start, end) {
 
   /** @type {!Array} */
-  var arr;
+  var result;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -38,26 +33,35 @@ function sliceArr(source, start, end) {
   /** @type {number} */
   var i;
 
-  len = source.length;
-  start = start
-    ? start < 0
-      ? len + start
-      : start
-    : 0;
-  start = start < 0 ? 0 : start;
-  end = end === undefined || end > len
-    ? len
-    : end < 0
-      ? len + end
-      : end;
+  len = source['length'];
 
-  if (start >= end) return [];
+  if ( $is.none(start) )
+    start = 0;
+  if ( $is.none(end) )
+    end = len;
 
-  arr = new Array(end - start);
+  if (start < 0)
+    start += len;
+  if (start < 0)
+    start = 0;
+
+  if (end > len)
+    end = len;
+  else if (end < 0)
+    end += len;
+
+  if (start >= end)
+    return [];
+
+  result = new Array(end - start);
   ii = start - 1;
   i = 0;
-  while (++ii < end) {
-    arr[i++] = source[ii];
-  }
-  return arr;
+  while (++ii < end)
+    result[i++] = source[ii];
+  return result;
 }
+/// }}}2
+
+module.exports = $sliceArr;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
