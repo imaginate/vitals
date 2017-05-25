@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $sliceArr = require('./helpers/slice-arr.js');
 var $escape = require('./helpers/escape.js');
 var $match = require('./helpers/match.js');
@@ -165,7 +164,7 @@ var cut = (function cutPrivateScope() {
 
     if ( $is.fun(val) ) {
 
-      if ( !$isNilNone.obj(thisArg) )
+      if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
         throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
       return $is.arr(source)
@@ -262,7 +261,7 @@ var cut = (function cutPrivateScope() {
 
     if ( $is.fun(val) ) {
 
-      if ( !$isNilNone.obj(thisArg) )
+      if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
         throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
           'property');
 
@@ -333,7 +332,7 @@ var cut = (function cutPrivateScope() {
         '!Array|!Arguments|!Object|!Function', 'index');
     if ( !$is.num(index) )
       throw $typeErr(new TypeError, 'index', index, 'number', 'index');
-    if ( !$isNone.num(toIndex) )
+    if ( !$is.none(toIndex) && !$is.num(toIndex) )
       throw $typeErr(new TypeError, 'toIndex', toIndex, 'number=', 'index');
 
     len = source['length'];

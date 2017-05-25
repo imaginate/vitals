@@ -66,7 +66,7 @@ var seal = (function sealPrivateScope() {
         return _seal(obj);
 
       default:
-        if ( !$isNone.bool(deep) )
+        if ( !$is.none(deep) && !$is.bool(deep) )
           throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
 
         if ( $is.nil(obj) )
@@ -112,7 +112,7 @@ var seal = (function sealPrivateScope() {
         return _seal(obj);
 
       default:
-        if ( !$isNone.bool(deep) )
+        if ( !$is.none(deep) && !$is.bool(deep) )
           throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
         if ( $is.nil(obj) )

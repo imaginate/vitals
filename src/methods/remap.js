@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $escape = require('./helpers/escape.js');
 var $own = require('./helpers/own.js');
@@ -164,7 +163,7 @@ var remap = (function remapPrivateScope() {
 
       default:
         if ( $is.str(source) ) {
-          if ( !$isNilNone.obj(thisArg) )
+          if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
             throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
           return _remapStr(source, iteratee, replacement, thisArg);
@@ -180,7 +179,7 @@ var remap = (function remapPrivateScope() {
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee,
         '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
-    if ( !$isNilNone.obj(thisArg) )
+    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
     return $is._arr(source)
@@ -250,7 +249,7 @@ var remap = (function remapPrivateScope() {
         if ( !$is.fun(iteratee) )
           throw $typeErr(new TypeError, 'iteratee', iteratee,
             '!function(*=, string=, (!Object|!Function)=): *', 'object');
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'object');
 
@@ -346,7 +345,7 @@ var remap = (function remapPrivateScope() {
         if ( !$is.fun(iteratee) )
           throw $typeErr(new TypeError, 'iteratee', iteratee,
             '!function(*=, number=, !Array=): *', 'array');
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'array');
 
@@ -426,7 +425,7 @@ var remap = (function remapPrivateScope() {
       default:
         if ( !$is.str(source) )
           throw $typeErr(new TypeError, 'source', source, 'string', 'string');
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'string');
 

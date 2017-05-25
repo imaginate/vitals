@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 var copy = require('./copy.js');
@@ -166,7 +165,7 @@ var roll = (function rollPrivateScope() {
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
         '*=, *=, (string|number)=, (!Object|!Function|!Array)=): *');
-    if ( !$isNilNone.obj(thisArg) )
+    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
 
     if ( $is.num(source) ) {
@@ -307,7 +306,7 @@ var roll = (function rollPrivateScope() {
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
         '*=, (string|number)=, (!Object|!Function|!Array)=): *', 'up');
-    if ( !$isNilNone.obj(thisArg) )
+    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'up');
 
     if ( $is.num(source) ) {
@@ -449,7 +448,7 @@ var roll = (function rollPrivateScope() {
     if ( !$is.fun(iteratee) )
       throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
         '*=, (string|number)=, (!Object|!Function|!Array)=): *', 'down');
-    if ( !$isNilNone.obj(thisArg) )
+    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
       throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'down');
 
     if ( $is.num(source) ) {

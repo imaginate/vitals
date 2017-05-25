@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNone = require('./helpers/is-none.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
 
@@ -67,7 +66,7 @@ var freeze = (function freezePrivateScope() {
         return _freeze(obj);
 
       default:
-        if ( !$isNone.bool(deep) )
+        if ( !$is.none(deep) && !$is.bool(deep) )
           throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
 
         if ( $is.nil(obj) )
@@ -113,7 +112,7 @@ var freeze = (function freezePrivateScope() {
         return _freeze(obj);
 
       default:
-        if ( !$isNone.bool(deep) )
+        if ( !$is.none(deep) && !$is.bool(deep) )
           throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
         if ( $is.nil(obj) )

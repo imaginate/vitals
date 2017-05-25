@@ -13,10 +13,8 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $normalize = require('./helpers/normalize.js');
 var $sliceArr = require('./helpers/slice-arr.js');
-var $isNone = require('./helpers/is-none.js');
 var $spawn = require('child_process')['spawnSync'];
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
@@ -123,7 +121,7 @@ var run = (function runPrivateScope() {
         break;
 
       default:
-        if ( $isNone.nil(opts) ) {
+        if ( $is.none(opts) || $is.nil(opts) ) {
           /** @dict */
           opts = copy['object'](OPTS, true);
           break;

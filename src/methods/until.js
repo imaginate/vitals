@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
@@ -181,7 +180,10 @@ var until = (function untilPrivateScope() {
         return _untilEnd(end, iteratee);
 
       case 3:
-        if ( $is.fun(source) && $isNilNone.obj(iteratee) ) {
+        if ($is.fun(source)
+            && ($is.nil(iteratee)
+                || $is.none(iteratee)
+                || $is.obj(iteratee) ) ) {
           thisArg = iteratee;
           iteratee = source;
           return _untilEnd(end, iteratee, thisArg);
@@ -189,7 +191,7 @@ var until = (function untilPrivateScope() {
         break;
 
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
         break;
     }
@@ -270,7 +272,7 @@ var until = (function untilPrivateScope() {
       case 3:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'object');
         break;
@@ -351,7 +353,7 @@ var until = (function untilPrivateScope() {
       case 3:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'array');
         break;
@@ -430,7 +432,7 @@ var until = (function untilPrivateScope() {
       case 3:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'cycle');
         break;

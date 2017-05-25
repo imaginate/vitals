@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNone = require('./helpers/is-none.js');
 var $inStr = require('./helpers/in-str.js');
 var $merge = require('./helpers/$merge.js');
 var $own = require('./helpers/own.js');
@@ -73,7 +72,7 @@ var copy = (function copyPrivateScope() {
 
     if (arguments['length'] < 1)
       throw $err(new Error, 'no #val defined');
-    if ( !$isNone.bool(deep) )
+    if ( !$is.none(deep) && !$is.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
 
     return !$is._obj(val)
@@ -103,7 +102,7 @@ var copy = (function copyPrivateScope() {
 
     if ( !$is.obj(obj) )
       throw $typeErr(new TypeError, 'obj', obj, '!Object', 'object');
-    if ( !$isNone.bool(deep) )
+    if ( !$is.none(deep) && !$is.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
 
     return _copyObj(obj, deep);
@@ -134,7 +133,7 @@ var copy = (function copyPrivateScope() {
 
     if ( !$is.obj(obj) )
       throw $typeErr(new TypeError, 'obj', obj, '!Array|!Object', 'array');
-    if ( !$isNone.bool(deep) )
+    if ( !$is.none(deep) && !$is.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
 
     len = obj['length'];
@@ -169,7 +168,7 @@ var copy = (function copyPrivateScope() {
 
     if ( !$is.regx(regex) )
       throw $typeErr(new TypeError, 'regex', regex, '!RegExp', 'regexp');
-    if ( !$isNone.bool(forceGlobal) )
+    if ( !$is.none(forceGlobal) && !$is.bool(forceGlobal) )
       throw $typeErr(new TypeError, 'forceGlobal', forceGlobal, 'boolean=',
         'regexp');
 
@@ -202,7 +201,7 @@ var copy = (function copyPrivateScope() {
 
     if ( !$is.fun(func) )
       throw $typeErr(new TypeError, 'func', func, '!function', 'function');
-    if ( !$isNone.bool(deep) )
+    if ( !$is.none(deep) && !$is.bool(deep) )
       throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'function');
 
     return _copyFunc(func, deep);

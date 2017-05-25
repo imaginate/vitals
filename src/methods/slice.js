@@ -15,7 +15,6 @@
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $sliceArr = require('./helpers/slice-arr.js');
 var $sliceStr = require('./helpers/slice-str.js');
-var $isNone = require('./helpers/is-none.js');
 var $is = require('./helpers/is.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
@@ -110,13 +109,13 @@ var slice = (function slicePrivateScope() {
       case 0:
         throw $err(new Error, 'no #source defined');
       case 1:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=');
         break;
       default:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=');
-        if ( !$isNone.num(end) )
+        if ( !$is.none(end) && !$is.num(end) )
           throw $typeErr(new TypeError, 'end', end, 'number=');
         break;
     }
@@ -193,13 +192,13 @@ var slice = (function slicePrivateScope() {
       case 0:
         throw $err(new Error, 'no #source defined', 'array');
       case 1:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
         break;
       default:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
-        if ( !$isNone.num(end) )
+        if ( !$is.none(end) && !$is.num(end) )
           throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
         break;
     }
@@ -255,13 +254,13 @@ var slice = (function slicePrivateScope() {
       case 0:
         throw $err(new Error, 'no #source defined', 'string');
       case 1:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
         break;
       default:
-        if ( !$isNone.num(start) )
+        if ( !$is.none(start) && !$is.num(start) )
           throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
-        if ( !$isNone.num(end) )
+        if ( !$is.none(end) && !$is.num(end) )
           throw $typeErr(new TypeError, 'end', end, 'number=', 'string');
         break;
     }

@@ -15,7 +15,6 @@
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $cloneObj = require('./helpers/clone-obj.js');
-var $isNone = require('./helpers/is-none.js');
 var $merge = require('./helpers/merge.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
@@ -259,11 +258,11 @@ var amend = (function amendPrivateScope() {
         break;
     }
 
-    if ( !$isNone.obj(descriptor) )
+    if ( !$is.none(descriptor) && !$is.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=');
-    if ( !$isNone.str(strongType) )
+    if ( !$is.none(strongType) && !$is.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=');
-    if ( !$isNone.fun(setter) )
+    if ( !$is.none(setter) && !$is.fun(setter) )
       throw $typeErr(new TypeError, 'setter', setter,'(!function(*, *): *)=');
 
     if (strongType) {
@@ -468,13 +467,13 @@ var amend = (function amendPrivateScope() {
       throw $typeErr(new TypeError, 'source', source, '!Object', 'property');
     if ( !$is.str(key) )
       throw $typeErr(new TypeError, 'key', key, 'string', 'property');
-    if ( !$isNone.obj(descriptor) )
+    if ( !$is.none(descriptor) && !$is.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
         'property');
-    if ( !$isNone.str(strongType) )
+    if ( !$is.none(strongType) && !$is.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=',
         'property');
-    if ( !$isNone.fun(setter) )
+    if ( !$is.none(setter) && !$is.fun(setter) )
       throw $typeErr(new TypeError, 'setter', setter, '(!function(*, *): *)=',
         'property');
     if ( !!strongType && !is(strongType + '=', val) )
@@ -750,13 +749,13 @@ var amend = (function amendPrivateScope() {
         break;
     }
 
-    if ( !$isNone.obj(descriptor) )
+    if ( !$is.none(descriptor) && !$is.obj(descriptor) )
       throw $typeErr(new TypeError, 'descriptor', descriptor, '!Object=',
         'properties');
-    if ( !$isNone.str(strongType) )
+    if ( !$is.none(strongType) && !$is.str(strongType) )
       throw $typeErr(new TypeError, 'strongType', strongType, 'string=',
         'properties');
-    if ( !$isNone.fun(setter) )
+    if ( !$is.none(setter) && !$is.fun(setter) )
       throw $typeErr(new TypeError, 'setter', setter, '(!function(*, *): *)=',
         'properties');
 

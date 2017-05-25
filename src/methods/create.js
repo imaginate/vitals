@@ -14,7 +14,6 @@
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $sliceArr = require('./helpers/slice-arr.js');
-var $isNil = require('./helpers/is-nil.js');
 var $is = require('./helpers/is.js');
 var amend = require('./amend.js');
 
@@ -63,7 +62,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !$isNil.obj(proto) )
+    if ( !$is.nil(proto) && !$is.obj(proto) )
       throw $typeErr(new TypeError, 'proto', proto, '?Object');
 
     if (arguments['length'] > 1) {
@@ -99,7 +98,7 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !$isNil.obj(proto) )
+    if ( !$is.nil(proto) && !$is.obj(proto) )
       throw $typeErr(new TypeError, 'proto', proto, '?Object', 'object');
 
     if (arguments['length'] > 1) {

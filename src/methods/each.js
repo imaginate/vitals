@@ -13,7 +13,6 @@
 'use strict';
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $isNilNone = require('./helpers/is-nil-none.js');
 var $splitKeys = require('./helpers/split-keys.js');
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
@@ -140,7 +139,7 @@ var each = (function eachPrivateScope() {
       case 2:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
         break;
     }
@@ -210,7 +209,7 @@ var each = (function eachPrivateScope() {
       case 2:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'object');
         break;
@@ -282,7 +281,7 @@ var each = (function eachPrivateScope() {
       case 2:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'array');
         break;
@@ -351,7 +350,7 @@ var each = (function eachPrivateScope() {
       case 2:
         break;
       default:
-        if ( !$isNilNone.obj(thisArg) )
+        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
           throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
             'cycle');
         break;
