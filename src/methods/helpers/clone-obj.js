@@ -1,38 +1,34 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: cloneObj
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $CLONE-OBJ HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $CLONE-OBJ HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: cloneObj
-////////////////////////////////////////////////////////////////////////////////
-
-var cloneObj = (function cloneObjPrivateScope() {
-
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var hasOwn = Object.prototype.hasOwnProperty;
-
-  /**
+/**
+ * @private
  * @param {!Object} obj
  * @return {!Object}
+ */
+var $cloneObj = (function $cloneObjPrivateScope() {
+
+  /// {{{3
+  /// @func $cloneObj
+  /**
+   * @param {!Object} obj
+   * @return {!Object}
    */
-  function cloneObj(obj) {
+  function $cloneObj(obj) {
 
     /** @type {!Object} */
     var clone;
@@ -41,15 +37,31 @@ var cloneObj = (function cloneObjPrivateScope() {
 
     clone = {};
     for (key in obj) {
-      if ( hasOwn.call(obj, key) ) clone[key] = obj[key];
+      if ( _hasOwn['call'](obj, key) )
+        clone[key] = obj[key];
     }
     return clone;
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: cloneObj
-  return cloneObj;
+  ///////////////////////////////////////////////////// {{{3
+  // $CLONE-OBJ HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func _hasOwn
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwn = Object['prototype']['hasOwnProperty'];
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $CLONE-OBJ
+  return $cloneObj;
 })();
+/// }}}2
 
+module.exports = $cloneObj;
 
-module.exports = cloneObj;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
