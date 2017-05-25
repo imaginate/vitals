@@ -1,49 +1,55 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: sliceStr
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $SLICE-STR HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-module.exports = sliceStr;
-
-
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: sliceStr
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////// {{{2
+// $SLICE-STR HELPER
+//////////////////////////////////////////////////////////////////////////////
 
 /**
- * @param {string} str
- * @param {number=} start - [default= 0]
- * @param {number=} end - [default= str.length]
+ * @private
+ * @param {string} source
+ * @param {number=} start = `0`
+ * @param {number=} end = `source.length`
  * @return {string}
  */
-function sliceStr(str, start, end) {
+function $sliceStr(source, start, end) {
 
   /** @type {number} */
   var len;
 
-  len = str.length;
-  start = start
-    ? start < 0
-      ? len + start
-      : start
-    : 0;
-  start = start < 0 ? 0 : start;
-  end = end === undefined || end > len
-    ? len
-    : end < 0
-      ? len + end
-      : end;
+  len = source['length'];
 
-  return start >= end ? '' : str.substring(start, end);
+  if ( $is.none(start) )
+    start = 0;
+  if ( $is.none(end) )
+    end = len;
+
+  if (start < 0)
+    start += len;
+  if (start < 0)
+    start = 0;
+
+  if (end > len)
+    end = len;
+  else if (end < 0)
+    end += len;
+
+  return start >= end
+    ? ''
+    : source['substring'](start, end);
 }
+/// }}}2
+
+module.exports = $sliceStr;
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
