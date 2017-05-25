@@ -9,7 +9,9 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-var $HAS_ARGS = require('./has-args.js');
+/// @open ARGS_POLYFILL_OFF
+'use strict';
+/// @close ARGS_POLYFILL_OFF
 
 ///////////////////////////////////////////////////////////////////////// {{{2
 // $IS HELPER
@@ -23,7 +25,7 @@ var $HAS_ARGS = require('./has-args.js');
 var $is = (function $isPrivateScope() {
 
   ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - PRIMITIVES
+  // $IS HELPERS
   //////////////////////////////////////////////////////////
 
   /// {{{4
@@ -33,6 +35,28 @@ var $is = (function $isPrivateScope() {
    * @const {undefined}
    */
   var NONE = (function(){})();
+
+  /// {{{4
+  /// @func _hasOwn
+  /**
+   * @private
+   * @param {*} key
+   * @return {boolean}
+   */
+  var _hasOwn = Object['prototype']['hasOwnProperty'];
+
+  /// {{{4
+  /// @func _objToStr
+  /**
+   * @private
+   * @this {!Object}
+   * @return {string}
+   */
+  var _objToStr = Object['prototype']['toString'];
+
+  ///////////////////////////////////////////////////// {{{3
+  // $IS METHODS - PRIMITIVES
+  //////////////////////////////////////////////////////////
 
   /// {{{4
   /// @func isNull
@@ -119,15 +143,6 @@ var $is = (function $isPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{4
-  /// @func objToStr
-  /**
-   * @private
-   * @this {!Object}
-   * @return {string}
-   */
-  var objToStr = Object['prototype']['toString'];
-
-  /// {{{4
   /// @func isObject
   /**
    * @param {*} val
@@ -174,36 +189,8 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isArray(val) {
-    return isObject(val) && objToStr['call'](val) === '[object Array]';
+    return isObject(val) && _objToStr['call'](val) === '[object Array]';
   }
-
-  /// {{{4
-  /// @func isArrayOrArguments
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  var isArrayOrArguments = $HAS_ARGS.PRIMARY
-    ? function isArrayOrArguments(val) {
-
-        if ( !isObject(val) )
-          return false;
-
-        switch ( objToStr['call'](val) )
-          case '[object Array]':
-          case '[object Arguments]':
-            return true;
-          default:
-            return false;
-        }
-      }
-    : $HAS_ARGS.POLYFILL
-      ? function isArrayOrArguments(val) {
-          return isObject(val)
-            && (objToStr['call'](val) === '[object Array]' ||'callee' in val);
-        }
-      : isArray;
-
 
   /// {{{4
   /// @func isRegExp
@@ -212,7 +199,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isRegExp(val) {
-    return isObject(val) && objToStr['call'](val) === '[object RegExp]';
+    return isObject(val) && _objToStr['call'](val) === '[object RegExp]';
   }
 
   /// {{{4
@@ -222,7 +209,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isDate(val) {
-    return isObject(val) && objToStr['call'](val) === '[object Date]';
+    return isObject(val) && _objToStr['call'](val) === '[object Date]';
   }
 
   /// {{{4
@@ -232,27 +219,157 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isError(val) {
-    return isObject(val) && objToStr['call'](val) === '[object Error]';
+    return isObject(val) && _objToStr['call'](val) === '[object Error]';
   }
 
-  /// {{{4
+  ///////////////////////////////////////////////////// {{{3
+  // $IS METHODS - ARGUMENTS
+  //////////////////////////////////////////////////////////
+
+  /// @open ARGS_POLYFILL_ON
+  /// {{{4 ARGS_POLYFILL_ON
+
+  /// {{{5
+  /// @const HAS_ARGS
+  /**
+   * @private
+   * @const {!Object<string, boolean>}
+   * @struct
+   */
+  var HAS_ARGS = (function HAS_ARGS_PrivateScope() {
+
+    /// {{{6
+    /// @const PRIMARY
+    /**
+     * Verify the platform's ability to use the primary test for `Arguments`.
+     *
+     * @const {boolean}
+     */
+    var PRIMARY = (function PRIMARY_PrivateScope() {
+      return _objToStr['call'](arguments) === '[object Arguments]';
+    })();
+
+    /// {{{6
+    /// @const POLYFILL
+    /**
+     * Verify the platform's ability to use a check for the `callee` property
+     * to test for `Arguments`.
+     *
+     * @const {boolean}
+     */
+    var POLYFILL = (function POLYFILL_PrivateScope() {
+      try {
+        'callee' in {};
+      }
+      catch (e) {
+        return false;
+      }
+      return 'callee' in arguments;
+    })();
+
+    /// {{{6
+    /// @const HAS_ARGS
+    /**
+     * @const {!Object<string, boolean>}
+     * @struct
+     */
+    var HAS_ARGS = {
+      PRIMARY:  PRIMARY,
+      POLYFILL: POLYFILL
+    };
+    /// }}}6
+
+    // END OF PRIVATE SCOPE FOR $IS CONSTANT HAS_ARGS
+    return HAS_ARGS;
+  })();
+
+  /// {{{5
   /// @func isArguments
   /**
    * @param {*} val
    * @return {boolean}
    */
-  var isArguments = $HAS_ARGS.PRIMARY
+  var isArguments = HAS_ARGS.PRIMARY
     ? function isArguments(val) {
         return isObject(val)
-          && objToStr['call'](val) === '[object Arguments]';
+          && _objToStr['call'](val) === '[object Arguments]';
       }
-    : $HAS_ARGS.POLYFILL
+    : HAS_ARGS.POLYFILL
       ? function isArguments(val) {
           return isObject(val) && 'callee' in val;
         }
       : function isArguments(val) {
           return false;
         };
+
+  /// {{{5
+  /// @func isArrayOrArguments
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  var isArrayOrArguments = HAS_ARGS.PRIMARY
+    ? function isArrayOrArguments(val) {
+
+        if ( !isObject(val) )
+          return false;
+
+        switch ( _objToStr['call'](val) ) {
+          case '[object Array]':
+          case '[object Arguments]':
+            return true;
+          default:
+            return false;
+        }
+      }
+    : HAS_ARGS.POLYFILL
+      ? function isArrayOrArguments(val) {
+          return isObject(val)
+            && (_objToStr['call'](val) === '[object Array]'
+                || 'callee' in val);
+        }
+      : function isArrayOrArguments(val) {
+          return isObject(val) && _objToStr['call'](val) === '[object Array]';
+        };
+
+  /// }}}4
+  /// @close ARGS_POLYFILL_ON
+
+  /// @open ARGS_POLYFILL_OFF
+  /// {{{4 ARGS_POLYFILL_OFF
+
+  /// {{{5
+  /// @func isArguments
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isArguments(val) {
+    return isObject(val) && _objToStr['call'](val) === '[object Arguments]';
+  }
+
+  /// {{{5
+  /// @func isArrayOrArguments
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isArrayOrArguments(val) {
+
+    if ( !isObject(val) )
+      return false;
+
+    switch ( _objToStr['call'](val) ) {
+      case '[object Array]':
+      case '[object Arguments]':
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  /// }}}4
+  /// @close ARGS_POLYFILL_OFF
 
   ///////////////////////////////////////////////////// {{{3
   // $IS METHODS - DOM OBJECTS
@@ -265,7 +382,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isDomDocument(val) {
-    return isObject(val) && val['nodeType'] === 9;
+    return isObject(val) && 'nodeType' in val && val['nodeType'] === 9;
   }
 
   /// {{{4
@@ -275,21 +392,12 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isDomElement(val) {
-    return isObject(val) && val['nodeType'] === 1;
+    return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
 
   ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - MISCELLANEOUS
+  // $IS METHODS - SPECIAL
   //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func hasOwn
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var hasOwn = Object['prototype']['hasOwnProperty'];
 
   /// {{{4
   /// @func isEmpty
@@ -337,12 +445,12 @@ var $is = (function $isPrivateScope() {
       return false;
 
     // arrays
-    if (objToStr['call'](val) === '[object Array]')
+    if (_objToStr['call'](val) === '[object Array]')
       return val['length'] === 0;
 
     // remaining objects
     for (key in val) {
-      if ( hasOwn['call'](val, key) )
+      if ( _hasOwn['call'](val, key) )
         return false;
     }
     return true;
@@ -373,7 +481,7 @@ var $is = (function $isPrivateScope() {
   /// {{{4
   /// @func isExtensible
   /**
-   * @param {(!Object|!function)} src
+   * @param {(!Object|!Function)} src
    * @return {boolean}
    */
   var isExtensible = (function $isExtensiblePolyfillPrivateScope() {
@@ -402,7 +510,7 @@ var $is = (function $isPrivateScope() {
   /// {{{4
   /// @func isFrozen
   /**
-   * @param {(!Object|!function)} src
+   * @param {(!Object|!Function)} src
    * @return {boolean}
    */
   var isFrozen = (function $isFrozenPolyfillPrivateScope() {
@@ -431,7 +539,7 @@ var $is = (function $isPrivateScope() {
   /// {{{4
   /// @func isSealed
   /**
-   * @param {(!Object|!function)} src
+   * @param {(!Object|!Function)} src
    * @return {boolean}
    */
   var isSealed = (function $isSealedPolyfillPrivateScope() {
