@@ -1,45 +1,55 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: escape
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $ESCAPE HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $ESCAPE HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: escape
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {string} source
+ * @return {string}
+ */
+var $escape = (function $escapePrivateScope() {
 
-var escape = (function escapePrivateScope() {
-
-  /**
-   * @private
-   * @type {!RegExp}
-   * @const
-   */
-  var CHARS = /[\\^$.*+?|(){}[\]]/g;
-
+  /// {{{3
+  /// @func $escape
   /**
    * @param {string} source
    * @return {string}
    */
-  function escape(source) {
-    return source.replace(CHARS, '\\$&');
+  function $escape(source) {
+    return source['replace'](CHARS, '\\$&');
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: escape
-  return escape;
+  ///////////////////////////////////////////////////// {{{3
+  // $ESCAPE HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @const CHARS
+  /**
+   * @private
+   * @type {!RegExp}
+   */
+  var CHARS = /[\\^$.*+?|(){}[\]]/g;
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $ESCAPE
+  return $escape;
 })();
+/// }}}2
 
+module.exports = $escape;
 
-module.exports = escape;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
