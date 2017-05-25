@@ -14,11 +14,11 @@
 
 var $newErrorMaker = require('./helpers/new-error-maker.js');
 var $normalize = require('./helpers/normalize.js');
+var $cloneObj = require('./helpers/clone-obj.js');
 var $sliceArr = require('./helpers/slice-arr.js');
 var $spawn = require('child_process')['spawnSync'];
 var $own = require('./helpers/own.js');
 var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
 
 ///////////////////////////////////////////////////////////////////////// {{{1
 // VITALS.RUN
@@ -117,13 +117,13 @@ var run = (function runPrivateScope() {
 
       case 1:
         /** @dict */
-        opts = copy['object'](OPTS, true);
+        opts = $cloneObj(OPTS);
         break;
 
       default:
         if ( $is.none(opts) || $is.nil(opts) ) {
           /** @dict */
-          opts = copy['object'](OPTS, true);
+          opts = $cloneObj(OPTS);
           break;
         }
 
@@ -131,7 +131,7 @@ var run = (function runPrivateScope() {
           throw $typeErr(new TypeError, 'opts', opts, '?Object=');
 
         /** @dict */
-        opts = copy['object'](opts);
+        opts = $cloneObj(opts);
 
         if ( !$own(opts, 'catchExit') || $is.none(opts['catchExit']) )
           opts['catchExit'] = true;
