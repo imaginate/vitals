@@ -1,63 +1,99 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS HELPER: splitKeys
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * $SPLIT-KEYS HELPER
+ * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
+///////////////////////////////////////////////////////////////////////// {{{2
+// $SPLIT-KEYS HELPER
+//////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
-// VITALS HELPER: splitKeys
-////////////////////////////////////////////////////////////////////////////////
+/**
+ * @private
+ * @param {string} keys
+ *   The #keys are split using one of the values in the following list as the
+ *   separator (values listed in order of rank):
+ *   - `", "`
+ *   - `","`
+ *   - `"|"`
+ *   - `" "`
+ * @return {!Array<string>}
+ */
+var $splitKeys = (function $splitKeysPrivateScope() {
 
-var splitKeys = (function splitKeysPrivateScope() {
-
-  /**
-   * @private
-   * @param {string} keys
-   * @param {string} str
-   * @return {boolean}
+  /* {{{3 $splitKeys References
+   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
    */
-  var inStr = !!String.prototype.includes
-    ? function inStr(keys, str) { return keys.includes(str); }
-    : function inStr(keys, str) { return keys.indexOf(str) !== -1; };
 
+  /// {{{3
+  /// @func $splitKeys
   /**
-   * @param {string} keys - The keys are split using one of the values in the
-   *   following list as the separator (values listed in order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
+   * @param {string} keys
    * @return {!Array<string>}
    */
-  function splitKeys(keys) {
+  function $splitKeys(keys) {
 
     /** @type {string} */
     var separator;
 
-    if (!keys) return [ '' ];
+    if (!keys)
+      return [ '' ];
 
-    separator = inStr(keys, ', ')
-      ? ', '  : inStr(keys, ',')
-        ? ',' : inStr(keys, '|')
-          ? '|' : ' ';
-    return keys.split(separator);
+    separator = _inStr(keys, ', ')
+      ? ', '
+      : _inStr(keys, ',')
+        ? ','
+        : _inStr(keys, '|')
+          ? '|'
+          : ' ';
+
+    return keys['split'](separator);
   }
 
-  ////////////////////////////////////////////////////
-  // PRIVATE SCOPE END: splitKeys
-  return splitKeys;
+  ///////////////////////////////////////////////////// {{{3
+  // $SPLIT-KEYS HELPERS
+  //////////////////////////////////////////////////////////
+
+  /// {{{4
+  /// @func _inStr
+  /**
+   * Polyfills [String.prototype.includes][includes] if it does not exist.
+   *
+   * @private
+   * @param {string} source
+   * @param {string} substr
+   * @return {boolean}
+   */
+  var _inStr = (function _inStrPrivateScope() {
+
+    /**
+     * @private
+     * @const {!Object}
+     */
+    var PROTO = String['prototype'];
+
+    return 'includes' in PROTO && $is.fun(PROTO['includes'])
+      ? function _inStr(source, substr) {
+          return source['includes'](substr);
+        }
+      : function _inStr(source, substr) {
+          return source['indexOf'](substr) !== -1;
+        };
+  })();
+  /// }}}3
+
+  // END OF PRIVATE SCOPE FOR $SPLIT-KEYS
+  return $splitKeys;
 })();
+/// }}}2
 
+module.exports = $splitKeys;
 
-module.exports = splitKeys;
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
