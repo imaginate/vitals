@@ -11,8 +11,6 @@
 
 'use strict';
 
-module.exports = $newErrorMaker;
-
 ///////////////////////////////////////////////////////////////////////// {{{2
 // $NEW-ERROR-MAKER HELPER
 //////////////////////////////////////////////////////////////////////////////
@@ -520,5 +518,7 @@ var $newErrorMaker = (function $newErrorMakerPrivateScope() {
   return $newErrorMaker;
 })();
 /// }}}2
+
+module.exports = $newErrorMaker;
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
