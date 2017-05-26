@@ -9,12 +9,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $OWN HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $own
 /**
  * @private
  * @param {(?Object|?Function)} source
@@ -23,42 +18,34 @@
  */
 var $own = (function $ownPrivateScope() {
 
-  /* {{{3 $own References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   */
+  /// #{{{ @docrefs $own
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// #}}} @docrefs $own
 
-  /// {{{3
-  /// @func $own
+  /// #{{{ @func $own
   /**
-   * A safe way to call [Object.prototype.hasOwnProperty][own].
-   *
+   * @description
+   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(?Object|?Function)} source
    * @param {*} key
    * @return {boolean}
    */
   function $own(source, key) {
-    return !!source && _hasOwn['call'](source, key);
+    return !!source && _hasOwnProp['call'](source, key);
   }
+  /// #}}} @func $own
 
-  ///////////////////////////////////////////////////// {{{3
-  // $OWN HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _hasOwn
+  /// #{{{ @func _hasOwnProp
   /**
    * @private
    * @param {*} key
    * @return {boolean}
    */
-  var _hasOwn = Object['prototype']['hasOwnProperty'];
-  /// }}}3
+  var _hasOwnProp = OBJ_PROTO['hasOwnProperty'];
+  /// #}}} @func _hasOwnProp
 
-  // END OF PRIVATE SCOPE FOR $OWN
   return $own;
 })();
-/// }}}2
-
-module.exports = $own;
+/// #}}} @helper $own
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
