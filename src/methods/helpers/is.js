@@ -115,7 +115,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isNumber(val) {
-    return typeof val === 'number' && val === val;
+    return typeof val === 'number' && val === val && isFinite(val);
   }
 
   /// {{{4
@@ -125,7 +125,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isNonZeroNumber(val) {
-    return !!val && typeof val === 'number' && val === val;
+    return !!val && typeof val === 'number' && val === val && isFinite(val);
   }
 
   /// {{{4
