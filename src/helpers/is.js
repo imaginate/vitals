@@ -9,14 +9,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// @open ARGS_POLYFILL_OFF
-'use strict';
-/// @close ARGS_POLYFILL_OFF
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $IS HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $is
 /**
  * @private
  * @const {!Object<string, !function>}
@@ -24,62 +17,29 @@
  */
 var $is = (function $isPrivateScope() {
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS HELPERS
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Primitives
 
-  /// {{{4
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
-
-  /// {{{4
-  /// @func _hasOwn
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwn = Object['prototype']['hasOwnProperty'];
-
-  /// {{{4
-  /// @func _objToStr
-  /**
-   * @private
-   * @this {!Object}
-   * @return {string}
-   */
-  var _objToStr = Object['prototype']['toString'];
-
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - PRIMITIVES
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func isNull
+  /// #{{{ @func isNull
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isNull(val) {
-    return val === null;
+    return val === NIL;
   }
+  /// #}}} @func isNull
 
-  /// {{{4
-  /// @func isUndefined
+  /// #{{{ @func isUndefined
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isUndefined(val) {
-    return val === NONE;
+    return val === VOID;
   }
+  /// #}}} @func isUndefined
 
-  /// {{{4
-  /// @func isBoolean
+  /// #{{{ @func isBoolean
   /**
    * @param {*} val
    * @return {boolean}
@@ -87,9 +47,9 @@ var $is = (function $isPrivateScope() {
   function isBoolean(val) {
     return typeof val === 'boolean';
   }
+  /// #}}} @func isBoolean
 
-  /// {{{4
-  /// @func isString
+  /// #{{{ @func isString
   /**
    * @param {*} val
    * @return {boolean}
@@ -97,9 +57,9 @@ var $is = (function $isPrivateScope() {
   function isString(val) {
     return typeof val === 'string';
   }
+  /// #}}} @func isString
 
-  /// {{{4
-  /// @func isNonEmptyString
+  /// #{{{ @func isNonEmptyString
   /**
    * @param {*} val
    * @return {boolean}
@@ -107,9 +67,9 @@ var $is = (function $isPrivateScope() {
   function isNonEmptyString(val) {
     return !!val && typeof val === 'string';
   }
+  /// #}}} @func isNonEmptyString
 
-  /// {{{4
-  /// @func isNumber
+  /// #{{{ @func isNumber
   /**
    * @param {*} val
    * @return {boolean}
@@ -117,9 +77,9 @@ var $is = (function $isPrivateScope() {
   function isNumber(val) {
     return typeof val === 'number' && val === val && isFinite(val);
   }
+  /// #}}} @func isNumber
 
-  /// {{{4
-  /// @func isNonZeroNumber
+  /// #{{{ @func isNonZeroNumber
   /**
    * @param {*} val
    * @return {boolean}
@@ -127,9 +87,9 @@ var $is = (function $isPrivateScope() {
   function isNonZeroNumber(val) {
     return !!val && typeof val === 'number' && val === val && isFinite(val);
   }
+  /// #}}} @func isNonZeroNumber
 
-  /// {{{4
-  /// @func isNan
+  /// #{{{ @func isNan
   /**
    * @param {*} val
    * @return {boolean}
@@ -137,13 +97,13 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
+  /// #}}} @func isNan
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - JS OBJECTS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Primitives
 
-  /// {{{4
-  /// @func isObject
+  /// #{{{ @group JS-Objects
+
+  /// #{{{ @func isObject
   /**
    * @param {*} val
    * @return {boolean}
@@ -151,9 +111,9 @@ var $is = (function $isPrivateScope() {
   function isObject(val) {
     return !!val && typeof val === 'object';
   }
+  /// #}}} @func isObject
 
-  /// {{{4
-  /// @func isObjectOrFunction
+  /// #{{{ @func isObjectOrFunction
   /**
    * @param {*} val
    * @return {boolean}
@@ -171,9 +131,9 @@ var $is = (function $isPrivateScope() {
         return false;
      }
   }
+  /// #}}} @func isObjectOrFunction
 
-  /// {{{4
-  /// @func isFunction
+  /// #{{{ @func isFunction
   /**
    * @param {*} val
    * @return {boolean}
@@ -181,83 +141,76 @@ var $is = (function $isPrivateScope() {
   function isFunction(val) {
     return !!val && typeof val === 'function';
   }
+  /// #}}} @func isFunction
 
-  /// {{{4
-  /// @func isArray
+  /// #{{{ @func isArray
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isArray(val) {
-    return isObject(val) && _objToStr['call'](val) === '[object Array]';
+    return isObject(val) && $objStr(val) === '[object Array]';
   }
+  /// #}}} @func isArray
 
-  /// {{{4
-  /// @func isRegExp
+  /// #{{{ @func isRegExp
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isRegExp(val) {
-    return isObject(val) && _objToStr['call'](val) === '[object RegExp]';
+    return isObject(val) && $objStr(val) === '[object RegExp]';
   }
+  /// #}}} @func isRegExp
 
-  /// {{{4
-  /// @func isDate
+  /// #{{{ @func isDate
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isDate(val) {
-    return isObject(val) && _objToStr['call'](val) === '[object Date]';
+    return isObject(val) && $objStr(val) === '[object Date]';
   }
+  /// #}}} @func isDate
 
-  /// {{{4
-  /// @func isError
+  /// #{{{ @func isError
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isError(val) {
-    return isObject(val) && _objToStr['call'](val) === '[object Error]';
+    return isObject(val) && $objStr(val) === '[object Error]';
   }
+  /// #}}} @func isError
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - ARGUMENTS
-  //////////////////////////////////////////////////////////
-
-  /// @open ARGS_POLYFILL_ON
-  /// {{{4 ARGS_POLYFILL_ON
-
-  /// {{{5
-  /// @const HAS_ARGS
+  /// #{{{ @on ARGS_POLYFILL
+  /// #{{{ @const _HAS_ARGS
   /**
    * @private
    * @const {!Object<string, boolean>}
    * @struct
    */
-  var HAS_ARGS = (function HAS_ARGS_PrivateScope() {
+  var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
-    /// {{{6
-    /// @const PRIMARY
+    /// #{{{ @const PRIMARY
     /**
-     * Verify the platform's ability to use the primary test for `Arguments`.
-     *
+     * @description
+     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
-    var PRIMARY = (function PRIMARY_PrivateScope() {
-      return _objToStr['call'](arguments) === '[object Arguments]';
+    var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
+      return $objStr(arguments) === '[object Arguments]';
     })();
+    /// #}}} @const PRIMARY
 
-    /// {{{6
-    /// @const POLYFILL
+    /// #{{{ @const POLYFILL
     /**
-     * Verify the platform's ability to use a check for the `callee` property
-     * to test for `Arguments`.
-     *
+     * @description
+     *   Verify the platform's ability to use a check for the `callee`
+     *   property to test for `Arguments`.
      * @const {boolean}
      */
-    var POLYFILL = (function POLYFILL_PrivateScope() {
+    var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
       try {
         'callee' in {};
       }
@@ -266,55 +219,53 @@ var $is = (function $isPrivateScope() {
       }
       return 'callee' in arguments;
     })();
+    /// #}}} @const POLYFILL
 
-    /// {{{6
-    /// @const HAS_ARGS
+    /// #{{{ @const HAS_ARGS
     /**
      * @const {!Object<string, boolean>}
      * @struct
      */
     var HAS_ARGS = {
-      PRIMARY:  PRIMARY,
+      PRIMARY: PRIMARY,
       POLYFILL: POLYFILL
     };
-    /// }}}6
+    /// #}}} @const HAS_ARGS
 
-    // END OF PRIVATE SCOPE FOR $IS CONSTANT HAS_ARGS
     return HAS_ARGS;
   })();
+  /// #}}} @const _HAS_ARGS
 
-  /// {{{5
-  /// @func isArguments
+  /// #{{{ @func isArguments
   /**
    * @param {*} val
    * @return {boolean}
    */
-  var isArguments = HAS_ARGS.PRIMARY
+  var isArguments = _HAS_ARGS.PRIMARY
     ? function isArguments(val) {
-        return isObject(val)
-          && _objToStr['call'](val) === '[object Arguments]';
+        return isObject(val) && $objStr(val) === '[object Arguments]';
       }
-    : HAS_ARGS.POLYFILL
+    : _HAS_ARGS.POLYFILL
       ? function isArguments(val) {
           return isObject(val) && 'callee' in val;
         }
       : function isArguments(val) {
           return false;
         };
+  /// #}}} @func isArguments
 
-  /// {{{5
-  /// @func isArrayOrArguments
+  /// #{{{ @func isArrayOrArguments
   /**
    * @param {*} val
    * @return {boolean}
    */
-  var isArrayOrArguments = HAS_ARGS.PRIMARY
+  var isArrayOrArguments = _HAS_ARGS.PRIMARY
     ? function isArrayOrArguments(val) {
 
         if ( !isObject(val) )
           return false;
 
-        switch ( _objToStr['call'](val) ) {
+        switch ( $objStr(val) ) {
           case '[object Array]':
           case '[object Arguments]':
             return true;
@@ -322,34 +273,29 @@ var $is = (function $isPrivateScope() {
             return false;
         }
       }
-    : HAS_ARGS.POLYFILL
+    : _HAS_ARGS.POLYFILL
       ? function isArrayOrArguments(val) {
           return isObject(val)
-            && (_objToStr['call'](val) === '[object Array]'
-                || 'callee' in val);
+            && ( $objStr(val) === '[object Array]' || 'callee' in val );
         }
       : function isArrayOrArguments(val) {
-          return isObject(val) && _objToStr['call'](val) === '[object Array]';
+          return isObject(val) && $objStr(val) === '[object Array]';
         };
+  /// #}}} @func isArrayOrArguments
+  /// #}}} @on ARGS_POLYFILL
 
-  /// }}}4
-  /// @close ARGS_POLYFILL_ON
-
-  /// @open ARGS_POLYFILL_OFF
-  /// {{{4 ARGS_POLYFILL_OFF
-
-  /// {{{5
-  /// @func isArguments
+  /// #{{{ @off ARGS_POLYFILL
+  /// #{{{ @func isArguments
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isArguments(val) {
-    return isObject(val) && _objToStr['call'](val) === '[object Arguments]';
+    return isObject(val) && $objStr(val) === '[object Arguments]';
   }
+  /// #}}} @func isArguments
 
-  /// {{{5
-  /// @func isArrayOrArguments
+  /// #{{{ @func isArrayOrArguments
   /**
    * @param {*} val
    * @return {boolean}
@@ -359,7 +305,7 @@ var $is = (function $isPrivateScope() {
     if ( !isObject(val) )
       return false;
 
-    switch ( _objToStr['call'](val) ) {
+    switch ( $objStr(val) ) {
       case '[object Array]':
       case '[object Arguments]':
         return true;
@@ -367,16 +313,14 @@ var $is = (function $isPrivateScope() {
         return false;
     }
   }
+  /// #}}} @func isArrayOrArguments
+  /// #}}} @off ARGS_POLYFILL
 
-  /// }}}4
-  /// @close ARGS_POLYFILL_OFF
+  /// #}}} @group JS-Objects
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - DOM OBJECTS
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group DOM-Objects
 
-  /// {{{4
-  /// @func isDomDocument
+  /// #{{{ @func isDomDocument
   /**
    * @param {*} val
    * @return {boolean}
@@ -384,9 +328,9 @@ var $is = (function $isPrivateScope() {
   function isDomDocument(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 9;
   }
+  /// #}}} @func isDomDocument
 
-  /// {{{4
-  /// @func isDomElement
+  /// #{{{ @func isDomElement
   /**
    * @param {*} val
    * @return {boolean}
@@ -394,36 +338,37 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
+  /// #}}} @func isDomElement
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - SPECIAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group DOM-Objects
 
-  /// {{{4
-  /// @func isEmpty
+  /// #{{{ @group Special
+
+  /// #{{{ @func isEmpty
   /**
-   * Checks if a value is considered empty. The definition of empty is defined
-   * as follows in order of priority (per #val data type):
-   * - *`null`*!$
-   *   `null` is considered empty.
-   * - *`undefined`*!$
-   *   `undefined` is considered empty.
-   * - *`number`*!$
-   *   Only `0` and `NaN` are considered empty.
-   * - *`string`*!$
-   *   Only `""` is considered empty.
-   * - *`boolean`*!$
-   *   Only `false` is considered empty.
-   * - *`function`*!$
-   *   The [length property][func-length] must be `0` to be considered empty.
-   * - *`!Array`*!$
-   *   The [length property][arr-length] must be `0` to be considered empty.
-   * - *`!Object`*!$
-   *   The `object` must [own][own] at least one property to be considered
-   *   empty.
-   * - *`*`*!$
-   *   All other data types are **not** considered empty.
-   *
+   * @description
+   *   Checks if a value is considered empty. The definition of empty is
+   *   defined as follows in order of priority (per the #val data type):
+   *   - *`null`*!$
+   *     `null` is considered empty.
+   *   - *`undefined`*!$
+   *     `undefined` is considered empty.
+   *   - *`number`*!$
+   *     Only `0` and `NaN` are considered empty.
+   *   - *`string`*!$
+   *     Only `""` is considered empty.
+   *   - *`boolean`*!$
+   *     Only `false` is considered empty.
+   *   - *`function`*!$
+   *     The [length property][func-length] must be `0` to be considered
+   *     empty.
+   *   - *`!Array`*!$
+   *     The [length property][arr-length] must be `0` to be considered empty.
+   *   - *`!Object`*!$
+   *     The `object` must [own][own] at least one property to be considered
+   *     empty.
+   *   - *`*`*!$
+   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -445,41 +390,41 @@ var $is = (function $isPrivateScope() {
       return false;
 
     // arrays
-    if (_objToStr['call'](val) === '[object Array]')
+    if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
     // remaining objects
     for (key in val) {
-      if ( _hasOwn['call'](val, key) )
+      if ( $own(val, key) )
         return false;
     }
     return true;
   }
+  /// #}}} @func isEmpty
 
-  /// {{{4
-  /// @const EOL
+  /// #{{{ @const _EOL
   /**
    * @private
    * @const {!RegExp}
    */
-  var EOL = /^(?:cr|lf|crlf)$/i;
+  var _EOL = /^(?:cr|lf|crlf)$/i;
+  /// #}}} @const _EOL
 
-  /// {{{4
-  /// @func isEndOfLine
+  /// #{{{ @func isEndOfLine
   /**
    * @param {string} val
    * @return {boolean}
    */
   function isEndOfLine(val) {
-    return EOL['test'](val);
+    return _EOL['test'](val);
   }
+  /// #}}} @func isEndOfLine
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - OBJECT STATES
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Special
 
-  /// {{{4
-  /// @func isExtensible
+  /// #{{{ @group Object-States
+
+  /// #{{{ @func isExtensible
   /**
    * @param {(!Object|!Function)} src
    * @return {boolean}
@@ -489,12 +434,12 @@ var $is = (function $isPrivateScope() {
     /** @type {!function(!Object): boolean} */
     var objectIsExtensible;
 
-    if ( !('isExtensible' in Object) || !isFunction(Object['isExtensible']) )
+    if ( !('isExtensible' in OBJ) || !isFunction(OBJ['isExtensible']) )
       return function isExtensible(src) {
         return false;
       };
 
-    objectIsExtensible = Object['isExtensible'];
+    objectIsExtensible = OBJ['isExtensible'];
 
     try {
       objectIsExtensible(function(){});
@@ -506,9 +451,9 @@ var $is = (function $isPrivateScope() {
       };
     }
   })();
+  /// #}}} @func isExtensible
 
-  /// {{{4
-  /// @func isFrozen
+  /// #{{{ @func isFrozen
   /**
    * @param {(!Object|!Function)} src
    * @return {boolean}
@@ -518,12 +463,12 @@ var $is = (function $isPrivateScope() {
     /** @type {!function(!Object): boolean} */
     var objectIsFrozen;
 
-    if ( !('isFrozen' in Object) || !isFunction(Object['isFrozen']) )
+    if ( !('isFrozen' in OBJ) || !isFunction(OBJ['isFrozen']) )
       return function isFrozen(src) {
         return false;
       };
 
-    objectIsFrozen = Object['isFrozen'];
+    objectIsFrozen = OBJ['isFrozen'];
 
     try {
       objectIsFrozen(function(){});
@@ -535,9 +480,9 @@ var $is = (function $isPrivateScope() {
       };
     }
   })();
+  /// #}}} @func isFrozen
 
-  /// {{{4
-  /// @func isSealed
+  /// #{{{ @func isSealed
   /**
    * @param {(!Object|!Function)} src
    * @return {boolean}
@@ -547,12 +492,12 @@ var $is = (function $isPrivateScope() {
     /** @type {!function(!Object): boolean} */
     var objectIsSealed;
 
-    if ( !('isSealed' in Object) || !isFunction(Object['isSealed']) )
+    if ( !('isSealed' in OBJ) || !isFunction(OBJ['isSealed']) )
       return function isSealed(src) {
         return false;
       };
 
-    objectIsSealed = Object['isSealed'];
+    objectIsSealed = OBJ['isSealed'];
 
     try {
       objectIsSealed(function(){});
@@ -564,13 +509,13 @@ var $is = (function $isPrivateScope() {
       };
     }
   })();
+  /// #}}} @func isSealed
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS METHODS - NUMBER STATES
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Object-States
 
-  /// {{{4
-  /// @func isWholeNumber
+  /// #{{{ @group Number-States
+
+  /// #{{{ @func isWholeNumber
   /**
    * @param {number} val
    * @return {boolean}
@@ -578,9 +523,9 @@ var $is = (function $isPrivateScope() {
   function isWholeNumber(val) {
     return !(val % 1);
   }
+  /// #}}} @func isWholeNumber
 
-  /// {{{4
-  /// @func isOddNumber
+  /// #{{{ @func isOddNumber
   /**
    * @param {number} val
    * @return {boolean}
@@ -588,9 +533,9 @@ var $is = (function $isPrivateScope() {
   function isOddNumber(val) {
     return !!(val % 2);
   }
+  /// #}}} @func isOddNumber
 
-  /// {{{4
-  /// @func isEvenNumber
+  /// #{{{ @func isEvenNumber
   /**
    * @param {number} val
    * @return {boolean}
@@ -598,18 +543,16 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
+  /// #}}} @func isEvenNumber
 
-  ///////////////////////////////////////////////////// {{{3
-  // $IS SETUP
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Number-States
 
-  /// {{{4
-  /// @const $IS
+  /// #{{{ @const $is
   /**
    * @const {!Object<string, !function>}
    * @struct
    */
-  var $IS = {
+  var $is = {
 
     // primitives
     nil:  isNull,
@@ -627,16 +570,16 @@ var $is = (function $isPrivateScope() {
     fun:  isFunction,
     arr:  isArray,
     _arr: isArrayOrArguments,
+    args: isArguments,
     regx: isRegExp,
     date: isDate,
     err:  isError,
-    args: isArguments,
 
     // dom objects
     doc:  isDomDocument,
     elem: isDomElement,
 
-    // miscellaneous
+    // special
     empty: isEmpty,
     eol:   isEndOfLine,
 
@@ -650,13 +593,10 @@ var $is = (function $isPrivateScope() {
     odd:   isOddNumber,
     even:  isEvenNumber
   };
-  /// }}}3
+  /// #}}} @const $is
 
-  // END OF PRIVATE SCOPE FOR $IS
-  return $IS;
+  return $is;
 })();
-/// }}}2
-
-module.exports = $is;
+/// #}}} @helper $is
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
