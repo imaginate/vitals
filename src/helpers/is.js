@@ -556,7 +556,7 @@ var $is = (function $isPrivateScope() {
 
     // primitives
     nil:  isNull,
-    none: isUndefined,
+    void: isUndefined,
     bool: isBoolean,
     str:  isString,
     _str: isNonEmptyString,
