@@ -12,7 +12,7 @@
 /// #{{{ @helper $own
 /**
  * @private
- * @param {(?Object|?Function)} source
+ * @param {(!Object|!Function)} source
  * @param {*} key
  * @return {boolean}
  */
@@ -26,12 +26,12 @@ var $own = (function $ownPrivateScope() {
   /**
    * @description
    *   A safe way to call [Object.prototype.hasOwnProperty][own].
-   * @param {(?Object|?Function)} source
+   * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
    */
   function $own(source, key) {
-    return !!source && _hasOwnProp['call'](source, key);
+    return _hasOwnProp['call'](source, key);
   }
   /// #}}} @func $own
 
