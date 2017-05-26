@@ -13,6 +13,7 @@
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var ARR_PROTO = ARR['prototype'];
 /// #}}} @constant ARR_PROTO
@@ -21,6 +22,7 @@ var ARR_PROTO = ARR['prototype'];
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var FUN_PROTO = FUN['prototype'];
 /// #}}} @constant FUN_PROTO
@@ -29,6 +31,7 @@ var FUN_PROTO = FUN['prototype'];
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var NUM_PROTO = NUM['prototype'];
 /// #}}} @constant NUM_PROTO
@@ -37,6 +40,7 @@ var NUM_PROTO = NUM['prototype'];
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var OBJ_PROTO = OBJ['prototype'];
 /// #}}} @constant OBJ_PROTO
@@ -45,6 +49,7 @@ var OBJ_PROTO = OBJ['prototype'];
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var STR_PROTO = STR['prototype'];
 /// #}}} @constant STR_PROTO
@@ -53,6 +58,7 @@ var STR_PROTO = STR['prototype'];
 /**
  * @private
  * @const {!Object}
+ * @dict
  */
 var REGX_PROTO = REGX['prototype'];
 /// #}}} @constant REGX_PROTO
