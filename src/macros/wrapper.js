@@ -14,12 +14,18 @@
 ;(function(/** (?Object|?Function|undefined) */ __THIS,
            /** undefined */ __VOID) {
 
+  /// #{{{ @on USE_STRICT
+  'use strict';
+
+  /// #}}} @on USE_STRICT
+  /// #{{{ @off SOLO
   /**
    * @type {(!Object|!Function)}
    * @dict
    */
   var vitals = {};
 
+  /// #}}} @off SOLO
 /// #}}} @macro OPEN_WRAPPER
 
 /// #{{{ @macro CLOSE_WRAPPER
