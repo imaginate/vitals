@@ -22,7 +22,7 @@ var NIL = null;
  * @private
  * @const {undefined}
  */
-var VOID = (function(){})();
+var VOID = __VOID;
 /// #}}} @constant VOID
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
