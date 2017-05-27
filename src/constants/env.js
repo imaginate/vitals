@@ -23,14 +23,14 @@ var ENV = (function ENV_PrivateScope() {
   /**
    * @const {boolean}
    */
-  var HAS_EXPORTS = _isValidType(typeof exports) && _isValidNode(exports);
+  var HAS_EXPORTS = _isObjFun(typeof exports) && _isValidNode(exports);
   /// #}}} @const HAS_EXPORTS
 
   /// #{{{ @const HAS_MODULE
   /**
    * @const {boolean}
    */
-  var HAS_MODULE = _isValidType(typeof module) && _isValidNode(module);
+  var HAS_MODULE = _isObjFun(typeof module) && _isValidNode(module);
   /// #}}} @const HAS_MODULE
 
   /// #{{{ @const HAS_GLOBAL
@@ -39,7 +39,7 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_GLOBAL = HAS_EXPORTS
     && HAS_MODULE
-    && _isValidType(typeof global, true)
+    && _isObj(typeof global)
     && _isValidRoot(global);
   /// #}}} @const HAS_GLOBAL
 
@@ -47,21 +47,30 @@ var ENV = (function ENV_PrivateScope() {
   /**
    * @const {boolean}
    */
-  var HAS_WINDOW = _isValidType(typeof window) && _isValidRoot(window);
+  var HAS_WINDOW = _isObjFun(typeof window) && _isValidRoot(window);
   /// #}}} @const HAS_WINDOW
+
+  /// #{{{ @const HAS_DEFINE
+  /**
+   * @const {boolean}
+   */
+  var HAS_DEFINE = _isFun(typeof define)
+    && 'amd' in define
+    && _isObj(typeof define['amd']);
+  /// #}}} @const HAS_DEFINE
 
   /// #{{{ @const HAS_SELF
   /**
    * @const {boolean}
    */
-  var HAS_SELF = _isValidType(typeof self) && _isValidRoot(self);
+  var HAS_SELF = _isObjFun(typeof self) && _isValidRoot(self);
   /// #}}} @const HAS_SELF
 
   /// #{{{ @const HAS_THIS
   /**
    * @const {boolean}
    */
-  var HAS_THIS = _isValidType(typeof __THIS) && _isValidRoot(__THIS);
+  var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
   /// #}}} @const HAS_THIS
 
   /// #}}} @group Checks
@@ -84,23 +93,43 @@ var ENV = (function ENV_PrivateScope() {
 
   /// #{{{ @group Helpers
 
-  /// #{{{ @func _isValidType
+  /// #{{{ @func _isObj
   /**
    * @private
    * @param {string} typeOf
-   * @param {boolean=} noFunc
    * @return {boolean}
    */
-  function _isValidType(typeOf, noFunc) {
+  function _isObj(typeOf) {
+    return typeOf === 'object';
+  }
+  /// #}}} @func _isObj
+
+  /// #{{{ @func _isFun
+  /**
+   * @private
+   * @param {string} typeOf
+   * @return {boolean}
+   */
+  function _isFun(typeOf) {
+    return typeOf === 'function';
+  }
+  /// #}}} @func _isFun
+
+  /// #{{{ @func _isObjFun
+  /**
+   * @private
+   * @param {string} typeOf
+   * @return {boolean}
+   */
+  function _isObjFun(typeOf) {
     switch (typeOf) {
       case 'object':
-        return true;
       case 'function':
-        return !noFunc;
+        return true;
     }
     return false;
   }
-  /// #}}} @func _isValidType
+  /// #}}} @func _isObjFun
 
   /// #{{{ @func _isValidRoot
   /**
@@ -136,6 +165,7 @@ var ENV = (function ENV_PrivateScope() {
     HAS_MODULE: HAS_MODULE,
     HAS_GLOBAL: HAS_GLOBAL,
     HAS_WINDOW: HAS_WINDOW,
+    HAS_DEFINE: HAS_DEFINE,
     HAS_SELF: HAS_SELF,
     HAS_THIS: HAS_THIS,
     ROOT: ROOT
