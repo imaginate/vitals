@@ -17,6 +17,8 @@
  */
 
 /// #{{{ @core constants
+/// #include @constant ENV ../constants/env.js
+/// #include @constant ROOT ../constants/env.js
 /// #include @constant ARR ../constants/constructor.js
 /// #include @constant ARR_PROTO ../constants/prototype.js
 /// #include @constant FUN ../constants/constructor.js

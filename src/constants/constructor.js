@@ -15,7 +15,7 @@
  * @const {!Function}
  * @constructor
  */
-var ARR = Array;
+var ARR = ROOT['Array'];
 /// #}}} @constant ARR
 
 /// #{{{ @constant FUN
@@ -24,7 +24,7 @@ var ARR = Array;
  * @const {!Function}
  * @constructor
  */
-var FUN = Function;
+var FUN = ROOT['Function'];
 /// #}}} @constant FUN
 
 /// #{{{ @constant NUM
@@ -33,7 +33,7 @@ var FUN = Function;
  * @const {!Function}
  * @constructor
  */
-var NUM = Number;
+var NUM = ROOT['Number'];
 /// #}}} @constant NUM
 
 /// #{{{ @constant OBJ
@@ -42,7 +42,7 @@ var NUM = Number;
  * @const {!Function}
  * @constructor
  */
-var OBJ = Object;
+var OBJ = ROOT['Object'];
 /// #}}} @constant OBJ
 
 /// #{{{ @constant STR
@@ -51,7 +51,7 @@ var OBJ = Object;
  * @const {!Function}
  * @constructor
  */
-var STR = String;
+var STR = ROOT['String'];
 /// #}}} @constant STR
 
 /// #{{{ @constant REGX
@@ -60,7 +60,7 @@ var STR = String;
  * @const {!Function}
  * @constructor
  */
-var REGX = RegExp;
+var REGX = ROOT['RegExp'];
 /// #}}} @constant REGX
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
