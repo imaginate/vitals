@@ -18,6 +18,15 @@
 var ARR = ROOT['Array'];
 /// #}}} @constant ARR
 
+/// #{{{ @constant ERR
+/**
+ * @private
+ * @const {!Function}
+ * @constructor
+ */
+var ERR = ROOT['Error'];
+/// #}}} @constant ERR
+
 /// #{{{ @constant FUN
 /**
  * @private
@@ -45,6 +54,15 @@ var NUM = ROOT['Number'];
 var OBJ = ROOT['Object'];
 /// #}}} @constant OBJ
 
+/// #{{{ @constant RANGE_ERR
+/**
+ * @private
+ * @const {!Function}
+ * @constructor
+ */
+var RANGE_ERR = ROOT['RangeError'];
+/// #}}} @constant RANGE_ERR
+
 /// #{{{ @constant STR
 /**
  * @private
@@ -53,6 +71,15 @@ var OBJ = ROOT['Object'];
  */
 var STR = ROOT['String'];
 /// #}}} @constant STR
+
+/// #{{{ @constant TYPE_ERR
+/**
+ * @private
+ * @const {!Function}
+ * @constructor
+ */
+var TYPE_ERR = ROOT['TypeError'];
+/// #}}} @constant TYPE_ERR
 
 /// #{{{ @constant REGX
 /**

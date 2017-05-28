@@ -21,6 +21,7 @@
 /// #include @constant ROOT ../constants/env.js
 /// #include @constant ARR ../constants/constructor.js
 /// #include @constant ARR_PROTO ../constants/prototype.js
+/// #include @constant ERR ../constants/constructor.js
 /// #include @constant FUN ../constants/constructor.js
 /// #include @constant FUN_PROTO ../constants/prototype.js
 /// #include @constant NIL ../constants/special.js
@@ -28,8 +29,10 @@
 /// #include @constant NUM_PROTO ../constants/prototype.js
 /// #include @constant OBJ ../constants/constructor.js
 /// #include @constant OBJ_PROTO ../constants/prototype.js
+/// #include @constant RANGE_ERR ../constants/constructor.js
 /// #include @constant STR ../constants/constructor.js
 /// #include @constant STR_PROTO ../constants/prototype.js
+/// #include @constant TYPE_ERR ../constants/constructor.js
 /// #include @constant REGX ../constants/constructor.js
 /// #include @constant REGX_PROTO ../constants/prototype.js
 /// #include @constant VOID ../constants/special.js
