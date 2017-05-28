@@ -344,6 +344,24 @@ var $is = (function $isPrivateScope() {
 
   /// #{{{ @group Special
 
+  /// #{{{ @func isArrayLike
+  /**
+   * @param {(!Array|!Arguments|!Object|!Function)} val
+   * @return {boolean}
+   */
+  function isArrayLike(val) {
+
+    /** @type {number} */
+    var len;
+
+    if ( isArray(val) )
+      return true;
+
+    len = val['length'];
+    return isNumber(len) && isWholeNumber(len) && len >= 0;
+  }
+  /// #}}} @func isArrayLike
+
   /// #{{{ @func isEmpty
   /**
    * @description
@@ -580,8 +598,9 @@ var $is = (function $isPrivateScope() {
     elem: isDomElement,
 
     // special
-    empty: isEmpty,
-    eol:   isEndOfLine,
+    arrish: isArrayLike,
+    empty:  isEmpty,
+    eol:    isEndOfLine,
 
     // object states
     extend: isExtensible,
