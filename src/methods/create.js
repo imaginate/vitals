@@ -36,6 +36,7 @@ var create = (function createPrivateScope() {
   /// #}}} @docrefs create
 
   /// #{{{ @submethod main
+  /// @section strict
   /// @method vitals.create
   /**
    * @description
@@ -79,6 +80,7 @@ var create = (function createPrivateScope() {
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// @section strict
   /// @method vitals.create.object
   /// @alias vitals.create.obj
   /**

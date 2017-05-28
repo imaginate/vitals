@@ -36,6 +36,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @docrefs amend
 
   /// #{{{ @submethod main
+  /// @section strict
   /// @method vitals.amend
   /**
    * @description
@@ -271,6 +272,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @submethod main
 
   /// #{{{ @submethod config
+  /// @section strict
   /// @method vitals.amend.config
   /**
    * @description
@@ -361,6 +363,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @submethod config
 
   /// #{{{ @submethod property
+  /// @section strict
   /// @method vitals.amend.property
   /// @alias vitals.amend.prop
   /**
@@ -485,6 +488,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @submethod property
 
   /// #{{{ @submethod property.config
+  /// @section strict
   /// @method vitals.amend.property.config
   /// @alias vitals.amend.prop.config
   /**
@@ -528,6 +532,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @submethod property.config
 
   /// #{{{ @submethod properties
+  /// @section strict
   /// @method vitals.amend.properties
   /// @alias vitals.amend.props
   /**
@@ -775,6 +780,7 @@ var amend = (function amendPrivateScope() {
   /// #}}} @submethod properties
 
   /// #{{{ @submethod properties.config
+  /// @section strict
   /// @method vitals.amend.properties.config
   /// @alias vitals.amend.props.config
   /**
