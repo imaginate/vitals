@@ -36,6 +36,10 @@
 /// #include @constant STR_PROTO ../constants/prototype.js
 /// #include @constant TYPE_ERR ../constants/constructor.js
 /// #include @constant VOID ../constants/special.js
+/// #{{{ @on NODE
+/// #include @constant CP ../constants/node.js
+/// #include @constant FS ../constants/node.js
+/// #}}} @on NODE
 /// #}}} @core constants
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
