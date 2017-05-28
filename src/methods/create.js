@@ -10,17 +10,19 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
+/// #include @helper $sliceArr ../helpers/slice-arr.js
+/// #include @helper $splitKeys ../helpers/split-keys.js
+/// #include @super is ./is.js
+/// #include @super amend ./amend.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $sliceArr = require('./helpers/slice-arr.js');
-var $is = require('./helpers/is.js');
-var amend = require('./amend.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.CREATE
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super create
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -28,26 +30,20 @@ var amend = require('./amend.js');
  */
 var create = (function createPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - create
-  // - create.object (create.obj)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs create
+  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+  /// @docref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
+  /// #}}} @docrefs create
 
-  /* {{{2 Create References
-   * @ref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
-   * @ref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
-   */
-
-  /// {{{2
-  /// @method create
+  /// #{{{ @submethod main
+  /// @method vitals.create
   /**
-   * A shortcut for [Object.create][create] that includes easier property
-   * value assignment, strong type declarations, and flexible default
-   * [descriptor][descriptor] options. Note that this method uses @amend#main
-   * for assigning properties to the new `object`. See @amend#main for
-   * detailed documentation on all of the available options.
-   *
+   * @description
+   *   A shortcut for [Object.create][create] that includes easier property
+   *   value assignment, strong type declarations, and flexible default
+   *   [descriptor][descriptor] options. Note that this method uses
+   *   @amend#main for assigning properties to the new `object`. See
+   *   @amend#main for detailed documentation on all of the available options.
    * @public
    * @param {?Object} proto
    * @param {(!Object<string, *>|!Array<string>|string)} props
@@ -62,28 +58,36 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
-    if ( !$is.nil(proto) && !$is.obj(proto) )
-      throw $typeErr(new TypeError, 'proto', proto, '?Object');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #proto defined');
 
-    if (arguments['length'] > 1) {
-      args = $sliceArr(arguments);
-      args[0] = _ObjectCreate(proto);
-      return amend['apply'](null, args);
+      case 1:
+        if ( !$is.nil(proto) && !$is.obj(proto) )
+          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
+
+        return _create(proto);
     }
 
-    return _ObjectCreate(proto);
-  }
+    if ( !$is.nil(proto) && !$is.obj(proto) )
+      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
 
-  /// {{{2
-  /// @method create.object
-  /// @alias create.obj
+    args = $sliceArr(arguments);
+    args[0] = _create(proto);
+    return amend['apply'](NIL, args);
+  }
+  /// #}}} @submethod main
+
+  /// #{{{ @submethod object
+  /// @method vitals.create.object
+  /// @alias vitals.create.obj
   /**
-   * A shortcut for [Object.create][create] that includes easier property
-   * value assignment, strong type declarations, and flexible default
-   * [descriptor][descriptor] options. Note that this method uses @amend#main
-   * for assigning properties to the new `object`. See @amend#main for
-   * detailed documentation on all of the available options.
-   *
+   * @description
+   *   A shortcut for [Object.create][create] that includes easier property
+   *   value assignment, strong type declarations, and flexible default
+   *   [descriptor][descriptor] options. Note that this method uses
+   *   @amend#main for assigning properties to the new `object`. See
+   *   @amend#main for detailed documentation on all of the available options.
    * @public
    * @param {?Object} proto
    * @param {(!Object<string, *>|!Array<string>|string)} props
@@ -98,26 +102,33 @@ var create = (function createPrivateScope() {
     /** @type {!Array} */
     var args;
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #proto defined', 'object');
+
+      case 1:
+        if ( !$is.nil(proto) && !$is.obj(proto) )
+          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
+
+        return _create(proto);
+    }
+
     if ( !$is.nil(proto) && !$is.obj(proto) )
-      throw $typeErr(new TypeError, 'proto', proto, '?Object', 'object');
+      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
 
-    if (arguments['length'] > 1) {
-      args = $sliceArr(arguments);
-      args[0] = _ObjectCreate(proto);
-      return amend['apply'](null, args);
-    } 
-
-    return _ObjectCreate(proto);
+    args = $sliceArr(arguments);
+    args[0] = _create(proto);
+    return amend['apply'](NIL, args);
   }
   create['object'] = createObject;
   create['obj'] = createObject;
+  /// #}}} @submethod object
 
-  ///////////////////////////////////////////////////// {{{2
-  // CREATE HELPERS - OBJECT.CREATE POLYFILL
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Create-Helpers
 
-  /// {{{3
-  /// @func _ObjectCreate
+  /// #{{{ @group Create-Polyfills
+
+  /// #{{{ @func _ObjectCreate
   /**
    * @private
    * @param {?Object} proto
@@ -125,15 +136,18 @@ var create = (function createPrivateScope() {
    */
   var _ObjectCreate = (function _ObjectCreatePolyfillPrivateScope() {
 
-    if ( ('create' in Object) && $is.fun(Object['create']) )
-      return Object['create'];
+    if ( 'create' in OBJ && $is.fun(OBJ['create']) )
+      return OBJ['create'];
 
+    /// #{{{ @func _Object
     /**
      * @private
      * @constructor
      */
     function _Object(){}
+    /// #}}} @func _Object
 
+    /// #{{{ @func ObjectCreate
     /**
      * @param {?Object} proto
      * @return {!Object}
@@ -145,70 +159,58 @@ var create = (function createPrivateScope() {
 
       _Object['prototype'] = proto;
       obj = new _Object();
-      _Object['prototype'] = null;
+      _Object['prototype'] = NIL;
       return obj;
     }
+    /// #}}} @func ObjectCreate
 
     return ObjectCreate;
   })();
+  /// #}}} @func _ObjectCreate
 
-  ///////////////////////////////////////////////////// {{{2
-  // CREATE HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Create-Polyfills
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _create
+  /**
+   * @private
+   * @param {?Object} proto
+   * @return {!Object}
+   */
+  var _create = _ObjectCreate;
+  /// #}}} @func _create
+
+  /// #}}} @group Main-Helpers
+
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('create');
+  var _MK_ERR = $mkErrs('create');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Create-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.CREATE
   return create;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['create'] = create;
+/// #}}} @off SOLO
+/// #}}} @super create
 
-module.exports = create;
+/// #{{{ @on SOLO
+var vitals = create;
+vitals['create'] = create;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
