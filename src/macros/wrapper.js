@@ -10,7 +10,6 @@
  */
 
 /// #{{{ @macro OPEN_WRAPPER
-/// #{{{ @group vitals
 ;(function(/** (?Object|?Function|undefined) */ __THIS,
            /** undefined */ __VOID) {
 
@@ -20,6 +19,7 @@
   /// #}}} @on USE_STRICT
   /// #{{{ @off SOLO
   /**
+   * @public
    * @type {(!Object|!Function)}
    * @dict
    */
@@ -30,7 +30,6 @@
 
 /// #{{{ @macro CLOSE_WRAPPER
 })(this);
-/// #}}} @group vitals
 /// #}}} @macro CLOSE_WRAPPER
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
