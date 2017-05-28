@@ -10,7 +10,8 @@
  */
 
 /// #{{{ @macro MK_ERR
-  /// #{{{ @func $err
+
+  /// #{{{ @func _mkErr
   /**
    * @private
    * @param {!Error} err
@@ -18,10 +19,10 @@
    * @param {string=} method
    * @return {!Error} 
    */
-  var $err = MK_ERR.error;
-  /// #}}} @func $err
+  var _mkErr = _MK_ERR.error;
+  /// #}}} @func _mkErr
 
-  /// #{{{ @func $typeErr
+  /// #{{{ @func _mkTypeErr
   /**
    * @private
    * @param {!TypeError} err
@@ -31,10 +32,10 @@
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var $typeErr = MK_ERR.typeError;
-  /// #}}} @func $typeErr
+  var _mkTypeErr = _MK_ERR.typeError;
+  /// #}}} @func _mkTypeErr
 
-  /// #{{{ @func $rangeErr
+  /// #{{{ @func _mkRangeErr
   /**
    * @private
    * @param {!RangeError} err
@@ -45,8 +46,8 @@
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var $rangeErr = MK_ERR.rangeError;
-  /// #}}} @func $rangeErr
+  var _mkRangeErr = _MK_ERR.rangeError;
+  /// #}}} @func _mkRangeErr
 /// #}}} @macro MK_ERR
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
