@@ -45,15 +45,6 @@ var NUM_PROTO = NUM['prototype'];
 var OBJ_PROTO = OBJ['prototype'];
 /// #}}} @constant OBJ_PROTO
 
-/// #{{{ @constant STR_PROTO
-/**
- * @private
- * @const {!Object}
- * @dict
- */
-var STR_PROTO = STR['prototype'];
-/// #}}} @constant STR_PROTO
-
 /// #{{{ @constant REGX_PROTO
 /**
  * @private
@@ -62,5 +53,14 @@ var STR_PROTO = STR['prototype'];
  */
 var REGX_PROTO = REGX['prototype'];
 /// #}}} @constant REGX_PROTO
+
+/// #{{{ @constant STR_PROTO
+/**
+ * @private
+ * @const {!Object}
+ * @dict
+ */
+var STR_PROTO = STR['prototype'];
+/// #}}} @constant STR_PROTO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

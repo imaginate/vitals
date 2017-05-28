@@ -63,6 +63,15 @@ var OBJ = ROOT['Object'];
 var RANGE_ERR = ROOT['RangeError'];
 /// #}}} @constant RANGE_ERR
 
+/// #{{{ @constant REGX
+/**
+ * @private
+ * @const {!Function}
+ * @constructor
+ */
+var REGX = ROOT['RegExp'];
+/// #}}} @constant REGX
+
 /// #{{{ @constant STR
 /**
  * @private
@@ -80,14 +89,5 @@ var STR = ROOT['String'];
  */
 var TYPE_ERR = ROOT['TypeError'];
 /// #}}} @constant TYPE_ERR
-
-/// #{{{ @constant REGX
-/**
- * @private
- * @const {!Function}
- * @constructor
- */
-var REGX = ROOT['RegExp'];
-/// #}}} @constant REGX
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

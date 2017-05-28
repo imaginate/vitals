@@ -30,11 +30,11 @@
 /// #include @constant OBJ ../constants/constructor.js
 /// #include @constant OBJ_PROTO ../constants/prototype.js
 /// #include @constant RANGE_ERR ../constants/constructor.js
+/// #include @constant REGX ../constants/constructor.js
+/// #include @constant REGX_PROTO ../constants/prototype.js
 /// #include @constant STR ../constants/constructor.js
 /// #include @constant STR_PROTO ../constants/prototype.js
 /// #include @constant TYPE_ERR ../constants/constructor.js
-/// #include @constant REGX ../constants/constructor.js
-/// #include @constant REGX_PROTO ../constants/prototype.js
 /// #include @constant VOID ../constants/special.js
 /// #}}} @core constants
 
