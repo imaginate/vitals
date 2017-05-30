@@ -10,16 +10,13 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.FREEZE
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super freeze
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -27,23 +24,18 @@ var $is = require('./helpers/is.js');
  */
 var freeze = (function freezePrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - freeze
-  // - freeze.object (freeze.obj)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs freeze
+  /// @docref [freeze]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+  /// #}}} @docrefs freeze
 
-  /* {{{2 Freeze References
-   * @ref [freeze]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
-   */
-
-  /// {{{2
-  /// @method freeze
+  /// #{{{ @submethod main
+  /// @section strict
+  /// @method vitals.freeze
   /**
-   * [Freezes][freeze] an `object` or `function` with the option to
-   * recursively [freeze][freeze] its properties. Note that incompatible
-   * interpreters are polyfilled to avoid failures in older environments.
-   *
+   * @description
+   *   [Freezes][freeze] an `object` or `function` with the option to
+   *   recursively [freeze][freeze] its properties. Note that incompatible
+   *   interpreters are polyfilled to avoid failures in older environments.
    * @public
    * @param {(?Object|?Function)} obj
    * @param {boolean=} deep
@@ -54,41 +46,43 @@ var freeze = (function freezePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #obj defined');
+        throw _mkErr(new ERR, 'no #obj defined');
 
       case 1:
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function');
 
         return _freeze(obj);
 
       default:
-        if ( !$is.none(deep) && !$is.bool(deep) )
-          throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=');
 
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function');
 
         return deep
           ? _deepFreeze(obj)
           : _freeze(obj);
     }
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method freeze.object
-  /// @alias freeze.obj
+  /// #{{{ @submethod object
+  /// @section strict
+  /// @method vitals.freeze.object
+  /// @alias vitals.freeze.obj
   /**
-   * [Freezes][freeze] an `object` or `function` with the option to
-   * recursively [freeze][freeze] its properties. Note that incompatible
-   * interpreters are polyfilled to avoid failures in older environments.
-   *
+   * @description
+   *   [Freezes][freeze] an `object` or `function` with the option to
+   *   recursively [freeze][freeze] its properties. Note that incompatible
+   *   interpreters are polyfilled to avoid failures in older environments.
    * @public
    * @param {(?Object|?Function)} obj
    * @param {boolean=} deep
@@ -99,27 +93,27 @@ var freeze = (function freezePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #obj defined', 'object');
+        throw _mkErr(new ERR, 'no #obj defined', 'object');
 
       case 1:
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function',
             'object');
 
         return _freeze(obj);
 
       default:
-        if ( !$is.none(deep) && !$is.bool(deep) )
-          throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'object');
 
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function',
             'object');
 
         return deep
@@ -129,13 +123,13 @@ var freeze = (function freezePrivateScope() {
   }
   freeze['object'] = freezeObject;
   freeze['obj'] = freezeObject;
+  /// #}}} @submethod object
 
-  ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - OBJECT.FREEZE POLYFILL
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Freeze-Helpers
 
-  /// {{{3
-  /// @func _ObjectFreeze
+  /// #{{{ @group Freeze-Polyfills
+
+  /// #{{{ @func _ObjectFreeze
   /**
    * @private
    * @param {(!Object|!Function)} obj
@@ -146,12 +140,12 @@ var freeze = (function freezePrivateScope() {
     /** @type {!function} */
     var objectFreeze;
 
-    if ( !('freeze' in Object) || !$is.fun(Object['freeze']) )
+    if ( !('freeze' in OBJ) || !$is.fun(OBJ['freeze']) )
       return function freeze(obj) {
         return obj;
       };
 
-    objectFreeze = Object['freeze'];
+    objectFreeze = OBJ['freeze'];
 
     try {
       objectFreeze(function(){});
@@ -165,22 +159,22 @@ var freeze = (function freezePrivateScope() {
       };
     }
   })();
+  /// #}}} @func _ObjectFreeze
 
-  ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Freeze-Polyfills
 
-  /// {{{3
-  /// @func _freeze
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _freeze
   /**
    * @private
    * @param {(!Object|!Function)} obj
    * @return {(!Object|!Function)}
    */
   var _freeze = _ObjectFreeze;
+  /// #}}} @func _freeze
 
-  /// {{{3
-  /// @func _deepFreeze
+  /// #{{{ @func _deepFreeze
   /**
    * @private
    * @param {(!Object|!Function)} obj
@@ -198,64 +192,38 @@ var freeze = (function freezePrivateScope() {
 
     return _freeze(obj);
   }
+  /// #}}} @func _deepFreeze
 
-  ///////////////////////////////////////////////////// {{{2
-  // FREEZE HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('freeze');
+  var _MK_ERR = $mkErrs('freeze');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Freeze-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.FREEZE
   return freeze;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['freeze'] = freeze;
+/// #}}} @off SOLO
+/// #}}} @super freeze
 
-module.exports = freeze;
+/// #{{{ @on SOLO
+var vitals = freeze;
+vitals['freeze'] = freeze;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
