@@ -10,18 +10,17 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $match ../helpers/match.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @super copy ./copy.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $match = require('./helpers/match.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.GET
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super get
 /**
  * @public
  * @type {!Function<string, !Function>}
@@ -29,30 +28,21 @@ var copy = require('./copy.js');
  */
 var get = (function getPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - get
-  // - get.keys
-  // - get.keys.byKey
-  // - get.keys.byValue (get.keys.byVal)
-  // - get.indexes      (get.ii)
-  // - get.values       (get.vals)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs get
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+  /// @docref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+  /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// #}}} @docrefs get
 
-  /* {{{2 Get References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
-   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
-   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-   */
-
-  /// {{{2
-  /// @method get
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.get
   /**
-   * Retrieves keys and values from an `object` or `function`, indexes and
-   * values from an `array` or `arguments` instance, or indexes and substrings
-   * from a `string`.
-   *
+   * @description
+   *   Retrieves keys and values from an `object` or `function`, indexes and
+   *   values from an `array` or `arguments` instance, or indexes and
+   *   substrings from a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
    *   If no #val is defined, the following rules apply in order of priority
@@ -89,14 +79,14 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
 
       case 1:
         if ( $is.str(source) )
-          throw $err(new Error, 'no #val defined');
+          throw _mkErr(new ERR, 'no #val defined');
 
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments|string');
 
         return $is._arr(source)
@@ -110,7 +100,7 @@ var get = (function getPrivateScope() {
             : _strIndexes(source, val);
 
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments|string');
 
         return $is._arr(source)
@@ -120,12 +110,14 @@ var get = (function getPrivateScope() {
             : _byValKeys(source, val);
     }
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method get.keys
+  /// #{{{ @submethod keys
+  /// @section base
+  /// @method vitals.get.keys
   /**
-   * Retrieves keys from an `object` or `function`.
-   *
+   * @description
+   *   Retrieves keys from an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} source
    *   If no #val is defined, this method returns an `array` of all of the
@@ -142,19 +134,19 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'keys');
+        throw _mkErr(new ERR, 'no #source defined', 'keys');
 
       case 1:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'keys');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'keys');
 
         return _allKeys(source);
 
       default:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'keys');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'keys');
 
         return $is.regx(val)
           ? _byKeyKeys(source, val)
@@ -162,14 +154,16 @@ var get = (function getPrivateScope() {
     }
   }
   get['keys'] = getKeys;
+  /// #}}} @submethod keys
 
-  /// {{{2
-  /// @method get.keys.byKey
+  /// #{{{ @submethod keys.byKey
+  /// @section base
+  /// @method vitals.get.keys.byKey
   /**
-   * Retrieves [owned][own] property key names from an `object` or `function`
-   * that have a matching key name. Note that @has#pattern is used to find key
-   * name matches.
-   *
+   * @description
+   *   Retrieves [owned][own] property key names from an `object` or
+   *   `function` that have a matching key name. Note that @has#pattern is
+   *   used to find key name matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} key
@@ -182,29 +176,31 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'keys.byKey');
+        throw _mkErr(new ERR, 'no #source defined', 'keys.byKey');
 
       case 1:
-        throw $err(new Error, 'no #key defined', 'keys.byKey');
+        throw _mkErr(new ERR, 'no #key defined', 'keys.byKey');
 
       default:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'keys.byKey');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'keys.byKey');
 
         return _byKeyKeys(source, key);
     }
   }
   get['keys']['byKey'] = getKeysByKey;
+  /// #}}} @submethod keys.byKey
 
-  /// {{{2
-  /// @method get.keys.byValue
-  /// @alias get.keys.byVal
+  /// #{{{ @submethod keys.byValue
+  /// @section base
+  /// @method vitals.get.keys.byValue
+  /// @alias vitals.get.keys.byVal
   /**
-   * Retrieves [owned][own] property key names from an `object` or `function`
-   * that have a matching property value. Note that a [strict equality][equal]
-   * test is used to find matches.
-   *
+   * @description
+   *   Retrieves [owned][own] property key names from an `object` or
+   *   `function` that have a matching property value. Note that a
+   *   [strict equality][equal] test is used to find matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} val
@@ -214,29 +210,31 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'keys.byValue');
+        throw _mkErr(new ERR, 'no #source defined', 'keys.byValue');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'keys.byValue');
+        throw _mkErr(new ERR, 'no #val defined', 'keys.byValue');
 
       default:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'keys.byValue');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'keys.byValue');
 
         return _byValKeys(source, val);
     }
   }
   get['keys']['byValue'] = getKeysByValue;
   get['keys']['byVal'] = getKeysByValue;
+  /// #}}} @submethod keys.byValue
 
-  /// {{{2
-  /// @method get.indexes
-  /// @alias get.ii
+  /// #{{{ @submethod indexes
+  /// @section base
+  /// @method vitals.get.indexes
+  /// @alias vitals.get.ii
   /**
-   * Retrieves property indexes from an `array`, array-like `object`, or
-   * `string`.
-   *
+   * @description
+   *   Retrieves property indexes from an `array`, array-like `object`, or
+   *   `string`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
    *   If no #val is defined, the following rules apply (per #source type):
@@ -264,23 +262,18 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'indexes');
+        throw _mkErr(new ERR, 'no #source defined', 'indexes');
 
       case 1:
         if ( $is.str(source) )
-          throw $err(new Error, 'no #val defined', 'indexes');
+          throw _mkErr(new ERR, 'no #val defined', 'indexes');
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function|string', 'indexes');
-
-        len = source['length'];
-
-        if ( !$is.num(len) )
-          throw $typeErr(new TypeError, 'source.length', len, 'number',
+        if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)',
             'indexes');
-        if ( !$is.whole(len) || len < 0 )
-          throw $err(new Error, 'invalid #source.length `number` (' +
-            'must be `0` or a positive whole `number`)', 'indexes');
 
         return _allIndexes(source);
 
@@ -289,31 +282,28 @@ var get = (function getPrivateScope() {
           return _strIndexes(source, val);
 
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function|string', 'indexes');
-
-        len = source['length'];
-
-        if ( !$is.num(len) )
-          throw $typeErr(new TypeError, 'source.length', len, 'number',
+        if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)',
             'indexes');
-        if ( !$is.whole(len) || len < 0 )
-          throw $err(new Error, 'invalid #source.length `number` (' +
-            'must be `0` or a positive whole `number`)', 'indexes');
 
         return _byValIndexes(source, val);
     }
   }
   get['indexes'] = getIndexes;
   get['ii'] = getIndexes;
+  /// #}}} @submethod indexes
 
-  /// {{{2
-  /// @method get.values
-  /// @alias get.vals
+  /// #{{{ @submethod values
+  /// @section base
+  /// @method vitals.get.values
+  /// @alias vitals.get.vals
   /**
-   * Retrieves property values from an `object` or `function` and substrings
-   * from a `string`.
-   *
+   * @description
+   *   Retrieves property values from an `object` or `function` and substrings
+   *   from a `string`.
    * @public
    * @param {(!Object|!Function|string)} source
    *   If no #val is defined, the following rules apply (per #source type):
@@ -340,13 +330,13 @@ var get = (function getPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'values');
+        throw _mkErr(new ERR, 'no #source defined', 'values');
 
       case 1:
         if ( $is.str(source) )
-          throw $err(new Error, 'no #val defined', 'values');
+          throw _mkErr(new ERR, 'no #val defined', 'values');
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Object|!Function|string', 'values');
 
         return _allObjVals(source);
@@ -356,7 +346,7 @@ var get = (function getPrivateScope() {
           return _strVals(source, val);
 
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Object|!Function|string', 'values');
 
         return _byKeyObjVals(source, val);
@@ -364,13 +354,13 @@ var get = (function getPrivateScope() {
   }
   get['values'] = getValues;
   get['vals'] = getValues;
+  /// #}}} @submethod values
 
-  ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - OBJECT
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Get-Helpers
 
-  /// {{{3
-  /// @func _allKeys
+  /// #{{{ @group Object-Helpers
+
+  /// #{{{ @func _allKeys
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -390,9 +380,9 @@ var get = (function getPrivateScope() {
     }
     return keys;
   }
+  /// #}}} @func _allKeys
 
-  /// {{{3
-  /// @func _byKeyKeys
+  /// #{{{ @func _byKeyKeys
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -406,8 +396,8 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !$is.regx(pattern) && !$is.str(pattern) )
-      pattern = String(pattern);
+    if ( !$is.regx(pattern) )
+      pattern = $mkStr(pattern);
 
     keys = [];
     for (key in src) {
@@ -416,9 +406,9 @@ var get = (function getPrivateScope() {
     }
     return keys;
   }
+  /// #}}} @func _byKeyKeys
 
-  /// {{{3
-  /// @func _byValKeys
+  /// #{{{ @func _byValKeys
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -439,9 +429,9 @@ var get = (function getPrivateScope() {
     }
     return keys;
   }
+  /// #}}} @func _byValKeys
 
-  /// {{{3
-  /// @func _allObjVals
+  /// #{{{ @func _allObjVals
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -461,9 +451,9 @@ var get = (function getPrivateScope() {
     }
     return vals;
   }
+  /// #}}} @func _allObjVals
 
-  /// {{{3
-  /// @func _byKeyObjVals
+  /// #{{{ @func _byKeyObjVals
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -477,8 +467,8 @@ var get = (function getPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !$is.regx(pattern) && !$is.str(pattern) )
-      pattern = String(pattern);
+    if ( !$is.regx(pattern) )
+      pattern = $mkStr(pattern);
 
     vals = [];
     for (key in src) {
@@ -487,13 +477,13 @@ var get = (function getPrivateScope() {
     }
     return vals;
   }
+  /// #}}} @func _byKeyObjVals
 
-  ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - ARRAY
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Object-Helpers
 
-  /// {{{3
-  /// @func _allIndexes
+  /// #{{{ @group Array-Helpers
+
+  /// #{{{ @func _allIndexes
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} src
@@ -509,15 +499,15 @@ var get = (function getPrivateScope() {
     var i;
 
     len = src['length'];
-    indexes = new Array(len);
+    indexes = new ARR(len);
     i = -1;
     while (++i < len)
       indexes[i] = i;
     return indexes;
   }
+  /// #}}} @func _allIndexes
 
-  /// {{{3
-  /// @func _byValIndexes
+  /// #{{{ @func _byValIndexes
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} src
@@ -542,13 +532,13 @@ var get = (function getPrivateScope() {
     }
     return indexes;
   }
+  /// #}}} @func _byValIndexes
 
-  ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - STRING
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Array-Helpers
 
-  /// {{{3
-  /// @func _strIndexes
+  /// #{{{ @group String-Helpers
+
+  /// #{{{ @func _strIndexes
   /**
    * @private
    * @param {string} src
@@ -560,9 +550,9 @@ var get = (function getPrivateScope() {
       ? _byRegexStrIndexes(src, pattern)
       : _byStrStrIndexes(src, pattern);
   }
+  /// #}}} @func _strIndexes
 
-  /// {{{3
-  /// @func _strVals
+  /// #{{{ @func _strVals
   /**
    * @private
    * @param {string} src
@@ -574,9 +564,9 @@ var get = (function getPrivateScope() {
       ? _byRegexStrVals(src, pattern)
       : _byStrStrVals(src, pattern);
   }
+  /// #}}} @func _strVals
 
-  /// {{{3
-  /// @func _byRegexStrIndexes
+  /// #{{{ @func _byRegexStrIndexes
   /**
    * @private
    * @param {string} src
@@ -599,9 +589,9 @@ var get = (function getPrivateScope() {
     }
     return indexes;
   }
+  /// #}}} @func _byRegexStrIndexes
 
-  /// {{{3
-  /// @func _byStrStrIndexes
+  /// #{{{ @func _byStrStrIndexes
   /**
    * @private
    * @param {string} src
@@ -615,9 +605,7 @@ var get = (function getPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !$is.str(pattern) )
-      pattern = String(pattern);
-
+    pattern = $mkStr(pattern);
     indexes = [];
     i = src['indexOf'](pattern);
     while (i !== -1) {
@@ -626,9 +614,9 @@ var get = (function getPrivateScope() {
     }
     return indexes;
   }
+  /// #}}} @func _byStrStrIndexes
 
-  /// {{{3
-  /// @func _byRegexStrVals
+  /// #{{{ @func _byRegexStrVals
   /**
    * @private
    * @param {string} src
@@ -651,9 +639,9 @@ var get = (function getPrivateScope() {
     }
     return vals;
   }
+  /// #}}} @func _byRegexStrVals
 
-  /// {{{3
-  /// @func _byStrStrVals
+  /// #{{{ @func _byStrStrVals
   /**
    * @private
    * @param {string} src
@@ -667,9 +655,7 @@ var get = (function getPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !$is.str(pattern) )
-      pattern = String(pattern);
-
+    pattern = $mkStr(pattern);
     vals = [];
     i = src['indexOf'](pattern);
     while (i !== -1) {
@@ -678,76 +664,38 @@ var get = (function getPrivateScope() {
     }
     return vals;
   }
+  /// #}}} @func _byStrStrVals
 
-  ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group String-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Error-Helpers
 
-  ///////////////////////////////////////////////////// {{{2
-  // GET HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('get');
+  var _MK_ERR = $mkErrs('get');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Get-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.GET
   return get;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['get'] = get;
+/// #}}} @off SOLO
+/// #}}} @super get
 
-module.exports = get;
+/// #{{{ @on SOLO
+var vitals = get;
+vitals['get'] = get;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
