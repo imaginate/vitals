@@ -10,17 +10,14 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $splitKeys ../helpers/split-keys.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $splitKeys = require('./helpers/split-keys.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.FILL
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super fill
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -28,25 +25,18 @@ var $is = require('./helpers/is.js');
  */
 var fill = (function fillPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - fill
-  // - fill.object (fill.obj)
-  // - fill.array  (fill.arr)
-  // - fill.string (fill.str)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs fill
+  /// @docref [str-func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
+  /// #}}} @docrefs fill
 
-  /* {{{2 Fill References
-   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
-   * @ref [str-func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-   * @ref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
-   */
-
-  /// {{{2
-  /// @method fill
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.fill
   /**
-   * Fills an `array`, `object`, or `string` with specified values.
-   *
+   * @description
+   *   Fills an `array`, `object`, or `string` with specified values.
    * @public
    * @param {(?Array|?Object|?Function|?number)} source
    *   If the #source is a `number`, @fill returns a new `string` filled with
@@ -77,19 +67,21 @@ var fill = (function fillPrivateScope() {
    */
   function fill(source, keys, val, start, end) {
 
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined');
-
-    if ( $is.nil(source) )
-      return null;
-
-    if ( $is.num(source) ) {
-      val = keys;
-      return _fillStr(source, val);
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined');
     }
 
+    if ( $is.nil(source) )
+      return NIL;
+
+    if ( $is.num(source) )
+      return _fillStr(source, keys); // note: `_fillStr(source, val)`
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '?Array|?Object|?Function|?number');
 
     if ( $is.arr(source) ) {
@@ -99,43 +91,43 @@ var fill = (function fillPrivateScope() {
 
       if ( $is.num(start) ) {
         if ( !$is.whole(start) )
-          throw $err(new Error, 'invalid #start `number` (' +
+          throw _mkErr(new ERR, 'invalid #start `number` (' +
             'must be whole `number`)');
       }
-      else if ( !$is.none(start) )
-        throw $typeErr(new TypeError, 'start', start, 'number=');
+      else if ( !$is.void(start) )
+        throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=');
 
       if ( $is.num(end) ) {
         if ( !$is.whole(end) )
-          throw $err(new Error, 'invalid #end `number` (' +
+          throw _mkErr(new ERR, 'invalid #end `number` (' +
             'must be whole `number`)');
       }
-      else if ( !$is.none(end) )
-        throw $typeErr(new TypeError, 'end', end, 'number=');
+      else if ( !$is.void(end) )
+        throw _mkTypeErr(new TYPE_ERR, 'end', end, 'number=');
 
       return _fillArr(source, val, start, end);
     }
 
-    if (arguments['length'] > 2) {
-      if ( $is.str(keys) )
-        keys = $splitKeys(keys);
+    if (arguments['length'] === 2)
+      return _fillObj(source, keys); // note: `_fillObj(source, val)`
 
-      if ( !$is.arr(keys) )
-        throw $typeErr(new TypeError, 'keys', keys, '(!Array|string)=');
+    if ( $is.str(keys) )
+      keys = $splitKeys(keys);
+    else if ( !$is.arr(keys) )
+      throw _mkTypeErr(new TYPE_ERR, 'keys', keys, '(!Array|string)=');
 
-      return _fillKeys(source, keys, val);
-    }
-
-    val = keys;
-    return _fillObj(source, val);
+    return _fillKeys(source, keys, val);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method fill.object
-  /// @alias fill.obj
+  /// #{{{ @submethod object
+  /// @section base
+  /// @method vitals.fill.object
+  /// @alias vitals.fill.obj
   /**
-   * Fills an existing `object` or `function` with specified keys and values.
-   *
+   * @description
+   *   Fills an existing `object` or `function` with specified keys and
+   *   values.
    * @public
    * @param {(!Object|!Function)} source
    * @param {(!Array|string)=} keys
@@ -153,35 +145,45 @@ var fill = (function fillPrivateScope() {
    */
   function fillObject(source, keys, val) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'object');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'object');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'object');
 
-    if (arguments['length'] > 2) {
-      if ( $is.str(keys) )
-        keys = $splitKeys(keys);
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'object');
 
-      if ( !$is.arr(keys) )
-        throw $typeErr(new TypeError, 'keys', keys, '(!Array|string)=',
-          'object');
+      case 2:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'object');
 
-      return _fillKeys(source, keys, val);
+        return _fillObj(source, keys); // note: `_fillObj(source, val)`
+
+      default:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'object');
+
+        if ( $is.str(keys) )
+          keys = $splitKeys(keys);
+        else if ( !$is.arr(keys) )
+          throw _mkTypeErr(new TYPE_ERR, 'keys', keys, '(!Array|string)=',
+            'object');
+
+        return _fillKeys(source, keys, val);
     }
-
-    val = keys;
-    return _fillObj(source, val);
   }
   fill['object'] = fillObject;
   fill['obj'] = fillObject;
+  /// #}}} @submethod object
 
-  /// {{{2
-  /// @method fill.array
-  /// @alias fill.arr
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.fill.array
+  /// @alias vitals.fill.arr
   /**
-   * Fills an existing or new `array` with specified values.
-   *
+   * @description
+   *   Fills an existing or new `array` with specified values.
    * @public
    * @param {(!Array|number)} source
    *   If #source is a `number`, it makes a new `array` for #source using the
@@ -202,71 +204,110 @@ var fill = (function fillPrivateScope() {
    */
   function fillArray(source, val, start, end) {
 
-    if ( $is.num(source) )
-      source = new Array(source);
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'array');
 
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'array');
-    if ( !$is.arr(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Array|number',
-        'array');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'array');
 
-    if ( $is.num(start) ) {
-      if ( !$is.whole(start) )
-        throw $err(new Error, 'invalid #start `number` (' +
-          'must be whole `number`)', 'array');
+      case 2:
+        if ( $is.num(source) )
+          source = new ARR(source);
+        else if ( !$is.arr(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Array|number',
+            'array');
+
+        return _fillArr(source, val, VOID, VOID);
+
+      case 3:
+        if ( $is.num(source) )
+          source = new ARR(source);
+        else if ( !$is.arr(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Array|number',
+            'array');
+
+        if ( $is.num(start) ) {
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'array');
+        }
+        else if ( !$is.void(start) )
+          throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=', 'array');
+
+        return _fillArr(source, val, start, VOID);
+
+      default:
+        if ( $is.num(source) )
+          source = new ARR(source);
+        else if ( !$is.arr(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Array|number',
+            'array');
+
+        if ( $is.num(start) ) {
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'array');
+        }
+        else if ( !$is.void(start) )
+          throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=', 'array');
+
+        if ( $is.num(end) ) {
+          if ( !$is.whole(end) )
+            throw _mkErr(new ERR, 'invalid #end `number` (' +
+              'must be whole `number`)', 'array');
+        }
+        else if ( !$is.void(end) )
+          throw _mkTypeErr(new TYPE_ERR, 'end', end, 'number=', 'array');
+
+        return _fillArr(source, val, start, end);
     }
-    else if ( !$is.none(start) )
-      throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
-
-    if ( $is.num(end) ) {
-      if ( !$is.whole(end) )
-        throw $err(new Error, 'invalid #end `number` (' +
-          'must be whole `number`)', 'array');
-    }
-    else if ( !$is.none(end) )
-      throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
-
-    return _fillArr(source, val, start, end);
   }
   fill['array'] = fillArray;
   fill['arr'] = fillArray;
+  /// #}}} @submethod array
 
-  /// {{{2
-  /// @method fill.string
-  /// @alias fill.str
+  /// #{{{ @submethod string
+  /// @section base
+  /// @method vitals.fill.string
+  /// @alias vitals.fill.str
   /**
-   * Fills a new `string` with specified values.
-   *
+   * @description
+   *   Fills a new `string` with specified values.
    * @public
    * @param {number} count
    *   The [length][str-length] of the new `string`.
    * @param {*} val
    *   The value to fill the new `string` with. Any #val that is not a
-   *   `string` is converted to a `string` with [String()][str-func].
+   *   `string` is converted to a `string`.
    * @return {string}
    */
   function fillString(count, val) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #count defined', 'string');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'string');
+    }
+
     if ( !$is.num(count) )
-      throw $typeErr(new TypeError, 'count', count, 'number', 'string');
+      throw _mkTypeErr(new TYPE_ERR, 'count', count, 'number', 'string');
     if ( !$is.whole(count) )
-      throw $err(new Error, 'invalid #count `number` (' +
+      throw _mkErr(new ERR, 'invalid #count `number` (' +
         'must be whole `number`)', 'string');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'string');
 
     return _fillStr(count, val);
   }
   fill['string'] = fillString;
   fill['str'] = fillString;
+  /// #}}} @submethod string
 
-  ///////////////////////////////////////////////////// {{{2
-  // FILL HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Fill-Helpers
 
-  /// {{{3
-  /// @func _fillObj
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _fillObj
   /**
    * @private
    * @param {(!Object|!Function)} obj
@@ -284,9 +325,9 @@ var fill = (function fillPrivateScope() {
     }
     return obj;
   }
+  /// #}}} @func _fillObj
 
-  /// {{{3
-  /// @func _fillKeys
+  /// #{{{ @func _fillKeys
   /**
    * @private
    * @param {(!Object|!Function)} obj
@@ -307,9 +348,9 @@ var fill = (function fillPrivateScope() {
       obj[ keys[i] ] = val;
     return obj;
   }
+  /// #}}} @func _fillKeys
 
-  /// {{{3
-  /// @func _fillArr
+  /// #{{{ @func _fillArr
   /**
    * @private
    * @param {!Array} arr
@@ -327,9 +368,9 @@ var fill = (function fillPrivateScope() {
 
     len = arr['length'];
 
-    if ( $is.none(start) )
+    if ( $is.void(start) )
       start = 0;
-    if ( $is.none(end) )
+    if ( $is.void(end) )
       end = len;
 
     if (start < 0)
@@ -350,9 +391,9 @@ var fill = (function fillPrivateScope() {
       arr[i] = val;
     return arr;
   }
+  /// #}}} @func _fillArr
 
-  /// {{{3
-  /// @func _fillStr
+  /// #{{{ @func _fillStr
   /**
    * @private
    * @param {number} count
@@ -367,82 +408,44 @@ var fill = (function fillPrivateScope() {
     if (count < 1)
       return '';
 
-    val = String(val);
+    val = $mkStr(val);
     str = '';
     while (count--)
       str += val;
     return str;
   }
+  /// #}}} @func _fillStr
 
-  ///////////////////////////////////////////////////// {{{2
-  // FILL HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Error-Helpers
 
-  ///////////////////////////////////////////////////// {{{2
-  // FILL HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('fill');
+  var _MK_ERR = $mkErrs('fill');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Fill-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.FILL
   return fill;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['fill'] = fill;
+/// #}}} @off SOLO
+/// #}}} @super fill
 
-module.exports = fill;
+/// #{{{ @on SOLO
+var vitals = fill;
+vitals['fill'] = fill;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
