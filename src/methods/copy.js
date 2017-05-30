@@ -10,18 +10,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $inStr = require('./helpers/in-str.js');
-var $merge = require('./helpers/$merge.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.COPY
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super copy
 /**
  * @public
  * @type {!Function<string, !Function>}
@@ -29,37 +26,28 @@ var $is = require('./helpers/is.js');
  */
 var copy = (function copyPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - copy
-  // - copy.object (copy.obj)
-  // - copy.array  (copy.arr|copy.args)
-  // - copy.regexp (copy.re|copy.regex)
-  // - copy.func   (copy.fn|copy.function*)
-  //
-  // * Note that `vitals.copy.function` will fail in all ES3
-  //   and some ES5 browser and other platform environments.
-  //   Use `vitals.copy.func` for compatibility with older
-  //   environments.
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs copy
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
+  /// @docref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
+  /// @docref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+  /// @docref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+  /// @docref [regex-global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+  /// @docref [regex-source]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
+  /// #}}} @docrefs copy
 
-  /* {{{2 Copy References
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
-   * @ref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
-   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
-   * @ref [regex-global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
-   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
-   */
-
-  /// {{{2
-  /// @method copy
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.copy
   /**
-   * Makes a [copy][clone] of any value. Note that for `array` values @slice 
-   * only copies the indexed properties while @copy copies all of the
-   * properties.
-   *
+   * @description
+   *   Makes a [copy][clone] of any value. Note that for `array` values @slice 
+   *   only copies the indexed properties while @copy copies all of the
+   *   properties.
    * @public
    * @param {*} val
    *   The value to copy.
@@ -70,10 +58,15 @@ var copy = (function copyPrivateScope() {
    */
   function copy(val, deep) {
 
-    if (arguments['length'] < 1)
-      throw $err(new Error, 'no #val defined');
-    if ( !$is.none(deep) && !$is.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #val defined');
+      case 1:
+        break;
+      default:
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=');
+    }
 
     return !$is._obj(val)
       ? val
@@ -85,126 +78,179 @@ var copy = (function copyPrivateScope() {
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method copy.object
-  /// @alias copy.obj
+  /// #{{{ @submethod object
+  /// @section base
+  /// @method vitals.copy.object
+  /// @alias vitals.copy.obj
   /**
-   * Makes a [copy][clone] of an `object`.
-   *
+   * @description
+   *   Makes a [copy][clone] of an `object`. By default it shallowly copies
+   *   all [owned][own] properties of the #source with the option to deeply
+   *   [copy][clone] them as well.
    * @public
-   * @param {!Object} obj
+   * @param {!Object} source
    * @param {boolean=} deep = `false`
-   *   Whether to recursively copy property values.
+   *   Whether to recursively [copy][clone] the #source property values.
    * @return {!Object}
+   *   A new `object` [copied][clone] from the #source.
    */
-  function copyObject(obj, deep) {
+  function copyObject(source, deep) {
 
-    if ( !$is.obj(obj) )
-      throw $typeErr(new TypeError, 'obj', obj, '!Object', 'object');
-    if ( !$is.none(deep) && !$is.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'object');
+      case 1:
+        break;
+      default:
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'object');
+    }
 
-    return _copyObj(obj, deep);
+    if ( !$is.obj(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'object');
+
+    return _copyObj(source, deep);
   }
   copy['object'] = copyObject;
   copy['obj'] = copyObject;
+  /// #}}} @submethod object
 
-  /// {{{2
-  /// @method copy.array
-  /// @alias copy.arr
-  /// @alias copy.args
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.copy.array
+  /// @alias vitals.copy.arr
+  /// @alias vitals.copy.args
   /**
-   * Makes a [copy][clone] of an `array` or array-like `object`. Note that
-   * @slice#array only copies the indexed properties while @copy#array copies
-   * all of the properties.
-   *
+   * @description
+   *   Makes a [copy][clone] of an `array` or array-like `object`. Note that
+   *   @slice#array only copies the indexed properties while @copy#array
+   *   copies all of the indexed and [owned][own] properties. By default it
+   *   shallowly copies all of the #source properties with the option to
+   *   deeply [copy][clone] them as well.
    * @public
-   * @param {(!Array|!Object)} obj
-   *   Must be an `array` or array-like `object`.
+   * @param {(!Array|!Arguments|!Object)} source
+   *   Must be an `array` or array-like `object`. The #source is considered
+   *   array-like when it [owns][own] a property with the `"length"` key name
+   *   (e.g. `source.length` like the `array` [length property][arr-length])
+   *   whose value is a whole `number` that is greater than or equal to zero
+   *   (e.g. `isWholeNumber(source.length) && source.length >= 0`).
    * @param {boolean=} deep = `false`
-   *   Whether to recursively copy property values.
+   *   Whether to recursively [copy][clone] the #source property values.
    * @return {!Array}
+   *   A new `array` [copied][clone] from the #source.
    */
-  function copyArray(obj, deep) {
+  function copyArray(source, deep) {
 
-    /** @type {number} */
-    var len;
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'array');
+      case 1:
+        break;
+      default:
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'array');
+    }
 
-    if ( !$is.obj(obj) )
-      throw $typeErr(new TypeError, 'obj', obj, '!Array|!Object', 'array');
-    if ( !$is.none(deep) && !$is.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'array');
+    if ( !$is.obj(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+        '(!Array|!Arguments|!Object)', 'array');
+    if ( !$is.arrish(source) )
+      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+        'length must be a whole `number` that is `0` or more)', 'array');
 
-    len = obj['length'];
-
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'obj.length', len, 'number', 'array');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #obj.length `number` (' +
-        'must be `0` or a positive whole `number`)', 'array');
-
-    return _copyArr(obj, deep);
+    return _copyArr(source, deep);
   }
   copy['array'] = copyArray;
   copy['arr'] = copyArray;
   copy['args'] = copyArray;
+  /// #}}} @submethod array
 
-  /// {{{2
-  /// @method copy.regexp
-  /// @alias copy.regex
-  /// @alias copy.re
+  /// #{{{ @submethod regexp
+  /// @section base
+  /// @method vitals.copy.regexp
+  /// @alias vitals.copy.regex
+  /// @alias vitals.copy.re
   /**
-   * Makes a [copy][clone] of a `RegExp`.
-   *
+   * @description
+   *   Makes a [copy][clone] of a `RegExp`.
    * @public
-   * @param {!RegExp} regex
-   * @param {boolean=} forceGlobal = `undefined`
+   * @param {!RegExp} source
+   * @param {(boolean|undefined)=} forceGlobal = `undefined`
    *   Override the [global setting][regex-global] for the returned `RegExp`.
-   *   If `undefined` the original value from #regex is used.
+   *   If the #forceGlobal is `undefined`, the [global setting][regex-global]
+   *   from the #source is used.
    * @return {!RegExp}
+   *   A new `RegExp` with the [RegExp.prototype.source][regex-source] value
+   *   and the `RegExp` flag settings of the provided #source `RegExp`.
    */
-  function copyRegexp(regex, forceGlobal) {
+  function copyRegExp(source, forceGlobal) {
 
-    if ( !$is.regx(regex) )
-      throw $typeErr(new TypeError, 'regex', regex, '!RegExp', 'regexp');
-    if ( !$is.none(forceGlobal) && !$is.bool(forceGlobal) )
-      throw $typeErr(new TypeError, 'forceGlobal', forceGlobal, 'boolean=',
-        'regexp');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'regexp');
+      case 1:
+        break;
+      default:
+        if ( !$is.void(forceGlobal) && !$is.bool(forceGlobal) )
+          throw _mkTypeErr(new TYPE_ERR, 'forceGlobal', forceGlobal,
+            'boolean=', 'regexp');
+    }
 
-    return _copyRegex(regex, forceGlobal);
+    if ( !$is.regx(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!RegExp', 'regexp');
+
+    return _copyRegex(source, forceGlobal);
   }
-  copy['regexp'] = copyRegexp;
-  copy['re'] = copyRegexp;
-  copy['regex'] = copyRegexp;
+  copy['regexp'] = copyRegExp;
+  copy['regex'] = copyRegExp;
+  copy['re'] = copyRegExp;
+  /// #}}} @submethod regexp
 
-  /// {{{2
-  /// @method copy.func
-  /// @alias copy.function
-  /// @alias copy.fn
+  /// #{{{ @submethod func
+  /// @section base
+  /// @method vitals.copy.fn
+  /// @alias vitals.copy.function
+  ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
+  ///   browser and other platform environments. Use `vitals.copy.func` for
+  ///   compatibility with older environments.
   /**
-   * Makes a [copy][clone] of a `function`. Note that all properties will be
-   * transferred except for the [length property][func-length] which will be
-   * set to `0` and the [name property][func-name] which will be set to
-   * `"funcCopy"` for [unminified][minify] `vitals` sources. Also note that
-   * `vitals.copy.function` is not valid in [ES3][ecma3] and some [ES5][ecma5]
-   * browser and other platform environments. Use `vitals.copy.func` for
-   * browser and platform safety.
-   *
+   * @description
+   *   Makes a [copy][clone] of a `function`. By default it shallowly copies
+   *   all [owned][own] properties of the #source with the option to deeply
+   *   [copy][clone] them as well. Note that the
+   *   [length property][func-length] will be set to `0` and the
+   *   [name property][func-name] will be set to `"funcCopy"` for
+   *   [unminified][minify] `vitals` sources. Also note that
+   *   `vitals.copy.function` is not valid in [ES3][ecma3] and some
+   *   [ES5][ecma5] browser and other platform environments. Use
+   *   `vitals.copy.func` for browser and platform safety.
    * @public
-   * @param {!function} func
+   * @param {!Function} source
    * @param {boolean=} deep = `false`
-   *   Whether to recursively copy property values.
-   * @return {!function}
+   *   Whether to recursively [copy][clone] the #source property values.
+   * @return {!Function}
+   *   A new `function` [copied][clone] from the #source.
    */
-  function copyFunction(func, deep) {
+  function copyFunction(source, deep) {
 
-    if ( !$is.fun(func) )
-      throw $typeErr(new TypeError, 'func', func, '!function', 'function');
-    if ( !$is.none(deep) && !$is.bool(deep) )
-      throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'function');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'function');
+      case 1:
+        break;
+      default:
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=',
+            'function');
+    }
 
-    return _copyFunc(func, deep);
+    if ( !$is.fun(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Function',
+        'function');
+
+    return _copyFunc(source, deep);
   }
   copy['func'] = copyFunction;
   try {
@@ -212,17 +258,17 @@ var copy = (function copyPrivateScope() {
     copy['function'] = copyFunction;
   }
   catch (e) {}
+  /// #}}} @submethod func
 
-  ///////////////////////////////////////////////////// {{{2
-  // COPY HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Copy-Helpers
 
-  /// {{{3
-  /// @func _copyObj
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _copyObj
   /**
    * @private
    * @param {!Object} obj
-   * @param {boolean=} deep
+   * @param {(boolean|undefined)=} deep
    * @return {!Object}
    */
   function _copyObj(obj, deep) {
@@ -230,13 +276,13 @@ var copy = (function copyPrivateScope() {
       ? _mergeDeep({}, obj)
       : $merge({}, obj);
   }
+  /// #}}} @func _copyObj
 
-  /// {{{3
-  /// @func _copyArr
+  /// #{{{ @func _copyArr
   /**
    * @private
    * @param {!Object} obj
-   * @param {boolean=} deep
+   * @param {(boolean|undefined)=} deep
    * @return {!Array}
    */
   function _copyArr(obj, deep) {
@@ -244,18 +290,18 @@ var copy = (function copyPrivateScope() {
     /** @type {!Array} */
     var arr;
 
-    arr = new Array(obj['length']);
+    arr = new ARR(obj['length']);
     return deep
       ? _mergeDeep(arr, obj)
       : $merge(arr, obj);
   }
+  /// #}}} @func _copyArr
 
-  /// {{{3
-  /// @func _copyRegex
+  /// #{{{ @func _copyRegex
   /**
    * @private
    * @param {!RegExp} regex
-   * @param {boolean=} forceGlobal
+   * @param {(boolean|undefined)=} forceGlobal
    * @return {!RegExp}
    */
   function _copyRegex(regex, forceGlobal) {
@@ -269,40 +315,67 @@ var copy = (function copyPrivateScope() {
     flags = _setupFlags(regex, forceGlobal);
 
     return flags
-      ? new RegExp(source, flags)
-      : new RegExp(source);
+      ? new REGX(source, flags)
+      : new REGX(source);
   }
+  /// #}}} @func _copyRegex
 
-  /// {{{3
-  /// @func _copyFunc
+  /// #{{{ @func _copyFunc
   /**
    * @private
-   * @param {!function} func
-   * @param {boolean=} deep
-   * @return {!function}
+   * @param {!Function} func
+   * @param {(boolean|undefined)=} deep
+   * @return {!Function}
    */
   function _copyFunc(func, deep) {
 
-    /** @type {!function} */
-    var funcCopy;
+    /** @type {!Function} */
+    function funcCopy() {
+      return func['apply'](NIL, arguments);
+    }
 
-    funcCopy = function funcCopy() {
-      return func['apply'](null, arguments);
-    };
     return deep
       ? _mergeDeep(funcCopy, func)
       : $merge(funcCopy, func);
   }
+  /// #}}} @func _copyFunc
 
-  ///////////////////////////////////////////////////// {{{2
-  // COPY HELPERS - REGEXP
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @func _escape
+  /// #{{{ @group RegExp-Helpers
+
+  /// #{{{ @const _FLAGS
   /**
-   * Returns a properly escaped `RegExp.prototype.source`.
-   *
+   * @private
+   * @const {!Object<string, string>}
+   * @dict
+   */
+  var _FLAGS = (function _FLAGS_PrivateScope() {
+
+    /**
+     * @type {!Object<string, string>}
+     * @dict
+     */
+    var flags;
+
+    flags = {};
+    flags['ignoreCase'] = 'i';
+    flags['multiline'] = 'm';
+    flags['global'] = 'g';
+
+    if ('sticky' in REGX_PROTO)
+      flags['sticky'] = 'y';
+    if ('unicode' in REGX_PROTO)
+      flags['unicode'] = 'u';
+
+    return flags;
+  })();
+  /// #}}} @const _FLAGS
+
+  /// #{{{ @func _escape
+  /**
+   * @description
+   *   Returns a properly escaped [RegExp.prototype.source][regex-source].
    * @private
    * @param {string} source
    * @return {string}
@@ -314,7 +387,7 @@ var copy = (function copyPrivateScope() {
 
     pattern = /\n/['source'] !== '\\n'
       ? /\\/g
-      : null;
+      : NIL;
     return pattern
       ? function _escape(source) {
           return source['replace'](pattern, '\\\\');
@@ -323,44 +396,9 @@ var copy = (function copyPrivateScope() {
           return source;
         };
   })();
+  /// #}}} @func _escape
 
-  /// {{{3
-  /// @const FLAGS
-  /**
-   * @private
-   * @const {!Object<string, string>}
-   * @dict
-   */
-  var FLAGS = (function _RegExpFlagsPrivateScope() {
-
-    /**
-     * @type {!Object<string, string>}
-     * @dict
-     */
-    var flags;
-
-    /**
-     * @private
-     * @const {!Object<string, string>}
-     * @dict
-     */
-    var PROTO = RegExp['prototype'];
-
-    flags = {};
-    flags['ignoreCase'] = 'i';
-    flags['multiline'] = 'm';
-    flags['global'] = 'g';
-
-    if ('sticky' in PROTO)
-      flags['sticky'] = 'y';
-    if ('unicode' in PROTO)
-      flags['unicode'] = 'u';
-
-    return flags;
-  })();
-
-  /// {{{3
-  /// @func _setupFlags
+  /// #{{{ @func _setupFlags
   /**
    * @private
    * @param {!RegExp} regex
@@ -375,12 +413,12 @@ var copy = (function copyPrivateScope() {
     var key;
 
     flags = '';
-    for (key in FLAGS) {
-      if ( $own(FLAGS, key) && regex[key] )
-        flags += FLAGS[key];
+    for (key in _FLAGS) {
+      if ( $own(_FLAGS, key) && regex[key] )
+        flags += _FLAGS[key];
     }
 
-    if ( $is.none(forceGlobal) )
+    if ( $is.void(forceGlobal) )
       return flags;
 
     return $inStr(flags, 'g')
@@ -391,21 +429,13 @@ var copy = (function copyPrivateScope() {
         ? flags + 'g'
         : flags;
   }
+  /// #}}} @func _setupFlags
 
-  ///////////////////////////////////////////////////// {{{2
-  // COPY HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group RegExp-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Merge-Helpers
 
-  /// {{{3
-  /// @func _mergeDeep
+  /// #{{{ @func _mergeDeep
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -423,64 +453,38 @@ var copy = (function copyPrivateScope() {
     }
     return dest;
   }
+  /// #}}} @func _mergeDeep
 
-  ///////////////////////////////////////////////////// {{{2
-  // COPY HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Merge-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('copy');
+  var _MK_ERR = $mkErrs('copy');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Copy-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.COPY
   return copy;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['copy'] = copy;
+/// #}}} @off SOLO
+/// #}}} @super copy
 
-module.exports = copy;
+/// #{{{ @on SOLO
+var vitals = copy;
+vitals['copy'] = copy;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
