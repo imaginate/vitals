@@ -10,21 +10,20 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $match ../helpers/match.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $escape ../helpers/escape.js
+/// #include @helper $sliceArr ../helpers/slice-arr.js
+/// #include @super is ./is.js
+/// #include @super copy ./copy.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $sliceArr = require('./helpers/slice-arr.js');
-var $escape = require('./helpers/escape.js');
-var $match = require('./helpers/match.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
-var is = require('./is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.CUT
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super cut
 /**
  * @public
  * @type {!Function<string, !Function>}
@@ -32,63 +31,50 @@ var is = require('./is.js');
  */
 var cut = (function cutPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - cut
-  // - cut.property   (cut.prop)
-  // - cut.key
-  // - cut.index      (cut.i)
-  // - cut.type
-  // - cut.value      (cut.val)
-  // - cut.pattern
-  // - cut.properties (cut.props)
-  // - cut.keys
-  // - cut.indexes    (cut.ii)
-  // - cut.values     (cut.vals)
-  // - cut.patterns
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs cut
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+  /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+  /// @docref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+  /// @docref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+  /// @docref [type]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [delete]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete)
+  /// @docref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+  /// @docref [splice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
+  /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+  /// #}}} @docrefs cut
 
-  /* {{{2 Cut References
-   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
-   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
-   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-   * @ref [type]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures)
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
-   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [delete]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/delete)
-   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
-   * @ref [splice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice)
-   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
-   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   */
-
-  /// {{{2
-  /// @method cut
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.cut
   /**
-   * Removes properties from an `object`, `array`, or `function` or characters
-   * from a `string` and returns the amended #source.
-   *
+   * @description
+   *   Removes properties from an `object`, `array`, or `function` or
+   *   characters from a `string` and returns the amended #source.
    * @public
-   * @param {(!Object|!Function|!Array|string)} source
+   * @param {(!Object|!Function|!Array|!Arguments|string)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     - **The leading #val is a `RegExp`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a @has#pattern test) any #val. If a #val is not a
-   *       `RegExp`, it is converted to a `string` before a test is ran.
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a key that matches (via a @has#pattern test) any
+   *       #val.
    *     - **The leading #val is a `string`**!$
    *       This method will [delete][delete] all properties with a key that
-   *       matches (via a [strict equality][equal] test) any #val. If a #val
-   *       is not a `string`, it is converted to a `string` before a
-   *       comparison is made.
+   *       matches (via a [strict equality][equal] test) any #val.
    *     - **The leading #val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the property is [deleted][delete]). It has the following
-   *       optional parameters:
+   *       `false` the [owned][own] property is [deleted][delete]). It has the
+   *       following optional parameters:
    *       - **value** *`*`*
    *       - **key** *`string`*
    *       - **source** *`!Object|!Function`*
@@ -98,17 +84,20 @@ var cut = (function cutPrivateScope() {
    *       filter's third parameter so you can safely assume all references to
    *       the #source are its original values).
    *     - **All other situations**!$
-   *       This method will [delete][delete] all properties with a value that
-   *       matches (via a [strict equality][equal] test) any #val.
-   *   - *`!Array`*!$
-   *     - **Every #val is a `number`**!$
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a value that matches (via a
+   *       [strict equality][equal] test) any #val.
+   *   - *`!Array|!Arguments`*!$
+   *     - **Every #val is a whole `number`**!$
    *       This method will [splice][splice] from the #source each property
    *       with an index that matches (via a [strict equality][equal] test)
-   *       any #val.
+   *       any #val. If a #val is a negative `number`, it is added to the
+   *       #source [length][arr-length] before checking for a matching
+   *       property.
    *     - **The leading #val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the property is [spliced][splice] from the #source). It has
-   *       the following optional parameters:
+   *       `false` the indexed property is [spliced][splice] from the
+   *       #source). It has the following optional parameters:
    *       - **value** *`*`*
    *       - **index** *`number`*
    *       - **source** *`!Array`*
@@ -118,9 +107,9 @@ var cut = (function cutPrivateScope() {
    *       third parameter so you can safely assume all references to the
    *       #source are its original values).
    *     - **All other situations**!$
-   *       This method will [splice][splice] from the #source all properties
-   *       with a value that matches (via a [strict equality][equal] test) any
-   *       #val.
+   *       This method will [splice][splice] from the #source all indexed
+   *       properties with a value that matches (via a
+   *       [strict equality][equal] test) any #val.
    *   - *`string`*!$
    *     Each `substring` of characters that matches any #val is removed from
    *     the #source. Each #val that is not a `RegExp` or `string` is
@@ -144,63 +133,89 @@ var cut = (function cutPrivateScope() {
    */
   function cut(source, val, thisArg) {
 
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined');
 
-    if ( $is.str(source) ) {
-      if (arguments['length'] > 2)
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined');
+
+      case 2:
+        if ( $is.str(source) )
+          return $is.arr(val)
+            ? _cutPatterns(source, val)
+            : _cutPattern(source, val);
+
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        if ( $is.args(source) )
+          source = $sliceArr(source);
+
+        return $is.fun(val)
+          ? $is.arr(source)
+            ? _filterArr(source, val, VOID)
+            : _filterObj(source, val, VOID)
+          : $is.arr(val)
+            ? _cutProps(source, val)
+            : _cutProp(source, val);
+
+      default:
+        if ( $is.str(source) ) {
+          val = $sliceArr(arguments, 1);
+          return _cutPatterns(source, val);
+        }
+
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function|!Array|!Arguments|string');
+
+        if ( $is.args(source) )
+          source = $sliceArr(source);
+
+        if ( $is.fun(val) ) {
+          if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+            throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
+
+          return $is.arr(source)
+            ? _filterArr(source, val, thisArg)
+            : _filterObj(source, val, thisArg);
+        }
+
         val = $sliceArr(arguments, 1);
-      return $is.arr(val)
-        ? _cutPatterns(source, val)
-        : _cutPattern(source, val);
+        return _cutProps(source, val);
     }
-
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!function|!Array|string');
-
-    if ( $is.args(source) )
-      source = $sliceArr(source);
-
-    if ( $is.fun(val) ) {
-
-      if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
-
-      return $is.arr(source)
-        ? _filterArr(source, val, thisArg)
-        : _filterObj(source, val, thisArg);
-    }
-
-    if (arguments['length'] > 2)
-      val = $sliceArr(arguments, 1);
-    return $is.arr(val)
-      ? _cutProps(source, val)
-      : _cutProp(source, val);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method cut.property
-  /// @alias cut.prop
+  /// #{{{ @submethod property
+  /// @section base
+  /// @method vitals.cut.property
+  /// @alias vitals.cut.prop
   /**
-   * Removes a property from an `object`, `array`, or `function` and returns
-   * the amended #source.
-   *
+   * @description
+   *   Removes a property from an `object`, `array`, or `function` and returns
+   *   the amended #source.
    * @public
-   * @param {(!Object|!Function|!Array)} source
+   * @param {(!Object|!Function|!Array|!Arguments)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {*} val
    *   All details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     - **#val is a `RegExp`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a @has#pattern test) #val.
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a key that matches (via a @has#pattern test) the
+   *       #val.
    *     - **#val is a `string`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a [strict equality][equal] test) #val.
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a key that matches (via a [strict equality][equal]
+   *       test) the #val.
    *     - **#val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the property is [deleted][delete]). It has the following
-   *       optional parameters:
+   *       `false` the [owned][own] property is [deleted][delete]). It has the
+   *       following optional parameters:
    *       - **value** *`*`*
    *       - **key** *`string`*
    *       - **source** *`!Object|!Function`*
@@ -210,13 +225,16 @@ var cut = (function cutPrivateScope() {
    *       filter's third parameter so you can safely assume all references to
    *       the #source are its original values).
    *     - **All other situations**!$
-   *       This method will [delete][delete] all properties with a value that
-   *       matches (via a [strict equality][equal] test) #val.
-   *   - *`!Array`*!$
-   *     - **#val is a `number`**!$
-   *       This method will [splice][splice] from the #source each property
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a value that matches (via a
+   *       [strict equality][equal] test) the #val.
+   *   - *`!Array|!Arguments`*!$
+   *     - **#val is a whole `number`**!$
+   *       This method will [splice][splice] from the #source the property
    *       with an index that matches (via a [strict equality][equal] test)
-   *       #val.
+   *       the #val. If the #val is a negative `number`, it is added to the
+   *       #source [length][arr-length] before checking for a matching
+   *       property.
    *     - **#val is a `function`**!$
    *       The #val is considered a filter `function` (i.e. if it returns
    *       `false` the property is [spliced][splice] from the #source). It has
@@ -232,7 +250,7 @@ var cut = (function cutPrivateScope() {
    *     - **All other situations**!$
    *       This method will [splice][splice] from the #source all properties
    *       with a value that matches (via a [strict equality][equal] test)
-   *       #val.
+   *       the #val.
    * @param {?Object=} thisArg
    *   Only applicable when a filter `function` is defined for #val. If
    *   #thisArg is defined, the filter `function` is bound to its value. Note
@@ -250,401 +268,573 @@ var cut = (function cutPrivateScope() {
    */
   function cutProperty(source, val, thisArg) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!function|!Array', 'property');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'property');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'property');
 
-    if ( $is.args(source) )
-     source = $sliceArr(source);
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'property');
 
-    if ( $is.fun(val) ) {
+      case 2:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function|!Array|!Arguments', 'property');
 
-      if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-        throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
-          'property');
+        if ( $is.args(source) )
+          source = $sliceArr(source);
 
-      return $is.arr(source)
-        ? _filterArr(source, val, thisArg)
-        : _filterObj(source, val, thisArg);
+        return $is.fun(val)
+          ? $is.arr(source)
+            ? _filterArr(source, val, VOID)
+            : _filterObj(source, val, VOID)
+          : _cutProp(source, val);
+
+      default:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function|!Array|!Arguments', 'property');
+
+        if ( $is.args(source) )
+          source = $sliceArr(source);
+
+        if ( $is.fun(val) ) {
+          if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+            throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
+              'property');
+
+          return $is.arr(source)
+            ? _filterArr(source, val, thisArg)
+            : _filterObj(source, val, thisArg);
+        }
+
+        return _cutProp(source, val);
     }
-
-    return _cutProp(source, val);
   }
   cut['property'] = cutProperty;
   cut['prop'] = cutProperty;
+  /// #}}} @submethod property
 
-  /// {{{2
-  /// @method cut.key
+  /// #{{{ @submethod key
+  /// @section base
+  /// @method vitals.cut.key
   /**
-   * Removes a property by key name from an `object` or `function` and returns
-   * the amended #source.
-   *
+   * @description
+   *   Removes a property by key name from an `object` or `function` and
+   *   returns the amended #source.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} key
-   *   If a property exists in #source with #key for its key name, it is
-   *   [deleted][delete]. If #key is not a `string`, it is converted to a
-   *   `string` before the #source is checked for #key.
+   *   If a property with the #key value for its key name is [owned][own] by
+   *   the #source, it is [deleted][delete].
    * @return {(!Object|!Function)}
    *   The amended #source.
    */
   function cutKey(source, key) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'key');
+      case 1:
+        throw _mkErr(new ERR, 'no #key defined', 'key');
+    }
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
         'key');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #key defined', 'key');
 
     return _cutKey(source, key);
   }
   cut['key'] = cutKey;
+  /// #}}} @submethod key
 
-  /// {{{2
-  /// @method cut.index
-  /// @alias cut.i
+  /// #{{{ @submethod index
+  /// @section base
+  /// @method vitals.cut.index
+  /// @alias vitals.cut.i
   /**
-   * Removes properties by index from an `array` or array-like `object` and
-   * returns the amended #source. If an array-like `object` is supplied, it is
-   * copied via [slice][slice] (i.e. converted to an `array`) before removing
-   * any properties.
-   *
+   * @description
+   *   Removes properties by index from an `array` or array-like `object` and
+   *   returns the amended #source. If an array-like `object` is supplied, it
+   *   is copied via [slice][slice] (i.e. converted to an `array`) before
+   *   removing any properties.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function)} source
+   *   If the #source is **not** an `array`, it must be an array-like `object`
+   *   or `function`. The #source is considered array-like when it [owns][own]
+   *   a property with the `"length"` key name (e.g. `source.length` like the
+   *   `array` [length property][arr-length]) whose value is a whole `number`
+   *   that is greater than or equal to zero (e.g.
+   *   `isWholeNumber(source.length) && source.length >= 0`). If an array-like
+   *   #source is provided, it is [sliced][slice] into an `array` before any
+   *   values are removed.
    * @param {number} index
-   *   The property index to [splice][splice] from #source.
-   * @param {number=} toIndex
-   *   If defined all property indexes from #index to #toIndex (not including
-   *   #toIndex) are [spliced][splice] from #source.
+   *   The #index must be a whole `number`. The following rules apply in order
+   *   of priority (per #toIndex data type):
+   *   - *`undefined`*!$
+   *     The #index value sets the one matching property (if a property with
+   *     an index value of the #index exists in the #source) to
+   *     [splice][splice] from the #source. If the #index is negative, it is
+   *     added to the #source [length][arr-length] before a matching property
+   *     is searched for.
+   *   - *`number`*!$
+   *     The #index value sets the start of a range of indexes that are
+   *     [spliced][splice] from the #source. If the #index is negative, it is
+   *     added to the #source [length][arr-length]. The property with a
+   *     matching index value of the #index is included (as well as starts the
+   *     range of indexes) in the [spliced][splice] properties if it exists.
+   * @param {(number|undefined)=} toIndex = `undefined`
+   *   If the #toIndex is defined, it must be a whole `number`. The #toIndex
+   *   `number` causes all property indexes from the #index to the #toIndex
+   *   (not including the #toIndex) to be [spliced][splice] from #source. If
+   *   the #toIndex is a negative `number`, it is added to the #source
+   *   [length][arr-length] before being used.
    * @return {!Array}
    *   The amended #source or when an array-like `object` is defined for the
    *   #source, an amended copy (via [slice][slice]) of #source.
    */
   function cutIndex(source, index, toIndex) {
 
-    /** @type {number} */
-    var len;
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'index');
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Array|!Arguments|!Object|!Function', 'index');
-    if ( !$is.num(index) )
-      throw $typeErr(new TypeError, 'index', index, 'number', 'index');
-    if ( !$is.none(toIndex) && !$is.num(toIndex) )
-      throw $typeErr(new TypeError, 'toIndex', toIndex, 'number=', 'index');
+      case 1:
+        throw _mkErr(new ERR, 'no #index defined', 'index');
 
-    len = source['length'];
+      case 2:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Array|!Arguments|!Object|!Function', 'index');
+        if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)', 'index');
+        if ( !$is.num(index) )
+          throw _mkTypeErr(new TYPE_ERR, 'index', index, 'number', 'index');
+        if ( !$is.whole(index) )
+          throw _mkErr(new ERR, 'invalid #index `number` (' +
+            'must be a whole `number`)', 'index');
 
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'source.length', len, 'number', 'index');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #source.length `number` (' +
-        'must be `0` or a positive whole `number`)', 'index');
+        if ( !$is.arr(source) )
+          source = $sliceArr(source);
 
-    if ( !$is.arr(source) )
-      source = $sliceArr(source);
+        return _cutIndex(source, index, VOID);
 
-    return _cutIndex(source, index, toIndex);
+      default:
+        if ( !$is._obj(source) )
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Array|!Arguments|!Object|!Function', 'index');
+        if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)', 'index');
+        if ( !$is.num(index) )
+          throw _mkTypeErr(new TYPE_ERR, 'index', index, 'number', 'index');
+        if ( !$is.whole(index) )
+          throw _mkErr(new ERR, 'invalid #index `number` (' +
+            'must be a whole `number`)', 'index');
+
+        if ( !$is.void(toIndex) ) {
+          if ( !$is.num(toIndex) )
+            throw _mkTypeErr(new TYPE_ERR, 'toIndex', toIndex, 'number',
+              'index');
+          if ( !$is.whole(index) )
+            throw _mkErr(new ERR, 'invalid #toIndex `number` (' +
+              'must be a whole `number`)', 'index');
+        }
+
+        if ( !$is.arr(source) )
+          source = $sliceArr(source);
+
+        return _cutIndex(source, index, toIndex);
+    }
   }
   cut['index'] = cutIndex;
   cut['i'] = cutIndex;
+  /// #}}} @submethod index
 
-  /// {{{2
-  /// @method cut.type
+  /// #{{{ @submethod type
+  /// @section base
+  /// @method vitals.cut.type
   /**
-   * Removes properties by their value's [data type][type] from an `object`,
-   * `function`, or `array` and returns the amended #source. @is#main is used
-   * to complete the type checks.
-   *
+   * @description
+   *   Removes properties by their value's [data type][type] from an `object`,
+   *   `function`, or `array` and returns the amended #source. @is#main is
+   *   used to complete the type checks. See @is-types for all available data
+   *   type options.
    * @public
-   * @param {(!Object|!Function|!Array)} source
+   * @param {(!Object|!Function|!Array|!Arguments)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {string} type
-   *   All properties with a value that match #type (via a @is#main test) will
-   *   be [deleted][delete]. Refer to @is#main for all valid #type options.
+   *   See @is-types for all valid #type options. The remaining details are as
+   *   follows (per #source type):
+   *   - *`!Object|!Function`*!$
+   *     This method will [delete][delete] from the #source all [owned][own]
+   *     properties with a value that matches (via a @is#main test) the #type.
+   *   - *`!Array|!Arguments`*!$
+   *     This method will [splice][splice] from the #source all indexed
+   *     properties with a value that matches (via a @is#main test) the #type.
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   function cutType(source, type) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'type');
+      case 1:
+        throw _mkErr(new ERR, 'no #type defined', 'type');
+    }
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array', 'type');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+        '!Object|!Function|!Array|!Arguments', 'type');
     if ( !$is.str(type) )
-      throw $typeErr(new TypeError, 'type', type, 'string', 'type');
+      throw _mkTypeErr(new TYPE_ERR, 'type', type, 'string', 'type');
 
     if ( $is.args(source) )
       source = $sliceArr(source);
 
     if ( $is.empty(source) ) {
-      is(type, ''); // run once to catch invalid types
+      is(type, ''); // run once to catch any invalid types in #type
       return source;
     }
 
     return _cutType(source, type);
   }
   cut['type'] = cutType;
+  /// #}}} @submethod type
 
-  /// {{{2
-  /// @method cut.value
-  /// @alias cut.val
+  /// #{{{ @submethod value
+  /// @section base
+  /// @method vitals.cut.value
+  /// @alias vitals.cut.val
   /**
-   * Removes properties by value from an `object`, `function`, or `array` and
-   * returns the amended #source.
-   *
+   * @description
+   *   Removes properties by value from an `object`, `function`, or `array`
+   *   and returns the amended #source.
    * @public
-   * @param {(!Object|!Function|!Array)} source
+   * @param {(!Object|!Function|!Array|!Arguments)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {*} val
    *   All details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
-   *     This method will [delete][delete] all properties with a value that
-   *     matches (via a [strict equality][equal] test) #val.
-   *   - *`!Array`*!$
-   *     This method will [splice][splice] from the #source all properties
-   *     with a value that matches (via a [strict equality][equal] test) #val.
+   *     This method will [delete][delete] from the #source all [owned][own]
+   *     properties with a value that matches (via a [strict equality][equal]
+   *     test) the #val.
+   *   - *`!Array|!Arguments`*!$
+   *     This method will [splice][splice] from the #source all indexed
+   *     properties with a value that matches (via a [strict equality][equal]
+   *     test) the #val.
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   function cutValue(source, val) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'value');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'value');
+    }
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array', 'value');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'value');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+        '!Object|!Function|!Array|!Arguments', 'value');
 
     if ( $is.args(source) )
       source = $sliceArr(source);
+
     return _cutVal(source, val);
   }
   cut['value'] = cutValue;
   cut['val'] = cutValue;
+  /// #}}} @submethod value
 
-  /// {{{2
-  /// @method cut.pattern
+  /// #{{{ @submethod pattern
+  /// @section base
+  /// @method vitals.cut.pattern
   /**
-   * Removes a pattern from a `string` and returns the amended #source.
-   *
+   * @description
+   *   Removes a pattern from a `string` and returns the amended #source.
    * @public
    * @param {string} source
    * @param {*} pattern
    *   Each `substring` of characters that matches #pattern is removed from
-   *   the #source. If #pattern is not a `RegExp` or `string`, it is converted
-   *   into a `string` before checking the #source for any matches.
+   *   the #source. If the #pattern is not a `RegExp` or `string`, it is
+   *   converted into a `string` before checking the #source for any matches.
    * @return {string}
    *   The amended #source.
    */
   function cutPattern(source, pattern) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'pattern');
+      case 1:
+        throw _mkErr(new ERR, 'no #pattern defined', 'pattern');
+    }
+
     if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'pattern');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #pattern defined', 'pattern');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'pattern');
 
     return _cutPattern(source, pattern);
   }
   cut['pattern'] = cutPattern;
+  /// #}}} @submethod pattern
 
-  /// {{{2
-  /// @method cut.properties
-  /// @alias cut.props
+  /// #{{{ @submethod properties
+  /// @section base
+  /// @method vitals.cut.properties
+  /// @alias vitals.cut.props
   /**
-   * Removes properties from an `object`, `array`, or `function` and returns
-   * the amended #source.
-   *
+   * @description
+   *   Removes properties from an `object`, `array`, or `function` and returns
+   *   the amended #source.
    * @public
-   * @param {(!Object|!Function|!Array)} source
+   * @param {(!Object|!Function|!Array|!Arguments)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
    *   - *`!Object|!Function`*!$
    *     - **The leading #val is a `RegExp`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a @has#pattern test) any #val. If a #val is not a
-   *       `RegExp`, it is converted into a `string` before a test is ran.
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a key that matches (via a @has#pattern test) any
+   *       #val.
    *     - **The leading #val is a `string`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a [strict equality][equal] test) any #val. If a #val
-   *       is not a `string`, it is converted into a `string` before a
-   *       comparison is made.
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a key that matches (via a [strict equality][equal]
+   *       test) any #val.
    *     - **All other situations**!$
-   *       This method will [delete][delete] all properties with a value that
-   *       matches (via a [strict equality][equal] test) any #val.
-   *   - *`!Array`*!$
-   *     - **Every #val is a `number`**!$
+   *       This method will [delete][delete] from the #source all [owned][own]
+   *       properties with a value that matches (via a
+   *       [strict equality][equal] test) any #val.
+   *   - *`!Array|!Arguments`*!$
+   *     - **Every #val is a whole `number`**!$
    *       This method will [splice][splice] from the #source each property
    *       with an index that matches (via a [strict equality][equal] test)
-   *       any #val.
+   *       any #val. If a #val is a negative `number`, it is added to the
+   *       #source [length][arr-length] before checking for a matching
+   *       property.
    *     - **All other situations**!$
-   *       This method will [splice][splice] from the #source all properties
-   *       with a value that matches (via a [strict equality][equal] test) any
-   *       #val.
+   *       This method will [splice][splice] from the #source all indexed
+   *       properties with a value that matches (via a
+   *       [strict equality][equal] test) any #val.
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   function cutProperties(source, val) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'properties');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'properties');
+      case 2:
+        break;
+      default:
+        val = $sliceArr(arguments, 1);
+        break;
+    }
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array', 'properties');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'properties');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+        '!Object|!Function|!Array|!Arguments', 'properties');
 
     if ( $is.args(source) )
       source = $sliceArr(source);
-    if (arguments['length'] > 2)
-      val = $sliceArr(arguments, 1);
+
     return $is.arr(val)
       ? _cutProps(source, val)
       : _cutProp(source, val);
   }
   cut['properties'] = cutProperties;
   cut['props'] = cutProperties;
+  /// #}}} @submethod properties
 
-  /// {{{2
-  /// @method cut.keys
+  /// #{{{ @submethod keys
+  /// @section base
+  /// @method vitals.cut.keys
   /**
-   * Removes properties by key name from an `object` or `function` and returns
-   * the amended #source.
-   *
+   * @description
+   *   Removes properties by key name from an `object` or `function` and
+   *   returns the amended #source.
    * @public
    * @param {(!Object|!Function)} source
    * @param {...*} key
    *   If only one `array` #key is provided, it is considered an `array` of
-   *   keys. If a property exists in #source with any #key for its key name,
-   *   it is [deleted][delete]. If a #key is not a `string`, it is converted
-   *   into a `string` before the #source is checked.
+   *   keys. For each #key value, if the #source [owns][own] a property with a
+   *   matching key name, it is [deleted][delete].
    * @return {(!Object|!Function)}
    *   The amended #source.
    */
   function cutKeys(source, key) {
 
-    if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-        'keys');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #key defined', 'keys');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'keys');
+      case 1:
+        throw _mkErr(new ERR, 'no #key defined', 'keys');
+      case 2:
+        break;
+      default:
+        key = $sliceArr(arguments, 1);
+        break;
+    }
 
-    if (arguments['length'] > 2)
-      key = $sliceArr(arguments, 1);
+    if ( !$is._obj(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
+        'keys');
+
     return $is.arr(key)
       ? _cutKeys(source, key)
       : _cutKey(source, key);
   }
   cut['keys'] = cutKeys;
+  /// #}}} @submethod keys
 
-  /// {{{2
-  /// @method cut.indexes
-  /// @alias cut.ii
+  /// #{{{ @submethod indexes
+  /// @section base
+  /// @method vitals.cut.indexes
+  /// @alias vitals.cut.ii
   /**
-   * Removes properties by index from an `array` or array-like `object` and
-   * returns the amended #source. If an array-like `object` is supplied, it is
-   * copied via [slice][slice] (i.e. converted to an `array`) before removing
-   * any properties.
-   *
+   * @description
+   *   Removes properties by index from an `array` or array-like `object` and
+   *   returns the amended #source. If an array-like `object` is supplied, it
+   *   is copied via [slice][slice] (i.e. converted to an `array`) before
+   *   removing any properties.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function)} source
+   *   If the #source is **not** an `array`, it must be an array-like `object`
+   *   or `function`. The #source is considered array-like when it [owns][own]
+   *   a property with the `"length"` key name (e.g. `source.length` like the
+   *   `array` [length property][arr-length]) whose value is a whole `number`
+   *   that is greater than or equal to zero (e.g.
+   *   `isWholeNumber(source.length) && source.length >= 0`). If an array-like
+   *   #source is provided, it is [sliced][slice] into an `array` before any
+   *   values are removed.
    * @param {(!Array<number>|...number)} index
-   *   If only one `array` #index is provided, it is considered an `array` of
-   *   indexes. If a property with any #index exists in #source, it is
-   *   [spliced][splice] from #source.
+   *   Each #index `number` must be a whole `number`. If only one `array`
+   *   #index is provided, it is considered an `array` of indexes. If a
+   *   property with any #index exists in #source, it is [spliced][splice]
+   *   from the #source. If an #index is a negative `number`, it is added to
+   *   the #source [length][arr-length] before checking for a matching
+   *   property.
    * @return {!Array}
    *   The amended #source or when an array-like `object` is defined for the
    *   #source, an amended copy (via [slice][slice]) of #source.
    */
   function cutIndexes(source, index) {
 
-    /** @type {number} */
-    var len;
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'indexes');
+      case 1:
+        throw _mkErr(new ERR, 'no #index defined', 'indexes');
+      case 2:
+        break;
+      default:
+        index = $sliceArr(arguments, 1);
+        break;
+    }
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Array|!Arguments|!Object|!Function', 'indexes');
-
-    len = source['length'];
-
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'source.length', len, 'number',
-        'indexes');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #source.length `number` (' +
-        'must be `0` or a positive whole `number`)', 'indexes');
-
-    len = arguments['length'];
-
-    if (len < 2)
-      throw $err(new Error, 'no #index defined', 'indexes');
+    if ( !$is.arrish(source) )
+      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+        'length must be a whole `number` that is `0` or more)', 'indexes');
 
     if ( !$is.arr(source) )
       source = $sliceArr(source);
-    if (len > 2)
-      index = $sliceArr(arguments, 1);
 
     if ( !$is.arr(index) ) {
-
       if ( !$is.num(index) )
-        throw $typeErr(new TypeError, 'index', index,
+        throw _mkTypeErr(new TYPE_ERR, 'index', index,
           '(!Array<number>|...number)', 'indexes');
+      if ( !$is.whole(index) )
+        throw _mkErr(new ERR, 'invalid #index `number` (' +
+          'must be a whole `number`)', 'indexes');
 
       return _cutIndex(source, index);
     }
 
-    if ( !is('!nums', index) )
-      throw $typeErr(new TypeError, 'index', index,
+    if ( !_isNumArr(index) )
+      throw _mkTypeErr(new TYPE_ERR, 'index', index,
         '(!Array<number>|...number)', 'indexes');
+    if ( !_isWholeNumArr(index) )
+      throw _mkErr(new ERR, 'an invalid #index `number` (' +
+        'every #index must be a whole `number`)', 'indexes');
 
     return _cutIndexes(source, index);
   }
   cut['indexes'] = cutIndexes;
   cut['ii'] = cutIndexes;
+  /// #}}} @submethod indexes
 
-  /// {{{2
-  /// @method cut.values
-  /// @alias cut.vals
+  /// #{{{ @submethod values
+  /// @section base
+  /// @method vitals.cut.values
+  /// @alias vitals.cut.vals
   /**
-   * Removes properties by value from an `object`, `function`, or `array` and
-   * returns the amended #source.
-   *
+   * @description
+   *   Removes properties by value from an `object`, `function`, or `array`
+   *   and returns the amended #source.
    * @public
-   * @param {(!Object|!Function|!Array)} source
+   * @param {(!Object|!Function|!Array|!Arguments)} source
+   *   If the #source is an `arguments` instance, it is [sliced][slice] into
+   *   an `array` before any values are removed.
    * @param {...*} val
    *   If only one `array` #val is provided, it is considered an `array` of
    *   values. All other details are as follows (per #source type):
-   *   - *`!Object|function`*!$
-   *     This method will [delete][delete] all properties with a value that
-   *     matches (via a [strict equality][equal] test) any #val.
-   *   - *`!Array`*!$
-   *     This method will [splice][splice] from the #source all properties
-   *     with a value that matches (via a [strict equality][equal] test) any
-   *     #val.
+   *   - *`!Object|!Function`*!$
+   *     This method will [delete][delete] from the #source all of the
+   *     [owned][own] properties with a value that matches (via a
+   *     [strict equality][equal] test) any #val.
+   *   - *`!Array|!Arguments`*!$
+   *     This method will [splice][splice] from the #source all of the indexed
+   *     properties with a value that matches (via a [strict equality][equal]
+   *     test) any #val.
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
   function cutValues(source, val) {
 
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'values');
+      case 1:
+        throw _mkErr(new ERR, 'no #val defined', 'values');
+      case 2:
+        break;
+      default:
+        val = $sliceArr(arguments, 1);
+        break;
+    }
+
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
-        '!Object|!Function|!Array', 'value');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #val defined', 'value');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+        '!Object|!Function|!Array|!Arguments', 'values');
 
     if ( $is.args(source) )
       source = $sliceArr(source);
-    if (arguments['length'] > 2)
-      val = $sliceArr(arguments, 1);
+
     return $is.arr(val)
       ? _cutVals(source, val)
       : _cutVal(source, val);
   }
   cut['values'] = cutValues;
   cut['vals'] = cutValues;
+  /// #}}} @submethod values
 
-  /// {{{2
-  /// @method cut.patterns
+  /// #{{{ @submethod patterns
+  /// @section base
+  /// @method vitals.cut.patterns
   /**
-   * Removes patterns from a `string` and returns the amended #source.
-   *
+   * @description
+   *   Removes patterns from a `string` and returns the amended #source.
    * @public
    * @param {string} source
    * @param {...*} pattern
@@ -658,25 +848,33 @@ var cut = (function cutPrivateScope() {
    */
   function cutPatterns(source, pattern) {
 
-    if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'patterns');
-    if (arguments['length'] < 2)
-      throw $err(new Error, 'no #pattern defined', 'patterns');
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'patterns');
+      case 1:
+        throw _mkErr(new ERR, 'no #pattern defined', 'patterns');
+      case 2:
+        break;
+      default:
+        pattern = $sliceArr(arguments, 1);
+        break;
+    }
 
-    if (arguments['length'] > 2)
-      pattern = $sliceArr(arguments, 1);
+    if ( !$is.str(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'patterns');
+
     return $is.arr(pattern)
       ? _cutPatterns(source, pattern)
       : _cutPattern(source, pattern);
   }
   cut['patterns'] = cutPatterns;
+  /// #}}} @submethod patterns
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Cut-Helpers
 
-  /// {{{3
-  /// @func _cutProp
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _cutProp
   /**
    * @private
    * @param {(!Object|!Function|!Array)} source
@@ -685,16 +883,16 @@ var cut = (function cutPrivateScope() {
    */
   function _cutProp(source, val) {
     return $is.arr(source)
-      ? $is.num(val)
+      ? $is.num(val) && $is.whole(val)
         ? _spliceKey(source, val)
         : _spliceVal(source, val)
-      : is('!str|regex', val)
+      : $is.str(val) || $is.regx(val)
         ? _deleteKey(source, val)
         : _deleteVal(source, val);
   }
+  /// #}}} @func _cutProp
 
-  /// {{{3
-  /// @func _cutProps
+  /// #{{{ @func _cutProps
   /**
    * @private
    * @param {(!Object|!Function|!Array)} source
@@ -703,16 +901,16 @@ var cut = (function cutPrivateScope() {
    */
   function _cutProps(source, vals) {
     return $is.arr(source)
-      ? is('nums', vals)
+      ? _isIntArr(vals)
         ? _spliceKeys(source, vals)
         : _spliceVals(source, vals)
-      : is('!str|regex', vals[0])
+      : $is.str(vals[0]) || $is.regx(vals[0])
         ? _deleteKeys(source, vals)
         : _deleteVals(source, vals);
   }
+  /// #}}} @func _cutProps
 
-  /// {{{3
-  /// @func _cutKey
+  /// #{{{ @func _cutKey
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -720,12 +918,15 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function)}
    */
   function _cutKey(source, key) {
-    delete source[key];
+
+    if ( $own(source, key) )
+      delete source[key];
+
     return source;
   }
+  /// #}}} @func _cutKey
 
-  /// {{{3
-  /// @func _cutKeys
+  /// #{{{ @func _cutKeys
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -742,12 +943,12 @@ var cut = (function cutPrivateScope() {
     len = keys['length'];
     i = -1;
     while (++i < len)
-      delete source[ keys[i] ];
+      source = _cutKey(source, keys[i]);
     return source;
   }
+  /// #}}} @func _cutKeys
 
-  /// {{{3
-  /// @func _cutIndex
+  /// #{{{ @func _cutIndex
   /**
    * @private
    * @param {!Array} source
@@ -761,13 +962,14 @@ var cut = (function cutPrivateScope() {
     var len;
 
     len = source['length'];
+
     if (key < 0)
-      key = len + key;
+      key += len;
 
     if (key >= len)
       return source;
 
-    if ( $is.none(toKey) ) {
+    if ( $is.void(toKey) ) {
       if (key < 0)
         return source;
       source['splice'](key, 1);
@@ -776,11 +978,11 @@ var cut = (function cutPrivateScope() {
 
     if (key < 0)
       key = 0;
-    toKey = toKey > len
-      ? len
-      : toKey < 0
-        ? len + toKey
-        : toKey;
+
+    if (toKey > len)
+      toKey = len;
+    else if (toKey < 0)
+      toKey += len;
 
     if (key >= toKey)
       return source;
@@ -788,9 +990,9 @@ var cut = (function cutPrivateScope() {
     source['splice'](key, toKey - key);
     return source;
   }
+  /// #}}} @func _cutIndex
 
-  /// {{{3
-  /// @func _cutIndexes
+  /// #{{{ @func _cutIndexes
   /**
    * @private
    * @param {!Array} source
@@ -800,9 +1002,9 @@ var cut = (function cutPrivateScope() {
   function _cutIndexes(source, keys) {
     return _spliceKeys(source, keys);
   }
+  /// #}}} @func _cutIndexes
 
-  /// {{{3
-  /// @func _cutType
+  /// #{{{ @func _cutType
   /**
    * @private
    * @param {(!Object|!Function|!Array)} source
@@ -814,9 +1016,9 @@ var cut = (function cutPrivateScope() {
       ? _spliceValByType(source, type)
       : _deleteValByType(source, type);
   }
+  /// #}}} @func _cutType
 
-  /// {{{3
-  /// @func _cutVal
+  /// #{{{ @func _cutVal
   /**
    * @private
    * @param {(!Object|!Function|!Array)} source
@@ -828,9 +1030,9 @@ var cut = (function cutPrivateScope() {
       ? _spliceVal(source, val)
       : _deleteVal(source, val);
   }
+  /// #}}} @func _cutVal
 
-  /// {{{3
-  /// @func _cutVals
+  /// #{{{ @func _cutVals
   /**
    * @private
    * @param {(!Object|!Function|!Array)} source
@@ -842,9 +1044,9 @@ var cut = (function cutPrivateScope() {
       ? _spliceVals(source, vals)
       : _deleteVals(source, vals);
   }
+  /// #}}} @func _cutVals
 
-  /// {{{3
-  /// @func _cutPattern
+  /// #{{{ @func _cutPattern
   /**
    * @private
    * @param {string} source
@@ -853,16 +1055,15 @@ var cut = (function cutPrivateScope() {
    */
   function _cutPattern(source, pattern) {
     if ( !$is.regx(pattern) ) {
-      if ( !$is.str(pattern) )
-        pattern = String(pattern);
+      pattern = $mkStr(pattern);
       pattern = $escape(pattern);
-      pattern = new RegExp(pattern, 'g');
+      pattern = new REGX(pattern, 'g');
     }
     return source['replace'](pattern, '');
   }
+  /// #}}} @func _cutPattern
 
-  /// {{{3
-  /// @func _cutPatterns
+  /// #{{{ @func _cutPatterns
   /**
    * @private
    * @param {string} source
@@ -882,13 +1083,13 @@ var cut = (function cutPrivateScope() {
       source = _cutPattern(source, patterns[i]);
     return source;
   }
+  /// #}}} @func _cutPatterns
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - DELETE
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @func _deleteKey
+  /// #{{{ @group Delete-Helpers
+
+  /// #{{{ @func _deleteKey
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -901,7 +1102,7 @@ var cut = (function cutPrivateScope() {
     /** @type {!RegExp} */
     var pattern;
 
-    if ( $is.none(useMatch) )
+    if ( $is.void(useMatch) )
       useMatch = $is.regx(key);
 
     if (!useMatch) {
@@ -917,9 +1118,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _deleteKey
 
-  /// {{{3
-  /// @func _deleteKeys
+  /// #{{{ @func _deleteKeys
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -942,9 +1143,9 @@ var cut = (function cutPrivateScope() {
       source = _deleteKey(source, keys[i], useMatch);
     return source;
   }
+  /// #}}} @func _deleteKeys
 
-  /// {{{3
-  /// @func _deleteVal
+  /// #{{{ @func _deleteVal
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -962,9 +1163,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _deleteVal
 
-  /// {{{3
-  /// @func _deleteValByType
+  /// #{{{ @func _deleteValByType
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -982,9 +1183,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _deleteValByType
 
-  /// {{{3
-  /// @func _deleteVals
+  /// #{{{ @func _deleteVals
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -1004,13 +1205,13 @@ var cut = (function cutPrivateScope() {
       source = _deleteVal(source, vals[i]);
     return source;
   }
+  /// #}}} @func _deleteVals
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - SPLICE
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Delete-Helpers
 
-  /// {{{3
-  /// @func _spliceKey
+  /// #{{{ @group Splice-Helpers
+
+  /// #{{{ @func _spliceKey
   /**
    * @private
    * @param {!Array} source
@@ -1023,8 +1224,9 @@ var cut = (function cutPrivateScope() {
     var len;
 
     len = source['length'];
+
     if (key < 0)
-      key = len + key;
+      key += len;
 
     if (key < 0 || key >= len)
       return source;
@@ -1032,9 +1234,9 @@ var cut = (function cutPrivateScope() {
     source['splice'](key, 1);
     return source;
   }
+  /// #}}} @func _spliceKey
 
-  /// {{{3
-  /// @func _spliceKeys
+  /// #{{{ @func _spliceKeys
   /**
    * @private
    * @param {!Array} source
@@ -1053,7 +1255,7 @@ var cut = (function cutPrivateScope() {
     if (!source['length'] || !keys['length'])
       return source;
 
-    if (keys['length'] < 2)
+    if (keys['length'] === 1)
       return _spliceKey(source, keys[0]);
 
     /**
@@ -1070,9 +1272,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _spliceKeys
 
-  /// {{{3
-  /// @func _spliceVal
+  /// #{{{ @func _spliceVal
   /**
    * @private
    * @param {!Array} source
@@ -1091,9 +1293,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _spliceVal
 
-  /// {{{3
-  /// @func _spliceValByType
+  /// #{{{ @func _spliceValByType
   /**
    * @private
    * @param {!Array} source
@@ -1112,9 +1314,9 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _spliceValByType
 
-  /// {{{3
-  /// @func _spliceVals
+  /// #{{{ @func _spliceVals
   /**
    * @private
    * @param {!Array} source
@@ -1146,86 +1348,86 @@ var cut = (function cutPrivateScope() {
     }
     return source;
   }
+  /// #}}} @func _spliceVals
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - FILTER
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Splice-Helpers
 
-  /// {{{3
-  /// @func _filterObj
+  /// #{{{ @group Filter-Helpers
+
+  /// #{{{ @func _filterObj
   /**
    * @private
    * @param {(!Object|!Function)} source
-   * @param {!function} filter
+   * @param {!function(*=, string=, (!Object|!Function)=): *} filter
    * @param {?Object=} thisArg
    * @return {(!Object|!Function)}
    */
   function _filterObj(source, filter, thisArg) {
 
-    /** @type {!Object} */
-    var obj;
+    /** @type {(!Object|!Function)} */
+    var src;
     /** @type {string} */
     var key;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       filter = _bind(filter, thisArg);
 
-    obj = filter['length'] > 2
+    src = filter['length'] > 2
       ? copy(source)
       : source;
 
     switch (filter['length']) {
       case 0:
-        for (key in obj) {
-          if ( $own(obj, key) && !filter() )
+        for (key in src) {
+          if ( $own(src, key) && !filter() )
             delete source[key];
         }
         break;
       case 1:
-        for (key in obj) {
-          if ( $own(obj, key) && !filter(obj[key]) )
+        for (key in src) {
+          if ( $own(src, key) && !filter(src[key]) )
             delete source[key];
         }
         break;
       case 2:
-        for (key in obj) {
-          if ( $own(obj, key) && !filter(obj[key], key) )
+        for (key in src) {
+          if ( $own(src, key) && !filter(src[key], key) )
             delete source[key];
         }
         break;
       default:
-        for (key in obj) {
-          if ( $own(obj, key) && !filter(obj[key], key, obj) )
+        for (key in src) {
+          if ( $own(src, key) && !filter(src[key], key, src) )
             delete source[key];
         }
         break;
     }
     return source;
   }
+  /// #}}} @func _filterObj
 
-  /// {{{3
-  /// @func _filterArr
+  /// #{{{ @func _filterArr
   /**
    * @private
    * @param {!Array} source
-   * @param {!function} filter
+   * @param {!function(*=, number=, !Array=): *} filter
    * @param {?Object=} thisArg
    * @return {!Array}
    */
   function _filterArr(source, filter, thisArg) {
 
     /** @type {!Array} */
-    var arr;
+    var src;
     /** @type {number} */
     var i;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       filter = _bind(filter, thisArg);
 
-    arr = filter['length'] > 2
+    src = filter['length'] > 2
       ? copy['array'](source)
       : source;
-    i = arr['length'];
+    i = src['length'];
 
     switch (filter['length']) {
       case 0:
@@ -1236,32 +1438,32 @@ var cut = (function cutPrivateScope() {
         break;
       case 1:
         while (i--) {
-          if ( !filter(arr[i]) )
+          if ( !filter(src[i]) )
             source['splice'](i, 1);
         }
         break;
       case 2:
         while (i--) {
-          if ( !filter(arr[i], i) )
+          if ( !filter(src[i], i) )
             source['splice'](i, 1);
         }
         break;
       default:
         while (i--) {
-          if ( !filter(arr[i], i, arr) )
+          if ( !filter(src[i], i, src) )
             source['splice'](i, 1);
         }
         break;
     }
     return source;
   }
+  /// #}}} @func _filterArr
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - SORT
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Filter-Helpers
 
-  /// {{{3
-  /// @func _sortIndexes
+  /// #{{{ @group Sort-Helpers
+
+  /// #{{{ @func _sortIndexes
   /**
    * @private
    * @param {!Array<number>} indexes
@@ -1270,8 +1472,7 @@ var cut = (function cutPrivateScope() {
    */
   var _sortIndexes = (function() {
 
-    /// {{{4
-    /// @func sortIndexes
+    /// #{{{ @func sortIndexes
     /**
      * @param {!Array<number>} indexes
      * @param {number} sourceLen
@@ -1282,33 +1483,29 @@ var cut = (function cutPrivateScope() {
       run(indexes, sourceLen);
       return result();
     }
+    /// #}}} @func sortIndexes
 
-    ///////////////////////// {{{4
-    // SORT MEMBERS
-    // - FIRST
-    // - LAST
+    /// #{{{ @group Sort-Members
 
-    /** @type {!Array<number>} */
+    /// #{{{ @member $first
+    /**
+     * @type {!Array<number>}
+     */
     var $first;
-    /** @type {!Array<number>} */
+    /// #}}} @member $first
+
+    /// #{{{ @member $last
+    /**
+     * @type {!Array<number>}
+     */
     var $last;
+    /// #}}} @member $last
 
-    ///////////////////////// {{{4
-    // SORT METHODS
-    // - SETUP
-    // - RUN
-    // - RESULT
-    // - PARSE
-    // - PUSH
-    // - UNSHIFT
-    // - INSERT
-    // - REMOVE
-    // - SORT
-    // - COMPARE-PREV
-    // - COMPARE-NEXT
+    /// #}}} @group Sort-Members
 
-    /// {{{5
-    /// @func setup
+    /// #{{{ @group Sort-Methods
+
+    /// #{{{ @method setup
     /**
      * @private
      * @return {void}
@@ -1317,9 +1514,9 @@ var cut = (function cutPrivateScope() {
       $first = [];
       $last = [];
     }
+    /// #}}} @method setup
 
-    /// {{{5
-    /// @func run
+    /// #{{{ @method run
     /**
      * @private
      * @param {!Array<number>} indexes
@@ -1351,9 +1548,9 @@ var cut = (function cutPrivateScope() {
           sort(index, 0, $last['length']);
       }
     }
+    /// #}}} @method run
 
-    /// {{{5
-    /// @func result
+    /// #{{{ @method result
     /**
      * @private
      * @return {!Object<string, !Array<number>>}
@@ -1371,9 +1568,9 @@ var cut = (function cutPrivateScope() {
 
       return SORTED_INDEXES;
     }
+    /// #}}} @method result
 
-    /// {{{5
-    /// @func parse
+    /// #{{{ @method parse
     /**
      * @private
      * @param {number} index
@@ -1382,15 +1579,17 @@ var cut = (function cutPrivateScope() {
      *   If invalid #index is given `-1` is returned.
      */
     function parse(index, len) {
+
       if (index < 0)
-        index = len + index;
+        index += len;
+
       return index < 0 || index >= len
         ? -1
         : index;
     }
+    /// #}}} @method parse
 
-    /// {{{5
-    /// @func push
+    /// #{{{ @method push
     /**
      * @private
      * @param {number} index
@@ -1400,9 +1599,9 @@ var cut = (function cutPrivateScope() {
       $first['push'](index);
       $last['push'](index);
     }
+    /// #}}} @method push
 
-    /// {{{5
-    /// @func unshift
+    /// #{{{ @method unshift
     /**
      * @private
      * @param {number} index
@@ -1412,9 +1611,9 @@ var cut = (function cutPrivateScope() {
       $first['unshift'](index);
       $last['unshift'](index);
     }
+    /// #}}} @method unshift
 
-    /// {{{5
-    /// @func insert
+    /// #{{{ @method insert
     /**
      * @private
      * @param {number} index
@@ -1425,9 +1624,9 @@ var cut = (function cutPrivateScope() {
       $first['splice'](pos, 0, index);
       $last['splice'](pos, 0, index);
     }
+    /// #}}} @method insert
 
-    /// {{{5
-    /// @func remove
+    /// #{{{ @method remove
     /**
      * @private
      * @param {number} index
@@ -1438,9 +1637,9 @@ var cut = (function cutPrivateScope() {
       $first['splice'](pos, 1);
       $last['splice'](pos, 1);
     }
+    /// #}}} @method remove
 
-    /// {{{5
-    /// @func sort
+    /// #{{{ @method sort
     /**
      * @private
      * @param {number} index
@@ -1462,9 +1661,9 @@ var cut = (function cutPrivateScope() {
       else if (index > $last[mid])
         compareNext(index, mid, right);
     }
+    /// #}}} @method sort
 
-    /// {{{5
-    /// @func comparePrev
+    /// #{{{ @method comparePrev
     /**
      * @private
      * @param {number} index
@@ -1508,9 +1707,9 @@ var cut = (function cutPrivateScope() {
       else
         sort(index, left, prev);
     }
+    /// #}}} @method comparePrev
 
-    /// {{{5
-    /// @func compareNext
+    /// #{{{ @method compareNext
     /**
      * @private
      * @param {number} index
@@ -1554,26 +1753,19 @@ var cut = (function cutPrivateScope() {
       else
         sort(index, next, right);
     }
+    /// #}}} @method compareNext
 
-    /// }}}4
-    // END OF INDEX SORT PRIVATE SCOPE
+    /// #}}} @group Sort-Methods
+
     return sortIndexes;
   })();
+  /// #}}} @func _sortIndexes
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Sort-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Bind-Helpers
 
-  /// {{{3
-  /// @func _bind
+  /// #{{{ @func _bind
   /**
    * @private
    * @param {!function} func
@@ -1599,64 +1791,117 @@ var cut = (function cutPrivateScope() {
       return func['call'](thisArg, val, key, obj);
     };
   }
+  /// #}}} @func _bind
 
-  ///////////////////////////////////////////////////// {{{2
-  // CUT HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Bind-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Is-Helpers
+
+  /// #{{{ @func _isIntArr
+  /**
+   * @private
+   * @param {!Array<*>} vals
+   * @return {boolean} 
+   */
+  function _isIntArr(vals) {
+
+    /** @type {*} */
+    var propVal;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = vals['length'];
+    i = -1;
+    while (++i < len) {
+      propVal = vals[i];
+      if ( !$is.num(propVal) || !$is.whole(propVal) )
+        return false;
+    }
+    return true;
+  }
+  /// #}}} @func _isIntArr
+
+  /// #{{{ @func _isNumArr
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean} 
+   */
+  function _isNumArr(val) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    if ( !$is.arr(val) )
+      return false;
+
+    len = val['length'];
+    i = -1;
+    while (++i < len) {
+      if ( !$is.num(val[i]) )
+        return false;
+    }
+    return true;
+  }
+  /// #}}} @func _isNumArr
+
+  /// #{{{ @func _isWholeNumArr
+  /**
+   * @private
+   * @param {!Array<number>} nums
+   * @return {boolean} 
+   */
+  function _isWholeNumArr(nums) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = nums['length'];
+    i = -1;
+    while (++i < len) {
+      if ( !$is.whole(nums[i]) )
+        return false;
+    }
+    return true;
+  }
+  /// #}}} @func _isWholeNumArr
+
+  /// #}}} @group Is-Helpers
+
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('cut');
+  var _MK_ERR = $mkErrs('cut');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Cut-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.CUT
   return cut;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['cut'] = cut;
+/// #}}} @off SOLO
+/// #}}} @super cut
 
-module.exports = cut;
+/// #{{{ @on SOLO
+var vitals = cut;
+vitals['cut'] = cut;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
