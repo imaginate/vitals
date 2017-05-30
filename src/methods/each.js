@@ -10,18 +10,17 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $splitKeys ../helpers/split-keys.js
+/// #include @super copy ./copy.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $splitKeys = require('./helpers/split-keys.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.EACH
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super each
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -29,33 +28,27 @@ var copy = require('./copy.js');
  */
 var each = (function eachPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - each
-  // - each.object (each.obj)
-  // - each.array  (each.arr)
-  // - each.cycle  (each.time)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs each
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+  /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+  /// @docref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+  /// @docref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+  /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+  /// #}}} @docrefs each
 
-  /* {{{2 Each References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
-   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
-   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
-   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
-   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   */
-
-  /// {{{2
-  /// @method each
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.each
   /**
-   * A shortcut for iterating over [owned][own] `object` properties, indexed
-   * `array` properties, or a defined `number` of cycles.
-   *
+   * @description
+   *   A shortcut for iterating over [owned][own] `object` properties, indexed
+   *   `array` properties, or a defined `number` of cycles.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string|number)} source
    *   The details are as follows (per #source type):
@@ -133,24 +126,24 @@ var each = (function eachPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
       case 1:
-        throw $err(new Error, 'no #iteratee defined');
+        throw _mkErr(new ERR, 'no #iteratee defined');
       case 2:
         break;
       default:
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
         break;
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
         '!function(*=, (string|number)=, (!Object|!Function|!Array)=)');
 
     if ( $is.num(source) ) {
       if ( !$is.whole(source) )
-        throw $err(new Error, 'invalid #source `number` (' +
+        throw _mkErr(new ERR, 'invalid #source `number` (' +
           'must be whole `number`)');
 
       return _eachCycle(source, iteratee, thisArg);
@@ -159,20 +152,22 @@ var each = (function eachPrivateScope() {
     if ( $is.str(source) )
       source = $splitKeys(source);
     else if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments|string|number');
 
     return $is._arr(source)
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method each.object
-  /// @alias each.obj
+  /// #{{{ @submethod object
+  /// @section base
+  /// @method vitals.each.object
+  /// @alias vitals.each.obj
   /**
-   * A shortcut for iterating over [owned][own] `object` properties.
-   *
+   * @description
+   *   A shortcut for iterating over [owned][own] `object` properties.
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=)} iteratee
@@ -203,37 +198,39 @@ var each = (function eachPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'object');
+        throw _mkErr(new ERR, 'no #source defined', 'object');
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'object');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'object');
       case 2:
         break;
       default:
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'object');
         break;
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
         '!function(*=, string=, (!Object|!Function)=)', 'object');
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
         'object');
 
     return _eachObj(source, iteratee, thisArg);
   }
   each['object'] = eachObject;
   each['obj'] = eachObject;
+  /// #}}} @submethod object
 
-  /// {{{2
-  /// @method each.array
-  /// @alias each.arr
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.each.array
+  /// @alias vitals.each.arr
   /**
-   * A shortcut for iterating over all of the indexed properties of an `array`
-   * or array-like `object` or `function`.
-   *
+   * @description
+   *   A shortcut for iterating over all of the indexed properties of an
+   *   `array` or array-like `object` or `function`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
    *   If the #source is a `string`, it is converted into an `array` using one
@@ -270,52 +267,46 @@ var each = (function eachPrivateScope() {
    */
   function eachArray(source, iteratee, thisArg) {
 
-    /** @type {number} */
-    var len;
-
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'array');
+        throw _mkErr(new ERR, 'no #source defined', 'array');
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'array');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'array');
       case 2:
         break;
       default:
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'array');
         break;
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
         '!function(*=, number=, !Array=)', 'array');
 
     if ( $is.str(source) )
       source = $splitKeys(source);
     else if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Array|!Arguments|!Object|!Function|string', 'array');
-
-    len = source['length'];
-
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'source.length', len, 'number', 'array');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #source.length `number` (' +
-        'must be `0` or a positive whole `number`)', 'array');
+    else if ( !$is.arrish(source) )
+      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+        'length must be a whole `number` that is `0` or more)', 'array');
 
     return _eachArr(source, iteratee, thisArg);
   }
   each['array'] = eachArray;
   each['arr'] = eachArray;
+  /// #}}} @submethod array
 
-  /// {{{2
-  /// @method each.cycle
-  /// @alias each.time
+  /// #{{{ @submethod cycle
+  /// @section base
+  /// @method vitals.each.cycle
+  /// @alias vitals.each.time
   /**
-   * A shortcut for iterating over a set `number` of cycles.
-   *
+   * @description
+   *   A shortcut for iterating over a set `number` of cycles.
    * @public
    * @param {number} cycles
    *   Must be a whole `number`.
@@ -344,42 +335,42 @@ var each = (function eachPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #cycles defined', 'cycle');
+        throw _mkErr(new ERR, 'no #cycles defined', 'cycle');
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'cycle');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'cycle');
       case 2:
         break;
       default:
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'cycle');
         break;
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
         '!function(number=, number=)', 'cycle');
     if ( !$is.num(cycles) )
-      throw $typeErr(new TypeError, 'cycles', cycles, 'number', 'cycle');
+      throw _mkTypeErr(new TYPE_ERR, 'cycles', cycles, 'number', 'cycle');
     if ( !$is.whole(cycles) )
-      throw $err(new Error, 'invalid #cycles `number` (' +
+      throw _mkErr(new ERR, 'invalid #cycles `number` (' +
         'must be whole `number`)', 'cycle');
 
     return _eachCycle(cycles, iteratee, thisArg);
   }
   each['cycle'] = eachCycle;
   each['time'] = eachCycle;
+  /// #}}} @submethod cycle
 
-  ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Each-Helpers
 
-  /// {{{3
-  /// @func _eachObj
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _eachObj
   /**
    * @private
    * @param {(!Object|!Function)} source
-   * @param {!function(*, string=, (!Object|!Function)=)} iteratee
+   * @param {!function(*=, string=, (!Object|!Function)=)} iteratee
    * @param {?Object=} thisArg
    * @return {(!Object|!Function)}
    */
@@ -390,7 +381,7 @@ var each = (function eachPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     src = iteratee['length'] > 2
@@ -426,13 +417,13 @@ var each = (function eachPrivateScope() {
 
     return source;
   }
+  /// #}}} @func _eachObj
 
-  /// {{{3
-  /// @func _eachArr
+  /// #{{{ @func _eachArr
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
-   * @param {!function(*, number=, !Array=)} iteratee
+   * @param {!function(*=, number=, !Array=)} iteratee
    * @param {?Object=} thisArg
    * @return {(!Array|!Arguments|!Object|!Function)}
    */
@@ -445,7 +436,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     src = iteratee['length'] > 2
@@ -475,13 +466,13 @@ var each = (function eachPrivateScope() {
 
     return source;
   }
+  /// #}}} @func _eachArr
 
-  /// {{{3
-  /// @func _eachCycle
+  /// #{{{ @func _eachCycle
   /**
    * @private
    * @param {number} cycles
-   * @param {!function} iteratee
+   * @param {!function(number=, number=)} iteratee
    * @param {?Object=} thisArg
    * @return {number}
    */
@@ -492,7 +483,7 @@ var each = (function eachPrivateScope() {
     /** @type {number} */
     var cycle;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindCycle(iteratee, thisArg);
 
     count = cycles > 0
@@ -518,13 +509,13 @@ var each = (function eachPrivateScope() {
 
     return cycles;
   }
+  /// #}}} @func _eachCycle
 
-  ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - BIND
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @func _bindMap
+  /// #{{{ @group Bind-Helpers
+
+  /// #{{{ @func _bindMap
   /**
    * @private
    * @param {!function} func
@@ -551,9 +542,9 @@ var each = (function eachPrivateScope() {
       func['call'](thisArg, value, key, source);
     };
   }
+  /// #}}} @func _bindMap
 
-  /// {{{3
-  /// @func _bindCycle
+  /// #{{{ @func _bindCycle
   /**
    * @private
    * @param {!function} func
@@ -576,76 +567,38 @@ var each = (function eachPrivateScope() {
       return func['call'](thisArg, cycle, cycles);
     };
   }
+  /// #}}} @func _bindCycle
 
-  ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Bind-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Error-Helpers
 
-  ///////////////////////////////////////////////////// {{{2
-  // EACH HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('each');
+  var _MK_ERR = $mkErrs('each');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Each-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.EACH
   return each;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['each'] = each;
+/// #}}} @off SOLO
+/// #}}} @super each
 
-module.exports = each;
+/// #{{{ @on SOLO
+var vitals = each;
+vitals['each'] = each;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
