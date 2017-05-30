@@ -10,18 +10,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $sliceArr ../helpers/slice-arr.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $sliceArr = require('./helpers/slice-arr.js');
-var $merge = require('./helpers/merge.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.FUSE
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super fuse
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -29,29 +26,20 @@ var $is = require('./helpers/is.js');
  */
 var fuse = (function fusePrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - fuse
-  // - fuse.value       (fuse.val)
-  // - fuse.value.start (fuse.value.top|fuse.val.start|fuse.val.top)
-  // - fuse.object      (fuse.obj)
-  // - fuse.array       (fuse.arr)
-  // - fuse.string      (fuse.str)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs fuse
+  /// @docref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
+  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
+  /// @docref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
+  /// #}}} @docrefs fuse
 
-  /* {{{2 Fuse References
-   * @ref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
-   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
-   * @ref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
-   */
-
-  /// {{{2
-  /// @method fuse
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.fuse
   /**
-   * Merges objects, [concatenates][concat] arrays, appends properties to
-   * objects and arrays, and combines strings.
-   *
+   * @description
+   *   Merges objects, [concatenates][concat] arrays, appends properties to
+   *   objects and arrays, and combines strings.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
    *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
@@ -79,10 +67,10 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined');
+        throw _mkErr(new ERR, 'no #dest defined');
 
       case 1:
-        throw $err(new Error, 'no #val defined');
+        throw _mkErr(new ERR, 'no #val defined');
 
       case 2:
         if ( $is.str(dest) )
@@ -91,7 +79,7 @@ var fuse = (function fusePrivateScope() {
             : _fuseStr(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string');
 
         if ( $is.args(dest) )
@@ -110,7 +98,7 @@ var fuse = (function fusePrivateScope() {
           return _fuseStrs(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string');
 
         if ( $is.args(dest) )
@@ -121,14 +109,16 @@ var fuse = (function fusePrivateScope() {
           : _fuseObjs(dest, val);
     }
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method fuse.value
-  /// @alias fuse.val
+  /// #{{{ @submethod value
+  /// @section base
+  /// @method vitals.fuse.value
+  /// @alias vitals.fuse.val
   /**
-   * Appends properties to an `object`, `function`, or `array` or strings to
-   * a `string`.
-   *
+   * @description
+   *   Appends properties to an `object`, `function`, or `array` or strings to
+   *   a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
    *   If #dest is an `arguments` instance, it is [sliced][slice] into an
@@ -149,17 +139,17 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined', 'value');
+        throw _mkErr(new ERR, 'no #dest defined', 'value');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'value');
+        throw _mkErr(new ERR, 'no #val defined', 'value');
 
       case 2:
         if ( $is.str(dest) )
           return _fuseStr(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string', 'value');
 
         if ( $is.args(dest) )
@@ -176,7 +166,7 @@ var fuse = (function fusePrivateScope() {
           return _fuseStrs(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string', 'value');
 
         if ( $is.args(dest) )
@@ -189,16 +179,18 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['value'] = fuseValue;
   fuse['val'] = fuseValue;
+  /// #}}} @submethod value
 
-  /// {{{2
-  /// @method fuse.value.start
-  /// @alias fuse.value.top
-  /// @alias fuse.val.start
-  /// @alias fuse.val.top
+  /// #{{{ @submethod value.start
+  /// @section base
+  /// @method vitals.fuse.value.start
+  /// @alias vitals.fuse.value.top
+  /// @alias vitals.fuse.val.start
+  /// @alias vitals.fuse.val.top
   /**
-   * Appends to the #dest beginning properties for an `object`, `function`, or
-   * `array` or strings for a `string`.
-   *
+   * @description
+   *   Appends to the #dest beginning properties for an `object`, `function`,
+   *   or `array` or strings for a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
    *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
@@ -220,17 +212,17 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined', 'value.start');
+        throw _mkErr(new ERR, 'no #dest defined', 'value.start');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'value.start');
+        throw _mkErr(new ERR, 'no #val defined', 'value.start');
 
       case 2:
         if ( $is.str(dest) )
           return _fuseStrTop(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string', 'value.start');
 
         if ( $is.args(dest) )
@@ -247,7 +239,7 @@ var fuse = (function fusePrivateScope() {
           return _fuseStrsTop(dest, val);
 
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest,
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest,
             '!Object|!Function|!Array|!Arguments|string', 'value.start');
 
         if ( $is.args(dest) )
@@ -262,13 +254,15 @@ var fuse = (function fusePrivateScope() {
   fuse['value']['top'] = fuseValueStart;
   fuse['val']['start'] = fuseValueStart;
   fuse['val']['top'] = fuseValueStart;
+  /// #}}} @submethod value.start
 
-  /// {{{2
-  /// @method fuse.object
-  /// @alias fuse.obj
+  /// #{{{ @submethod object
+  /// @section base
+  /// @method vitals.fuse.object
+  /// @alias vitals.fuse.obj
   /**
-   * Appends and merges properties to an `object` or `function`.
-   *
+   * @description
+   *   Appends and merges properties to an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} dest
    * @param {...*} val
@@ -291,14 +285,14 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined', 'object');
+        throw _mkErr(new ERR, 'no #dest defined', 'object');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'object');
+        throw _mkErr(new ERR, 'no #val defined', 'object');
 
       case 2:
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, '!Object|!Function',
             'object');
 
         return $is.arr(val)
@@ -307,7 +301,7 @@ var fuse = (function fusePrivateScope() {
 
       default:
         if ( !$is._obj(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, '!Object|!Function',
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, '!Object|!Function',
             'object');
 
         val = $sliceArr(arguments, 1);
@@ -316,13 +310,15 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['object'] = fuseObject;
   fuse['obj'] = fuseObject;
+  /// #}}} @submethod object
 
-  /// {{{2
-  /// @method fuse.array
-  /// @alias fuse.arr
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.fuse.array
+  /// @alias vitals.fuse.arr
   /**
-   * [Pushes][push] values and [concatenates][concat] arrays to an `array`.
-   *
+   * @description
+   *   [Pushes][push] values and [concatenates][concat] arrays to an `array`.
    * @public
    * @param {(!Array|!Arguments)} dest
    *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
@@ -341,16 +337,16 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined', 'array');
+        throw _mkErr(new ERR, 'no #dest defined', 'array');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'array');
+        throw _mkErr(new ERR, 'no #val defined', 'array');
 
       case 2:
         if ( $is.args(dest) )
           dest = $sliceArr(dest);
         else if ( !$is.arr(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, '!Array|!Arguments',
             'array');
 
         return _fuseArr(dest, val);
@@ -359,7 +355,7 @@ var fuse = (function fusePrivateScope() {
         if ( $is.args(dest) )
           dest = $sliceArr(dest);
         else if ( !$is.arr(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, '!Array|!Arguments',
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, '!Array|!Arguments',
             'array');
 
         val = $sliceArr(arguments, 1);
@@ -368,13 +364,15 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['array'] = fuseArray;
   fuse['arr'] = fuseArray;
+  /// #}}} @submethod array
 
-  /// {{{2
-  /// @method fuse.string
-  /// @alias fuse.str
+  /// #{{{ @submethod string
+  /// @section base
+  /// @method vitals.fuse.string
+  /// @alias vitals.fuse.str
   /**
-   * Appends strings to a `string`.
-   *
+   * @description
+   *   Appends strings to a `string`.
    * @public
    * @param {string} dest
    * @param {...*} val
@@ -386,14 +384,14 @@ var fuse = (function fusePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #dest defined', 'string');
+        throw _mkErr(new ERR, 'no #dest defined', 'string');
 
       case 1:
-        throw $err(new Error, 'no #val defined', 'string');
+        throw _mkErr(new ERR, 'no #val defined', 'string');
 
       case 2:
         if ( !$is.str(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'string');
 
         return $is.arr(val)
           ? _fuseStrs(dest, val)
@@ -401,7 +399,7 @@ var fuse = (function fusePrivateScope() {
 
       default:
         if ( !$is.str(dest) )
-          throw $typeErr(new TypeError, 'dest', dest, 'string', 'string');
+          throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'string');
 
         val = $sliceArr(arguments, 1);
         return _fuseStrs(dest, val);
@@ -409,13 +407,13 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['string'] = fuseString;
   fuse['str'] = fuseString;
+  /// #}}} @submethod string
 
-  ///////////////////////////////////////////////////// {{{2
-  // FUSE HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Fuse-Helpers
 
-  /// {{{3
-  /// @func _fuseObj
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _fuseObj
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -428,13 +426,13 @@ var fuse = (function fusePrivateScope() {
       return $merge(dest, val);
 
     if ( !$is.nil(val) )
-      dest[val] = NONE;
+      dest[val] = VOID;
 
     return dest;
   }
+  /// #}}} @func _fuseObj
 
-  /// {{{3
-  /// @func _fuseObjs
+  /// #{{{ @func _fuseObjs
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -454,9 +452,9 @@ var fuse = (function fusePrivateScope() {
       dest = _fuseObj(dest, vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseObjs
 
-  /// {{{3
-  /// @func _fuseObjVal
+  /// #{{{ @func _fuseObjVal
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -464,12 +462,12 @@ var fuse = (function fusePrivateScope() {
    * @return {(!Object|!Function)}
    */
   function _fuseObjVal(dest, val) {
-    dest[val] = NONE;
+    dest[val] = VOID;
     return dest;
   }
+  /// #}}} @func _fuseObjVal
 
-  /// {{{3
-  /// @func _fuseObjsVal
+  /// #{{{ @func _fuseObjsVal
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -489,13 +487,13 @@ var fuse = (function fusePrivateScope() {
     i = -1;
     while (++i < len) {
       val = vals[i];
-      dest[val] = NONE;
+      dest[val] = VOID;
     }
     return dest;
   }
+  /// #}}} @func _fuseObjsVal
 
-  /// {{{3
-  /// @func _fuseObjValTop
+  /// #{{{ @func _fuseObjValTop
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -505,13 +503,13 @@ var fuse = (function fusePrivateScope() {
   function _fuseObjValTop(dest, val) {
 
     if ( !$own(dest, val) )
-      dest[val] = NONE;
+      dest[val] = VOID;
 
     return dest;
   }
+  /// #}}} @func _fuseObjValTop
 
-  /// {{{3
-  /// @func _fuseObjsValTop
+  /// #{{{ @func _fuseObjsValTop
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -531,9 +529,9 @@ var fuse = (function fusePrivateScope() {
       dest = _fuseObjValTop(dest, vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseObjsValTop
 
-  /// {{{3
-  /// @func _fuseArr
+  /// #{{{ @func _fuseArr
   /**
    * @private
    * @param {!Array} dest
@@ -550,9 +548,9 @@ var fuse = (function fusePrivateScope() {
 
     return dest;
   }
+  /// #}}} @func _fuseArr
 
-  /// {{{3
-  /// @func _fuseArrs
+  /// #{{{ @func _fuseArrs
   /**
    * @private
    * @param {!Array} dest
@@ -572,9 +570,9 @@ var fuse = (function fusePrivateScope() {
       dest = _fuseArr(dest, vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseArrs
 
-  /// {{{3
-  /// @func _fuseArrVal
+  /// #{{{ @func _fuseArrVal
   /**
    * @private
    * @param {!Array} dest
@@ -585,9 +583,9 @@ var fuse = (function fusePrivateScope() {
     dest['push'](val);
     return dest;
   }
+  /// #}}} @func _fuseArrVal
 
-  /// {{{3
-  /// @func _fuseArrsVal
+  /// #{{{ @func _fuseArrsVal
   /**
    * @private
    * @param {!Array} dest
@@ -607,9 +605,9 @@ var fuse = (function fusePrivateScope() {
       dest['push'](vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseArrsVal
 
-  /// {{{3
-  /// @func _fuseArrValTop
+  /// #{{{ @func _fuseArrValTop
   /**
    * @private
    * @param {!Array} dest
@@ -620,9 +618,9 @@ var fuse = (function fusePrivateScope() {
     dest['unshift'](val);
     return dest;
   }
+  /// #}}} @func _fuseArrValTop
 
-  /// {{{3
-  /// @func _fuseArrsValTop
+  /// #{{{ @func _fuseArrsValTop
   /**
    * @private
    * @param {!Array} dest
@@ -642,9 +640,9 @@ var fuse = (function fusePrivateScope() {
       dest['unshift'](vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseArrsValTop
 
-  /// {{{3
-  /// @func _fuseStr
+  /// #{{{ @func _fuseStr
   /**
    * @private
    * @param {string} dest
@@ -652,11 +650,11 @@ var fuse = (function fusePrivateScope() {
    * @return {string}
    */
   function _fuseStr(dest, val) {
-    return dest + val;
+    return dest + $mkStr(val);
   }
+  /// #}}} @func _fuseStr
 
-  /// {{{3
-  /// @func _fuseStrs
+  /// #{{{ @func _fuseStrs
   /**
    * @private
    * @param {string} dest
@@ -673,12 +671,12 @@ var fuse = (function fusePrivateScope() {
     len = vals['length'];
     i = -1;
     while (++i < len)
-      dest += vals[i];
+      dest += $mkStr(vals[i]);
     return dest;
   }
+  /// #}}} @func _fuseStrs
 
-  /// {{{3
-  /// @func _fuseStrTop
+  /// #{{{ @func _fuseStrTop
   /**
    * @private
    * @param {string} dest
@@ -686,11 +684,11 @@ var fuse = (function fusePrivateScope() {
    * @return {string}
    */
   function _fuseStrTop(dest, val) {
-    return val + dest;
+    return $mkStr(val) + dest;
   }
+  /// #}}} @func _fuseStrTop
 
-  /// {{{3
-  /// @func _fuseStrsTop
+  /// #{{{ @func _fuseStrsTop
   /**
    * @private
    * @param {string} dest
@@ -707,79 +705,41 @@ var fuse = (function fusePrivateScope() {
     len = vals['length'];
     i = -1;
     while (++i < len)
-      dest = vals[i] + dest;
+      dest = $mkStr(vals[i]) + dest;
     return dest;
   }
+  /// #}}} @func _fuseStrsTop
 
-  ///////////////////////////////////////////////////// {{{2
-  // FUSE HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Error-Helpers
 
-  ///////////////////////////////////////////////////// {{{2
-  // FUSE HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('fuse');
+  var _MK_ERR = $mkErrs('fuse');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Fuse-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.FUSE
   return fuse;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['fuse'] = fuse;
+/// #}}} @off SOLO
+/// #}}} @super fuse
 
-module.exports = fuse;
+/// #{{{ @on SOLO
+var vitals = fuse;
+vitals['fuse'] = fuse;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
