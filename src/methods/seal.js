@@ -10,16 +10,13 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.SEAL
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super seal
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -27,26 +24,21 @@ var $is = require('./helpers/is.js');
  */
 var seal = (function sealPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - seal
-  // - seal.object (seal.obj)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs seal
+  /// @docref [seal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)
+  /// #}}} @docrefs seal
 
-  /* {{{2 Seal References
-   * @ref [seal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)
-   */
-
-  /// {{{2
-  /// @method seal
+  /// #{{{ @submethod main
+  /// @section strict
+  /// @method vitals.seal
   /**
-   * [Seals][seal] an `object` or `function` with the option to
-   * recursively [seal][seal] its properties. Note that incompatible
-   * interpreters are polyfilled to avoid failures in older environments.
-   *
+   * @description
+   *   [Seals][seal] an `object` or `function` with the option to
+   *   recursively [seal][seal] its properties. Note that incompatible
+   *   interpreters are polyfilled to avoid failures in older environments.
    * @public
    * @param {(?Object|?Function)} obj
-   * @param {boolean=} deep
+   * @param {boolean=} deep = `false`
    *   Whether to recursively [seal][seal] the #obj properties.
    * @return {(?Object|?Function)}
    */
@@ -54,44 +46,46 @@ var seal = (function sealPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #obj defined');
+        throw _mkErr(new ERR, 'no #obj defined');
 
       case 1:
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function');
 
         return _seal(obj);
 
       default:
-        if ( !$is.none(deep) && !$is.bool(deep) )
-          throw $typeErr(new TypeError, 'deep', deep, 'boolean=');
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=');
 
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function');
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function');
 
         return deep
           ? _deepSeal(obj)
           : _seal(obj);
     }
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method seal.object
-  /// @alias seal.obj
+  /// #{{{ @submethod object
+  /// @section strict
+  /// @method vitals.seal.object
+  /// @alias vitals.seal.obj
   /**
-   * [Seals][seal] an `object` or `function` with the option to
-   * recursively [seal][seal] its properties. Note that incompatible
-   * interpreters are polyfilled to avoid failures in older environments.
-   *
+   * @description
+   *   [Seals][seal] an `object` or `function` with the option to
+   *   recursively [seal][seal] its properties. Note that incompatible
+   *   interpreters are polyfilled to avoid failures in older environments.
    * @public
    * @param {(?Object|?Function)} obj
-   * @param {boolean=} deep
+   * @param {boolean=} deep = `false`
    *   Whether to recursively [seal][seal] the #obj properties.
    * @return {(?Object|?Function)}
    */
@@ -99,27 +93,27 @@ var seal = (function sealPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #obj defined', 'object');
+        throw _mkErr(new ERR, 'no #obj defined', 'object');
 
       case 1:
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function',
             'object');
 
         return _seal(obj);
 
       default:
-        if ( !$is.none(deep) && !$is.bool(deep) )
-          throw $typeErr(new TypeError, 'deep', deep, 'boolean=', 'object');
+        if ( !$is.void(deep) && !$is.bool(deep) )
+          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'object');
 
         if ( $is.nil(obj) )
-          return null;
+          return NIL;
 
         if ( !$is._obj(obj) )
-          throw $typeErr(new TypeError, 'obj', obj, '?Object|?Function',
+          throw _mkTypeErr(new TYPE_ERR, 'obj', obj, '?Object|?Function',
             'object');
 
         return deep
@@ -129,13 +123,13 @@ var seal = (function sealPrivateScope() {
   }
   seal['object'] = sealObject;
   seal['obj'] = sealObject;
+  /// #}}} @submethod object
 
-  ///////////////////////////////////////////////////// {{{2
-  // SEAL HELPERS - OBJECT.SEAL POLYFILL
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Seal-Helpers
 
-  /// {{{3
-  /// @func _ObjectSeal
+  /// #{{{ @group Seal-Polyfills
+
+  /// #{{{ @func _ObjectSeal
   /**
    * @private
    * @param {(!Object|!Function)} obj
@@ -146,12 +140,12 @@ var seal = (function sealPrivateScope() {
     /** @type {!function} */
     var objectSeal;
 
-    if ( !('seal' in Object) || !$is.fun(Object['seal']) )
+    if ( !('seal' in OBJ) || !$is.fun(OBJ['seal']) )
       return function seal(obj) {
         return obj;
       };
 
-    objectSeal = Object['seal'];
+    objectSeal = OBJ['seal'];
 
     try {
       objectSeal(function(){});
@@ -165,22 +159,26 @@ var seal = (function sealPrivateScope() {
       };
     }
   })();
+  /// #}}} @func _ObjectSeal
 
-  ///////////////////////////////////////////////////// {{{2
-  // SEAL HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Seal-Polyfills
 
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _seal
   /**
    * @private
    * @param {(!Object|!Function)} obj
    * @return {(!Object|!Function)}
    */
   var _seal = _ObjectSeal;
+  /// #}}} @func _seal
 
+  /// #{{{ @func _deepSeal
   /**
    * @private
-   * @param {(?Object|?Function)} obj
-   * @return {(?Object|?Function)}
+   * @param {(!Object|!Function)} obj
+   * @return {(!Object|!Function)}
    */
   function _deepSeal(obj) {
 
@@ -194,64 +192,38 @@ var seal = (function sealPrivateScope() {
 
     return _seal(obj);
   }
+  /// #}}} @func _deepSeal
 
-  ///////////////////////////////////////////////////// {{{2
-  // SEAL HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('seal');
+  var _MK_ERR = $mkErrs('seal');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Seal-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.SEAL
   return seal;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['seal'] = seal;
+/// #}}} @off SOLO
+/// #}}} @super seal
 
-module.exports = seal;
+/// #{{{ @on SOLO
+var vitals = seal;
+vitals['seal'] = seal;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
