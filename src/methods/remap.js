@@ -10,19 +10,18 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $escape ../helpers/escape.js
+/// #include @helper $splitKeys ../helpers/split-keys.js
+/// #include @super copy ./copy.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $splitKeys = require('./helpers/split-keys.js');
-var $escape = require('./helpers/escape.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.REMAP
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super remap
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -30,40 +29,34 @@ var copy = require('./copy.js');
  */
 var remap = (function remapPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - remap
-  // - remap.object (remap.obj)
-  // - remap.array  (remap.arr)
-  // - remap.string (remap.str)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs remap
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+  /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+  /// @docref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+  /// @docref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+  /// @docref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+  /// @docref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+  /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// @docref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
+  /// @docref [lastIndex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
+  /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+  /// #}}} @docrefs remap
 
-  /* {{{2 Remap References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
-   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
-   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-   * @ref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
-   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
-   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-   * @ref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
-   * @ref [lastIndex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
-   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
-   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
-   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   */
-
-  /// {{{2
-  /// @method remap
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.remap
   /**
-   * A shortcut for making a new `object`, `array`, or `string` by invoking an
-   * action over each [owned][own] `object` or `function` property, indexed
-   * `array` or `arguments` property, or matched `substring` pattern.
-   *
+   * @description
+   *   A shortcut for making a new `object`, `array`, or `string` by invoking
+   *   an action over each [owned][own] `object` or `function` property,
+   *   indexed `array` or `arguments` property, or matched `substring`
+   *   pattern.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
    * @param {*} iteratee
@@ -95,14 +88,12 @@ var remap = (function remapPrivateScope() {
    *   - *`string`*!$
    *     The #iteratee must be a `substring` pattern to search for within the
    *     #source. If the #iteratee is **not** a `RegExp`, it is converted into
-   *     a `string` with [String()][string] before running a search on the
-   *     #source for any matches.
+   *     a `string` before running a search on the #source for any matches.
    * @param {*=} replacement
    *   Only allowed (and then required) when the #source is a `string`. If it
-   *   is **not** a `function` the #replacement is converted into a `string`
-   *   with [String()][string]. If the #replacement is a `function`, it
-   *   operates the same as any `function` parameter specified for
-   *   [String.prototype.replace][replace].
+   *   is **not** a `function` the #replacement is converted into a `string`.
+   *   If the #replacement is a `function`, it operates the same as any
+   *   `function` parameter specified for [String.prototype.replace][replace].
    * @param {?Object=} thisArg
    *   The details are as follows (per #source type):
    *   - *`!Object|!Function|!Array|!Arguments`*!$
@@ -136,20 +127,20 @@ var remap = (function remapPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
 
       case 1:
-        throw $err(new Error, 'no #iteratee defined');
+        throw _mkErr(new ERR, 'no #iteratee defined');
 
       case 2:
         if ( $is.str(source) )
-          throw $err(new Error, 'no #replacement defined');
+          throw _mkErr(new ERR, 'no #replacement defined');
 
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments|string');
         if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
+          throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
            '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
 
         return $is._arr(source)
@@ -163,8 +154,8 @@ var remap = (function remapPrivateScope() {
 
       default:
         if ( $is.str(source) ) {
-          if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-            throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+          if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+            throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
 
           return _remapStr(source, iteratee, replacement, thisArg);
         }
@@ -174,28 +165,30 @@ var remap = (function remapPrivateScope() {
     thisArg = replacement;
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments|string');
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee,
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
         '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
-    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+    if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+      throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
 
     return $is._arr(source)
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method remap.object
-  /// @alias remap.obj
+  /// #{{{ @submethod object
+  /// @section base
+  /// @method vitals.remap.object
+  /// @alias vitals.remap.obj
   /**
-   * A shortcut for making a new `object` with the same [owned][own] property
-   * key names as an existing `object` or `function` and new values set by
-   * invoking an action with an #iteratee `function` upon each [owned][own]
-   * property of the existing `object`.
-   *
+   * @description
+   *   A shortcut for making a new `object` with the same [owned][own]
+   *   property key names as an existing `object` or `function` and new values
+   *   set by invoking an action with an #iteratee `function` upon each
+   *   [owned][own] property of the existing `object`.
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
@@ -227,30 +220,30 @@ var remap = (function remapPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'object');
+        throw _mkErr(new ERR, 'no #source defined', 'object');
 
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'object');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'object');
 
       case 2:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'object');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'object');
         if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
+          throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
             '!function(*=, string=, (!Object|!Function)=): *', 'object');
 
         return _remapObj(source, iteratee, VOID);
 
       default:
         if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source, '!Object|!Function',
-            'object');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+            '!Object|!Function', 'object');
         if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
+          throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
             '!function(*=, string=, (!Object|!Function)=): *', 'object');
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'object');
 
         return _remapObj(source, iteratee, thisArg);
@@ -258,17 +251,19 @@ var remap = (function remapPrivateScope() {
   }
   remap['object'] = remapObject;
   remap['obj'] = remapObject;
+  /// #}}} @submethod object
 
-  /// {{{2
-  /// @method remap.array
-  /// @alias remap.arr
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.remap.array
+  /// @alias vitals.remap.arr
   /**
-   * A shortcut for making a new `array` with the same [length][arr-length] of
-   * indexed properties as an existing `array` or array-like `object` and with
-   * new property values set by invoking an action with an #iteratee
-   * `function` upon each indexed property of the existing `array` or
-   * `object`.
-   *
+   * @description
+   *   A shortcut for making a new `array` with the same [length][arr-length]
+   *   of indexed properties as an existing `array` or array-like `object` and
+   *   with new property values set by invoking an action with an #iteratee
+   *   `function` upon each indexed property of the existing `array` or
+   *   `object`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
    *   If the #source is a `string`, it is converted into an `array` using one
@@ -305,34 +300,26 @@ var remap = (function remapPrivateScope() {
    */
   function remapArray(source, iteratee, thisArg) {
 
-    /** @type {number} */
-    var len;
-
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'array');
+        throw _mkErr(new ERR, 'no #source defined', 'array');
 
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'array');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'array');
 
       case 2:
         if ( $is.str(source) )
           source = $splitKeys(source);
         else if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function|string', 'array');
+        else if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)', 'array');
+
         if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
+          throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
             '!function(*=, number=, !Array=): *', 'array');
-
-        len = source['length'];
-
-        if ( !$is.num(len) )
-          throw $typeErr(new TypeError, 'source.length', len, 'number',
-            'array');
-        if ( !$is.whole(len) || len < 0 )
-          throw $err(new Error, 'invalid #source.length `number` (' +
-            'must be `0` or a positive whole `number`)', 'array');
 
         return _remapArr(source, iteratee, VOID);
 
@@ -340,53 +327,50 @@ var remap = (function remapPrivateScope() {
         if ( $is.str(source) )
           source = $splitKeys(source);
         else if ( !$is._obj(source) )
-          throw $typeErr(new TypeError, 'source', source,
+          throw _mkTypeErr(new TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function|string', 'array');
+        else if ( !$is.arrish(source) )
+          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+            'length must be a whole `number` that is `0` or more)', 'array');
+
         if ( !$is.fun(iteratee) )
-          throw $typeErr(new TypeError, 'iteratee', iteratee,
+          throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee,
             '!function(*=, number=, !Array=): *', 'array');
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'array');
-
-        len = source['length'];
-
-        if ( !$is.num(len) )
-          throw $typeErr(new TypeError, 'source.length', len, 'number',
-            'array');
-        if ( !$is.whole(len) || len < 0 )
-          throw $err(new Error, 'invalid #source.length `number` (' +
-            'must be `0` or a positive whole `number`)', 'array');
 
         return _remapArr(source, iteratee, thisArg);
     }
   }
   remap['array'] = remapArray;
   remap['arr'] = remapArray;
+  /// #}}} @submethod array
 
-  /// {{{2
-  /// @method remap.string
-  /// @alias remap.str
+  /// #{{{ @submethod string
+  /// @section base
+  /// @method vitals.remap.string
+  /// @alias vitals.remap.str
   /**
-   * A shortcut for replacing each matching `substring` with a new `substring`
-   * within a #source `string`.
-   *
+   * @description
+   *   A shortcut for replacing each matching `substring` with a new
+   *   `substring` within a #source `string`.
    * @public
    * @param {string} source
    * @param {*} pattern
    *   The #pattern must be a `substring` pattern to search for within the
    *   #source. If the #pattern is **not** a `RegExp`, it is converted into
-   *   a `string` with [String()][string] before running a search on the
-   *   #source for any matches. Note that a `string` #pattern will replace all
-   *   of the `substring` matches in the #source (i.e. not just the first). To
-   *   replace only one match use a `RegExp` #pattern that does not have the
-   *   [global flag][global] set, a `RegExp` #pattern with an altered
-   *   [lastIndex property][lastIndex], or a `function` #replacement that uses
-   *   your own logic to decide whether to replace each #pattern occurrence.
+   *   a `string` before running a search on the #source for any matches. Note
+   *   that a `string` #pattern will replace all of the `substring` matches in
+   *   the #source (i.e. not just the first). To replace only one match use a
+   *   `RegExp` #pattern that does not have the [global flag][global] set, a
+   *   `RegExp` #pattern with an altered [lastIndex property][lastIndex], or a
+   *   `function` #replacement that uses your own logic to decide whether to
+   *   replace each #pattern occurrence.
    * @param {*} replacement
    *   If the #replacement is **not** a `function`, it is converted into a
-   *   `string` with [String()][string]. If the #replacement is a `function`,
-   *   it operates the same as any `function` parameter specified for
+   *   `string`. If the #replacement is a `function`, it operates the same as
+   *   any `function` parameter specified for
    *   [String.prototype.replace][replace].
    * @param {?Object=} thisArg
    *   If #thisArg is defined and the #replacement is a `function`, the
@@ -408,25 +392,27 @@ var remap = (function remapPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'string');
+        throw _mkErr(new ERR, 'no #source defined', 'string');
 
       case 1:
-        throw $err(new Error, 'no #pattern defined', 'string');
+        throw _mkErr(new ERR, 'no #pattern defined', 'string');
 
       case 2:
-        throw $err(new Error, 'no #replacement defined', 'string');
+        throw _mkErr(new ERR, 'no #replacement defined', 'string');
 
       case 3:
         if ( !$is.str(source) )
-          throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+          throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string',
+            'string');
 
         return _remapStr(source, pattern, replacement, VOID);
 
       default:
         if ( !$is.str(source) )
-          throw $typeErr(new TypeError, 'source', source, 'string', 'string');
-        if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-          throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=',
+          throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string',
+            'string');
+        if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+          throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
             'string');
 
         return _remapStr(source, pattern, replacement, thisArg);
@@ -434,13 +420,13 @@ var remap = (function remapPrivateScope() {
   }
   remap['string'] = remapString;
   remap['str'] = remapString;
+  /// #}}} @submethod string
 
-  ///////////////////////////////////////////////////// {{{2
-  // REMAP HELPERS - MAIN
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Remap-Helpers
 
-  /// {{{3
-  /// @func _remapObj
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _remapObj
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -459,7 +445,7 @@ var remap = (function remapPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindIteratee(iteratee, thisArg);
 
     switch (iteratee['length']) {
@@ -491,9 +477,9 @@ var remap = (function remapPrivateScope() {
 
     return obj;
   }
+  /// #}}} @func _remapObj
 
-  /// {{{3
-  /// @func _remapArr
+  /// #{{{ @func _remapArr
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -512,11 +498,11 @@ var remap = (function remapPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindIteratee(iteratee, thisArg);
 
     len = source['length'];
-    arr = new Array(len);
+    arr = new ARR(len);
     i = -1;
 
     switch (iteratee['length']) {
@@ -540,9 +526,9 @@ var remap = (function remapPrivateScope() {
 
     return arr;
   }
+  /// #}}} @func _remapArr
 
-  /// {{{3
-  /// @func _remapStr
+  /// #{{{ @func _remapStr
   /**
    * @private
    * @param {string} source
@@ -557,30 +543,27 @@ var remap = (function remapPrivateScope() {
       return source;
 
     if ( !$is.regx(pattern) ) {
-      if ( !$is.str(pattern) )
-        pattern = String(pattern);
-      else if (!pattern)
+      pattern = $mkStr(pattern);
+      if (!pattern)
         return source;
       pattern = $escape(pattern);
-      pattern = new RegExp(pattern, 'g');
+      pattern = new REGX(pattern, 'g');
     }
 
-    if ( $is.fun(replacement) ) {
-      if ( !$is.none(thisArg) )
-        replacement = _bindReplacement(replacement, thisArg);
-    }
-    else if ( !$is.str(replacement) )
-      replacement = String(replacement);
+    if ( !$is.fun(replacement) )
+      replacement = $mkStr(replacement);
+    else if ( !$is.void(thisArg) )
+      replacement = _bindReplacement(replacement, thisArg);
 
     return source['replace'](pattern, replacement);
   }
+  /// #}}} @func _remapStr
 
-  ///////////////////////////////////////////////////// {{{2
-  // REMAP HELPERS - BIND
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Main-Helpers
 
-  /// {{{3
-  /// @func _bindIteratee
+  /// #{{{ @group Bind-Helpers
+
+  /// #{{{ @func _bindIteratee
   /**
    * @private
    * @param {!function} func
@@ -606,9 +589,9 @@ var remap = (function remapPrivateScope() {
       return func['call'](thisArg, value, key, source);
     };
   }
+  /// #}}} @func _bindIteratee
 
-  /// {{{3
-  /// @func _bindReplacement
+  /// #{{{ @func _bindReplacement
   /**
    * @private
    * @param {!function} func
@@ -650,64 +633,38 @@ var remap = (function remapPrivateScope() {
       return func['apply'](thisArg, arguments);
     };
   }
+  /// #}}} @func _bindReplacement
 
-  ///////////////////////////////////////////////////// {{{2
-  // REMAP HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Bind-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('remap');
+  var _MK_ERR = $mkErrs('remap');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Remap-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.REMAP
   return remap;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['remap'] = remap;
+/// #}}} @off SOLO
+/// #}}} @super remap
 
-module.exports = remap;
+/// #{{{ @on SOLO
+var vitals = remap;
+vitals['remap'] = remap;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
