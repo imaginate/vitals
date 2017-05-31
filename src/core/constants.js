@@ -25,6 +25,7 @@
 /// #include @constant FUN ../constants/constructor.js
 /// #include @constant FUN_PROTO ../constants/prototype.js
 /// #include @constant NIL ../constants/special.js
+/// #include @constant NO ../constants/special.js
 /// #include @constant NUM ../constants/constructor.js
 /// #include @constant NUM_PROTO ../constants/prototype.js
 /// #include @constant OBJ ../constants/constructor.js
@@ -36,6 +37,7 @@
 /// #include @constant STR_PROTO ../constants/prototype.js
 /// #include @constant TYPE_ERR ../constants/constructor.js
 /// #include @constant VOID ../constants/special.js
+/// #include @constant YES ../constants/special.js
 /// #{{{ @on NODE
 /// #include @constant CP ../constants/node.js
 /// #include @constant FS ../constants/node.js

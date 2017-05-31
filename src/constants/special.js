@@ -17,6 +17,14 @@
 var NIL = null;
 /// #}}} @constant NIL
 
+/// #{{{ @constant NO
+/**
+ * @private
+ * @const {boolean}
+ */
+var NO = false;
+/// #}}} @constant NO
+
 /// #{{{ @constant VOID
 /**
  * @private
@@ -24,5 +32,13 @@ var NIL = null;
  */
 var VOID = __VOID;
 /// #}}} @constant VOID
+
+/// #{{{ @constant YES
+/**
+ * @private
+ * @const {boolean}
+ */
+var YES = true;
+/// #}}} @constant YES
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
