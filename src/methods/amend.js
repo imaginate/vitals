@@ -18,7 +18,6 @@
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
-/// #include @super amend ./amend.js
 /// #}}} @on SOLO
 
 /// #{{{ @super amend
