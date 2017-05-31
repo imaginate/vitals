@@ -153,12 +153,12 @@ var remap = (function remapPrivateScope() {
            '!function(*=, (string|number)=, (!Object|!Function|!Array)=): *');
 
         return $is._arr(source)
-          ? _remapArr(source, iteratee, NONE)
-          : _remapObj(source, iteratee, NONE);
+          ? _remapArr(source, iteratee, VOID)
+          : _remapObj(source, iteratee, VOID);
 
       case 3:
         if ( $is.str(source) )
-          return _remapStr(source, iteratee, replacement, NONE);
+          return _remapStr(source, iteratee, replacement, VOID);
         break;
 
       default:
@@ -240,7 +240,7 @@ var remap = (function remapPrivateScope() {
           throw $typeErr(new TypeError, 'iteratee', iteratee,
             '!function(*=, string=, (!Object|!Function)=): *', 'object');
 
-        return _remapObj(source, iteratee, NONE);
+        return _remapObj(source, iteratee, VOID);
 
       default:
         if ( !$is._obj(source) )
@@ -334,7 +334,7 @@ var remap = (function remapPrivateScope() {
           throw $err(new Error, 'invalid #source.length `number` (' +
             'must be `0` or a positive whole `number`)', 'array');
 
-        return _remapArr(source, iteratee, NONE);
+        return _remapArr(source, iteratee, VOID);
 
       default:
         if ( $is.str(source) )
@@ -420,7 +420,7 @@ var remap = (function remapPrivateScope() {
         if ( !$is.str(source) )
           throw $typeErr(new TypeError, 'source', source, 'string', 'string');
 
-        return _remapStr(source, pattern, replacement, NONE);
+        return _remapStr(source, pattern, replacement, VOID);
 
       default:
         if ( !$is.str(source) )
@@ -576,16 +576,8 @@ var remap = (function remapPrivateScope() {
   }
 
   ///////////////////////////////////////////////////// {{{2
-  // REMAP HELPERS - GENERAL
+  // REMAP HELPERS - BIND
   //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   /// {{{3
   /// @func _bindIteratee

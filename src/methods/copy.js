@@ -449,7 +449,7 @@ var copy = (function copyPrivateScope() {
 
     for (key in source) {
       if ( $own(source, key) )
-        dest[key] = copy(source[key], true);
+        dest[key] = copy(source[key], YES);
     }
     return dest;
   }

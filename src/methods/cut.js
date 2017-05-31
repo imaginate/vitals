@@ -1817,9 +1817,9 @@ var cut = (function cutPrivateScope() {
     while (++i < len) {
       propVal = vals[i];
       if ( !$is.num(propVal) || !$is.whole(propVal) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _isIntArr
 
@@ -1837,15 +1837,15 @@ var cut = (function cutPrivateScope() {
     var i;
 
     if ( !$is.arr(val) )
-      return false;
+      return NO;
 
     len = val['length'];
     i = -1;
     while (++i < len) {
       if ( !$is.num(val[i]) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _isNumArr
 
@@ -1866,9 +1866,9 @@ var cut = (function cutPrivateScope() {
     i = -1;
     while (++i < len) {
       if ( !$is.whole(nums[i]) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _isWholeNumArr
 

@@ -1250,9 +1250,9 @@ var amend = (function amendPrivateScope() {
    * @dict
    */
   var _DATA_DESCRIPTOR = {
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
+    'writable': YES,
+    'enumerable': YES,
+    'configurable': YES
   };
   /// #}}} @const _DATA_DESCRIPTOR
 
@@ -1263,8 +1263,8 @@ var amend = (function amendPrivateScope() {
    * @dict
    */
   var _ACCESSOR_DESCRIPTOR = {
-    'enumerable': true,
-    'configurable': true
+    'enumerable': YES,
+    'configurable': YES
   };
   /// #}}} @const _ACCESSOR_DESCRIPTOR
 
@@ -1275,12 +1275,12 @@ var amend = (function amendPrivateScope() {
    * @dict
    */
   var _DESCRIPTOR_PROPS = {
-    'get': true,
-    'set': true,
-    'value': true,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
+    'get': YES,
+    'set': YES,
+    'value': YES,
+    'writable': YES,
+    'enumerable': YES,
+    'configurable': YES
   };
   /// #}}} @const _DESCRIPTOR_PROPS
 
@@ -1296,13 +1296,13 @@ var amend = (function amendPrivateScope() {
     var key;
 
     if ( !$is.obj(val) )
-      return false;
+      return NO;
 
     for (key in val) {
       if ( $own(val, key) && !$own(_DESCRIPTOR_PROPS, key) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _isDescriptor
 
@@ -1415,12 +1415,12 @@ var amend = (function amendPrivateScope() {
     name = 'defineProperties';
 
     if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return false;
+      return NO;
 
     name = 'defineProperty';
 
     if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return false;
+      return NO;
 
     /** @dict */ 
     obj = {};
@@ -1428,17 +1428,17 @@ var amend = (function amendPrivateScope() {
     descriptor = {};
 
     descriptor['value'] = obj;
-    descriptor['enumerable'] = false;
+    descriptor['enumerable'] = NO;
 
     try {
       OBJ[name](obj, 'key', descriptor);
       for (key in obj) {
         if (key === 'key')
-          return false;
+          return NO;
       }
     }
     catch (e) {
-      return false;
+      return NO;
     }
 
     return obj['key'] === obj;
@@ -1517,9 +1517,9 @@ var amend = (function amendPrivateScope() {
 
     for (key in obj) {
       if ( $own(obj, key) && !$own(source, key) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _hasKeys
 
@@ -1547,10 +1547,10 @@ var amend = (function amendPrivateScope() {
           val = val['value'];
         }
         if ( !is(strongType, val) )
-          return false;
+          return NO;
       }
     }
-    return true;
+    return YES;
   }
   /// #}}} @func _strongTypeCheckProps
 
@@ -1566,10 +1566,10 @@ var amend = (function amendPrivateScope() {
    * @return {!TypeError}
    */
   function _mkStrongTypeErr(err, msg) {
-    err['__setter'] = true;
-    err['setter'] = true;
-    err['__type'] = true;
-    err['type'] = true;
+    err['__setter'] = YES;
+    err['setter'] = YES;
+    err['__type'] = YES;
+    err['type'] = YES;
     err['name'] = 'TypeError';
     err['message'] = msg;
     err['msg'] = msg;

@@ -482,7 +482,7 @@ var until = (function untilPrivateScope() {
       while(iteratee() !== end)
         ;
     }
-    return true;
+    return YES;
   }
 
   /// {{{3
@@ -510,7 +510,7 @@ var until = (function untilPrivateScope() {
         for (key in source) {
           if ( $own(source, key) ) {
             if (iteratee() === end)
-              return true;
+              return YES;
           }
         }
         break;
@@ -518,7 +518,7 @@ var until = (function untilPrivateScope() {
         for (key in source) {
           if ( $own(source, key) ) {
             if (iteratee(source[key]) === end)
-              return true;
+              return YES;
           }
         }
         break;
@@ -526,7 +526,7 @@ var until = (function untilPrivateScope() {
         for (key in source) {
           if ( $own(source, key) ) {
             if (iteratee(source[key], key) === end)
-              return true;
+              return YES;
           }
         }
         break;
@@ -534,12 +534,12 @@ var until = (function untilPrivateScope() {
         for (key in source) {
           if ( $own(source, key) ) {
             if (iteratee(source[key], key, source) === end)
-              return true;
+              return YES;
           }
         }
         break;
     }
-    return false;
+    return NO;
   }
 
   /// {{{3
@@ -571,29 +571,29 @@ var until = (function untilPrivateScope() {
       case 0:
         while (++i < len) {
           if (iteratee() === end)
-            return true;
+            return YES;
         }
         break;
       case 1:
         while (++i < len) {
           if (iteratee(source[i]) === end)
-            return true;
+            return YES;
         }
         break;
       case 2:
         while (++i < len) {
           if (iteratee(source[i], i) === end)
-            return true;
+            return YES;
         }
         break;
       default:
         while (++i < len) {
           if (iteratee(source[i], i, source) === end)
-            return true;
+            return YES;
         }
         break;
     }
-    return false;
+    return NO;
   }
 
   /// {{{3
@@ -624,25 +624,25 @@ var until = (function untilPrivateScope() {
       case 0:
         while(count--) {
           if (iteratee() === end)
-            return true;
+            return YES;
         }
         break;
       case 1:
         cycle = 0;
         while(count--) {
           if (iteratee(cycle++) === end)
-            return true;
+            return YES;
         }
         break;
       default:
         cycle = 0;
         while(count--) {
           if (iteratee(cycle++, cycles) === end)
-            return true;
+            return YES;
         }
         break;
     }
-    return false;
+    return NO;
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -721,18 +721,6 @@ var until = (function untilPrivateScope() {
       return func['call'](thisArg, cycle, cycles);
     };
   }
-
-  ///////////////////////////////////////////////////// {{{2
-  // UNTIL HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   ///////////////////////////////////////////////////// {{{2
   // UNTIL HELPERS - ERROR MAKERS

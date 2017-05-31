@@ -119,10 +119,10 @@ var is = (function isPrivateScope() {
       case 1:
         throw $err(new Error, 'no #val defined');
       case 2:
-        vals = false;
+        vals = NO;
         break;
       default:
-        vals = true;
+        vals = YES;
         break;
     }
 
@@ -132,7 +132,7 @@ var is = (function isPrivateScope() {
       throw $err(new Error, 'invalid empty #types `string`');
 
     if ( _hasSpecial('*', types) )
-      return true;
+      return YES;
 
     checks = _getChecks(types);
 
@@ -824,9 +824,9 @@ var is = (function isPrivateScope() {
     i = vals['length'];
     while (i--) {
       if ( !check(vals[i]) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -843,7 +843,7 @@ var is = (function isPrivateScope() {
   function _isFrozen(val) {
 
     if ( $is.nil(val) )
-      return false;
+      return NO;
 
     if ( !$is._obj(val) )
       throw $typeErr(new TypeError, 'val', val, '?Object|?Function',
@@ -922,9 +922,9 @@ var is = (function isPrivateScope() {
     i = checks['length'];
     while (i--) {
       if ( checks[i](val, nullable) )
-        return true;
+        return YES;
     }
-    return false;
+    return NO;
   }
 
   /// {{{3
@@ -944,9 +944,9 @@ var is = (function isPrivateScope() {
     i = vals['length'];
     while (--i) {
       if ( !_checkVal(checks, vals[i], nullable) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
 
   ///////////////////////////////////////////////////// {{{2
@@ -1017,7 +1017,7 @@ var is = (function isPrivateScope() {
       if ( $own(addType, section) )
         check = addType[section](check);
 
-      nullableDefault = nullableDefault !== false;
+      nullableDefault = nullableDefault !== NO;
 
       /**
        * @param {*} val
@@ -1083,14 +1083,14 @@ var is = (function isPrivateScope() {
         var i;
 
         if ( !$is.arr(val) )
-          return false;
+          return NO;
 
         i = val['length'];
         while (i--) {
           if ( !eachCheck(val[i]) )
-            return false;
+            return NO;
         }
-        return true;
+        return YES;
       }
 
       return check;
@@ -1118,13 +1118,13 @@ var is = (function isPrivateScope() {
         var key;
 
         if ( !$is.obj(val) )
-          return false;
+          return NO;
 
         for (key in val) {
           if( $own(val, key) && !eachCheck(val[key]) )
-            return false;
+            return NO;
         }
-        return true;
+        return YES;
       }
 
       return check;
@@ -1142,7 +1142,7 @@ var is = (function isPrivateScope() {
       'string':    $is.str,
       'number':    $is.num,
       'nan':       $is.nan
-    }, false);
+    }, NO);
     addType('primitives', 'null', $is.nil);
 
     /// {{{5 Add JS Objects
@@ -1154,7 +1154,7 @@ var is = (function isPrivateScope() {
       'date':   $is.date
     });
     addType('js_objects', 'arguments', $is.args);
-    addType('js_objects', 'function', $is.fun, false);
+    addType('js_objects', 'function', $is.fun, NO);
 
     /// {{{5 Add DOM Objects
     addTypes('dom_objects', {
@@ -1430,13 +1430,13 @@ var is = (function isPrivateScope() {
     while (i--) {
       type = '_' + checks[i];
       if ( !$own(TYPES, type) )
-        return null;
+        return NIL;
       checks[i] = TYPES[type];
     }
 
     return checks['length']
       ? checks
-      : null;
+      : NIL;
   }
 
   /// {{{3
@@ -1461,24 +1461,12 @@ var is = (function isPrivateScope() {
     ensure = _hasSpecial('?', types);
     negate = _hasSpecial('!', types);
     override = ensure && negate
-      ? false
+      ? NO
       : ensure || negate;
     return override
       ? !negate && ensure
-      : NONE;
+      : VOID;
   }
-
-  ///////////////////////////////////////////////////// {{{2
-  // IS HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   ///////////////////////////////////////////////////// {{{2
   // IS HELPERS - ERROR MAKERS

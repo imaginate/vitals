@@ -121,7 +121,7 @@ var slice = (function slicePrivateScope() {
     }
 
     if ( $is.nil(source) )
-      return null;
+      return NIL;
 
     if ( $is.str(source) )
       return $sliceStr(source, start, end);
@@ -204,7 +204,7 @@ var slice = (function slicePrivateScope() {
     }
 
     if ( $is.nil(source) )
-      return null;
+      return NIL;
 
     if ( !$is._obj(source) )
       throw $typeErr(new TypeError, 'source', source,

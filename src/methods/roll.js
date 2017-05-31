@@ -147,18 +147,18 @@ var roll = (function rollPrivateScope() {
       case 2:
         iteratee = source;
         source = base;
-        hasBase = false;
+        hasBase = NO;
         break;
       case 3:
         if ( !$is.fun(iteratee) ) {
           thisArg = iteratee;
           iteratee = source;
           source = base;
-          hasBase = false;
+          hasBase = NO;
           break;
         }
       default:
-        hasBase = true;
+        hasBase = YES;
         break;
     }
 
@@ -288,18 +288,18 @@ var roll = (function rollPrivateScope() {
       case 2:
         iteratee = source;
         source = base;
-        hasBase = false;
+        hasBase = NO;
         break;
       case 3:
         if ( !$is.fun(iteratee) ) {
           thisArg = iteratee;
           iteratee = source;
           source = base;
-          hasBase = false;
+          hasBase = NO;
           break;
         }
       default:
-        hasBase = true;
+        hasBase = YES;
         break;
     }
 
@@ -430,18 +430,18 @@ var roll = (function rollPrivateScope() {
       case 2:
         iteratee = source;
         source = base;
-        hasBase = false;
+        hasBase = NO;
         break;
       case 3:
         if ( !$is.fun(iteratee) ) {
           thisArg = iteratee;
           iteratee = source;
           source = base;
-          hasBase = false;
+          hasBase = NO;
           break;
         }
       default:
-        hasBase = true;
+        hasBase = YES;
         break;
     }
 
@@ -504,8 +504,8 @@ var roll = (function rollPrivateScope() {
     if ( !$is.none(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
-    loaded = false;
-    result = NONE;
+    loaded = NO;
+    result = VOID;
 
     switch (iteratee['length']) {
       case 0:
@@ -516,7 +516,7 @@ var roll = (function rollPrivateScope() {
               result = iteratee(result);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -528,7 +528,7 @@ var roll = (function rollPrivateScope() {
               result = iteratee(result, source[key]);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -540,7 +540,7 @@ var roll = (function rollPrivateScope() {
               result = iteratee(result, source[key], key);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -552,7 +552,7 @@ var roll = (function rollPrivateScope() {
               result = iteratee(result, source[key], key, source);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -636,8 +636,8 @@ var roll = (function rollPrivateScope() {
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    loaded = false;
-    result = NONE;
+    loaded = NO;
+    result = VOID;
 
     switch (iteratee['length']) {
       case 0:
@@ -647,7 +647,7 @@ var roll = (function rollPrivateScope() {
               result += iteratee();
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -659,7 +659,7 @@ var roll = (function rollPrivateScope() {
               result += iteratee(source[key]);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -671,7 +671,7 @@ var roll = (function rollPrivateScope() {
               result += iteratee(source[key], key);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -683,7 +683,7 @@ var roll = (function rollPrivateScope() {
               result += iteratee(source[key], key, source);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -766,8 +766,8 @@ var roll = (function rollPrivateScope() {
     if ( !$is.none(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
-    loaded = false;
-    result = NONE;
+    loaded = NO;
+    result = VOID;
 
     switch (iteratee['length']) {
       case 0:
@@ -777,7 +777,7 @@ var roll = (function rollPrivateScope() {
               result -= iteratee();
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -789,7 +789,7 @@ var roll = (function rollPrivateScope() {
               result -= iteratee(source[key]);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -801,7 +801,7 @@ var roll = (function rollPrivateScope() {
               result -= iteratee(source[key], key);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -813,7 +813,7 @@ var roll = (function rollPrivateScope() {
               result -= iteratee(source[key], key, source);
             else {
               result = source[key];
-              loaded = true;
+              loaded = YES;
             }
           }
         }
@@ -903,7 +903,7 @@ var roll = (function rollPrivateScope() {
     len = source['length'];
     result = len > 0
       ? source[0]
-      : NONE;
+      : VOID;
     i = 0;
 
     switch (iteratee['length']) {
@@ -1003,7 +1003,7 @@ var roll = (function rollPrivateScope() {
     len = source['length'];
     result = len > 0
       ? source[0]
-      : NONE;
+      : VOID;
     i = 0;
 
     switch (iteratee['length']) {
@@ -1101,7 +1101,7 @@ var roll = (function rollPrivateScope() {
     len = source['length'];
     result = len > 0
       ? source[0]
-      : NONE;
+      : VOID;
     i = 0;
 
     switch (iteratee['length']) {
@@ -1425,18 +1425,6 @@ var roll = (function rollPrivateScope() {
       return func['call'](thisArg, prevValue, cycle, cycles);
     };
   }
-
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
 
   ///////////////////////////////////////////////////// {{{2
   // ROLL HELPERS - ERROR MAKERS

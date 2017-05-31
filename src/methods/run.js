@@ -134,20 +134,20 @@ var run = (function runPrivateScope() {
         opts = $cloneObj(opts);
 
         if ( !$own(opts, 'catchExit') || $is.none(opts['catchExit']) )
-          opts['catchExit'] = true;
+          opts['catchExit'] = YES;
         else if ( !$is.bool(opts['catchExit']) )
           throw $typeErr(new TypeError, 'opts.catchExit', opts['catchExit'],
             'boolean=');
 
         if ( !$own(opts, 'buffer') || $is.none(opts['buffer']) )
-          opts['buffer'] = false;
+          opts['buffer'] = NO;
         else if ( !$is.bool(opts['buffer']) )
           throw $typeErr(new TypeError, 'opts.buffer', opts['buffer'],
             'boolean=');
 
         if ( !$own(opts, 'encoding') || $is.none(opts['encoding']) )
           opts['encoding'] = opts['buffer']
-            ? NONE
+            ? VOID
             : 'utf8';
         else if ( !$is.str(opts['encoding']) )
           throw $typeErr(new TypeError, 'opts.encoding', opts['encoding'],
@@ -157,7 +157,7 @@ var run = (function runPrivateScope() {
 
         if ( !$own(opts, 'eol') || $is.none(opts['eol']) )
           opts['eol'] = opts['buffer']
-            ? null
+            ? NIL
             : 'LF';
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
@@ -254,14 +254,6 @@ var run = (function runPrivateScope() {
   //////////////////////////////////////////////////////////
 
   /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
-
-  /// {{{3
   /// @const ANY_SPACE
   /**
    * @private
@@ -294,8 +286,8 @@ var run = (function runPrivateScope() {
    */
   var OPTS = {
     'eol': 'LF',
-    'buffer': false,
-    'catchExit': true,
+    'buffer': NO,
+    'catchExit': YES,
     'encoding': 'utf8'
   };
 

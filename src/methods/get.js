@@ -580,7 +580,7 @@ var get = (function getPrivateScope() {
     /** @type {(?Array|?Object)} */
     var result;
 
-    pattern = copy['regexp'](pattern, true);
+    pattern = copy['regexp'](pattern, YES);
     indexes = [];
     result = pattern['exec'](src);
     while (result) {
@@ -630,7 +630,7 @@ var get = (function getPrivateScope() {
     /** @type {!Array<string>} */
     var vals;
 
-    pattern = copy['regexp'](pattern, true);
+    pattern = copy['regexp'](pattern, YES);
     vals = [];
     result = pattern['exec'](src);
     while (result) {
