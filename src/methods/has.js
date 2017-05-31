@@ -10,21 +10,18 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $match ../helpers/match.js
+/// #include @helper $inArr ../helpers/in-arr.js
+/// #include @helper $inObj ../helpers/in-obj.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $ownEnum ../helpers/own-enum.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $ownEnum = require('./helpers/own-enum.js');
-var $inArr = require('./helpers/in-arr.js');
-var $inObj = require('./helpers/in-obj.js');
-var $inStr = require('./helpers/in-str.js');
-var $match = require('./helpers/match.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.HAS
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super has
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -32,37 +29,25 @@ var $is = require('./helpers/is.js');
  */
 var has = (function hasPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - has
-  // - has.key
-  // - has.value      (has.val)
-  // - has.pattern
-  // - has.substring  (has.substr)
-  // - has.enumerable (has.enum)
-  //
-  // * Note that has.enum may fail in older browser
-  //   environments.
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs has
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+  /// @docref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
+  /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+  /// @docref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+  /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// @docref [indexof]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)
+  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+  /// #}}} @docrefs has
 
-  /* {{{2 Has References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
-   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
-   * @ref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
-   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-   * @ref [isEnum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-   * @ref [indexOf]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)
-   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   */
-
-  /// {{{2
-  /// @method has
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.has
   /**
-   * Checks if an `object` or `function` [owns][own] a property, if an `array`
-   * or `arguments` instance contains a value, or a `string` matches a pattern
-   * or contains a substring.
-   *
+   * @description
+   *   Checks if an `object` or `function` [owns][own] a property, if an
+   *   `array` or `arguments` instance contains a value, or a `string` matches
+   *   a pattern or contains a substring.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments|?string)} source
    *   The following rules apply in order of priority (per #source type):
@@ -73,14 +58,16 @@ var has = (function hasPrivateScope() {
    *     [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
    *     This method checks each indexed property in the #source for one
-   *     matching value.
+   *     matching value (via a [strict equality][equal] test).
    *   - *`string`*!$
    *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise it returns
-   *     the result of a call to [String.prototype.includes][includes] or for
-   *     older platforms a [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexOf] (i.e.
-   *     `return source.indexOf(alteredVal) !== -1;`).
+   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
+   *     returns the result of a call to [String.prototype.includes][includes]
+   *     or, in the case of an older platform that does not support
+   *     [String.prototype.includes][includes], it returns a
+   *     [strict equality][equal] test for a non-negative
+   *     index result from [String.prototype.indexOf][indexof] (i.e.
+   *     `return source.indexOf(val) !== -1;`).
    * @param {*} val
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
@@ -93,8 +80,8 @@ var has = (function hasPrivateScope() {
    *     the #val is used to evaluate each indexed property value.
    *   - *`string`*!$
    *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     via [String()][string] before [String.prototype.includes][includes]
-   *     or [String.prototype.indexOf][indexOf] is called.
+   *     before [String.prototype.includes][includes] or, in the case of an
+   *     older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
@@ -107,41 +94,45 @@ var has = (function hasPrivateScope() {
    *     matching value.
    *   - *`string`*!$
    *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise it returns
-   *     the result of a call to [String.prototype.includes][includes] or for
-   *     older platforms a [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexOf] (i.e.
-   *     `return source.indexOf(alteredVal) !== -1;`).
+   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
+   *     returns the result of a call to [String.prototype.includes][includes]
+   *     or, in the case of an older platform that does not support
+   *     [String.prototype.includes][includes], it returns a
+   *     [strict equality][equal] test for a non-negative
+   *     index result from [String.prototype.indexOf][indexof] (i.e.
+   *     `return source.indexOf(val) !== -1;`).
    */
   function has(source, val) {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
       case 1:
-        throw $err(new Error, 'no #val defined');
+        throw _mkErr(new ERR, 'no #val defined');
     }
 
     if ( $is.nil(source) )
-      return false;
+      return NO;
 
     if ( $is.str(source) )
       return $match(source, val);
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '?Object|?Function|?Array|?Arguments|?string');
 
     return $is._arr(source)
       ? $inArr(source, val)
       : $own(source, val);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method has.key
+  /// #{{{ @submethod key
+  /// @section base
+  /// @method vitals.has.key
   /**
-   * Checks if an `object` or `function` [owns][own] a property.
-   *
+   * @description
+   *   Checks if an `object` or `function` [owns][own] a property.
    * @public
    * @param {(?Object|?Function)} source
    *   The following rules apply in order of priority (per #source type):
@@ -169,29 +160,31 @@ var has = (function hasPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'key');
+        throw _mkErr(new ERR, 'no #source defined', 'key');
       case 1:
-        throw $err(new Error, 'no #key defined', 'key');
+        throw _mkErr(new ERR, 'no #key defined', 'key');
     }
 
     if ( $is.nil(source) )
-      return false;
+      return NO;
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '?Object|?Function',
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '?Object|?Function',
         'key');
 
     return $own(source, key);
   }
   has['key'] = hasKey;
+  /// #}}} @submethod key
 
-  /// {{{2
-  /// @method has.value
-  /// @alias has.val
+  /// #{{{ @submethod value
+  /// @section base
+  /// @method vitals.has.value
+  /// @alias vitals.has.val
   /**
-   * Checks if an `object` or `function` [owned][own] property or an `array`
-   * or `arguments` indexed property has a value.
-   *
+   * @description
+   *   Checks if an `object` or `function` [owned][own] property or an `array`
+   *   or `arguments` indexed property has a value.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments)} source
    *   The following rules apply in order of priority (per #source type):
@@ -228,16 +221,16 @@ var has = (function hasPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'value');
+        throw _mkErr(new ERR, 'no #source defined', 'value');
       case 1:
-        throw $err(new Error, 'no #val defined', 'value');
+        throw _mkErr(new ERR, 'no #val defined', 'value');
     }
 
     if ( $is.nil(source) )
-      return false;
+      return NO;
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '?Object|?Function|?Array|?Arguments', 'value');
 
     return $is._arr(source)
@@ -246,96 +239,113 @@ var has = (function hasPrivateScope() {
   }
   has['value'] = hasValue;
   has['val'] = hasValue;
+  /// #}}} @submethod value
 
-  /// {{{2
-  /// @method has.pattern
+  /// #{{{ @submethod pattern
+  /// @section base
+  /// @method vitals.has.pattern
   /**
-   * Checks if a `string` matches a pattern or contains a substring.
-   *
+   * @description
+   *   Checks if a `string` matches a pattern or contains a substring.
    * @public
    * @param {string} source
    *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise it returns the
-   *   result of a call to [String.prototype.includes][includes] or for older
-   *   platforms a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredPattern) !== -1;`).
+   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
+   *   result of a call to [String.prototype.includes][includes] or, in the
+   *   case of an older platform that does not support
+   *   [String.prototype.includes][includes], it returns a
+   *   [strict equality][equal] test for a non-negative index result from
+   *   [String.prototype.indexOf][indexof] (i.e.
+   *   `return source.indexOf(val) !== -1;`).
    * @param {*} pattern
    *   If the #pattern is **not** a `RegExp`, it is converted into a `string`
-   *   via [String()][string] before [String.prototype.includes][includes]
-   *   or [String.prototype.indexOf][indexOf] is called.
+   *   before [String.prototype.includes][includes] or, in the case of an
+   *   older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
    *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise it returns the
-   *   result of a call to [String.prototype.includes][includes] or for older
-   *   platforms a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredPattern) !== -1;`).
+   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
+   *   result of a call to [String.prototype.includes][includes] or, in the
+   *   case of an older platform that does not support
+   *   [String.prototype.includes][includes], it returns a
+   *   [strict equality][equal] test for a non-negative index result from
+   *   [String.prototype.indexOf][indexof] (i.e.
+   *   `return source.indexOf(val) !== -1;`).
    */
   function hasPattern(source, pattern) {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'pattern');
+        throw _mkErr(new ERR, 'no #source defined', 'pattern');
       case 1:
-        throw $err(new Error, 'no #pattern defined', 'pattern');
+        throw _mkErr(new ERR, 'no #pattern defined', 'pattern');
     }
 
     if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'pattern');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'pattern');
 
     return $match(source, pattern);
   }
   has['pattern'] = hasPattern;
+  /// #}}} @submethod pattern
 
-  /// {{{2
-  /// @method has.substring
-  /// @alias has.substr
+  /// #{{{ @submethod substring
+  /// @section base
+  /// @method vitals.has.substring
+  /// @alias vitals.has.substr
   /**
-   * Checks if a `string` contains a substring.
-   *
+   * @description
+   *   Checks if a `string` contains a substring.
    * @public
    * @param {string} source
    *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or for older platforms a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredVal) !== -1;`).
+   *   [String.prototype.includes][includes] or, in the case of an older
+   *   platform that does not support [String.prototype.includes][includes],
+   *   it returns a [strict equality][equal] test for a non-negative index
+   *   result from [String.prototype.indexOf][indexof] (i.e.
+   *   `return source.indexOf(val) !== -1;`).
    * @param {*} val
-   *   The #val is converted into a `string` via [String()][string] before
-   *   [String.prototype.includes][includes] or
-   *   [String.prototype.indexOf][indexOf] is called.
+   *   The #val is converted into a `string` before
+   *   [String.prototype.includes][includes] or, in the case of an older
+   *   platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
    *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or for older platforms a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexOf] (i.e.
-   *   `return source.indexOf(alteredVal) !== -1;`).
+   *   [String.prototype.includes][includes] or, in the case of an older
+   *   platform that does not support [String.prototype.includes][includes],
+   *   it returns a [strict equality][equal] test for a non-negative index
+   *   result from [String.prototype.indexOf][indexof] (i.e.
+   *   `return source.indexOf(val) !== -1;`).
    */
   function hasSubstring(source, val) {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'substring');
+        throw _mkErr(new ERR, 'no #source defined', 'substring');
       case 1:
-        throw $err(new Error, 'no #val defined', 'substring');
+        throw _mkErr(new ERR, 'no #val defined', 'substring');
     }
 
     if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'substring');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'substring');
 
     return $inStr(source, val);
   }
   has['substring'] = hasSubstring;
   has['substr'] = hasSubstring;
+  /// #}}} @submethod substring
 
-  /// {{{2
-  /// @method has.enumerable
-  /// @alias has.enum
+  /// #{{{ @submethod enumerable
+  /// @section base
+  /// @method vitals.has.enumerable
+  /// @alias vitals.has.enum
+  ///   Note that `vitals.has.enum` will fail in some ES3 and ES5 browser and
+  ///   other platform environments. Use `vitals.has.enumerable` for
+  ///   compatibility with older environments.
   /**
-   * Checks if an `object` or `function` [owns][own] an [enumerable][isEnum]
-   * property.
-   *
+   * @description
+   *   Checks if an `object` or `function` [owns][own] an [enumerable][enum]
+   *   property. Also note that `vitals.has.enum` is not valid in some
+   *   [ES3][ecma3] and [ES5][ecma5] browser and other platform environments.
+   *   Use `vitals.has.enumerable` for browser and platform safety.
    * @public
    * @param {(?Object|?Function)} source
    *   The following rules apply in order of priority (per #source type):
@@ -344,7 +354,7 @@ var has = (function hasPrivateScope() {
    *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][isEnum].
+   *     [Object.prototype.propertyIsEnumerable][enum].
    * @param {*} key
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
@@ -352,7 +362,7 @@ var has = (function hasPrivateScope() {
    *   - *`!Object|!Function`*!$
    *     The #key is passed **without** any conversions to
    *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][isEnum].
+   *     [Object.prototype.propertyIsEnumerable][enum].
    * @return {boolean}
    *   The following rules apply in order of priority (per #source type):
    *   - *`null`*!$
@@ -360,22 +370,22 @@ var has = (function hasPrivateScope() {
    *   - *`!Object|!Function`*!$
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][isEnum].
+   *     [Object.prototype.propertyIsEnumerable][enum].
    */
   function hasEnumerable(source, key) {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'enumerable');
+        throw _mkErr(new ERR, 'no #source defined', 'enumerable');
       case 1:
-        throw $err(new Error, 'no #key defined', 'enumerable');
+        throw _mkErr(new ERR, 'no #key defined', 'enumerable');
     }
 
     if ( $is.nil(source) )
-      return false;
+      return NO;
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source, '?Object|?Function',
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '?Object|?Function',
         'enumerable');
 
     return $ownEnum(source, key);
@@ -385,76 +395,38 @@ var has = (function hasPrivateScope() {
     has['enum'] = hasEnumerable;
   }
   catch (e) {}
+  /// #}}} @submethod enumerable
 
-  ///////////////////////////////////////////////////// {{{2
-  // HAS HELPERS - GENERAL
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Has-Helpers
 
-  /// {{{3
-  /// @const NONE
-  /**
-   * @private
-   * @const {undefined}
-   */
-  var NONE = (function(){})();
+  /// #{{{ @group Error-Helpers
 
-  ///////////////////////////////////////////////////// {{{2
-  // HAS HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('has');
+  var _MK_ERR = $mkErrs('has');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Has-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.HAS
   return has;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['has'] = has;
+/// #}}} @off SOLO
+/// #}}} @super has
 
-module.exports = has;
+/// #{{{ @on SOLO
+var vitals = has;
+vitals['has'] = has;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
