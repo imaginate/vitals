@@ -10,17 +10,16 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $inStr ../helpers/in-str.js
+/// #include @super copy ./copy.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $own = require('./helpers/own.js');
-var $is = require('./helpers/is.js');
-var copy = require('./copy.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.ROLL
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super roll
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -28,39 +27,33 @@ var copy = require('./copy.js');
  */
 var roll = (function rollPrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - roll
-  // - roll.up
-  // - roll.down
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs roll
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
+  /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
+  /// @docref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
+  /// @docref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+  /// @docref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
+  /// @docref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
+  /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// @docref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
+  /// @docref [lastIndex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
+  /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
+  /// #}}} @docrefs roll
 
-  /* {{{2 Roll References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
-   * @ref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
-   * @ref [func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function)
-   * @ref [this]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-   * @ref [apply]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply)
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
-   * @ref [minify]:(https://en.wikipedia.org/wiki/Minification_(programming))
-   * @ref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
-   * @ref [replace]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace#Specifying_a_function_as_a_parameter)
-   * @ref [lastIndex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex)
-   * @ref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
-   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
-   * @ref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-   */
-
-  /// {{{2
-  /// @method roll
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.roll
   /**
-   * A shortcut for deriving a result by carrying a value over each
-   * [owned][own] property of an `object` or `function`, each indexed property
-   * of an `array` or `arguments`, or each `number` of cycles.
-   *
+   * @description
+   *   A shortcut for deriving a result by carrying a value over each
+   *   [owned][own] property of an `object` or `function`, each indexed
+   *   property of an `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
    *   If a #base is defined, it is the initial carried value. Note that for a
@@ -141,9 +134,9 @@ var roll = (function rollPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
       case 1:
-        throw $err(new Error, 'no #iteratee defined');
+        throw _mkErr(new ERR, 'no #iteratee defined');
       case 2:
         iteratee = source;
         source = base;
@@ -163,25 +156,25 @@ var roll = (function rollPrivateScope() {
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee, '!function(' +
         '*=, *=, (string|number)=, (!Object|!Function|!Array)=): *');
-    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=');
+    if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+      throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
 
     if ( $is.num(source) ) {
 
       if (!hasBase)
-        throw $err(new Error, 'no #base defined (' +
+        throw _mkErr(new ERR, 'no #base defined (' +
           '#base is required with a `number` #source)');
       if ( !$is.whole(source) )
-        throw $err(new Error, 'invalid #source `number` (' +
+        throw _mkErr(new ERR, 'invalid #source `number` (' +
           'must be whole `number`)');
 
       return _rollCycle(base, source, iteratee, thisArg);
     }
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments|number');
 
     return $is._arr(source)
@@ -192,15 +185,17 @@ var roll = (function rollPrivateScope() {
         ? _rollBaseObj(base, source, iteratee, thisArg)
         : _rollObj(source, iteratee, thisArg);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method roll.up
+  /// #{{{ @submethod up
+  /// @section base
+  /// @method vitals.roll.up
   /**
-   * A shortcut for deriving a summed total by adding each value returned by
-   * an #iteratee `function` call over each [owned][own] property of an
-   * `object` or `function`, each indexed property of an `array` or
-   * `arguments`, or each `number` of cycles.
-   *
+   * @description
+   *   A shortcut for deriving a summed total by adding each value returned by
+   *   an #iteratee `function` call over each [owned][own] property of an
+   *   `object` or `function`, each indexed property of an `array` or
+   *   `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
    *   If a #base is defined, it is the initial total. Note that for a
@@ -282,9 +277,9 @@ var roll = (function rollPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'up');
+        throw _mkErr(new ERR, 'no #source defined', 'up');
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'up');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'up');
       case 2:
         iteratee = source;
         source = base;
@@ -304,25 +299,25 @@ var roll = (function rollPrivateScope() {
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee, '!function(' +
         '*=, (string|number)=, (!Object|!Function|!Array)=): *', 'up');
-    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'up');
+    if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+      throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=', 'up');
 
     if ( $is.num(source) ) {
 
       if (!hasBase)
-        throw $err(new Error, 'no #base defined (' +
+        throw _mkErr(new ERR, 'no #base defined (' +
           '#base is required with a `number` #source)', 'up');
       if ( !$is.whole(source) )
-        throw $err(new Error, 'invalid #source `number` (' +
+        throw _mkErr(new ERR, 'invalid #source `number` (' +
           'must be whole `number`)', 'up');
 
       return _rollCycleUp(base, source, iteratee, thisArg);
     }
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments|number', 'up');
 
     return $is._arr(source)
@@ -334,15 +329,17 @@ var roll = (function rollPrivateScope() {
         : _rollObjUp(source, iteratee, thisArg);
   }
   roll['up'] = rollUp;
+  /// #}}} @submethod up
 
-  /// {{{2
-  /// @method roll.down
+  /// #{{{ @submethod down
+  /// @section base
+  /// @method vitals.roll.down
   /**
-   * A shortcut for deriving a reduced total by subtracting each value
-   * returned by an #iteratee `function` call over each [owned][own] property
-   * of an `object` or `function`, each indexed property of an `array` or
-   * `arguments`, or each `number` of cycles.
-   *
+   * @description
+   *   A shortcut for deriving a reduced total by subtracting each value
+   *   returned by an #iteratee `function` call over each [owned][own]
+   *   property of an `object` or `function`, each indexed property of an
+   *   `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
    *   If a #base is defined, it is the initial total. Note that for a
@@ -424,9 +421,9 @@ var roll = (function rollPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'down');
+        throw _mkErr(new ERR, 'no #source defined', 'down');
       case 1:
-        throw $err(new Error, 'no #iteratee defined', 'down');
+        throw _mkErr(new ERR, 'no #iteratee defined', 'down');
       case 2:
         iteratee = source;
         source = base;
@@ -446,25 +443,25 @@ var roll = (function rollPrivateScope() {
     }
 
     if ( !$is.fun(iteratee) )
-      throw $typeErr(new TypeError, 'iteratee', iteratee, '!function(' +
+      throw _mkTypeErr(new TYPE_ERR, 'iteratee', iteratee, '!function(' +
         '*=, (string|number)=, (!Object|!Function|!Array)=): *', 'down');
-    if ( !$is.nil(thisArg) && !$is.none(thisArg) && !$is.obj(thisArg) )
-      throw $typeErr(new TypeError, 'thisArg', thisArg, '?Object=', 'down');
+    if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
+      throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=', 'down');
 
     if ( $is.num(source) ) {
 
       if (!hasBase)
-        throw $err(new Error, 'no #base defined (' +
+        throw _mkErr(new ERR, 'no #base defined (' +
           '#base is required with a `number` #source)', 'down');
       if ( !$is.whole(source) )
-        throw $err(new Error, 'invalid #source `number` (' +
+        throw _mkErr(new ERR, 'invalid #source `number` (' +
           'must be whole `number`)', 'down');
 
       return _rollCycleDown(base, source, iteratee, thisArg);
     }
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments|number', 'down');
 
     return $is._arr(source)
@@ -476,13 +473,13 @@ var roll = (function rollPrivateScope() {
         : _rollObjDown(source, iteratee, thisArg);
   }
   roll['down'] = rollDown;
+  /// #}}} @submethod down
 
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - OBJECT
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Roll-Helpers
 
-  /// {{{3
-  /// @func _rollObj
+  /// #{{{ @group Object-Helpers
+
+  /// #{{{ @func _rollObj
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -501,7 +498,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 3)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
     loaded = NO;
@@ -561,9 +558,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollObj
 
-  /// {{{3
-  /// @func _rollBaseObj
+  /// #{{{ @func _rollBaseObj
   /**
    * @private
    * @param {*} result
@@ -579,7 +576,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 3)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
     switch (iteratee['length']) {
@@ -612,9 +609,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseObj
 
-  /// {{{3
-  /// @func _rollObjUp
+  /// #{{{ @func _rollObjUp
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -633,7 +630,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     loaded = NO;
@@ -692,9 +689,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollObjUp
 
-  /// {{{3
-  /// @func _rollBaseObjUp
+  /// #{{{ @func _rollBaseObjUp
   /**
    * @private
    * @param {*} result
@@ -710,7 +707,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     switch (iteratee['length']) {
@@ -742,9 +739,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseObjUp
 
-  /// {{{3
-  /// @func _rollObjDown
+  /// #{{{ @func _rollObjDown
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -763,7 +760,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     loaded = NO;
@@ -822,9 +819,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollObjDown
 
-  /// {{{3
-  /// @func _rollBaseObjDown
+  /// #{{{ @func _rollBaseObjDown
   /**
    * @private
    * @param {*} result
@@ -840,7 +837,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy(source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     switch (iteratee['length']) {
@@ -872,13 +869,13 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseObjDown
 
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - ARRAY
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Object-Helpers
 
-  /// {{{3
-  /// @func _rollArr
+  /// #{{{ @group Array-Helpers
+
+  /// #{{{ @func _rollArr
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -897,7 +894,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 3)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
     len = source['length'];
@@ -928,9 +925,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollArr
 
-  /// {{{3
-  /// @func _rollBaseArr
+  /// #{{{ @func _rollBaseArr
   /**
    * @private
    * @param {*} result
@@ -948,7 +945,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 3)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindPrevMap(iteratee, thisArg);
 
     len = source['length'];
@@ -976,9 +973,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseArr
 
-  /// {{{3
-  /// @func _rollArrUp
+  /// #{{{ @func _rollArrUp
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -997,7 +994,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     len = source['length'];
@@ -1027,9 +1024,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollArrUp
 
-  /// {{{3
-  /// @func _rollBaseArrUp
+  /// #{{{ @func _rollBaseArrUp
   /**
    * @private
    * @param {*} result
@@ -1047,7 +1044,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     len = source['length'];
@@ -1074,9 +1071,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseArrUp
 
-  /// {{{3
-  /// @func _rollArrDown
+  /// #{{{ @func _rollArrDown
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -1095,7 +1092,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     len = source['length'];
@@ -1125,9 +1122,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollArrDown
 
-  /// {{{3
-  /// @func _rollBaseArrDown
+  /// #{{{ @func _rollBaseArrDown
   /**
    * @private
    * @param {*} result
@@ -1145,7 +1142,7 @@ var roll = (function rollPrivateScope() {
 
     if (iteratee['length'] > 2)
       source = copy['array'](source);
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
     len = source['length'];
@@ -1172,13 +1169,13 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollBaseArrDown
 
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - CYCLE
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Array-Helpers
 
-  /// {{{3
-  /// @func _rollCycle
+  /// #{{{ @group Cycle-Helpers
+
+  /// #{{{ @func _rollCycle
   /**
    * @private
    * @param {*} result
@@ -1194,7 +1191,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var cycle;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindPrevCycle(iteratee, thisArg);
 
     count = cycles > 0
@@ -1221,9 +1218,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollCycle
 
-  /// {{{3
-  /// @func _rollCycleUp
+  /// #{{{ @func _rollCycleUp
   /**
    * @private
    * @param {*} result
@@ -1239,7 +1236,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var cycle;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindCycle(iteratee, thisArg);
 
     count = cycles > 0
@@ -1265,9 +1262,9 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollCycleUp
 
-  /// {{{3
-  /// @func _rollCycleDown
+  /// #{{{ @func _rollCycleDown
   /**
    * @private
    * @param {*} result
@@ -1283,7 +1280,7 @@ var roll = (function rollPrivateScope() {
     /** @type {number} */
     var cycle;
 
-    if ( !$is.none(thisArg) )
+    if ( !$is.void(thisArg) )
       iteratee = _bindCycle(iteratee, thisArg);
 
     count = cycles > 0
@@ -1309,13 +1306,13 @@ var roll = (function rollPrivateScope() {
 
     return result;
   }
+  /// #}}} @func _rollCycleDown
 
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - BIND
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Cycle-Helpers
 
-  /// {{{3
-  /// @func _bindMap
+  /// #{{{ @group Bind-Helpers
+
+  /// #{{{ @func _bindMap
   /**
    * @private
    * @param {!function} func
@@ -1341,9 +1338,9 @@ var roll = (function rollPrivateScope() {
       return func['call'](thisArg, propValue, key, source);
     };
   }
+  /// #}}} @func _bindMap
 
-  /// {{{3
-  /// @func _bindPrevMap
+  /// #{{{ @func _bindPrevMap
   /**
    * @private
    * @param {!function} func
@@ -1373,9 +1370,9 @@ var roll = (function rollPrivateScope() {
       return func['call'](thisArg, prevValue, propValue, key, source);
     };
   }
+  /// #}}} @func _bindPrevMap
 
-  /// {{{3
-  /// @func _bindCycle
+  /// #{{{ @func _bindCycle
   /**
    * @private
    * @param {!function} func
@@ -1397,9 +1394,9 @@ var roll = (function rollPrivateScope() {
       return func['call'](thisArg, cycle, cycles);
     };
   }
+  /// #}}} @func _bindCycle
 
-  /// {{{3
-  /// @func _bindPrevCycle
+  /// #{{{ @func _bindPrevCycle
   /**
    * @private
    * @param {!function} func
@@ -1425,64 +1422,38 @@ var roll = (function rollPrivateScope() {
       return func['call'](thisArg, prevValue, cycle, cycles);
     };
   }
+  /// #}}} @func _bindPrevCycle
 
-  ///////////////////////////////////////////////////// {{{2
-  // ROLL HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #}}} @group Bind-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('roll');
+  var _MK_ERR = $mkErrs('roll');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Roll-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.ROLL
   return roll;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['roll'] = roll;
+/// #}}} @off SOLO
+/// #}}} @super roll
 
-module.exports = roll;
+/// #{{{ @on SOLO
+var vitals = roll;
+vitals['roll'] = roll;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
