@@ -10,14 +10,13 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.SAME
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super same
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -25,21 +24,16 @@ var $newErrorMaker = require('./helpers/new-error-maker.js');
  */
 var same = (function samePrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - same
-  // - same.loose (same.ish)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs same
+  /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
+  /// #}}} @docrefs same
 
-  /* {{{2 Same References
-   * @ref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
-   */
-
-  /// {{{2
-  /// @method same
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.same
   /**
-   * A functional representation of [strict equality][equal].
-   *
+   * @description
+   *   A functional representation of [strict equality][equal].
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -49,20 +43,22 @@ var same = (function samePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #val1 defined');
+        throw _mkErr(new ERR, 'no #val1 defined');
       case 1:
-        throw $err(new Error, 'no #val2 defined');
+        throw _mkErr(new ERR, 'no #val2 defined');
     }
 
     return val1 === val2;
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method same.loose
-  /// @alias same.ish
+  /// #{{{ @submethod loose
+  /// @section base
+  /// @method vitals.same.loose
+  /// @alias vitals.same.ish
   /**
-   * A functional representation of [loose equality][equal].
-   *
+   * @description
+   *   A functional representation of [loose equality][equal].
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -72,73 +68,47 @@ var same = (function samePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #val1 defined', 'loose');
+        throw _mkErr(new ERR, 'no #val1 defined', 'loose');
       case 1:
-        throw $err(new Error, 'no #val2 defined', 'loose');
+        throw _mkErr(new ERR, 'no #val2 defined', 'loose');
     }
 
     return val1 == val2;
   }
   same['loose'] = sameLoose;
   same['ish'] = sameLoose;
+  /// #}}} @submethod loose
 
-  ///////////////////////////////////////////////////// {{{2
-  // SAME HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Same-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('same');
+  var _MK_ERR = $mkErrs('same');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Same-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.SAME
   return same;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['same'] = same;
+/// #}}} @off SOLO
+/// #}}} @super same
 
-module.exports = same;
+/// #{{{ @on SOLO
+var vitals = same;
+vitals['same'] = same;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
