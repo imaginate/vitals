@@ -21,6 +21,10 @@
 /// #}}} @off FS_ONLY
 /// #{{{ @on FS
 /// #include @helper $match ../helpers/match.js
+/// #include @helper $mkdir ../helpers/mkdir.js
+/// #include @helper $resolve ../helpers/resolve.js
+/// #include @helper $pathname ../helpers/pathname.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $normalize ../helpers/normalize.js
 /// #}}} @on FS
 /// #}}} @on SOLO
@@ -288,6 +292,136 @@ var copy = (function copyPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @submethod file
+  /// @section fs
+  /// @method vitals.copy.file
+  /**
+   * @description
+   *   Copy the contents of a file to a new or existing file.
+   * @public
+   * @param {string} source
+   *   Must be a valid filepath to an existing file.
+   * @param {string} dest
+   *   Must be a valid filepath to a new or existing file, a valid dirpath to
+   *   an existing directory, or a valid dirpath to a new directory noted by
+   *   ending the #dest `string` with `"/"`.
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.buffer option to
+   *   its value.
+   * @param {boolean=} opts.buffer = `true`
+   *   If set to `true`, the #opts.buffer option directs @copy#file to not
+   *   convert the `buffer` of the #source file's contents into a `string`
+   *   before saving it to the #dest file (i.e. do not apply any normalization
+   *   to the #source contents while copying). This also determines whether a
+   *   `buffer` or `string` of the #source contents is returned.
+   * @param {string=} opts.encoding = `"utf8"`
+   *   The #opts.encoding option only applies if #opts.buffer is `false`.
+   * @param {?string=} opts.eol = `"LF"`
+   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
+   *   the end of line character to use when normalizing the #source contents
+   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
+   *   end of line character normalization is completed. The optional `string`
+   *   values are as follows (values are **not** case-sensitive):
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @return {(!Buffer|string)}
+   *   The #source file's contents.
+   */
+  function copyFile(source, dest, opts) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'file');
+
+      case 1:
+        throw _mkErr(new ERR, 'no #dest defined', 'file');
+
+      case 2:
+        /** @dict */
+        opts = $cloneObj(_DFLT_FILE_OPTS);
+        break;
+
+      default:
+        if ( $is.void(opts) || $is.nil(opts) ) {
+          /** @dict */
+          opts = $cloneObj(_DFLT_FILE_OPTS);
+          break;
+        }
+
+        if ( $is.bool(opts) ) {
+          if (opts) {
+            /** @dict */
+            opts = $cloneObj(_DFLT_FILE_OPTS);
+            opts['buffer'] = YES;
+          }
+          else {
+            /** @dict */
+            opts = $cloneObj(_DFLT_FILE_OPTS);
+            opts['buffer'] = NO;
+          }
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
+            'file');
+
+        /** @dict */
+        opts = $cloneObj(opts);
+
+        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+          opts['buffer'] = YES;
+        else if ( !$is.bool(opts['buffer']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
+            'boolean=', 'file');
+
+        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+          opts['encoding'] = 'utf8';
+        else if ( !$is.str(opts['encoding']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
+            'string=', 'file');
+        else if ( !opts['encoding'] )
+          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+            'file');
+
+        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+          opts['eol'] = 'LF';
+        else if ( $is.str(opts['eol']) ) {
+          if ( !$is.eol(opts['eol']) )
+            throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
+              [ 'LF', 'CR', 'CRLF' ], 'file');
+
+          opts['eol'] = opts['eol']['toUpperCase']();
+        }
+        else if ( !$is.nil(opts['eol']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.eol', opts['eol'], '?string=',
+            'file');
+    }
+
+    if ( !$is.str(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'file');
+    else if (!source)
+      throw _mkErr(new ERR, 'invalid empty #source `string`', 'file');
+    else if ( !$is.file(source) )
+      throw _mkErr(new ERR, 'invalid #source file path `' + source + '`',
+        'file');
+
+    if ( !$is.str(dest) )
+      throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'file');
+    else if (!dest)
+      throw _mkErr(new ERR, 'invalid empty #dest `string`', 'file');
+
+    if ( _hasDirMark(dest) )
+      $mkdir(dest);
+
+    if ( $is.dir(dest) )
+      dest = $resolve(dest, $pathname(source));
+
+    return _copyFile(source, dest, opts);
+  }
+  copy['file'] = copyFile;
+  /// #}}} @submethod file
   /// #}}} @on FS
 
   /// #{{{ @group Copy-Helpers
