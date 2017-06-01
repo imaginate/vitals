@@ -3,6 +3,7 @@
  * VITALS.COPY
  * ---------------------------------------------------------------------------
  * @section base
+ * @section fs
  * @version 4.1.3
  * @see [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
  *
@@ -14,16 +15,31 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
+/// #{{{ @off FS_ONLY
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS
+/// #include @helper $match ../helpers/match.js
+/// #include @helper $normalize ../helpers/normalize.js
+/// #}}} @on FS
 /// #}}} @on SOLO
 
 /// #{{{ @super copy
+/// #{{{ @off FS_ONLY
 /**
  * @public
- * @type {!Function<string, !Function>}
+ * @const {!Function<string, !Function>}
  * @dict
  */
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS_ONLY
+/**
+ * @public
+ * @const {!Object<string, !Function>}
+ * @dict
+ */
+/// #}}} @on FS_ONLY
 var copy = (function copyPrivateScope() {
 
   /// #{{{ @docrefs copy
@@ -40,6 +56,16 @@ var copy = (function copyPrivateScope() {
   /// @docref [regex-source]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
   /// #}}} @docrefs copy
 
+  /// #{{{ @on FS_ONLY
+  /**
+   * @public
+   * @type {!Object<string, !Function>}
+   * @dict
+   */
+  var copy = {};
+  /// #}}} @on FS_ONLY
+
+  /// #{{{ @off FS_ONLY
   /// #{{{ @submethod main
   /// @section base
   /// @method vitals.copy
@@ -259,11 +285,16 @@ var copy = (function copyPrivateScope() {
   }
   catch (e) {}
   /// #}}} @submethod func
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #{{{ @group Copy-Helpers
 
   /// #{{{ @group Main-Helpers
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @func _copyObj
   /**
    * @private
@@ -339,9 +370,14 @@ var copy = (function copyPrivateScope() {
       : $merge(funcCopy, func);
   }
   /// #}}} @func _copyFunc
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @group RegExp-Helpers
 
   /// #{{{ @const _FLAGS
@@ -456,6 +492,10 @@ var copy = (function copyPrivateScope() {
   /// #}}} @func _mergeDeep
 
   /// #}}} @group Merge-Helpers
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
 
