@@ -422,6 +422,158 @@ var copy = (function copyPrivateScope() {
   }
   copy['file'] = copyFile;
   /// #}}} @submethod file
+
+  /// #{{{ @submethod directory
+  /// @section fs
+  /// @method vitals.copy.directory
+  /// @alias vitals.copy.dir
+  /**
+   * @description
+   *   Copy all of the files in a directory to another directory.
+   * @public
+   * @param {string} source
+   *   Must be a valid directory path to an existing directory.
+   * @param {string} dest
+   *   Must be a valid directory path to an existing directory or a valid
+   *   directory path to a new directory noted by ending the #dest `string`
+   *   with `"/"`.
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
+   *   value.
+   * @param {boolean=} opts.deep = `false`
+   *   The #opts.deep option tells #copy#directory whether it should
+   *   recursively copy all of the sub-directory trees within the #source.
+   * @param {boolean=} opts.recursive
+   *   An alias for the #opts.deep option.
+   * @param {boolean=} opts.buffer = `true`
+   *   If set to `true`, the #opts.buffer option directs @copy#directory to
+   *   not convert the `buffer` of each #source file's contents into a
+   *   `string` before saving it into the #dest directory (i.e. do not apply
+   *   any normalization to the #source contents while copying).
+   * @param {string=} opts.encoding = `"utf8"`
+   *   The #opts.encoding option only applies if #opts.buffer is `false`.
+   * @param {?string=} opts.eol = `"LF"`
+   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
+   *   the end of line character to use when normalizing the #source contents
+   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
+   *   end of line character normalization is completed. The optional `string`
+   *   values are as follows (values are **not** case-sensitive):
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @return {!Array<string>}
+   *   An `array` of each file name copied from the #source to the #dest.
+   */
+  function copyDirectory(source, dest, opts) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'directory');
+
+      case 1:
+        throw _mkErr(new ERR, 'no #dest defined', 'directory');
+
+      case 2:
+        /** @dict */
+        opts = $cloneObj(_DFLT_DIR_OPTS);
+        break;
+
+      default:
+        if ( $is.void(opts) || $is.nil(opts) ) {
+          /** @dict */
+          opts = $cloneObj(_DFLT_DIR_OPTS);
+          break;
+        }
+
+        if ( $is.bool(opts) ) {
+          if (opts) {
+            /** @dict */
+            opts = $cloneObj(_DFLT_DIR_OPTS);
+            opts['deep'] = YES;
+          }
+          else {
+            /** @dict */
+            opts = $cloneObj(_DFLT_DIR_OPTS);
+            opts['deep'] = NO;
+          }
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
+            'directory');
+
+        /** @dict */
+        opts = $cloneObj(opts);
+
+        if ($own(opts, 'recursive')
+            && !$is.void(opts['recursive'])
+            && !$is.bool(opts['recursive']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
+            'boolean=', 'directory');
+
+        if ( !$own(opts, 'deep') || $is.void(opts['deep']) )
+          opts['deep'] = $own(opts, 'recursive') && $is.bool(opts['recursive'])
+            ? opts['recursive']
+            : NO;
+        else if ( !$is.bool(opts['deep']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
+            'boolean=', 'directory');
+
+        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+          opts['buffer'] = YES;
+        else if ( !$is.bool(opts['buffer']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
+            'boolean=', 'directory');
+
+        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+          opts['encoding'] = 'utf8';
+        else if ( !$is.str(opts['encoding']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
+            'string=', 'directory');
+        else if ( !opts['encoding'] )
+          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+            'directory');
+
+        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+          opts['eol'] = 'LF';
+        else if ( $is.str(opts['eol']) ) {
+          if ( !$is.eol(opts['eol']) )
+            throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
+              [ 'LF', 'CR', 'CRLF' ], 'directory');
+
+          opts['eol'] = opts['eol']['toUpperCase']();
+        }
+        else if ( !$is.nil(opts['eol']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.eol', opts['eol'], '?string=',
+            'directory');
+    }
+
+    if ( !$is.str(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'directory');
+    else if (!source)
+      throw _mkErr(new ERR, 'invalid empty #source `string`', 'directory');
+    else if ( !$is.dir(source) )
+      throw _mkErr(new ERR, 'invalid #source directory path `' + source + '`',
+        'directory');
+
+    if ( !$is.str(dest) )
+      throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'directory');
+    else if (!dest)
+      throw _mkErr(new ERR, 'invalid empty #dest `string`', 'directory');
+
+    if ( _hasDirMark(dest) )
+      $mkdir(dest);
+
+    if ( !$is.dir(dest) )
+      throw _mkErr(new ERR, 'invalid #dest directory path `' + source + '`',
+        'directory');
+
+    return _copyDir(source, dest, opts);
+  }
+  copy['directory'] = copyDirectory;
+  copy['dir'] = copyDirectory;
+  /// #}}} @submethod directory
   /// #}}} @on FS
 
   /// #{{{ @group Copy-Helpers
