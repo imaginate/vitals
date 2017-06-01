@@ -22,7 +22,7 @@ var $pathname = (function $pathnamePrivateScope() {
    * @private
    * @const {!RegExp}
    */
-  var _DIRNAME = /^.*\//;
+  var _DIRNAME = /^.*[\/\\]/;
   /// #}}} @const _DIRNAME
 
   /// #{{{ @const _END_SLASH
@@ -30,7 +30,7 @@ var $pathname = (function $pathnamePrivateScope() {
    * @private
    * @const {!RegExp}
    */
-  var _END_SLASH = /\/$/;
+  var _END_SLASH = /[\/\\]$/;
   /// #}}} @const _END_SLASH
 
   /// #{{{ @func $pathname
