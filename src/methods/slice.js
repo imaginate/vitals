@@ -10,17 +10,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
+/// #{{{ @on SOLO
+/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #include @core constants ../core/constants.js
+/// #include @core helpers ../core/helpers.js
+/// #include @helper $sliceArr ../helpers/slice-arr.js
+/// #include @helper $sliceStr ../helpers/slice-str.js
+/// #}}} @on SOLO
 
-var $newErrorMaker = require('./helpers/new-error-maker.js');
-var $sliceArr = require('./helpers/slice-arr.js');
-var $sliceStr = require('./helpers/slice-str.js');
-var $is = require('./helpers/is.js');
-
-///////////////////////////////////////////////////////////////////////// {{{1
-// VITALS.SLICE
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @super slice
 /**
  * @public
  * @const {!Function<string, !Function>}
@@ -28,32 +26,26 @@ var $is = require('./helpers/is.js');
  */
 var slice = (function slicePrivateScope() {
 
-  //////////////////////////////////////////////////////////
-  // PUBLIC METHODS
-  // - slice
-  // - slice.array  (slice.arr)
-  // - slice.string (slice.str)
-  //////////////////////////////////////////////////////////
+  /// #{{{ @docrefs slice
+  /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
+  /// @docref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
+  /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
+  /// @docref [str-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice)
+  /// @docref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
+  /// #}}} @docrefs slice
 
-  /* {{{2 Slice References
-   * @ref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
-   * @ref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-   * @ref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
-   * @ref [str-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice)
-   * @ref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
-   */
-
-  /// {{{2
-  /// @method slice
+  /// #{{{ @submethod main
+  /// @section base
+  /// @method vitals.slice
   /**
-   * Makes a shallow [copy][clone] of specified indexed properties for an
-   * `array` or array-like `object` or indexed characters for a `string`. Note
-   * that @copy#array should be used to [copy][clone] all (not only indexed)
-   * properties or to deep [copy][clone] an `array` or array-like `object`.
-   * This method operates like a cross-platform safe shortcut for
-   * [Array.prototype.slice][arr-slice] and
-   * [String.prototype.slice][str-slice].
-   *
+   * @description
+   *   Makes a shallow [copy][clone] of specified indexed properties for an
+   *   `array` or array-like `object` or indexed characters for a `string`.
+   *   Note that @copy#array should be used to [copy][clone] all (not only
+   *   indexed) properties or to deep [copy][clone] an `array` or array-like
+   *   `object`. This method operates like a cross-platform safe shortcut for
+   *   [Array.prototype.slice][arr-slice] and
+   *   [String.prototype.slice][str-slice].
    * @public
    * @param {(?Array|?Arguments|?Object|?Function|?string)} source
    *   The details are as follows (per #source type):
@@ -102,22 +94,36 @@ var slice = (function slicePrivateScope() {
    */
   function slice(source, start, end) {
 
-    /** @type {number} */
-    var len;
-
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined');
+        throw _mkErr(new ERR, 'no #source defined');
+
       case 1:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=');
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)');
+        }
         break;
+
       default:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=');
-        if ( !$is.none(end) && !$is.num(end) )
-          throw $typeErr(new TypeError, 'end', end, 'number=');
-        break;
+        if ( !$is.void(end) ) {
+          if ( !$is.num(end) )
+            throw _mkTypeErr(new TYPE_ERR, 'end', end, 'number=');
+          if ( !$is.whole(end) )
+            throw _mkErr(new ERR, 'invalid #end `number` (' +
+              'must be whole `number`)');
+        }
+
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)');
+        }
     }
 
     if ( $is.nil(source) )
@@ -127,30 +133,27 @@ var slice = (function slicePrivateScope() {
       return $sliceStr(source, start, end);
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '?Array|?Arguments|?Object|?Function|?string');
-
-    len = source['length'];
-
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'source.length', len, 'number');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #source.length `number` (' +
-        'must be `0` or a positive whole `number`)');
+    if ( !$is.arrish(source) )
+      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+        'length must be a whole `number` that is `0` or more)');
 
     return $sliceArr(source, start, end);
   }
+  /// #}}} @submethod main
 
-  /// {{{2
-  /// @method slice.array
-  /// @alias slice.arr
+  /// #{{{ @submethod array
+  /// @section base
+  /// @method vitals.slice.array
+  /// @alias vitals.slice.arr
   /**
-   * Makes a shallow [copy][clone] of specified indexed properties for an
-   * `array` or array-like `object`. Note that @copy#array should be used to
-   * [copy][clone] all (not only indexed) properties or to deep [copy][clone]
-   * the #source. This method operates like a cross-platform safe shortcut for
-   * [Array.prototype.slice][arr-slice].
-   *
+   * @description
+   *   Makes a shallow [copy][clone] of specified indexed properties for an
+   *   `array` or array-like `object`. Note that @copy#array should be used to
+   *   [copy][clone] all (not only indexed) properties or to deep
+   *   [copy][clone] the #source. This method operates like a cross-platform
+   *   safe shortcut for [Array.prototype.slice][arr-slice].
    * @public
    * @param {(?Array|?Arguments|?Object|?Function)} source
    *   The details are as follows (per #source type):
@@ -185,53 +188,65 @@ var slice = (function slicePrivateScope() {
    */
   function sliceArray(source, start, end) {
 
-    /** @type {number} */
-    var len;
-
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'array');
+        throw _mkErr(new ERR, 'no #source defined', 'array');
+
       case 1:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=',
+              'array');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'array');
+        }
         break;
+
       default:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=', 'array');
-        if ( !$is.none(end) && !$is.num(end) )
-          throw $typeErr(new TypeError, 'end', end, 'number=', 'array');
-        break;
+        if ( !$is.void(end) ) {
+          if ( !$is.num(end) )
+            throw _mkTypeErr(new TYPE_ERR, 'end', end, 'number=', 'array');
+          if ( !$is.whole(end) )
+            throw _mkErr(new ERR, 'invalid #end `number` (' +
+              'must be whole `number`)', 'array');
+        }
+
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=',
+              'array');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'array');
+        }
     }
 
     if ( $is.nil(source) )
       return NIL;
 
     if ( !$is._obj(source) )
-      throw $typeErr(new TypeError, 'source', source,
+      throw _mkTypeErr(new TYPE_ERR, 'source', source,
         '?Array|?Arguments|?Object|?Function', 'array');
-
-    len = source['length'];
-
-    if ( !$is.num(len) )
-      throw $typeErr(new TypeError, 'source.length', len, 'number', 'array');
-    if ( !$is.whole(len) || len < 0 )
-      throw $err(new Error, 'invalid #source.length `number` (' +
-        'must be `0` or a positive whole `number`)', 'array');
+    if ( !$is.arrish(source) )
+      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+        'length must be a whole `number` that is `0` or more)', 'array');
 
     return $sliceArr(source, start, end);
   }
   slice['array'] = sliceArray;
   slice['arr'] = sliceArray;
+  /// #}}} @submethod array
 
-
-  /// {{{2
-  /// @method slice.string
-  /// @alias slice.str
+  /// #{{{ @submethod string
+  /// @section base
+  /// @method vitals.slice.string
+  /// @alias vitals.slice.str
   /**
-   * Makes a [copy][clone] of a specified range of indexed characters in a
-   * `string`. This method operates like a cross-platform safe shortcut for
-   * [String.prototype.slice][str-slice].
-   *
+   * @description
+   *   Makes a [copy][clone] of a specified range of indexed characters in a
+   *   `string`. This method operates like a cross-platform safe shortcut for
+   *   [String.prototype.slice][str-slice].
    * @public
    * @param {string} source
    *   This method [slices][str-slice] the #source.
@@ -252,84 +267,77 @@ var slice = (function slicePrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw $err(new Error, 'no #source defined', 'string');
+        throw _mkErr(new ERR, 'no #source defined', 'string');
+
       case 1:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=',
+              'string');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'string');
+        }
         break;
+
       default:
-        if ( !$is.none(start) && !$is.num(start) )
-          throw $typeErr(new TypeError, 'start', start, 'number=', 'string');
-        if ( !$is.none(end) && !$is.num(end) )
-          throw $typeErr(new TypeError, 'end', end, 'number=', 'string');
-        break;
+        if ( !$is.void(end) ) {
+          if ( !$is.num(end) )
+            throw _mkTypeErr(new TYPE_ERR, 'end', end, 'number=', 'string');
+          if ( !$is.whole(end) )
+            throw _mkErr(new ERR, 'invalid #end `number` (' +
+              'must be whole `number`)', 'string');
+        }
+
+        if ( !$is.void(start) ) {
+          if ( !$is.num(start) )
+            throw _mkTypeErr(new TYPE_ERR, 'start', start, 'number=',
+              'string');
+          if ( !$is.whole(start) )
+            throw _mkErr(new ERR, 'invalid #start `number` (' +
+              'must be whole `number`)', 'string');
+        }
     }
 
     if ( !$is.str(source) )
-      throw $typeErr(new TypeError, 'source', source, 'string', 'string');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'string');
 
     return $sliceStr(source, start, end);
   }
   slice['string'] = sliceString;
   slice['str'] = sliceString;
+  /// #}}} @submethod string
 
-  ///////////////////////////////////////////////////// {{{2
-  // SLICE HELPERS - ERROR MAKERS
-  //////////////////////////////////////////////////////////
+  /// #{{{ @group Slice-Helpers
 
-  /// {{{3
-  /// @const ERROR_MAKER
+  /// #{{{ @group Error-Helpers
+
+  /// #{{{ @const _MK_ERR
   /**
    * @private
    * @const {!Object<string, !function>}
    * @struct
    */
-  var ERROR_MAKER = $newErrorMaker('slice');
+  var _MK_ERR = $mkErrs('slice');
+  /// #}}} @const _MK_ERR
+  /// #include @macro MK_ERR ../macros/mk-err.js
 
-  /// {{{3
-  /// @func $err
-  /**
-   * @private
-   * @param {!Error} err
-   * @param {string} msg
-   * @param {string=} method
-   * @return {!Error} 
-   */
-  var $err = ERROR_MAKER.error;
+  /// #}}} @group Error-Helpers
 
-  /// {{{3
-  /// @func $typeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} paramName
-   * @param {*} paramVal
-   * @param {string} validTypes
-   * @param {string=} methodName
-   * @return {!TypeError} 
-   */
-  var $typeErr = ERROR_MAKER.typeError;
+  /// #}}} @group Slice-Helpers
 
-  /// {{{3
-  /// @func $rangeErr
-  /**
-   * @private
-   * @param {!RangeError} err
-   * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
-   * @param {string=} methodName
-   * @return {!RangeError} 
-   */
-  var $rangeErr = ERROR_MAKER.rangeError;
-  /// }}}2
-
-  // END OF PRIVATE SCOPE FOR VITALS.SLICE
   return slice;
 })();
-/// }}}1
+/// #{{{ @off SOLO
+vitals['slice'] = slice;
+/// #}}} @off SOLO
+/// #}}} @super slice
 
-module.exports = slice;
+/// #{{{ @on SOLO
+var vitals = slice;
+vitals['slice'] = slice;
+/// #include @macro EXPORT ../macros/export.js
+/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #}}} @on SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
