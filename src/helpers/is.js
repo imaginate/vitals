@@ -316,6 +316,16 @@ var $is = (function $isPrivateScope() {
   /// #}}} @func isArrayOrArguments
   /// #}}} @off ARGS_POLYFILL
 
+  /// #{{{ @on NODE
+  /// #{{{ @func isBuffer
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  var isBuffer = BUFF['isBuffer'];
+  /// #}}} @func isBuffer
+  /// #}}} @on NODE
+
   /// #}}} @group JS-Objects
 
   /// #{{{ @group DOM-Objects
@@ -565,6 +575,58 @@ var $is = (function $isPrivateScope() {
 
   /// #}}} @group Number-States
 
+  /// #{{{ @on NODE
+  /// #{{{ @group File-System
+
+  /// #{{{ @func _getStats
+  /**
+   * @param {string} path
+   * @return {!Object}
+   */
+  var _getStats = FS['statSync'];
+  /// #}}} @func _getStats
+
+  /// #{{{ @func isDirectory
+  /**
+   * @param {string} path
+   * @return {boolean}
+   */
+  function isDirectory(path) {
+
+    if ( !path || !isString(path) )
+      return NO;
+
+    try {
+      return _getStats(path)['isDirectory']();
+    }
+    catch (e) {
+      return NO;
+    }
+  }
+  /// #}}} @func isDirectory
+
+  /// #{{{ @func isFile
+  /**
+   * @param {string} path
+   * @return {boolean}
+   */
+  function isFile(path) {
+
+    if ( !path || !isString(path) )
+      return NO;
+
+    try {
+      return _getStats(path)['isFile']();
+    }
+    catch (e) {
+      return NO;
+    }
+  }
+  /// #}}} @func isFile
+
+  /// #}}} @group File-System
+  /// #}}} @on NODE
+
   /// #{{{ @const $is
   /**
    * @const {!Object<string, !function>}
@@ -572,7 +634,7 @@ var $is = (function $isPrivateScope() {
    */
   var $is = {
 
-    // primitives
+    /// #{{{ @group Primitives
     nil:  isNull,
     void: isUndefined,
     bool: isBoolean,
@@ -581,8 +643,9 @@ var $is = (function $isPrivateScope() {
     num:  isNumber,
     _num: isNonZeroNumber,
     nan:  isNan,
+    /// #}}} @group Primitives
 
-    // js objects
+    /// #{{{ @group JS-Objects
     obj:  isObject,
     _obj: isObjectOrFunction,
     fun:  isFunction,
@@ -592,25 +655,46 @@ var $is = (function $isPrivateScope() {
     regx: isRegExp,
     date: isDate,
     err:  isError,
+    /// #{{{ @on NODE
+    buff: isBuffer,
+    /// #}}} @on NODE
+    /// #}}} @group JS-Objects
 
-    // dom objects
+    /// #{{{ @group DOM-Objects
     doc:  isDomDocument,
     elem: isDomElement,
+    /// #}}} @group DOM-Objects
 
-    // special
+    /// #{{{ @group Special
     arrish: isArrayLike,
     empty:  isEmpty,
     eol:    isEndOfLine,
+    /// #}}} @group Special
 
-    // object states
+    /// #{{{ @group Object-States
     extend: isExtensible,
     frozen: isFrozen,
     sealed: isSealed,
+    /// #}}} @group Object-States
 
+    /// #{{{ @group Number-States
     // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
+    /// #{{{ @off NODE
     even:  isEvenNumber
+    /// #}}} @off NODE
+    /// #{{{ @on NODE
+    even:  isEvenNumber,
+    /// #}}} @on NODE
+    /// #}}} @group Number-States
+
+    /// #{{{ @on NODE
+    /// #{{{ @group File-System
+    dir:  isDirectory,
+    file: isFile
+    /// #}}} @group File-System
+    /// #}}} @on NODE
   };
   /// #}}} @const $is
 
