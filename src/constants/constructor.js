@@ -18,6 +18,15 @@
 var ARR = ROOT['Array'];
 /// #}}} @constant ARR
 
+/// #{{{ @constant BUFF
+/**
+ * @private
+ * @const {!Function}
+ * @constructor
+ */
+var BUFF = ROOT['Buffer'];
+/// #}}} @constant BUFF
+
 /// #{{{ @constant ERR
 /**
  * @private

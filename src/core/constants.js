@@ -39,6 +39,7 @@
 /// #include @constant VOID ../constants/special.js
 /// #include @constant YES ../constants/special.js
 /// #{{{ @on NODE
+/// #include @constant BUFF ../constants/constructor.js
 /// #include @constant CP ../constants/node.js
 /// #include @constant FS ../constants/node.js
 /// #}}} @on NODE
