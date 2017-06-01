@@ -687,6 +687,35 @@ var copy = (function copyPrivateScope() {
     return contents;
   }
   /// #}}} @func _copyFile
+
+  /// #{{{ @func _copyDir
+  /**
+   * @private
+   * @param {string} source
+   * @param {string} dest
+   * @param {!Object} opts
+   * @return {!Array<string>}
+   */
+  function _copyDir(source, dest, opts) {
+
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    if (opts['deep'])
+      _mkSubDirs(source, dest);
+
+    paths = _getFilepaths(source, opts['deep']);
+    len = paths['length'];
+    i = -1;
+    while (++i < len)
+      _copyFile($resolve(source, paths[i]), $resolve(dest, paths[i]), opts);
+    return paths;
+  }
+  /// #}}} @func _copyDir
   /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
@@ -824,6 +853,20 @@ var copy = (function copyPrivateScope() {
   };
   /// #}}} @const _DFLT_FILE_OPTS
 
+  /// #{{{ @const _DFLT_DIR_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_DIR_OPTS = {
+    'eol': 'LF',
+    'deep': NO,
+    'buffer': YES,
+    'encoding': 'utf8'
+  };
+  /// #}}} @const _DFLT_DIR_OPTS
+
   /// #}}} @group Default-Options
 
   /// #{{{ @group File-Helpers
@@ -857,6 +900,30 @@ var copy = (function copyPrivateScope() {
     return hasDirMark;
   })();
   /// #}}} @func _hasDirMark
+
+  /// #{{{ @func _mkSubDirs
+  /**
+   * @private
+   * @param {string} source
+   * @param {string} dest
+   * @return {void}
+   */
+  function _mkSubDirs(source, dest) {
+
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getDirpathsDeep(source);
+    len = paths['length'];
+    i = -1;
+    while (++i < len)
+      $mkdir($resolve(dest, paths[i]));
+  }
+  /// #}}} @func _mkSubDirs
 
   /// #{{{ @func _readFile
   /**
