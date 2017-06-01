@@ -507,6 +507,34 @@ var copy = (function copyPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @func _copyFile
+  /**
+   * @private
+   * @param {string} source
+   * @param {string} dest
+   * @param {!Object} opts
+   * @return {(!Buffer|string)}
+   */
+  function _copyFile(source, dest, opts) {
+
+    /** @type {string} */
+    var contents;
+
+    if (opts['buffer']) {
+      contents = _readFile(source);
+      _writeFile(dest, contents);
+    }
+    else {
+      contents = _readFile(source, opts['encoding']);
+
+      if (opts['eol'])
+        contents = $normalize(contents, opts['eol']);
+
+      _writeFile(dest, contents, opts['encoding']);
+    }
+    return contents;
+  }
+  /// #}}} @func _copyFile
   /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
@@ -629,6 +657,77 @@ var copy = (function copyPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @group Default-Options
+
+  /// #{{{ @const _DFLT_FILE_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_FILE_OPTS = {
+    'eol': 'LF',
+    'buffer': YES,
+    'encoding': 'utf8'
+  };
+  /// #}}} @const _DFLT_FILE_OPTS
+
+  /// #}}} @group Default-Options
+
+  /// #{{{ @group File-Helpers
+
+  /// #{{{ @func _hasDirMark
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  var _hasDirMark = (function _hasDirMarkPrivateScope() {
+
+    /// #{{{ @const _DIR_MARK
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _DIR_MARK = /\/$/;
+    /// #}}} @const _DIR_MARK
+
+    /// #{{{ @func hasDirMark
+    /**
+     * @param {string} path
+     * @return {string}
+     */
+    function hasDirMark(path) {
+      return $match(path, _DIR_MARK);
+    }
+    /// #}}} @func hasDirMark
+
+    return hasDirMark;
+  })();
+  /// #}}} @func _hasDirMark
+
+  /// #{{{ @func _readFile
+  /**
+   * @private
+   * @param {string} path
+   * @param {string=} encoding
+   * @return {(!Buffer|string)}
+   */
+  var _readFile = FS['readFileSync'];
+  /// #}}} @func _readFile
+
+  /// #{{{ @func _writeFile
+  /**
+   * @private
+   * @param {string} path
+   * @param {string} contents
+   * @param {string=} encoding
+   * @return {void}
+   */
+  var _writeFile = FS['writeFileSync'];
+  /// #}}} @func _writeFile
+
+  /// #}}} @group File-Helpers
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
