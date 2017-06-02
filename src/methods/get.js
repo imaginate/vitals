@@ -812,6 +812,368 @@ var get = (function getPrivateScope() {
   }
   get['dirpaths'] = getDirpaths;
   /// #}}} @submethod dirpaths
+
+  /// #{{{ @submethod filepaths
+  /// @section fs
+  /// @method vitals.get.filepaths
+  /**
+   * @description
+   *   Gets all of the file paths within a directory tree.
+   * @public
+   * @param {string} source
+   *   Must be a valid directory path.
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
+   *   value.
+   * @param {boolean=} opts.deep = `false`
+   *   The #opts.deep option tells @get#filepaths whether it should
+   *   recursively retrieve all of the sub-directory file paths within the
+   *   #source.
+   * @param {boolean=} opts.recursive
+   *   An alias for the #opts.deep option.
+   * @param {boolean=} opts.base = `false`
+   *   The #opts.base option tells @get#filepaths whether it should append the
+   *   #source directory path to the base of each of the resulting directory
+   *   paths found.
+   * @param {boolean=} opts.basepath
+   *   An alias for the #opts.base option.
+   * @param {boolean=} opts.abs = `false`
+   *   The #opts.abs option only applies if #opts.base is `true`. It appends
+   *   the absolute path of the #source to each of the resulting directory
+   *   paths found.
+   * @param {boolean=} opts.absolute
+   *   An alias for the #opts.abs option.
+   * @param {boolean=} opts.glob = `true`
+   *   The #opts.glob option defines whether a `string` pattern provided for
+   *   any valid or invalid #opts test option is allowed to contain the
+   *   following wildcard values:
+   *   - `"*"`!$
+   *     This wildcard states that any `number` (`0` or more) of characters
+   *     except for the directory separator, `"/"`, is allowed in its place.
+   *     Use the backslash, `"\\"`, to escape a literal asterisk.
+   * @param {boolean=} opts.wildcard
+   *   An alias for the #opts.glob option.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.valid = `null`
+   *   The #opts.valid option limits the returned file paths and the checked
+   *   directory paths. The remaining details are as follows (per #opts.valid
+   *   data type):
+   *   - *`null`*!$
+   *     All file and directory paths are considered valid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.valid contains a
+   *     directory separator, `"/"`, each file and directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each file and
+   *     directory **name** is [tested][test] against the `RegExp`. If a
+   *     [test][test] returns `false`, the file is **not** added to the
+   *     results or the directory's children (if #opts.deep is enabled) are
+   *     **not** checked.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.valid `array`. Second, each `string` within the
+   *     `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.valid is considered a filter `function` (i.e. if it
+   *       returns `false`, the file is **not** added to the results or the
+   *       directory's children are **not** checked). If the value returned by
+   *       the filter is not a `boolean`, it is converted into a `boolean`. It
+   *       has the following optional parameters:
+   *       - **filename** *`string`*
+   *       - **filepath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendValid = `false`
+   *   The #opts.extendValid option only applies if the #opts.valid default
+   *   value is not `null` and #opts.valid is defined. If the
+   *   #opts.extendValid option is set to `true`, any value supplied to
+   *   #opts.valid supplements as opposed to overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalid = `null`
+   *   The #opts.invalid option limits the returned file paths and the checked
+   *   directory paths. The remaining details are as follows (per
+   *   #opts.invalid data type):
+   *   - *`null`*!$
+   *     All file and directory paths are **not** considered invalid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.invalid contains a
+   *     directory separator, `"/"`, each file and directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each file and
+   *     directory **name** is [tested][test] against the `RegExp`. If a
+   *     [test][test] returns `true`, the file is **not** added to the results
+   *     or the directory's children (if #opts.deep is enabled) are **not**
+   *     checked.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.invalid `array`. Second, each `string` within the
+   *     `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.invalid is considered a filter `function` (i.e. if it
+   *       returns `true`, the file is **not** added to the results or the
+   *       directory's children are **not** checked). If the value returned by
+   *       the filter is not a `boolean`, it is converted into a `boolean`. It
+   *       has the following optional parameters:
+   *       - **filename** *`string`*
+   *       - **filepath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendInvalid = `false`
+   *   The #opts.extendValid option only applies if the #opts.valid default
+   *   value is not `null` and #opts.valid is defined. If the
+   *   #opts.extendValid option is set to `true`, any value supplied to
+   *   #opts.valid supplements as opposed to overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs = `null`
+   *   The #opts.validDirs option limits the checked directory paths. The
+   *   remaining details are as follows (per #opts.validDirs data type):
+   *   - *`null`*!$
+   *     All directory names and paths are considered valid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.validDirs contains
+   *     a directory separator, `"/"`, each directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each directory
+   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
+   *     returns `false`, the directory and its sub-directories (if #opts.deep
+   *     is enabled) are **not** checked.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.validDirs `array`. Second, each `string` within the
+   *     `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.validDirs is considered a filter `function` (i.e. if it
+   *       returns `false`, the directory and its sub-directories are **not**
+   *       checked). If the value returned by the filter is not a `boolean`,
+   *       it is converted into a `boolean`. It has the following optional
+   *       parameters:
+   *       - **dirname** *`string`*
+   *       - **dirpath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendValidDirs = `false`
+   *   The #opts.extendValidDirs option only applies if the #opts.validDirs
+   *   default value is not `null` and #opts.validDirs is defined. If the
+   *   #opts.extendValidDirs option is set to `true`, any value supplied to
+   *   #opts.validDirs supplements as opposed to overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs = `/^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/`
+   *   The #opts.invalidDirs option limits the checked directory paths. The
+   *   remaining details are as follows (per #opts.invalidDirs data type):
+   *   - *`null`*!$
+   *     All directory names and paths are **not** considered invalid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.invalidDirs
+   *     contains a directory separator, `"/"`, each directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each directory
+   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
+   *     returns `true`, the directory and its sub-directories (if #opts.deep
+   *     is enabled) are **not** checked.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.invalidDirs `array`. Second, each `string` within
+   *     the `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.invalidDirs is considered a filter `function` (i.e. if it
+   *       returns `true`, the directory and its sub-directories are **not**
+   *       checked). If the value returned by the filter is not a `boolean`,
+   *       it is converted into a `boolean`. It has the following optional
+   *       parameters:
+   *       - **dirname** *`string`*
+   *       - **dirpath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendInvalidDirs = `false`
+   *   The #opts.extendInvalidDirs option only applies if the
+   *   #opts.invalidDirs default value is not `null` and #opts.invalidDirs is
+   *   defined. If the #opts.extendInvalidDirs option is set to `true`, any
+   *   value supplied to #opts.invalidDirs supplements as opposed to
+   *   overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string)=} opts.validExts = `null`
+   *   The #opts.validExts option limits the returned file paths by checking
+   *   their file extension. Note that a file extension is defined as the
+   *   first period, `"."`, in a file name that is only followed by
+   *   alpha-numerics (i.e. `/\.[a-zA-Z0-9]+(?:\.[a-zA-Z0-9)*$/`). The
+   *   remaining details are as follows (per #opts.validExts data type):
+   *   - *`null`*!$
+   *     All file extensions are considered valid.
+   *   - *`!RegExp`*!$
+   *     Each file's extension is [tested][test] against #opts.validExts. If
+   *     a [test][test] returns `false`, the file is **not** added to the
+   *     results.
+   *   - *`!Array<string>`*!$
+   *     Each string must consist of only alpha-numerics, periods, and (if
+   *     #opts.glob is enabled) any valid wildcard characters. All periods
+   *     are escaped and a leading period is appended if it is missing for
+   *     each `string`. After being cleaned each `string` is [joined][join]
+   *     together with a [pipe character][pipe], `"|"`. Finally, the
+   *     [joined][join] `string` is converted into a `RegExp` and all of the
+   *     `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     Each string must consist of only alpha-numerics, periods, pipes, and
+   *     (if #opts.glob is enabled) any valid wildcard characters. All periods
+   *     and pipes are escaped and a leading period is appended to each file
+   *     extension if it is missing for the `string`. Finally, the cleaned
+   *     `string` is converted into a `RegExp` and all of the `RegExp` rules
+   *     stated above apply.
+   * @param {boolean=} opts.extendValidExts = `false`
+   *   The #opts.extendValidExts option only applies if the #opts.validExts
+   *   default value is not `null` and #opts.validExts is defined. If the
+   *   #opts.extendValidExts option is set to `true`, any value supplied to
+   *   #opts.validExts supplements as opposed to overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string)=} opts.invalidExts = `null`
+   *   The #opts.invalidExts option limits the returned file paths by checking
+   *   their file extension. Note that a file extension is defined as the
+   *   first period, `"."`, in a file name that is only followed by
+   *   alpha-numerics (i.e. `/\.[a-zA-Z0-9]+(?:\.[a-zA-Z0-9)*$/`). The
+   *   remaining details are as follows (per #opts.invalidExts data type):
+   *   - *`null`*!$
+   *     All file extensions are **not** considered invalid.
+   *   - *`!RegExp`*!$
+   *     Each file's extension is [tested][test] against #opts.invalidExts. If
+   *     a [test][test] returns `true`, the file is **not** added to the
+   *     results.
+   *   - *`!Array<string>`*!$
+   *     Each string must consist of only alpha-numerics, periods, and (if
+   *     #opts.glob is enabled) any valid wildcard characters. All periods
+   *     are escaped and a leading period is appended if it is missing for
+   *     each `string`. After being cleaned each `string` is [joined][join]
+   *     together with a [pipe character][pipe], `"|"`. Finally, the
+   *     [joined][join] `string` is converted into a `RegExp` and all of the
+   *     `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     Each string must consist of only alpha-numerics, periods, pipes, and
+   *     (if #opts.glob is enabled) any valid wildcard characters. All periods
+   *     and pipes are escaped and a leading period is appended to each file
+   *     extension if it is missing for the `string`. Finally, the cleaned
+   *     `string` is converted into a `RegExp` and all of the `RegExp` rules
+   *     stated above apply.
+   * @param {boolean=} opts.extendInvalidExts = `false`
+   *   The #opts.extendInvalidExts option only applies if the
+   *   #opts.invalidExts default value is not `null` and #opts.invalidExts is
+   *   defined. If the #opts.extendInvalidExts option is set to `true`, any
+   *   value supplied to #opts.invalidExts supplements as opposed to
+   *   overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validFiles = `null`
+   *   The #opts.validFiles option limits the returned file paths. The
+   *   remaining details are as follows (per #opts.validFiles data type):
+   *   - *`null`*!$
+   *     All file paths are considered valid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.validFiles contains
+   *     a directory separator, `"/"`, each file **path** is [tested][test]
+   *     against the `RegExp`. Otherwise, each file **name** is [tested][test]
+   *     against the `RegExp`. If a [test][test] returns `false`, the file is
+   *     **not** added to the results.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.validFiles `array`. Second, each `string` within the
+   *     `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.validFiles is considered a filter `function` (i.e. if it
+   *       returns `false`, the file is **not** added to the results). If the
+   *       value returned by the filter is not a `boolean`, it is converted
+   *       into a `boolean`. It has the following optional parameters:
+   *       - **filename** *`string`*
+   *       - **filepath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendValidFiles = `false`
+   *   The #opts.extendValidFiles option only applies if the #opts.validFiles
+   *   default value is not `null` and #opts.validFiles is defined. If the
+   *   #opts.extendValidFiles option is set to `true`, any value supplied to
+   *   #opts.validFiles supplements as opposed to overwrites its default
+   *   value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidFiles = `null`
+   *   The #opts.invalidFiles option limits the returned file paths. The
+   *   remaining details are as follows (per #opts.invalidFiles data type):
+   *   - *`null`*!$
+   *     All file paths are **not** considered invalid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.invalidFiles
+   *     contains a directory separator, `"/"`, each file **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each file **name** is
+   *     [tested][test] against the `RegExp`. If a [test][test] returns
+   *     `true`, the file is **not** added to the results.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.invalidFiles `array`. Second, each `string` within
+   *     the `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.invalidFiles is considered a filter `function` (i.e. if
+   *       it returns `true`, the file is **not** added to the results). If
+   *       the value returned by the filter is not a `boolean`, it is
+   *       converted into a `boolean`. It has the following optional
+   *       parameters:
+   *       - **filename** *`string`*
+   *       - **filepath** *`string`*
+   *       - **source** *`string`*
+   * @param {boolean=} opts.extendInvalidFiles = `false`
+   *   The #opts.extendInvalidFiles option only applies if the
+   *   #opts.invalidFiles default value is not `null` and #opts.invalidFiles
+   *   is defined. If the #opts.extendInvalidFiles option is set to `true`,
+   *   any value supplied to #opts.invalidFiles supplements as opposed to
+   *   overwrites its default value.
+   * @return {!Array<string>}
+   */
+  function getFilepaths(source, opts) {
+  }
+  get['filepaths'] = getFilepaths;
+  /// #}}} @submethod filepaths
   /// #}}} @on FS
 
   /// #{{{ @group Get-Helpers
