@@ -23,6 +23,7 @@
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $mkdir ../helpers/mkdir.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #}}} @on FS
@@ -1056,7 +1057,7 @@ var copy = (function copyPrivateScope() {
     var i;
 
     dirpaths = [];
-    paths = _readDir(SRC);
+    paths = $readDir(SRC);
     len = paths['length'];
     i = -1;
     while (++i < len) {
@@ -1116,7 +1117,7 @@ var copy = (function copyPrivateScope() {
       return _getFilepathsDeep(SRC);
 
     filepaths = [];
-    paths = _readDir(SRC);
+    paths = $readDir(SRC);
     len = paths['length'];
     i = -1;
     while (++i < len) {
@@ -1213,15 +1214,6 @@ var copy = (function copyPrivateScope() {
     }
   }
   /// #}}} @func _mkSubDirs
-
-  /// #{{{ @func _readDir
-  /**
-   * @private
-   * @param {string} path
-   * @return {!Array<string>}
-   */
-  var _readDir = FS['readdirSync'];
-  /// #}}} @func _readDir
 
   /// #{{{ @func _readFile
   /**
