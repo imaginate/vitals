@@ -1840,6 +1840,253 @@ var get = (function getPrivateScope() {
   /// #}}} @const _DFLT_FILES_OPTS
 
   /// #}}} @group Default-Options
+
+  /// #{{{ @group Dirs-Class
+
+  /// #{{{ @constructor _Dirs
+  /**
+   * @private
+   * @param {string} source
+   * @param {!Object<string, *>} opts
+   * @constructor
+   * @struct
+   */
+  function _Dirs(source, opts) {
+
+    /** @type {?function(string): boolean} */
+    var isValidDirDflt;
+    /** @type {?function(string): boolean} */
+    var isValidDirUser;
+    /** @type {boolean} */
+    var extInvalidDirs;
+    /** @type {boolean} */
+    var extValidDirs;
+    /** @type {boolean} */
+    var glob;
+    /** @type {boolean} */
+    var base;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var src;
+    /** @type {boolean} */
+    var abs;
+
+    source = $cleanpath(source);
+    src = $resolve(source);
+    abs = opts['abs'];
+    path = abs
+      ? src
+      : source;
+    base = opts['base'];
+    glob = opts['glob'];
+    extValidDirs = opts['extendValidDirs'];
+    extInvalidDirs = opts['extendInvalidDirs'];
+    isValidDirDflt = extValidDirs
+      ? extInvalidDirs
+        ? _mkValidTest(glob, _DFLT_DIRS_OPTS['validDirs'],
+            _DFLT_DIRS_OPTS['invalidDirs'])
+        : _mkValidTest(glob, _DFLT_DIRS_OPTS['validDirs'], NIL)
+      : extInvalidDirs
+        ? _mkValidTest(glob, NIL, _DFLT_DIRS_OPTS['invalidDirs'])
+        : NIL;
+    isValidDirUser = _mkValidTest(opts['glob'], opts['validDirs'],
+      opts['invalidDirs']);
+
+    /// #{{{ @const SOURCE
+    /**
+     * @const {string}
+     */
+    this.SOURCE = source;
+    /// #}}} @const SOURCE
+
+    /// #{{{ @const SRC
+    /**
+     * @const {string}
+     */
+    this.SRC = src;
+    /// #}}} @const SRC
+
+    /// #{{{ @const BASE
+    /**
+     * @const {boolean}
+     */
+    this.BASE = base;
+    /// #}}} @const BASE
+
+    /// #{{{ @const ABS
+    /**
+     * @const {boolean}
+     */
+    this.ABS = abs;
+    /// #}}} @const ABS
+
+    /// #{{{ @const PATH
+    /**
+     * @const {string}
+     */
+    this.PATH = _appendSlash(path);
+    /// #}}} @const PATH
+
+    /// #{{{ @func isValidDir
+    /**
+     * @param {string} name
+     * @param {string} tree
+     * @return {boolean}
+     */
+    this.isValidDir = isValidDirDflt
+      ? isValidDirUser
+        ? function isValidDir(name, tree) {
+            return isValidDirDflt(name, tree) && isValidDirUser(name, tree);
+          }
+        : function isValidDir(name, tree) {
+            return isValidDirDflt(name, tree);
+          }
+      : isValidDirUser
+        ? function isValidDir(name, tree) {
+            return isValidDirUser(name, tree);
+          }
+        : function isValidDir(name, tree) {
+            return YES;
+          };
+    /// #}}} @func isValidDir
+
+    /// #{{{ @member trees
+    /**
+     * @type {!Array<string>}
+     */
+    this.trees = [];
+    /// #}}} @member trees
+
+    /// #{{{ @member paths
+    /**
+     * @type {!Array<string>}
+     */
+    this.paths = [];
+    /// #}}} @member paths
+  }
+  _Dirs['prototype'] = $mkObj(NIL);
+  _Dirs['prototype']['constructor'] = _Dirs;
+  /// #}}} @constructor _Dirs
+
+  /// #{{{ @func _Dirs.prototype.main
+  /**
+   * @private
+   * @return {!Array<string>}
+   */
+  _Dirs['prototype'].main = function main() {
+
+    this.getDirs(this.SRC, '');
+
+    if (this.DEEP)
+      this.getDirsDeep(this.SRC);
+
+    return this.BASE
+      ? this.paths
+      : this.trees;
+  }
+  /// #}}} @func _Dirs.prototype.main
+
+  /// #{{{ @func _Dirs.prototype.getDirs
+  /**
+   * @private
+   * @param {string} src
+   * @param {string} tree
+   * @return {void}
+   */
+  _Dirs['prototype'].getDirs = function getDirs(src, tree) {
+
+    /** @type {!Array<string>} */
+    var trees;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {!Array<string>} */
+    var names;
+    /** @type {string} */
+    var name;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var SRC = _appendSlash(src);
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var TREE = tree && _appendSlash(tree);
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var PATH = this.PATH;
+
+    /**
+     * @private
+     * @param {string} name
+     * @param {string} tree
+     * @return {boolean}
+     */
+    var isValidDir = this.isValidDir;
+
+    trees = this.trees;
+    paths = this.paths;
+
+    names = $readDir(SRC);
+    len = names['length'];
+    i = -1;
+    while (++i < len) {
+      name = names[i];
+      src = SRC + name;
+      if ( $is.dir(src) ) {
+        tree = TREE + name;
+        if ( isValidDir(name, tree) ) {
+          trees['push'](tree);
+          paths['push'](PATH + name);
+        }
+      }
+    }
+  }
+  /// #}}} @func _Dirs.prototype.getDirs
+
+  /// #{{{ @func _Dirs.prototype.getDirsDeep
+  /**
+   * @private
+   * @param {string} src
+   * @return {void}
+   */
+  _Dirs['prototype'].getDirsDeep = function getDirsDeep(src) {
+
+    /** @type {!Array<string>} */
+    var trees;
+    /** @type {string} */
+    var tree;
+    /** @type {number} */
+    var i;
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var SRC = _appendSlash(src);
+
+    trees = this.trees;
+    i = -1;
+    while (++i < trees['length']) {
+      tree = trees[i];
+      src = SRC + tree;
+      this.getDirs(src, tree);
+    }
+  }
+  /// #}}} @func _Dirs.prototype.getDirsDeep
+
+  /// #}}} @group Dirs-Class
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
