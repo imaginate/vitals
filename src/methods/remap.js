@@ -16,7 +16,7 @@
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
-/// #include @helper $escape ../helpers/escape.js
+/// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super copy ./copy.js
 /// #}}} @on SOLO
@@ -546,7 +546,7 @@ var remap = (function remapPrivateScope() {
       pattern = $mkStr(pattern);
       if (!pattern)
         return source;
-      pattern = $escape(pattern);
+      pattern = $escRegx(pattern);
       pattern = new REGX(pattern, 'g');
     }
 

@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $ESCAPE HELPER
+ * $ESC-REGX HELPER
  * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,15 +9,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @helper $escape
+/// #{{{ @helper $escRegx
 /**
  * @private
  * @param {string} source
  * @return {string}
  */
-function $escape(source) {
+function $escRegx(source) {
   return source['replace'](/[\\^$.*+?|(){}[\]]/g, '\\$&');
 }
-/// #}}} @helper $escape
+/// #}}} @helper $escRegx
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

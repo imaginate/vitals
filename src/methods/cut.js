@@ -17,7 +17,7 @@
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
-/// #include @helper $escape ../helpers/escape.js
+/// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @super is ./is.js
 /// #include @super copy ./copy.js
@@ -1056,7 +1056,7 @@ var cut = (function cutPrivateScope() {
   function _cutPattern(source, pattern) {
     if ( !$is.regx(pattern) ) {
       pattern = $mkStr(pattern);
-      pattern = $escape(pattern);
+      pattern = $escRegx(pattern);
       pattern = new REGX(pattern, 'g');
     }
     return source['replace'](pattern, '');
