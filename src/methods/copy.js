@@ -945,6 +945,35 @@ var copy = (function copyPrivateScope() {
 
   /// #{{{ @group File-System-Helpers
 
+  /// #{{{ @func _appendDirpaths
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} dirpath
+   * @param {!Array<string>} dirpaths
+   * @return {void}
+   */
+  function _appendDirpaths(SRC, dirpath, dirpaths) {
+
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    dirpath = _appendSlash(dirpath);
+    src = $resolve(SRC, dirpath);
+    paths = _getDirpaths(src);
+    len = paths['length'];
+    i = -1;
+    while (++i < len)
+      dirpaths['push'](dirpath + paths[i]);
+  }
+  /// #}}} @func _appendDirpaths
+
   /// #{{{ @func _appendSlash
   /**
    * @private
@@ -976,6 +1005,62 @@ var copy = (function copyPrivateScope() {
     return appendSlash;
   })();
   /// #}}} @func _appendSlash
+
+  /// #{{{ @func _getDirpaths
+  /**
+   * @private
+   * @param {string} SRC
+   * @return {!Array<string>}
+   */
+  function _getDirpaths(SRC) {
+
+    /** @type {!Array<string>} */
+    var dirpaths;
+    /** @type {string} */
+    var dirpath;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    dirpaths = [];
+    paths = _readDir(SRC);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      dirpath = $cleanpath(paths[i]);
+      path = $resolve(SRC, dirpath);
+      if ( $is.dir(path) )
+        dirpaths['push'](dirpath);
+    }
+    return dirpaths;
+  }
+  /// #}}} @func _getDirpaths
+
+  /// #{{{ @func _getDirpathsDeep
+  /**
+   * @private
+   * @param {string} SRC
+   * @return {!Array<string>}
+   */
+  function _getDirpathsDeep(SRC) {
+
+    /** @type {!Array<string>} */
+    var dirpaths;
+    /** @type {number} */
+    var i;
+
+    dirpaths = _getDirpaths(SRC);
+    i = -1;
+    while (++i < dirpaths['length'])
+      _appendDirpaths(SRC, dirpaths[i], dirpaths);
+    return dirpaths;
+  }
+  /// #}}} @func _getDirpathsDeep
 
   /// #{{{ @func _hasDirMark
   /**
