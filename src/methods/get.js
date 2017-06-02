@@ -1841,6 +1841,147 @@ var get = (function getPrivateScope() {
 
   /// #}}} @group Default-Options
 
+  /// #{{{ @group Option-Helpers
+
+  /// #{{{ @func _isBoolOpt
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _isBoolOpt(val) {
+    return $is.void(val) || $is.bool(val);
+  }
+  /// #}}} @func _isBoolOpt
+
+  /// #{{{ @func _isExtOpt
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  var _isExtOpt = (function _isExtOptPrivateScope() {
+
+    /// #{{{ @const _EXT_PATT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _EXT_PATT = /^\.?[a-zA-Z0-9\*]+(?:\.[a-zA-Z0-9\*]+)*$/;
+    /// #}}} @const _EXT_PATT
+ 
+    /// #{{{ @const _EXTS_PATT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _EXTS_PATT = /^\|?\.?[a-zA-Z0-9\*]+(?:\.[a-zA-Z0-9\*]+)*(?:\|\.?[a-zA-Z0-9\*]+(?:\.[a-zA-Z0-9\*]+)*)*\|?$/;
+    /// #}}} @const _EXTS_PATT
+ 
+    /// #{{{ @func _isExtArr
+    /**
+     * @private
+     * @param {!Array} vals
+     * @return {boolean}
+     */
+    function _isExtArr(vals) {
+
+      /** @type {*} */
+      var val;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
+
+      len = vals['length'];
+      i = -1;
+      while (++i < len) {
+        val = vals[i];
+        if ( !$is.str(val) || !_EXT_PATT['test'](val) )
+          return NO;
+      }
+      return YES;
+    }
+    /// #}}} @func _isExtArr
+ 
+    /// #{{{ @func isExtOpt
+    /**
+     * @param {*} val
+     * @return {boolean}
+     */
+    function isExtOpt(val) {
+      return $is.void(val) || $is.nil(val) || $is.regx(val)
+        ? YES
+        : $is.str(val)
+          ? _EXTS_PATT['test'](val)
+          : $is.arr(val)
+            ? _isExtArr(val)
+            : NO;
+    }
+    /// #}}} @func isExtOpt
+ 
+    return isExtOpt;
+  })();
+  /// #}}} @func _isExtOpt
+
+  /// #{{{ @func _isPattOpt
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  var _isPattOpt = (function _isPattOptPrivateScope() {
+
+    /// #{{{ @func _isStrArr
+    /**
+     * @private
+     * @param {!Array} vals
+     * @return {boolean}
+     */
+    function _isStrArr(vals) {
+
+      /** @type {*} */
+      var val;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
+
+      len = vals['length'];
+      i = -1;
+      while (++i < len) {
+        val = vals[i];
+        if ( !$is.str(val) )
+          return NO;
+      }
+      return YES;
+    }
+    /// #}}} @func _isStrArr
+ 
+    /// #{{{ @func isPattOpt
+    /**
+     * @param {*} val
+     * @return {boolean}
+     */
+    function isPattOpt(val) {
+      return $is.void(val)
+        || $is.nil(val)
+        || $is.str(val)
+        || $is.regx(val)
+        || $is.fun(val)
+          ? YES
+          : $is.arr(val)
+            ? _isStrArr(val)
+            : NO;
+    }
+    /// #}}} @func isPattOpt
+ 
+    return isPattOpt;
+  })();
+  /// #}}} @func _isPattOpt
+
+  /// #}}} @group Option-Helpers
+
   /// #{{{ @group Dirs-Class
 
   /// #{{{ @constructor _Dirs
