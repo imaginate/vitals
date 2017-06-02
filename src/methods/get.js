@@ -769,7 +769,7 @@ var get = (function getPrivateScope() {
             'string=, string=, string=): *)=', 'dirpaths');
 
         if ( !$own(opts, 'validDirs') || $is.void(opts['validDirs']) )
-          if ( $is.void(opts['valid']) )
+          if ( !$is.void(opts['valid']) )
             opts['validDirs'] = opts['valid'];
           else {
             opts['validDirs'] = _DFLT_DIRS_OPTS['validDirs'];
@@ -788,7 +788,7 @@ var get = (function getPrivateScope() {
             'string=, string=, string=): *)=', 'dirpaths');
 
         if ( !$own(opts, 'invalidDirs') || $is.void(opts['invalidDirs']) )
-          if ( $is.void(opts['invalid']) )
+          if ( !$is.void(opts['invalid']) )
             opts['invalidDirs'] = opts['invalid'];
           else {
             opts['invalidDirs'] = _DFLT_DIRS_OPTS['invalidDirs'];
