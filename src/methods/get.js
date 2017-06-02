@@ -3,6 +3,7 @@
  * VITALS.GET
  * ---------------------------------------------------------------------------
  * @section base
+ * @section fs
  * @version 4.1.3
  * @see [vitals.get](https://github.com/imaginate/vitals/wiki/vitals.get)
  *
@@ -14,18 +15,38 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
+/// #{{{ @off FS_ONLY
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS
+/// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $readDir ../helpers/read-dir.js
+/// #include @helper $pathname ../helpers/pathname.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
+/// #include @helper $readFile ../helpers/read-file.js
+/// #}}} @on FS
+/// #{{{ @off FS_ONLY
 /// #include @super copy ./copy.js
+/// #}}} @off FS_ONLY
 /// #}}} @on SOLO
 
 /// #{{{ @super get
+/// #{{{ @off FS_ONLY
 /**
  * @public
- * @type {!Function<string, !Function>}
+ * @const {!Function<string, !Function>}
  * @dict
  */
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS_ONLY
+/**
+ * @public
+ * @const {!Object<string, !Function>}
+ * @dict
+ */
+/// #}}} @on FS_ONLY
 var get = (function getPrivateScope() {
 
   /// #{{{ @docrefs get
@@ -35,6 +56,16 @@ var get = (function getPrivateScope() {
   /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
   /// #}}} @docrefs get
 
+  /// #{{{ @on FS_ONLY
+  /**
+   * @public
+   * @type {!Object<string, !Function>}
+   * @dict
+   */
+  var get = {};
+  /// #}}} @on FS_ONLY
+
+  /// #{{{ @off FS_ONLY
   /// #{{{ @submethod main
   /// @section base
   /// @method vitals.get
@@ -355,9 +386,14 @@ var get = (function getPrivateScope() {
   get['values'] = getValues;
   get['vals'] = getValues;
   /// #}}} @submethod values
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #{{{ @group Get-Helpers
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @group Object-Helpers
 
   /// #{{{ @func _allKeys
@@ -667,6 +703,7 @@ var get = (function getPrivateScope() {
   /// #}}} @func _byStrStrVals
 
   /// #}}} @group String-Helpers
+  /// #}}} @off FS_ONLY
 
   /// #{{{ @group Error-Helpers
 
