@@ -541,6 +541,8 @@ var get = (function getPrivateScope() {
    *     This wildcard states that any `number` (`0` or more) of characters
    *     except for the directory separator, `"/"`, is allowed in its place.
    *     Use the backslash, `"\\"`, to escape a literal asterisk.
+   * @param {boolean=} opts.wildcard
+   *   An alias for the #opts.glob option.
    * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs = `null`
    *   The #opts.validDirs option limits the returned directory paths. The
    *   remaining details are as follows (per #opts.validDirs data type):
