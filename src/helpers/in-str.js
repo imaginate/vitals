@@ -9,84 +9,59 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $IN-STR HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $inStr
 /**
  * @private
- * @param {string} source
- * @param {*} pattern
+ * @param {string} src
+ * @param {*} val
  * @return {boolean}
  */
 var $inStr = (function $inStrPrivateScope() {
 
-  /* {{{3 $inStr References
-   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   */
+  /// #{{{ @docrefs $inStr
+  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+  /// #}}} @docrefs $inStr
 
-  /// {{{3
-  /// @func $inStr
+  /// #{{{ @func _inStr
   /**
-   * A cross-platform shortcut for [String.prototype.includes][includes].
-   *
-   * @param {string} source
-   * @param {*} substr
-   * @return {boolean}
-   */
-  function $inStr(source, substr) {
-
-    if ( !$is.str(substr) )
-      substr = $is.regx(substr)
-        ? substr['toString']()
-        : String(substr);
-
-    return !source
-      ? !substr
-      : !substr
-        ? true
-        : _inStr(source, substr);
-  }
-
-  ///////////////////////////////////////////////////// {{{3
-  // $IN-STR HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _inStr
-  /**
-   * Polyfills [String.prototype.includes][includes] if it does not exist.
-   *
+   * @description
+   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @private
-   * @param {string} source
-   * @param {string} substr
+   * @param {string} src
+   * @param {string} val
    * @return {boolean}
    */
   var _inStr = (function _inStrPrivateScope() {
-
-    /**
-     * @private
-     * @const {!Object}
-     */
-    var PROTO = String['prototype'];
-
-    return 'includes' in PROTO && $is.fun(PROTO['includes'])
-      ? function _inStr(source, substr) {
-          return source['includes'](substr);
+    return 'includes' in STR_PROTO && $is.fun(STR_PROTO['includes'])
+      ? function _inStr(src, val) {
+          return src['includes'](val);
         }
-      : function _inStr(source, substr) {
-          return source['indexOf'](substr) !== -1;
+      : function _inStr(src, val) {
+          return src['indexOf'](val) !== -1;
         };
   })();
-  /// }}}3
+  /// #}}} @func _inStr
 
-  // END OF PRIVATE SCOPE FOR $IN-STR
+  /// #{{{ @func $inStr
+  /**
+   * @description
+   *   A cross-platform shortcut for [String.prototype.includes][includes].
+   * @param {string} src
+   * @param {*} val
+   * @return {boolean}
+   */
+  function $inStr(src, val) {
+    val = $mkStr(val);
+    return !src
+      ? !val
+      : !val
+        ? YES
+        : _inStr(src, val);
+  }
+  /// #}}} @func $inStr
+
   return $inStr;
 })();
-/// }}}2
-
-module.exports = $inStr;
+/// #}}} @helper $inStr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
