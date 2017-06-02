@@ -463,13 +463,13 @@ var get = (function getPrivateScope() {
         opts = $cloneObj(opts);
 
         if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
-          opts['buffer'] = NO;
+          opts['buffer'] = _DFLT_FILE_OPTS['buffer'];
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'file');
 
         if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
-          opts['encoding'] = 'utf8';
+          opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
         else if ( !$is.str(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
             'string=', 'file');
@@ -478,7 +478,7 @@ var get = (function getPrivateScope() {
             'file');
 
         if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
-          opts['eol'] = 'LF';
+          opts['eol'] = _DFLT_FILE_OPTS['eol'];
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
             throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
