@@ -670,7 +670,7 @@ var copy = (function copyPrivateScope() {
    */
   function _copyFile(source, dest, opts) {
 
-    /** @type {string} */
+    /** @type {(!Buffer|string)} */
     var contents;
 
     if (opts['buffer']) {
@@ -692,31 +692,96 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @func _copyDir
   /**
    * @private
-   * @param {string} source
+   * @param {string} src
    * @param {string} dest
    * @param {!Object} opts
    * @return {!Array<string>}
    */
-  function _copyDir(source, dest, opts) {
+  function _copyDir(src, dest, opts) {
+
+    src = $resolve(src);
+    dest = $resolve(dest);
+
+    if (opts['deep'])
+      _mkSubDirs(src, dest);
+
+    return opts['buffer']
+      ? _copyDirByBuffer(src, dest, opts['deep'])
+      : _copyDirByString(src, dest, opts['deep'],
+          opts['encoding'], opts['eol']);
+  }
+  /// #}}} @func _copyDir
+
+  /// #{{{ @func _copyDirByBuffer
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @return {!Array<string>}
+   */
+  function _copyDirByBuffer(SRC, DEST, deep) {
 
     /** @type {!Array<string>} */
     var paths;
+    /** @type {string} */
+    var path;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    if (opts['deep'])
-      _mkSubDirs(source, dest);
-
-    paths = _getFilepaths(source, opts['deep']);
+    paths = _getFilepaths(SRC, deep);
     len = paths['length'];
     i = -1;
-    while (++i < len)
-      _copyFile($resolve(source, paths[i]), $resolve(dest, paths[i]), opts);
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      _writeFile(dest, _readFile(src));
+    }
     return paths;
   }
-  /// #}}} @func _copyDir
+  /// #}}} @func _copyDirByBuffer
+
+  /// #{{{ @func _copyDirByString
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @param {string} encoding
+   * @param {?string} eol
+   * @return {!Array<string>}
+   */
+  function _copyDirByString(SRC, DEST, deep, encoding, eol) {
+
+    /** @type {string} */
+    var contents;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getFilepaths(SRC, deep);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      contents = _readFile(src, encoding);
+      if (eol)
+        contents = $normalize(contents, eol);
+      _writeFile(dest, contents, encoding);
+    }
+    return paths;
+  }
+  /// #}}} @func _copyDirByString
   /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
@@ -905,11 +970,11 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @func _mkSubDirs
   /**
    * @private
-   * @param {string} source
+   * @param {string} src
    * @param {string} dest
    * @return {void}
    */
-  function _mkSubDirs(source, dest) {
+  function _mkSubDirs(src, dest) {
 
     /** @type {!Array<string>} */
     var paths;
@@ -918,7 +983,7 @@ var copy = (function copyPrivateScope() {
     /** @type {number} */
     var i;
 
-    paths = _getDirpathsDeep(source);
+    paths = _getDirpathsDeep(src);
     len = paths['length'];
     i = -1;
     while (++i < len)
