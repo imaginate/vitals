@@ -974,6 +974,35 @@ var copy = (function copyPrivateScope() {
   }
   /// #}}} @func _appendDirpaths
 
+  /// #{{{ @func _appendFilepaths
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} dirpath
+   * @param {!Array<string>} filepaths
+   * @return {void}
+   */
+  function _appendFilepaths(SRC, dirpath, filepaths) {
+
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    dirpath = _appendSlash(dirpath);
+    src = $resolve(SRC, dirpath);
+    paths = _getFilepaths(src);
+    len = paths['length'];
+    i = -1;
+    while (++i < len)
+      filepaths['push'](dirpath + paths[i]);
+  }
+  /// #}}} @func _appendFilepaths
+
   /// #{{{ @func _appendSlash
   /**
    * @private
@@ -1061,6 +1090,72 @@ var copy = (function copyPrivateScope() {
     return dirpaths;
   }
   /// #}}} @func _getDirpathsDeep
+
+  /// #{{{ @func _getFilepaths
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {boolean=} deep
+   * @return {!Array<string>}
+   */
+  function _getFilepaths(SRC, deep) {
+
+    /** @type {!Array<string>} */
+    var filepaths;
+    /** @type {string} */
+    var filepath;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    if (deep)
+      return _getFilepathsDeep(SRC);
+
+    filepaths = [];
+    paths = _readDir(SRC);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      filepath = $cleanpath(paths[i]);
+      path = $resolve(SRC, filepath);
+      if ( $is.file(path) )
+        filepaths['push'](filepath);
+    }
+    return filepaths;
+  }
+  /// #}}} @func _getFilepaths
+
+  /// #{{{ @func _getFilepathsDeep
+  /**
+   * @private
+   * @param {string} SRC
+   * @return {!Array<string>}
+   */
+  function _getFilepathsDeep(SRC) {
+
+    /** @type {!Array<string>} */
+    var filepaths;
+    /** @type {!Array<string>} */
+    var dirpaths;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    filepaths = _getFilepaths(SRC);
+    dirpaths = _getDirpathsDeep(SRC);
+    len = dirpaths['length'];
+    i = -1;
+    while (++i < len)
+      _appendFilepaths(SRC, dirpaths[i], filepaths);
+    return filepaths;
+  }
+  /// #}}} @func _getFilepathsDeep
 
   /// #{{{ @func _hasDirMark
   /**
