@@ -67,15 +67,16 @@ var create = (function createPrivateScope() {
         if ( !$is.nil(proto) && !$is.obj(proto) )
           throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
 
-        return _create(proto);
+        return $mkObj(proto);
+
+      default:
+        if ( !$is.nil(proto) && !$is.obj(proto) )
+          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
+
+        args = $sliceArr(arguments);
+        args[0] = $mkObj(proto);
+        return amend['apply'](NIL, args);
     }
-
-    if ( !$is.nil(proto) && !$is.obj(proto) )
-      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
-
-    args = $sliceArr(arguments);
-    args[0] = _create(proto);
-    return amend['apply'](NIL, args);
   }
   /// #}}} @submethod main
 
@@ -112,78 +113,22 @@ var create = (function createPrivateScope() {
         if ( !$is.nil(proto) && !$is.obj(proto) )
           throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
 
-        return _create(proto);
+        return $mkObj(proto);
+
+      default:
+        if ( !$is.nil(proto) && !$is.obj(proto) )
+          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
+
+        args = $sliceArr(arguments);
+        args[0] = $mkObj(proto);
+        return amend['apply'](NIL, args);
     }
-
-    if ( !$is.nil(proto) && !$is.obj(proto) )
-      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
-
-    args = $sliceArr(arguments);
-    args[0] = _create(proto);
-    return amend['apply'](NIL, args);
   }
   create['object'] = createObject;
   create['obj'] = createObject;
   /// #}}} @submethod object
 
   /// #{{{ @group Create-Helpers
-
-  /// #{{{ @group Create-Polyfills
-
-  /// #{{{ @func _ObjectCreate
-  /**
-   * @private
-   * @param {?Object} proto
-   * @return {!Object}
-   */
-  var _ObjectCreate = (function _ObjectCreatePolyfillPrivateScope() {
-
-    if ( 'create' in OBJ && $is.fun(OBJ['create']) )
-      return OBJ['create'];
-
-    /// #{{{ @func _Object
-    /**
-     * @private
-     * @constructor
-     */
-    function _Object(){}
-    /// #}}} @func _Object
-
-    /// #{{{ @func ObjectCreate
-    /**
-     * @param {?Object} proto
-     * @return {!Object}
-     */
-    function ObjectCreate(proto) {
-
-      /** @type {!Object} */
-      var obj;
-
-      _Object['prototype'] = proto;
-      obj = new _Object();
-      _Object['prototype'] = NIL;
-      return obj;
-    }
-    /// #}}} @func ObjectCreate
-
-    return ObjectCreate;
-  })();
-  /// #}}} @func _ObjectCreate
-
-  /// #}}} @group Create-Polyfills
-
-  /// #{{{ @group Main-Helpers
-
-  /// #{{{ @func _create
-  /**
-   * @private
-   * @param {?Object} proto
-   * @return {!Object}
-   */
-  var _create = _ObjectCreate;
-  /// #}}} @func _create
-
-  /// #}}} @group Main-Helpers
 
   /// #{{{ @group Error-Helpers
 

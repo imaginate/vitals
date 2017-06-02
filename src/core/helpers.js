@@ -24,6 +24,7 @@
 /// #include @helper $is ../helpers/is.js
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
+/// #include @helper $mkObj ../helpers/mk-obj.js
 /// #include @helper $mkErrs ../helpers/mk-errs.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #{{{ @on FS
