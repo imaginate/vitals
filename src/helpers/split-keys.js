@@ -21,59 +21,23 @@
  *   - `" "`
  * @return {!Array<string>}
  */
-var $splitKeys = (function $splitKeysPrivateScope() {
+function $splitKeys(keys) {
 
-  /// #{{{ @docrefs $splitKeys
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-  /// #}}} @docrefs $splitKeys
+  /** @type {string} */
+  var separator;
 
-  /// #{{{ @func _inStr
-  /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
-   * @private
-   * @param {string} src
-   * @param {string} val
-   * @return {boolean}
-   */
-  var _inStr = (function _inStrPrivateScope() {
-    return 'includes' in STR_PROTO && $is.fun(STR_PROTO['includes'])
-      ? function _inStr(src, val) {
-          return src['includes'](val);
-        }
-      : function _inStr(src, val) {
-          return src['indexOf'](val) !== -1;
-        };
-  })();
-  /// #}}} @func _inStr
+  if (!keys)
+    return [ '' ];
 
-  /// #{{{ @func $splitKeys
-  /**
-   * @param {string} keys
-   * @return {!Array<string>}
-   */
-  function $splitKeys(keys) {
-
-    /** @type {string} */
-    var separator;
-
-    if (!keys)
-      return [ '' ];
-
-    separator = _inStr(keys, ', ')
-      ? ', '
-      : _inStr(keys, ',')
-        ? ','
-        : _inStr(keys, '|')
-          ? '|'
-          : ' ';
-
-    return keys['split'](separator);
-  }
-  /// #}}} @func $splitKeys
-
-  return $splitKeys;
-})();
+  separator = $strIncl(keys, ', ')
+    ? ', '
+    : $strIncl(keys, ',')
+      ? ','
+      : $strIncl(keys, '|')
+        ? '|'
+        : ' ';
+  return keys['split'](separator);
+}
 /// #}}} @helper $splitKeys
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
