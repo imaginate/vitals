@@ -573,8 +573,8 @@ var get = (function getPrivateScope() {
    *   - *`function(string=, string=, string=): *`*!$
    *       The #opts.validDirs is considered a filter `function` (i.e. if it
    *       returns `false`, the directory and its sub-directories are **not**
-   *       added to the results). If the a value returned by the filter is not
-   *       a `boolean`, it is converted into a `boolean`. It has the following
+   *       added to the results). If the value returned by the filter is not a
+   *       `boolean`, it is converted into a `boolean`. It has the following
    *       optional parameters:
    *       - **dirname** *`string`*
    *       - **dirpath** *`string`*
@@ -583,16 +583,16 @@ var get = (function getPrivateScope() {
    *   An alias for the #opts.validDirs option.
    * @param {boolean=} opts.extendValidDirs = `false`
    *   The #opts.extendValidDirs option only applies if the #opts.validDirs
-   *   default value is not `null`. If the #opts.extendValidDirs option is set
-   *   to `true`, any value supplied to #opts.validDirs supplements as opposed
-   *   to overwrites the default value.
+   *   default value is not `null` and #opts.validDirs is defined. If the
+   *   #opts.extendValidDirs option is set to `true`, any value supplied to
+   *   #opts.validDirs supplements as opposed to overwrites its default value.
    * @param {boolean=} opts.extendValid
    *   An alias for the #opts.extendValidDirs option.
    * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs = `/^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/`
    *   The #opts.invalidDirs option limits the returned directory paths. The
    *   remaining details are as follows (per #opts.invalidDirs data type):
    *   - *`null`*!$
-   *     All directory names and paths are considered valid.
+   *     All directory names and paths are **not** considered invalid.
    *   - *`!RegExp`*!$
    *     If the [RegExp.prototype.source][source] of #opts.invalidDirs
    *     contains a directory separator, `"/"`, each directory **path** is
@@ -618,8 +618,8 @@ var get = (function getPrivateScope() {
    *   - *`function(string=, string=, string=): *`*!$
    *       The #opts.invalidDirs is considered a filter `function` (i.e. if it
    *       returns `true`, the directory and its sub-directories are **not**
-   *       added to the results). If the a value returned by the filter is not
-   *       a `boolean`, it is converted into a `boolean`. It has the following
+   *       added to the results). If the value returned by the filter is not a
+   *       `boolean`, it is converted into a `boolean`. It has the following
    *       optional parameters:
    *       - **dirname** *`string`*
    *       - **dirpath** *`string`*
@@ -628,10 +628,10 @@ var get = (function getPrivateScope() {
    *   An alias for the #opts.invalidDirs option.
    * @param {boolean=} opts.extendInvalidDirs = `false`
    *   The #opts.extendInvalidDirs option only applies if the
-   *   #opts.invalidDirs default value is not `null`. If the
-   *   #opts.extendInvalidDirs option is set to `true`, any value supplied to
-   *   #opts.invalidDirs supplements as opposed to overwrites the default
-   *   value.
+   *   #opts.invalidDirs default value is not `null` and #opts.invalidDirs is
+   *   defined. If the #opts.extendInvalidDirs option is set to `true`, any
+   *   value supplied to #opts.invalidDirs supplements as opposed to
+   *   overwrites its default value.
    * @param {boolean=} opts.extendInvalid
    *   An alias for the #opts.extendInvalidDirs option.
    * @return {!Array<string>}
