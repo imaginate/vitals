@@ -12,7 +12,7 @@
 /// #{{{ @helper $ownEnum
 /**
  * @private
- * @param {(?Object|?Function)} src
+ * @param {(!Object|!Function)} src
  * @param {*} key
  * @return {boolean}
  */
@@ -37,12 +37,12 @@ var $ownEnum = (function $ownEnumPrivateScope() {
    * @description
    *   A safe way to call [Object.prototype.hasOwnProperty][own] and
    *   [Object.prototype.propertyIsEnumerable][enum].
-   * @param {(?Object|?Function)} src
+   * @param {(!Object|!Function)} src
    * @param {*} key
    * @return {boolean}
    */
   function $ownEnum(src, key) {
-    return !!src && $own(src, key) && _hasEnum['call'](src, key);
+    return $own(src, key) && _hasEnum['call'](src, key);
   }
   /// #}}} @func $ownEnum
 
