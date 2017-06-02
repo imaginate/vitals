@@ -9,12 +9,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $SPLIT-KEYS HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $splitKeys
 /**
  * @private
  * @param {string} keys
@@ -28,12 +23,31 @@
  */
 var $splitKeys = (function $splitKeysPrivateScope() {
 
-  /* {{{3 $splitKeys References
-   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   */
+  /// #{{{ @docrefs $splitKeys
+  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+  /// #}}} @docrefs $splitKeys
 
-  /// {{{3
-  /// @func $splitKeys
+  /// #{{{ @func _inStr
+  /**
+   * @description
+   *   Polyfills [String.prototype.includes][includes] if it does not exist.
+   * @private
+   * @param {string} src
+   * @param {string} val
+   * @return {boolean}
+   */
+  var _inStr = (function _inStrPrivateScope() {
+    return 'includes' in STR_PROTO && $is.fun(STR_PROTO['includes'])
+      ? function _inStr(src, val) {
+          return src['includes'](val);
+        }
+      : function _inStr(src, val) {
+          return src['indexOf'](val) !== -1;
+        };
+  })();
+  /// #}}} @func _inStr
+
+  /// #{{{ @func $splitKeys
   /**
    * @param {string} keys
    * @return {!Array<string>}
@@ -56,44 +70,10 @@ var $splitKeys = (function $splitKeysPrivateScope() {
 
     return keys['split'](separator);
   }
+  /// #}}} @func $splitKeys
 
-  ///////////////////////////////////////////////////// {{{3
-  // $SPLIT-KEYS HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _inStr
-  /**
-   * Polyfills [String.prototype.includes][includes] if it does not exist.
-   *
-   * @private
-   * @param {string} source
-   * @param {string} substr
-   * @return {boolean}
-   */
-  var _inStr = (function _inStrPrivateScope() {
-
-    /**
-     * @private
-     * @const {!Object}
-     */
-    var PROTO = String['prototype'];
-
-    return 'includes' in PROTO && $is.fun(PROTO['includes'])
-      ? function _inStr(source, substr) {
-          return source['includes'](substr);
-        }
-      : function _inStr(source, substr) {
-          return source['indexOf'](substr) !== -1;
-        };
-  })();
-  /// }}}3
-
-  // END OF PRIVATE SCOPE FOR $SPLIT-KEYS
   return $splitKeys;
 })();
-/// }}}2
-
-module.exports = $splitKeys;
+/// #}}} @helper $splitKeys
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
