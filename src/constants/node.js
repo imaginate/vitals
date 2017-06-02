@@ -27,4 +27,13 @@ var CP = require('child_process');
 var FS = require('fs');
 /// #}}} @constant FS
 
+/// #{{{ @constant PATH
+/**
+ * @private
+ * @const {!Object}
+ * @dict
+ */
+var PATH = require('path');
+/// #}}} @constant PATH
+
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

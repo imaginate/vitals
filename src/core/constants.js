@@ -42,6 +42,7 @@
 /// #include @constant BUFF ../constants/constructor.js
 /// #include @constant CP ../constants/node.js
 /// #include @constant FS ../constants/node.js
+/// #include @constant PATH ../constants/node.js
 /// #}}} @on NODE
 /// #}}} @core constants
 
