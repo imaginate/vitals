@@ -51,9 +51,14 @@ var get = (function getPrivateScope() {
 
   /// #{{{ @docrefs get
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [join]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
+  /// @docref [pipe]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#alternation)
+  /// @docref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
   /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
   /// @docref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+  /// @docref [source]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
   /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
+  /// @docref [special]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions)
   /// #}}} @docrefs get
 
   /// #{{{ @on FS_ONLY
@@ -498,6 +503,141 @@ var get = (function getPrivateScope() {
   }
   get['file'] = getFile;
   /// #}}} @submethod file
+
+  /// #{{{ @submethod dirpaths
+  /// @section fs
+  /// @method vitals.get.dirpaths
+  /**
+   * @description
+   *   Gets all of the directory paths within a directory tree.
+   * @public
+   * @param {string} source
+   *   Must be a valid directory path.
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
+   *   value.
+   * @param {boolean=} opts.deep = `false`
+   *   The #opts.deep option tells @get#dirpaths whether it should recursively
+   *   retrieve all of the sub-directory paths within the #source.
+   * @param {boolean=} opts.recursive
+   *   An alias for the #opts.deep option.
+   * @param {boolean=} opts.base = `false`
+   *   The #opts.base option tells @get#dirpaths whether it should append the
+   *   #source directory path to the base of each of the resulting directory
+   *   paths found.
+   * @param {boolean=} opts.basepath
+   *   An alias for the #opts.base option.
+   * @param {boolean=} opts.abs = `false`
+   *   The #opts.abs option only applies if #opts.base is `true`. It appends
+   *   the absolute path of the #source to each of the resulting directory
+   *   paths found.
+   * @param {boolean=} opts.absolute
+   *   An alias for the #opts.abs option.
+   * @param {boolean=} opts.glob = `true`
+   *   The #opts.glob option defines whether a `string` value provided for
+   *   #opts.validDirs or #opts.invalidDirs is allowed to contain the
+   *   following wildcard values:
+   *   - `"*"`!$
+   *     This wildcard states that any `number` (`0` or more) of characters
+   *     except for the directory separator, `"/"`, is allowed in its place.
+   *     Use the backslash, `"\\"`, to escape a literal asterisk.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs = `null`
+   *   The #opts.validDirs option limits the returned directory paths. The
+   *   remaining details are as follows (per #opts.validDirs data type):
+   *   - *`null`*!$
+   *     All directory names and paths are considered valid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.validDirs contains
+   *     a directory separator, `"/"`, each directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each directory
+   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
+   *     returns `false`, the directory and its sub-directories (if #opts.deep
+   *     is enabled) are **not** added to the results.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.validDirs `array`. Second, each `string` within the
+   *     `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.validDirs is considered a filter `function` (i.e. if it
+   *       returns `false`, the directory and its sub-directories are **not**
+   *       added to the results). If the a value returned by the filter is not
+   *       a `boolean`, it is converted into a `boolean`. It has the following
+   *       optional parameters:
+   *       - **dirname** *`string`*
+   *       - **dirpath** *`string`*
+   *       - **source** *`string`*
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.valid
+   *   An alias for the #opts.validDirs option.
+   * @param {boolean=} opts.extendValidDirs = `false`
+   *   The #opts.extendValidDirs option only applies if the #opts.validDirs
+   *   default value is not `null`. If the #opts.extendValidDirs option is set
+   *   to `true`, any value supplied to #opts.validDirs supplements as opposed
+   *   to overwrites the default value.
+   * @param {boolean=} opts.extendValid
+   *   An alias for the #opts.extendValidDirs option.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs = `/^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/`
+   *   The #opts.invalidDirs option limits the returned directory paths. The
+   *   remaining details are as follows (per #opts.invalidDirs data type):
+   *   - *`null`*!$
+   *     All directory names and paths are considered valid.
+   *   - *`!RegExp`*!$
+   *     If the [RegExp.prototype.source][source] of #opts.invalidDirs
+   *     contains a directory separator, `"/"`, each directory **path** is
+   *     [tested][test] against the `RegExp`. Otherwise, each directory
+   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
+   *     returns `true`, the directory and its sub-directories (if #opts.deep
+   *     is enabled) are **not** added to the results.
+   *   - *`!Array<string>`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) are escaped for each `string`
+   *     within the #opts.invalidDirs `array`. Second, each `string` within
+   *     the `array` is [joined][join] together with a [pipe character][pipe],
+   *     `"|"`. Third, the [joined][join] `string` is converted into a
+   *     `RegExp` using its new value for the [RegExp source][source].
+   *     Finally, all the `RegExp` rules stated above apply.
+   *   - *`string`*!$
+   *     First, all of the [special characters][special] (unless #opts.glob is
+   *     enabled then its wildcard rules apply) expect for the
+   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
+   *     `string` is converted into a `RegExp` using its value for the
+   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
+   *     apply.
+   *   - *`function(string=, string=, string=): *`*!$
+   *       The #opts.invalidDirs is considered a filter `function` (i.e. if it
+   *       returns `true`, the directory and its sub-directories are **not**
+   *       added to the results). If the a value returned by the filter is not
+   *       a `boolean`, it is converted into a `boolean`. It has the following
+   *       optional parameters:
+   *       - **dirname** *`string`*
+   *       - **dirpath** *`string`*
+   *       - **source** *`string`*
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalid
+   *   An alias for the #opts.invalidDirs option.
+   * @param {boolean=} opts.extendInvalidDirs = `false`
+   *   The #opts.extendInvalidDirs option only applies if the
+   *   #opts.invalidDirs default value is not `null`. If the
+   *   #opts.extendInvalidDirs option is set to `true`, any value supplied to
+   *   #opts.invalidDirs supplements as opposed to overwrites the default
+   *   value.
+   * @param {boolean=} opts.extendInvalid
+   *   An alias for the #opts.extendInvalidDirs option.
+   * @return {!Array<string>}
+   */
+  function getDirpaths(dirpath, opts) {
+  }
+  get['dirpaths'] = getDirpaths;
+  /// #}}} @submethod dirpaths
   /// #}}} @on FS
 
   /// #{{{ @group Get-Helpers
