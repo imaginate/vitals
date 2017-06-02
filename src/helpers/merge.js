@@ -9,58 +9,24 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $MERGE HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $merge
 /**
  * @private
  * @param {(!Object|!Function)} dest
- * @param {(!Object|!Function)} source
+ * @param {(!Object|!Function)} src
  * @return {(!Object|!Function)}
  */
-var $merge = (function $mergePrivateScope() {
+function $merge(dest, src) {
 
-  /// {{{3
-  /// @func $merge
-  /**
-   * @param {(!Object|!Function)} dest
-   * @param {(!Object|!Function)} source
-   * @return {(!Object|!Function)}
-   */
-  function $merge(dest, source) {
+  /** @type {string} */
+  var key;
 
-    /** @type {string} */
-    var key;
-
-    for (key in source) {
-      if ( _hasOwn['call'](source, key) )
-        dest[key] = source[key];
-    }
-    return dest;
+  for (key in src) {
+    if ( $own(src, key) )
+      dest[key] = src[key];
   }
-
-  ///////////////////////////////////////////////////// {{{3
-  // $MERGE HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _hasOwn
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwn = Object['prototype']['hasOwnProperty'];
-  /// }}}3
-
-  // END OF PRIVATE SCOPE FOR $MERGE
-  return $merge;
-})();
-/// }}}2
-
-module.exports = $merge;
+  return dest;
+}
+/// #}}} @helper $merge
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
