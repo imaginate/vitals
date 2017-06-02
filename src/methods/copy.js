@@ -726,6 +726,10 @@ var copy = (function copyPrivateScope() {
     var paths;
     /** @type {string} */
     var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
     /** @type {number} */
     var len;
     /** @type {number} */
@@ -762,6 +766,10 @@ var copy = (function copyPrivateScope() {
     var paths;
     /** @type {string} */
     var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
     /** @type {number} */
     var len;
     /** @type {number} */
@@ -935,7 +943,7 @@ var copy = (function copyPrivateScope() {
 
   /// #}}} @group Default-Options
 
-  /// #{{{ @group File-Helpers
+  /// #{{{ @group File-System-Helpers
 
   /// #{{{ @func _hasDirMark
   /**
@@ -970,24 +978,28 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @func _mkSubDirs
   /**
    * @private
-   * @param {string} src
-   * @param {string} dest
+   * @param {string} SRC
+   * @param {string} DEST
    * @return {void}
    */
-  function _mkSubDirs(src, dest) {
+  function _mkSubDirs(SRC, DEST) {
 
     /** @type {!Array<string>} */
     var paths;
+    /** @type {string} */
+    var path;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    paths = _getDirpathsDeep(src);
+    paths = _getDirpathsDeep(SRC);
     len = paths['length'];
     i = -1;
-    while (++i < len)
-      $mkdir($resolve(dest, paths[i]));
+    while (++i < len) {
+      path = $resolve(DEST, paths[i]);
+      $mkdir(path);
+    }
   }
   /// #}}} @func _mkSubDirs
 
@@ -1012,7 +1024,7 @@ var copy = (function copyPrivateScope() {
   var _writeFile = FS['writeFileSync'];
   /// #}}} @func _writeFile
 
-  /// #}}} @group File-Helpers
+  /// #}}} @group File-System-Helpers
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
