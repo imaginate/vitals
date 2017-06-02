@@ -27,6 +27,7 @@
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
+/// #include @helper $writeFile ../helpers/write-file.js
 /// #}}} @on FS
 /// #}}} @on SOLO
 
@@ -676,7 +677,7 @@ var copy = (function copyPrivateScope() {
 
     if (opts['buffer']) {
       contents = $readFile(source);
-      _writeFile(dest, contents);
+      $writeFile(dest, contents);
     }
     else {
       contents = $readFile(source, opts['encoding']);
@@ -684,7 +685,7 @@ var copy = (function copyPrivateScope() {
       if (opts['eol'])
         contents = $fixEol(contents, opts['eol']);
 
-      _writeFile(dest, contents, opts['encoding']);
+      $writeFile(dest, contents, opts['encoding']);
     }
     return contents;
   }
@@ -743,7 +744,7 @@ var copy = (function copyPrivateScope() {
       path = paths[i];
       src = $resolve(SRC, path);
       dest = $resolve(DEST, path);
-      _writeFile(dest, $readFile(src));
+      $writeFile(dest, $readFile(src));
     }
     return paths;
   }
@@ -786,7 +787,7 @@ var copy = (function copyPrivateScope() {
       contents = $readFile(src, encoding);
       if (eol)
         contents = $fixEol(contents, eol);
-      _writeFile(dest, contents, encoding);
+      $writeFile(dest, contents, encoding);
     }
     return paths;
   }
@@ -1215,17 +1216,6 @@ var copy = (function copyPrivateScope() {
     }
   }
   /// #}}} @func _mkSubDirs
-
-  /// #{{{ @func _writeFile
-  /**
-   * @private
-   * @param {string} path
-   * @param {string} contents
-   * @param {string=} encoding
-   * @return {void}
-   */
-  var _writeFile = FS['writeFileSync'];
-  /// #}}} @func _writeFile
 
   /// #}}} @group File-System-Helpers
   /// #}}} @on FS
