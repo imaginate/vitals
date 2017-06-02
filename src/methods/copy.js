@@ -510,8 +510,7 @@ var copy = (function copyPrivateScope() {
 
         if ( !$own(opts, 'recursive') )
           opts['recursive'] = VOID;
-        else if ( !$is.void(opts['recursive'])
-                  && !$is.bool(opts['recursive']) )
+        else if ( !_isBoolOpt(opts['recursive']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
             'boolean=', 'directory');
 
@@ -944,6 +943,21 @@ var copy = (function copyPrivateScope() {
   /// #}}} @const _DFLT_DIR_OPTS
 
   /// #}}} @group Default-Options
+
+  /// #{{{ @group Option-Helpers
+
+  /// #{{{ @func _isBoolOpt
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _isBoolOpt(val) {
+    return $is.void(val) && $is.bool(val);
+  }
+  /// #}}} @func _isBoolOpt
+
+  /// #}}} @group Option-Helpers
 
   /// #{{{ @group File-System-Helpers
 
