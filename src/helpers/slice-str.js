@@ -9,29 +9,24 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $SLICE-STR HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $sliceStr
 /**
  * @private
- * @param {string} source
+ * @param {string} src
  * @param {number=} start = `0`
- * @param {number=} end = `source.length`
+ * @param {number=} end = `src.length`
  * @return {string}
  */
-function $sliceStr(source, start, end) {
+function $sliceStr(src, start, end) {
 
   /** @type {number} */
   var len;
 
-  len = source['length'];
+  len = src['length'];
 
-  if ( $is.none(start) )
+  if ( $is.void(start) )
     start = 0;
-  if ( $is.none(end) )
+  if ( $is.void(end) )
     end = len;
 
   if (start < 0)
@@ -46,10 +41,8 @@ function $sliceStr(source, start, end) {
 
   return start >= end
     ? ''
-    : source['substring'](start, end);
+    : src['substring'](start, end);
 }
-/// }}}2
-
-module.exports = $sliceStr;
+/// #}}} @helper $sliceStr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
