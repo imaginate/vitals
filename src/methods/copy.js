@@ -945,6 +945,38 @@ var copy = (function copyPrivateScope() {
 
   /// #{{{ @group File-System-Helpers
 
+  /// #{{{ @func _appendSlash
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  var _appendSlash = (function _appendSlashPrivateScope() {
+
+    /// #{{{ @const _END_SLASH
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _END_SLASH = /\/$/;
+    /// #}}} @const _END_SLASH
+
+    /// #{{{ @func appendSlash
+    /**
+     * @param {string} path
+     * @return {string}
+     */
+    function appendSlash(path) {
+      return _END_SLASH['test'](path)
+        ? path
+        : path + '/';
+    }
+    /// #}}} @func appendSlash
+
+    return appendSlash;
+  })();
+  /// #}}} @func _appendSlash
+
   /// #{{{ @func _hasDirMark
   /**
    * @private
@@ -1002,6 +1034,15 @@ var copy = (function copyPrivateScope() {
     }
   }
   /// #}}} @func _mkSubDirs
+
+  /// #{{{ @func _readDir
+  /**
+   * @private
+   * @param {string} path
+   * @return {!Array<string>}
+   */
+  var _readDir = FS['readdirSync'];
+  /// #}}} @func _readDir
 
   /// #{{{ @func _readFile
   /**
