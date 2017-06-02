@@ -1711,6 +1711,72 @@ var get = (function getPrivateScope() {
   /// #}}} @group String-Helpers
   /// #}}} @off FS_ONLY
 
+  /// #{{{ @on FS
+  /// #{{{ @group Main-File-System-Helpers
+
+  /// #{{{ @func _getFile
+  /**
+   * @private
+   * @param {string} src
+   * @param {!Object<string, *>} opts
+   * @return {(!Buffer|string)}
+   */
+  function _getFile(src, opts) {
+
+    /** @type {string} */
+    var contents;
+
+    src = $resolve(src);
+
+    if (opts['buffer'])
+      return $readFile(src);
+
+    contents = $readFile(src, opts['encoding']);
+
+    if (opts['eol'])
+      contents = $fixEol(contents, opts['eol']);
+
+    return contents;
+  }
+  /// #}}} @func _getFile
+
+  /// #{{{ @func _getDirs
+  /**
+   * @private
+   * @param {string} src
+   * @param {!Object<string, *>} opts
+   * @return {!Array<string>}
+   */
+  function _getDirs(src, opts) {
+
+    /** @type {!_Dirs} */
+    var dirs;
+
+    dirs = new _Dirs(src, opts);
+    return dirs.main();
+  }
+  /// #}}} @func _getDirs
+
+  /// #{{{ @func _getFiles
+  /**
+   * @private
+   * @param {string} src
+   * @param {!Object<string, *>} opts
+   * @return {!Array<string>}
+   */
+  function _getFiles(src, opts) {
+
+    /** @type {!_Files} */
+    var files;
+
+    files = new _Files(src, opts);
+    return files.main();
+  }
+  /// #}}} @func _getFiles
+
+  /// #}}} @group Main-File-System-Helpers
+  /// #}}} @on FS
+
   /// #{{{ @group Error-Helpers
 
   /// #{{{ @const _MK_ERR
