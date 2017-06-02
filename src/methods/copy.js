@@ -953,7 +953,7 @@ var copy = (function copyPrivateScope() {
    * @return {boolean}
    */
   function _isBoolOpt(val) {
-    return $is.void(val) && $is.bool(val);
+    return $is.void(val) || $is.bool(val);
   }
   /// #}}} @func _isBoolOpt
 
