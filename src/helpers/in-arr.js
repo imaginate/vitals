@@ -9,35 +9,28 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $IN-ARR HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $inArr
 /**
  * @private
- * @param {!Object} source
+ * @param {(!Array|!Arguments|!Object|!Function)} src
  * @param {*} val
  * @return {boolean}
  */
-function $inArr(source, val) {
+function $inArr(src, val) {
 
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  len = source['length'];
+  len = src['length'];
   i = -1;
   while (++i < len) {
-    if (source[i] === val)
-      return true;
+    if (src[i] === val)
+      return YES;
   }
-  return false;
+  return NO;
 }
-/// }}}2
-
-module.exports = $inArr;
+/// #}}} @helper $inArr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
