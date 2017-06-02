@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $NORMALIZE HELPER
+ * $FIX-EOL HELPER
  * ---------------------------------------------------------------------------
  * @version 4.1.3
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,14 +9,14 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @helper $normalize
+/// #{{{ @helper $fixEol
 /**
  * @private
  * @param {string} src
  * @param {string} eol
  * @return {string}
  */
-var $normalize = (function $normalizePrivateScope() {
+var $fixEol = (function $fixEolPrivateScope() {
 
   /// #{{{ @const _EOLS
   /**
@@ -25,31 +25,31 @@ var $normalize = (function $normalizePrivateScope() {
    * @dict
    */
   var _EOLS = {
-    'CRLF': function normalizeEolCRLF(source) {
-      return source['replace'](/\r?\n|\r\n?/g, '\r\n');
+    'CRLF': function fixEolCRLF(src) {
+      return src['replace'](/\r?\n|\r\n?/g, '\r\n');
     },
-    'CR': function normalizeEolCR(source) {
-      return source['replace'](/\r?\n/g, '\r');
+    'CR': function fixEolCR(src) {
+      return src['replace'](/\r?\n/g, '\r');
     },
-    'LF': function normalizeEolLF(source) {
-      return source['replace'](/\r\n?/g, '\n');
+    'LF': function fixEolLF(src) {
+      return src['replace'](/\r\n?/g, '\n');
     }
   };
   /// #}}} @const _EOLS
 
-  /// #{{{ @func $normalize
+  /// #{{{ @func $fixEol
   /**
    * @param {string} src
    * @param {string} eol
    * @return {string}
    */
-  function $normalize(src, eol) {
+  function $fixEol(src, eol) {
     return _EOLS[eol](src);
   }
-  /// #}}} @func $normalize
+  /// #}}} @func $fixEol
 
-  return $normalize;
+  return $fixEol;
 })();
-/// #}}} @helper $normalize
+/// #}}} @helper $fixEol
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

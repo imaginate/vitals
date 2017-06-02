@@ -16,7 +16,7 @@
 'use strict';
 
 var newErrorMaker = require('../helpers/new-error-maker.js');
-var normalize = require('../helpers/normalize.js');
+var fixEol = require('../helpers/fix-eol.js');
 var own = require('../helpers/own.js');
 var _is = require('./helpers/is.js');
 var fs = require('fs');
@@ -209,7 +209,7 @@ var get = {};
     if (options.buffer) return fs.readFileSync(source);
 
     contents = fs.readFileSync(source, options.encoding);
-    return options.eol ? normalize(contents, options.eol) : contents;
+    return options.eol ? fixEol(contents, options.eol) : contents;
   }
 
   /**

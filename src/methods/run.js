@@ -14,9 +14,9 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
+/// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
-/// #include @helper $normalize ../helpers/normalize.js
 /// #}}} @on SOLO
 
 /// #{{{ @super run
@@ -210,7 +210,7 @@ var run = (function runPrivateScope() {
     }
 
     return $is.str(eol)
-      ? $normalize(stdout, eol)
+      ? $fixEol(stdout, eol)
       : stdout;
   }
   /// #}}} @func _cleanStdout

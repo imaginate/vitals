@@ -22,9 +22,9 @@
 /// #{{{ @on FS
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $mkdir ../helpers/mkdir.js
+/// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
-/// #include @helper $normalize ../helpers/normalize.js
 /// #}}} @on FS
 /// #}}} @on SOLO
 
@@ -680,7 +680,7 @@ var copy = (function copyPrivateScope() {
       contents = _readFile(source, opts['encoding']);
 
       if (opts['eol'])
-        contents = $normalize(contents, opts['eol']);
+        contents = $fixEol(contents, opts['eol']);
 
       _writeFile(dest, contents, opts['encoding']);
     }
@@ -783,7 +783,7 @@ var copy = (function copyPrivateScope() {
       dest = $resolve(DEST, path);
       contents = _readFile(src, encoding);
       if (eol)
-        contents = $normalize(contents, eol);
+        contents = $fixEol(contents, eol);
       _writeFile(dest, contents, encoding);
     }
     return paths;
