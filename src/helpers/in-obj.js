@@ -9,58 +9,24 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $IN-OBJ HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $inObj
 /**
  * @private
- * @param {(!Object|!Function)} source
+ * @param {(!Object|!Function)} src
  * @param {*} val
  * @return {boolean}
  */
-var $inObj = (function $inObjPrivateScope() {
+function $inObj(src, val) {
 
-  /// {{{3
-  /// @func $inObj
-  /**
-   * @param {(!Object|!Function)} source
-   * @param {*} val
-   * @return {boolean}
-   */
-  function $inObj(source, val) {
+  /** @type {string} */
+  var key;
 
-    /** @type {string} */
-    var key;
-
-    for (key in source) {
-      if ( _hasOwn['call'](source, key) && source[key] === val )
-        return true;
-    }
-    return false;
+  for (key in src) {
+    if ( $own(src, key) && src[key] === val )
+      return YES;
   }
-
-  ///////////////////////////////////////////////////// {{{3
-  // $IN-OBJ HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _hasOwn
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwn = Object['prototype']['hasOwnProperty'];
-  /// }}}3
-
-  // END OF PRIVATE SCOPE FOR $IN-OBJ
-  return $inObj;
-})();
-/// }}}2
-
-module.exports = $inObj;
+  return NO;
+}
+/// #}}} @helper $inObj
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
