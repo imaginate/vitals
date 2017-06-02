@@ -27,6 +27,7 @@
 /// #include @helper $mkErrs ../helpers/mk-errs.js
 /// #{{{ @on FS
 /// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #include @helper $resolve ../helpers/resolve.js
 /// #}}} @on FS
 /// #}}} @core helpers
 

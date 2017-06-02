@@ -22,7 +22,6 @@
 /// #{{{ @on FS
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $mkdir ../helpers/mkdir.js
-/// #include @helper $resolve ../helpers/resolve.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $normalize ../helpers/normalize.js
