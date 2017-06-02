@@ -9,43 +9,22 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $NORMALIZE HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $normalize
 /**
  * @private
- * @param {string} source
+ * @param {string} src
  * @param {string} eol
  * @return {string}
  */
 var $normalize = (function $normalizePrivateScope() {
 
-  /// {{{3
-  /// @func $normalize
-  /**
-   * @param {string} source
-   * @param {string} eol
-   * @return {string}
-   */
-  function $normalize(source, eol) {
-    return EOL[eol](source);
-  }
-
-  ///////////////////////////////////////////////////// {{{3
-  // $NORMALIZE HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @const EOL
+  /// #{{{ @const _EOLS
   /**
    * @private
    * @const {!Object<string, !function(string): string>}
    * @dict
    */
-  var EOL = {
+  var _EOLS = {
     'CRLF': function normalizeEolCRLF(source) {
       return source['replace'](/\r?\n|\r\n?/g, '\r\n');
     },
@@ -56,13 +35,21 @@ var $normalize = (function $normalizePrivateScope() {
       return source['replace'](/\r\n?/g, '\n');
     }
   };
-  /// }}}3
+  /// #}}} @const _EOLS
 
-  // END OF PRIVATE SCOPE FOR $NORMALIZE
+  /// #{{{ @func $normalize
+  /**
+   * @param {string} src
+   * @param {string} eol
+   * @return {string}
+   */
+  function $normalize(src, eol) {
+    return _EOLS[eol](src);
+  }
+  /// #}}} @func $normalize
+
   return $normalize;
 })();
-/// }}}2
-
-module.exports = $normalize;
+/// #}}} @helper $normalize
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
