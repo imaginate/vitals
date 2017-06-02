@@ -9,87 +9,65 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $MATCH HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $match
 /**
  * @private
- * @param {string} source
- * @param {*} pattern
+ * @param {string} src
+ * @param {*} patt
  * @return {boolean}
  */
 var $match = (function $matchPrivateScope() {
 
-  /* {{{3 $match References
-   * @ref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
-   * @ref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-   */
+  /// #{{{ @docrefs $match
+  /// @docref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
+  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
+  /// #}}} @docrefs $match
 
-  /// {{{3
-  /// @func $match
+  /// #{{{ @func _inStr
   /**
-   * A cross-platform shortcut for [String.prototype.includes][includes] and
-   * [RegExp.prototype.test][test].
-   *
-   * @param {string} source
-   * @param {*} pattern
-   * @return {boolean}
-   */
-  function $match(source, pattern) {
-
-    if ( $is.regx(pattern) )
-      return pattern['test'](source);
-
-    if ( !$is.str(pattern) )
-      pattern = String(pattern);
-
-    return !source
-      ? !pattern
-      : !pattern
-        ? true
-        : _inStr(source, pattern);
-  }
-
-  ///////////////////////////////////////////////////// {{{3
-  // $MATCH HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _inStr
-  /**
-   * Polyfills [String.prototype.includes][includes] if it does not exist.
-   *
+   * @description
+   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @private
-   * @param {string} source
-   * @param {string} substr
+   * @param {string} src
+   * @param {string} val
    * @return {boolean}
    */
   var _inStr = (function _inStrPrivateScope() {
-
-    /**
-     * @private
-     * @const {!Object}
-     */
-    var PROTO = String['prototype'];
-
-    return 'includes' in PROTO && $is.fun(PROTO['includes'])
-      ? function _inStr(source, substr) {
-          return source['includes'](substr);
+    return 'includes' in STR_PROTO && $is.fun(STR_PROTO['includes'])
+      ? function _inStr(src, val) {
+          return src['includes'](val);
         }
-      : function _inStr(source, substr) {
-          return source['indexOf'](substr) !== -1;
+      : function _inStr(src, val) {
+          return src['indexOf'](val) !== -1;
         };
   })();
-  /// }}}3
+  /// #}}} @func _inStr
 
-  // END OF PRIVATE SCOPE FOR $MATCH
+  /// #{{{ @func $match
+  /**
+   * @description
+   *   A cross-platform shortcut for [String.prototype.includes][includes] and
+   *   [RegExp.prototype.test][test].
+   * @param {string} src
+   * @param {*} patt
+   * @return {boolean}
+   */
+  function $match(src, patt) {
+
+    if ( $is.regx(patt) )
+      return patt['test'](src);
+
+    patt = $mkStr(patt);
+    return !src
+      ? !patt
+      : !patt
+        ? YES
+        : _inStr(src, patt);
+  }
+  /// #}}} @func $match
+
   return $match;
 })();
-/// }}}2
-
-module.exports = $match;
+/// #}}} @helper $match
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
