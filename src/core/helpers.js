@@ -25,6 +25,9 @@
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
 /// #include @helper $mkErrs ../helpers/mk-errs.js
+/// #{{{ @on FS
+/// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #}}} @on FS
 /// #}}} @core helpers
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
