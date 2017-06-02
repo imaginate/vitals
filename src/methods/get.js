@@ -389,6 +389,115 @@ var get = (function getPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @submethod file
+  /// @section fs
+  /// @method vitals.get.file
+  /**
+   * @description
+   *   Gets the contents of a file.
+   * @public
+   * @param {string} path
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.buffer option to
+   *   its value.
+   * @param {boolean=} opts.buffer = `false`
+   *   If set to `true`, the #opts.buffer option directs @get#file to not
+   *   convert the `buffer` of the #path file's contents into a `string`
+   *   before returning it (i.e. do not apply any normalization to the #path
+   *   contents).
+   * @param {string=} opts.encoding = `"utf8"`
+   *   The #opts.encoding option only applies if #opts.buffer is `false`.
+   * @param {?string=} opts.eol = `"LF"`
+   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
+   *   the end of line character to use when normalizing the #path contents
+   *   before they are returned. If #opts.eol is set to `null`, no end of line
+   *   character normalization is completed. The optional `string` values are
+   *   as follows (values are **not** case-sensitive):
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @return {(!Buffer|string)}
+   */
+  function getFile(path, opts) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #path defined', 'file');
+
+      case 1:
+        /** @dict */
+        opts = $cloneObj(_DFLT_FILE_OPTS);
+        break;
+
+      default:
+        if ( $is.void(opts) || $is.nil(opts) ) {
+          /** @dict */
+          opts = $cloneObj(_DFLT_FILE_OPTS);
+          break;
+        }
+
+        if ( $is.bool(opts) ) {
+          if (opts) {
+            /** @dict */
+            opts = $cloneObj(_DFLT_FILE_OPTS);
+            opts['buffer'] = YES;
+          }
+          else {
+            /** @dict */
+            opts = $cloneObj(_DFLT_FILE_OPTS);
+            opts['buffer'] = NO;
+          }
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
+            'file');
+
+        /** @dict */
+        opts = $cloneObj(opts);
+
+        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+          opts['buffer'] = NO;
+        else if ( !$is.bool(opts['buffer']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
+            'boolean=', 'file');
+
+        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+          opts['encoding'] = 'utf8';
+        else if ( !$is.str(opts['encoding']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
+            'string=', 'file');
+        else if ( !opts['encoding'] )
+          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+            'file');
+
+        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+          opts['eol'] = 'LF';
+        else if ( $is.str(opts['eol']) ) {
+          if ( !$is.eol(opts['eol']) )
+            throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
+              [ 'LF', 'CR', 'CRLF' ], 'file');
+
+          opts['eol'] = opts['eol']['toUpperCase']();
+        }
+        else if ( !$is.nil(opts['eol']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.eol', opts['eol'], '?string=',
+            'file');
+    }
+
+    if ( !$is.str(path) )
+      throw _mkTypeErr(new TYPE_ERR, 'path', path, 'string', 'file');
+    else if (!path)
+      throw _mkErr(new ERR, 'invalid empty #path `string`', 'file');
+    else if ( !$is.file(path) )
+      throw _mkErr(new ERR, 'invalid #path file path `' + path + '`',
+        'file');
+
+    return _getFile(path, opts);
+  }
+  get['file'] = getFile;
+  /// #}}} @submethod file
   /// #}}} @on FS
 
   /// #{{{ @group Get-Helpers
