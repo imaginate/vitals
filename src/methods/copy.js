@@ -443,7 +443,7 @@ var copy = (function copyPrivateScope() {
    *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
    *   value.
    * @param {boolean=} opts.deep = `false`
-   *   The #opts.deep option tells #copy#directory whether it should
+   *   The #opts.deep option tells @copy#directory whether it should
    *   recursively copy all of the sub-directory trees within the #source.
    * @param {boolean=} opts.recursive
    *   An alias for the #opts.deep option.
