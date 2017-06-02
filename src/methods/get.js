@@ -636,7 +636,179 @@ var get = (function getPrivateScope() {
    *   An alias for the #opts.extendInvalidDirs option.
    * @return {!Array<string>}
    */
-  function getDirpaths(dirpath, opts) {
+  function getDirpaths(source, opts) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #source defined', 'dirpaths');
+
+      case 1:
+        /** @dict */
+        opts = $cloneObj(_DFLT_DIRS_OPTS);
+        break;
+
+      default:
+        if ( $is.void(opts) || $is.nil(opts) ) {
+          /** @dict */
+          opts = $cloneObj(_DFLT_DIRS_OPTS);
+          break;
+        }
+
+        if ( $is.bool(opts) ) {
+          if (opts) {
+            /** @dict */
+            opts = $cloneObj(_DFLT_DIRS_OPTS);
+            opts['deep'] = YES;
+          }
+          else {
+            /** @dict */
+            opts = $cloneObj(_DFLT_DIRS_OPTS);
+            opts['deep'] = NO;
+          }
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
+            'dirpaths');
+
+        /** @dict */
+        opts = $cloneObj(opts);
+
+        if ( !$own(opts, 'recursive') )
+          opts['recursive'] = VOID;
+        else if ( !_isBoolOpt(opts['recursive']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'deep') || $is.void(opts['deep']) )
+          opts['deep'] = $is.bool(opts['recursive'])
+            ? opts['recursive']
+            : _DFLT_DIRS_OPTS['deep'];
+        else if ( !$is.bool(opts['deep']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'basepath') )
+          opts['basepath'] = VOID;
+        else if ( !_isBoolOpt(opts['basepath']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.basepath', opts['basepath'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'base') || $is.void(opts['base']) )
+          opts['base'] = $is.bool(opts['basepath'])
+            ? opts['basepath']
+            : _DFLT_DIRS_OPTS['base'];
+        else if ( !$is.bool(opts['base']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.base', opts['base'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'absolute') )
+          opts['absolute'] = VOID;
+        else if ( !_isBoolOpt(opts['absolute']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.absolute', opts['absolute'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'abs') || $is.void(opts['abs']) )
+          opts['abs'] = $is.bool(opts['absolute'])
+            ? opts['absolute']
+            : _DFLT_DIRS_OPTS['abs'];
+        else if ( !$is.bool(opts['abs']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.abs', opts['abs'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'wildcard') )
+          opts['wildcard'] = VOID;
+        else if ( !_isBoolOpt(opts['wildcard']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.wildcard', opts['wildcard'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'glob') || $is.void(opts['glob']) )
+          opts['glob'] = $is.bool(opts['wildcard'])
+            ? opts['wildcard']
+            : _DFLT_DIRS_OPTS['glob'];
+        else if ( !$is.bool(opts['glob']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.glob', opts['glob'],
+            'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'extendValid') )
+          opts['extendValid'] = VOID;
+        else if ( !_isBoolOpt(opts['extendValid']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.extendValid',
+            opts['extendValid'], 'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'extendValidDirs')
+            || $is.void(opts['extendValidDirs']) )
+          opts['extendValidDirs'] = $is.bool(opts['extendValid'])
+            ? opts['extendValid']
+            : _DFLT_DIRS_OPTS['extendValidDirs'];
+        else if ( !$is.bool(opts['extendValidDirs']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.extendValidDirs',
+            opts['extendValidDirs'], 'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'extendInvalid') )
+          opts['extendInvalid'] = VOID;
+        else if ( !_isBoolOpt(opts['extendInvalid']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalid',
+            opts['extendInvalid'], 'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'extendInvalidDirs')
+            || $is.void(opts['extendInvalidDirs']) )
+          opts['extendInvalidDirs'] = $is.bool(opts['extendInvalid'])
+            ? opts['extendInvalid']
+            : _DFLT_DIRS_OPTS['extendInvalidDirs'];
+        else if ( !$is.bool(opts['extendInvalidDirs']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalidDirs',
+            opts['extendInvalidDirs'], 'boolean=', 'dirpaths');
+
+        if ( !$own(opts, 'valid') )
+          opts['valid'] = VOID;
+        else if ( !_isPattOpt(opts['valid']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.valid', opts['valid'],
+            '(?RegExp|?Array<string>|?string|?function(' +
+            'string=, string=, string=): *)=', 'dirpaths');
+
+        if ( !$own(opts, 'validDirs') || $is.void(opts['validDirs']) )
+          if ( $is.void(opts['valid']) )
+            opts['validDirs'] = opts['valid'];
+          else {
+            opts['validDirs'] = _DFLT_DIRS_OPTS['validDirs'];
+            opts['extendValidDirs'] = NO;
+          }
+        else if ( !_isPattOpt(opts['validDirs']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.validDirs', opts['validDirs'],
+            '(?RegExp|?Array<string>|?string|?function(' +
+            'string=, string=, string=): *)=', 'dirpaths');
+
+        if ( !$own(opts, 'invalid') )
+          opts['invalid'] = VOID;
+        else if ( !_isPattOpt(opts['invalid']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.invalid', opts['invalid'],
+            '(?RegExp|?Array<string>|?string|?function(' +
+            'string=, string=, string=): *)=', 'dirpaths');
+
+        if ( !$own(opts, 'invalidDirs') || $is.void(opts['invalidDirs']) )
+          if ( $is.void(opts['invalid']) )
+            opts['invalidDirs'] = opts['invalid'];
+          else {
+            opts['invalidDirs'] = _DFLT_DIRS_OPTS['invalidDirs'];
+            opts['extendInvalidDirs'] = NO;
+          }
+        else if ( !_isPattOpt(opts['invalidDirs']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.invalidDirs',
+            opts['invalidDirs'], '(?RegExp|?Array<string>|?string|?function' +
+            '(string=, string=, string=): *)=', 'dirpaths');
+    }
+
+    if ( !$is.str(source) )
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'dirpaths');
+    else if (!source)
+      throw _mkErr(new ERR, 'invalid empty #source `string`', 'dirpaths');
+    else if ( !$is.dir(source) )
+      throw _mkErr(new ERR, 'invalid #source directory path `' + source + '`',
+        'dirpaths');
+
+    return _getDirs(source, opts);
   }
   get['dirpaths'] = getDirpaths;
   /// #}}} @submethod dirpaths
