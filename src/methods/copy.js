@@ -373,13 +373,13 @@ var copy = (function copyPrivateScope() {
         opts = $cloneObj(opts);
 
         if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
-          opts['buffer'] = YES;
+          opts['buffer'] = _DFLT_FILE_OPTS['buffer'];
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'file');
 
         if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
-          opts['encoding'] = 'utf8';
+          opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
         else if ( !$is.str(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
             'string=', 'file');
@@ -388,7 +388,7 @@ var copy = (function copyPrivateScope() {
             'file');
 
         if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
-          opts['eol'] = 'LF';
+          opts['eol'] = _DFLT_FILE_OPTS['eol'];
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
             throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
@@ -518,19 +518,19 @@ var copy = (function copyPrivateScope() {
         if ( !$own(opts, 'deep') || $is.void(opts['deep']) )
           opts['deep'] = $is.bool(opts['recursive'])
             ? opts['recursive']
-            : NO;
+            : _DFLT_DIR_OPTS['deep'];
         else if ( !$is.bool(opts['deep']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
             'boolean=', 'directory');
 
         if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
-          opts['buffer'] = YES;
+          opts['buffer'] = _DFLT_DIR_OPTS['buffer'];
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'directory');
 
         if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
-          opts['encoding'] = 'utf8';
+          opts['encoding'] = _DFLT_DIR_OPTS['encoding'];
         else if ( !$is.str(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
             'string=', 'directory');
@@ -539,7 +539,7 @@ var copy = (function copyPrivateScope() {
             'directory');
 
         if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
-          opts['eol'] = 'LF';
+          opts['eol'] = _DFLT_DIR_OPTS['eol'];
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
             throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
