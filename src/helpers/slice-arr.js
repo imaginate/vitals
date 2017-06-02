@@ -9,20 +9,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $SLICE-ARR HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $sliceArr
 /**
  * @private
- * @param {(!Object|!Function)} source
+ * @param {(!Object|!Function)} src
  * @param {number=} start = `0`
- * @param {number=} end = `source.length`
+ * @param {number=} end = `src.length`
  * @return {!Array}
  */
-function $sliceArr(source, start, end) {
+function $sliceArr(src, start, end) {
 
   /** @type {!Array} */
   var result;
@@ -33,11 +28,11 @@ function $sliceArr(source, start, end) {
   /** @type {number} */
   var i;
 
-  len = source['length'];
+  len = src['length'];
 
-  if ( $is.none(start) )
+  if ( $is.void(start) )
     start = 0;
-  if ( $is.none(end) )
+  if ( $is.void(end) )
     end = len;
 
   if (start < 0)
@@ -53,15 +48,13 @@ function $sliceArr(source, start, end) {
   if (start >= end)
     return [];
 
-  result = new Array(end - start);
+  result = new ARR(end - start);
   ii = start - 1;
   i = 0;
   while (++ii < end)
-    result[i++] = source[ii];
+    result[i++] = src[ii];
   return result;
 }
-/// }}}2
-
-module.exports = $sliceArr;
+/// #}}} @helper $sliceArr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
