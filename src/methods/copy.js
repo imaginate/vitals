@@ -506,14 +506,15 @@ var copy = (function copyPrivateScope() {
         /** @dict */
         opts = $cloneObj(opts);
 
-        if ($own(opts, 'recursive')
-            && !$is.void(opts['recursive'])
-            && !$is.bool(opts['recursive']) )
+        if ( !$own(opts, 'recursive') )
+          opts['recursive'] = VOID;
+        else if ( !$is.void(opts['recursive'])
+                  && !$is.bool(opts['recursive']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
             'boolean=', 'directory');
 
         if ( !$own(opts, 'deep') || $is.void(opts['deep']) )
-          opts['deep'] = $own(opts, 'recursive') && $is.bool(opts['recursive'])
+          opts['deep'] = $is.bool(opts['recursive'])
             ? opts['recursive']
             : NO;
         else if ( !$is.bool(opts['deep']) )
