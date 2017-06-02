@@ -9,69 +9,45 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-'use strict';
-
-///////////////////////////////////////////////////////////////////////// {{{2
-// $OWN-ENUM HELPER
-//////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @helper $ownEnum
 /**
  * @private
- * @param {(?Object|?Function)} source
+ * @param {(?Object|?Function)} src
  * @param {*} key
  * @return {boolean}
  */
 var $ownEnum = (function $ownEnumPrivateScope() {
 
-  /* {{{3 $ownEnum References
-   * @ref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-   * @ref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-   */
+  /// #{{{ @docrefs $ownEnum
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
+  /// #}}} @docrefs $ownEnum
 
-  /// {{{3
-  /// @func $ownEnum
+  /// #{{{ @func _hasEnum
   /**
-   * A safe way to call [Object.prototype.hasOwnProperty][own] and
-   * [Object.prototype.propertyIsEnumerable][enum].
-   *
-   * @param {(?Object|?Function)} source
+   * @private
    * @param {*} key
    * @return {boolean}
    */
-  function $ownEnum(source, key) {
-    return !!source
-      && _hasOwn['call'](source, key)
-      && _hasEnum['call'](source, key);
+  var _hasEnum = OBJ_PROTO['propertyIsEnumerable'];
+  /// #}}} @func _hasEnum
+
+  /// #{{{ @func $ownEnum
+  /**
+   * @description
+   *   A safe way to call [Object.prototype.hasOwnProperty][own] and
+   *   [Object.prototype.propertyIsEnumerable][enum].
+   * @param {(?Object|?Function)} src
+   * @param {*} key
+   * @return {boolean}
+   */
+  function $ownEnum(src, key) {
+    return !!src && $own(src, key) && _hasEnum['call'](src, key);
   }
+  /// #}}} @func $ownEnum
 
-  ///////////////////////////////////////////////////// {{{3
-  // $OWN-ENUM HELPERS
-  //////////////////////////////////////////////////////////
-
-  /// {{{4
-  /// @func _hasEnum
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasEnum = Object['prototype']['propertyIsEnumerable'];
-
-  /// {{{4
-  /// @func _hasOwn
-  /**
-   * @private
-   * @param {*} key
-   * @return {boolean}
-   */
-  var _hasOwn = Object['prototype']['hasOwnProperty'];
-  /// }}}3
-
-  // END OF PRIVATE SCOPE FOR $OWN-ENUM
   return $ownEnum;
 })();
-/// }}}2
-
-module.exports = $ownEnum;
+/// #}}} @helper $ownEnum
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
