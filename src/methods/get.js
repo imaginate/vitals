@@ -1775,6 +1775,71 @@ var get = (function getPrivateScope() {
   /// #}}} @func _getFiles
 
   /// #}}} @group Main-File-System-Helpers
+
+  /// #{{{ @group Default-Options
+
+  /// #{{{ @const _DFLT_FILE_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_FILE_OPTS = {
+    'eol': 'LF',
+    'buffer': NO,
+    'encoding': 'utf8'
+  };
+  /// #}}} @const _DFLT_FILE_OPTS
+
+  /// #{{{ @const _DFLT_DIRS_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_DIRS_OPTS = {
+    'abs': NO,
+    'deep': NO,
+    'base': NO,
+    'glob': YES,
+    'validDirs': NIL,
+    'invalidDirs': /^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/,
+    'extendValidDirs': NO,
+    'extendInvalidDirs': NO
+  };
+  /// #}}} @const _DFLT_DIRS_OPTS
+
+  /// #{{{ @const _DFLT_FILES_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_FILES_OPTS = {
+    'abs': NO,
+    'deep': NO,
+    'base': NO,
+    'glob': YES,
+    'valid': NIL,
+    'invalid': NIL,
+    'validDirs': NIL,
+    'invalidDirs': /^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/,
+    'validExts': NIL,
+    'invalidExts': NIL,
+    'validFiles': NIL,
+    'invalidFiles': NIL,
+    'extendValid': NO,
+    'extendInvalid': NO,
+    'extendValidDirs': NO,
+    'extendInvalidDirs': NO,
+    'extendValidExts': NO,
+    'extendInvalidExts': NO,
+    'extendValidFiles': NO,
+    'extendInvalidFiles': NO
+  };
+  /// #}}} @const _DFLT_FILES_OPTS
+
+  /// #}}} @group Default-Options
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
