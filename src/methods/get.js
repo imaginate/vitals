@@ -2780,7 +2780,7 @@ var get = (function getPrivateScope() {
         invalid = '^(?:' + invalid + ')$';
         invalid = new REGX(invalid);
       }
-      else if ( $is.str(valid) ) {
+      else if ( $is.str(invalid) ) {
         invalid = _escape(invalid, glob, YES);
         invalid = '^(?:' + invalid + ')$';
         invalid = new REGX(invalid);
