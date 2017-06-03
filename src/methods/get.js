@@ -2886,6 +2886,161 @@ var get = (function getPrivateScope() {
   }
   /// #}}} @func _mkValidTests
 
+  /// #{{{ @func _mkValidExtTest
+  /**
+   * @private
+   * @param {string} src
+   * @param {boolean} glob
+   * @param {(?RegExp|?Array<string>|?string)} valid
+   * @param {(?RegExp|?Array<string>|?string)} invalid
+   * @return {?function(string): boolean}
+   */
+  var _mkValidExtTest = (function _mkValidExtTestPrivateScope() {
+
+    /// #{{{ @const _LEAD_DOT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _LEAD_DOT = /^\./;
+    /// #}}} @const _LEAD_DOT
+ 
+    /// #{{{ @func _prepExts
+    /**
+     * @private
+     * @param {!Array<string>} exts
+     * @param {boolean} glob
+     * @return {string}
+     */
+    function _prepExts(exts, glob) {
+
+      /** @type {string} */
+      var result;
+      /** @type {string} */
+      var ext;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
+
+      result = '';
+
+      len = exts['length'];
+      i = -1;
+      while (++i < len) {
+        ext = _trimLead(exts[i] || '');
+        if (ext) {
+          if (result)
+            result += '|';
+          result += '.' + ext;
+        }
+      }
+
+      result = result['replace'](/\./g, '\\.');
+      return glob
+        ? result['replace'](/\*/g, '.*')
+        : result['replace'](/\*/g, '');
+    }
+    /// #}}} @func _prepExts
+
+    /// #{{{ @func _trimLead
+    /**
+     * @private
+     * @param {string} ext
+     * @return {string}
+     */
+    function _trimLead(ext) {
+      return ext && ext['replace'](_LEAD_DOT, '');
+    }
+    /// #}}} @func _trimLead
+
+    /// #{{{ @func _mkValid
+    /**
+     * @private
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string)} valid
+     * @return {!function(string): boolean}
+     */
+    function _mkValid(glob, valid) {
+
+      if ( $is.nil(valid) )
+        return function isValidExt(ext) {
+          return YES;
+        };
+
+      if ( $is.str(valid) )
+        valid = valid['split']('|');
+
+      if ( $is.arr(valid) ) {
+        valid = _prepExts(valid, glob);
+        valid = '^(?:' + valid + ')$';
+        valid = new REGX(valid);
+      }
+
+      return function isValidExt(ext) {
+        return valid['test'](ext);
+      };
+    }
+    /// #}}} @func _mkValid
+
+    /// #{{{ @func _mkInvalid
+    /**
+     * @private
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string)} invalid
+     * @return {!function(string): boolean}
+     */
+    function _mkInvalid(glob, invalid) {
+
+      if ( $is.nil(invalid) )
+        return function isInvalidExt(ext) {
+          return NO;
+        };
+
+      if ( $is.str(invalid) )
+        invalid = invalid['split']('|');
+
+      if ( $is.arr(invalid) ) {
+        invalid = _prepExts(invalid, glob);
+        invalid = '^(?:' + invalid + ')$';
+        invalid = new REGX(invalid);
+      }
+
+      return function isInvalidExt(ext) {
+        return invalid['test'](ext);
+      };
+    }
+    /// #}}} @func _mkInvalid
+
+    /// #{{{ @func mkValidExtTest
+    /**
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string)} valid
+     * @param {(?RegExp|?Array<string>|?string)} invalid
+     * @return {?function(string, string): boolean}
+     */
+    function mkValidExtTest(glob, valid, invalid) {
+
+      /** @type {!function(string): boolean} */
+      var _isInvalid;
+      /** @type {!function(string): boolean} */
+      var _isValid;
+
+      if ( $is.nil(valid) && $is.nil(invalid) )
+        return NIL;
+
+      _isValid = _mkValid(glob, valid);
+      _isInvalid = _mkInvalid(glob, invalid);
+      return function isValidExt(ext) {
+        return _isValid(ext) && !_isInvalid(ext);
+      };
+    }
+    /// #}}} @func mkValidExtTest
+
+    return mkValidExtTest;
+  })();
+  /// #}}} @func _mkValidExtTest
+
   /// #{{{ @func _mkValidExtTests
   /**
    * @private
