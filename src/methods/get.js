@@ -2892,13 +2892,13 @@ var get = (function getPrivateScope() {
    * @param {!Object<string, *>} dfltOpts
    * @param {!Object<string, *>} usrOpts
    * @param {string=} type
-   * @return {!function(string, string): boolean}
+   * @return {!function(string): boolean}
    */
   function _mkValidExtTests(dfltOpts, usrOpts, type) {
 
-    /** @type {?function(string, string): boolean} */
+    /** @type {?function(string): boolean} */
     var isValidDflt;
-    /** @type {?function(string, string): boolean} */
+    /** @type {?function(string): boolean} */
     var isValidUsr;
     /** @type {boolean} */
     var extinvalid;
