@@ -22,6 +22,7 @@
 /// #}}} @off FS_ONLY
 /// #{{{ @on FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $addSlash ../helpers/add-slash.js
@@ -2487,6 +2488,343 @@ var get = (function getPrivateScope() {
     return getFileExt;
   })();
   /// #}}} @func _getFileExt
+
+  /// #{{{ @func _mkValidTest
+  /**
+   * @private
+   * @param {string} src
+   * @param {boolean} glob
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} valid
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} invalid
+   * @return {?function(string, string): boolean}
+   */
+  var _mkValidTest = (function _mkValidTestPrivateScope() {
+
+    /// #{{{ @const _END_ESC_CHAR
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _END_ESC_CHAR = /\\$/;
+    /// #}}} @const _END_ESC_CHAR
+ 
+    /// #{{{ @const _END_ESC_PATT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _END_ESC = /^(?:.*[^\\])?(?:\\\\)*\\$/;
+    /// #}}} @const _END_ESC_PATT
+ 
+    /// #{{{ @const _GLOB
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _GLOB = /\*/;
+    /// #}}} @const _GLOB
+ 
+    /// #{{{ @const _PIPE
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _PIPE = /\|/;
+    /// #}}} @const _PIPE
+ 
+    /// #{{{ @const _SLASH
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _SLASH = /\//;
+    /// #}}} @const _SLASH
+ 
+    /// #{{{ @func _escape
+    /**
+     * @private
+     * @param {string} src
+     * @param {boolean} glob
+     * @param {boolean=} pipe
+     * @return {string}
+     */
+    function _escape(src, glob, pipe) {
+      return !!src
+        ? !!glob
+          ? !!pipe
+            ? _escGlobPipe(src)
+            : _escGlob(src)
+          : !!pipe
+            ? _escPipe(src)
+            : $escRegx(src)
+        : '';
+    }
+    /// #}}} @func _escape
+
+    /// #{{{ @func _escArr
+    /**
+     * @private
+     * @param {!Array<string>} vals
+     * @param {boolean} glob
+     * @return {string}
+     */
+    function _escArr(vals, glob) {
+
+      /** @type {number} */
+      var last;
+      /** @type {string} */
+      var src;
+      /** @type {number} */
+      var i;
+
+      src = '';
+      last = vals['length'] - 1;
+      i = -1;
+      while (++i < last) {
+        src += _escape(vals[i], glob) + '|';
+      }
+      src += _escape(vals[last], glob);
+      return src;
+    }
+    /// #}}} @func _escArr
+
+    /// #{{{ @func _escGlob
+    /**
+     * @private
+     * @param {string} src
+     * @return {string}
+     */
+    function _escGlob(src) {
+
+      /** @type {!Array<string>} */
+      var parts;
+      /** @type {string} */
+      var part;
+      /** @type {number} */
+      var last;
+      /** @type {number} */
+      var i;
+
+      if ( !_GLOB['test'](src) )
+        return $escRegx(src);
+
+      parts = src['split']('*');
+      src = '';
+
+      last = parts['length'] - 1;
+      i = -1;
+      while (++i < last) {
+        part = parts[i] || '';
+        if ( _END_ESC_PATT['test'](part) ) {
+          part = part['replace'](_END_ESC_CHAR, '*');
+          src += $escRegx(part);
+        }
+        else {
+          part = part && $escRegx(part);
+          src += part + '.*';
+        }
+      }
+      part = parts[last] || '';
+      src += part && $escRegx(part);
+      return src;
+    }
+    /// #}}} @func _escGlob
+
+    /// #{{{ @func _escPipe
+    /**
+     * @private
+     * @param {string} src
+     * @return {string}
+     */
+    function _escPipe(src) {
+
+      /** @type {!Array<string>} */
+      var parts;
+      /** @type {string} */
+      var part;
+      /** @type {number} */
+      var last;
+      /** @type {number} */
+      var i;
+
+      if ( !_PIPE['test'](src) )
+        return $escRegx(src);
+
+      parts = src['split']('|');
+      src = '';
+
+      last = parts['length'] - 1;
+      i = -1;
+      while (++i < last) {
+        part = parts[i] || '';
+        if ( _END_ESC_PATT['test'](part) ) {
+          part = part['replace'](_END_ESC_CHAR, '|');
+          src += $escRegx(part);
+        }
+        else {
+          part = part && $escRegx(part);
+          src += part + '|';
+        }
+      }
+      part = parts[last] || '';
+      src += part && $escRegx(part);
+      return src;
+    }
+    /// #}}} @func _escPipe
+
+    /// #{{{ @func _escGlobPipe
+    /**
+     * @private
+     * @param {string} src
+     * @return {string}
+     */
+    function _escGlobPipe(src) {
+
+      /** @type {!Array<string>} */
+      var parts;
+      /** @type {string} */
+      var part;
+      /** @type {number} */
+      var last;
+      /** @type {number} */
+      var i;
+
+      if ( !_GLOB['test'](src) )
+        return _escPipe(src);
+
+      parts = src['split']('*');
+      src = '';
+
+      last = parts['length'] - 1;
+      i = -1;
+      while (++i < last) {
+        part = parts[i] || '';
+        if ( _END_ESC_PATT['test'](part) ) {
+          part = part['replace'](_END_ESC_CHAR, '*');
+          src += _escPipe(part);
+        }
+        else {
+          part = part && _escPipe(part);
+          src += part + '.*';
+        }
+      }
+      part = parts[last] || '';
+      src += part && _escPipe(part);
+      return src;
+    }
+    /// #}}} @func _escGlobPipe
+
+    /// #{{{ @func _mkValid
+    /**
+     * @private
+     * @param {string} src
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} valid
+     * @return {!function(string, string): boolean}
+     */
+    function _mkValid(src, glob, valid) {
+
+      if ( $is.nil(valid) )
+        return function isValid(name, tree) {
+          return YES;
+        };
+
+      if ( $is.fun(valid) )
+        return function isValid(name, tree) {
+          return !!valid(name, tree, src);
+        };
+
+      if ( $is.arr(valid) ) {
+        valid = _escArr(valid, glob);
+        valid = '^(?:' + valid + ')$';
+        valid = new REGX(valid);
+      }
+      else if ( $is.str(valid) ) {
+        valid = _escape(valid, glob, YES);
+        valid = '^(?:' + valid + ')$';
+        valid = new REGX(valid);
+      }
+
+      return _SLASH['test'](valid['source'])
+        ? function isValid(name, tree) {
+            return valid['test'](tree);
+          }
+        : function isValid(name, tree) {
+            return valid['test'](name);
+          };
+    }
+    /// #}}} @func _mkValid
+
+    /// #{{{ @func _mkInvalid
+    /**
+     * @private
+     * @param {string} src
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} invalid
+     * @return {!function(string, string): boolean}
+     */
+    function _mkInvalid(src, glob, invalid) {
+
+      if ( $is.nil(invalid) )
+        return function isInvalid(name, tree) {
+          return NO;
+        };
+
+      if ( $is.fun(invalid) )
+        return function isInvalid(name, tree) {
+          return !!invalid(name, tree, src);
+        };
+
+      if ( $is.arr(invalid) ) {
+        invalid = _escArr(invalid, glob);
+        invalid = '^(?:' + invalid + ')$';
+        invalid = new REGX(invalid);
+      }
+      else if ( $is.str(valid) ) {
+        invalid = _escape(invalid, glob, YES);
+        invalid = '^(?:' + invalid + ')$';
+        invalid = new REGX(invalid);
+      }
+
+      return _SLASH['test'](invalid['source'])
+        ? function isInvalid(name, tree) {
+            return invalid['test'](tree);
+          }
+        : function isInvalid(name, tree) {
+            return invalid['test'](name);
+          };
+    }
+    /// #}}} @func _mkInvalid
+
+    /// #{{{ @func mkValidTest
+    /**
+     * @param {string} src
+     * @param {boolean} glob
+     * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} valid
+     * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)} invalid
+     * @return {?function(string, string): boolean}
+     */
+    function mkValidTest(src, glob, valid, invalid) {
+
+      /** @type {!function(string, string): boolean} */
+      var _isInvalid;
+      /** @type {!function(string, string): boolean} */
+      var _isValid;
+
+      if ( $is.nil(valid) && $is.nil(invalid) )
+        return NIL;
+
+      _isValid = _mkValid(src, glob, valid);
+      _isInvalid = _mkInvalid(src, glob, invalid);
+      return function isValid(name, tree) {
+        return _isValid(name, tree) && !_isInvalid(name, tree);
+      };
+    }
+    /// #}}} @func mkValidTest
+
+    return mkValidTest;
+  })();
+  /// #}}} @func _mkValidTest
 
   /// #{{{ @func _mkValidTests
   /**
