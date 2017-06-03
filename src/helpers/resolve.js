@@ -12,7 +12,7 @@
 /// #{{{ @helper $resolve
 /**
  * @private
- * @param {string} path
+ * @param {(!Array<string|undefined>|!Arguments<string|undefined>|...string)=} path
  * @return {string}
  */
 var $resolve = (function $resolvePrivateScope() {
