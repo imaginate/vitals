@@ -1713,7 +1713,9 @@ var get = (function getPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
-  /// #{{{ @group Main-File-System-Helpers
+  /// #{{{ @group File-System-Helpers
+
+  /// #{{{ @group Main-Helpers
 
   /// #{{{ @func _getFile
   /**
@@ -1775,7 +1777,7 @@ var get = (function getPrivateScope() {
   }
   /// #}}} @func _getFiles
 
-  /// #}}} @group Main-File-System-Helpers
+  /// #}}} @group Main-Helpers
 
   /// #{{{ @group Default-Options
 
@@ -1995,16 +1997,6 @@ var get = (function getPrivateScope() {
    */
   function _Dirs(source, opts) {
 
-    /** @type {?function(string): boolean} */
-    var isValidDirDflt;
-    /** @type {?function(string): boolean} */
-    var isValidDirUser;
-    /** @type {boolean} */
-    var extInvalidDirs;
-    /** @type {boolean} */
-    var extValidDirs;
-    /** @type {boolean} */
-    var glob;
     /** @type {boolean} */
     var base;
     /** @type {string} */
@@ -2016,24 +2008,11 @@ var get = (function getPrivateScope() {
 
     source = $cleanpath(source);
     src = $resolve(source);
+    base = opts['base'];
     abs = opts['abs'];
     path = abs
       ? src
       : source;
-    base = opts['base'];
-    glob = opts['glob'];
-    extValidDirs = opts['extendValidDirs'];
-    extInvalidDirs = opts['extendInvalidDirs'];
-    isValidDirDflt = extValidDirs
-      ? extInvalidDirs
-        ? _mkValidTest(glob, _DFLT_DIRS_OPTS['validDirs'],
-            _DFLT_DIRS_OPTS['invalidDirs'])
-        : _mkValidTest(glob, _DFLT_DIRS_OPTS['validDirs'], NIL)
-      : extInvalidDirs
-        ? _mkValidTest(glob, NIL, _DFLT_DIRS_OPTS['invalidDirs'])
-        : NIL;
-    isValidDirUser = _mkValidTest(opts['glob'], opts['validDirs'],
-      opts['invalidDirs']);
 
     /// #{{{ @const SOURCE
     /**
@@ -2076,21 +2055,7 @@ var get = (function getPrivateScope() {
      * @param {string} tree
      * @return {boolean}
      */
-    this.isValidDir = isValidDirDflt
-      ? isValidDirUser
-        ? function isValidDir(name, tree) {
-            return isValidDirDflt(name, tree) && isValidDirUser(name, tree);
-          }
-        : function isValidDir(name, tree) {
-            return isValidDirDflt(name, tree);
-          }
-      : isValidDirUser
-        ? function isValidDir(name, tree) {
-            return isValidDirUser(name, tree);
-          }
-        : function isValidDir(name, tree) {
-            return YES;
-          };
+    this.isValidDir = _mkValidTests(_DFLT_DIRS_OPTS, opts, 'Dirs');
     /// #}}} @func isValidDir
 
     /// #{{{ @member trees
@@ -2230,9 +2195,70 @@ var get = (function getPrivateScope() {
 
   /// #}}} @group Dirs-Class
 
-  /// #{{{ @group General-File-System-Helpers
+  /// #{{{ @group Test-Factories
 
-  /// #}}} @group General-File-System-Helpers
+  /// #{{{ @func _mkValidTests
+  /**
+   * @private
+   * @param {!Object<string, *>} dfltOpts
+   * @param {!Object<string, *>} usrOpts
+   * @param {string=} type
+   * @return {!function(string, string): boolean}
+   */
+  function _mkValidTests(dfltOpts, usrOpts, type) {
+
+    /** @type {?function(string): boolean} */
+    var isValidDflt;
+    /** @type {?function(string): boolean} */
+    var isValidUsr;
+    /** @type {boolean} */
+    var extinvalid;
+    /** @type {boolean} */
+    var extvalid;
+    /** @type {string} */
+    var invalid;
+    /** @type {string} */
+    var valid;
+    /** @type {boolean} */
+    var glob;
+
+    type = type || '';
+    glob = usrOpts['glob'];
+    valid = 'valid' + type;
+    invalid = 'invalid' + type;
+    extvalid = usrOpts['extendValid' + type];
+    extinvalid = usrOpts['extendInvalid' + type];
+
+    isValidDflt = extvalid
+      ? extinvalid
+        ? _mkValidTest(glob, dfltOpts[valid], dfltOpts[invalid])
+        : _mkValidTest(glob, dfltOpts[valid], NIL)
+      : extinvalid
+        ? _mkValidTest(glob, NIL, dfltOpts[invalid])
+        : NIL;
+    isValidUsr = _mkValidTest(glob, usrOpts[valid], usrOpts[invalid]);
+
+    return isValidDflt
+      ? isValidUsr
+        ? function isValid(name, tree) {
+            return isValidDflt(name, tree) && isValidUsr(name, tree);
+          }
+        : function isValid(name, tree) {
+            return isValidDflt(name, tree);
+          }
+      : isValidUsr
+        ? function isValid(name, tree) {
+            return isValidUsr(name, tree);
+          }
+        : function isValid(name, tree) {
+            return YES;
+          };
+  }
+  /// #}}} @func _mkValidTests
+
+  /// #}}} @group Test-Factories
+
+  /// #}}} @group File-System-Helpers
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
