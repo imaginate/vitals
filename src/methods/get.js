@@ -24,6 +24,7 @@
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js
+/// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
 /// #}}} @on FS
@@ -2066,7 +2067,7 @@ var get = (function getPrivateScope() {
     /**
      * @const {string}
      */
-    this.PATH = _appendSlash(path);
+    this.PATH = $addSlash(path);
     /// #}}} @const PATH
 
     /// #{{{ @func isValidDir
@@ -2154,13 +2155,13 @@ var get = (function getPrivateScope() {
      * @private
      * @const {string}
      */
-    var SRC = _appendSlash(src);
+    var SRC = $addSlash(src);
 
     /**
      * @private
      * @const {string}
      */
-    var TREE = tree && _appendSlash(tree);
+    var TREE = tree && $addSlash(tree);
 
     /**
      * @private
@@ -2215,7 +2216,7 @@ var get = (function getPrivateScope() {
      * @private
      * @const {string}
      */
-    var SRC = _appendSlash(src);
+    var SRC = $addSlash(src);
 
     trees = this.trees;
     i = -1;
@@ -2229,41 +2230,9 @@ var get = (function getPrivateScope() {
 
   /// #}}} @group Dirs-Class
 
-  /// #{{{ @group File-System-Helpers
+  /// #{{{ @group General-File-System-Helpers
 
-  /// #{{{ @func _appendSlash
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  var _appendSlash = (function _appendSlashPrivateScope() {
-
-    /// #{{{ @const _END_SLASH
-    /**
-     * @private
-     * @const {!RegExp}
-     */
-    var _END_SLASH = /\/$/;
-    /// #}}} @const _END_SLASH
-
-    /// #{{{ @func appendSlash
-    /**
-     * @param {string} path
-     * @return {string}
-     */
-    function appendSlash(path) {
-      return _END_SLASH['test'](path)
-        ? path
-        : path + '/';
-    }
-    /// #}}} @func appendSlash
-
-    return appendSlash;
-  })();
-  /// #}}} @func _appendSlash
-
-  /// #}}} @group File-System-Helpers
+  /// #}}} @group General-File-System-Helpers
   /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers

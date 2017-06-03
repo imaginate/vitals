@@ -25,6 +25,7 @@
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js
+/// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
 /// #include @helper $writeFile ../helpers/write-file.js
@@ -980,7 +981,7 @@ var copy = (function copyPrivateScope() {
     /** @type {number} */
     var i;
 
-    dirpath = _appendSlash(dirpath);
+    dirpath = $addSlash(dirpath);
     src = $resolve(SRC, dirpath);
     paths = _getDirpaths(src);
     len = paths['length'];
@@ -1009,7 +1010,7 @@ var copy = (function copyPrivateScope() {
     /** @type {number} */
     var i;
 
-    dirpath = _appendSlash(dirpath);
+    dirpath = $addSlash(dirpath);
     src = $resolve(SRC, dirpath);
     paths = _getFilepaths(src);
     len = paths['length'];
@@ -1018,38 +1019,6 @@ var copy = (function copyPrivateScope() {
       filepaths['push'](dirpath + paths[i]);
   }
   /// #}}} @func _appendFilepaths
-
-  /// #{{{ @func _appendSlash
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  var _appendSlash = (function _appendSlashPrivateScope() {
-
-    /// #{{{ @const _END_SLASH
-    /**
-     * @private
-     * @const {!RegExp}
-     */
-    var _END_SLASH = /\/$/;
-    /// #}}} @const _END_SLASH
-
-    /// #{{{ @func appendSlash
-    /**
-     * @param {string} path
-     * @return {string}
-     */
-    function appendSlash(path) {
-      return _END_SLASH['test'](path)
-        ? path
-        : path + '/';
-    }
-    /// #}}} @func appendSlash
-
-    return appendSlash;
-  })();
-  /// #}}} @func _appendSlash
 
   /// #{{{ @func _getDirpaths
   /**
