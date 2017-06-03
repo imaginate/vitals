@@ -2444,6 +2444,50 @@ var get = (function getPrivateScope() {
 
   /// #{{{ @group Test-Factories
 
+  /// #{{{ @func _getFileExt
+  /**
+   * @private
+   * @param {string} filename
+   * @return {string}
+   */
+  var _getFileExt = (function _getFileExtPrivateScope() {
+  
+    /// #{{{ @const _FILE_EXT
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _FILE_EXT = /^.+?(\.[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*)$/;
+    /// #}}} @const _FILE_EXT
+ 
+    /// #{{{ @const _HIDDEN
+    /**
+     * @private
+     * @const {!RegExp}
+     */
+    var _HIDDEN = /^\./;
+    /// #}}} @const _HIDDEN
+ 
+    /// #{{{ @func getFileExt
+    /**
+     * @param {string} filename
+     * @return {string}
+     */
+    function getFileExt(filename) {
+      
+      if ( _HIDDEN['test'](filename) )
+        filename = filename['replace'](_HIDDEN, '');
+
+      return _FILE_EXT['test'](filename)
+        ? filename['replace'](_FILE_EXT, '$1')
+        : '';
+    }
+    /// #}}} @func getFileExt
+
+    return getFileExt;
+  })();
+  /// #}}} @func _getFileExt
+
   /// #{{{ @func _mkValidTests
   /**
    * @private
@@ -2503,6 +2547,68 @@ var get = (function getPrivateScope() {
           };
   }
   /// #}}} @func _mkValidTests
+
+  /// #{{{ @func _mkValidExtTests
+  /**
+   * @private
+   * @param {!Object<string, *>} dfltOpts
+   * @param {!Object<string, *>} usrOpts
+   * @param {string=} type
+   * @return {!function(string, string): boolean}
+   */
+  function _mkValidExtTests(dfltOpts, usrOpts, type) {
+
+    /** @type {?function(string, string): boolean} */
+    var isValidDflt;
+    /** @type {?function(string, string): boolean} */
+    var isValidUsr;
+    /** @type {boolean} */
+    var extinvalid;
+    /** @type {boolean} */
+    var extvalid;
+    /** @type {string} */
+    var invalid;
+    /** @type {string} */
+    var valid;
+    /** @type {boolean} */
+    var glob;
+
+    type = type || '';
+    glob = usrOpts['glob'];
+    valid = 'valid' + type;
+    invalid = 'invalid' + type;
+    extvalid = usrOpts['extendValid' + type];
+    extinvalid = usrOpts['extendInvalid' + type];
+
+    isValidDflt = extvalid
+      ? extinvalid
+        ? _mkValidExtTest(glob, dfltOpts[valid], dfltOpts[invalid])
+        : _mkValidExtTest(glob, dfltOpts[valid], NIL)
+      : extinvalid
+        ? _mkValidExtTest(glob, NIL, dfltOpts[invalid])
+        : NIL;
+    isValidUsr = _mkValidExtTest(glob, usrOpts[valid], usrOpts[invalid]);
+
+    return isValidDflt
+      ? isValidUsr
+        ? function isValidExt(filename) {
+            filename = _getFileExt(filename);
+            return isValidDflt(filename) && isValidUsr(filename);
+          }
+        : function isValidExt(filename) {
+            filename = _getFileExt(filename);
+            return isValidDflt(filename);
+          }
+      : isValidUsr
+        ? function isValidExt(filename) {
+            filename = _getFileExt(filename);
+            return isValidUsr(filename);
+          }
+        : function isValidExt(filename) {
+            return YES;
+          };
+  }
+  /// #}}} @func _mkValidExtTests
 
   /// #}}} @group Test-Factories
 
