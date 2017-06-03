@@ -2042,7 +2042,7 @@ var get = (function getPrivateScope() {
      * @param {string} tree
      * @return {boolean}
      */
-    this.isValidDir = _mkValidTests(_DFLT_DIRS_OPTS, opts, 'Dirs');
+    this.isValidDir = _mkValidTests(source, _DFLT_DIRS_OPTS, opts, 'Dirs');
     /// #}}} @func isValidDir
 
     /// #{{{ @member trees
@@ -2187,16 +2187,17 @@ var get = (function getPrivateScope() {
   /// #{{{ @func _mkValidTests
   /**
    * @private
+   * @param {string} src
    * @param {!Object<string, *>} dfltOpts
    * @param {!Object<string, *>} usrOpts
    * @param {string=} type
    * @return {!function(string, string): boolean}
    */
-  function _mkValidTests(dfltOpts, usrOpts, type) {
+  function _mkValidTests(src, dfltOpts, usrOpts, type) {
 
-    /** @type {?function(string): boolean} */
+    /** @type {?function(string, string): boolean} */
     var isValidDflt;
-    /** @type {?function(string): boolean} */
+    /** @type {?function(string, string): boolean} */
     var isValidUsr;
     /** @type {boolean} */
     var extinvalid;
@@ -2218,12 +2219,12 @@ var get = (function getPrivateScope() {
 
     isValidDflt = extvalid
       ? extinvalid
-        ? _mkValidTest(glob, dfltOpts[valid], dfltOpts[invalid])
-        : _mkValidTest(glob, dfltOpts[valid], NIL)
+        ? _mkValidTest(src, glob, dfltOpts[valid], dfltOpts[invalid])
+        : _mkValidTest(src, glob, dfltOpts[valid], NIL)
       : extinvalid
-        ? _mkValidTest(glob, NIL, dfltOpts[invalid])
+        ? _mkValidTest(src, glob, NIL, dfltOpts[invalid])
         : NIL;
-    isValidUsr = _mkValidTest(glob, usrOpts[valid], usrOpts[invalid]);
+    isValidUsr = _mkValidTest(src, glob, usrOpts[valid], usrOpts[invalid]);
 
     return isValidDflt
       ? isValidUsr
