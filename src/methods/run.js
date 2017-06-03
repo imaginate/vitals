@@ -107,19 +107,19 @@ var run = (function runPrivateScope() {
         /** @dict */
         opts = $cloneObj(opts);
 
-        if ( !$own(opts, 'catchExit') || $is.void(opts['catchExit']) )
+        if ( !$hasOpt(opts, 'catchExit') )
           opts['catchExit'] = YES;
         else if ( !$is.bool(opts['catchExit']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.catchExit', opts['catchExit'],
             'boolean=');
 
-        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+        if ( !$hasOpt(opts, 'buffer') )
           opts['buffer'] = NO;
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=');
 
-        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+        if ( !$hasOpt(opts, 'encoding') )
           opts['encoding'] = opts['buffer']
             ? VOID
             : 'utf8';
@@ -129,7 +129,7 @@ var run = (function runPrivateScope() {
         else if ( !opts['encoding'] )
           throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`');
 
-        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+        if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = opts['buffer']
             ? NIL
             : 'LF';

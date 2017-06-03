@@ -373,13 +373,13 @@ var copy = (function copyPrivateScope() {
         /** @dict */
         opts = $cloneObj(opts);
 
-        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+        if ( !$hasOpt(opts, 'buffer') )
           opts['buffer'] = _DFLT_FILE_OPTS['buffer'];
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'file');
 
-        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+        if ( !$hasOpt(opts, 'encoding') )
           opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
         else if ( !$is.str(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
@@ -388,7 +388,7 @@ var copy = (function copyPrivateScope() {
           throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
             'file');
 
-        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+        if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = _DFLT_FILE_OPTS['eol'];
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
@@ -509,13 +509,13 @@ var copy = (function copyPrivateScope() {
         /** @dict */
         opts = $cloneObj(opts);
 
-        if ( !$own(opts, 'recursive') )
+        if ( !$hasOpt(opts, 'recursive') )
           opts['recursive'] = VOID;
-        else if ( !_isBoolOpt(opts['recursive']) )
+        else if ( !$is.bool(opts['recursive']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
             'boolean=', 'directory');
 
-        if ( !$own(opts, 'deep') || $is.void(opts['deep']) )
+        if ( !$hasOpt(opts, 'deep') )
           opts['deep'] = $is.bool(opts['recursive'])
             ? opts['recursive']
             : _DFLT_DIR_OPTS['deep'];
@@ -523,13 +523,13 @@ var copy = (function copyPrivateScope() {
           throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
             'boolean=', 'directory');
 
-        if ( !$own(opts, 'buffer') || $is.void(opts['buffer']) )
+        if ( !$hasOpt(opts, 'buffer') )
           opts['buffer'] = _DFLT_DIR_OPTS['buffer'];
         else if ( !$is.bool(opts['buffer']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'directory');
 
-        if ( !$own(opts, 'encoding') || $is.void(opts['encoding']) )
+        if ( !$hasOpt(opts, 'encoding') )
           opts['encoding'] = _DFLT_DIR_OPTS['encoding'];
         else if ( !$is.str(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
@@ -538,7 +538,7 @@ var copy = (function copyPrivateScope() {
           throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
             'directory');
 
-        if ( !$own(opts, 'eol') || $is.void(opts['eol']) )
+        if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = _DFLT_DIR_OPTS['eol'];
         else if ( $is.str(opts['eol']) ) {
           if ( !$is.eol(opts['eol']) )
@@ -944,21 +944,6 @@ var copy = (function copyPrivateScope() {
   /// #}}} @const _DFLT_DIR_OPTS
 
   /// #}}} @group Default-Options
-
-  /// #{{{ @group Option-Helpers
-
-  /// #{{{ @func _isBoolOpt
-  /**
-   * @private
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _isBoolOpt(val) {
-    return $is.void(val) || $is.bool(val);
-  }
-  /// #}}} @func _isBoolOpt
-
-  /// #}}} @group Option-Helpers
 
   /// #{{{ @group File-System-Helpers
 

@@ -27,6 +27,9 @@
 /// #include @helper $mkObj ../helpers/mk-obj.js
 /// #include @helper $mkErrs ../helpers/mk-errs.js
 /// #include @helper $strIncl ../helpers/str-incl.js
+/// #{{{ @on NODE
+/// #include @helper $hasOpt ../helpers/has-opt.js
+/// #}}} @on NODE
 /// #{{{ @on FS
 /// #include @helper $cleanpath ../helpers/cleanpath.js
 /// #include @helper $resolve ../helpers/resolve.js
