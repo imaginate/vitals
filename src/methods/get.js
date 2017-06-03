@@ -2182,6 +2182,266 @@ var get = (function getPrivateScope() {
 
   /// #}}} @group Dirs-Class
 
+  /// #{{{ @group Files-Class
+
+  /// #{{{ @constructor _Files
+  /**
+   * @private
+   * @param {string} source
+   * @param {!Object<string, *>} opts
+   * @constructor
+   * @struct
+   */
+  function _Files(source, opts) {
+
+    /** @type {!function(string, string): boolean} */
+    var _isValidFile;
+    /** @type {!function(string): boolean} */
+    var _isValidExt;
+    /** @type {!function(string, string): boolean} */
+    var _isValidDir;
+    /** @type {!function(string, string): boolean} */
+    var _isValid;
+    /** @type {boolean} */
+    var base;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var src;
+    /** @type {boolean} */
+    var abs;
+
+    source = $cleanpath(source);
+    src = $resolve(source);
+    base = opts['base'];
+    abs = opts['abs'];
+    path = abs
+      ? src
+      : source;
+
+    _isValid = _mkValidTests(source, _DFLT_FILES_OPTS, opts);
+    _isValidDir = _mkValidTests(source, _DFLT_FILES_OPTS, opts, 'Dirs');
+    _isValidExt = _mkValidExtTests(_DFLT_FILES_OPTS, opts, 'Exts');
+    _isValidFile = _mkValidTests(source, _DFLT_FILES_OPTS, opts, 'Files');
+
+    /// #{{{ @const SOURCE
+    /**
+     * @const {string}
+     */
+    this.SOURCE = source;
+    /// #}}} @const SOURCE
+
+    /// #{{{ @const SRC
+    /**
+     * @const {string}
+     */
+    this.SRC = src;
+    /// #}}} @const SRC
+
+    /// #{{{ @const BASE
+    /**
+     * @const {boolean}
+     */
+    this.BASE = base;
+    /// #}}} @const BASE
+
+    /// #{{{ @const ABS
+    /**
+     * @const {boolean}
+     */
+    this.ABS = abs;
+    /// #}}} @const ABS
+
+    /// #{{{ @const PATH
+    /**
+     * @const {string}
+     */
+    this.PATH = $addSlash(path);
+    /// #}}} @const PATH
+
+    /// #{{{ @func isValidDir
+    /**
+     * @param {string} name
+     * @param {string} tree
+     * @return {boolean}
+     */
+    this.isValidDir = function isValidDir(name, tree) {
+      return _isValid(name, tree) && _isValidDir(name, tree);
+    };
+    /// #}}} @func isValidDir
+
+    /// #{{{ @func isValidFile
+    /**
+     * @param {string} name
+     * @param {string} tree
+     * @return {boolean}
+     */
+    this.isValidFile = function isValidFile(name, tree) {
+      return _isValid(name, tree)
+        && _isValidExt(name)
+        && _isValidFile(name, tree);
+    };
+    /// #}}} @func isValidFile
+
+    /// #{{{ @member files
+    /**
+     * @type {!Array<string>}
+     */
+    this.files = [];
+    /// #}}} @member files
+
+    /// #{{{ @member trees
+    /**
+     * @type {!Array<string>}
+     */
+    this.trees = [];
+    /// #}}} @member trees
+
+    /// #{{{ @member paths
+    /**
+     * @type {!Array<string>}
+     */
+    this.paths = [];
+    /// #}}} @member paths
+  }
+  _Files['prototype'] = $mkObj(NIL);
+  _Files['prototype']['constructor'] = _Files;
+  /// #}}} @constructor _Files
+
+  /// #{{{ @func _Files.prototype.main
+  /**
+   * @private
+   * @return {!Array<string>}
+   */
+  _Files['prototype'].main = function main() {
+
+    this.getFiles(this.SRC, '');
+
+    if (this.DEEP)
+      this.getFilesDeep(this.SRC);
+
+    return this.BASE
+      ? this.paths
+      : this.files;
+  }
+  /// #}}} @func _Files.prototype.main
+
+  /// #{{{ @func _Files.prototype.getFiles
+  /**
+   * @private
+   * @param {string} src
+   * @param {string} tree
+   * @return {void}
+   */
+  _Files['prototype'].getFiles = function getFiles(src, tree) {
+
+    /** @type {!Array<string>} */
+    var files;
+    /** @type {!Array<string>} */
+    var trees;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {!Array<string>} */
+    var names;
+    /** @type {string} */
+    var name;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var SRC = $addSlash(src);
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var TREE = tree && $addSlash(tree);
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var PATH = this.PATH;
+
+    /**
+     * @private
+     * @param {string} dirname
+     * @param {string} dirtree
+     * @return {boolean}
+     */
+    var isValidDir = this.isValidDir;
+
+    /**
+     * @private
+     * @param {string} filename
+     * @param {string} filetree
+     * @return {boolean}
+     */
+    var isValidFile = this.isValidFile;
+
+    files = this.files;
+    trees = this.trees;
+    paths = this.paths;
+
+    names = $readDir(SRC);
+    len = names['length'];
+    i = -1;
+    while (++i < len) {
+      name = names[i];
+      src = SRC + name;
+      tree = TREE + name;
+      if ( $is.file(src) ) {
+        if ( isValidFile(name, tree) ) {
+          files['push'](tree);
+          paths['push'](PATH + name);
+        }
+      }
+      else if ( $is.dir(src) ) {
+        if ( isValidDir(name, tree) )
+          trees['push'](tree);
+      }
+    }
+  }
+  /// #}}} @func _Files.prototype.getFiles
+
+  /// #{{{ @func _Files.prototype.getFilesDeep
+  /**
+   * @private
+   * @param {string} src
+   * @return {void}
+   */
+  _Files['prototype'].getFilesDeep = function getFilesDeep(src) {
+
+    /** @type {!Array<string>} */
+    var trees;
+    /** @type {string} */
+    var tree;
+    /** @type {number} */
+    var i;
+
+    /**
+     * @private
+     * @const {string}
+     */
+    var SRC = $addSlash(src);
+
+    trees = this.trees;
+    i = -1;
+    while (++i < trees['length']) {
+      tree = trees[i];
+      src = SRC + tree;
+      this.getFiles(src, tree);
+    }
+  }
+  /// #}}} @func _Files.prototype.getFilesDeep
+
+  /// #}}} @group Files-Class
+
   /// #{{{ @group Test-Factories
 
   /// #{{{ @func _mkValidTests
