@@ -2932,7 +2932,7 @@ var get = (function getPrivateScope() {
         if (ext) {
           if (result)
             result += '|';
-          result += '.' + ext;
+          result += ext;
         }
       }
 
@@ -2973,7 +2973,7 @@ var get = (function getPrivateScope() {
 
       if ( $is.arr(valid) ) {
         valid = _prepExts(valid, glob);
-        valid = '^(?:' + valid + ')$';
+        valid = '\\.(?:' + valid + ')$';
         valid = new REGX(valid);
       }
 
@@ -3002,7 +3002,7 @@ var get = (function getPrivateScope() {
 
       if ( $is.arr(invalid) ) {
         invalid = _prepExts(invalid, glob);
-        invalid = '^(?:' + invalid + ')$';
+        invalid = '\\.(?:' + invalid + ')$';
         invalid = new REGX(invalid);
       }
 
