@@ -22,6 +22,7 @@
 /// #}}} @off FS_ONLY
 /// #{{{ @on FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js

@@ -15,6 +15,7 @@
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #}}} @on SOLO

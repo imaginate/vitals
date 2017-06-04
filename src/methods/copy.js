@@ -23,6 +23,7 @@
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $mkdir ../helpers/mkdir.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $addSlash ../helpers/add-slash.js
