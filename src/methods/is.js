@@ -873,6 +873,34 @@ var is = (function isPrivateScope() {
   is['buff'] = isBuffer;
   is['buf'] = isBuffer;
   /// #}}} @submethod buffer
+
+  /// #{{{ @submethod directory
+  /// @section fs
+  /// @method vitals.is.directory
+  /// @alias vitals.is.dir
+  /**
+   * @description
+   *   Checks if a value or many values are a valid directory path.
+   * @public
+   * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided, every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  function isDirectory(val) {
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #val defined', 'directory');
+      case 1:
+        return $is.dir(val);
+      default:
+        return _are(arguments, $is.dir);
+    }
+  }
+  is['directory'] = isDirectory;
+  is['dir'] = isDirectory;
+  /// #}}} @submethod directory
   /// #}}} @on FS
 
   /// #{{{ @group Is-Helpers
@@ -969,9 +997,6 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _isEven
   /// #}}} @off FS_ONLY
-
-  /// #{{{ @on FS
-  /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
 
