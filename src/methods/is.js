@@ -3,6 +3,7 @@
  * VITALS.IS
  * ---------------------------------------------------------------------------
  * @section base
+ * @section fs
  * @version 4.1.3
  * @see [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
  *
@@ -17,11 +18,20 @@
 /// #}}} @on SOLO
 
 /// #{{{ @super is
+/// #{{{ @off FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS_ONLY
+/**
+ * @public
+ * @const {!Object<string, !Function>}
+ * @dict
+ */
+/// #}}} @on FS_ONLY
 var is = (function isPrivateScope() {
 
   /// #{{{ @docrefs is
@@ -49,6 +59,16 @@ var is = (function isPrivateScope() {
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
   /// #}}} @docrefs is
 
+  /// #{{{ @on FS_ONLY
+  /**
+   * @public
+   * @type {!Object<string, !Function>}
+   * @dict
+   */
+  var is = {};
+  /// #}}} @on FS_ONLY
+
+  /// #{{{ @off FS_ONLY
   /// #{{{ @submethod main
   /// @section base
   /// @method vitals.is
@@ -821,6 +841,10 @@ var is = (function isPrivateScope() {
   }
   is['even'] = isEvenNumber;
   /// #}}} @submethod even
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #{{{ @group Is-Helpers
 
@@ -847,6 +871,7 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _are
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @func _isFrozen
   /**
    * @private
@@ -914,9 +939,14 @@ var is = (function isPrivateScope() {
     return $is.even(val);
   }
   /// #}}} @func _isEven
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @group Check-Helpers
 
   /// #{{{ @func _checkVal
@@ -1490,6 +1520,7 @@ var is = (function isPrivateScope() {
   /// #}}} @func _getNullable
 
   /// #}}} @group Parse-Helpers
+  /// #}}} @off FS_ONLY
 
   /// #{{{ @group Error-Helpers
 
