@@ -17,8 +17,8 @@
 /// #include @core helpers ../core/helpers.js
 /// #{{{ @off FS_ONLY
 /// #include @helper $match ../helpers/match.js
-/// #include @helper $merge ../helpers/merge.js
-/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $getFlags ../helpers/get-flags.js
+/// #include @helper $cloneRegx ../helpers/clone-regx.js
 /// #}}} @off FS_ONLY
 /// #{{{ @on FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
@@ -30,9 +30,6 @@
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
 /// #}}} @on FS
-/// #{{{ @off FS_ONLY
-/// #include @super copy ./copy.js
-/// #}}} @off FS_ONLY
 /// #}}} @on SOLO
 
 /// #{{{ @super get
@@ -1637,22 +1634,26 @@ var get = (function getPrivateScope() {
   /**
    * @private
    * @param {string} src
-   * @param {!RegExp} pattern
+   * @param {!RegExp} patt
    * @return {!Array<number>}
    */
-  function _byRegexStrIndexes(src, pattern) {
+  function _byRegexStrIndexes(src, patt) {
 
     /** @type {!Array<number>} */
     var indexes;
     /** @type {(?Array|?Object)} */
     var result;
+    /** @type {string} */
+    var flags;
 
-    pattern = copy['regexp'](pattern, YES);
+    flags = $getFlags(patt, YES);
+    patt = $cloneRegx(patt, flags);
+
     indexes = [];
-    result = pattern['exec'](src);
+    result = patt['exec'](src);
     while (result) {
       indexes['push'](result['index']);
-      result = pattern['exec'](src);
+      result = patt['exec'](src);
     }
     return indexes;
   }
@@ -1687,22 +1688,26 @@ var get = (function getPrivateScope() {
   /**
    * @private
    * @param {string} src
-   * @param {!RegExp} pattern
+   * @param {!RegExp} patt
    * @return {!Array<string>}
    */
-  function _byRegexStrVals(src, pattern) {
+  function _byRegexStrVals(src, patt) {
 
     /** @type {(?Array|?Object)} */
     var result;
+    /** @type {string} */
+    var flags;
     /** @type {!Array<string>} */
     var vals;
 
-    pattern = copy['regexp'](pattern, YES);
+    flags = $getFlags(patt, YES);
+    patt = $cloneRegx(patt, flags);
+
     vals = [];
-    result = pattern['exec'](src);
+    result = patt['exec'](src);
     while (result) {
       vals['push'](result[0]);
-      result = pattern['exec'](src);
+      result = patt['exec'](src);
     }
     return vals;
   }
