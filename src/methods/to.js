@@ -3,6 +3,7 @@
  * VITALS.TO
  * ---------------------------------------------------------------------------
  * @section base
+ * @section fs
  * @version 4.1.3
  * @see [vitals.to](https://github.com/imaginate/vitals/wiki/vitals.to)
  *
@@ -14,13 +15,21 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
+/// #{{{ @off FS_ONLY
 /// #include @helper $splitKeys ../helpers/split-keys.js
+/// #}}} @off FS_ONLY
+/// #{{{ @on FS
+/// #include @helper $fixEol ../helpers/fix-eol.js
+/// #include @helper $hasOpt ../helpers/has-opt.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
+/// #include @helper $writeFile ../helpers/write-file.js
+/// #}}} @on FS
 /// #}}} @on SOLO
 
 /// #{{{ @super to
 /**
  * @public
- * @type {!Object<string, !Function>}
+ * @const {!Object<string, !Function>}
  * @dict
  */
 var to = (function toPrivateScope() {
@@ -45,6 +54,7 @@ var to = (function toPrivateScope() {
    */
   var to = {};
 
+  /// #{{{ @off FS_ONLY
   /// #{{{ @submethod string
   /// @section base
   /// @method vitals.to.string
@@ -325,6 +335,10 @@ var to = (function toPrivateScope() {
   to['lowerCase'] = toLowerCase;
   to['lower'] = toLowerCase;
   /// #}}} @submethod lowerCase
+  /// #}}} @off FS_ONLY
+
+  /// #{{{ @on FS
+  /// #}}} @on FS
 
   /// #{{{ @group To-Helpers
 
