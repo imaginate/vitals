@@ -13,6 +13,9 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
+/// #include @helper $cloneArr ../helpers/clone-arr.js
+/// #include @helper $cloneFun ../helpers/clone-fun.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $cloneRegx ../helpers/clone-regx.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $getFlags ../helpers/get-flags.js

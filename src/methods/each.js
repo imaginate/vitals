@@ -14,10 +14,10 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $merge ../helpers/merge.js
-/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $cloneArr ../helpers/clone-arr.js
+/// #include @helper $cloneFun ../helpers/clone-fun.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #include @super copy ./copy.js
 /// #}}} @on SOLO
 
 /// #{{{ @super each
@@ -385,7 +385,9 @@ var each = (function eachPrivateScope() {
       iteratee = _bindMap(iteratee, thisArg);
 
     src = iteratee['length'] > 2
-      ? copy(source)
+      ? $is.fun(source)
+        ? $cloneFun(source)
+        : $cloneObj(source)
       : source;
 
     switch (iteratee['length']) {
@@ -440,7 +442,7 @@ var each = (function eachPrivateScope() {
       iteratee = _bindMap(iteratee, thisArg);
 
     src = iteratee['length'] > 2
-      ? copy['array'](source)
+      ? $cloneArr(source)
       : source;
     len = src['length'];
     i = -1;

@@ -14,13 +14,13 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $match ../helpers/match.js
-/// #include @helper $merge ../helpers/merge.js
-/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $cloneArr ../helpers/clone-arr.js
+/// #include @helper $cloneFun ../helpers/clone-fun.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
+/// #include @helper $match ../helpers/match.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @super is ./is.js
-/// #include @super copy ./copy.js
 /// #}}} @on SOLO
 
 /// #{{{ @super cut
@@ -1377,7 +1377,9 @@ var cut = (function cutPrivateScope() {
       filter = _bind(filter, thisArg);
 
     src = filter['length'] > 2
-      ? copy(source)
+      ? $is.fun(source)
+        ? $cloneFun(source)
+        : $cloneObj(source)
       : source;
 
     switch (filter['length']) {
@@ -1429,7 +1431,7 @@ var cut = (function cutPrivateScope() {
       filter = _bind(filter, thisArg);
 
     src = filter['length'] > 2
-      ? copy['array'](source)
+      ? $cloneArr(source)
       : source;
     i = src['length'];
 

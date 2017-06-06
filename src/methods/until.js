@@ -14,10 +14,10 @@
 /// #include @macro OPEN_WRAPPER ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $merge ../helpers/merge.js
-/// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $cloneArr ../helpers/clone-arr.js
+/// #include @helper $cloneFun ../helpers/clone-fun.js
+/// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #include @super copy ./copy.js
 /// #}}} @on SOLO
 
 /// #{{{ @super until
@@ -494,7 +494,9 @@ var until = (function untilPrivateScope() {
     var key;
 
     if (iteratee['length'] > 2)
-      source = copy(source);
+      source = $is.fun(source)
+        ? $cloneFun(source)
+        : $cloneObj(source);
     if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
@@ -553,7 +555,7 @@ var until = (function untilPrivateScope() {
     var i;
 
     if (iteratee['length'] > 2)
-      source = copy['array'](source);
+      source = $cloneArr(source);
     if ( !$is.void(thisArg) )
       iteratee = _bindMap(iteratee, thisArg);
 
