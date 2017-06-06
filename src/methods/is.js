@@ -162,6 +162,7 @@ var is = (function isPrivateScope() {
   /// #{{{ @submethod undefined
   /// @section base
   /// @method vitals.is.undefined
+  /// @alias vitals.is.void
   /**
    * @description
    *   Checks if a value or many values are [undefined][void].
@@ -183,6 +184,7 @@ var is = (function isPrivateScope() {
     }
   }
   is['undefined'] = isUndefined;
+  is['void'] = isUndefined;
   /// #}}} @submethod undefined
 
   /// #{{{ @submethod boolean
