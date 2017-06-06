@@ -246,7 +246,9 @@ var copy = (function copyPrivateScope() {
 
   /// #{{{ @submethod func
   /// @section base
-  /// @method vitals.copy.fn
+  /// @method vitals.copy.func
+  /// @alias vitals.copy.fn
+  /// @alias vitals.copy.fun
   /// @alias vitals.copy.function
   ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
   ///   browser and other platform environments. Use `vitals.copy.func` for
@@ -289,6 +291,7 @@ var copy = (function copyPrivateScope() {
     return _copyFunc(source, deep);
   }
   copy['func'] = copyFunction;
+  copy['fun'] = copyFunction;
   try {
     copy['fn'] = copyFunction;
     copy['function'] = copyFunction;
