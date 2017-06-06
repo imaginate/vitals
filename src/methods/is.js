@@ -424,6 +424,7 @@ var is = (function isPrivateScope() {
   /// @section base
   /// @method vitals.is.func
   /// @alias vitals.is.fn
+  /// @alias vitals.is.fun
   /// @alias vitals.is.function
   ///   Note that `vitals.is.function` will fail in all ES3 and some ES5
   ///   browser and other platform environments. Use `vitals.is.func` for
@@ -452,6 +453,7 @@ var is = (function isPrivateScope() {
     }
   }
   is['func'] = isFunction;
+  is['fun'] = isFunction;
   try {
     is['fn'] = isFunction;
     is['function'] = isFunction;
