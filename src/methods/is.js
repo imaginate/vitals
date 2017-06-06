@@ -521,6 +521,7 @@ var is = (function isPrivateScope() {
   /// @section base
   /// @method vitals.is.regexp
   /// @alias vitals.is.regex
+  /// @alias vitals.is.regx
   /// @alias vitals.is.re
   /**
    * @description
@@ -545,6 +546,7 @@ var is = (function isPrivateScope() {
   }
   is['regexp'] = isRegExp;
   is['regex'] = isRegExp;
+  is['regx'] = isRegExp;
   is['re'] = isRegExp;
   /// #}}} @submethod regexp
 
