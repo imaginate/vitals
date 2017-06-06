@@ -554,6 +554,7 @@ var cut = (function cutPrivateScope() {
   /// #{{{ @submethod pattern
   /// @section base
   /// @method vitals.cut.pattern
+  /// @alias vitals.cut.patt
   /**
    * @description
    *   Removes a pattern from a `string` and returns the amended #source.
@@ -581,6 +582,7 @@ var cut = (function cutPrivateScope() {
     return _cutPattern(source, pattern);
   }
   cut['pattern'] = cutPattern;
+  cut['patt'] = cutPattern;
   /// #}}} @submethod pattern
 
   /// #{{{ @submethod properties
@@ -832,6 +834,7 @@ var cut = (function cutPrivateScope() {
   /// #{{{ @submethod patterns
   /// @section base
   /// @method vitals.cut.patterns
+  /// @alias vitals.cut.patts
   /**
    * @description
    *   Removes patterns from a `string` and returns the amended #source.
@@ -868,6 +871,7 @@ var cut = (function cutPrivateScope() {
       : _cutPattern(source, pattern);
   }
   cut['patterns'] = cutPatterns;
+  cut['patts'] = cutPatterns;
   /// #}}} @submethod patterns
 
   /// #{{{ @group Cut-Helpers
