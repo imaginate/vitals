@@ -18,6 +18,8 @@
 /// #{{{ @off FS_ONLY
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
+/// #include @helper $getFlags ../helpers/get-flags.js
+/// #include @helper $cloneRegx ../helpers/clone-regx.js
 /// #}}} @off FS_ONLY
 /// #{{{ @on FS
 /// #include @helper $match ../helpers/match.js
@@ -212,15 +214,21 @@ var copy = (function copyPrivateScope() {
    *   Makes a [copy][clone] of a `RegExp`.
    * @public
    * @param {!RegExp} source
-   * @param {(boolean|undefined)=} forceGlobal = `undefined`
-   *   Override the [global setting][regex-global] for the returned `RegExp`.
-   *   If the #forceGlobal is `undefined`, the [global setting][regex-global]
-   *   from the #source is used.
+   * @param {(string|undefined)=} flags = `undefined`
+   *   Override the #source `RegExp` flags when [copying][clone] it. If the
+   *   #flags is `undefined`, the original #source flags are used. If the
+   *   #flags `string` does **not** start with a plus, `"+"`, or minus, `"-"`,
+   *   sign, the #flags value is used for the [copied][clone] `RegExp`.
+   *   Otherwise, #flags `string` is parsed according to the following rules:
+   *   - Each series of flag characters following a plus sign, `"+"`, are
+   *     enabled for the [copied][clone] `RegExp`.
+   *   - Each series of flag characters following a minus sign, `"-"`, are
+   *     disabled for the [copied][clone] `RegExp`.
    * @return {!RegExp}
    *   A new `RegExp` with the [RegExp.prototype.source][regex-source] value
    *   and the `RegExp` flag settings of the provided #source `RegExp`.
    */
-  function copyRegExp(source, forceGlobal) {
+  function copyRegExp(source, flags) {
 
     switch (arguments['length']) {
       case 0:
@@ -228,15 +236,20 @@ var copy = (function copyPrivateScope() {
       case 1:
         break;
       default:
-        if ( !$is.void(forceGlobal) && !$is.bool(forceGlobal) )
-          throw _mkTypeErr(new TYPE_ERR, 'forceGlobal', forceGlobal,
-            'boolean=', 'regexp');
+        if ( $is.str(flags) ) {
+          if ( !$is.flags(flags) )
+            throw _mkErr(new ERR, 'invalid #flags `string` `' + flags + '` ' +
+              '(must consist of only valid `RegExp` flags and if it starts ' +
+              'with a mod flag, mod flags, `"+"` and `"-"`)', 'regexp');
+        }
+        else if ( !$is.void(flags) )
+          throw _mkTypeErr(new TYPE_ERR, 'flags', flags, 'string=', 'regexp');
     }
 
     if ( !$is.regx(source) )
       throw _mkTypeErr(new TYPE_ERR, 'source', source, '!RegExp', 'regexp');
 
-    return _copyRegex(source, forceGlobal);
+    return _copyRegex(source, flags);
   }
   copy['regexp'] = copyRegExp;
   copy['regex'] = copyRegExp;
@@ -664,23 +677,17 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @func _copyRegex
   /**
    * @private
-   * @param {!RegExp} regex
-   * @param {(boolean|undefined)=} forceGlobal
+   * @param {!RegExp} src
+   * @param {(string|undefined)=} flags
    * @return {!RegExp}
    */
-  function _copyRegex(regex, forceGlobal) {
+  function _copyRegex(src, flags) {
 
-    /** @type {string} */
-    var source;
     /** @type {string} */
     var flags;
 
-    source = _escape(regex['source']);
-    flags = _setupFlags(regex, forceGlobal);
-
-    return flags
-      ? new REGX(source, flags)
-      : new REGX(source);
+    flags = _getFlags(src, flags);
+    return $cloneRegx(src, flags);
   }
   /// #}}} @func _copyRegex
 
@@ -1042,92 +1049,126 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @off FS_ONLY
   /// #{{{ @group RegExp-Helpers
 
-  /// #{{{ @const _FLAGS
+  /// #{{{ @const _ADD_FLAG
   /**
    * @private
-   * @const {!Object<string, string>}
-   * @dict
+   * @const {!RegExp}
    */
-  var _FLAGS = (function _FLAGS_PrivateScope() {
+  var _ADD_FLAG = /^\+/;
+  /// #}}} @const _ADD_FLAG
 
-    /**
-     * @type {!Object<string, string>}
-     * @dict
-     */
-    var flags;
-
-    flags = {};
-    flags['ignoreCase'] = 'i';
-    flags['multiline'] = 'm';
-    flags['global'] = 'g';
-
-    if ('sticky' in REGX_PROTO)
-      flags['sticky'] = 'y';
-    if ('unicode' in REGX_PROTO)
-      flags['unicode'] = 'u';
-
-    return flags;
-  })();
-  /// #}}} @const _FLAGS
-
-  /// #{{{ @func _escape
+  /// #{{{ @const _MOD_FLAGS
   /**
-   * @description
-   *   Returns a properly escaped [RegExp.prototype.source][regex-source].
    * @private
-   * @param {string} source
+   * @const {!RegExp}
+   */
+  var _MOD_FLAGS = /^[\+\-]/;
+  /// #}}} @const _MOD_FLAGS
+
+  /// #{{{ @const _RM_FLAG
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _RM_FLAG = /^\-/;
+  /// #}}} @const _RM_FLAG
+
+  /// #{{{ @func _addFlags
+  /**
+   * @private
+   * @param {string} src
+   * @param {string} mod
    * @return {string}
    */
-  var _escape = (function() {
+  function _addFlags(src, mod) {
 
-    /** @type {?RegExp} */
-    var pattern;
-
-    pattern = /\n/['source'] !== '\\n'
-      ? /\\/g
-      : NIL;
-    return pattern
-      ? function _escape(source) {
-          return source['replace'](pattern, '\\\\');
-        }
-      : function _escape(source) {
-          return source;
-        };
-  })();
-  /// #}}} @func _escape
-
-  /// #{{{ @func _setupFlags
-  /**
-   * @private
-   * @param {!RegExp} regex
-   * @param {boolean=} forceGlobal
-   * @return {string}
-   */
-  function _setupFlags(regex, forceGlobal) {
-
-    /** @type {string} */
+    /** @type {!Array<string>} */
     var flags;
     /** @type {string} */
-    var key;
+    var flag;
 
-    flags = '';
-    for (key in _FLAGS) {
-      if ( $own(_FLAGS, key) && regex[key] )
-        flags += _FLAGS[key];
+    mod = mod['replace'](_ADD_FLAG, '');
+    flags = mod['split']('');
+    len = flags['length'];
+    i = -1;
+    while (++i < len) {
+      flag = flags[i];
+      if ( !$inStr(src, flag) )
+        src += flag;
     }
+    return src;
+  }
+  /// #}}} @func _addFlags
 
-    if ( $is.void(forceGlobal) )
+  /// #{{{ @func _getFlags
+  /**
+   * @private
+   * @param {!RegExp} src
+   * @param {(string|undefined)} flags
+   * @return {string}
+   */
+  function _getFlags(src, flags) {
+
+    /** @type {(?Array|?Object)} */
+    var result;
+    /** @type {!RegExp} */
+    var patt;
+    /** @type {string} */
+    var flag;
+
+    if ( $is.void(flags) )
+      return $getFlags(src);
+
+    if ( !_MOD_FLAGS['test'](flags) )
       return flags;
 
-    return $inStr(flags, 'g')
-      ? forceGlobal
-        ? flags
-        : flags['replace']('g', '')
-      : forceGlobal
-        ? flags + 'g'
-        : flags;
+    /** @const {string} */
+    var FLAGS = flags;
+
+    patt = /[\+\-][imgyu]+/g;
+    flags = $getFlags(src);
+    result = patt['exec'](FLAGS);
+    while (result) {
+      flag = result[0];
+      flags = _ADD_FLAG['test'](flag)
+        ? _addFlags(flags, flag)
+        : _rmFlags(flags, flag);
+      result = patt['exec'](FLAGS);
+    }
+    return flags;
   }
-  /// #}}} @func _setupFlags
+  /// #}}} @func _getFlags
+
+  /// #{{{ @func _rmFlags
+  /**
+   * @private
+   * @param {string} src
+   * @param {string} mod
+   * @return {string}
+   */
+  function _rmFlags(src, mod) {
+
+    /** @type {!Array<string>} */
+    var flags;
+    /** @type {string} */
+    var flag;
+    /** @type {!RegExp} */
+    var patt;
+
+    mod = mod['replace'](_RM_FLAG, '');
+    flags = mod['split']('');
+    len = flags['length'];
+    i = -1;
+    while (++i < len) {
+      flag = flags[i];
+      if ( $inStr(src, flag) ) {
+        patt = new REGX(flag, 'g');
+        src['replace'](patt, '');
+      }
+    }
+    return src;
+  }
+  /// #}}} @func _rmFlags
 
   /// #}}} @group RegExp-Helpers
 
