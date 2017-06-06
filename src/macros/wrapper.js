@@ -18,6 +18,7 @@
 
   /// #}}} @on USE_STRICT
   /// #{{{ @off SOLO
+  /// #{{{ @off CONSTRUCTOR
   /**
    * @public
    * @type {(!Object|!Function)}
@@ -25,6 +26,7 @@
    */
   var vitals = {};
 
+  /// #}}} @off CONSTRUCTOR
   /// #}}} @off SOLO
 /// #}}} @macro OPEN_WRAPPER
 
