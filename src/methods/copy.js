@@ -658,7 +658,7 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @func _copyArr
   /**
    * @private
-   * @param {!Object} obj
+   * @param {(!Array|!Arguments|!Object)} obj
    * @param {(boolean|undefined)=} deep
    * @return {!Array}
    */
