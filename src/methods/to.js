@@ -338,9 +338,154 @@ var to = (function toPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @submethod file
+  /// @section fs
+  /// @method vitals.to.file
+  /**
+   * @description
+   *   Write the contents of a file to a new or existing file.
+   * @public
+   * @param {(!Buffer|string)} contents
+   * @param {string} dest
+   *   Must be a valid filepath to a new or existing file.
+   * @param {(?Object|?string|undefined)=} opts
+   *   If the #opts is `null` or a `string` value, it sets the #opts.encoding
+   *   option to its value.
+   * @param {?string=} opts.encoding = `"utf8"`
+   *   The #opts.encoding option sets the character encoding for the
+   *   #contents. If it is `null`, no character encoding is set.
+   * @param {?string=} opts.eol = `null`
+   *   The #opts.eol option only applies if the #contents is a `string`. It
+   *   sets the end of line character to use when normalizing the #contents
+   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
+   *   end of line character normalization is completed. The optional `string`
+   *   values are as follows (values are **not** case-sensitive):
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @return {(!Buffer|string)}
+   *   The saved #contents.
+   */
+  function toFile(contents, dest, opts) {
+
+    /** @type {?string} */
+    var encoding;
+
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #contents defined', 'file');
+
+      case 1:
+        throw _mkErr(new ERR, 'no #dest defined', 'file');
+
+      case 2:
+        /** @dict */
+        opts = $cloneObj(_DFLT_FILE_OPTS);
+        break;
+
+      default:
+        if ( $is.void(opts) ) {
+          /** @dict */
+          opts = $cloneObj(_DFLT_FILE_OPTS);
+          break;
+        }
+
+        if ( $is.nil(opts) ) {
+          encoding = opts;
+          /** @dict */
+          opts = $cloneObj(_DFLT_FILE_OPTS);
+          opts['encoding'] = encoding;
+          break;
+        }
+
+        if ( $is.str(opts) ) {
+          encoding = opts;
+
+          if (!encoding)
+            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+              'file');
+
+          /** @dict */
+          opts = $cloneObj(_DFLT_FILE_OPTS);
+          opts['encoding'] = encoding;
+          break;
+        }
+
+        if ( !$is.obj(opts) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?string)=',
+            'file');
+
+        /** @dict */
+        opts = $cloneObj(opts);
+
+        if ( !$hasOpt(opts, 'encoding') )
+          opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
+        else if ( $is.str(opts['encoding']) ) {
+          if (!opts['encoding'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encoding']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
+            '?string=', 'file');
+
+        if ( !$hasOpt(opts, 'eol') )
+          opts['eol'] = _DFLT_FILE_OPTS['eol'];
+        else if ( $is.str(opts['eol']) ) {
+          if ( !$is.eol(opts['eol']) )
+            throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
+              [ 'LF', 'CR', 'CRLF' ], 'file');
+
+          opts['eol'] = opts['eol']['toUpperCase']();
+        }
+        else if ( !$is.nil(opts['eol']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.eol', opts['eol'], '?string=',
+            'file');
+    }
+
+    if ( !$is.str(dest) )
+      throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'file');
+    else if (!dest)
+      throw _mkErr(new ERR, 'invalid empty #dest `string`', 'file');
+
+    if ( $is.str(contents) ) {
+      if (opts['eol'])
+        contents = $fixEol(contents, opts['eol']);
+    }
+    else if ( !$is.buff(contents) )
+      throw _mkTypeErr(new TYPE_ERR, 'contents', contents, '!Buffer|string',
+        'file');
+
+    if (opts['encoding'])
+      $writeFile(dest, contents, opts['encoding']);
+    else
+      $writeFile(dest, contents);
+
+    return contents;
+  }
+  to['file'] = toFile;
+  /// #}}} @submethod file
   /// #}}} @on FS
 
   /// #{{{ @group To-Helpers
+
+  /// #{{{ @on FS
+  /// #{{{ @group Default-Options
+
+  /// #{{{ @const _DFLT_FILE_OPTS
+  /**
+   * @private
+   * @const {!Object<string, *>}
+   * @dict
+   */
+  var _DFLT_FILE_OPTS = {
+    'eol': NIL,
+    'encoding': 'utf8'
+  };
+  /// #}}} @const _DFLT_FILE_OPTS
+
+  /// #}}} @group Default-Options
+  /// #}}} @on FS
 
   /// #{{{ @group Error-Helpers
 
