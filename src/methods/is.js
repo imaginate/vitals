@@ -1271,7 +1271,7 @@ var is = (function isPrivateScope() {
 
     /// #{{{ @group Primitives
     _addTypes('primitives', {
-      'undefined': $is.none,
+      'undefined': $is.void,
       'boolean':   $is.bool,
       'string':    $is.str,
       'number':    $is.num,
@@ -1305,37 +1305,39 @@ var is = (function isPrivateScope() {
 
     /// #{{{ @group Arrays
     _addTypes('arrays', {
-      'nulls':     $is.nil,
-      'booleans':  $is.bool,
-      'strings':   $is.str,
-      'numbers':   $is.num,
-      'nans':      $is.nan,
-      'objects':   $is.obj,
-      'functions': $is.fun,
-      'regexps':   $is.regx,
-      'arrays':    $is.arr,
-      'dates':     $is.date,
-      'errors':    $is.err,
-      'elements':  $is.elem,
-      'documents': $is.doc
+      'undefineds': $is.void,
+      'nulls':      $is.nil,
+      'booleans':   $is.bool,
+      'strings':    $is.str,
+      'numbers':    $is.num,
+      'nans':       $is.nan,
+      'objects':    $is.obj,
+      'functions':  $is.fun,
+      'regexps':    $is.regx,
+      'arrays':     $is.arr,
+      'dates':      $is.date,
+      'errors':     $is.err,
+      'elements':   $is.elem,
+      'documents':  $is.doc
     });
     /// #}}} @group Arrays
 
     /// #{{{ @group Maps
     _addTypes('maps', {
-      'nullmap':     $is.nil,
-      'booleanmap':  $is.bool,
-      'stringmap':   $is.str,
-      'numbermap':   $is.num,
-      'nanmap':      $is.nan,
-      'objectmap':   $is.obj,
-      'functionmap': $is.func,
-      'regexpmap':   $is.regex,
-      'arraymap':    $is.arr,
-      'datemap':     $is.date,
-      'errormap':    $is.err,
-      'elementmap':  $is.elem,
-      'documentmap': $is.doc
+      'undefinedmap': $is.void,
+      'nullmap':      $is.nil,
+      'booleanmap':   $is.bool,
+      'stringmap':    $is.str,
+      'numbermap':    $is.num,
+      'nanmap':       $is.nan,
+      'objectmap':    $is.obj,
+      'functionmap':  $is.func,
+      'regexpmap':    $is.regex,
+      'arraymap':     $is.arr,
+      'datemap':      $is.date,
+      'errormap':     $is.err,
+      'elementmap':   $is.elem,
+      'documentmap':  $is.doc
     });
     /// #}}} @group Maps
 
@@ -1349,13 +1351,16 @@ var is = (function isPrivateScope() {
       'bool': 'boolean',
       'str':  'string',
       'num':  'number',
+      'void': 'undefined',
       /// #}}} @group Primitives
 
       /// #{{{ @group JS-Objects
       'obj':   'object',
       'func':  'function',
+      'fun':   'function',
       'fn':    'function',
       'regex': 'regexp',
+      'regx':  'regexp',
       're':    'regexp',
       'arr':   'array',
       'err':   'error',
@@ -1368,30 +1373,37 @@ var is = (function isPrivateScope() {
       /// #}}} @group DOM-Objects
 
       /// #{{{ @group Arrays
-      'nils':   'nulls',
-      'strs':   'strings',
-      'nums':   'numbers',
-      'bools':  'booleans',
-      'objs':   'objects',
-      'funcs':  'functions',
-      'fns':    'functions',
-      'regexs': 'regexps',
-      'res':    'regexps',
-      'arrs':   'arrays',
-      'errs':   'errors',
-      'elems':  'elements',
-      'docs':   'documents',
+      'undefinedes': 'undefineds',
+      'voids':   'undefineds',
+      'nils':    'nulls',
+      'strs':    'strings',
+      'nums':    'numbers',
+      'bools':   'booleans',
+      'objs':    'objects',
+      'funcs':   'functions',
+      'funs':    'functions',
+      'fns':     'functions',
+      'regexes': 'regexps',
+      'regexs':  'regexps',
+      'res':     'regexps',
+      'arrs':    'arrays',
+      'errs':    'errors',
+      'elems':   'elements',
+      'docs':    'documents',
       /// #}}} @group Arrays
 
       /// #{{{ @group Maps
+      'voidmap':  'undefinedmap',
       'nilmap':   'nullmap',
       'strmap':   'stringmap',
       'nummap':   'numbermap',
       'boolmap':  'booleanmap',
       'objmap':   'objectmap',
       'funcmap':  'functionmap',
+      'funmap':   'functionmap',
       'fnmap':    'functionmap',
       'regexmap': 'regexpmap',
+      'regxmap':  'regexpmap',
       'remap':    'regexpmap',
       'arrmap':   'arraymap',
       'errmap':   'errormap',
