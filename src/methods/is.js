@@ -901,6 +901,32 @@ var is = (function isPrivateScope() {
   is['directory'] = isDirectory;
   is['dir'] = isDirectory;
   /// #}}} @submethod directory
+
+  /// #{{{ @submethod file
+  /// @section fs
+  /// @method vitals.is.file
+  /**
+   * @description
+   *   Checks if a value or many values are a valid file path.
+   * @public
+   * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided, every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  function isFile(val) {
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #val defined', 'file');
+      case 1:
+        return $is.file(val);
+      default:
+        return _are(arguments, $is.file);
+    }
+  }
+  is['file'] = isFile;
+  /// #}}} @submethod file
   /// #}}} @on FS
 
   /// #{{{ @group Is-Helpers
