@@ -318,9 +318,13 @@ var copy = (function copyPrivateScope() {
    *   before saving it to the #dest file (i.e. do not apply any normalization
    *   to the #source contents while copying). This also determines whether a
    *   `buffer` or `string` of the #source contents is returned.
-   * @param {string=} opts.encoding = `"utf8"`
-   *   The #opts.encoding option only applies if #opts.buffer is `false`.
-   * @param {?string=} opts.eol = `"LF"`
+   * @param {?string=} opts.encoding = `null`
+   *   The #opts.encoding option sets the character encoding for the #source
+   *   contents saved to the #dest file. If it is `null`, no character
+   *   encoding is applied.
+   * @param {?string=} opts.encode
+   *   An alias for the #opts.encoding option.
+   * @param {?string=} opts.eol = `null`
    *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
    *   the end of line character to use when normalizing the #source contents
    *   before they are saved to the #dest. If #opts.eol is set to `null`, no
@@ -380,14 +384,29 @@ var copy = (function copyPrivateScope() {
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'file');
 
+        if ( !$hasOpt(opts, 'encode') )
+          opts['encode'] = VOID;
+        else if ( $is.str(opts['encode']) ) {
+          if (!opts['encode'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encode `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encode']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encode', opts['encode'],
+            '?string=', 'file');
+
         if ( !$hasOpt(opts, 'encoding') )
-          opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
-        else if ( !$is.str(opts['encoding']) )
+          opts['encoding'] = $is.void(opts['encode'])
+            ? _DFLT_FILE_OPTS['encoding']
+            : opts['encode'];
+        else if ( $is.str(opts['encoding']) ) {
+          if (!opts['encoding'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
-            'string=', 'file');
-        else if ( !opts['encoding'] )
-          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
-            'file');
+            '?string=', 'file');
 
         if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = _DFLT_FILE_OPTS['eol'];
@@ -454,9 +473,13 @@ var copy = (function copyPrivateScope() {
    *   not convert the `buffer` of each #source file's contents into a
    *   `string` before saving it into the #dest directory (i.e. do not apply
    *   any normalization to the #source contents while copying).
-   * @param {string=} opts.encoding = `"utf8"`
-   *   The #opts.encoding option only applies if #opts.buffer is `false`.
-   * @param {?string=} opts.eol = `"LF"`
+   * @param {?string=} opts.encoding = `null`
+   *   The #opts.encoding option sets the character encoding for each #source
+   *   contents saved to each #dest file. If it is `null`, no character
+   *   encoding is applied.
+   * @param {?string=} opts.encode
+   *   An alias for the #opts.encoding option.
+   * @param {?string=} opts.eol = `null`
    *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
    *   the end of line character to use when normalizing the #source contents
    *   before they are saved to the #dest. If #opts.eol is set to `null`, no
@@ -530,14 +553,29 @@ var copy = (function copyPrivateScope() {
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'directory');
 
+        if ( !$hasOpt(opts, 'encode') )
+          opts['encode'] = VOID;
+        else if ( $is.str(opts['encode']) ) {
+          if (!opts['encode'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encode `string`',
+              'directory');
+        }
+        else if ( !$is.nil(opts['encode']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encode', opts['encode'],
+            '?string=', 'directory');
+
         if ( !$hasOpt(opts, 'encoding') )
-          opts['encoding'] = _DFLT_DIR_OPTS['encoding'];
-        else if ( !$is.str(opts['encoding']) )
+          opts['encoding'] = $is.void(opts['encode'])
+            ? _DFLT_DIR_OPTS['encoding']
+            : opts['encode'];
+        else if ( $is.str(opts['encoding']) ) {
+          if (!opts['encoding'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+              'directory');
+        }
+        else if ( !$is.nil(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
-            'string=', 'directory');
-        else if ( !opts['encoding'] )
-          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
-            'directory');
+            '?string=', 'directory');
 
         if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = _DFLT_DIR_OPTS['eol'];
@@ -675,18 +713,37 @@ var copy = (function copyPrivateScope() {
 
     /** @type {(!Buffer|string)} */
     var contents;
+    /** @type {?string} */
+    var encoding;
+    /** @type {?string} */
+    var eol;
+
+    encoding = opts['encoding'];
+    eol = opts['eol'];
 
     if (opts['buffer']) {
       contents = $readFile(source);
+      if (encoding)
+        $writeFile(dest, contents, encoding);
+      else
+        $writeFile(dest, contents);
+    }
+    else if (encoding) {
+      contents = $readFile(source, encoding);
+      if (eol)
+        contents = $fixEol(contents, eol);
+      $writeFile(dest, contents, encoding);
+    }
+    else if (eol) {
+      contents = $readFile(source);
+      contents = contents['toString']();
+      contents = $fixEol(contents, eol);
       $writeFile(dest, contents);
     }
     else {
-      contents = $readFile(source, opts['encoding']);
-
-      if (opts['eol'])
-        contents = $fixEol(contents, opts['eol']);
-
-      $writeFile(dest, contents, opts['encoding']);
+      contents = $readFile(source);
+      $writeFile(dest, contents);
+      contents = contents['toString']();
     }
     return contents;
   }
@@ -702,20 +759,38 @@ var copy = (function copyPrivateScope() {
    */
   function _copyDir(src, dest, opts) {
 
+    /** @type {?string} */
+    var encoding;
+    /** @type {boolean} */
+    var deep;
+    /** @type {?string} */
+    var eol;
+
     src = $resolve(src);
     dest = $resolve(dest);
 
     if (opts['deep'])
       _mkSubDirs(src, dest);
 
+    eol = opts['eol'];
+    deep = opts['deep'];
+    encoding = opts['encoding'];
+
     return opts['buffer']
-      ? _copyDirByBuffer(src, dest, opts['deep'])
-      : _copyDirByString(src, dest, opts['deep'],
-          opts['encoding'], opts['eol']);
+      ? encoding
+        ? _copyDirByBuffWithEncode(src, dest, deep, encoding)
+        : _copyDirByBuff(src, dest, deep)
+      : encoding
+        ? eol
+          ? _copyDirByStrWithEncodeEol(src, dest, deep, encoding, eol)
+          : _copyDirByStrWithEncode(src, dest, deep, encoding)
+        : eol
+          ? _copyDirByStrWithEol(src, dest, deep, eol)
+          : _copyDirByStr(src, dest, deep);
   }
   /// #}}} @func _copyDir
 
-  /// #{{{ @func _copyDirByBuffer
+  /// #{{{ @func _copyDirByBuff
   /**
    * @private
    * @param {string} SRC
@@ -723,8 +798,10 @@ var copy = (function copyPrivateScope() {
    * @param {boolean} deep
    * @return {!Array<string>}
    */
-  function _copyDirByBuffer(SRC, DEST, deep) {
+  function _copyDirByBuff(SRC, DEST, deep) {
 
+    /** @type {!Buffer} */
+    var contents;
     /** @type {!Array<string>} */
     var paths;
     /** @type {string} */
@@ -745,23 +822,143 @@ var copy = (function copyPrivateScope() {
       path = paths[i];
       src = $resolve(SRC, path);
       dest = $resolve(DEST, path);
-      $writeFile(dest, $readFile(src));
+      contents = $readFile(src);
+      $writeFile(dest, contents);
     }
     return paths;
   }
-  /// #}}} @func _copyDirByBuffer
+  /// #}}} @func _copyDirByBuff
 
-  /// #{{{ @func _copyDirByString
+  /// #{{{ @func _copyDirByBuffWithEncode
   /**
    * @private
    * @param {string} SRC
    * @param {string} DEST
    * @param {boolean} deep
    * @param {string} encoding
-   * @param {?string} eol
    * @return {!Array<string>}
    */
-  function _copyDirByString(SRC, DEST, deep, encoding, eol) {
+  function _copyDirByBuffWithEncode(SRC, DEST, deep, encoding) {
+
+    /** @type {!Buffer} */
+    var contents;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getFilepaths(SRC, deep);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      contents = $readFile(src);
+      $writeFile(dest, contents, encoding);
+    }
+    return paths;
+  }
+  /// #}}} @func _copyDirByBuffWithEncode
+
+  /// #{{{ @func _copyDirByStr
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @return {!Array<string>}
+   */
+  function _copyDirByStr(SRC, DEST, deep) {
+
+    /** @type {!Buffer} */
+    var contents;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getFilepaths(SRC, deep);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      contents = $readFile(src);
+      $writeFile(dest, contents);
+    }
+    return paths;
+  }
+  /// #}}} @func _copyDirByStr
+
+  /// #{{{ @func _copyDirByStrWithEol
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @param {string} eol
+   * @return {!Array<string>}
+   */
+  function _copyDirByStrWithEol(SRC, DEST, deep, eol) {
+
+    /** @type {string} */
+    var contents;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getFilepaths(SRC, deep);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      contents = $readFile(src)['toString']();
+      contents = $fixEol(contents, eol);
+      $writeFile(dest, contents);
+    }
+    return paths;
+  }
+  /// #}}} @func _copyDirByStrWithEol
+
+  /// #{{{ @func _copyDirByStrWithEncode
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @param {string} encoding
+   * @return {!Array<string>}
+   */
+  function _copyDirByStrWithEncode(SRC, DEST, deep, encoding) {
 
     /** @type {string} */
     var contents;
@@ -786,13 +983,53 @@ var copy = (function copyPrivateScope() {
       src = $resolve(SRC, path);
       dest = $resolve(DEST, path);
       contents = $readFile(src, encoding);
-      if (eol)
-        contents = $fixEol(contents, eol);
       $writeFile(dest, contents, encoding);
     }
     return paths;
   }
-  /// #}}} @func _copyDirByString
+  /// #}}} @func _copyDirByStrWithEncode
+
+  /// #{{{ @func _copyDirByStrWithEncodeEol
+  /**
+   * @private
+   * @param {string} SRC
+   * @param {string} DEST
+   * @param {boolean} deep
+   * @param {string} encoding
+   * @param {string} eol
+   * @return {!Array<string>}
+   */
+  function _copyDirByStrWithEncodeEol(SRC, DEST, deep, encoding, eol) {
+
+    /** @type {string} */
+    var contents;
+    /** @type {!Array<string>} */
+    var paths;
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var dest;
+    /** @type {string} */
+    var src;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    paths = _getFilepaths(SRC, deep);
+    len = paths['length'];
+    i = -1;
+    while (++i < len) {
+      path = paths[i];
+      src = $resolve(SRC, path);
+      dest = $resolve(DEST, path);
+      contents = $readFile(src, encoding);
+      contents = $fixEol(contents, eol);
+      $writeFile(dest, contents, encoding);
+    }
+    return paths;
+  }
+  /// #}}} @func _copyDirByStrWithEncodeEol
   /// #}}} @on FS
 
   /// #}}} @group Main-Helpers
@@ -924,9 +1161,9 @@ var copy = (function copyPrivateScope() {
    * @dict
    */
   var _DFLT_FILE_OPTS = {
-    'eol': 'LF',
+    'eol': NIL,
     'buffer': YES,
-    'encoding': 'utf8'
+    'encoding': NIL
   };
   /// #}}} @const _DFLT_FILE_OPTS
 
@@ -937,10 +1174,10 @@ var copy = (function copyPrivateScope() {
    * @dict
    */
   var _DFLT_DIR_OPTS = {
-    'eol': 'LF',
+    'eol': NIL,
     'deep': NO,
     'buffer': YES,
-    'encoding': 'utf8'
+    'encoding': NIL
   };
   /// #}}} @const _DFLT_DIR_OPTS
 
