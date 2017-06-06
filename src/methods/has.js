@@ -75,8 +75,10 @@ var has = (function hasPrivateScope() {
    *   - *`null`*!$
    *     The value of #val does not matter and is not used.
    *   - *`!Object|!Function`*!$
-   *     The #val is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own].
+   *     If the #val is a `RegExp`, each [owned][own] property is
+   *     [tested][test] for a matching property key. If a match is found, this
+   *     method immediately returns `true`. Otherwise, the #val is passed
+   *     without any conversions to [Object.prototype.hasOwnProperty][own].
    *   - *`!Array|!Arguments`*!$
    *     The #val is **not** altered. A [strict equality][equal] test against
    *     the #val is used to evaluate each indexed property value.
@@ -125,7 +127,9 @@ var has = (function hasPrivateScope() {
 
     return $is._arr(source)
       ? $inArr(source, val)
-      : $own(source, val);
+      : $is.regx(val)
+        ? _ownMatch(source, val)
+        : $own(source, val);
   }
   /// #}}} @submethod main
 
@@ -404,6 +408,30 @@ var has = (function hasPrivateScope() {
   /// #}}} @submethod enumerableKey
 
   /// #{{{ @group Has-Helpers
+
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _ownMatch
+  /**
+   * @private
+   * @param {(!Object|!Function)} src
+   * @param {!RegExp} patt
+   * @return {boolean}
+   */
+  function _ownMatch(src, patt) {
+
+    /** @type {string} */
+    var key;
+
+    for (key in src) {
+      if ( $own(src, key) && patt['test'](key) )
+        return YES;
+    }
+    return NO;
+  }
+  /// #}}} @func _ownMatch
+
+  /// #}}} @group Main-Helpers
 
   /// #{{{ @group Error-Helpers
 
