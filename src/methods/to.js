@@ -354,21 +354,23 @@ var to = (function toPrivateScope() {
    * @param {?string=} opts.encoding = `"utf8"`
    *   The #opts.encoding option sets the character encoding for the
    *   #contents. If it is `null`, no character encoding is set.
+   * @param {?string=} opts.encode
+   *   An alias for the #opts.encoding option.
    * @param {?string=} opts.eol = `null`
-   *   The #opts.eol option only applies if the #contents is a `string`. It
-   *   sets the end of line character to use when normalizing the #contents
-   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
-   *   end of line character normalization is completed. The optional `string`
-   *   values are as follows (values are **not** case-sensitive):
+   *   The #opts.eol option sets the end of line character to use when
+   *   normalizing the #contents before they are saved to the #dest. If
+   *   it is set to `null`, no end of line character normalization is
+   *   completed. The optional `string` values are as follows (values are
+   *   **not** case-sensitive):
    *   - `"LF"`
    *   - `"CR"`
    *   - `"CRLF"`
    * @return {(!Buffer|string)}
-   *   The saved #contents.
+   *   The original #contents (without any normalization applied).
    */
   function toFile(contents, dest, opts) {
 
-    /** @type {?string} */
+    /** @type {string} */
     var encoding;
 
     switch (arguments['length']) {
@@ -391,10 +393,9 @@ var to = (function toPrivateScope() {
         }
 
         if ( $is.nil(opts) ) {
-          encoding = opts;
           /** @dict */
           opts = $cloneObj(_DFLT_FILE_OPTS);
-          opts['encoding'] = encoding;
+          opts['encoding'] = NIL;
           break;
         }
 
@@ -417,6 +418,17 @@ var to = (function toPrivateScope() {
 
         /** @dict */
         opts = $cloneObj(opts);
+
+        if ( !$hasOpt(opts, 'encode') )
+          opts['encode'] = VOID;
+        else if ( $is.str(opts['encode']) ) {
+          if (!opts['encode'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encode `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encode']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encode', opts['encode'],
+            '?string=', 'file');
 
         if ( !$hasOpt(opts, 'encoding') )
           opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
@@ -448,20 +460,14 @@ var to = (function toPrivateScope() {
     else if (!dest)
       throw _mkErr(new ERR, 'invalid empty #dest `string`', 'file');
 
-    if ( $is.str(contents) ) {
-      if (opts['eol'])
-        contents = $fixEol(contents, opts['eol']);
-    }
-    else if ( !$is.buff(contents) )
+    if ( $is.buff(contents) )
+      return _toFileByBuff(contents, dest, opts);
+
+    if ( !$is.str(contents) )
       throw _mkTypeErr(new TYPE_ERR, 'contents', contents, '!Buffer|string',
         'file');
 
-    if (opts['encoding'])
-      $writeFile(dest, contents, opts['encoding']);
-    else
-      $writeFile(dest, contents);
-
-    return contents;
+    return _toFileByStr(contents, dest, opts);
   }
   to['file'] = toFile;
   /// #}}} @submethod file
@@ -470,6 +476,66 @@ var to = (function toPrivateScope() {
   /// #{{{ @group To-Helpers
 
   /// #{{{ @on FS
+  /// #{{{ @group Main-Helpers
+
+  /// #{{{ @func _toFileByBuff
+  /**
+   * @private
+   * @param {!Buffer} contents
+   * @param {string} dest
+   * @param {!Object} opts
+   * @return {!Buffer}
+   */
+  function _toFileByBuff(contents, dest, opts) {
+
+    /** @type {(!Buffer|string)} */
+    var _contents;
+
+    _contents = contents;
+
+    if (opts['eol']) {
+      _contents = _contents['toString']();
+      _contents = $fixEol(_contents, opts['eol']);
+    }
+
+    if (opts['encoding'])
+      $writeFile(dest, _contents, opts['encoding']);
+    else
+      $writeFile(dest, _contents);
+
+    return contents;
+  }
+  /// #}}} @func _toFileByBuff
+
+  /// #{{{ @func _toFileByStr
+  /**
+   * @private
+   * @param {string} contents
+   * @param {string} dest
+   * @param {!Object} opts
+   * @return {string}
+   */
+  function _toFileByStr(contents, dest, opts) {
+
+    /** @type {string} */
+    var _contents;
+
+    _contents = contents;
+
+    if (opts['eol'])
+      _contents = $fixEol(_contents, opts['eol']);
+
+    if (opts['encoding'])
+      $writeFile(dest, _contents, opts['encoding']);
+    else
+      $writeFile(dest, _contents);
+
+    return contents;
+  }
+  /// #}}} @func _toFileByStr
+
+  /// #}}} @group Main-Helpers
+
   /// #{{{ @group Default-Options
 
   /// #{{{ @const _DFLT_FILE_OPTS
