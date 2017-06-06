@@ -205,6 +205,7 @@ var copy = (function copyPrivateScope() {
   /// @section base
   /// @method vitals.copy.regexp
   /// @alias vitals.copy.regex
+  /// @alias vitals.copy.regx
   /// @alias vitals.copy.re
   /**
    * @description
@@ -239,6 +240,7 @@ var copy = (function copyPrivateScope() {
   }
   copy['regexp'] = copyRegExp;
   copy['regex'] = copyRegExp;
+  copy['regx'] = copyRegExp;
   copy['re'] = copyRegExp;
   /// #}}} @submethod regexp
 
