@@ -131,6 +131,7 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @submethod main
 
+  /// #{{{ @off STRICT_ONLY
   /// #{{{ @submethod null
   /// @section base
   /// @method vitals.is.null
@@ -853,6 +854,7 @@ var is = (function isPrivateScope() {
   is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
   /// #}}} @submethod evenNumber
+  /// #}}} @off STRICT_ONLY
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
@@ -943,6 +945,7 @@ var is = (function isPrivateScope() {
 
   /// #{{{ @group Is-Helpers
 
+  /// #{{{ @off STRICT_ONLY
   /// #{{{ @group Main-Helpers
 
   /// #{{{ @func _are
@@ -1037,6 +1040,7 @@ var is = (function isPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #}}} @group Main-Helpers
+  /// #}}} @off STRICT_ONLY
 
   /// #{{{ @off FS_ONLY
   /// #{{{ @group Check-Helpers
@@ -1645,7 +1649,9 @@ var is = (function isPrivateScope() {
   return is;
 })();
 /// #{{{ @off SOLO
+/// #{{{ @off STRICT_ONLY
 vitals['is'] = is;
+/// #}}} @off STRICT_ONLY
 /// #}}} @off SOLO
 /// #}}} @super is
 
