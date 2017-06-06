@@ -12,7 +12,7 @@
 /// #{{{ @helper $mkErrs
 /**
  * @private
- * @param {string} superMethod
+ * @param {string=} superMethod
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
@@ -75,10 +75,14 @@ var $mkErrs = (function $mkErrsPrivateScope() {
   /// #{{{ @func _prepSuper
   /**
    * @private
-   * @param {string} name
+   * @param {(string|undefined)} name
    * @return {string}
    */
   function _prepSuper(name) {
+    
+    if ( $is.void(name) )
+      return 'newVitals';
+
     name = name['replace'](_OPEN_VITALS, '');
     return 'vitals.' + name;
   }
@@ -140,7 +144,7 @@ var $mkErrs = (function $mkErrsPrivateScope() {
 
   /// #{{{ @func $mkErrs
   /**
-   * @param {string} superMethod
+   * @param {string=} superMethod
    * @return {!Object<string, !function>}
    */
   function $mkErrs(superMethod) {
