@@ -409,13 +409,18 @@ var get = (function getPrivateScope() {
    *   If the #opts is a `boolean` value, it sets the #opts.buffer option to
    *   its value.
    * @param {boolean=} opts.buffer = `false`
-   *   If set to `true`, the #opts.buffer option directs @get#file to not
+   *   If set to `true`, the #opts.buffer option directs @get#file to not set
+   *   an encoding when retrieving the #path file's contents and to not
    *   convert the `buffer` of the #path file's contents into a `string`
    *   before returning it (i.e. do not apply any normalization to the #path
    *   contents).
-   * @param {string=} opts.encoding = `"utf8"`
-   *   The #opts.encoding option only applies if #opts.buffer is `false`.
-   * @param {?string=} opts.eol = `"LF"`
+   * @param {?string=} opts.encoding = `"utf8"`
+   *   The #opts.encoding option only applies if #opts.buffer is `false`. It
+   *   sets the character encoding for the #path contents returned. If it is
+   *   `null`, no character encoding is applied.
+   * @param {?string=} opts.encode
+   *   An alias for the #opts.encoding option.
+   * @param {?string=} opts.eol = `null`
    *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
    *   the end of line character to use when normalizing the #path contents
    *   before they are returned. If #opts.eol is set to `null`, no end of line
@@ -471,14 +476,29 @@ var get = (function getPrivateScope() {
           throw _mkTypeErr(new TYPE_ERR, 'opts.buffer', opts['buffer'],
             'boolean=', 'file');
 
+        if ( !$hasOpt(opts, 'encode') )
+          opts['encode'] = VOID;
+        else if ( $is.str(opts['encode']) ) {
+          if (!opts['encode'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encode `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encode']) )
+          throw _mkTypeErr(new TYPE_ERR, 'opts.encode', opts['encode'],
+            '?string=', 'file');
+
         if ( !$hasOpt(opts, 'encoding') )
-          opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
-        else if ( !$is.str(opts['encoding']) )
+          opts['encoding'] = $is.void(opts['encode'])
+            ? _DFLT_FILE_OPTS['encoding']
+            : opts['encode'];
+        else if ( $is.str(opts['encoding']) ) {
+          if (!opts['encoding'])
+            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
+              'file');
+        }
+        else if ( !$is.nil(opts['encoding']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
-            'string=', 'file');
-        else if ( !opts['encoding'] )
-          throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
-            'file');
+            '?string=', 'file');
 
         if ( !$hasOpt(opts, 'eol') )
           opts['eol'] = _DFLT_FILE_OPTS['eol'];
@@ -1792,7 +1812,7 @@ var get = (function getPrivateScope() {
    * @dict
    */
   var _DFLT_FILE_OPTS = {
-    'eol': 'LF',
+    'eol': NIL,
     'buffer': NO,
     'encoding': 'utf8'
   };
