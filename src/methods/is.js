@@ -844,6 +844,35 @@ var is = (function isPrivateScope() {
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
+  /// #{{{ @submethod buffer
+  /// @section fs
+  /// @method vitals.is.buffer
+  /// @alias vitals.is.buff
+  /// @alias vitals.is.buf
+  /**
+   * @description
+   *   Checks if a value or many values are a `Buffer` instance.
+   * @public
+   * @param {...*} val
+   *   The value to evaluate. If more than one #val is provided, every #val
+   *   must pass the type check to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  function isBuffer(val) {
+    switch (arguments['length']) {
+      case 0:
+        throw _mkErr(new ERR, 'no #val defined', 'buffer');
+      case 1:
+        return $is.buff(val);
+      default:
+        return _are(arguments, $is.buff);
+    }
+  }
+  is['buffer'] = isBuffer;
+  is['buff'] = isBuffer;
+  is['buf'] = isBuffer;
+  /// #}}} @submethod buffer
   /// #}}} @on FS
 
   /// #{{{ @group Is-Helpers
