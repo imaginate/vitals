@@ -766,9 +766,10 @@ var is = (function isPrivateScope() {
   is['frozen'] = isFrozen;
   /// #}}} @submethod frozen
 
-  /// #{{{ @submethod whole
+  /// #{{{ @submethod wholeNumber
   /// @section base
-  /// @method vitals.is.whole
+  /// @method vitals.is.wholeNumber
+  /// @alias vitals.is.whole
   /**
    * @description
    *   Checks if a [number][num] is whole (i.e. has no fractional portion).
@@ -784,19 +785,21 @@ var is = (function isPrivateScope() {
   function isWholeNumber(val) {
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'whole');
+        throw _mkErr(new ERR, 'no #val defined', 'wholeNumber');
       case 1:
         return _isWhole(val);
       default:
         return _are(arguments, _isWhole);
     }
   }
+  is['wholeNumber'] = isWholeNumber;
   is['whole'] = isWholeNumber;
-  /// #}}} @submethod whole
+  /// #}}} @submethod wholeNumber
 
-  /// #{{{ @submethod odd
+  /// #{{{ @submethod oddNumber
   /// @section base
-  /// @method vitals.is.odd
+  /// @method vitals.is.oddNumber
+  /// @alias vitals.is.odd
   /**
    * @description
    *   Checks if a [number][num] is odd. All odd numbers less than zero (e.g.
@@ -811,19 +814,21 @@ var is = (function isPrivateScope() {
   function isOddNumber(val) {
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'odd');
+        throw _mkErr(new ERR, 'no #val defined', 'oddNumber');
       case 1:
         return _isOdd(val);
       default:
         return _are(arguments, _isOdd);
     }
   }
+  is['oddNumber'] = isOddNumber;
   is['odd'] = isOddNumber;
-  /// #}}} @submethod odd
+  /// #}}} @submethod oddNumber
 
-  /// #{{{ @submethod even
+  /// #{{{ @submethod evenNumber
   /// @section base
-  /// @method vitals.is.even
+  /// @method vitals.is.evenNumber
+  /// @alias vitals.is.even
   /**
    * @description
    *   Checks if a [number][num] is even. All even numbers less than one (e.g.
@@ -838,15 +843,16 @@ var is = (function isPrivateScope() {
   function isEvenNumber(val) {
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'even');
+        throw _mkErr(new ERR, 'no #val defined', 'evenNumber');
       case 1:
         return _isEven(val);
       default:
         return _are(arguments, _isEven);
     }
   }
+  is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
-  /// #}}} @submethod even
+  /// #}}} @submethod evenNumber
   /// #}}} @off FS_ONLY
 
   /// #{{{ @on FS
@@ -989,7 +995,7 @@ var is = (function isPrivateScope() {
   function _isWhole(val) {
 
     if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'whole');
+      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'wholeNumber');
 
     return $is.whole(val);
   }
@@ -1004,9 +1010,9 @@ var is = (function isPrivateScope() {
   function _isOdd(val) {
 
     if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'odd');
+      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'oddNumber');
     if ( !$is.whole(val) )
-      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'odd');
+      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'oddNumber');
 
     return $is.odd(val);
   }
@@ -1021,9 +1027,9 @@ var is = (function isPrivateScope() {
   function _isEven(val) {
 
     if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'even');
+      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'evenNumber');
     if ( !$is.whole(val) )
-      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'even');
+      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'evenNumber');
 
     return $is.even(val);
   }
