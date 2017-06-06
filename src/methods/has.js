@@ -335,9 +335,11 @@ var has = (function hasPrivateScope() {
   has['substr'] = hasSubstring;
   /// #}}} @submethod substring
 
-  /// #{{{ @submethod enumerable
+  /// #{{{ @submethod enumerableKey
   /// @section base
-  /// @method vitals.has.enumerable
+  /// @method vitals.has.enumerableKey
+  /// @alias vitals.has.enumerable
+  /// @alias vitals.has.enumKey
   /// @alias vitals.has.enum
   ///   Note that `vitals.has.enum` will fail in some ES3 and ES5 browser and
   ///   other platform environments. Use `vitals.has.enumerable` for
@@ -374,13 +376,13 @@ var has = (function hasPrivateScope() {
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][enum].
    */
-  function hasEnumerable(source, key) {
+  function hasEnumerableKey(source, key) {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'enumerable');
+        throw _mkErr(new ERR, 'no #source defined', 'enumerableKey');
       case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'enumerable');
+        throw _mkErr(new ERR, 'no #key defined', 'enumerableKey');
     }
 
     if ( $is.nil(source) )
@@ -388,16 +390,18 @@ var has = (function hasPrivateScope() {
 
     if ( !$is._obj(source) )
       throw _mkTypeErr(new TYPE_ERR, 'source', source, '?Object|?Function',
-        'enumerable');
+        'enumerableKey');
 
     return $ownEnum(source, key);
   }
-  has['enumerable'] = hasEnumerable;
+  has['enumerableKey'] = hasEnumerableKey;
+  has['enumerable'] = hasEnumerableKey;
+  has['enumKey'] = hasEnumerableKey;
   try {
-    has['enum'] = hasEnumerable;
+    has['enum'] = hasEnumerableKey;
   }
   catch (e) {}
-  /// #}}} @submethod enumerable
+  /// #}}} @submethod enumerableKey
 
   /// #{{{ @group Has-Helpers
 
