@@ -448,6 +448,38 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isEndOfLine
 
+  /// #{{{ @const _FLAGS
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _FLAGS = (function _FLAGS_PrivateScope() {
+
+    /** @type {string} */
+    var flags;
+
+    flags = 'img';
+
+    if ('sticky' in REGX_PROTO)
+      flags += 'y';
+    if ('unicode' in REGX_PROTO)
+      flags += 'u';
+
+    flags = '[\\+\\-][' + flags + '\\+\\-]*|[' + flags + ']*';
+    return new REGX('^(?:' + flags + ')$');
+  })();
+  /// #}}} @const _FLAGS
+
+  /// #{{{ @func isRegExpFlags
+  /**
+   * @param {string} val
+   * @return {boolean}
+   */
+  function isRegExpFlags(val) {
+    return _FLAGS['test'](val);
+  }
+  /// #}}} @func isRegExpFlags
+
   /// #}}} @group Special
 
   /// #{{{ @group Object-States
@@ -669,6 +701,7 @@ var $is = (function $isPrivateScope() {
     arrish: isArrayLike,
     empty:  isEmpty,
     eol:    isEndOfLine,
+    flags:  isRegExpFlags,
     /// #}}} @group Special
 
     /// #{{{ @group Object-States
