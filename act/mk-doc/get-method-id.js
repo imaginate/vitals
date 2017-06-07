@@ -1,60 +1,78 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getMethodID
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * GET-METHOD-ID HELPER
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @func loadHelper
 /**
  * @private
- * @const {!Object<string, function>}
+ * @param {string} name
+ * @return {(!Object|!Function)}
  */
-var IS = require('../is.js');
+var loadHelper = require('./load-helper.js');
+/// #}}} @func loadHelper
 
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const IS
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var IS = loadHelper('is');
+/// #}}} @const IS
+
+/// #{{{ @const MAIN
 /**
  * @private
  * @const {!RegExp}
  */
 var MAIN = /^[a-zA-Z0-9_]+\./;
+/// #}}} @const MAIN
+/// #}}} @group CONSTANTS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
+/// #}}} @group HELPERS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 // EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func getMethodID
 /**
  * @public
  * @param {string} method
  * @return {string}
  */
-module.exports = function getMethodID(method) {
+function getMethodID(method) {
 
   /** @type {string} */
   var id;
 
   if ( !isString(method) )
     throw new TypeError('invalid `method` type (must be a string)');
-  if ( !method )
+  if (!method)
     throw new Error('invalid empty `method` string');
 
   if ( !MAIN.test(method) )
@@ -62,4 +80,11 @@ module.exports = function getMethodID(method) {
 
   id = method.replace(MAIN, '');
   return id.replace(/\./g, '-');
-};
+}
+/// #}}} @func getMethodID
+
+module.exports = getMethodID;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
