@@ -1,55 +1,75 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: mkDoc
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * MK-DOC
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
-
+/// #{{{ @func loadHelper
 /**
  * @private
- * @const {!Object<string, function>}
+ * @param {string} name
+ * @return {(!Object|!Function)}
  */
-var IS = require('../is.js');
+var loadHelper = require('./load-helper.js');
+/// #}}} @func loadHelper
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const IS
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var IS = loadHelper('is');
+/// #}}} @const IS
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
 
+/// #{{{ @func isUndefined
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+/// #}}} @group HELPERS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
 // METHODS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func insertMentions
 /**
  * @private
  * @param {string} doc
  * @return {string}
  */
 var insertMentions = require('./mentions/insert.js');
+/// #}}} @func insertMentions
 
+/// #{{{ @func mkBody
 /**
  * @private
  * @param {string} content
@@ -57,7 +77,9 @@ var insertMentions = require('./mentions/insert.js');
  * @return {string}
  */
 var mkBody = require('./mk-body/index.js');
+/// #}}} @func mkBody
 
+/// #{{{ @func mkFooter
 /**
  * @private
  * @param {string} content
@@ -65,7 +87,9 @@ var mkBody = require('./mk-body/index.js');
  * @return {string}
  */
 var mkFooter = require('./mk-footer.js');
+/// #}}} @func mkFooter
 
+/// #{{{ @func mkHeader
 /**
  * @private
  * @param {string} content
@@ -73,30 +97,40 @@ var mkFooter = require('./mk-footer.js');
  * @return {string}
  */
 var mkHeader = require('./mk-header/index.js');
+/// #}}} @func mkHeader
+/// #}}} @group METHODS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 // EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func mkDoc
 /**
  * @public
  * @param {string} content
- * @param {string=} fscontent
  * @return {string}
  */
-module.exports = function mkDoc(content, fscontent) {
+function mkDoc(content) {
 
   /** @type {string} */
   var result;
 
   if ( !isString(content) )
     throw new TypeError('invalid `content` type (must be a string)');
-  if ( !isString(fscontent) && !isUndefined(fscontent) )
-    throw new TypeError('invalid `fscontent` type (must be a string or undefined)');
 
-  result = mkHeader(content, fscontent);
-  result += mkBody(content, fscontent);
-  result += mkFooter(content, fscontent);
+  result = mkHeader(content);
+  result += mkBody(content);
+  result += mkFooter(content);
 
-  return insertMentions(result);
-};
+  result = insertMentions(result);
+
+  return result;
+}
+/// #}}} @func mkDoc
+
+module.exports = mkDoc;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
