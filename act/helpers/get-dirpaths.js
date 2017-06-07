@@ -234,37 +234,55 @@ var resolvePath = require('./resolve-path.js');
  * @private
  * @param {string} pwd
  * @param {boolean} full
- * @param {function(string): boolean} isValidDirname
+ * @param {!function(string, string): boolean} isValidDir
  * @return {!Array<string>}
  */
-function getDirs(pwd, full, isValidDirname) {
+function getDirs(pwd, full, isValidDir) {
 
   /** @type {!Array<string>} */
   var paths;
   /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var path;
+  var trees;
+  /** @type {!Array<string>} */
+  var names;
   /** @type {string} */
   var name;
+  /** @type {string} */
+  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  pwd = cleanDirpath(pwd);
+  /**
+   * @private
+   * @const {string}
+   */
+  var PWD = cleanDirpath(pwd);
 
-  dirs = [];
-  paths = readPaths(pwd);
-  len = paths.length;
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var FULL = full;
+
+  paths = [];
+  trees = [];
+
+  names = readPaths(PWD);
+  len = names.length;
   i = -1;
   while ( isLT(++i, len) ) {
-    name = getPathname(paths[i]);
-    path = pwd + name;
-    if ( isDirectory(path) && isValidDirname(name) )
-      dirs.push(full ? path : name);
+    name = getPathname(names[i]);
+    path = PWD + name;
+    if ( isDirectory(path) && isValidDir(name, name) ) {
+      paths.push(path);
+      trees.push(name);
+    }
   }
-  return dirs;
+  return FULL
+    ? paths
+    : trees;
 }
 /// #}}} @func getDirs
 
@@ -272,45 +290,60 @@ function getDirs(pwd, full, isValidDirname) {
 /**
  * @private
  * @param {string} pwd
- * @param {string} prepend
- * @param {function(string): boolean} isValidDirname
- * @param {!Array<string>=} dirs
+ * @param {string} tree
+ * @param {boolean} full
+ * @param {!Array<string>} paths
+ * @param {!Array<string>} trees
+ * @param {!function(string, string): boolean} isValidDir
  * @return {!Array<string>}
  */
-function getDirsDeep(pwd, prepend, isValidDirname, dirs) {
+function getDirsDeep(pwd, tree, full, paths, trees, isValidDir) {
 
   /** @type {!Array<string>} */
-  var paths;
-  /** @type {string} */
-  var path;
-  /** @type {string} */
-  var tree;
+  var names;
   /** @type {string} */
   var name;
+  /** @type {string} */
+  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  pwd = cleanDirpath(pwd);
-  prepend = prepend && cleanDirpath(prepend);
+  /**
+   * @private
+   * @const {string}
+   */
+  var PWD = cleanDirpath(pwd);
 
-  if (!dirs)
-    dirs = [];
+  /**
+   * @private
+   * @const {string}
+   */
+  var TREE = tree && cleanDirpath(tree);
 
-  paths = readPaths(pwd);
-  len = paths.length;
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var FULL = full;
+
+  names = readPaths(PWD);
+  len = names.length;
   i = -1;
   while ( isLT(++i, len) ) {
-    name = getPathname(paths[i]);
-    path = pwd + name;
-    if ( isDirectory(path) && isValidDirname(name) ) {
-      tree = prepend + name;
-      dirs.push(tree);
-      getDirsDeep(path, tree, isValidDirname, dirs);
+    name = getPathname(names[i]);
+    tree = TREE + name;
+    path = PWD + name;
+    if ( isDirectory(path) && isValidDir(name, tree) ) {
+      trees.push(tree);
+      paths.push(path);
+      getDirsDeep(path, tree, FULL, paths, trees, isValidDir);
     }
   }
-  return dirs;
+  return FULL
+    ? paths
+    : trees;
 }
 /// #}}} @func getDirsDeep
 /// #}}} @group METHODS
@@ -426,7 +459,7 @@ function getDirpaths(dirpath, opts) {
         opts['validDirs'], opts['invalidDirs'])
     : mkValidTest(opts['validDirs'], opts['invalidDirs']);
   return opts['deep']
-    ? getDirsDeep(dirpath, opts['full'] ? dirpath : '', isValidDir)
+    ? getDirsDeep(dirpath, '', opts['full'], [], [], isValidDir)
     : getDirs(dirpath, opts['full'], isValidDir);
 }
 /// #}}} @func getDirpaths
