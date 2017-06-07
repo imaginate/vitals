@@ -1,77 +1,94 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: getFilepaths
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * GET-FILEPATHS HELPER
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const FS
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object<string, !function>}
  */
 var FS = require('fs');
+/// #}}} @const FS
 
+/// #{{{ @const INVALID_DIRS
 /**
  * @private
  * @const {!RegExp}
  */
-var INVALID_DIRS = /^\.git|\.bak|node_modules|vendor|tmp|logs?$/;
+var INVALID_DIRS = /^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i;
+/// #}}} @const INVALID_DIRS
 
+/// #{{{ @const IS
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object<string, !function>}
  */
 var IS = require('./is.js');
+/// #}}} @const IS
+/// #}}} @group CONSTANTS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func cleanDirpath
 /**
  * @private
  * @param {string} dirpath
  * @return {string}
  */
 var cleanDirpath = require('./clean-dirpath.js');
+/// #}}} @func cleanDirpath
 
+/// #{{{ @func getPathname
 /**
  * @private
  * @param {string} path
  * @return {string}
  */
 var getPathname = require('./get-pathname.js');
+/// #}}} @func getPathname
 
+/// #{{{ @func isBoolean
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
 
+/// #{{{ @func isDirectory
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
 var isDirectory = IS.directory;
+/// #}}} @func isDirectory
 
+/// #{{{ @func isFile
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
 var isFile = IS.file;
+/// #}}} @func isFile
 
+/// #{{{ @func isLT
 /**
  * @private
  * @param {number} val1
@@ -79,68 +96,86 @@ var isFile = IS.file;
  * @return {boolean}
  */
 var isLT = IS.lessThan;
+/// #}}} @func isLT
 
+/// #{{{ @func isNull
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isNull = IS['null'];
+var isNull = IS.nil;
+/// #}}} @func isNull
 
+/// #{{{ @func isObject
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isObject = IS.object;
+/// #}}} @func isObject
 
+/// #{{{ @func isRegExp
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isRegExp = IS.regexp;
+/// #}}} @func isRegExp
 
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
 
+/// #{{{ @func isUndefined
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
 
+/// #{{{ @func readPaths
 /**
  * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/fs.html#fs_fs_readdirsync_path)
  * @see [node.js v7.9](https://nodejs.org/docs/v7.9.0/api/fs.html#fs_fs_readdirsync_path_options)
  * @private
  * @param {string} dirpath
- * @return {!Array<string>} - An array of all the dirnames and filenames in
- *   the directory.
+ * @return {!Array<string>}
+ *   An array of all the dirnames and filenames in the directory.
  */
 var readPaths = FS.readdirSync;
+/// #}}} @func readPaths
 
+/// #{{{ @func resolvePath
 /**
  * @private
  * @param {(!Array<string>|...string)=} path
  * @return {string}
  */
 var resolvePath = require('./resolve-path.js');
+/// #}}} @func resolvePath
+/// #}}} @group HELPERS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
 // METHODS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func getFiles
 /**
  * @private
  * @param {string} pwd
  * @param {boolean} full
- * @param {function(string): boolean} isValidFilename
+ * @param {!function(string): boolean} isValidFilename
  * @return {!Array<string>}
  */
 function getFiles(pwd, full, isValidFilename) {
@@ -172,7 +207,9 @@ function getFiles(pwd, full, isValidFilename) {
   }
   return files;
 }
+/// #}}} @func getFiles
 
+/// #{{{ @func getFilesDeep
 /**
  * @private
  * @param {string} pwd
@@ -220,7 +257,9 @@ function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname, files) {
   }
   return files;
 }
+/// #}}} @func getFilesDeep
 
+/// #{{{ @func mkFilenameCheck
 /**
  * @private
  * @param {?RegExp} validNames
@@ -248,7 +287,9 @@ function mkFilenameCheck(validNames, invalidNames) {
     return true;
   };
 }
+/// #}}} @func mkFilenameCheck
 
+/// #{{{ @func mkDirnameCheck
 /**
  * @private
  * @param {?RegExp} validNames
@@ -276,11 +317,15 @@ function mkDirnameCheck(validNames, invalidNames) {
     return true;
   };
 }
+/// #}}} @func mkDirnameCheck
+/// #}}} @group METHODS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 // EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func getFilepaths
 /**
  * @public
  * @param {string} dirpath
@@ -303,12 +348,12 @@ function mkDirnameCheck(validNames, invalidNames) {
  * @param {?RegExp=} opts.validDirs = `null`
  *   Only used when `opts.deep` is `true`. A pattern for matching valid dirnames.
  *   If `null` is given then no check is performed.
- * @param {?RegExp=} opts.invalidDirs = `/^\.git|\.bak|node_modules|vendor|tmp|logs?$/`
+ * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
  *   Only used when `opts.deep` is `true`. A pattern for matching invalid
  *   dirnames. If `null` is given then no check is performed.
  * @return {!Array<string>}
  */
-module.exports = function getFilepaths(dirpath, opts) {
+function getFilepaths(dirpath, opts) {
 
   /** @type {function(string): boolean} */
   var isValidFilename;
@@ -375,4 +420,11 @@ module.exports = function getFilepaths(dirpath, opts) {
 
   isValidDirname = mkDirnameCheck(opts.validDirs, opts.invalidDirs);
   return getFilesDeep(dirpath, opts.full ? dirpath : '', isValidFilename, isValidDirname);
-};
+}
+/// #}}} @func getFilepaths
+
+module.exports = getFilepaths;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
