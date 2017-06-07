@@ -13,6 +13,25 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const DFLT_OPTS
+/**
+ * @private
+ * @const {!Object<string, *>}
+ * @dict
+ */
+var DFLT_OPTS = {
+  'deep': false,
+  'full': false,
+  'extend': false,
+  'valid': null,
+  'invalid': null,
+  'validDirs': null,
+  'invalidDirs': /^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i,
+  'validFiles': null,
+  'invalidFiles': null
+};
+/// #}}} @const DFLT_OPTS
+
 /// #{{{ @const FS
 /**
  * @private
@@ -20,14 +39,6 @@
  */
 var FS = require('fs');
 /// #}}} @const FS
-
-/// #{{{ @const INVALID_DIRS
-/**
- * @private
- * @const {!RegExp}
- */
-var INVALID_DIRS = /^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i;
-/// #}}} @const INVALID_DIRS
 
 /// #{{{ @const IS
 /**
@@ -51,6 +62,15 @@ var IS = require('./is.js');
  */
 var cleanDirpath = require('./clean-dirpath.js');
 /// #}}} @func cleanDirpath
+
+/// #{{{ @func cloneObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @return {!Object}
+ */
+var cloneObject = require('./clone-object.js');
+/// #}}} @func cloneObject
 
 /// #{{{ @func getPathname
 /**
@@ -143,6 +163,58 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #{{{ @func mkValidTest
+/**
+ * @private
+ * @param {?RegExp} valid
+ *   A pattern for matching valid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #valid pattern. Otherwise (i.e. if it does not have a
+ *   forward slash), the path name is tested against the #valid pattern.
+ * @param {?RegExp} invalid
+ *   A pattern for matching invalid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #invalid pattern. Otherwise (i.e. if it does not have
+ *   a forward slash), the path name is tested against the #invalid pattern.
+ * @return {!function(string, string): boolean}
+ */
+var mkValidTest = require('./mk-valid-path-test.js');
+/// #}}} @func mkValidTest
+
+/// #{{{ @func mkValidTests
+/**
+ * @private
+ * @param {?RegExp} dfltValid
+ *   A pattern for matching valid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #valid pattern. Otherwise (i.e. if it does not have a
+ *   forward slash), the path name is tested against the #valid pattern.
+ * @param {?RegExp} dfltInvalid
+ *   A pattern for matching invalid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #invalid pattern. Otherwise (i.e. if it does not have
+ *   a forward slash), the path name is tested against the #invalid pattern.
+ * @param {?RegExp} usrValid
+ *   A pattern for matching valid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #valid pattern. Otherwise (i.e. if it does not have a
+ *   forward slash), the path name is tested against the #valid pattern.
+ * @param {?RegExp} usrInvalid
+ *   A pattern for matching invalid path names or trees. If it is `null`, no
+ *   check is performed. If it is a `RegExp`, the source property is checked
+ *   for a forward slash, `"/"`. If it has a forward slash, the path tree is
+ *   tested against the #invalid pattern. Otherwise (i.e. if it does not have
+ *   a forward slash), the path name is tested against the #invalid pattern.
+ * @return {!function(string, string): boolean}
+ */
+var mkValidTests = require('./mk-valid-path-tests.js');
+/// #}}} @func mkValidTests
+
 /// #{{{ @func readPaths
 /**
  * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/fs.html#fs_fs_readdirsync_path)
@@ -175,37 +247,55 @@ var resolvePath = require('./resolve-path.js');
  * @private
  * @param {string} pwd
  * @param {boolean} full
- * @param {!function(string): boolean} isValidFilename
+ * @param {!function(string, string): boolean} isValidFile
  * @return {!Array<string>}
  */
-function getFiles(pwd, full, isValidFilename) {
+function getFiles(pwd, full, isValidFile) {
 
   /** @type {!Array<string>} */
   var paths;
   /** @type {!Array<string>} */
-  var files;
-  /** @type {string} */
-  var path;
+  var trees;
+  /** @type {!Array<string>} */
+  var names;
   /** @type {string} */
   var name;
+  /** @type {string} */
+  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  pwd = cleanDirpath(pwd);
+  /**
+   * @private
+   * @const {string}
+   */
+  var PWD = cleanDirpath(pwd);
 
-  files = [];
-  paths = readPaths(pwd);
-  len = paths.length;
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var FULL = full;
+
+  paths = [];
+  trees = [];
+
+  names = readPaths(PWD);
+  len = names.length;
   i = -1;
   while ( isLT(++i, len) ) {
-    name = getPathname(paths[i]);
-    path = pwd + name;
-    if ( isFile(path) && isValidFilename(name) )
-      files.push(full ? path : name);
+    name = getPathname(names[i]);
+    path = PWD + name;
+    if ( isFile(path) && isValidFile(name, name) ) {
+      paths.push(path);
+      trees.push(name);
+    }
   }
-  return files;
+  return FULL
+    ? paths
+    : trees;
 }
 /// #}}} @func getFiles
 
@@ -213,111 +303,68 @@ function getFiles(pwd, full, isValidFilename) {
 /**
  * @private
  * @param {string} pwd
- * @param {string} prepend
- * @param {function(string): boolean} isValidFilename
- * @param {function(string): boolean} isValidDirname
- * @param {!Array<string>=} files
+ * @param {string} tree
+ * @param {boolean} full
+ * @param {!Array<string>} paths
+ * @param {!Array<string>} trees
+ * @param {!function(string, string): boolean} isValidDir
+ * @param {!function(string, string): boolean} isValidFile
  * @return {!Array<string>}
  */
-function getFilesDeep(pwd, prepend, isValidFilename, isValidDirname, files) {
+function getFilesDeep(pwd, tree, full, paths, trees, isValidDir, isValidFile) {
 
   /** @type {!Array<string>} */
-  var paths;
-  /** @type {string} */
-  var path;
+  var names;
   /** @type {string} */
   var name;
+  /** @type {string} */
+  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  pwd = cleanDirpath(pwd);
-  prepend = prepend && cleanDirpath(prepend);
+  /**
+   * @private
+   * @const {string}
+   */
+  var PWD = cleanDirpath(pwd);
 
-  if (!files)
-    files = [];
+  /**
+   * @private
+   * @const {string}
+   */
+  var TREE = tree && cleanDirpath(tree);
 
-  paths = readPaths(pwd);
-  len = paths.length;
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var FULL = full;
+
+  names = readPaths(PWD);
+  len = names.length;
   i = -1;
   while ( isLT(++i, len) ) {
-    name = getPathname(paths[i]);
-    path = pwd + name;
+    name = getPathname(names[i]);
+    tree = TREE + name;
+    path = PWD + name;
     if ( isFile(path) ) {
-      if ( isValidFilename(name) )
-        files.push(prepend + name);
-    }
-    else if ( isDirectory(path) ) {
-      if ( isValidDirname(name) ) {
-        name = prepend + name;
-        getFilesDeep(path, name, isValidFilename, isValidDirname, files);
+      if ( isValidFile(name, tree) ) {
+        trees.push(tree);
+        paths.push(path);
       }
     }
+    else if ( isDirectory(path) ) {
+      if ( isValidDir(name, tree) )
+        getFilesDeep(path, tree, FULL, paths, trees, isValidDir, isValidFile);
+    }
   }
-  return files;
+  return FULL
+    ? paths
+    : trees;
 }
 /// #}}} @func getFilesDeep
-
-/// #{{{ @func mkFilenameCheck
-/**
- * @private
- * @param {?RegExp} validNames
- * @param {?RegExp} invalidNames
- * @return {function(string): boolean}
- */
-function mkFilenameCheck(validNames, invalidNames) {
-
-  if (!!validNames && !!invalidNames)
-    return function isValidFilename(filename) {
-      return validNames.test(filename) && !invalidNames.test(filename);
-    };
-
-  if (!!validNames)
-    return function isValidFilename(filename) {
-      return validNames.test(filename);
-    };
-
-  if (!!invalidNames)
-    return function isValidFilename(filename) {
-      return !invalidNames.test(filename);
-    };
-
-  return function isValidFilename(filename) {
-    return true;
-  };
-}
-/// #}}} @func mkFilenameCheck
-
-/// #{{{ @func mkDirnameCheck
-/**
- * @private
- * @param {?RegExp} validNames
- * @param {?RegExp} invalidNames
- * @return {function(string): boolean}
- */
-function mkDirnameCheck(validNames, invalidNames) {
-
-  if (!!validNames && !!invalidNames)
-    return function isValidDirname(dirname) {
-      return validNames.test(dirname) && !invalidNames.test(dirname);
-    };
-
-  if (!!validNames)
-    return function isValidDirname(dirname) {
-      return validNames.test(dirname);
-    };
-
-  if (!!invalidNames)
-    return function isValidDirname(dirname) {
-      return !invalidNames.test(dirname);
-    };
-
-  return function isValidDirname(dirname) {
-    return true;
-  };
-}
-/// #}}} @func mkDirnameCheck
 /// #}}} @group METHODS
 
 /// #{{{ @group EXPORTS
@@ -330,96 +377,172 @@ function mkDirnameCheck(validNames, invalidNames) {
  * @public
  * @param {string} dirpath
  * @param {?Object|boolean=} opts
- *   If a `boolean` then it is `opts.deep`.
+ *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
  * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid filenames.
+ *   Make a recursive search for valid files.
  * @param {?boolean=} opts.full = `false`
- *   Return absolute filepaths instead of relative.
- * @param {?RegExp=} opts.valid
- *   An alias for `opts.validFiles`.
- * @param {?RegExp=} opts.invalid
- *   An alias for `opts.invalidFiles`.
- * @param {?RegExp=} opts.validFiles = `null`
- *   A pattern for matching valid filenames. If `null` is given then no check is
- *   performed.
- * @param {?RegExp=} opts.invalidFiles = `null`
- *   A pattern for matching invalid filenames. If `null` is given then no check
- *   is performed.
+ *   Return absolute file paths instead of relative file paths.
+ * @param {?boolean=} opts.extend = `false`
+ *   When supplying a valid or invalid pattern to check paths against, the
+ *   #opts.extend option allows you to supplement instead of overwrite the
+ *   default valid or invalid test. If the default value is `null`, this
+ *   option does not have any side effects.
+ * @param {?RegExp=} opts.valid = `null`
+ *   A pattern for matching valid file or directory paths. If #opts.valid is
+ *   `null`, no check is performed. If it is a `RegExp`, the source property
+ *   is checked for a forward slash, `"/"`. If it has a forward slash, the
+ *   path tree is tested against the #opts.valid pattern. Otherwise (i.e. if
+ *   it does not have a forward slash), the path name is tested against the
+ *   #opts.valid pattern.
+ * @param {?RegExp=} opts.invalid = `null`
+ *   A pattern for matching invalid file or directory paths. If #opts.invalid
+ *   is `null`, no check is performed. If it is a `RegExp`, the source
+ *   property is checked for a forward slash, `"/"`. If it has a forward
+ *   slash, the path tree is tested against the #opts.invalid pattern.
+ *   Otherwise (i.e. if it does not have a forward slash), the path name is
+ *   tested against the #opts.invalid pattern.
  * @param {?RegExp=} opts.validDirs = `null`
- *   Only used when `opts.deep` is `true`. A pattern for matching valid dirnames.
- *   If `null` is given then no check is performed.
+ *   Only used when #opts.deep is `true`. A pattern for matching valid
+ *   directory paths. If #opts.validDirs is `null`, no check is performed. If
+ *   it is a `RegExp`, the source property is checked for a forward slash,
+ *   `"/"`. If it has a forward slash, the path tree is tested against the
+ *   #opts.validDirs pattern. Otherwise (i.e. if it does not have a forward
+ *   slash), the path name is tested against the #opts.validDirs pattern.
  * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   Only used when `opts.deep` is `true`. A pattern for matching invalid
- *   dirnames. If `null` is given then no check is performed.
+ *   Only used when #opts.deep is `true`. A pattern for matching invalid
+ *   directory paths. If #opts.invalidDirs is `null`, no check is performed.
+ *   If it is a `RegExp`, the source property is checked for a forward slash,
+ *   `"/"`. If it has a forward slash, the path tree is tested against the
+ *   #opts.invalidDirs pattern. Otherwise (i.e. if it does not have a forward
+ *   slash), the path name is tested against the #opts.invalidDirs pattern.
+ * @param {?RegExp=} opts.validFiles = `null`
+ *   A pattern for matching valid file paths. If #opts.validFiles is `null`,
+ *   no check is performed. If it is a `RegExp`, the source property is
+ *   checked for a forward slash, `"/"`. If it has a forward slash, the path
+ *   tree is tested against the #opts.validFiles pattern. Otherwise (i.e. if
+ *   it does not have a forward slash), the path name is tested against the
+ *   #opts.validFiles pattern.
+ * @param {?RegExp=} opts.invalidFiles = `null`
+ *   A pattern for matching invalid file paths. If #opts.invalidFiles is
+ *   `null`, no check is performed. If it is a `RegExp`, the source property
+ *   is checked for a forward slash, `"/"`. If it has a forward slash, the
+ *   path tree is tested against the #opts.invalidFiles pattern. Otherwise
+ *   (i.e. if it does not have a forward slash), the path name is tested
+ *   against the #opts.invalidFiles pattern.
  * @return {!Array<string>}
  */
 function getFilepaths(dirpath, opts) {
 
-  /** @type {function(string): boolean} */
-  var isValidFilename;
-  /** @type {function(string): boolean} */
-  var isValidDirname;
+  /** @type {!function(string, string): boolean} */
+  var _isValidFile;
+  /** @type {!function(string, string): boolean} */
+  var _isValidDir;
+  /** @type {!function(string, string): boolean} */
+  var isValidFile;
+  /** @type {!function(string, string): boolean} */
+  var isValidDir;
+  /** @type {!function(string, string): boolean} */
+  var isValid;
 
   if ( !isString(dirpath) )
-    throw new TypeError('invalid `dirpath` type (must be a string)');
+    throw new TypeError('invalid `dirpath` data type (must be a `string`)');
   if ( !isDirectory(dirpath) )
     throw new Error('invalid `dirpath` path (must be a readable directory)');
 
-  if ( isBoolean(opts) )
-    opts = { deep: opts };
-  else if ( isNull(opts) || isUndefined(opts) )
-    opts = {};
+  if ( isNull(opts) || isUndefined(opts) )
+    opts = cloneObject(DFLT_OPTS);
+  else if ( isBoolean(opts) ) {
+    if (opts) {
+      opts = cloneObject(DFLT_OPTS);
+      opts['deep'] = true;
+    }
+    else {
+      opts = cloneObject(DFLT_OPTS);
+      opts['deep'] = false;
+    }
+  }
+  else if ( !isObject(opts) || isRegExp(opts) || isArray(opts) )
+    throw new TypeError('invalid `opts` data type (must be `(?Object|?boolean)=`)');
   else {
-    if ( !isObject(opts) || isRegExp(opts) )
-      throw new TypeError('invalid `opts` type (must be an object, boolean, undefined, or null)');
-    if ( !isNull(opts.deep) && !isUndefined(opts.deep) && !isBoolean(opts.deep) )
-      throw new TypeError('invalid `opts.deep` type (must be a boolean, undefined, or null)');
-    if ( !isNull(opts.full) && !isUndefined(opts.full) && !isBoolean(opts.full) )
-      throw new TypeError('invalid `opts.full` type (must be a boolean, undefined, or null)');
-    if ( !isNull(opts.valid) && !isUndefined(opts.valid) && !isRegExp(opts.valid) )
-      throw new TypeError('invalid `opts.valid` type (must be a RegExp, undefined, or null)');
-    if ( !isNull(opts.invalid) && !isUndefined(opts.invalid) && !isRegExp(opts.invalid) )
-      throw new TypeError('invalid `opts.invalid` type (must be a RegExp, undefined, or null)');
-    if ( !isNull(opts.validFiles) && !isUndefined(opts.validFiles) && !isRegExp(opts.validFiles) )
-      throw new TypeError('invalid `opts.validFiles` type (must be a RegExp, undefined, or null)');
-    if ( !isNull(opts.invalidFiles) && !isUndefined(opts.invalidFiles) && !isRegExp(opts.invalidFiles) )
-      throw new TypeError('invalid `opts.invalidFiles` type (must be a RegExp, undefined, or null)');
-    if ( !isNull(opts.validDirs) && !isUndefined(opts.validDirs) && !isRegExp(opts.validDirs) )
-      throw new TypeError('invalid `opts.validDirs` type (must be a RegExp, undefined, or null)');
-    if ( !isNull(opts.invalidDirs) && !isUndefined(opts.invalidDirs) && !isRegExp(opts.invalidDirs) )
-      throw new TypeError('invalid `opts.invalidDirs` type (must be a RegExp, undefined, or null)');
+    if ( !isNull(opts['deep']) && !isUndefined(opts['deep']) && !isBoolean(opts['deep']) )
+      throw new TypeError('invalid `opts.deep` data type (must be `?boolean=`)');
+    if ( !isNull(opts['full']) && !isUndefined(opts['full']) && !isBoolean(opts['full']) )
+      throw new TypeError('invalid `opts.full` data type (must be `?boolean=`)');
+    if ( !isNull(opts['extend']) && !isUndefined(opts['extend']) && !isBoolean(opts['extend']) )
+      throw new TypeError('invalid `opts.extend` data type (must be `?boolean=`)');
+    if ( !isNull(opts['valid']) && !isUndefined(opts['valid']) && !isRegExp(opts['valid']) )
+      throw new TypeError('invalid `opts.valid` data type (must be `?RegExp=`)');
+    if ( !isNull(opts['invalid']) && !isUndefined(opts['invalid']) && !isRegExp(opts['invalid']) )
+      throw new TypeError('invalid `opts.invalid` data type (must be `?RegExp=`)');
+    if ( !isNull(opts['validDirs']) && !isUndefined(opts['validDirs']) && !isRegExp(opts['validDirs']) )
+      throw new TypeError('invalid `opts.validDirs` data type (must be `?RegExp=`)');
+    if ( !isNull(opts['invalidDirs']) && !isUndefined(opts['invalidDirs']) && !isRegExp(opts['invalidDirs']) )
+      throw new TypeError('invalid `opts.invalidDirs` data type (must be `?RegExp=`)');
+    if ( !isNull(opts['validFiles']) && !isUndefined(opts['validFiles']) && !isRegExp(opts['validFiles']) )
+      throw new TypeError('invalid `opts.validFiles` data type (must be `?RegExp=`)');
+    if ( !isNull(opts['invalidFiles']) && !isUndefined(opts['invalidFiles']) && !isRegExp(opts['invalidFiles']) )
+      throw new TypeError('invalid `opts.invalidFiles` data type (must be `?RegExp=`)');
   }
 
-  if ( !isUndefined(opts.valid) && !isUndefined(opts.validFiles) && (opts.valid !== opts.validFiles) )
-    throw new Error('conflicting values for alias `opts.valid` and `opts.validFiles`');
-  if ( !isUndefined(opts.invalid) && !isUndefined(opts.invalidFiles) && (opts.invalid !== opts.invalidFiles) )
-    throw new Error('conflicting values for alias `opts.invalid` and `opts.invalidFiles`');
-
-  if ( !isBoolean(opts.deep) )
-    opts.deep = false;
-  if ( !isBoolean(opts.full) )
-    opts.full = false;
-  if ( !isUndefined(opts.valid) )
-    opts.validFiles = opts.valid;
-  else if ( isUndefined(opts.validFiles) )
-    opts.validFiles = null;
-  if ( !isUndefined(opts.invalid) )
-    opts.invalidFiles = opts.invalid;
-  else if ( isUndefined(opts.invalidFiles) )
-    opts.invalidFiles = null;
-  if ( isUndefined(opts.validDirs) )
-    opts.validDirs = null;
-  if ( isUndefined(opts.invalidDirs) )
-    opts.invalidDirs = INVALID_DIRS;
+  if ( !isBoolean(opts['deep']) )
+    opts['deep'] = DFLT_OPTS['deep'];
+  if ( !isBoolean(opts['full']) )
+    opts['full'] = DFLT_OPTS['full'];
+  if ( !isBoolean(opts['extend']) )
+    opts['extend'] = DFLT_OPTS['extend'];
+  if ( isUndefined(opts['valid']) )
+    opts['valid'] = opts['extend']
+      ? null
+      : DFLT_OPTS['valid'];
+  if ( isUndefined(opts['invalid']) )
+    opts['invalid'] = opts['extend']
+      ? null
+      : DFLT_OPTS['invalid'];
+  if ( isUndefined(opts['validDirs']) )
+    opts['validDirs'] = opts['extend']
+      ? null
+      : DFLT_OPTS['validDirs'];
+  if ( isUndefined(opts['invalidDirs']) )
+    opts['invalidDirs'] = opts['extend']
+      ? null
+      : DFLT_OPTS['invalidDirs'];
+  if ( isUndefined(opts['validFiles']) )
+    opts['validFiles'] = opts['extend']
+      ? null
+      : DFLT_OPTS['validFiles'];
+  if ( isUndefined(opts['invalidFiles']) )
+    opts['invalidFiles'] = opts['extend']
+      ? null
+      : DFLT_OPTS['invalidFiles'];
 
   dirpath = resolvePath(dirpath);
-  isValidFilename = mkFilenameCheck(opts.validFiles, opts.invalidFiles);
 
-  if (!opts.deep)
-    return getFiles(dirpath, opts.full, isValidFilename);
+  isValid = opts['extend']
+    ? mkValidTests(DFLT_OPTS['valid'], DFLT_OPTS['invalid'],
+        opts['valid'], opts['invalid'])
+    : mkValidTest(opts['valid'], opts['invalid']);
 
-  isValidDirname = mkDirnameCheck(opts.validDirs, opts.invalidDirs);
-  return getFilesDeep(dirpath, opts.full ? dirpath : '', isValidFilename, isValidDirname);
+  _isValidFile = opts['extend']
+    ? mkValidTests(DFLT_OPTS['validFiles'], DFLT_OPTS['invalidFiles'],
+        opts['validFiles'], opts['invalidFiles'])
+    : mkValidTest(opts['validFiles'], opts['invalidFiles']);
+  isValidFile = function isValidFile(name, tree) {
+    return isValid(name, tree) && _isValidFile(name, tree);
+  };
+
+  if (!opts['deep'])
+    return getFiles(dirpath, opts['full'], isValidFile);
+
+  _isValidDir = opts['extend']
+    ? mkValidTests(DFLT_OPTS['validDirs'], DFLT_OPTS['invalidDirs'],
+        opts['validDirs'], opts['invalidDirs'])
+    : mkValidTest(opts['validDirs'], opts['invalidDirs']);
+  isValidDir = function isValidDir(name, tree) {
+    return isValid(name, tree) && _isValidDir(name, tree);
+  };
+
+  return getFilesDeep(dirpath, '', opts['full'], [], [], isValidDir,
+    isValidFile);
 }
 /// #}}} @func getFilepaths
 
