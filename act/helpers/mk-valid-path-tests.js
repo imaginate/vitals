@@ -62,7 +62,7 @@ var isRegExp = IS.regexp;
  *   a forward slash), the path name is tested against the #invalid pattern.
  * @return {!function(string, string): boolean}
  */
-var mkValidPathTest = require('./mk-valid-path-test.js');
+var mkValidTest = require('./mk-valid-path-test.js');
 /// #}}} @func mkValidTest
 /// #}}} @group HELPERS
 
