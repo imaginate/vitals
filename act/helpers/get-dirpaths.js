@@ -358,11 +358,11 @@ function getDirsDeep(pwd, tree, full, paths, trees, isValidDir) {
  * @public
  * @param {string} dirpath
  * @param {?Object|boolean=} opts
- *   If a `boolean` then it is `opts.deep`.
+ *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
  * @param {?boolean=} opts.deep = `false`
  *   Make a recursive search for valid directory paths.
  * @param {?boolean=} opts.full = `false`
- *   Return absolute filepaths instead of relative.
+ *   Return absolute directory paths instead of relative directory paths.
  * @param {?boolean=} opts.extend = `false`
  *   When supplying a valid or invalid pattern to check paths against, the
  *   #opts.extend option allows you to supplement instead of overwrite the
