@@ -64,7 +64,7 @@ var readFile = FS.readFileSync;
 /**
  * @public
  * @param {string} filepath
- * @param {boolean=} buffer
+ * @param {boolean=} buffer = `false`
  * @return {(!Buffer|string)}
  */
 module.exports = function getFileContent(filepath, buffer) {
