@@ -717,6 +717,29 @@ Dir.prototype.parse = function parse() {
     kids[i].parse();
 };
 /// #}}} @func Dir.prototype.parse
+
+/// #{{{ @func Dir.prototype.preparse
+/**
+ * @return {void}
+ */
+Dir.prototype.preparse = function preparse() {
+
+  /** @type {!Array<(!Dir|!File)>} */
+  var kids;
+  /** @type {(!Dir|!File)} */
+  var kid;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  kids = this.kids;
+  len = kids.length;
+  i = -1;
+  while (++i < len)
+    kids[i].preparse();
+};
+/// #}}} @func Dir.prototype.preparse
 /// #}}} @group DIR-PROTOTYPE
 
 /// #{{{ @group EXPORTS
