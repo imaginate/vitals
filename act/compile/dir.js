@@ -504,7 +504,7 @@ function Dir(path, dir) {
   /// #{{{ @member kids
   /**
    * @public
-   * @const {string}
+   * @const {!Array<(!Dir|!File)>}
    */
   defineProp(this, 'kids', {
     'value': [],
