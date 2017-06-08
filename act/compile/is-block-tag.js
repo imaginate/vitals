@@ -27,7 +27,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!RegExp}
  */
-var TAG = /^[ \t]*\/\/\/[ \t]+#(\{{3}|\}{3})[ \t]/;
+var TAG = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]/;
 /// #}}} @const TAG
 
 /// #{{{ @const IS
