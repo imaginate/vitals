@@ -172,6 +172,16 @@ var cleanPath = loadHelper('clean-path');
 var getDirpaths = loadHelper('get-dirpaths');
 /// #}}} @func getDirpaths
 
+/// #{{{ @func getFileContent
+/**
+ * @private
+ * @param {string} filepath
+ * @param {boolean=} buffer = `false`
+ * @return {(!Buffer|string)}
+ */
+var getFileContent = loadHelper('get-file-content');
+/// #}}} @func getFileContent
+
 /// #{{{ @func getFilepaths
 /**
  * @private
@@ -707,20 +717,26 @@ File.prototype.compile = function compile(src, dest, flags) {
  */
 File.prototype.load = function load() {
 
-  /** @type {!Array<(!Dir|!File)>} */
-  var kids;
-  /** @type {(!Dir|!File)} */
-  var kid;
+  /** @type {!Array<string>} */
+  var content;
+  /** @type {!Array<!FileLine>} */
+  var lines;
+  /** @type {!FileLine} */
+  var line;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  kids = this.kids;
-  len = kids.length;
+  lines = this.lines;
+
+  content = getFileContent(this.path).split('\n');
+  len = content.length;
   i = -1;
-  while (++i < len)
-    kids[i].load();
+  while (++i < len) {
+    line = new FileLine(content[i], i, this);
+    lines.push(line);
+  }
 };
 /// #}}} @func File.prototype.load
 
