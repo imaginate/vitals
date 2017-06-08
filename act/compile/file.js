@@ -769,20 +769,54 @@ File.prototype.parse = function parse() {
  */
 File.prototype.preparse = function preparse() {
 
-  /** @type {!Array<(!Dir|!File)>} */
-  var kids;
-  /** @type {(!Dir|!File)} */
-  var kid;
+  /** @type {!Array<(!FileLine|!BlockTag|!IfTag|!IncludeTag|!MacroTag)>} */
+  var content;
+  /** @type {!Array<(!BlockTag|!IfTag)>} */
+  var stack;
+  /** @type {!Array<!FileLine>} */
+  var lines;
+  /** @type {!FileLine} */
+  var line;
+  /** @type {!Object<string, (!BlockTag|!IfTag|!IncludeTag|!MacroTag)>} */
+  var tags;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  kids = this.kids;
-  len = kids.length;
+  ////////////////////////////////////////////////////////////////////////////
+  //// TEMP NOTE TO SELF
+  //// - Finalize each tag spec
+  ////   - BlockTag
+  ////   - IfTag
+  ////   - IncludeTag
+  ////   - MacroTag
+  //// - Decide on approach to solve BlockTag & IfTag stack (leaning towards
+  ////   Tag.prototype.add[Line|Tag] & Tag.prototype.close methods)
+  //// - Remember the decision to pass the tag name, id, path, ... checks to
+  ////   each tag constructor (i.e. the tag constructor should throw all
+  ////   errors for invalid tag formatting)
+  //// - Add a method for adding a tag and its key hash to the tags hash map
+  ////   (it should throw errors for duplicate tag ids) (random thought: maybe
+  ////   make this method a part of the Tag.prototype group if File instance
+  ////   refs for each Tag passes the final spec which is probably unlikely as
+  ////   include tags could over complicate such an approach)
+  //// - Remember FileLine spec
+  ////   - type => unique-FileLine-type-ID
+  ////   - file => pointer-to-File-instance
+  ////   - text => string-of-original-text-without-eol-in-utf8
+  ////   - linenum => line-number-integer-for-original-file
+  ////////////////////////////////////////////////////////////////////////////
+
+  content = this.content;
+  lines = this.lines;
+  tags = this.tags;
+
+  len = lines.length;
   i = -1;
-  while (++i < len)
-    kids[i].preparse();
+  while (++i < len) {
+    line = lines[i];
+  }
 };
 /// #}}} @func File.prototype.preparse
 /// #}}} @group FILE-PROTOTYPE
