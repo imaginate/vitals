@@ -225,7 +225,7 @@ var getPathname = loadHelper('get-pathname');
  * @return {boolean}
  */
 function isDir(val) {
-  return isObject(val) && 'type' in val && val['type'] === DIR_ID;
+  return isObject(val) && val.type === DIR_ID;
 }
 /// #}}} @func isDir
 
@@ -293,6 +293,64 @@ var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 /// #}}} @group HELPERS
 
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func mkKids
+/**
+ * @private
+ * @param {!Dir} dir
+ * @return {void}
+ */
+function mkKids(dir) {
+
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {string} */
+  var path;
+  /** @type {!Array<(!Dir|!File)>} */
+  var kids;
+  /** @type {(!Dir|!File)} */
+  var kid;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  kids = dir.kids;
+
+  paths = getFilepaths(dir.path, {
+    'deep': false,
+    'full': true,
+    'validFiles': /\.js$/
+  });
+  len = paths.length;
+  i = -1;
+  while (++i < len) {
+    path = paths[i];
+    kid = new File(path, dir);
+    kids.push(kid);
+  }
+
+  paths = getDirpaths(dir.path, {
+    'deep': false,
+    'full': true,
+    'extend': true,
+    'invalidDirs': /^\./
+  });
+  len = paths.length;
+  i = -1;
+  while (++i < len) {
+    path = paths[i];
+    kid = new Dir(path, dir);
+    kids.push(kid);
+  }
+}
+/// #}}} @func mkKids
+/// #}}} @group METHODS
+
 /// #{{{ @group CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
@@ -305,6 +363,7 @@ var resolvePath = loadHelper('resolve-path');
  * @param {?Dir=} dir
  * @return {void}
  * @constructor
+ * @struct
  */
 function Dir(path, dir) {
 
@@ -351,6 +410,32 @@ function Dir(path, dir) {
     : '';
   /// #}}} @const TREE
 
+  /// #{{{ @member kids
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProp(this, 'kids', {
+    'value': [],
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member kids
+
+  /// #{{{ @member name
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProp(this, 'name', {
+    'value': NAME,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member name
+
   /// #{{{ @member parent
   /**
    * @public
@@ -376,19 +461,6 @@ function Dir(path, dir) {
     'configurable': false
   });
   /// #}}} @member path
-
-  /// #{{{ @member name
-  /**
-   * @public
-   * @const {string}
-   */
-  defineProp(this, 'name', {
-    'value': NAME,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member name
 
   /// #{{{ @member tree
   /**
@@ -416,19 +488,6 @@ function Dir(path, dir) {
   });
   /// #}}} @member type
 
-  /// #{{{ @member kids
-  /**
-   * @public
-   * @const {string}
-   */
-  defineProp(this, 'kids', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member kids
-
   sealObject(this);
   capObject(this);
   mkKids(this);
@@ -442,6 +501,7 @@ function Dir(path, dir) {
  * @param {!Dir} dir
  * @return {void}
  * @constructor
+ * @struct
  */
 var File = require('./file.js');
 /// #}}} @func File
@@ -452,7 +512,7 @@ var File = require('./file.js');
 // DIR-PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
-Dir.prototype = mkObject(null);
+Dir.prototype = createObject(null);
 Dir.prototype.constructor = Dir;
 
 /// #{{{ @func Dir.prototype.
