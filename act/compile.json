@@ -1,0 +1,358 @@
+{
+  "SRC_DIR": "src",
+  "DEST_DIR": "dist",
+  "FLAGS": {
+    "ARGS_POLYFILL": false,
+    "CONSTRUCTOR": false,
+    "FS": false,
+    "FS_ONLY": false,
+    "IS_MAIN_ONLY": false,
+    "NODE": false,
+    "SOLO": false,
+    "USE_STRICT": false
+  },
+  "branches": {
+    "browser": {
+      "srcdir": ".",
+      "destdir": "browser",
+      "flags": {
+        "ARGS_POLYFILL": true
+      },
+      "files": [
+        {
+          "src": "vitals.js",
+          "dest": "vitals.js",
+          "flags": {}
+        }
+      ],
+      "sections": {
+        "srcdir": "sections",
+        "destdir": "sections",
+        "flags": {},
+        "files": [
+          {
+            "src": "all.js",
+            "dest": "all.js",
+            "flags": {}
+          },
+          {
+            "src": "base.js",
+            "dest": "base.js",
+            "flags": {}
+          },
+          {
+            "src": "strict.js",
+            "dest": "strict.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          }
+        ]
+      },
+      "methods": {
+        "srcdir": "methods",
+        "destdir": "methods",
+        "flags": {
+          "SOLO": true
+        },
+        "files": [
+          {
+            "src": "amend.js",
+            "dest": "amend.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "copy.js",
+            "dest": "copy.js",
+            "flags": {}
+          },
+          {
+            "src": "create.js",
+            "dest": "create.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "cut.js",
+            "dest": "cut.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "each.js",
+            "dest": "each.js",
+            "flags": {}
+          },
+          {
+            "src": "fill.js",
+            "dest": "fill.js",
+            "flags": {}
+          },
+          {
+            "src": "freeze.js",
+            "dest": "freeze.js",
+            "flags": {}
+          },
+          {
+            "src": "fuse.js",
+            "dest": "fuse.js",
+            "flags": {}
+          },
+          {
+            "src": "get.js",
+            "dest": "get.js",
+            "flags": {}
+          },
+          {
+            "src": "has.js",
+            "dest": "has.js",
+            "flags": {}
+          },
+          {
+            "src": "is.js",
+            "dest": "is.js",
+            "flags": {}
+          },
+          {
+            "src": "remap.js",
+            "dest": "remap.js",
+            "flags": {}
+          },
+          {
+            "src": "roll.js",
+            "dest": "roll.js",
+            "flags": {}
+          },
+          {
+            "src": "same.js",
+            "dest": "same.js",
+            "flags": {}
+          },
+          {
+            "src": "seal.js",
+            "dest": "seal.js",
+            "flags": {}
+          },
+          {
+            "src": "slice.js",
+            "dest": "slice.js",
+            "flags": {}
+          },
+          {
+            "src": "to.js",
+            "dest": "to.js",
+            "flags": {}
+          },
+          {
+            "src": "until.js",
+            "dest": "until.js",
+            "flags": {}
+          }
+        ]
+      }
+    },
+    "node": {
+      "srcdir": ".",
+      "destdir": "node",
+      "flags": {
+        "NODE": true,
+        "USE_STRICT": true
+      },
+      "files": [
+        {
+          "src": "vitals.js",
+          "dest": "vitals.js",
+          "flags": {
+            "CONSTRUCTOR": true
+          }
+        }
+      ],
+      "sections": {
+        "srcdir": "sections",
+        "destdir": "sections",
+        "flags": {},
+        "files": [
+          {
+            "src": "all.js",
+            "dest": "all.js",
+            "flags": {}
+          },
+          {
+            "src": "base.js",
+            "dest": "base.js",
+            "flags": {}
+          },
+          {
+            "src": "base-fs.js",
+            "dest": "base-fs.js",
+            "flags": {
+              "FS": true
+            }
+          },
+          {
+            "src": "strict.js",
+            "dest": "strict.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "fs.js",
+            "dest": "fs.js",
+            "flags": {
+              "FS": true,
+              "FS_ONLY": true
+            }
+          },
+          {
+            "src": "shell.js",
+            "dest": "shell.js",
+            "flags": {}
+          }
+        ]
+      },
+      "methods": {
+        "srcdir": "methods",
+        "destdir": "methods",
+        "flags": {
+          "SOLO": true
+        },
+        "files": [
+          {
+            "src": "amend.js",
+            "dest": "amend.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "copy.js",
+            "dest": "copy.js",
+            "flags": {}
+          },
+          {
+            "src": "copy.js",
+            "dest": "copy-fs.js",
+            "flags": {
+              "FS": true
+            }
+          },
+          {
+            "src": "create.js",
+            "dest": "create.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "cut.js",
+            "dest": "cut.js",
+            "flags": {
+              "IS_MAIN_ONLY": true
+            }
+          },
+          {
+            "src": "each.js",
+            "dest": "each.js",
+            "flags": {}
+          },
+          {
+            "src": "fill.js",
+            "dest": "fill.js",
+            "flags": {}
+          },
+          {
+            "src": "freeze.js",
+            "dest": "freeze.js",
+            "flags": {}
+          },
+          {
+            "src": "fuse.js",
+            "dest": "fuse.js",
+            "flags": {}
+          },
+          {
+            "src": "get.js",
+            "dest": "get.js",
+            "flags": {}
+          },
+          {
+            "src": "get.js",
+            "dest": "get-fs.js",
+            "flags": {
+              "FS": true
+            }
+          },
+          {
+            "src": "has.js",
+            "dest": "has.js",
+            "flags": {}
+          },
+          {
+            "src": "is.js",
+            "dest": "is.js",
+            "flags": {}
+          },
+          {
+            "src": "is.js",
+            "dest": "is-fs.js",
+            "flags": {
+              "FS": true
+            }
+          },
+          {
+            "src": "remap.js",
+            "dest": "remap.js",
+            "flags": {}
+          },
+          {
+            "src": "roll.js",
+            "dest": "roll.js",
+            "flags": {}
+          },
+          {
+            "src": "run.js",
+            "dest": "run.js",
+            "flags": {}
+          },
+          {
+            "src": "same.js",
+            "dest": "same.js",
+            "flags": {}
+          },
+          {
+            "src": "seal.js",
+            "dest": "seal.js",
+            "flags": {}
+          },
+          {
+            "src": "slice.js",
+            "dest": "slice.js",
+            "flags": {}
+          },
+          {
+            "src": "to.js",
+            "dest": "to.js",
+            "flags": {}
+          },
+          {
+            "src": "to.js",
+            "dest": "to-fs.js",
+            "flags": {
+              "FS": true
+            }
+          },
+          {
+            "src": "until.js",
+            "dest": "until.js",
+            "flags": {}
+          }
+        ]
+      }
+    }
+  }
+}
