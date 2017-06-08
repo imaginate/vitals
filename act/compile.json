@@ -1,6 +1,7 @@
 {
   "SRC_DIR": "src",
   "DEST_DIR": "dist",
+  "MINIFY": false,
   "FLAGS": {
     "ARGS_POLYFILL": false,
     "CONSTRUCTOR": false,
@@ -15,6 +16,7 @@
     "browser": {
       "srcdir": ".",
       "destdir": "browser",
+      "minify": true,
       "flags": {
         "ARGS_POLYFILL": true
       },
