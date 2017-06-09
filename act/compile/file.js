@@ -38,7 +38,7 @@ var capObject = loadHelper('cap-object');
  * @param {?Object} proto
  * @return {!Object}
  */
-var createObject = loadHelper('mk-object');
+var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
 /// #{{{ @func defineProp

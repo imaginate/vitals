@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * MK-OBJECT HELPER
+ * CREATE-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -60,7 +60,7 @@ var isObject = IS.object;
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func createObject
+/// #{{{ @func create
 /**
  * @description
  *   Polyfills `Object.create` if it does not exist.
@@ -68,7 +68,7 @@ var isObject = IS.object;
  * @param {?Object} proto
  * @return {!Object}
  */
-var createObject = (function createObjectPrivateScope() {
+var create = (function createPrivateScope() {
 
   if ( 'create' in Object && isFunction(Object['create']) )
     return Object['create'];
@@ -100,7 +100,7 @@ var createObject = (function createObjectPrivateScope() {
 
   return create;
 })();
-/// #}}} @func createObject
+/// #}}} @func create
 /// #}}} @group METHODS
 
 /// #{{{ @group EXPORTS
@@ -108,7 +108,7 @@ var createObject = (function createObjectPrivateScope() {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func mkObject
+/// #{{{ @func createObject
 /**
  * @description
  *   Cross-platform `Object.create` implementation.
@@ -116,16 +116,16 @@ var createObject = (function createObjectPrivateScope() {
  * @param {?Object} proto
  * @return {!Object}
  */
-function mkObject(proto) {
+function createObject(proto) {
 
   if ( !isNull(proto) && !isObject(proto) )
     throw new TypeError('invalid `proto` data type (must be `?Object`)');
 
-  return createObject(proto);
+  return create(proto);
 }
-/// #}}} @func mkObject
+/// #}}} @func createObject
 
-module.exports = mkObject;
+module.exports = createObject;
 
 /// #}}} @group EXPORTS
 
