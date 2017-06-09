@@ -9,16 +9,16 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @macro OPEN_WRAPPER
+/// #def{{{ @wrapper OPEN
 ;(function(/** (?Object|?Function|undefined) */ __THIS,
            /** undefined */ __VOID) {
 
-  /// #{{{ @on USE_STRICT
+  /// #if{{{ @env USE_STRICT
   'use strict';
 
-  /// #}}} @on USE_STRICT
-  /// #{{{ @off SOLO
-  /// #{{{ @off CONSTRUCTOR
+  /// #if}}} @env USE_STRICT
+  /// #ifnot{{{ @scope SOLO
+  /// #ifnot{{{ @scope CONSTRUCTOR
   /**
    * @public
    * @type {(!Object|!Function)}
@@ -26,12 +26,12 @@
    */
   var vitals = {};
 
-  /// #}}} @off CONSTRUCTOR
-  /// #}}} @off SOLO
-/// #}}} @macro OPEN_WRAPPER
+  /// #ifnot}}} @scope CONSTRUCTOR
+  /// #ifnot}}} @scope SOLO
+/// #def}}} @wrapper OPEN
 
-/// #{{{ @macro CLOSE_WRAPPER
+/// #def{{{ @wrapper CLOSE
 })(this);
-/// #}}} @macro CLOSE_WRAPPER
+/// #def}}} @wrapper CLOSE
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

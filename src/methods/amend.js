@@ -10,15 +10,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @on SOLO
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #if{{{ @env SOLO
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
-/// #}}} @on SOLO
+/// #if}}} @env SOLO
 
 /// #{{{ @super amend
 /**
@@ -1584,7 +1584,7 @@ var amend = (function amendPrivateScope() {
    */
   var _MK_ERR = $mkErrs('amend');
   /// #}}} @const _MK_ERR
-  /// #include @macro MK_ERR ../macros/mk-err.js
+  /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #}}} @group Error-Helpers
 
@@ -1592,16 +1592,16 @@ var amend = (function amendPrivateScope() {
 
   return amend;
 })();
-/// #{{{ @off SOLO
+/// #ifnot{{{ @env SOLO
 vitals['amend'] = amend;
-/// #}}} @off SOLO
+/// #ifnot}}} @env SOLO
 /// #}}} @super amend
 
-/// #{{{ @on SOLO
+/// #if{{{ @env SOLO
 var vitals = amend;
 vitals['amend'] = amend;
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
-/// #}}} @on SOLO
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #if}}} @env SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

@@ -10,15 +10,15 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @on SOLO
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #if{{{ @env SOLO
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
-/// #}}} @on SOLO
+/// #if}}} @env SOLO
 
 /// #{{{ @super run
 /**
@@ -335,7 +335,7 @@ var run = (function runPrivateScope() {
    */
   var _MK_ERR = $mkErrs('run');
   /// #}}} @const _MK_ERR
-  /// #include @macro MK_ERR ../macros/mk-err.js
+  /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #}}} @group Error-Helpers
 
@@ -343,16 +343,16 @@ var run = (function runPrivateScope() {
 
   return run;
 })();
-/// #{{{ @off SOLO
+/// #ifnot{{{ @env SOLO
 vitals['run'] = run;
-/// #}}} @off SOLO
+/// #ifnot}}} @env SOLO
 /// #}}} @super run
 
-/// #{{{ @on SOLO
+/// #if{{{ @env SOLO
 var vitals = run;
 vitals['run'] = run;
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
-/// #}}} @on SOLO
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #if}}} @env SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

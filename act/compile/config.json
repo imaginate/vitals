@@ -1,168 +1,149 @@
 {
-  "srcdir": "src",
-  "destdir": "dist",
+  "src": "src/",
+  "dest": "dist/",
   "minify": false,
-  "flags": {
+  "env": {
     "ARGS_POLYFILL": false,
+    "NODE": false,
+    "USE_STRICT": false
+  },
+  "scope": {
     "CONSTRUCTOR": false,
     "FS": false,
     "FS_ONLY": false,
     "IS_MAIN_ONLY": false,
-    "NODE": false,
-    "SOLO": false,
-    "USE_STRICT": false
+    "SOLO": false
   },
   "branches": {
     "browser": {
-      "srcdir": ".",
-      "destdir": "browser",
+      "dest": "browser/",
       "minify": true,
-      "flags": {
+      "env": {
         "ARGS_POLYFILL": true
       },
       "files": [
         {
           "src": "vitals.js",
-          "dest": "vitals.js",
-          "flags": {}
+          "dest": "vitals.js"
         }
       ],
       "branches": {
         "sections": {
-          "srcdir": "sections",
-          "destdir": "sections",
-          "flags": {},
+          "src": "sections/",
+          "dest": "sections/",
           "files": [
             {
               "src": "all.js",
-              "dest": "all.js",
-              "flags": {}
+              "dest": "all.js"
             },
             {
               "src": "base.js",
-              "dest": "base.js",
-              "flags": {}
+              "dest": "base.js"
             },
             {
               "src": "strict.js",
               "dest": "strict.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             }
           ]
         },
         "methods": {
-          "srcdir": "methods",
-          "destdir": "methods",
-          "flags": {
+          "src": "methods/",
+          "dest": "methods/",
+          "scope": {
             "SOLO": true
           },
           "files": [
             {
               "src": "amend.js",
               "dest": "amend.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "copy.js",
-              "dest": "copy.js",
-              "flags": {}
+              "dest": "copy.js"
             },
             {
               "src": "create.js",
               "dest": "create.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "cut.js",
               "dest": "cut.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "each.js",
-              "dest": "each.js",
-              "flags": {}
+              "dest": "each.js"
             },
             {
               "src": "fill.js",
-              "dest": "fill.js",
-              "flags": {}
+              "dest": "fill.js"
             },
             {
               "src": "freeze.js",
-              "dest": "freeze.js",
-              "flags": {}
+              "dest": "freeze.js"
             },
             {
               "src": "fuse.js",
-              "dest": "fuse.js",
-              "flags": {}
+              "dest": "fuse.js"
             },
             {
               "src": "get.js",
-              "dest": "get.js",
-              "flags": {}
+              "dest": "get.js"
             },
             {
               "src": "has.js",
-              "dest": "has.js",
-              "flags": {}
+              "dest": "has.js"
             },
             {
               "src": "is.js",
-              "dest": "is.js",
-              "flags": {}
+              "dest": "is.js"
             },
             {
               "src": "remap.js",
-              "dest": "remap.js",
-              "flags": {}
+              "dest": "remap.js"
             },
             {
               "src": "roll.js",
-              "dest": "roll.js",
-              "flags": {}
+              "dest": "roll.js"
             },
             {
               "src": "same.js",
-              "dest": "same.js",
-              "flags": {}
+              "dest": "same.js"
             },
             {
               "src": "seal.js",
-              "dest": "seal.js",
-              "flags": {}
+              "dest": "seal.js"
             },
             {
               "src": "slice.js",
-              "dest": "slice.js",
-              "flags": {}
+              "dest": "slice.js"
             },
             {
               "src": "to.js",
-              "dest": "to.js",
-              "flags": {}
+              "dest": "to.js"
             },
             {
               "src": "until.js",
-              "dest": "until.js",
-              "flags": {}
+              "dest": "until.js"
             }
           ]
         }
       }
     },
     "node": {
-      "srcdir": ".",
-      "destdir": "node",
-      "flags": {
+      "dest": "node/",
+      "env": {
         "NODE": true,
         "USE_STRICT": true
       },
@@ -170,191 +151,171 @@
         {
           "src": "vitals.js",
           "dest": "vitals.js",
-          "flags": {
+          "scope": {
             "CONSTRUCTOR": true
           }
         }
       ],
       "branches": {
         "sections": {
-          "srcdir": "sections",
-          "destdir": "sections",
-          "flags": {},
+          "src": "sections/",
+          "dest": "sections/",
           "files": [
             {
               "src": "all.js",
-              "dest": "all.js",
-              "flags": {}
+              "dest": "all.js"
             },
             {
               "src": "base.js",
-              "dest": "base.js",
-              "flags": {}
+              "dest": "base.js"
             },
             {
               "src": "base-fs.js",
               "dest": "base-fs.js",
-              "flags": {
+              "scope": {
                 "FS": true
               }
             },
             {
               "src": "strict.js",
               "dest": "strict.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "fs.js",
               "dest": "fs.js",
-              "flags": {
+              "scope": {
                 "FS": true,
                 "FS_ONLY": true
               }
             },
             {
               "src": "shell.js",
-              "dest": "shell.js",
-              "flags": {}
+              "dest": "shell.js"
             }
           ]
         },
         "methods": {
-          "srcdir": "methods",
-          "destdir": "methods",
-          "flags": {
+          "src": "methods/",
+          "dest": "methods/",
+          "scope": {
             "SOLO": true
           },
           "files": [
             {
               "src": "amend.js",
               "dest": "amend.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "copy.js",
-              "dest": "copy.js",
-              "flags": {}
+              "dest": "copy.js"
             },
             {
               "src": "copy.js",
               "dest": "copy-fs.js",
-              "flags": {
+              "scope": {
                 "FS": true
               }
             },
             {
               "src": "create.js",
               "dest": "create.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "cut.js",
               "dest": "cut.js",
-              "flags": {
+              "scope": {
                 "IS_MAIN_ONLY": true
               }
             },
             {
               "src": "each.js",
-              "dest": "each.js",
-              "flags": {}
+              "dest": "each.js"
             },
             {
               "src": "fill.js",
-              "dest": "fill.js",
-              "flags": {}
+              "dest": "fill.js"
             },
             {
               "src": "freeze.js",
-              "dest": "freeze.js",
-              "flags": {}
+              "dest": "freeze.js"
             },
             {
               "src": "fuse.js",
-              "dest": "fuse.js",
-              "flags": {}
+              "dest": "fuse.js"
             },
             {
               "src": "get.js",
-              "dest": "get.js",
-              "flags": {}
+              "dest": "get.js"
             },
             {
               "src": "get.js",
               "dest": "get-fs.js",
-              "flags": {
+              "scope": {
                 "FS": true
               }
             },
             {
               "src": "has.js",
-              "dest": "has.js",
-              "flags": {}
+              "dest": "has.js"
             },
             {
               "src": "is.js",
-              "dest": "is.js",
-              "flags": {}
+              "dest": "is.js"
             },
             {
               "src": "is.js",
               "dest": "is-fs.js",
-              "flags": {
+              "scope": {
                 "FS": true
               }
             },
             {
               "src": "remap.js",
-              "dest": "remap.js",
-              "flags": {}
+              "dest": "remap.js"
             },
             {
               "src": "roll.js",
-              "dest": "roll.js",
-              "flags": {}
+              "dest": "roll.js"
             },
             {
               "src": "run.js",
-              "dest": "run.js",
-              "flags": {}
+              "dest": "run.js"
             },
             {
               "src": "same.js",
-              "dest": "same.js",
-              "flags": {}
+              "dest": "same.js"
             },
             {
               "src": "seal.js",
-              "dest": "seal.js",
-              "flags": {}
+              "dest": "seal.js"
             },
             {
               "src": "slice.js",
-              "dest": "slice.js",
-              "flags": {}
+              "dest": "slice.js"
             },
             {
               "src": "to.js",
-              "dest": "to.js",
-              "flags": {}
+              "dest": "to.js"
             },
             {
               "src": "to.js",
               "dest": "to-fs.js",
-              "flags": {
+              "scope": {
                 "FS": true
               }
             },
             {
               "src": "until.js",
-              "dest": "until.js",
-              "flags": {}
+              "dest": "until.js"
             }
           ]
         }

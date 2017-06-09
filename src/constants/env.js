@@ -15,7 +15,7 @@
  * @const {!Object}
  * @struct
  */
-/// #{{{ @on NODE
+/// #if{{{ @env NODE
 var ENV = {
   HAS_EXPORTS: true,
   HAS_MODULE: true,
@@ -26,8 +26,8 @@ var ENV = {
   HAS_THIS: false,
   ROOT: global
 };
-/// #}}} @on NODE
-/// #{{{ @off NODE
+/// #if}}} @env NODE
+/// #ifnot{{{ @env NODE
 var ENV = (function ENV_PrivateScope() {
 
   /// #{{{ @group Checks
@@ -187,7 +187,7 @@ var ENV = (function ENV_PrivateScope() {
 
   return ENV;
 })();
-/// #}}} @off NODE
+/// #ifnot}}} @env NODE
 /// #}}} @constant ENV
 
 /// #{{{ @constant ROOT

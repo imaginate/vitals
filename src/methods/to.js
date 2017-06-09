@@ -11,20 +11,20 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @on SOLO
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #if{{{ @env SOLO
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #{{{ @off FS_ONLY
+/// #ifnot{{{ @env FS_ONLY
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #}}} @off FS_ONLY
-/// #{{{ @on FS
+/// #ifnot}}} @env FS_ONLY
+/// #if{{{ @env FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $writeFile ../helpers/write-file.js
-/// #}}} @on FS
-/// #}}} @on SOLO
+/// #if}}} @env FS
+/// #if}}} @env SOLO
 
 /// #{{{ @super to
 /**
@@ -54,7 +54,7 @@ var to = (function toPrivateScope() {
    */
   var to = {};
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @submethod string
   /// @section base
   /// @method vitals.to.string
@@ -335,9 +335,9 @@ var to = (function toPrivateScope() {
   to['lowerCase'] = toLowerCase;
   to['lower'] = toLowerCase;
   /// #}}} @submethod lowerCase
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
-  /// #{{{ @on FS
+  /// #if{{{ @env FS
   /// #{{{ @submethod file
   /// @section fs
   /// @method vitals.to.file
@@ -471,11 +471,11 @@ var to = (function toPrivateScope() {
   }
   to['file'] = toFile;
   /// #}}} @submethod file
-  /// #}}} @on FS
+  /// #if}}} @env FS
 
   /// #{{{ @group To-Helpers
 
-  /// #{{{ @on FS
+  /// #if{{{ @env FS
   /// #{{{ @group Main-Helpers
 
   /// #{{{ @func _toFileByBuff
@@ -551,7 +551,7 @@ var to = (function toPrivateScope() {
   /// #}}} @const _DFLT_FILE_OPTS
 
   /// #}}} @group Default-Options
-  /// #}}} @on FS
+  /// #if}}} @env FS
 
   /// #{{{ @group Error-Helpers
 
@@ -563,7 +563,7 @@ var to = (function toPrivateScope() {
    */
   var _MK_ERR = $mkErrs('to');
   /// #}}} @const _MK_ERR
-  /// #include @macro MK_ERR ../macros/mk-err.js
+  /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #}}} @group Error-Helpers
 
@@ -571,16 +571,16 @@ var to = (function toPrivateScope() {
 
   return to;
 })();
-/// #{{{ @off SOLO
+/// #ifnot{{{ @env SOLO
 vitals['to'] = to;
-/// #}}} @off SOLO
+/// #ifnot}}} @env SOLO
 /// #}}} @super to
 
-/// #{{{ @on SOLO
+/// #if{{{ @env SOLO
 var vitals = to;
 vitals['to'] = to;
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
-/// #}}} @on SOLO
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #if}}} @env SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

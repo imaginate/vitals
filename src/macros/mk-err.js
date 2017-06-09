@@ -9,7 +9,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @macro MK_ERR
+/// #def{{{ @code MK_ERR
 
   /// #{{{ @func _mkErr
   /**
@@ -48,6 +48,6 @@
    */
   var _mkRangeErr = _MK_ERR.rangeError;
   /// #}}} @func _mkRangeErr
-/// #}}} @macro MK_ERR
+/// #def}}} @code MK_ERR
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

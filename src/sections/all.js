@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $cloneArr ../helpers/clone-arr.js
@@ -28,7 +28,7 @@
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @helper $sliceStr ../helpers/slice-str.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #{{{ @on NODE
+/// #if{{{ @env NODE
 /// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
@@ -37,7 +37,7 @@
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $readFile ../helpers/read-file.js
 /// #include @helper $writeFile ../helpers/write-file.js
-/// #}}} @on NODE
+/// #if}}} @env NODE
 /// #{{{ @section base
 /// #include @super is ../methods/is.js
 /// #include @super copy ../methods/copy.js
@@ -60,12 +60,12 @@
 /// #include @super freeze ../methods/freeze.js
 /// #include @super seal ../methods/seal.js
 /// #}}} @section strict
-/// #{{{ @on NODE
+/// #if{{{ @env NODE
 /// #{{{ @section shell
 /// #include @super run ../methods/run.js
 /// #}}} @section shell
-/// #}}} @on NODE
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #if}}} @env NODE
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

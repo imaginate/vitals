@@ -9,12 +9,12 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @macro EXPORT
+/// #def{{{ @code EXPORT
   /// #{{{ @group export
-  /// #{{{ @on NODE
+  /// #if{{{ @env NODE
   module.exports = vitals;
-  /// #}}} @on NODE
-  /// #{{{ @off NODE
+  /// #if}}} @env NODE
+  /// #ifnot{{{ @env NODE
   (function __exportVitals() {
 
     if (ENV.HAS_WINDOW)
@@ -49,8 +49,8 @@
     }
     /// #}}} @func _appendVitals
   })();
-  /// #}}} @off NODE
+  /// #ifnot}}} @env NODE
   /// #}}} @group export
-/// #}}} @macro EXPORT
+/// #def}}} @code EXPORT
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

@@ -38,12 +38,12 @@
 /// #include @constant TYPE_ERR ../constants/constructor.js
 /// #include @constant VOID ../constants/special.js
 /// #include @constant YES ../constants/special.js
-/// #{{{ @on NODE
+/// #if{{{ @env NODE
 /// #include @constant BUFF ../constants/constructor.js
 /// #include @constant CP ../constants/node.js
 /// #include @constant FS ../constants/node.js
 /// #include @constant PATH ../constants/node.js
-/// #}}} @on NODE
+/// #if}}} @env NODE
 /// #}}} @core constants
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

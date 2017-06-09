@@ -27,10 +27,10 @@
 /// #include @helper $mkObj ../helpers/mk-obj.js
 /// #include @helper $mkErrs ../helpers/mk-errs.js
 /// #include @helper $strIncl ../helpers/str-incl.js
-/// #{{{ @on FS
+/// #if{{{ @env FS
 /// #include @helper $cleanpath ../helpers/cleanpath.js
 /// #include @helper $resolve ../helpers/resolve.js
-/// #}}} @on FS
+/// #if}}} @env FS
 /// #}}} @core helpers
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

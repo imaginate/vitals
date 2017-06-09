@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $addSlash ../helpers/add-slash.js
@@ -30,7 +30,7 @@
 /// #include @super is ../methods/is.js
 /// #include @super to ../methods/to.js
 /// #}}} @section fs
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

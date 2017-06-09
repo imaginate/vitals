@@ -11,27 +11,27 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @on SOLO
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #if{{{ @env SOLO
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #}}} @on SOLO
+/// #if}}} @env SOLO
 
 /// #{{{ @super is
-/// #{{{ @off FS_ONLY
+/// #ifnot{{{ @env FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
-/// #}}} @off FS_ONLY
-/// #{{{ @on FS_ONLY
+/// #ifnot}}} @env FS_ONLY
+/// #if{{{ @env FS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
-/// #}}} @on FS_ONLY
+/// #if}}} @env FS_ONLY
 var is = (function isPrivateScope() {
 
   /// #{{{ @docrefs is
@@ -59,16 +59,16 @@ var is = (function isPrivateScope() {
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
   /// #}}} @docrefs is
 
-  /// #{{{ @on FS_ONLY
+  /// #if{{{ @env FS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var is = {};
-  /// #}}} @on FS_ONLY
+  /// #if}}} @env FS_ONLY
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @submethod main
   /// @section base
   /// @method vitals.is
@@ -131,7 +131,7 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @submethod main
 
-  /// #{{{ @off IS_MAIN_ONLY
+  /// #ifnot{{{ @env IS_MAIN_ONLY
   /// #{{{ @submethod null
   /// @section base
   /// @method vitals.is.null
@@ -854,10 +854,10 @@ var is = (function isPrivateScope() {
   is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
   /// #}}} @submethod evenNumber
-  /// #}}} @off IS_MAIN_ONLY
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env IS_MAIN_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
-  /// #{{{ @on FS
+  /// #if{{{ @env FS
   /// #{{{ @submethod buffer
   /// @section fs
   /// @method vitals.is.buffer
@@ -941,11 +941,11 @@ var is = (function isPrivateScope() {
   }
   is['file'] = isFile;
   /// #}}} @submethod file
-  /// #}}} @on FS
+  /// #if}}} @env FS
 
   /// #{{{ @group Is-Helpers
 
-  /// #{{{ @off IS_MAIN_ONLY
+  /// #ifnot{{{ @env IS_MAIN_ONLY
   /// #{{{ @group Main-Helpers
 
   /// #{{{ @func _are
@@ -969,7 +969,7 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _are
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @func _isFrozen
   /**
    * @private
@@ -1037,12 +1037,12 @@ var is = (function isPrivateScope() {
     return $is.even(val);
   }
   /// #}}} @func _isEven
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
   /// #}}} @group Main-Helpers
-  /// #}}} @off IS_MAIN_ONLY
+  /// #ifnot}}} @env IS_MAIN_ONLY
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @group Check-Helpers
 
   /// #{{{ @func _checkVal
@@ -1628,7 +1628,7 @@ var is = (function isPrivateScope() {
   /// #}}} @func _getNullable
 
   /// #}}} @group Parse-Helpers
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
   /// #{{{ @group Error-Helpers
 
@@ -1640,7 +1640,7 @@ var is = (function isPrivateScope() {
    */
   var _MK_ERR = $mkErrs('is');
   /// #}}} @const _MK_ERR
-  /// #include @macro MK_ERR ../macros/mk-err.js
+  /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #}}} @group Error-Helpers
 
@@ -1648,18 +1648,18 @@ var is = (function isPrivateScope() {
 
   return is;
 })();
-/// #{{{ @off SOLO
-/// #{{{ @off IS_MAIN_ONLY
+/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @env IS_MAIN_ONLY
 vitals['is'] = is;
-/// #}}} @off IS_MAIN_ONLY
-/// #}}} @off SOLO
+/// #ifnot}}} @env IS_MAIN_ONLY
+/// #ifnot}}} @env SOLO
 /// #}}} @super is
 
-/// #{{{ @on SOLO
+/// #if{{{ @env SOLO
 var vitals = is;
 vitals['is'] = is;
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
-/// #}}} @on SOLO
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #if}}} @env SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

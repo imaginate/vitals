@@ -11,16 +11,16 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @on SOLO
-/// #include @macro OPEN_WRAPPER ../macros/wrapper.js
+/// #if{{{ @env SOLO
+/// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #{{{ @off FS_ONLY
+/// #ifnot{{{ @env FS_ONLY
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $getFlags ../helpers/get-flags.js
 /// #include @helper $cloneRegx ../helpers/clone-regx.js
-/// #}}} @off FS_ONLY
-/// #{{{ @on FS
+/// #ifnot}}} @env FS_ONLY
+/// #if{{{ @env FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
@@ -29,24 +29,24 @@
 /// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
-/// #}}} @on FS
-/// #}}} @on SOLO
+/// #if}}} @env FS
+/// #if}}} @env SOLO
 
 /// #{{{ @super get
-/// #{{{ @off FS_ONLY
+/// #ifnot{{{ @env FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
-/// #}}} @off FS_ONLY
-/// #{{{ @on FS_ONLY
+/// #ifnot}}} @env FS_ONLY
+/// #if{{{ @env FS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
-/// #}}} @on FS_ONLY
+/// #if}}} @env FS_ONLY
 var get = (function getPrivateScope() {
 
   /// #{{{ @docrefs get
@@ -61,16 +61,16 @@ var get = (function getPrivateScope() {
   /// @docref [special]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions)
   /// #}}} @docrefs get
 
-  /// #{{{ @on FS_ONLY
+  /// #if{{{ @env FS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var get = {};
-  /// #}}} @on FS_ONLY
+  /// #if}}} @env FS_ONLY
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @submethod main
   /// @section base
   /// @method vitals.get
@@ -391,9 +391,9 @@ var get = (function getPrivateScope() {
   get['values'] = getValues;
   get['vals'] = getValues;
   /// #}}} @submethod values
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
-  /// #{{{ @on FS
+  /// #if{{{ @env FS
   /// #{{{ @submethod file
   /// @section fs
   /// @method vitals.get.file
@@ -1417,11 +1417,11 @@ var get = (function getPrivateScope() {
   }
   get['filepaths'] = getFilepaths;
   /// #}}} @submethod filepaths
-  /// #}}} @on FS
+  /// #if}}} @env FS
 
   /// #{{{ @group Get-Helpers
 
-  /// #{{{ @off FS_ONLY
+  /// #ifnot{{{ @env FS_ONLY
   /// #{{{ @group Object-Helpers
 
   /// #{{{ @func _allKeys
@@ -1739,9 +1739,9 @@ var get = (function getPrivateScope() {
   /// #}}} @func _byStrStrVals
 
   /// #}}} @group String-Helpers
-  /// #}}} @off FS_ONLY
+  /// #ifnot}}} @env FS_ONLY
 
-  /// #{{{ @on FS
+  /// #if{{{ @env FS
   /// #{{{ @group File-System-Helpers
 
   /// #{{{ @group Main-Helpers
@@ -3132,7 +3132,7 @@ var get = (function getPrivateScope() {
   /// #}}} @group Test-Factories
 
   /// #}}} @group File-System-Helpers
-  /// #}}} @on FS
+  /// #if}}} @env FS
 
   /// #{{{ @group Error-Helpers
 
@@ -3144,7 +3144,7 @@ var get = (function getPrivateScope() {
    */
   var _MK_ERR = $mkErrs('get');
   /// #}}} @const _MK_ERR
-  /// #include @macro MK_ERR ../macros/mk-err.js
+  /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #}}} @group Error-Helpers
 
@@ -3152,16 +3152,16 @@ var get = (function getPrivateScope() {
 
   return get;
 })();
-/// #{{{ @off SOLO
+/// #ifnot{{{ @env SOLO
 vitals['get'] = get;
-/// #}}} @off SOLO
+/// #ifnot}}} @env SOLO
 /// #}}} @super get
 
-/// #{{{ @on SOLO
+/// #if{{{ @env SOLO
 var vitals = get;
 vitals['get'] = get;
-/// #include @macro EXPORT ../macros/export.js
-/// #include @macro CLOSE_WRAPPER ../macros/wrapper.js
-/// #}}} @on SOLO
+/// #insert @code EXPORT ../macros/export.js
+/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #if}}} @env SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

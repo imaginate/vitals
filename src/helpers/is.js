@@ -183,7 +183,7 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isError
 
-  /// #{{{ @on ARGS_POLYFILL
+  /// #if{{{ @env ARGS_POLYFILL
   /// #{{{ @const _HAS_ARGS
   /**
    * @private
@@ -282,9 +282,9 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
   /// #}}} @func isArrayOrArguments
-  /// #}}} @on ARGS_POLYFILL
+  /// #if}}} @env ARGS_POLYFILL
 
-  /// #{{{ @off ARGS_POLYFILL
+  /// #ifnot{{{ @env ARGS_POLYFILL
   /// #{{{ @func isArguments
   /**
    * @param {*} val
@@ -314,9 +314,9 @@ var $is = (function $isPrivateScope() {
     }
   }
   /// #}}} @func isArrayOrArguments
-  /// #}}} @off ARGS_POLYFILL
+  /// #ifnot}}} @env ARGS_POLYFILL
 
-  /// #{{{ @on NODE
+  /// #if{{{ @env NODE
   /// #{{{ @func isBuffer
   /**
    * @param {*} val
@@ -324,7 +324,7 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
   /// #}}} @func isBuffer
-  /// #}}} @on NODE
+  /// #if}}} @env NODE
 
   /// #}}} @group JS-Objects
 
@@ -607,7 +607,7 @@ var $is = (function $isPrivateScope() {
 
   /// #}}} @group Number-States
 
-  /// #{{{ @on NODE
+  /// #if{{{ @env NODE
   /// #{{{ @group File-System
 
   /// #{{{ @func _getStats
@@ -657,7 +657,7 @@ var $is = (function $isPrivateScope() {
   /// #}}} @func isFile
 
   /// #}}} @group File-System
-  /// #}}} @on NODE
+  /// #if}}} @env NODE
 
   /// #{{{ @const $is
   /**
@@ -687,9 +687,9 @@ var $is = (function $isPrivateScope() {
     regx: isRegExp,
     date: isDate,
     err:  isError,
-    /// #{{{ @on NODE
+    /// #if{{{ @env NODE
     buff: isBuffer,
-    /// #}}} @on NODE
+    /// #if}}} @env NODE
     /// #}}} @group JS-Objects
 
     /// #{{{ @group DOM-Objects
@@ -714,20 +714,20 @@ var $is = (function $isPrivateScope() {
     // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
-    /// #{{{ @off NODE
+    /// #ifnot{{{ @env NODE
     even:  isEvenNumber
-    /// #}}} @off NODE
-    /// #{{{ @on NODE
+    /// #ifnot}}} @env NODE
+    /// #if{{{ @env NODE
     even:  isEvenNumber,
-    /// #}}} @on NODE
+    /// #if}}} @env NODE
     /// #}}} @group Number-States
 
-    /// #{{{ @on NODE
+    /// #if{{{ @env NODE
     /// #{{{ @group File-System
     dir:  isDirectory,
     file: isFile
     /// #}}} @group File-System
-    /// #}}} @on NODE
+    /// #if}}} @env NODE
   };
   /// #}}} @const $is
 

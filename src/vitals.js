@@ -9,8 +9,8 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #{{{ @off NODE
-/// #include @macro OPEN_WRAPPER ./macros/wrapper.js
+/// #ifnot{{{ @env NODE
+/// #insert @wrapper OPEN ./macros/wrapper.js
 /// #include @core constants ./core/constants.js
 /// #include @core helpers ./core/helpers.js
 /// #include @helper $cloneArr ./helpers/clone-arr.js
@@ -50,11 +50,11 @@
 /// #include @super freeze ./methods/freeze.js
 /// #include @super seal ./methods/seal.js
 /// #}}} @section strict
-/// #include @macro EXPORT ./macros/export.js
-/// #include @macro CLOSE_WRAPPER ./macros/wrapper.js
-/// #}}} @off NODE
-/// #{{{ @on NODE
-/// #include @macro OPEN_WRAPPER ./macros/wrapper.js
+/// #insert @code EXPORT ./macros/export.js
+/// #insert @wrapper CLOSE ./macros/wrapper.js
+/// #ifnot}}} @env NODE
+/// #if{{{ @env NODE
+/// #insert @wrapper OPEN ./macros/wrapper.js
 /// #include @core constants ./core/constants.js
 /// #include @helper $objStr ./helpers/obj-str.js
 /// #include @helper $own ./helpers/own.js
@@ -770,7 +770,7 @@ function _isValidStrArr(methods) {
  */
 var _MK_ERR = $mkErrs();
 /// #}}} @const _MK_ERR
-/// #include @macro MK_ERR ./macros/mk-err.js
+/// #insert @code MK_ERR ./macros/mk-err.js
 
 /// #}}} @group Error-Helpers
 
@@ -783,7 +783,7 @@ newVitals['construct'] = newVitals;
 newVitals['newVitals'] = newVitals;
 module.exports = newVitals;
 /// #}}} @group exports
-/// #include @macro CLOSE_WRAPPER ./macros/wrapper.js
-/// #}}} @on NODE
+/// #insert @wrapper CLOSE ./macros/wrapper.js
+/// #if}}} @env NODE
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
