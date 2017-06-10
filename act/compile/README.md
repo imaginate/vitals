@@ -142,7 +142,7 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 1. <p><a name="rule1"></a><strong>No Sharing</strong></p><p>A compile <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
 2. <p><a name="rule2"></a><strong>Start With 3</strong></p><p>A compile <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
 3. <p><a name="rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
-4. <p><a name="rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>commmand</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
+4. <p><a name="rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
 5. <p><a name="rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
 6. <p><a name="rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-grps">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
 7. <p><a name="rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-grps">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
@@ -160,7 +160,19 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 
 <a name="grps"></a>
 ## Groups
-Compile groups are how you define sections of code that can be referenced by other files or scopes and that can be flexibly enabled or disabled. Every group has an *open* and *close* command.
+[Group](#user-content-grps) *commands* are how you define scopes of code that can be referenced from other [file](#user-content-file) or [root](#user-content-root-scope) scopes (i.e. let's avoid infinite include loops -- meaning you cannot reference [groups](#user-content-grps) within the same [root scope](#user-content-root-scope)) and that can be flexibly enabled or disabled. Every [group](#user-content-grps) *command* type has an [open](#user-content-open-cmd) and [close](#user-content-close-cmd) *command*.
+
+<a name="root-scope"></a>
+### Root Scope
+The term *root scope* refers to every *command* whose parent scope is the [file](#user-content-file) (i.e. not defined within another *command's* scope).
+
+<a name="open-cmd"></a>
+### Open Command
+The [open](#user-content-open-cmd) *command* starts a new group. All three [group](#user-content-grps) *command* types use three curly open brackets, `"{{{"`, within the *action* to denote an [open](#user-content-open-cmd) *command* (e.g. `"/// #{{{ @tag id"`).
+
+<a name="close-cmd"></a>
+### Close Command
+The [close](#user-content-close-cmd) *command* ends an existing group. All three [group](#user-content-grps) *command* types require [groups](#user-content-grps) to close the most recent [group](#user-content-grps) first and that the *tag* and *ID* of the [close](#user-content-close-cmd) *command* exactly match that of the [open](#user-content-open-cmd) *command*. All three [group](#user-content-grps) *command* types also use three curly close brackets, `"}}}"`, within the *action* to denote a [close](#user-content-close-cmd) *command* (e.g. `"/// #}}} @tag id"`).
 
 ### GOTO
 - [Block Class](#user-content-blk)
@@ -171,24 +183,26 @@ Compile groups are how you define sections of code that can be referenced by oth
 <a name="blk"></a>
 ## Block Class
 
- Constructor | Description
-:------------|:------------
- `Blk`       | <ADD-DESCRIP>
+ Open Action | Close Action | Constructor | Description
+:------------|:-------------|:------------|:------------
+ `"#{{{"`    | `"#}}}"`     | `Blk`       | A general grouping *command* that may be [included](#user-content-incl) from other [file](#user-content-file) or [root](#user-content-root-scope) scopes.
 
 <a name="blk-members"></a>
 ### Block Members
 
- Member  | Data Type              | Description
-:------- |:----------             |:------------
- type    | !Object                | A pointer to a unique object instance designated for each class.
- name    | !string                | The tag's name (e.g. `@tag-name`).
- id      | !string                | The tag's id (e.g. `@tag-name tag-id`).
- hash    | !string                | The hashed result of the tag's and each of its parent's tag name and id (e.g. `"parent-name:parent-id\|child-name:child-id"`).
- open    | !FileLine              | A pointer to opening FileLine instance.
- close   | !FileLine              | A pointer to closing FileLine instance.
- parent  | ?AnyBlockTag           | A pointer to tag's parent tag.
- kids    | !Array\<!AnyTag>       | An ordered `array` of the tags within this tag's scope.
- content | !Array\<!AnyLineOrTag> | An ordered `array` of the lines and tags within this tag's scope.
+ Member  | Data Type                               | Description
+:------- |:----------                              |:------------
+ type    | *`!Object`*                             | A pointer to a unique `object` instance designated for the `Blk` class.
+ tag     | *`string`*                              | The `Blk` instance's *tag* name (e.g. `"/// #{{{ @tag id"`).
+ id      | *`string`*                              | The `Blk` instance's *ID* name (e.g. `"/// #{{{ @tag id"`).
+ file    | *`!File`*                               | A pointer to the parent `File` instance.
+ open    | *`!Line`*                               | A pointer to opening `Line` instance.
+ close   | *`!Line`*                               | A pointer to closing `Line` instance.
+ parent  | *`(?Blk\|?Cond)`*                       | A pointer to the parent `Blk` or `Cond` instance. It is `null` if it is at the root scope of the `File` instance (i.e. it becomes a [root scope](#user-content-root-scope) *command*).
+ blks    | *`!Object<!Blk>`*                       | A hash map of all of the `Blk` instances within the immediate scope of the `Blk` instance. The *hashed* key names combine each `Blk` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ conds   | *`!Object<!Cond>`*                      | A hash map of all of the `Cond` instances within the immediate scope of the `Blk` instance. The *hashed* key names combine each `Cond` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ incls   | *`!Object<!Incl>`*                      | A hash map of all of the `Incl` instances within the immediate scope of the `Blk` instance. The *hashed* key names combine each `Incl` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ content | *`!Array<(!Line\|!Blk\|!Cond\|!Incl)>`* | An ordered `array` of all of the `Line`, `Blk`, `Cond`, and `Incl` instances within the immediate scope of the `Blk` instance.
 
 <a name="blk-methods"></a>
 ### Block Methods
@@ -200,25 +214,27 @@ Compile groups are how you define sections of code that can be referenced by oth
 <a name="cond"></a>
 ### Conditional Class
 
- Constructor | Description
-:------------|:------------
- `Cond`      | <ADD-DESCRIP>
+ Open Action                 | Close Action                | Constructor | Description
+:------------                |:-------------               |:------------|:------------
+ `"#if{{{"` or `"#ifnot{{{"` | `"#if}}}"` or `"#ifnot}}}"` | `Cond`      | A conditional grouping *command* that shows or hides itself based upon the *flags* `object` passed to the *compile* method of the [file class](#user-content-file-methods) (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be referenced from other [file](#user-content-file) or [root](#user-content-root-scope) scopes.
 
 <a name="cond-members"></a>
 ### Conditional Members
 
- Member  | Data Type              | Description
-:------- |:----------             |:------------
- type    | !Object                | A pointer to a unique object instance designated for each class.
- state   | !boolean               | The tag's state. It is `true` if the tag's name is `"on"`, and it is `false` if the tag's name is `"off"`.
- name    | !string                | The tag's name (e.g. `@tag-name`).
- id      | !string                | The tag's id (e.g. `@tag-name tag-id`).
- hash    | !string                | The hashed result of the tag's and each of its parent's tag name and id (e.g. `"parent-name:parent-id\|child-name:child-id"`).
- open    | !FileLine              | A pointer to opening FileLine instance.
- close   | !FileLine              | A pointer to closing FileLine instance.
- parent  | ?AnyBlockTag           | A pointer to tag's parent tag.
- kids    | !Array\<!AnyTag>       | An ordered `array` of the tags within this tag's scope.
- content | !Array\<!AnyLineOrTag> | An ordered `array` of the lines and tags within this tag's scope.
+ Member  | Data Type                               | Description
+:------- |:----------                              |:------------
+ type    | *`!Object`*                             | A pointer to a unique `object` instance designated for the `Cond` class.
+ tag     | *`string`*                              | The `Cond` instance's *tag* name (e.g. `/// #if{{{ @tag id`).
+ id      | *`string`*                              | The `Cond` instance's *ID* name (e.g. `/// #ifnot{{{ @tag id`).
+ action  | *`boolean`*                             | The `Cond` instance's *action* type. The `"#if{{{"` *action* is `true`, and the `"#ifnot{{{"` *action* is `false`.
+ file    | *`!File`*                               | A pointer to the parent `File` instance.
+ open    | *`!Line`*                               | A pointer to opening `Line` instance.
+ close   | *`!Line`*                               | A pointer to closing `Line` instance.
+ parent  | *`(?Blk\|?Cond)`*                       | A pointer to the parent `Blk` or `Cond` instance. It is `null` if it is at the root scope of the `File` instance (i.e. it becomes a [root scope](#user-content-root-scope) *command*).
+ blks    | *`!Object<!Blk>`*                       | A hash map of all of the `Blk` instances within the immediate scope of the `Cond` instance. The *hashed* key names combine each `Blk` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ conds   | *`!Object<!Cond>`*                      | A hash map of all of the `Cond` instances within the immediate scope of the `Cond` instance. The *hashed* key names combine each `Cond` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ incls   | *`!Object<!Incl>`*                      | A hash map of all of the `Incl` instances within the immediate scope of the `Cond` instance. The *hashed* key names combine each `Incl` *tag* and *ID* using a colon as the separator (e.g. `"tag:id"`).
+ content | *`!Array<(!Line\|!Blk\|!Cond\|!Incl)>`* | An ordered `array` of all of the `Line`, `Blk`, `Cond`, and `Incl` instances within the immediate scope of the `Cond` instance.
 
 <a name="cond-methods"></a>
 ### Conditional Methods
@@ -230,20 +246,22 @@ Compile groups are how you define sections of code that can be referenced by oth
 <a name="def"></a>
 ## Macro Class
 
- Constructor | Description
-:------------|:------------
- `Def`       | <ADD-DESCRIP>
+ Open Action | Close Action | Constructor | Description
+:------------|:-------------|:------------|:------------
+ `"#def{{{"` | `"#def}}}"`  | `Def`       | A special grouping *command* for defining a simple C-like macro. Macros must be defined in the root scope of a [file](#user-content-file) before all other *command* types. Macros may be [inserted](#user-content-ins) from all other [file](#user-content-file), `Blk`, or `Cond` scopes.
 
 <a name="def-members"></a>
 ### Macro Members
 
- Member | Data Type          | Description
-:-------|:----------         |:------------
- type   | !Object            | A pointer to a unique object instance designated for each class.
- id     | !string            | The MacroDef instance's id (e.g. `@macro id`).
- open   | !FileLine          | A pointer to opening FileLine instance.
- close  | !FileLine          | A pointer to closing FileLine instance.
- lines  | !Array\<!FileLine> | An ordered `array` of the lines within the MacroDef instance's scope.
+ Member | Data Type         | Description
+:-------|:----------        |:------------
+ type   | *`!Object`*       | A pointer to a unique `object` instance designated for the `Def` class.
+ tag    | *`string`*        | The `Def` instance's *tag* name (e.g. `"/// #def{{{ @tag id"`).
+ id     | *`string`*        | The `Def` instance's *ID* name (e.g. `"/// #def{{{ @tag id"`).
+ file   | *`!File`*         | A pointer to the parent `File` instance.
+ open   | *`!Line`*         | A pointer to opening `Line` instance.
+ close  | *`!Line`*         | A pointer to closing `Line` instance.
+ lines  | *`!Array<!Line>`* | An ordered `array` of all of the `Line` instances within the `Def` instance scope.
 
 <a name="def-methods"></a>
 ### Macro Methods
@@ -264,9 +282,9 @@ Compile groups are how you define sections of code that can be referenced by oth
 <a name="incl"></a>
 ## Include Class
 
- Constructor | Description
-:------------|:------------
- `Incl`      | <ADD-DESCRIP>
+ Action       | Constructor | Description
+:-------      |:------------|:------------
+ `"#include"` | `Incl`      | <ADD-DESCRIP>
 
 <a name="incl-members"></a>
 ### Include Members
@@ -291,9 +309,9 @@ Compile groups are how you define sections of code that can be referenced by oth
 <a name="ins"></a>
 ## Insert Class
 
- Constructor | Description
-:------------|:------------
- `Ins`       | <ADD-DESCRIP>
+ Action      | Constructor | Description
+:-------     |:------------|:------------
+ `"#insert"` | `Ins`       | <ADD-DESCRIP>
 
 <a name="ins-members"></a>
 ### Insert Members
