@@ -1,5 +1,5 @@
 # Compile Class & Syntax Specs
-This guide gives an overview and defines each member and method of every compile class and provides descriptive details for the compile syntax within the source.
+This guide describes every compile class, defines each member and method of every class, and provides descriptive details for the compile syntax within the source. It is likely that this compiler will become its own separate project in the future. Thoughts and feedback appreciated.
 
 ## GOTO
 - [File System](#user-content-fs)
@@ -107,7 +107,7 @@ The file-system classes wrap different file-system components for the compiler.
 :------- |:----------  |:------------
  type    | *`!Object`* | A pointer to a unique `object` instance designated for the `Line` class.
  file    | *`!File`*   | A pointer to the parent `File` instance of the `Line` instance.
- text    | *`string`*  | The `Line` instance's UTF-8 encoded text. Note that all end-of-line characters (e.g. line-feed or carriage-return) are trimmed.
+ text    | *`string`*  | The `Line` instance's original UTF-8 encoded text. Note that all end-of-line characters (e.g. line-feeds and carriage-returns) are trimmed.
  linenum | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the `Line` instance's original position within its *file* `File` instance's context. Note that the first *linenum* in a `File` is `1` (i.e. one-based).
 
 <a name="line-methods"></a>
@@ -120,14 +120,32 @@ The file-system classes wrap different file-system components for the compiler.
 
 <a name="syntax"></a>
 ## Source Syntax
-The compile syntax has a simple layout and structure. It is built on one pattern with few variations to comprise the five total syntax components available. The following rules relate to every compile command:
-- <p><strong>No Sharing</strong></p><p>Each compile command must not share a line with any other syntax (e.g. JavaScript, JSDoc, etc).</p>
-- <p><strong>Start With 3</strong></p><p>Each command must start with three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The three slashes can only be preceded by space or tab characters.</p>
-- <p><strong>Hash It</strong></p><p>A hash tag, <code>"#"</code>, must follow the three forward slashes and whitespace (e.g. <code>"/// #"</code>).</p>
-- <p><strong>Action Time</strong></p><p>The desired compile commmand must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>).</p>
-- <p><strong>Tag It</strong></p><p>An at symbol, <code>"@"</code>, followed by your choice of tag name (alphanumerics, underscores, dots, and dashes only) and at least one space or tab character must follow the action (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
-- <p><strong>ID It</strong></p><p>After the tag, you must assign a unique ID (alphanumerics, underscores, dots, dashes, and dollar signs only) (e.g. <code>"/// #{{{ @tagname uniqueID"</code> or <code>"/// #ifnot}}} @tag-name unique-id"</code>) relative to the current scope for the tag type (i.e. if you want to give two items in the same scope the same ID, you must give them different tag names).</p>
-- <p><strong>Ref Directions</strong></p><p>For reference commands, you will likely need to define the relative path to file containing the group you want include or insert. In such cases, just add at least one space or tab character after the ID and the relative file path (e.g. <code>"/// #include @tagname uniqueID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
+The compile syntax has a simple layout and structure. It is built upon a single option, the *command*. A *command* is always one line. It is based upon one pattern with few variations to comprise the five total syntax *command* types available. The five *command* types are separated into two general types, [groups](#user-content-grps) and [references](#user-content-refs). The [group commands](#user-content-grps) create *scopes* of code (e.g. JavaScript) that can be enabled or disabled and be re-used. The [reference commands](#user-content-refs) reference [groups](#user-content-grps) of code from outside *scopes* (e.g. other [files](#user-content-file)) to give you more flexible composability with any programming language (although for now, it is only JavaScript, but that is easy to change). All of the *commands* consist of four basic syntax components, and both of the [reference](#user-content-refs) *command* types have an optional fifth.
+
+### The 5 Commands
+##### The Group Commands
+1. <p><strong><a href="#user-content-blk">Blocks</a></strong></p>
+2. <p><strong><a href="#user-content-cond">Conditionals</a></strong></p>
+3. <p><strong><a href="#user-content-def">Macros</a></strong></p>
+##### The Reference Commands
+4. <p><strong><a href="#user-content-incl">Includes</a></strong></p>
+5. <p><strong><a href="#user-content-ins">Inserts</a></strong></p>
+
+### The 5 Command Components
+1. <p><strong><a href="#user-content-rule2">Comment</a></strong></p>
+2. <p><strong><a href="#user-content-rule3">Action</a></strong></p>
+3. <p><strong><a href="#user-content-rule5">Tag</a></strong></p>
+4. <p><strong><a href="#user-content-rule6">ID</a></strong></p>
+5. <p><strong><a href="#user-content-rule7">Path</a></strong></p>
+
+### The 7 Command Rules
+1. <p><a name="rule1"></a><strong>No Sharing</strong></p><p>A compile <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
+2. <p><a name="rule2"></a><strong>Start With 3</strong></p><p>A compile <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
+3. <p><a name="rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
+4. <p><a name="rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>commmand</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
+5. <p><a name="rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
+6. <p><a name="rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-grps">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
+7. <p><a name="rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-grps">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
 
 
 ### GOTO
@@ -142,7 +160,7 @@ The compile syntax has a simple layout and structure. It is built on one pattern
 
 <a name="grps"></a>
 ## Groups
-<ADD-DESCRIP>
+Compile groups are how you define sections of code that can be referenced by other files or scopes and that can be flexibly enabled or disabled. Every group has an *open* and *close* command.
 
 ### GOTO
 - [Block Class](#user-content-blk)
