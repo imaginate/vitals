@@ -181,15 +181,17 @@ This method triggers [File.prototype.compile][file-compile] for the [File][file]
 <a name="dir-method-compile-params"></a>
 #### Dir.prototype.compile Parameters
 
-|    | Parameter                                    | Data Type                    | Description
-|:---|:---------------------------------------------|:-----------------------------|:------------
-| 1  | <a name="dir-method-compile-src"></a>src     | *`string`*                   | The file path to the source [File][file] instance you want to call [File.prototype.compile][file-compile] from. The file path must be RELATIVE TO THE ROOT [Dir][dir] instance (as only the root [Dir][dir] instance API is exposed to users). NO ABSOLUTE PATHS are allowed for this parameter.
-| 2  | <a name="dir-method-compile-dest"></a>dest   | *`string`*                   | The file path to the destination you want to save the compiled result of [File.prototype.compile][file-compile]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-compile-dest] path must already exist. If a file exists at the resolved [dest][dir-compile-dest], it is overwritten.
-| 3  | <a name="dir-method-compile-state"></a>state | *`!Object<string, boolean>`* | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-compile-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][dir-compile-state] or an error will be thrown.
+|    | Parameter                                    | Data Type                        | Description
+|:---|:---------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="dir-method-compile-src"></a>src     | *`string`*                       | The file path to the source [File][file] instance you want to call [File.prototype.compile][file-compile] from. The file path must be RELATIVE TO THE ROOT [Dir][dir] instance (as only the root [Dir][dir] instance API is exposed to users). NO ABSOLUTE PATHS are allowed for this parameter.
+| 2  | <a name="dir-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result of [File.prototype.compile][file-compile]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-compile-dest] path must already exist. If a file exists at the resolved [dest][dir-compile-dest], it is overwritten.
+| 3  | <a name="dir-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-compile-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][dir-compile-state] or an error will be thrown.
+| 4  | <a name="dir-method-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][dir-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result of [File.prototype.compile][file-compile] before it is saved to the [dest][dir-compile-dest].
 
 [dir-compile-src]: #user-content-dir-method-compile-src
 [dir-compile-dest]: #user-content-dir-method-compile-dest
 [dir-compile-state]: #user-content-dir-method-compile-state
+[dir-compile-alter]: #user-content-dir-method-compile-alter
 
 <a name="dir-method-compile-returns"></a>
 #### Dir.prototype.compile Returns
@@ -342,13 +344,15 @@ This method creates a compiled destination file, [dest][file-compile-dest].
 <a name="file-method-compile-params"></a>
 #### File.prototype.compile Parameters
 
-|    | Parameter                                     | Data Type                    | Description
-|:---|:----------------------------------------------|:-----------------------------|:------------
-| 1  | <a name="file-method-compile-dest"></a>dest   | *`string`*                   | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest], it is overwritten.
-| 2  | <a name="file-method-compile-state"></a>state | *`!Object<string, boolean>`* | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown. Note that all [Incl][incl] loops are caught in this step.
+|    | Parameter                                     | Data Type                        | Description
+|:---|:----------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="file-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest], it is overwritten.
+| 2  | <a name="file-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown. Note that all [Incl][incl] loops are caught in this step.
+| 3  | <a name="file-method-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result before it is saved to the [dest][file-compile-dest].
 
 [file-compile-dest]: #user-content-file-method-compile-dest
 [file-compile-state]: #user-content-file-method-compile-state
+[file-compile-alter]: #user-content-file-method-compile-alter
 
 <a name="file-method-compile-returns"></a>
 #### File.prototype.compile Returns
@@ -458,6 +462,11 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 [def]: #user-content-def
 [incl]: #user-content-incl
 [ins]: #user-content-ins
+[blk-construct]: #user-content-blk-construct
+[cond-construct]: #user-content-cond-construct
+[def-construct]: #user-content-def-construct
+[incl-construct]: #user-content-incl-construct
+[ins-construct]: #user-content-ins-construct
 [blk-members]: #user-content-blk-members
 [cond-members]: #user-content-cond-members
 [def-members]: #user-content-def-members
@@ -490,22 +499,70 @@ The [close][close-cmd] *command* ends an existing group. All three [group][grps]
 
 ### GOTO
 - [Block Class][blk]
+  - [Constructor][blk-construct]
   - [Members][blk-members]
   - [Methods][blk-methods]
 - [Conditional Class][cond]
+  - [Constructor][cond-construct]
   - [Members][cond-members]
   - [Methods][cond-methods]
 - [Macro Class][def]
+  - [Constructor][def-construct]
   - [Members][def-members]
   - [Methods][def-methods]
 <br>
 
 <a name="blk"></a>
 ## Block Class
+A general [grouping][grps] *command* that may be [included][incl] from other [file][file] or [root][root-scope] scopes.
 
-| Open Action | Close Action | Constructor | Description
-|:------------|:-------------|:------------|:------------
-| `"#{{{"`    | `"#}}}"`     | `Blk`       | A general [grouping][grps] *command* that may be [included][incl] from other [file][file] or [root][root-scope] scopes.
+| Open Action | Close Action |
+|:------------|:-------------|
+| `"#{{{"`    | `"#}}}"`     |
+
+- [Block Constructor][blk-construct]
+- [Block Members][blk-members]
+- [Block Methods][blk-methods]
+  - [Block.prototype.addClose][blk-add-close]
+  - [Block.prototype.addBlock][blk-add-blk]
+  - [Block.prototype.addConditional][blk-add-cond]
+  - [Block.prototype.addInclude][blk-add-incl]
+  - [Block.prototype.addLine][blk-add-line]
+<br>
+
+[blk-add-close]: #user-content-blk-method-add-close
+[blk-add-blk]: #user-content-blk-method-add-blk
+[blk-add-cond]: #user-content-blk-method-add-cond
+[blk-add-incl]: #user-content-blk-method-add-incl
+[blk-add-line]: #user-content-blk-method-add-line
+[blk-add-close-params]: #user-content-blk-method-add-close-params
+[blk-add-blk-params]: #user-content-blk-method-add-blk-params
+[blk-add-cond-params]: #user-content-blk-method-add-cond-params
+[blk-add-incl-params]: #user-content-blk-method-add-incl-params
+[blk-add-line-params]: #user-content-blk-method-add-line-params
+[blk-add-close-returns]: #user-content-blk-method-add-close-returns
+[blk-add-blk-returns]: #user-content-blk-method-add-blk-returns
+[blk-add-cond-returns]: #user-content-blk-method-add-cond-returns
+[blk-add-incl-returns]: #user-content-blk-method-add-incl-returns
+[blk-add-line-returns]: #user-content-blk-method-add-line-returns
+
+<a name="blk-construct"></a>
+### Block Constructor
+
+| Constructor |
+|:------------|
+| `Blk`       |
+
+|    | Parameter                                 | Data Type         | Description
+|:---|:------------------------------------------|:------------------|:------------
+| 1  | <a name="blk-construct-open"></a>open     | *`!Line`*         | The opening [Line][line] instance.
+| 2  | <a name="blk-construct-file"></a>file     | *`!File`*         | The parent [File][file] instance.
+| 3  | <a name="blk-construct-parent"></a>parent | *`(?Blk\|?Cond)`* | The parent [Blk][blk] or [Cond][cond] instance.
+<br>
+
+[blk-construct-open]: #user-content-blk-construct-open
+[blk-construct-file]: #user-content-blk-construct-file
+[blk-construct-parent]: #user-content-blk-construct-parent
 
 <a name="blk-members"></a>
 ### Block Members
