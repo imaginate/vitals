@@ -393,7 +393,7 @@ var $is = (function $isPrivateScope() {
    *   - *`!Array`*!$
    *     The [length property][arr-length] must be `0` to be considered empty.
    *   - *`!Object`*!$
-   *     The `object` must [own][own] at least one property to be considered
+   *     The `object` must **not** [own][own] any properties to be considered
    *     empty.
    *   - *`*`*!$
    *     All other data types are **not** considered empty.
