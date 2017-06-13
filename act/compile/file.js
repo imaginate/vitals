@@ -78,13 +78,13 @@ var sealObject = loadHelper('seal-object');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const FILE_ID
+/// #{{{ @const FILE_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var FILE_ID = freezeObject({});
-/// #}}} @const FILE_ID
+var FILE_TYPE_ID = freezeObject({});
+/// #}}} @const FILE_TYPE_ID
 
 /// #{{{ @const SRC_EXT
 /**
@@ -244,14 +244,148 @@ var getFileContent = loadHelper('get-file-content');
 var getFilepaths = loadHelper('get-filepaths');
 /// #}}} @func getFilepaths
 
-/// #{{{ @func getPathname
+/// #{{{ @func getPathName
 /**
  * @private
  * @param {string} path
  * @return {string}
  */
-var getPathname = loadHelper('get-pathname');
-/// #}}} @func getPathname
+var getPathName = loadHelper('get-pathname');
+/// #}}} @func getPathName
+
+/// #{{{ @func getPathNode
+/**
+ * @private
+ * @param {(!Dir|!File)} src
+ * @param {string} path
+ * @return {(?Dir|?File)}
+ */
+var getPathNode = require('./get-path-node.js');
+/// #}}} @func getPathNode
+
+/// #{{{ @func hasCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasCmd = require('./has-command.js');
+/// #}}} @func hasCmd
+
+/// #{{{ @func hasBlkCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasBlkCmd = require('./has-block-command.js');
+/// #}}} @func hasBlkCmd
+
+/// #{{{ @func hasCloseCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasCloseCmd = require('./has-close-command.js');
+/// #}}} @func hasCloseCmd
+
+/// #{{{ @func hasCondCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasCondCmd = require('./has-conditional-command.js');
+/// #}}} @func hasCondCmd
+
+/// #{{{ @func hasDefCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasDefCmd = require('./has-define-command.js');
+/// #}}} @func hasDefCmd
+
+/// #{{{ @func hasInclCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasInclCmd = require('./has-include-command.js');
+/// #}}} @func hasInclCmd
+
+/// #{{{ @func hasInsCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasInsCmd = require('./has-insert-command.js');
+/// #}}} @func hasInsCmd
+
+/// #{{{ @func hasOpenCmd
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasOpenCmd = require('./has-open-command.js');
+/// #}}} @func hasOpenCmd
+
+/// #{{{ @func hasOwnCmd
+/**
+ * @private
+ * @param {(!File|!Blk|!Cond)} src
+ * @param {string} key
+ * @return {boolean}
+ */
+function hasOwnCmd(src, key) {
+  return hasOwnProp(src.blks, key)
+    || hasOwnProp(src.conds, key)
+    || hasOwnProp(src.incls, key);
+}
+/// #}}} @func hasOwnCmd
+
+/// #{{{ @func hasOwnProp
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} prop
+ * @return {boolean}
+ */
+var hasOwnProp = loadHelper('has-own-property');
+/// #}}} @func hasOwnProp
+
+/// #{{{ @func isBoolean
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
+
+/// #{{{ @func isBooleanMap
+/**
+ * @private
+ * @param {!Object} vals
+ * @return {boolean}
+ */
+function isBooleanMap(vals) {
+
+  /** @type {string} */
+  var key;
+
+  for (key in vals) {
+    if ( hasOwnProp(vals, key) && !isBoolean(vals[key]) )
+      return false;
+  }
+  return true;
+}
+/// #}}} @func isBooleanMap
 
 /// #{{{ @func isDirectory
 /**
@@ -262,14 +396,14 @@ var getPathname = loadHelper('get-pathname');
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
-/// #{{{ @func isDirInst
+/// #{{{ @func isDirNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isDirInst = require('./dir.js').isDir;
-/// #}}} @func isDirInst
+var isDirNode = require('./dir.js').isDirNode;
+/// #}}} @func isDirNode
 
 /// #{{{ @func isFile
 /**
@@ -280,16 +414,16 @@ var isDirInst = require('./dir.js').isDir;
 var isFile = IS.file;
 /// #}}} @func isFile
 
-/// #{{{ @func isFileInst
+/// #{{{ @func isFileNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-function isFileInst(val) {
-  return isObject(val) && val.type === FILE_ID;
+function isFileNode(val) {
+  return isObject(val) && 'type' in val && val.type === FILE_TYPE_ID;
 }
-/// #}}} @func isFileInst
+/// #}}} @func isFileNode
 
 /// #{{{ @func isFunction
 /**
@@ -345,14 +479,24 @@ var isUndefined = IS.undefined;
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func trimPathname
+/// #{{{ @func toFile
+/**
+ * @private
+ * @param {(!Buffer|string)} content
+ * @param {string} filepath
+ * @return {(!Buffer|string)}
+ */
+var toFile = loadHelper('to-file');
+/// #}}} @func toFile
+
+/// #{{{ @func trimPathName
 /**
  * @private
  * @param {string} path
  * @return {string}
  */
-var trimPathname = loadHelper('trim-pathname');
-/// #}}} @func trimPathname
+var trimPathName = loadHelper('trim-pathname');
+/// #}}} @func trimPathName
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -360,49 +504,40 @@ var trimPathname = loadHelper('trim-pathname');
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func getKid
+/// #{{{ @func mkInsArgs
 /**
  * @private
- * @param {!Dir} dir
- * @param {string} name
- * @return {(?Dir|?File)}
+ * @param {!Ins} insert
+ * @return {!Array}
  */
-function getKid(dir, name) {
+function mkInsArgs(insert) {
 
-  /** @type {!Array<(!Dir|!File)>} */
-  var kids;
-  /** @type {(!Dir|!File)} */
-  var kid;
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Array} */
+  var args;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  if (!name || name === '.')
-    return dir;
-
-  if (name === '..')
-    return dir.parent;
-
-  kids = dir.kids;
-  len = kids.length;
+  args = [ insert.index, 1 ];
+  lines = insert.lines;
+  len = lines.length;
   i = -1;
-  while (++i < len) {
-    kid = kids[i];
-    if (kid.name === name)
-      return kid;
-  }
-  return null;
+  while (++i < len)
+    args.push(lines[i]);
+  return args;
 }
-/// #}}} @func getKid
+/// #}}} @func mkInsArgs
 
-/// #{{{ @func mkKids
+/// #{{{ @func mk
 /**
  * @private
- * @param {!Dir} dir
+ * @param {} 
  * @return {void}
  */
-function mkKids(dir) {
+function mk() {
 
   /** @type {!Array<string>} */
   var paths;
@@ -448,8 +583,44 @@ function mkKids(dir) {
 
   capObject(kids);
   sealObject(kids);
+
+  /** @type {!Array<!Ins>} */
+  var inserts;
+  /** @type {!Ins} */
+  var insert;
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Line} */
+  var line;
+  /** @type {!Array} */
+  var args;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+  /** @type {number} */
+  var u;
+
+  inserts = this.inserts;
+  lines = this.lines;
+  len = lines.length;
+  i = -1;
+  while (++i < len) {
+    line = lines[i];
+    if ( hasInsCmd(line.text) ) {
+      insert = new Ins(line, i, this);
+      inserts.push(insert);
+    }
+  }
+
+  i = inserts.length;
+  while (i--) {
+    insert = inserts[i];
+    args = [ insert.index, 1 ];
+    len = insert.lines.length;
+  }
 }
-/// #}}} @func mkKids
+/// #}}} @func mk
 /// #}}} @group METHODS
 
 /// #{{{ @group CONSTRUCTORS
@@ -473,12 +644,12 @@ var Dir = require('./dir.js');
 /**
  * @public
  * @param {string} path
- * @param {!Dir} dir
+ * @param {!Dir} parent
  * @return {void}
  * @constructor
  * @struct
  */
-function File(path, dir) {
+function File(path, parent) {
 
   if ( !isString(path) )
     throw new TypeError('invalid `path` data type (valid types: `string`)');
@@ -486,15 +657,17 @@ function File(path, dir) {
     throw new Error('invalid empty `path` `string`');
   if ( !isFile(path) )
     throw new Error('invalid `path` `string` (must be a readable file)');
-  if ( !isDirInst(dir) )
-    throw new TypeError('invalid `dir` data type (valid types: `!Dir`)');
+  if ( !isDirNode(parent) )
+    throw new TypeError('invalid `parent` data type (valid types: `!Dir`)');
+
+  /// #{{{ @group File-Constants
 
   /// #{{{ @const PARENT
   /**
    * @private
    * @const {!Dir}
    */
-  var PARENT = dir || null;
+  var PARENT = parent;
   /// #}}} @const PARENT
 
   /// #{{{ @const PATH
@@ -510,7 +683,7 @@ function File(path, dir) {
    * @private
    * @const {string}
    */
-  var NAME = getPathname(PATH);
+  var NAME = getPathName(PATH);
   /// #}}} @const NAME
 
   /// #{{{ @const TREE
@@ -521,31 +694,22 @@ function File(path, dir) {
   var TREE = PARENT.tree + name;
   /// #}}} @const TREE
 
-  /// #{{{ @member content
-  /**
-   * @public
-   * @const {!Array<(!FileLine|!BlockTag|!IfTag|!IncludeTag|!MacroTag)>}
-   */
-  defineProp(this, 'content', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member content
+  /// #}}} @group File-Constants
 
-  /// #{{{ @member lines
+  /// #{{{ @group File-Members
+
+  /// #{{{ @member type
   /**
    * @public
-   * @const {!Array<!FileLine>}
+   * @const {!Object}
    */
-  defineProp(this, 'lines', {
-    'value': [],
+  defineProp(this, 'type', {
+    'value': FILE_TYPE_ID,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member lines
+  /// #}}} @member type
 
   /// #{{{ @member name
   /**
@@ -560,18 +724,18 @@ function File(path, dir) {
   });
   /// #}}} @member name
 
-  /// #{{{ @member parent
+  /// #{{{ @member tree
   /**
    * @public
-   * @const {!Dir}
+   * @const {string}
    */
-  defineProp(this, 'parent', {
-    'value': PARENT,
+  defineProp(this, 'tree', {
+    'value': TREE,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member parent
+  /// #}}} @member tree
 
   /// #{{{ @member path
   /**
@@ -586,50 +750,111 @@ function File(path, dir) {
   });
   /// #}}} @member path
 
-  /// #{{{ @member tags
+  /// #{{{ @member parent
   /**
    * @public
-   * @const {!Object<string, (!BlockTag|!IfTag|!IncludeTag|!MacroTag)>}
-   *   Each `object` key is created (aka *hashed* for future reference) by
-   *   using the tag name and id (e.g. `"@tag-name tag-id"`) with a colon
-   *   separator (e.g. `"name:id"`). If the tag is a child of another tag
-   *   within a parsed file (note: include tags can change the tag scope per
-   *   each file), it is hashed with **all** of its parents using a pipe
-   *   separator (e.g. `"parent-name:parent-id|child-name:child-id"`).
+   * @const {!Dir}
    */
-  defineProp(this, 'tags', {
+  defineProp(this, 'parent', {
+    'value': PARENT,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member parent
+
+  /// #{{{ @member lines
+  /**
+   * @public
+   * @const {!Array<!Line>}
+   */
+  defineProp(this, 'lines', {
+    'value': [],
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member lines
+
+  /// #{{{ @member defs
+  /**
+   * @public
+   * @const {!Object<string, !Def>}
+   */
+  defineProp(this, 'defs', {
     'value': {},
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member tags
+  /// #}}} @member defs
 
-  /// #{{{ @member tree
+  /// #{{{ @member blks
   /**
    * @public
-   * @const {string}
+   * @const {!Object<string, !Blk>}
    */
-  defineProp(this, 'tree', {
-    'value': TREE,
+  defineProp(this, 'blks', {
+    'value': {},
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member tree
+  /// #}}} @member blks
 
-  /// #{{{ @member type
+  /// #{{{ @member conds
   /**
    * @public
-   * @const {!Object}
+   * @const {!Object<string, !Cond>}
    */
-  defineProp(this, 'type', {
-    'value': FILE_ID,
+  defineProp(this, 'conds', {
+    'value': {},
     'writable': false,
-    'enumerable': false,
+    'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member type
+  /// #}}} @member conds
+
+  /// #{{{ @member incls
+  /**
+   * @public
+   * @const {!Object<string, !Incl>}
+   */
+  defineProp(this, 'incls', {
+    'value': {},
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member incls
+
+  /// #{{{ @member inserts
+  /**
+   * @public
+   * @const {!Array<!Ins>}
+   */
+  defineProp(this, 'inserts', {
+    'value': [],
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member inserts
+
+  /// #{{{ @member content
+  /**
+   * @public
+   * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
+   */
+  defineProp(this, 'content', {
+    'value': [],
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member content
+
+  /// #}}} @group File-Members
 
   capObject(this);
   sealObject(this);
@@ -645,35 +870,350 @@ function File(path, dir) {
 File.prototype = createObject(null);
 File.prototype.constructor = File;
 
-/// #{{{ @func File.prototype.compile
+/// #{{{ @func File.prototype.load
 /**
- * @param {string} src
- *   Must be a valid file path relative to the Dir instance's path.
- * @param {string} dest
- *   Must be a valid absolute or relative file path. All directories must be
- *   existing and a new or existing filename may be provided. Note that the
- *   `cwd` is used for relative paths.
- * @param {!Object<string, boolean>} flags
- * @return {string}
+ * @return {void}
  */
-File.prototype.compile = function compile(src, dest, flags) {
+File.prototype.load = function load() {
 
+  /** @type {boolean} */
+  var passedCmd;
   /** @type {!Array<string>} */
-  var names;
+  var textRows;
+  /** @type {number} */
+  var linenum;
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Line} */
+  var line;
   /** @type {string} */
-  var path;
-  /** @type {(?Dir|?File)} */
-  var kid;
+  var text;
+  /** @type {!Object<string, !Def>} */
+  var defs;
+  /** @type {?Def} */
+  var def;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  if ( !isObject(flags) )
-    throw new TypeError('invalid `flags` data type (valid types: `!Object`)');
+  passedCmd = false;
+  textRows = getFileContent(this.path).split('\n');
+  lines = this.lines;
+  defs = this.defs;
+  def = null;
+  len = content.length;
+  i = -1;
+  while (++i < len) {
+    linenum = i + 1;
+    text = textRows[i];
+    line = new Line(text, linenum, this);
+    if (def) {
+      if ( !hasCmd(text) )
+        def.addLine(line);
+      else if ( hasDefCmd(text) ) {
+        if ( !hasCloseCmd(text) )
+          throw new Error('invalid `define` within `define`\n' +
+            '    linenum: `' + linenum + '`\n' +
+            '    file: `' + this.path + '`\n' +
+            '    text: `' + text + '`');
 
+        def.addClose(line);
+        def = null;
+      }
+      else if ( hasInsCmd(text) )
+        throw new Error('invalid `insert` within `define`\n' +
+          '    linenum: `' + linenum + '`\n' +
+          '    file: `' + this.path + '`\n' +
+          '    text: `' + text + '`');
+      else
+        def.addLine(line);
+    }
+    else if ( !hasCmd(text) )
+      lines.push(line);
+    else if ( hasDefCmd(text) ) {
+      if ( passedCmd || !hasOpenCmd(text) )
+        throw new Error('invalid `define` command order\n' +
+          '    linenum: `' + linenum + '`\n' +
+          '    file: `' + this.path + '`\n' +
+          '    text: `' + text + '`');
+
+      def = new Def(line, this);
+      defs[def.tag + ':' + def.id] = def;
+    }
+    else {
+      if (!passedCmd)
+        passedCmd = true;
+      lines.push(line);
+    }
+  }
+};
+/// #}}} @func File.prototype.load
+
+/// #{{{ @func File.prototype.preprocess
+/**
+ * @return {void}
+ */
+File.prototype.preprocess = function preprocess() {
+
+  /** @type {!Array<!Ins>} */
+  var inserts;
+  /** @type {!Ins} */
+  var insert;
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Line} */
+  var line;
+  /** @type {!Array} */
+  var args;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  inserts = this.inserts;
+  lines = this.lines;
+  len = lines.length;
+  i = -1;
+  while (++i < len) {
+    line = lines[i];
+    if ( hasInsCmd(line.text) ) {
+      insert = new Ins(line, i, this);
+      inserts.push(insert);
+    }
+  }
+
+  i = inserts.length;
+  while (i--) {
+    insert = inserts[i];
+    args = mkInsArgs(insert);
+    lines.splice.apply(lines, args);
+  }
+};
+/// #}}} @func File.prototype.preprocess
+
+/// #{{{ @func File.prototype.process
+/**
+ * @return {void}
+ */
+File.prototype.process = function process() {
+
+  /** @type {!Array<(!Blk|!Cond)>} */
+  var stack;
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Line} */
+  var line;
+  /** @type {string} */
+  var text;
+  /** @type {(!Blk|!Cond)} */
+  var last;
+  /** @type {(!Blk|!Cond|!Incl)} */
+  var cmd;
+  /** @type {string} */
+  var key;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  stack = [];
+  lines = this.lines;
+  len = lines.length;
+  i = -1;
+  while (++i < len) {
+    line = lines[i];
+    text = line.text;
+    if (stack.length) {
+      if ( !hasCmd(text) )
+        last.content.push(line);
+      else if ( hasInclCmd(text) ) {
+        cmd = new Incl(line, this, last);
+        key = cmd.tag + ':' + cmd.id;
+
+        if ( hasOwnCmd(last, key) )
+          throw new Error('duplicate `include` command\n' +
+            '    src-linenum: `' + (++i) + '`\n' +
+            '    src-file: `' + this.path + '`\n' +
+            '    linenum: `' + line.linenum + '`\n' +
+            '    file: `' + line.file.path + '`\n' +
+            '    text: `' + text + '`');
+
+        last.incls[key] = cmd;
+        last.content.push(cmd);
+      }
+      else if ( hasOpenCmd(text) ) {
+        if ( hasCondCmd(text) ) {
+          cmd = new Cond(line, this, last);
+          key = cmd.tag + ':' + cmd.id;
+
+          if ( hasOwnCmd(last, key) )
+            throw new Error('duplicate `conditional` command\n' +
+              '    src-linenum: `' + (++i) + '`\n' +
+              '    src-file: `' + this.path + '`\n' +
+              '    linenum: `' + line.linenum + '`\n' +
+              '    file: `' + line.file.path + '`\n' +
+              '    text: `' + text + '`');
+
+          last.conds[key] = cmd;
+        }
+        else {
+          cmd = new Blk(line, this, last);
+          key = cmd.tag + ':' + cmd.id;
+
+          if ( hasOwnCmd(last, key) )
+            throw new Error('duplicate `block` command\n' +
+              '    src-linenum: `' + (++i) + '`\n' +
+              '    src-file: `' + this.path + '`\n' +
+              '    linenum: `' + line.linenum + '`\n' +
+              '    file: `' + line.file.path + '`\n' +
+              '    text: `' + text + '`');
+
+          last.blks[key] = cmd;
+        }
+        last.content.push(cmd);
+        stack.push(cmd);
+        last = cmd;
+      }
+      else if ( !hasCloseCmd(text) )
+        throw new Error('invalid `command` syntax\n' +
+          '    src-linenum: `' + (++i) + '`\n' +
+          '    src-file: `' + this.path + '`\n' +
+          '    linenum: `' + line.linenum + '`\n' +
+          '    file: `' + line.file.path + '`\n' +
+          '    text: `' + text + '`');
+      else {
+        last.addClose(line);
+        stack.pop();
+        if (stack.length)
+          last = stack[stack.length - 1];
+      }
+    }
+    if ( !hasCmd(text) )
+      this.content.push(line);
+    else if ( hasInclCmd(text) ) {
+      cmd = new Incl(line, this);
+      key = cmd.tag + ':' + cmd.id;
+
+      if ( hasOwnCmd(this, key) )
+        throw new Error('duplicate `include` command\n' +
+          '    src-linenum: `' + (++i) + '`\n' +
+          '    src-file: `' + this.path + '`\n' +
+          '    linenum: `' + line.linenum + '`\n' +
+          '    file: `' + line.file.path + '`\n' +
+          '    text: `' + text + '`');
+
+      this.incls[key] = cmd;
+      this.content.push(cmd);
+    }
+    else if ( hasCloseCmd(text) )
+      throw new Error('invalid `close` command (no `open` command)\n' +
+        '    src-linenum: `' + (++i) + '`\n' +
+        '    src-file: `' + this.path + '`\n' +
+        '    linenum: `' + line.linenum + '`\n' +
+        '    file: `' + line.file.path + '`\n' +
+        '    text: `' + text + '`');
+    else if ( !hasOpenCmd(text) )
+      throw new Error('invalid `command` syntax\n' +
+        '    src-linenum: `' + (++i) + '`\n' +
+        '    src-file: `' + this.path + '`\n' +
+        '    linenum: `' + line.linenum + '`\n' +
+        '    file: `' + line.file.path + '`\n' +
+        '    text: `' + text + '`');
+    else {
+      if ( hasCondCmd(text) ) {
+        cmd = new Cond(line, this);
+        key = cmd.tag + ':' + cmd.id;
+
+        if ( hasOwnCmd(this, key) )
+          throw new Error('duplicate `conditional` command\n' +
+            '    src-linenum: `' + (++i) + '`\n' +
+            '    src-file: `' + this.path + '`\n' +
+            '    linenum: `' + line.linenum + '`\n' +
+            '    file: `' + line.file.path + '`\n' +
+            '    text: `' + text + '`');
+
+        this.conds[key] = cmd;
+      }
+      else {
+        cmd = new Blk(line, this);
+        key = cmd.tag + ':' + cmd.id;
+
+        if ( hasOwnCmd(this, key) )
+          throw new Error('duplicate `block` command\n' +
+            '    src-linenum: `' + (++i) + '`\n' +
+            '    src-file: `' + this.path + '`\n' +
+            '    linenum: `' + line.linenum + '`\n' +
+            '    file: `' + line.file.path + '`\n' +
+            '    text: `' + text + '`');
+
+        this.blks[key] = cmd;
+      }
+      this.content.push(cmd);
+      stack.push(cmd);
+      last = cmd;
+    }
+  }
+
+  if (stack.length) {
+    if (stack.length === 1)
+      throw new Error('unclosed `open` command\n' +
+        '    src-file: `' + this.path + '`\n' +
+        '    linenum: `' + stack[0].open.linenum + '`\n' +
+        '    file: `' + stack[0].open.file.path + '`\n' +
+        '    text: `' + stack[0].open.text + '`');
+
+    text = 'unclosed `open` commands\n' +
+      '    src-file: `' + this.path + '`';
+    len = stack.length;
+    i = -1;
+    while (++i < len)
+      text += '\n    command:\n' +
+        '        linenum: `' + stack[i].open.linenum + '`\n' +
+        '        file: `' + stack[0].open.file.path + '`\n' +
+        '        text: `' + stack[0].open.text + '`';
+    throw new Error(text);
+  }
+};
+/// #}}} @func File.prototype.process
+
+/// #{{{ @func File.prototype.compile
+/**
+ * @param {string} dest
+ *   The file path to the destination you want to save the compiled result.
+ *   The file path may be relative or absolute. If it is a relative path, it
+ *   is relative to the `cwd`. The directory path up to the file name of the
+ *   resolved #dest path must already exist. If a file exists at the resolved
+ *   #dest path, it is overwritten.
+ * @param {!Object<string, boolean>} state
+ *   The enabled, `true`, or disabled, `false`, state for every conditional
+ *   command defined within the `File` instance's *content* `array`. Each
+ *   #state `object` key must be *hashed* (i.e. created) by combining each
+ *   `Cond` instance's *tag* and *ID* with a colon, `":"`, separating them
+ *   (e.g. `"tag:id"`). Every `Cond` instance within the `File` instance must
+ *   be defined in the #state or an error will be thrown.
+ * @param {(!function(string): string)=} alter
+ *   The #alter `function` is optional. If it is defined, it allows you to
+ *   provide custom alterations to the compiled result before it is saved to
+ *   the #dest.
+ * @return {string}
+ */
+File.prototype.compile = function compile(dest, state, alter) {
+
+  /** @type {string} */
+  var result;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  if ( !isUndefined(alter) && !isFunction(alter) )
+    throw new TypeError('invalid `alter` data type (valid types: `(!function(string): string)=`)');
+  if ( !isObject(state) || !isBooleanMap(state) )
+    throw new TypeError('invalid `state` data type (valid types: `!Object<string, boolean>`)');
   if ( !isString(dest) )
     throw new TypeError('invalid `dest` data type (valid types: `string`)');
+
   if (!dest)
     throw new Error('invalid empty `dest` `string`');
 
@@ -682,143 +1222,25 @@ File.prototype.compile = function compile(src, dest, flags) {
   if ( !DEST_EXT.test(dest) )
     throw new Error('invalid `dest` file ext (must match `' + DEST_EXT.toString() + '`)');
 
-  path = trimPathname(dest);
+  path = trimPathName(dest);
 
   if ( !isDirectory(path) )
     throw new Error('invalid `dest` directory path `' + path + '` (must be a readable directory)');
 
-  if ( !isString(src) )
-    throw new TypeError('invalid `src` data type (valid types: `string`)');
-  if (!src)
-    throw new Error('invalid empty `src` `string`');
-  if ( !SRC_EXT.test(src) )
-    throw new Error('invalid `src` file ext (must match `' + SRC_EXT.toString() + '`)');
+  ////////////////////////////////////////////////////////////////////////////
+  // ADD COMPILE LOGIC HERE
+  ////////////////////////////////////////////////////////////////////////////
 
-  src = cleanPath(src);
-  names = src.split('/');
-  len = names.length;
-  kid = this;
-  i = -1;
-  while (++i < len && kid)
-    kid = getKid(kid, names[i]);
+  if ( isFunction(alter) ) {
+    result = alter(result);
 
-  if (!kid)
-    throw new Error('invalid `src` file path (must exist within `Dir` tree)');
-  if ( !isFileInst(kid) )
-    throw new TypeError('invalid `src` `kid` data type (valid types: `!File`)');
+    if ( !isString(result) )
+      throw new TypeError('invalid returned `alter` data type (valid types: `string`)');
+  }
 
-  return kid.compile(dest, flags);
+  return toFile(result, dest);
 };
 /// #}}} @func File.prototype.compile
-
-/// #{{{ @func File.prototype.load
-/**
- * @return {void}
- */
-File.prototype.load = function load() {
-
-  /** @type {!Array<string>} */
-  var content;
-  /** @type {!Array<!FileLine>} */
-  var lines;
-  /** @type {!FileLine} */
-  var line;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  lines = this.lines;
-
-  content = getFileContent(this.path).split('\n');
-  len = content.length;
-  i = -1;
-  while (++i < len) {
-    line = new FileLine(content[i], i, this);
-    lines.push(line);
-  }
-};
-/// #}}} @func File.prototype.load
-
-/// #{{{ @func File.prototype.parse
-/**
- * @return {void}
- */
-File.prototype.parse = function parse() {
-
-  /** @type {!Array<(!Dir|!File)>} */
-  var kids;
-  /** @type {(!Dir|!File)} */
-  var kid;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  kids = this.kids;
-  len = kids.length;
-  i = -1;
-  while (++i < len)
-    kids[i].parse();
-};
-/// #}}} @func File.prototype.parse
-
-/// #{{{ @func File.prototype.preparse
-/**
- * @return {void}
- */
-File.prototype.preparse = function preparse() {
-
-  /** @type {!Array<(!FileLine|!BlockTag|!IfTag|!IncludeTag|!MacroTag)>} */
-  var content;
-  /** @type {!Array<(!BlockTag|!IfTag)>} */
-  var stack;
-  /** @type {!Array<!FileLine>} */
-  var lines;
-  /** @type {!FileLine} */
-  var line;
-  /** @type {!Object<string, (!BlockTag|!IfTag|!IncludeTag|!MacroTag)>} */
-  var tags;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  ////////////////////////////////////////////////////////////////////////////
-  //// TEMP NOTE TO SELF
-  //// - Finalize each tag spec
-  ////   - BlockTag
-  ////   - IfTag
-  ////   - IncludeTag
-  ////   - MacroTag
-  //// - Decide on approach to solve BlockTag & IfTag stack (leaning towards
-  ////   Tag.prototype.add[Line|Tag] & Tag.prototype.close methods)
-  //// - Remember the decision to pass the tag name, id, path, ... checks to
-  ////   each tag constructor (i.e. the tag constructor should throw all
-  ////   errors for invalid tag formatting)
-  //// - Add a method for adding a tag and its key hash to the tags hash map
-  ////   (it should throw errors for duplicate tag ids) (random thought: maybe
-  ////   make this method a part of the Tag.prototype group if File instance
-  ////   refs for each Tag passes the final spec which is probably unlikely as
-  ////   include tags could over complicate such an approach)
-  //// - Remember FileLine spec
-  ////   - type => unique-FileLine-type-ID
-  ////   - file => pointer-to-File-instance
-  ////   - text => string-of-original-text-without-eol-in-utf8
-  ////   - linenum => line-number-integer-for-original-file
-  ////////////////////////////////////////////////////////////////////////////
-
-  content = this.content;
-  lines = this.lines;
-  tags = this.tags;
-
-  len = lines.length;
-  i = -1;
-  while (++i < len) {
-    line = lines[i];
-  }
-};
-/// #}}} @func File.prototype.preparse
 /// #}}} @group FILE-PROTOTYPE
 
 /// #{{{ @group EXPORTS
@@ -826,8 +1248,9 @@ File.prototype.preparse = function preparse() {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-Dir.isDir = isDirInst;
-module.exports = Dir;
+File.isFileNode = isFileNode;
+File.isFile = isFileNode;
+module.exports = File;
 
 /// #}}} @group EXPORTS
 
