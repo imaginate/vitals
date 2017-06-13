@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-IF-TAG HELPER
+ * HAS-CONDITIONAL-COMMAND HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -22,13 +22,13 @@ var loadHelper = require('./load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const TAG
+/// #{{{ @const CMD
 /**
  * @private
  * @const {!RegExp}
  */
-var TAG = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]+@(?:on|off)[ \t]/;
-/// #}}} @const TAG
+var CMD = /^[ \t]*\/\/\/[ \t]+#(?:if|ifnot)(?:\{{3}|\}{3})[ \t]/;
+/// #}}} @const CMD
 
 /// #{{{ @const IS
 /**
@@ -59,22 +59,22 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isIfTag
+/// #{{{ @func hasConditionalCommand
 /**
  * @public
- * @param {string} src
+ * @param {string} text
  * @return {boolean}
  */
-function isIfTag(src) {
+function hasConditionalCommand(text) {
 
-  if ( !isString(src) )
-    throw new TypeError('invalid `src` data type (valid types: `string`)');
+  if ( !isString(text) )
+    throw new TypeError('invalid `text` data type (valid types: `string`)');
 
-  return !!src && TAG.test(src);
+  return !!text && CMD.test(text);
 }
-/// #}}} @func isIfTag
+/// #}}} @func hasConditionalCommand
 
-module.exports = isIfTag;
+module.exports = hasConditionalCommand;
 
 /// #}}} @group EXPORTS
 
