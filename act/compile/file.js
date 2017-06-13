@@ -947,6 +947,9 @@ File.prototype.load = function load() {
       lines.push(line);
     }
   }
+
+  capObject(defs);
+  sealObject(defs);
 };
 /// #}}} @func File.prototype.load
 
@@ -989,6 +992,11 @@ File.prototype.preprocess = function preprocess() {
     args = mkInsArgs(insert);
     lines.splice.apply(lines, args);
   }
+
+  capObject(lines);
+  sealObject(lines);
+  capObject(inserts);
+  sealObject(inserts);
 };
 /// #}}} @func File.prototype.preprocess
 
@@ -1174,6 +1182,15 @@ File.prototype.process = function process() {
         '        text: `' + stack[0].open.text + '`';
     throw new Error(text);
   }
+
+  capObject(this.blks);
+  capObject(this.conds);
+  capObject(this.incls);
+  capObject(this.content);
+  sealObject(this.blks);
+  sealObject(this.conds);
+  sealObject(this.incls);
+  sealObject(this.content);
 };
 /// #}}} @func File.prototype.process
 
