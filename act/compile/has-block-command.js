@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-BLOCK-TAG HELPER
+ * HAS-BLOCK-COMMAND HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -22,13 +22,13 @@ var loadHelper = require('./load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const TAG
+/// #{{{ @const CMD
 /**
  * @private
  * @const {!RegExp}
  */
-var TAG = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]/;
-/// #}}} @const TAG
+var CMD = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]/;
+/// #}}} @const CMD
 
 /// #{{{ @const IS
 /**
@@ -59,22 +59,22 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isBlockTag
+/// #{{{ @func hasBlockCommand
 /**
  * @public
- * @param {string} src
+ * @param {string} text
  * @return {boolean}
  */
-function isBlockTag(src) {
+function hasBlockCommand(text) {
 
-  if ( !isString(src) )
-    throw new TypeError('invalid `src` data type (valid types: `string`)');
+  if ( !isString(text) )
+    throw new TypeError('invalid `text` data type (valid types: `string`)');
 
-  return !!src && TAG.test(src);
+  return !!text && CMD.test(text);
 }
-/// #}}} @func isBlockTag
+/// #}}} @func hasBlockCommand
 
-module.exports = isBlockTag;
+module.exports = hasBlockCommand;
 
 /// #}}} @group EXPORTS
 
