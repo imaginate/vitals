@@ -2,24 +2,28 @@
   "src": "src/",
   "dest": "dist/",
   "minify": false,
-  "env": {
-    "ARGS_POLYFILL": false,
-    "NODE": false,
-    "USE_STRICT": false
-  },
-  "scope": {
-    "CONSTRUCTOR": false,
-    "FS": false,
-    "FS_ONLY": false,
-    "IS_MAIN_ONLY": false,
-    "SOLO": false
+  "state": {
+    "env": {
+      "ARGS_POLYFILL": false,
+      "NODE": false,
+      "USE_STRICT": false
+    },
+    "scope": {
+      "CONSTRUCTOR": false,
+      "FS": false,
+      "FS_ONLY": false,
+      "IS_MAIN_ONLY": false,
+      "SOLO": false
+    }
   },
   "branches": {
     "browser": {
       "dest": "browser/",
       "minify": true,
-      "env": {
-        "ARGS_POLYFILL": true
+      "state": {
+        "env": {
+          "ARGS_POLYFILL": true
+        }
       },
       "files": [
         {
@@ -43,8 +47,10 @@
             {
               "src": "strict.js",
               "dest": "strict.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             }
           ]
@@ -52,15 +58,19 @@
         "methods": {
           "src": "methods/",
           "dest": "methods/",
-          "scope": {
-            "SOLO": true
+          "state": {
+            "scope": {
+              "SOLO": true
+            }
           },
           "files": [
             {
               "src": "amend.js",
               "dest": "amend.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
@@ -70,15 +80,19 @@
             {
               "src": "create.js",
               "dest": "create.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
               "src": "cut.js",
               "dest": "cut.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
@@ -143,16 +157,20 @@
     },
     "node": {
       "dest": "node/",
-      "env": {
-        "NODE": true,
-        "USE_STRICT": true
+      "state": {
+        "env": {
+          "NODE": true,
+          "USE_STRICT": true
+        }
       },
       "files": [
         {
           "src": "vitals.js",
           "dest": "vitals.js",
-          "scope": {
-            "CONSTRUCTOR": true
+          "state": {
+            "scope": {
+              "CONSTRUCTOR": true
+            }
           }
         }
       ],
@@ -172,23 +190,29 @@
             {
               "src": "base-fs.js",
               "dest": "base-fs.js",
-              "scope": {
-                "FS": true
+              "state": {
+                "scope": {
+                  "FS": true
+                }
               }
             },
             {
               "src": "strict.js",
               "dest": "strict.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
               "src": "fs.js",
               "dest": "fs.js",
-              "scope": {
-                "FS": true,
-                "FS_ONLY": true
+              "state": {
+                "scope": {
+                  "FS": true,
+                  "FS_ONLY": true
+                }
               }
             },
             {
@@ -200,15 +224,19 @@
         "methods": {
           "src": "methods/",
           "dest": "methods/",
-          "scope": {
-            "SOLO": true
+          "state": {
+            "scope": {
+              "SOLO": true
+            }
           },
           "files": [
             {
               "src": "amend.js",
               "dest": "amend.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
@@ -218,22 +246,28 @@
             {
               "src": "copy.js",
               "dest": "copy-fs.js",
-              "scope": {
-                "FS": true
+              "state": {
+                "scope": {
+                  "FS": true
+                }
               }
             },
             {
               "src": "create.js",
               "dest": "create.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
               "src": "cut.js",
               "dest": "cut.js",
-              "scope": {
-                "IS_MAIN_ONLY": true
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
               }
             },
             {
@@ -259,8 +293,10 @@
             {
               "src": "get.js",
               "dest": "get-fs.js",
-              "scope": {
-                "FS": true
+              "state": {
+                "scope": {
+                  "FS": true
+                }
               }
             },
             {
@@ -274,8 +310,10 @@
             {
               "src": "is.js",
               "dest": "is-fs.js",
-              "scope": {
-                "FS": true
+              "state": {
+                "scope": {
+                  "FS": true
+                }
               }
             },
             {
@@ -309,8 +347,10 @@
             {
               "src": "to.js",
               "dest": "to-fs.js",
-              "scope": {
-                "FS": true
+              "state": {
+                "scope": {
+                  "FS": true
+                }
               }
             },
             {
