@@ -1,67 +1,103 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: hasOwnProperty
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * HAS-OWN-PROPERTY HELPER
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const IS
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object<string, !function>}
  */
 var IS = require('./is.js');
+/// #}}} @const IS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasOwnProp
 /**
  * @private
- * @param {string} prop
+ * @param {*} key
  * @return {boolean}
  */
-var hasOwn = Object.prototype.hasOwnProperty;
+var hasOwnProp = Object.prototype.hasOwnProperty;
+/// #}}} @func hasOwnProp
 
+/// #{{{ @func isHashMap
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
 
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
 
-////////////////////////////////////////////////////////////////////////////////
+/// #}}} @group HELPERS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 // EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasOwnProperty
 /**
  * @public
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-module.exports = function hasOwnProperty(src, prop) {
+function hasOwnProperty(src, key) {
 
-  if ( !isObject(src) )
-    throw new TypeError('invalid `src` type (must be an object)');
-  if ( !isString(prop) )
-    throw new TypeError('invalid `prop` type (must be a string)');
+  if ( !isHashMap(src) )
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `(!Object|!Function)`');
 
-  return !!prop && hasOwn.call(src, prop);
-};
+  if ( isString(key) ) {
+    if (!key)
+      throw new Error('invalid empty `string` for `key`');
+  }
+  else if ( !isNumber(key) )
+    throw new TypeError('invalid `key` data type\n' +
+      '    valid-types: `(string|number)`');
+
+  return hasOwnProp.call(src, key);
+}
+/// #}}} @func hasOwnProperty
+
+module.exports = hasOwnProperty;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
