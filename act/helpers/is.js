@@ -118,6 +118,33 @@ function hasOwnProperty(obj, prop) {
 }
 /// #}}} @func hasOwnProperty
 
+/// #{{{ @func objectIsExtensible
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @return {boolean}
+ */
+var objectIsExtensible = Object.isExtensible;
+/// #}}} @func objectIsExtensible
+
+/// #{{{ @func objectIsFrozen
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @return {boolean}
+ */
+var objectIsFrozen = Object.isFrozen;
+/// #}}} @func objectIsFrozen
+
+/// #{{{ @func objectIsSealed
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @return {boolean}
+ */
+var objectIsSealed = Object.isSealed;
+/// #}}} @func objectIsSealed
+
 /// #{{{ @func objectToString
 /** 
  * @private
@@ -416,20 +443,59 @@ function isEmpty(val) {
 // OBJECT-STATE-METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isFrozen
+/// #{{{ @func isCapped
 /**
  * @public
- * @param {(!Object|!Function)} src
+ * @param {(?Object|?Function)} src
  * @return {boolean}
  */
-function isFrozen(src) {
+function isCapped(src) {
+
+  if ( isNull(src) )
+    return false;
 
   if ( !isObject(src) && !isFunction(src) )
     throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
 
-  return Object.isFrozen(src);
+  return !objectIsExtensible(src);
+}
+/// #}}} @func isCapped
+
+/// #{{{ @func isFrozen
+/**
+ * @public
+ * @param {(?Object|?Function)} src
+ * @return {boolean}
+ */
+function isFrozen(src) {
+
+  if ( isNull(src) )
+    return false;
+
+  if ( !isObject(src) && !isFunction(src) )
+    throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
+
+  return objectIsFrozen(src);
 }
 /// #}}} @func isFrozen
+
+/// #{{{ @func isSealed
+/**
+ * @public
+ * @param {(?Object|?Function)} src
+ * @return {boolean}
+ */
+function isSealed(src) {
+
+  if ( isNull(src) )
+    return false;
+
+  if ( !isObject(src) && !isFunction(src) )
+    throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
+
+  return objectIsSealed(src);
+}
+/// #}}} @func isSealed
 
 /// #}}} @group OBJECT-STATE-METHODS
 
@@ -716,7 +782,11 @@ var IS = {
 
   'empty':          isEmpty,
 
+  'capped':         isCapped,
+
   'frozen':         isFrozen,
+
+  'sealed':         isSealed,
 
   'wholeNumber':    isWholeNumber,
   'whole':          isWholeNumber,
