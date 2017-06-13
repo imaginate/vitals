@@ -11,7 +11,7 @@ This guide describes every compile class, defines each member and method of ever
   - [Group Commands][grps]
     - [Block Command][blk]
     - [Conditional Command][cond]
-    - [Macro Command][def]
+    - [Define Command][def]
   - [Reference Commands][refs]
     - [Include Command][incl]
     - [Insert Command][ins]
@@ -82,14 +82,14 @@ The [directory class][dir] wraps each directory node within the *src* tree.
 |:------------|
 | `Dir`       |
 
-|    | Parameter                             | Data Type  | Description
-|:---|:--------------------------------------|:-----------|:------------
-| 1  | <a name="dir-construct-path"></a>path | *`string`* | The file path to the directory node being wrapped. The directory path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
-| 2  | <a name="dir-construct-dir"></a>dir   | *`?Dir=`*  | The parent [Dir][dir] instance. This parameter is required for all [Dir][dir] instances except for the root [Dir][dir] instance (i.e. since the root instance is the only exposed instance, this parameter is not a part of the public API).
+|    | Parameter                                 | Data Type  | Description
+|:---|:------------------------------------------|:-----------|:------------
+| 1  | <a name="dir-construct-path"></a>path     | *`string`* | The file path to the directory node being wrapped. The directory path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
+| 2  | <a name="dir-construct-parent"></a>parent | *`?Dir=`*  | The parent [Dir][dir] instance. This parameter is required for all [Dir][dir] instances except for the root [Dir][dir] instance (i.e. since the root instance is the only exposed instance, this parameter is not a part of the public API).
 <br>
 
 [dir-construct-path]: #user-content-dir-construct-path
-[dir-construct-dir]: #user-content-dir-construct-dir
+[dir-construct-parent]: #user-content-dir-construct-parent
 
 <a name="dir-members"></a>
 ### Directory Members
@@ -235,14 +235,14 @@ The [file class][file] wraps each file node within the *src* tree.
 |:------------|
 | `File`      |
 
-|    | Parameter                              | Data Type  | Description
-|:---|:---------------------------------------|:-----------|:------------
-| 1  | <a name="file-construct-path"></a>path | *`string`* | The file path to the file node being wrapped. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
-| 2  | <a name="file-construct-dir"></a>dir   | *`!Dir`*   | The parent [Dir][dir] instance.
+|    | Parameter                                  | Data Type  | Description
+|:---|:-------------------------------------------|:-----------|:------------
+| 1  | <a name="file-construct-path"></a>path     | *`string`* | The file path to the file node being wrapped. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
+| 2  | <a name="file-construct-parent"></a>parent | *`!Dir`*   | The parent [Dir][dir] instance.
 <br>
 
 [file-construct-path]: #user-content-file-construct-path
-[file-construct-dir]: #user-content-file-construct-dir
+[file-construct-parent]: #user-content-file-construct-parent
 
 <a name="file-members"></a>
 ### File Members
@@ -255,10 +255,10 @@ The [file class][file] wraps each file node within the *src* tree.
 | <a name="file-member-path"></a>path       | *`string`*                              | The [File][file] instance's absolute file path.
 | <a name="file-member-parent"></a>parent   | *`!Dir`*                                | A pointer to the [File][file] instance's parent [Dir][dir] instance.
 | <a name="file-member-lines"></a>lines     | *`!Array<!Line>`*                       | An ordered `array` of all of the [Line][line] instances within the [File][file] instance scope (i.e. each [Ins][ins] modifies this property).
-| <a name="file-member-defs"></a>defs       | *`!Object<!Def>`*                       | A hash map of all of the [Def][def] instances within the scope of the [File][file] instance. The *hashed* `object` key names combine each [Def][def] instance's [tag][def-tag] and [ID][def-id] with a colon separator (e.g. `"tag:id"`).
-| <a name="file-member-blks"></a>blks       | *`!Object<!Blk>`*                       | A hash map of all of the [Blk][blk] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Blk][blk] instance's [tag][blk-tag] and [ID][blk-id] with a colon separator (e.g. `"tag:id"`).
-| <a name="file-member-conds"></a>conds     | *`!Object<!Cond>`*                      | A hash map of all of the [Cond][cond] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon separator (e.g. `"tag:id"`).
-| <a name="file-member-incls"></a>incls     | *`!Object<!Incl>`*                      | A hash map of all of the [Incl][incl] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Incl][incl] instance's [tag][incl-tag] and [ID][incl-id] with a colon separator (e.g. `"tag:id"`).
+| <a name="file-member-defs"></a>defs       | *`!Object<string, !Def>`*               | A hash map of all of the [Def][def] instances within the scope of the [File][file] instance. The *hashed* `object` key names combine each [Def][def] instance's [tag][def-tag] and [ID][def-id] with a colon separator (e.g. `"tag:id"`).
+| <a name="file-member-blks"></a>blks       | *`!Object<string, !Blk>`*               | A hash map of all of the [Blk][blk] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Blk][blk] instance's [tag][blk-tag] and [ID][blk-id] with a colon separator (e.g. `"tag:id"`).
+| <a name="file-member-conds"></a>conds     | *`!Object<string, !Cond>`*              | A hash map of all of the [Cond][cond] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon separator (e.g. `"tag:id"`).
+| <a name="file-member-incls"></a>incls     | *`!Object<string, !Incl>`*              | A hash map of all of the [Incl][incl] instances within the root scope of the [File][file] instance. The *hashed* `object` key names combine each [Incl][incl] instance's [tag][incl-tag] and [ID][incl-id] with a colon separator (e.g. `"tag:id"`).
 | <a name="file-member-inserts"></a>inserts | *`!Array<!Ins>`*                        | An ordered `array` of all of the [Ins][ins] instances within the [File][file] instance.
 | <a name="file-member-content"></a>content | *`!Array<(!Line\|!Blk\|!Cond\|!Incl)>`* | An ordered `array` of all of the [Line][line], [Blk][blk], [Cond][cond], and [Incl][incl] instances within the root scope of the [File][file] instance.
 <br>
@@ -346,8 +346,8 @@ This method creates a compiled destination file, [dest][file-compile-dest].
 
 |    | Parameter                                     | Data Type                        | Description
 |:---|:----------------------------------------------|:---------------------------------|:------------
-| 1  | <a name="file-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest], it is overwritten.
-| 2  | <a name="file-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown. Note that all [Incl][incl] loops are caught in this step.
+| 1  | <a name="file-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest] path, it is overwritten.
+| 2  | <a name="file-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown.
 | 3  | <a name="file-method-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result before it is saved to the [dest][file-compile-dest].
 
 [file-compile-dest]: #user-content-file-method-compile-dest
@@ -414,13 +414,13 @@ The [Line][line] class has no methods.
 
 <a name="syntax"></a>
 ## Source Syntax
-The compile syntax has a simple layout and structure. It is built upon a single option, the *command*. A *command* is always one line. It is based upon one pattern with few variations to comprise the five total syntax *command* types available. The five *command* types are separated into two general types, [groups][grps] and [references][refs]. The [group commands][grps] create *scopes* of code (e.g. JavaScript) that can be enabled or disabled and be re-used. The [reference commands][refs] reference [groups][grps] of code from outside *scopes* (e.g. other [files][file]) to give you more flexible composability with any programming language (although for now, it is only JavaScript, but that is easy to change). All of the *commands* consist of four basic syntax components, and both of the [reference][refs] *command* types have an optional fifth.
+The compile syntax has a simple layout and structure. It is built upon a single option, the *command*. A *command* is always one line. It is based upon one pattern with few variations to comprise the five total syntax *command* types available. The five *command* types are separated into two general types, [groups][grps] and [references][refs]. The [group commands][grps] create *scopes* of code (e.g. JavaScript) that can be enabled or disabled and be re-used. The [reference commands][refs] reference [groups][grps] of code from outside *scopes* (e.g. other [files][file]) to give you more flexible composability with any programming language (although for now, it is only JavaScript, but that is easy to change). All of the *commands* consist of four basic syntax components, and both of the [reference][refs] *command* types have a fifth.
 
 ### The 5 Commands
 ##### The Group Commands
 1. <p><strong><a href="#user-content-blk">Blocks</a></strong></p>
 2. <p><strong><a href="#user-content-cond">Conditionals</a></strong></p>
-3. <p><strong><a href="#user-content-def">Macros</a></strong></p>
+3. <p><strong><a href="#user-content-def">Defines</a></strong></p>
 ##### The Reference Commands
 4. <p><strong><a href="#user-content-incl">Includes</a></strong></p>
 5. <p><strong><a href="#user-content-ins">Inserts</a></strong></p>
@@ -446,7 +446,7 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 - [Group Commands][grps]
   - [Block Command][blk]
   - [Conditional Command][cond]
-  - [Macro Command][def]
+  - [Define Command][def]
 - [Reference Commands][refs]
   - [Include Command][incl]
   - [Insert Command][ins]
@@ -483,7 +483,7 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 
 <a name="grps"></a>
 ## Groups
-[Group][grps] *commands* are how you define scopes of code that can be referenced from other [file][file] or [root][root-scope] scopes (i.e. let's avoid infinite include loops -- meaning you cannot reference [groups][grps] within the same [root scope][root-scope]) and that can be flexibly enabled or disabled. Every [group][grps] *command* type has an [open][open-cmd] and [close][close-cmd] *command*.
+[Group][grps] *commands* are how you define scopes of code that can be referenced from other [file][file] or [root][root-scope] scopes (i.e. let's avoid infinite include or insert loops -- meaning you cannot reference [groups][grps] within the same [root scope][root-scope]) and that can be flexibly enabled or disabled. Every [group][grps] *command* type has an [open][open-cmd] and [close][close-cmd] *command*.
 
 <a name="root-scope"></a>
 ### Root Scope
@@ -553,11 +553,11 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 |:------------|
 | `Blk`       |
 
-|    | Parameter                                 | Data Type         | Description
-|:---|:------------------------------------------|:------------------|:------------
-| 1  | <a name="blk-construct-open"></a>open     | *`!Line`*         | The opening [Line][line] instance.
-| 2  | <a name="blk-construct-file"></a>file     | *`!File`*         | The parent [File][file] instance.
-| 3  | <a name="blk-construct-parent"></a>parent | *`(?Blk\|?Cond)`* | The parent [Blk][blk] or [Cond][cond] instance.
+|    | Parameter                                 | Data Type          | Description
+|:---|:------------------------------------------|:-------------------|:------------
+| 1  | <a name="blk-construct-open"></a>open     | *`!Line`*          | The opening [Line][line] instance.
+| 2  | <a name="blk-construct-file"></a>file     | *`!File`*          | The parent [File][file] instance.
+| 3  | <a name="blk-construct-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
 <br>
 
 [blk-construct-open]: #user-content-blk-construct-open
@@ -601,10 +601,12 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 
 <a name="cond"></a>
 ### Conditional Class
+A [grouping][grps] *command* that shows or hides itself based upon the [state][file-compile-state] `object` passed to [File.prototype.compile][file-compile] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from other [file][file] or [root][root-scope] scopes.
 
-| Open Action                 | Close Action                | Constructor | Description
-|:----------------------------|:----------------------------|:------------|:------------
-| `"#if{{{"` or `"#ifnot{{{"` | `"#if}}}"` or `"#ifnot}}}"` | `Cond`      | A [grouping][grps] *command* that shows or hides itself based upon the [state][file-compile-state] `object` passed to [File.prototype.compile][file-compile] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from other [file][file] or [root][root-scope] scopes.
+| Open Action   | Close Action  |
+|:--------------|:--------------|
+| `"#if{{{"`    | `"#if}}}"`    |
+| `"#ifnot{{{"` | `"#ifnot}}}"` |
 
 <a name="cond-members"></a>
 ### Conditional Members
@@ -644,14 +646,15 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 
 
 <a name="def"></a>
-## Macro Class
+## Define Class
+A special [grouping][grps] *command* for defining a simple C-like macro. [Define][def] *commands* must be defined in the root scope of a [file][file] before all other *command* types. [Define][def] *commands* may be [inserted][ins] from all other [File][file], [Block][blk], or [Conditional][cond] scopes.
 
 | Open Action | Close Action | Constructor | Description
 |:------------|:-------------|:------------|:------------
-| `"#def{{{"` | `"#def}}}"`  | `Def`       | A special [grouping][grps] *command* for defining a simple C-like macro. [Macros][def] must be defined in the root scope of a [file][file] before all other *command* types. [Macros][def] may be [inserted][ins] from all other [file][file], [Blk][blk], or [Cond][cond] scopes.
+| `"#def{{{"` | `"#def}}}"`  | `Def`       | 
 
 <a name="def-members"></a>
-### Macro Members
+### Define Members
 
 | Member                               | Data Type         | Description
 |:-------------------------------------|:------------------|:------------
@@ -673,7 +676,7 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 [def-lines]: #user-content-def-member-lines
 
 <a name="def-methods"></a>
-### Macro Methods
+### Define Methods
 <br>
 
 
@@ -723,14 +726,24 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 
 | Member | Data Type         | Description
 |:-------|:------------------|:------------
-| type   | *`!Object`*       | A pointer to a unique `object` instance designated for the `Ins` class.
-| tag    | *`string`*        | The `Ins` instance's *tag* name (e.g. `"/// #insert @tag id"`).
-| id     | *`string`*        | The `Ins` instance's *ID* name (e.g. `"/// #insert @tag id"`).
-| path   | *`string`*        | The `Ins` instance's *path* value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
-| file   | *`!File`*         | A pointer to the parent `File` instance.
-| line   | *`!Line`*         | A pointer to defining `Line` instance.
-| parent | *`(?Blk\|?Cond)`* | A pointer to the parent `Blk` or `Cond` instance. It is `null` if it is at the root scope of the `File` instance (i.e. it becomes a [root scope](#user-content-root-scope) *command*).
-| def    | *`!Def`*          | A pointer to the included `Def` instance.
+| type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Ins][ins] class.
+| tag    | *`string`*        | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
+| id     | *`string`*        | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
+| path   | *`string`*        | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
+| file   | *`!File`*         | A pointer to the parent [File][file] instance.
+| line   | *`!Line`*         | A pointer to defining [Line][line] instance.
+| def    | *`!Def`*          | A pointer to the included [Def][def] instance.
+| index  | *`number`*        | The index of the defining [Line][line] instance's place in the [File][file] instance's [lines][file-lines] `array`.
+<br>
+
+[ins-type]: #user-content-ins-member-type
+[ins-tag]: #user-content-ins-member-tag
+[ins-id]: #user-content-ins-member-id
+[ins-path]: #user-content-ins-member-path
+[ins-file]: #user-content-ins-member-file
+[ins-line]: #user-content-ins-member-line
+[ins-def]: #user-content-ins-member-def
+[ins-index]: #user-content-ins-member-index
 
 <a name="ins-methods"></a>
 ### Insert Methods
