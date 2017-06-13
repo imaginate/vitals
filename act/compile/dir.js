@@ -489,12 +489,12 @@ function mkFiles(parent) {
 /**
  * @public
  * @param {string} path
- * @param {?Dir=} dir
+ * @param {?Dir=} parent
  * @return {void}
  * @constructor
  * @struct
  */
-function Dir(path, dir) {
+function Dir(path, parent) {
 
   if ( !isString(path) )
     throw new TypeError('invalid `path` data type (valid types: `string`)');
@@ -502,15 +502,17 @@ function Dir(path, dir) {
     throw new Error('invalid empty `path` `string`');
   if ( !isDirectory(path) )
     throw new Error('invalid `path` `string` (must be a readable directory)');
-  if ( !isNull(dir) && !isUndefined(dir) && !isDirNode(dir) )
-    throw new TypeError('invalid `dir` data type (valid types: `?Dir=`)');
+  if ( !isNull(parent) && !isUndefined(parent) && !isDirNode(parent) )
+    throw new TypeError('invalid `parent` data type (valid types: `?Dir=`)');
+
+  /// #{{{ @group Dir-Constants
 
   /// #{{{ @const PARENT
   /**
    * @private
    * @const {?Dir}
    */
-  var PARENT = dir || null;
+  var PARENT = parent || null;
   /// #}}} @const PARENT
 
   /// #{{{ @const PATH
@@ -539,6 +541,75 @@ function Dir(path, dir) {
     : '';
   /// #}}} @const TREE
 
+  /// #}}} @group Dir-Constants
+
+  /// #{{{ @group Dir-Members
+
+  /// #{{{ @member type
+  /**
+   * @public
+   * @const {!Object}
+   */
+  defineProp(this, 'type', {
+    'value': DIR_TYPE_ID,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member type
+
+  /// #{{{ @member name
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProp(this, 'name', {
+    'value': NAME,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member name
+
+  /// #{{{ @member tree
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProp(this, 'tree', {
+    'value': TREE,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member tree
+
+  /// #{{{ @member path
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProp(this, 'path', {
+    'value': PATH,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member path
+
+  /// #{{{ @member parent
+  /**
+   * @public
+   * @const {?Dir}
+   */
+  defineProp(this, 'parent', {
+    'value': PARENT,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member parent
+
   /// #{{{ @member dirs
   /**
    * @public
@@ -565,70 +636,7 @@ function Dir(path, dir) {
   });
   /// #}}} @member files
 
-  /// #{{{ @member name
-  /**
-   * @public
-   * @const {string}
-   */
-  defineProp(this, 'name', {
-    'value': NAME,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member name
-
-  /// #{{{ @member parent
-  /**
-   * @public
-   * @const {?Dir}
-   */
-  defineProp(this, 'parent', {
-    'value': PARENT,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member parent
-
-  /// #{{{ @member path
-  /**
-   * @public
-   * @const {string}
-   */
-  defineProp(this, 'path', {
-    'value': PATH,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member path
-
-  /// #{{{ @member tree
-  /**
-   * @public
-   * @const {string}
-   */
-  defineProp(this, 'tree', {
-    'value': TREE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member tree
-
-  /// #{{{ @member type
-  /**
-   * @public
-   * @const {!Object}
-   */
-  defineProp(this, 'type', {
-    'value': DIR_TYPE_ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member type
+  /// #}}} @group Dir-Members
 
   sealObject(this);
   capObject(this);
