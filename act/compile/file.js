@@ -1090,6 +1090,13 @@ File.prototype.process = function process() {
           '    linenum: `' + line.linenum + '`\n' +
           '    file: `' + line.file.path + '`\n' +
           '    text: `' + text + '`');
+      else if ( !last.isClose(text) )
+        throw new Error('invalid `close` command (must match the `open`)\n' +
+          '    src-linenum: `' + (++i) + '`\n' +
+          '    src-file: `' + this.path + '`\n' +
+          '    linenum: `' + line.linenum + '`\n' +
+          '    file: `' + line.file.path + '`\n' +
+          '    text: `' + text + '`');
       else {
         last.addClose(line);
         stack.pop();
