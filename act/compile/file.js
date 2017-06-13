@@ -910,15 +910,20 @@ File.prototype.load = function load() {
     line = new Line(text, linenum, this);
     if (def) {
       if ( !hasCmd(text) )
-        def.addLine(line);
+        def.lines.push(line);
       else if ( hasDefCmd(text) ) {
         if ( !hasCloseCmd(text) )
           throw new Error('invalid `define` within `define`\n' +
             '    linenum: `' + linenum + '`\n' +
             '    file: `' + this.path + '`\n' +
             '    text: `' + text + '`');
+        if ( !def.isClose(text) )
+          throw new Error('invalid `close` command (must match the `open`)\n' +
+            '    linenum: `' + linenum + '`\n' +
+            '    file: `' + this.path + '`\n' +
+            '    text: `' + text + '`');
 
-        def.addClose(line);
+        def.setClose(line);
         def = null;
       }
       else if ( hasInsCmd(text) )
@@ -927,7 +932,7 @@ File.prototype.load = function load() {
           '    file: `' + this.path + '`\n' +
           '    text: `' + text + '`');
       else
-        def.addLine(line);
+        def.lines.push(line);
     }
     else if ( !hasCmd(text) )
       lines.push(line);
@@ -1098,7 +1103,7 @@ File.prototype.process = function process() {
           '    file: `' + line.file.path + '`\n' +
           '    text: `' + text + '`');
       else {
-        last.addClose(line);
+        last.setClose(line);
         stack.pop();
         if (stack.length)
           last = stack[stack.length - 1];
