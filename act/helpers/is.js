@@ -118,6 +118,50 @@ function hasOwnProperty(obj, prop) {
 }
 /// #}}} @func hasOwnProperty
 
+/// #{{{ @func isHashMapOf
+/**
+ * @private
+ * @param {(!Object|!Function)} map
+ * @param {!function(*): boolean} isType
+ * @return {boolean}
+ */
+function isHashMapOf(map, isType) {
+
+  /** @type {string} */
+  var key;
+
+  for (key in map) {
+    if ( hasOwnProperty(map, key) && !isType(map[key]) )
+      return false;
+  }
+  return true;
+}
+/// #}}} @func isHashMapOf
+
+/// #{{{ @func isListOf
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object)} list
+ * @param {!function(*): boolean} isType
+ * @return {boolean}
+ */
+function isListOf(list, isType) {
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  len = list.length;
+  i = -1;
+  while (++i < len) {
+    if ( !isType(list[i]) )
+      return false;
+  }
+  return true;
+}
+/// #}}} @func isListOf
+
 /// #{{{ @func objectIsExtensible
 /**
  * @private
@@ -258,6 +302,38 @@ function isFunction(val) {
 }
 /// #}}} @func isFunction
 
+/// #{{{ @func isObjectOrFunction
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isObjectOrFunction(val) {
+
+  if (!val)
+    return false;
+
+  switch (typeof val) {
+    case 'object':
+    case 'function':
+      return true;
+    default:
+      return false;
+  }
+}
+/// #}}} @func isObjectOrFunction
+
+/// #{{{ @func isArguments
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isArguments(val) {
+  return isObject(val) && objectToString(val) === '[object Arguments]';
+}
+/// #}}} @func isArguments
+
 /// #{{{ @func isArray
 /**
  * @public
@@ -287,17 +363,6 @@ function isArrayLike(val) {
   return isNumber(len) && isWholeNumber(len) && len >= 0;
 }
 /// #}}} @func isArrayLike
-
-/// #{{{ @func isArguments
-/**
- * @public
- * @param {*} val
- * @return {boolean}
- */
-function isArguments(val) {
-  return isObject(val) && objectToString(val) === '[object Arguments]';
-}
-/// #}}} @func isArguments
 
 /// #{{{ @func isRegExp
 /**
@@ -344,38 +409,151 @@ function isError(val) {
 
 /// #}}} @group JS-OBJECT-METHODS
 
-/// #{{{ @group JS-ARRAY-METHODS
+/// #{{{ @group JS-LIST-OF-METHODS
 //////////////////////////////////////////////////////////////////////////////
-// JS-ARRAY-METHODS
+// JS-LIST-OF-METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isStrings
+/// #{{{ @func isNullList
 /**
  * @public
  * @param {*} val
  * @return {boolean}
  */
-function isStrings(val) {
-
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  if ( !isArrayLike(val) )
-    return false;
-
-  len = val.length;
-  i = -1;
-  while (++i < len) {
-    if ( !isString(val[i]) )
-      return false;
-  }
-  return true;
+function isNullList(val) {
+  return isArrayLike(val) && isListOf(val, isNull);
 }
-/// #}}} @func isStrings
+/// #}}} @func isNullList
 
-/// #}}} @group JS-ARRAY-METHODS
+/// #{{{ @func isUndefinedList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isUndefinedList(val) {
+  return isArrayLike(val) && isListOf(val, isUndefined);
+}
+/// #}}} @func isUndefinedList
+
+/// #{{{ @func isBooleanList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isBooleanList(val) {
+  return isArrayLike(val) && isListOf(val, isBoolean);
+}
+/// #}}} @func isBooleanList
+
+/// #{{{ @func isStringList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isStringList(val) {
+  return isArrayLike(val) && isListOf(val, isString);
+}
+/// #}}} @func isStringList
+
+/// #{{{ @func isNumberList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNumberList(val) {
+  return isArrayLike(val) && isListOf(val, isNumber);
+}
+/// #}}} @func isNumberList
+
+/// #{{{ @func isNanList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNanList(val) {
+  return isArrayLike(val) && isListOf(val, isNan);
+}
+/// #}}} @func isNanList
+
+/// #}}} @group JS-LIST-OF-METHODS
+
+/// #{{{ @group JS-HASH-MAP-OF-METHODS
+//////////////////////////////////////////////////////////////////////////////
+// JS-HASH-MAP-OF-METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func isNullHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isNull);
+}
+/// #}}} @func isNullHashMap
+
+/// #{{{ @func isUndefinedHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isUndefinedHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isUndefined);
+}
+/// #}}} @func isUndefinedHashMap
+
+/// #{{{ @func isBooleanHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isBooleanHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isBoolean);
+}
+/// #}}} @func isBooleanHashMap
+
+/// #{{{ @func isStringHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isStringHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isString);
+}
+/// #}}} @func isStringHashMap
+
+/// #{{{ @func isNumberHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNumberHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isNumber);
+}
+/// #}}} @func isNumberHashMap
+
+/// #{{{ @func isNanHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNanHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isNan);
+}
+/// #}}} @func isNanHashMap
+
+/// #}}} @group JS-HASH-MAP-OF-METHODS
 
 /// #{{{ @group SPECIAL-METHODS
 //////////////////////////////////////////////////////////////////////////////
@@ -735,106 +913,228 @@ function isFile(path) {
  */
 var IS = {
 
-  'null':           isNull,
-  'nil':            isNull,
+  'null': isNull,
+  'nil':  isNull,
 
-  'undefined':      isUndefined,
-  'void':           isUndefined,
+  'undefined': isUndefined,
+  'void':      isUndefined,
 
-  'boolean':        isBoolean,
-  'bool':           isBoolean,
+  'boolean': isBoolean,
+  'bool':    isBoolean,
 
-  'string':         isString,
-  'str':            isString,
+  'string': isString,
+  'str':    isString,
 
-  'number':         isNumber,
-  'num':            isNumber,
+  'number': isNumber,
+  'num':    isNumber,
 
-  'nan':            isNan,
+  'nan': isNan,
 
-  'object':         isObject,
-  'obj':            isObject,
+  'object': isObject,
+  'obj':    isObject,
 
-  'func':           isFunction,
-  'fun':            isFunction,
-  'fn':             isFunction,
+  'func': isFunction,
+  'fun':  isFunction,
+  'fn':   isFunction,
 
-  'array':          isArray,
-  'arr':            isArray,
+  'hashMap': isObjectOrFunction,
+  'hashmap': isObjectOrFunction,
 
-  'arrayLike':      isArrayLike,
-  'arrLike':        isArrayLike,
+  'args': isArguments,
 
-  'args':           isArguments,
+  'array': isArray,
+  'arr':   isArray,
 
-  'regexp':         isRegExp,
-  'regex':          isRegExp,
-  'regx':           isRegExp,
-  're':             isRegExp,
+  'arrayLike': isArrayLike,
+  'arraylike': isArrayLike,
+  'arrLike':   isArrayLike,
+  'arrlike':   isArrayLike,
+  'list':      isArrayLike,
 
-  'date':           isDate,
+  'regexp': isRegExp,
+  'regex':  isRegExp,
+  'regx':   isRegExp,
+  're':     isRegExp,
 
-  'error':          isError,
-  'err':            isError,
+  'date': isDate,
 
-  'strings':        isStrings,
-  'strs':           isStrings,
+  'error': isError,
+  'err':   isError,
 
-  'empty':          isEmpty,
+  'nullList': isNullList,
+  'nulllist': isNullList,
+  'nilList':  isNullList,
+  'nillist':  isNullList,
+  'nulls':    isNullList,
+  'nils':     isNullList,
 
-  'capped':         isCapped,
+  'undefinedList': isUndefinedList,
+  'undefinedlist': isUndefinedList,
+  'undefineds':    isUndefinedList,
+  'voidList':      isUndefinedList,
+  'voidlist':      isUndefinedList,
+  'voids':         isUndefinedList,
 
-  'frozen':         isFrozen,
+  'booleanList': isBooleanList,
+  'booleanlist': isBooleanList,
+  'booleans':    isBooleanList,
+  'boolList':    isBooleanList,
+  'boollist':    isBooleanList,
+  'bools':       isBooleanList,
 
-  'sealed':         isSealed,
+  'stringList': isStringList,
+  'stringlist': isStringList,
+  'strings':    isStringList,
+  'strList':    isStringList,
+  'strlist':    isStringList,
+  'strs':       isStringList,
 
-  'wholeNumber':    isWholeNumber,
-  'whole':          isWholeNumber,
+  'numberList': isNumberList,
+  'numberlist': isNumberList,
+  'numbers':    isNumberList,
+  'numList':    isNumberList,
+  'numlist':    isNumberList,
+  'nums':       isNumberList,
 
-  'oddNumber':      isOddNumber,
-  'odd':            isOddNumber,
+  'nanList': isNanList,
+  'nanlist': isNanList,
+  'nans':    isNanList,
 
-  'evenNumber':     isEvenNumber,
-  'even':           isEvenNumber,
+  'nullHashMap': isNullHashMap,
+  'nullhashmap': isNullHashMap,
+  'nilHashMap':  isNullHashMap,
+  'nilhashmap':  isNullHashMap,
+  'nullMap':     isNullHashMap,
+  'nullmap':     isNullHashMap,
+  'nilMap':      isNullHashMap,
+  'nilmap':      isNullHashMap,
 
-  'equalTo':        isEqualTo,
-  'equal':          isEqualTo,
-  'eq':             isEqualTo,
+  'undefinedHashMap': isUndefinedHashMap,
+  'undefinedhashmap': isUndefinedHashMap,
+  'undefinedMap':     isUndefinedHashMap,
+  'undefinedmap':     isUndefinedHashMap,
+  'voidHashMap':      isUndefinedHashMap,
+  'voidhashmap':      isUndefinedHashMap,
+  'voidMap':          isUndefinedHashMap,
+  'voidmap':          isUndefinedHashMap,
 
-  'greaterThan':    isGreaterThan,
-  'greater':        isGreaterThan,
-  'gt':             isGreaterThan,
+  'booleanHashMap': isBooleanHashMap,
+  'booleanhashmap': isBooleanHashMap,
+  'boolHashMap':    isBooleanHashMap,
+  'boolhashmap':    isBooleanHashMap,
+  'booleanMap':     isBooleanHashMap,
+  'booleanmap':     isBooleanHashMap,
+  'boolMap':        isBooleanHashMap,
+  'boolmap':        isBooleanHashMap,
+
+  'stringHashMap': isStringHashMap,
+  'stringhashmap': isStringHashMap,
+  'strHashMap':    isStringHashMap,
+  'strhashmap':    isStringHashMap,
+  'stringMap':     isStringHashMap,
+  'stringmap':     isStringHashMap,
+  'strMap':        isStringHashMap,
+  'strmap':        isStringHashMap,
+
+  'numberHashMap': isNumberHashMap,
+  'numberhashmap': isNumberHashMap,
+  'numHashMap':    isNumberHashMap,
+  'numhashmap':    isNumberHashMap,
+  'numberMap':     isNumberHashMap,
+  'numbermap':     isNumberHashMap,
+  'numMap':        isNumberHashMap,
+  'nummap':        isNumberHashMap,
+
+  'nanHashMap': isNanHashMap,
+  'nanhashmap': isNanHashMap,
+  'nanMap':     isNanHashMap,
+  'nanmap':     isNanHashMap,
+
+  'empty': isEmpty,
+
+  'cappedHashMap': isCapped,
+  'cappedhashmap': isCapped,
+  'cappedMap':     isCapped,
+  'cappedmap':     isCapped,
+  'capped':        isCapped,
+
+  'frozenHashMap': isFrozen,
+  'frozenhashmap': isFrozen,
+  'frozenMap':     isFrozen,
+  'frozenmap':     isFrozen,
+  'frozen':        isFrozen,
+
+  'sealedHashMap': isSealed,
+  'sealedhashmap': isSealed,
+  'sealedMap':     isSealed,
+  'sealedmap':     isSealed,
+  'sealed':        isSealed,
+
+  'wholeNumber': isWholeNumber,
+  'wholenumber': isWholeNumber,
+  'wholeNum':    isWholeNumber,
+  'wholenum':    isWholeNumber,
+  'whole':       isWholeNumber,
+
+  'oddNumber': isOddNumber,
+  'oddnumber': isOddNumber,
+  'oddNum':    isOddNumber,
+  'oddnum':    isOddNumber,
+  'odd':       isOddNumber,
+
+  'evenNumber': isEvenNumber,
+  'evennumber': isEvenNumber,
+  'evenNum':    isEvenNumber,
+  'evennum':    isEvenNumber,
+  'even':       isEvenNumber,
+
+  'equalTo': isEqualTo,
+  'equalto': isEqualTo,
+  'equal':   isEqualTo,
+  'eq':      isEqualTo,
+
+  'greaterThan': isGreaterThan,
+  'greaterthan': isGreaterThan,
+  'greater':     isGreaterThan,
+  'gt':          isGreaterThan,
 
   'greaterOrEqual': isGreaterOrEqual,
+  'greaterorequal': isGreaterOrEqual,
   'greaterEqual':   isGreaterOrEqual,
+  'greaterequal':   isGreaterOrEqual,
   'ge':             isGreaterOrEqual,
 
-  'lessThan':       isLessThan,
-  'less':           isLessThan,
-  'lt':             isLessThan,
+  'lessThan': isLessThan,
+  'lessthan': isLessThan,
+  'less':     isLessThan,
+  'lt':       isLessThan,
 
-  'lessOrEqual':    isLessOrEqual,
-  'lessEqual':      isLessOrEqual,
-  'le':             isLessOrEqual,
+  'lessOrEqual': isLessOrEqual,
+  'lessorequal': isLessOrEqual,
+  'lessEqual':   isLessOrEqual,
+  'lessequal':   isLessOrEqual,
+  'le':          isLessOrEqual,
 
-  'notEqualTo':     isNotEqualTo,
-  'notEqual':       isNotEqualTo,
-  'ne':             isNotEqualTo,
+  'notEqualTo': isNotEqualTo,
+  'notequalto': isNotEqualTo,
+  'notEqual':   isNotEqualTo,
+  'notequal':   isNotEqualTo,
+  'ne':         isNotEqualTo,
 
-  'buffer':         isBuffer,
-  'buff':           isBuffer,
-  'buf':            isBuffer,
+  'buffer': isBuffer,
+  'buff':   isBuffer,
+  'buf':    isBuffer,
 
-  'directoryPath':  isDirectory,
-  'directorypath':  isDirectory,
-  'directory':      isDirectory,
-  'dirPath':        isDirectory,
-  'dirpath':        isDirectory,
-  'dir':            isDirectory,
+  'directoryPath': isDirectory,
+  'directorypath': isDirectory,
+  'directory':     isDirectory,
+  'dirPath':       isDirectory,
+  'dirpath':       isDirectory,
+  'dir':           isDirectory,
 
-  'filePath':       isFile,
-  'filepath':       isFile,
-  'file':           isFile
+  'filePath': isFile,
+  'filepath': isFile,
+  'file':     isFile
 };
 /// #}}} @const IS
 
