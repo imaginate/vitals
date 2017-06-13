@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * HAS-TAG HELPER
+ * HAS-COMMAND HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -22,13 +22,13 @@ var loadHelper = require('./load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const TAG
+/// #{{{ @const CMD
 /**
  * @private
  * @const {!RegExp}
  */
-var TAG = /^[ \t]*\/\/\/[ \t]+#/;
-/// #}}} @const TAG
+var CMD = /^[ \t]*\/\/\/[ \t]+#/;
+/// #}}} @const CMD
 
 /// #{{{ @const IS
 /**
@@ -59,22 +59,22 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasTag
+/// #{{{ @func hasCommand
 /**
  * @public
- * @param {string} src
+ * @param {string} text
  * @return {boolean}
  */
-function hasTag(src) {
+function hasCommand(text) {
 
-  if ( !isString(src) )
-    throw new TypeError('invalid `src` data type (valid types: `string`)');
+  if ( !isString(text) )
+    throw new TypeError('invalid `text` data type (valid types: `string`)');
 
-  return !!src && TAG.test(src);
+  return !!text && CMD.test(text);
 }
-/// #}}} @func hasTag
+/// #}}} @func hasCommand
 
-module.exports = hasTag;
+module.exports = hasCommand;
 
 /// #}}} @group EXPORTS
 
