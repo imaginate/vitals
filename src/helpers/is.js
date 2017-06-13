@@ -407,7 +407,7 @@ var $is = (function $isPrivateScope() {
 
     // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
-      return true;
+      return YES;
 
     // functions
     if (typeof val === 'function')
@@ -415,7 +415,7 @@ var $is = (function $isPrivateScope() {
 
     // remaining primitives
     if (typeof val !== 'object')
-      return false;
+      return NO;
 
     // arrays
     if ($objStr(val) === '[object Array]')
@@ -424,9 +424,9 @@ var $is = (function $isPrivateScope() {
     // remaining objects
     for (key in val) {
       if ( $own(val, key) )
-        return false;
+        return NO;
     }
-    return true;
+    return YES;
   }
   /// #}}} @func isEmpty
 
