@@ -523,28 +523,16 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 - [Block Constructor][blk-construct]
 - [Block Members][blk-members]
 - [Block Methods][blk-methods]
-  - [Block.prototype.addClose][blk-add-close]
-  - [Block.prototype.addBlock][blk-add-blk]
-  - [Block.prototype.addConditional][blk-add-cond]
-  - [Block.prototype.addInclude][blk-add-incl]
-  - [Block.prototype.addLine][blk-add-line]
+  - [Blk.prototype.isClose][blk-is-close]
+  - [Blk.prototype.setClose][blk-set-close]
 <br>
 
-[blk-add-close]: #user-content-blk-method-add-close
-[blk-add-blk]: #user-content-blk-method-add-blk
-[blk-add-cond]: #user-content-blk-method-add-cond
-[blk-add-incl]: #user-content-blk-method-add-incl
-[blk-add-line]: #user-content-blk-method-add-line
-[blk-add-close-params]: #user-content-blk-method-add-close-params
-[blk-add-blk-params]: #user-content-blk-method-add-blk-params
-[blk-add-cond-params]: #user-content-blk-method-add-cond-params
-[blk-add-incl-params]: #user-content-blk-method-add-incl-params
-[blk-add-line-params]: #user-content-blk-method-add-line-params
-[blk-add-close-returns]: #user-content-blk-method-add-close-returns
-[blk-add-blk-returns]: #user-content-blk-method-add-blk-returns
-[blk-add-cond-returns]: #user-content-blk-method-add-cond-returns
-[blk-add-incl-returns]: #user-content-blk-method-add-incl-returns
-[blk-add-line-returns]: #user-content-blk-method-add-line-returns
+[blk-is-close]: #user-content-blk-method-is-close
+[blk-set-close]: #user-content-blk-method-set-close
+[blk-is-close-params]: #user-content-blk-method-is-close-params
+[blk-set-close-params]: #user-content-blk-method-set-close-params
+[blk-is-close-returns]: #user-content-blk-method-is-close-returns
+[blk-set-close-returns]: #user-content-blk-method-set-close-returns
 
 <a name="blk-construct"></a>
 ### Block Constructor
@@ -596,6 +584,53 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 
 <a name="blk-methods"></a>
 ### Block Methods
+
+- [Blk.prototype.isClose][blk-is-close]
+  - [Parameters][blk-is-close-params]
+  - [Returns][blk-is-close-returns]
+- [Blk.prototype.setClose][blk-set-close]
+  - [Parameters][blk-set-close-params]
+  - [Returns][blk-set-close-returns]
+
+<a name="blk-method-is-close"></a>
+### Blk.prototype.isClose
+This method tests if a line of text is a valid closing [block][blk] *command* and if it matches the [block][blk] instance's [tag][blk-tag] and [ID][blk-id].
+
+<a name="blk-method-is-close-params"></a>
+#### Blk.prototype.isClose Parameters
+
+|    | Parameter                                   | Data Type  | Description
+|:---|:--------------------------------------------|:-----------|:------------
+| 1  | <a name="blk-method-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
+
+[blk-is-close-text]: #user-content-blk-method-is-close-text
+
+<a name="blk-method-is-close-returns"></a>
+#### Blk.prototype.isClose Returns
+
+| Data Type   | Description
+|:------------|:------------
+| *`boolean`* | The result of the [close][close-cmd] *command* test.
+
+<a name="blk-method-set-close"></a>
+### Blk.prototype.setClose
+This method sets the [close][blk-close] property for the [Blk][blk] instance.
+
+<a name="blk-method-set-close-params"></a>
+#### Blk.prototype.setClose Parameters
+
+|    | Parameter                                      | Data Type | Description
+|:---|:-----------------------------------------------|:----------|:------------
+| 1  | <a name="blk-method-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
+
+[blk-set-close-close]: #user-content-blk-method-set-close-close
+
+<a name="blk-method-set-close-returns"></a>
+#### Blk.prototype.setClose Returns
+
+| Data Type | Description
+|:----------|:------------
+| *`void`*  | This method does not return a value.
 <br>
 
 
