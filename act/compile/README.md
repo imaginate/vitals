@@ -399,23 +399,30 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 5. <p><strong><a href="#user-content-ins">Inserts</a></strong></p>
 
 ### The 5 Command Components
-1. <p><strong><a href="#user-content-rule2">Comment</a></strong></p>
-2. <p><strong><a href="#user-content-rule3">Action</a></strong></p>
-3. <p><strong><a href="#user-content-rule5">Tag</a></strong></p>
-4. <p><strong><a href="#user-content-rule6">ID</a></strong></p>
-5. <p><strong><a href="#user-content-rule7">Path</a></strong></p>
+1. <p><strong><a href="#user-content-cmd-rule2">Comment</a></strong></p>
+2. <p><strong><a href="#user-content-cmd-rule3">Action</a></strong></p>
+3. <p><strong><a href="#user-content-cmd-rule5">Tag</a></strong></p>
+4. <p><strong><a href="#user-content-cmd-rule6">ID</a></strong></p>
+5. <p><strong><a href="#user-content-cmd-rule7">Path</a></strong></p>
 
 ### The 7 Command Rules
-1. <p><a name="rule1"></a><strong>No Sharing</strong></p><p>A compile <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
-2. <p><a name="rule2"></a><strong>Start With 3</strong></p><p>A compile <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
-3. <p><a name="rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
-4. <p><a name="rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
-5. <p><a name="rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
-6. <p><a name="rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-groups">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
-7. <p><a name="rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-groups">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
+1. <p><a name="cmd-rule1"></a><strong>No Sharing</strong></p><p>A compile <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
+2. <p><a name="cmd-rule2"></a><strong>Start With 3</strong></p><p>A compile <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
+3. <p><a name="cmd-rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
+4. <p><a name="cmd-rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
+5. <p><a name="cmd-rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
+6. <p><a name="cmd-rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-groups">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
+7. <p><a name="cmd-rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-groups">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
 <br>
 
 [syntax]: #user-content-syntax
+[cmd-rule1]: #user-content-cmd-rule1
+[cmd-rule2]: #user-content-cmd-rule2
+[cmd-rule3]: #user-content-cmd-rule3
+[cmd-rule4]: #user-content-cmd-rule4
+[cmd-rule5]: #user-content-cmd-rule5
+[cmd-rule6]: #user-content-cmd-rule6
+[cmd-rule7]: #user-content-cmd-rule7
 [root-scope]: #user-content-root-cmd-scope
 [root-cmd]: #user-content-root-cmd-scope
 [grps]: #user-content-groups
@@ -832,58 +839,124 @@ This method sets the [close][def-close] property for the [Def][def] instance.
 
 <a name="refs"></a>
 ## Reference Commands
-<ADD-DESCRIP>
+[Reference][refs] *commands* allow you to use code from other [file][file] or [command][root-cmd] scopes.
 
-### GOTO
-- [Include Class](#user-content-incl)
-- [Insert Class](#user-content-ins)
-
+- [Include Command & Class][incl]
+  - [Incl Action Syntax][incl-act]
+  - [Incl Constructor][incl-new]
+  - [Incl Instance Properties][incl-props]
+  - [Incl.prototype.][incl-]
+- [Insert Command & Class][ins]
+  - [Ins Action Syntax][ins-act]
+  - [Ins Constructor][ins-new]
+  - [Ins Instance Properties][ins-props]
+<br>
 
 <a name="incl"></a>
-## Include Class
+## Include Command & Class
+The [include][incl] *command* is a general [reference][refs] *command* that allows you to include the [content][blk-content] of a [root command][root-cmd] from another [file][file] into the [content][file-content] of your current [file][file]. The [include class][incl], `Incl`, wraps each [include][incl] *command*.
 
-| Action       | Constructor | Description
-|:-------------|:------------|:------------
-| `"#include"` | `Incl`      | <ADD-DESCRIP>
+- [Incl Action Syntax][incl-act]
+- [Incl Constructor][incl-new]
+- [Incl Instance Properties][incl-props]
+- [Incl.prototype.][incl-]
+  - [Parameters][incl--params]
+  - [Returns][incl--returns]
+<br>
+
+<a name="incl-actions"></a>
+## Incl Action Syntax
+
+| Action       |
+|:-------------|
+| `"#include"` |
+<br>
+
+<a name="incl-constructor"></a>
+## Incl Constructor
+This method creates `Incl` instances. Use the `new` keyword when calling `Incl` (e.g. `incl = new Incl(line, file, cmd);`).
+
+|    | Parameter                                    | Data Type          | Description
+|:---|:---------------------------------------------|:-------------------|:------------
+| 1  | <a name="incl-constructor-line"></a>line     | *`!Line`*          | The defining [Line][line] instance.
+| 2  | <a name="incl-constructor-file"></a>file     | *`!File`*          | The parent [File][file] instance.
+| 3  | <a name="incl-constructor-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
+<br>
+
+[incl-new-line]: #user-content-incl-constructor-line
+[incl-new-file]: #user-content-incl-constructor-file
+[incl-new-parent]: #user-content-incl-constructor-parent
 
 <a name="incl-members"></a>
-### Include Members
+## Incl Instance Properties
 
-| Member | Data Type         | Description
-|:-------|:------------------|:------------
-| type   | *`!Object`*       | A pointer to a unique `object` instance designated for the `Incl` class.
-| tag    | *`string`*        | The `Incl` instance's *tag* name (e.g. `"/// #include @tag id"`).
-| id     | *`string`*        | The `Incl` instance's *ID* name (e.g. `"/// #include @tag id"`).
-| path   | *`string`*        | The `Incl` instance's *path* value (e.g. `"/// #include @tag id ./path/to/file.js"`).
-| file   | *`!File`*         | A pointer to the parent `File` instance.
-| line   | *`!Line`*         | A pointer to defining `Line` instance.
-| parent | *`(?Blk\|?Cond)`* | A pointer to the parent `Blk` or `Cond` instance. It is `null` if it is at the root scope of the `File` instance (i.e. it becomes a [root scope](#user-content-root-scope) *command*).
-| blk    | *`!Blk`*          | A pointer to the included `Blk` instance.
+| Property Name                           | Data Type         | Description
+|:----------------------------------------|:------------------|:------------
+| <a name="incl-member-type"></a>type     | *`!Object`*       | A pointer to a unique `object` instance designated for the [Incl][incl] class.
+| <a name="incl-member-tag"></a>tag       | *`string`*        | The [Incl][incl] instance's [tag][incl-tag] name (e.g. `"/// #include @tag id"`).
+| <a name="incl-member-id"></a>id         | *`string`*        | The [Incl][incl] instance's [ID][incl-id] name (e.g. `"/// #include @tag id"`).
+| <a name="incl-member-path"></a>path     | *`string`*        | The [Incl][incl] instance's [path][incl-path] value (e.g. `"/// #include @tag id ./path/to/file.js"`).
+| <a name="incl-member-file"></a>file     | *`!File`*         | A pointer to the parent [File][file] instance.
+| <a name="incl-member-line"></a>line     | *`!Line`*         | A pointer to defining [Line][line] instance.
+| <a name="incl-member-parent"></a>parent | *`(?Blk\|?Cond)`* | A pointer to the parent [Blk][blk] or [Cond][cond] instance. It is `null` if it is at the root scope of the [File][file] instance (i.e. it becomes like a [root][root-cmd] [group][grps] *command*).
+| <a name="incl-member-cmd"></a>cmd       | *`!Blk`*          | A pointer to the included [Blk][blk] instance.
+<br>
 
-<a name="incl-methods"></a>
-### Include Methods
+[incl-type]: #user-content-incl-member-type
+[incl-tag]: #user-content-incl-member-tag
+[incl-id]: #user-content-incl-member-id
+[incl-path]: #user-content-incl-member-path
+[incl-file]: #user-content-incl-member-file
+[incl-line]: #user-content-incl-member-line
+[incl-parent]: #user-content-incl-member-parent
+[incl-cmd]: #user-content-incl-member-cmd
 
 
 <a name="ins"></a>
-## Insert Class
+## Insert Command & Class
+The [insert][ins] *command* is a special [reference][refs] *command* that allows you to insert the [lines][def-lines] of any [define][def] *command* into the [lines][file-lines] of your current [file][file] during the [preprocess][file-preprocess] stage (i.e. before any [block][blk], [conditional][cond], or [include][incl] *commands* are processed). If you would like to [insert][ins] a [define][def] from the same [file][file], you do not need to add a [path component][cmd-rule7] to the [insert][ins] *command*. The [insert class][ins], `Ins`, wraps each [insert][ins] *command*.
 
-| Action      | Constructor | Description
-|:------------|:------------|:------------
-| `"#insert"` | `Ins`       | <ADD-DESCRIP>
+- [Ins Action Syntax][ins-act]
+- [Ins Constructor][ins-new]
+- [Ins Instance Properties][ins-props]
+<br>
+
+<a name="ins-actions"></a>
+## Ins Action Syntax
+
+| Action      |
+|:------------|
+| `"#insert"` |
+<br>
+
+<a name="ins-constructor"></a>
+## Ins Constructor
+This method creates `Ins` instances. Use the `new` keyword when calling `Ins` (e.g. `ins = new Ins(line, 1, file);`).
+
+|    | Parameter                                 | Data Type  | Description
+|:---|:------------------------------------------|:-----------|:------------
+| 1  | <a name="ins-constructor-line"></a>line   | *`!Line`*  | The defining [Line][line] instance.
+| 2  | <a name="ins-constructor-index"></a>index | *`number`* | The defining [index][ins-index] within the parent [File][file] instance's [lines][file-lines] `array`.
+| 3  | <a name="ins-constructor-file"></a>file   | *`!File`*  | The parent [File][file] instance.
+<br>
+
+[ins-new-line]: #user-content-ins-constructor-line
+[ins-new-index]: #user-content-ins-constructor-index
+[ins-new-file]: #user-content-ins-constructor-file
 
 <a name="ins-members"></a>
-### Insert Members
+## Ins Instance Properties
 
-| Member | Data Type         | Description
-|:-------|:------------------|:------------
-| type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Ins][ins] class.
-| tag    | *`string`*        | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
-| id     | *`string`*        | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
-| path   | *`string`*        | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
-| file   | *`!File`*         | A pointer to the parent [File][file] instance.
-| line   | *`!Line`*         | A pointer to defining [Line][line] instance.
-| def    | *`!Def`*          | A pointer to the included [Def][def] instance.
-| index  | *`number`*        | The index of the defining [Line][line] instance's place in the [File][file] instance's [lines][file-lines] `array`.
+| Property Name                        | Data Type         | Description
+|:-------------------------------------|:------------------|:------------
+| <a name="ins-member-type"></a>type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Ins][ins] class.
+| <a name="ins-member-tag"></a>tag     | *`string`*        | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
+| <a name="ins-member-id"></a>id       | *`string`*        | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
+| <a name="ins-member-path"></a>path   | *`string`*        | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
+| <a name="ins-member-file"></a>file   | *`!File`*         | A pointer to the parent [File][file] instance.
+| <a name="ins-member-line"></a>line   | *`!Line`*         | A pointer to defining [Line][line] instance.
+| <a name="ins-member-def"></a>def     | *`!Def`*          | A pointer to the included [Def][def] instance.
+| <a name="ins-member-index"></a>index | *`number`*        | The index of the defining [Line][line] instance's place in the [File][file] instance's [lines][file-lines] `array`.
 <br>
 
 [ins-type]: #user-content-ins-member-type
@@ -894,8 +967,4 @@ This method sets the [close][def-close] property for the [Def][def] instance.
 [ins-line]: #user-content-ins-member-line
 [ins-def]: #user-content-ins-member-def
 [ins-index]: #user-content-ins-member-index
-
-<a name="ins-methods"></a>
-### Insert Methods
-
 
