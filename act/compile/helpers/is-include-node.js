@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * HAS-INSERT-COMMAND HELPER
+ * IS-INCLUDE-NODE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -8,35 +8,36 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const CMD
+/// #{{{ @const INCL_TYPE_ID
 /**
  * @private
- * @const {!RegExp}
+ * @const {!Object}
  */
-var CMD = /^[ \t]*\/\/\/[ \t]+#insert[ \t]/;
-/// #}}} @const CMD
+var INCL_TYPE_ID = require('./type-ids.js').include;
+/// #}}} @const INCL_TYPE_ID
 
 /// #{{{ @const IS
 /**
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -44,14 +45,15 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isString
+/// #{{{ @func isObject
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isString = IS.string;
-/// #}}} @func isString
+var isObject = IS.object;
+/// #}}} @func isObject
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group EXPORTS
@@ -59,22 +61,18 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasInsertCommand
+/// #{{{ @func isIncludeNode
 /**
  * @public
- * @param {string} text
+ * @param {*} val
  * @return {boolean}
  */
-function hasInsertCommand(text) {
-
-  if ( !isString(text) )
-    throw new TypeError('invalid `text` data type (valid types: `string`)');
-
-  return !!text && CMD.test(text);
+function isIncludeNode(val) {
+  return isObject(val) && 'type' in val && val.type === INCL_TYPE_ID;
 }
-/// #}}} @func hasInsertCommand
+/// #}}} @func isIncludeNode
 
-module.exports = hasInsertCommand;
+module.exports = isIncludeNode;
 
 /// #}}} @group EXPORTS
 

@@ -8,14 +8,14 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group OBJECT-CONTROL
 //////////////////////////////////////////////////////////////////////////////
@@ -29,7 +29,7 @@ var loadHelper = require('./load-helper.js');
  * @param {boolean=} deep
  * @return {?Object}
  */
-var freezeObject = loadHelper('freeze-object');
+var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
 
 /// #}}} @group OBJECT-CONTROL

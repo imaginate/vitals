@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-DIRECTORY-NODE HELPER
+ * IS-FILE-NODE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -8,35 +8,35 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const FILE_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var FILE_TYPE_ID = require('./type-ids.js').file;
+/// #}}} @const FILE_TYPE_ID
+
 /// #{{{ @const IS
 /**
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
-
-/// #{{{ @const DIR_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var DIR_TYPE_ID = require('./type-ids.js').directory;
-/// #}}} @const DIR_TYPE_ID
 
 /// #}}} @group CONSTANTS
 
@@ -61,18 +61,18 @@ var isObject = IS.object;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isDirectoryNode
+/// #{{{ @func isFileNode
 /**
  * @public
  * @param {*} val
  * @return {boolean}
  */
-function isDirectoryNode(val) {
-  return isObject(val) && 'type' in val && val.type === DIR_TYPE_ID;
+function isFileNode(val) {
+  return isObject(val) && 'type' in val && val.type === FILE_TYPE_ID;
 }
-/// #}}} @func isDirectoryNode
+/// #}}} @func isFileNode
 
-module.exports = isDirectoryNode;
+module.exports = isFileNode;
 
 /// #}}} @group EXPORTS
 

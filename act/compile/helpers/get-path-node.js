@@ -8,14 +8,14 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,8 +27,9 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -36,15 +37,15 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwn
+/// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwn = loadHelper('has-own-property');
-/// #}}} @func hasOwn
+var hasOwnProperty = loadTaskHelper('has-own-property');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isDirNode
 /**
@@ -52,7 +53,7 @@ var hasOwn = loadHelper('has-own-property');
  * @param {*} val
  * @return {boolean}
  */
-var isDirNode = require('./dir.js').isDirNode;
+var isDirNode = require('./is-directory-node.js');
 /// #}}} @func isDirNode
 
 /// #{{{ @func isFileNode
@@ -61,7 +62,7 @@ var isDirNode = require('./dir.js').isDirNode;
  * @param {*} val
  * @return {boolean}
  */
-var isFileNode = require('./file.js').isFileNode;
+var isFileNode = require('./is-file-node.js');
 /// #}}} @func isFileNode
 
 /// #{{{ @func isString
@@ -72,6 +73,7 @@ var isFileNode = require('./file.js').isFileNode;
  */
 var isString = IS.string;
 /// #}}} @func isString
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -93,13 +95,14 @@ function getNode(src, name) {
       ? src.parent
       : isFileNode(src)
         ? null
-        : hasOwn(src.dirs, name)
+        : hasOwnProperty(src.dirs, name)
           ? src.dirs[name]
-          : hasOwn(src.files, name)
+          : hasOwnProperty(src.files, name)
             ? src.files[name]
             : null;
 }
 /// #}}} @func getNode
+
 /// #}}} @group METHODS
 
 /// #{{{ @group EXPORTS
@@ -126,9 +129,11 @@ function getPathNode(src, path) {
   var i;
 
   if ( !isDirNode(src) && !isFileNode(src) )
-    throw new TypeError('invalid `src` data type (valid types: `!Dir|!File`)');
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `!Dir|!File`');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type (valid types: `string`)');
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
 
   names = path.split('/');
   node = src;

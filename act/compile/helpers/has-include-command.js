@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-CONDITIONAL-NODE HELPER
+ * HAS-INCLUDE-COMMAND HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -8,35 +8,35 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const CMD
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var CMD = /^[ \t]*\/\/\/[ \t]+#include[ \t]/;
+/// #}}} @const CMD
+
 /// #{{{ @const IS
 /**
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
-
-/// #{{{ @const COND_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var COND_TYPE_ID = require('./type-ids.js').conditional;
-/// #}}} @const COND_TYPE_ID
 
 /// #}}} @group CONSTANTS
 
@@ -45,14 +45,14 @@ var COND_TYPE_ID = require('./type-ids.js').conditional;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isObject
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
+var isString = IS.string;
+/// #}}} @func isString
 
 /// #}}} @group HELPERS
 
@@ -61,18 +61,23 @@ var isObject = IS.object;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isConditionalNode
+/// #{{{ @func hasIncludeCommand
 /**
  * @public
- * @param {*} val
+ * @param {string} text
  * @return {boolean}
  */
-function isConditionalNode(val) {
-  return isObject(val) && 'type' in val && val.type === COND_TYPE_ID;
-}
-/// #}}} @func isConditionalNode
+function hasIncludeCommand(text) {
 
-module.exports = isConditionalNode;
+  if ( !isString(text) )
+    throw new TypeError('invalid `text` data type\n' +
+      '    valid-types: `string`');
+
+  return !!text && CMD.test(text);
+}
+/// #}}} @func hasIncludeCommand
+
+module.exports = hasIncludeCommand;
 
 /// #}}} @group EXPORTS
 

@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * HAS-INCLUDE-COMMAND HELPER
+ * HAS-BLOCK-COMMAND HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -8,14 +8,14 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!RegExp}
  */
-var CMD = /^[ \t]*\/\/\/[ \t]+#include[ \t]/;
+var CMD = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]/;
 /// #}}} @const CMD
 
 /// #{{{ @const IS
@@ -35,8 +35,9 @@ var CMD = /^[ \t]*\/\/\/[ \t]+#include[ \t]/;
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -52,6 +53,7 @@ var IS = loadHelper('is');
  */
 var isString = IS.string;
 /// #}}} @func isString
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group EXPORTS
@@ -59,22 +61,23 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasIncludeCommand
+/// #{{{ @func hasBlockCommand
 /**
  * @public
  * @param {string} text
  * @return {boolean}
  */
-function hasIncludeCommand(text) {
+function hasBlockCommand(text) {
 
   if ( !isString(text) )
-    throw new TypeError('invalid `text` data type (valid types: `string`)');
+    throw new TypeError('invalid `text` data type\n' +
+      '    valid-types: `string`');
 
   return !!text && CMD.test(text);
 }
-/// #}}} @func hasIncludeCommand
+/// #}}} @func hasBlockCommand
 
-module.exports = hasIncludeCommand;
+module.exports = hasBlockCommand;
 
 /// #}}} @group EXPORTS
 

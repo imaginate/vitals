@@ -8,14 +8,14 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
 /// #{{{ @const KEY_HASH
@@ -52,7 +52,7 @@ var KEY_HASH = /^[a-zA-Z0-9_\-\.]+:[a-zA-Z0-9_\-\.\$]+$/;
  * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwnProperty = loadHelper('has-own-property');
+var hasOwnProperty = loadTaskHelper('has-own-property');
 /// #}}} @func hasOwnProperty
 
 /// #{{{ @func isBlkNode

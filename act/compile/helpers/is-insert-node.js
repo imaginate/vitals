@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * HAS-BLOCK-COMMAND HELPER
+ * IS-INSERT-NODE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -8,35 +8,36 @@
 
 'use strict';
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const CMD
+/// #{{{ @const INS_TYPE_ID
 /**
  * @private
- * @const {!RegExp}
+ * @const {!Object}
  */
-var CMD = /^[ \t]*\/\/\/[ \t]+#(?:\{{3}|\}{3})[ \t]/;
-/// #}}} @const CMD
+var INS_TYPE_ID = require('./type-ids.js').insert;
+/// #}}} @const INS_TYPE_ID
 
 /// #{{{ @const IS
 /**
  * @private
  * @const {!Object<string, !function>}
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -44,14 +45,15 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isString
+/// #{{{ @func isObject
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isString = IS.string;
-/// #}}} @func isString
+var isObject = IS.object;
+/// #}}} @func isObject
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group EXPORTS
@@ -59,22 +61,18 @@ var isString = IS.string;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasBlockCommand
+/// #{{{ @func isInsertNode
 /**
  * @public
- * @param {string} text
+ * @param {*} val
  * @return {boolean}
  */
-function hasBlockCommand(text) {
-
-  if ( !isString(text) )
-    throw new TypeError('invalid `text` data type (valid types: `string`)');
-
-  return !!text && CMD.test(text);
+function isInsertNode(val) {
+  return isObject(val) && 'type' in val && val.type === INS_TYPE_ID;
 }
-/// #}}} @func hasBlockCommand
+/// #}}} @func isInsertNode
 
-module.exports = hasBlockCommand;
+module.exports = isInsertNode;
 
 /// #}}} @group EXPORTS
 
