@@ -71,28 +71,13 @@ var freezeObject = loadHelper('freeze-object');
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
+
 /// #}}} @group OBJECT-CONTROL
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const FILE_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var FILE_TYPE_ID = freezeObject({});
-/// #}}} @const FILE_TYPE_ID
-
-/// #{{{ @const SRC_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var SRC_EXT = /\.js$/;
-/// #}}} @const SRC_EXT
 
 /// #{{{ @const DEST_EXT
 /**
@@ -102,6 +87,14 @@ var SRC_EXT = /\.js$/;
 var DEST_EXT = /\.js$/;
 /// #}}} @const DEST_EXT
 
+/// #{{{ @const FILE_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var FILE_TYPE_ID = require('./type-ids.js').file;
+/// #}}} @const FILE_TYPE_ID
+
 /// #{{{ @const IS
 /**
  * @private
@@ -109,6 +102,15 @@ var DEST_EXT = /\.js$/;
  */
 var IS = loadHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const SRC_EXT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var SRC_EXT = /\.js$/;
+/// #}}} @const SRC_EXT
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -335,20 +337,6 @@ var hasInsCmd = require('./has-insert-command.js');
 var hasOpenCmd = require('./has-open-command.js');
 /// #}}} @func hasOpenCmd
 
-/// #{{{ @func hasOwnCmd
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {string} key
- * @return {boolean}
- */
-function hasOwnCmd(src, key) {
-  return hasOwnProp(src.blks, key)
-    || hasOwnProp(src.conds, key)
-    || hasOwnProp(src.incls, key);
-}
-/// #}}} @func hasOwnCmd
-
 /// #{{{ @func hasOwnProp
 /**
  * @private
@@ -371,26 +359,16 @@ var isBoolean = IS.boolean;
 /// #{{{ @func isBooleanMap
 /**
  * @private
- * @param {!Object} vals
+ * @param {*} val
  * @return {boolean}
  */
-function isBooleanMap(vals) {
-
-  /** @type {string} */
-  var key;
-
-  for (key in vals) {
-    if ( hasOwnProp(vals, key) && !isBoolean(vals[key]) )
-      return false;
-  }
-  return true;
-}
+var isBooleanMap = IS.booleanHashMap;
 /// #}}} @func isBooleanMap
 
 /// #{{{ @func isDirectory
 /**
  * @private
- * @param {string} val
+ * @param {string} path
  * @return {boolean}
  */
 var isDirectory = IS.directory;
@@ -402,13 +380,13 @@ var isDirectory = IS.directory;
  * @param {*} val
  * @return {boolean}
  */
-var isDirNode = require('./dir.js').isDirNode;
+var isDirNode = require('./is-directory-node.js');
 /// #}}} @func isDirNode
 
 /// #{{{ @func isFile
 /**
  * @private
- * @param {string} val
+ * @param {string} path
  * @return {boolean}
  */
 var isFile = IS.file;
@@ -420,9 +398,7 @@ var isFile = IS.file;
  * @param {*} val
  * @return {boolean}
  */
-function isFileNode(val) {
-  return isObject(val) && 'type' in val && val.type === FILE_TYPE_ID;
-}
+var isFileNode = require('./is-file-node.js');
 /// #}}} @func isFileNode
 
 /// #{{{ @func isFunction
@@ -470,6 +446,16 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #{{{ @func ownsCmd
+/**
+ * @private
+ * @param {(!File|!Blk|!Cond)} src
+ * @param {(string|!Blk|!Cond|!Incl)} node
+ * @return {boolean}
+ */
+var ownsCmd = require('./owns-command.js');
+/// #}}} @func ownsCmd
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -497,6 +483,7 @@ var toFile = loadHelper('to-file');
  */
 var trimPathName = loadHelper('trim-pathname');
 /// #}}} @func trimPathName
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -531,96 +518,6 @@ function mkInsArgs(insert) {
 }
 /// #}}} @func mkInsArgs
 
-/// #{{{ @func mk
-/**
- * @private
- * @param {} 
- * @return {void}
- */
-function mk() {
-
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {string} */
-  var path;
-  /** @type {!Array<(!Dir|!File)>} */
-  var kids;
-  /** @type {(!Dir|!File)} */
-  var kid;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  kids = dir.kids;
-
-  paths = getFilepaths(dir.path, {
-    'deep': false,
-    'full': true,
-    'validFiles': /\.js$/
-  });
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    path = paths[i];
-    kid = new File(path, dir);
-    kids.push(kid);
-  }
-
-  paths = getDirpaths(dir.path, {
-    'deep': false,
-    'full': true,
-    'extend': true,
-    'invalidDirs': /^\./
-  });
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    path = paths[i];
-    kid = new Dir(path, dir);
-    kids.push(kid);
-  }
-
-  capObject(kids);
-  sealObject(kids);
-
-  /** @type {!Array<!Ins>} */
-  var inserts;
-  /** @type {!Ins} */
-  var insert;
-  /** @type {!Array<!Line>} */
-  var lines;
-  /** @type {!Line} */
-  var line;
-  /** @type {!Array} */
-  var args;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-  /** @type {number} */
-  var u;
-
-  inserts = this.inserts;
-  lines = this.lines;
-  len = lines.length;
-  i = -1;
-  while (++i < len) {
-    line = lines[i];
-    if ( hasInsCmd(line.text) ) {
-      insert = new Ins(line, i, this);
-      inserts.push(insert);
-    }
-  }
-
-  i = inserts.length;
-  while (i--) {
-    insert = inserts[i];
-    args = [ insert.index, 1 ];
-    len = insert.lines.length;
-  }
-}
-/// #}}} @func mk
 /// #}}} @group METHODS
 
 /// #{{{ @group CONSTRUCTORS
@@ -637,7 +534,7 @@ function mk() {
  * @constructor
  * @struct
  */
-var Dir = require('./dir.js');
+var Dir = require('./directory.js');
 /// #}}} @func Dir
 
 /// #{{{ @func File
@@ -652,13 +549,16 @@ var Dir = require('./dir.js');
 function File(path, parent) {
 
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type (valid types: `string`)');
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
   if (!path)
-    throw new Error('invalid empty `path` `string`');
+    throw new Error('invalid empty `string` for `path`');
   if ( !isFile(path) )
-    throw new Error('invalid `path` `string` (must be a readable file)');
+    throw new Error('invalid readable file path `string` for `path`\n' +
+      '    path: `' + path + '`');
   if ( !isDirNode(parent) )
-    throw new TypeError('invalid `parent` data type (valid types: `!Dir`)');
+    throw new TypeError('invalid `parent` data type\n' +
+      '    valid-types: `!Dir`');
 
   /// #{{{ @group File-Constants
 
@@ -860,6 +760,7 @@ function File(path, parent) {
   sealObject(this);
 }
 /// #}}} @func File
+
 /// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group FILE-PROTOTYPE
@@ -1023,8 +924,6 @@ File.prototype.process = function process() {
   var last;
   /** @type {(!Blk|!Cond|!Incl)} */
   var cmd;
-  /** @type {string} */
-  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -1042,9 +941,8 @@ File.prototype.process = function process() {
         last.content.push(line);
       else if ( hasInclCmd(text) ) {
         cmd = new Incl(line, this, last);
-        key = cmd.tag + ':' + cmd.id;
 
-        if ( hasOwnCmd(last, key) )
+        if ( ownsCmd(last, cmd) )
           throw new Error('duplicate `include` command\n' +
             '    src-linenum: `' + (++i) + '`\n' +
             '    src-file: `' + this.path + '`\n' +
@@ -1052,15 +950,14 @@ File.prototype.process = function process() {
             '    file: `' + line.file.path + '`\n' +
             '    text: `' + text + '`');
 
-        last.incls[key] = cmd;
+        last.incls[cmd.tag + ':' + cmd.id] = cmd;
         last.content.push(cmd);
       }
       else if ( hasOpenCmd(text) ) {
         if ( hasCondCmd(text) ) {
           cmd = new Cond(line, this, last);
-          key = cmd.tag + ':' + cmd.id;
 
-          if ( hasOwnCmd(last, key) )
+          if ( ownsCmd(last, cmd) )
             throw new Error('duplicate `conditional` command\n' +
               '    src-linenum: `' + (++i) + '`\n' +
               '    src-file: `' + this.path + '`\n' +
@@ -1068,13 +965,12 @@ File.prototype.process = function process() {
               '    file: `' + line.file.path + '`\n' +
               '    text: `' + text + '`');
 
-          last.conds[key] = cmd;
+          last.conds[cmd.tag + ':' + cmd.id] = cmd;
         }
         else {
           cmd = new Blk(line, this, last);
-          key = cmd.tag + ':' + cmd.id;
 
-          if ( hasOwnCmd(last, key) )
+          if ( ownsCmd(last, cmd) )
             throw new Error('duplicate `block` command\n' +
               '    src-linenum: `' + (++i) + '`\n' +
               '    src-file: `' + this.path + '`\n' +
@@ -1082,7 +978,7 @@ File.prototype.process = function process() {
               '    file: `' + line.file.path + '`\n' +
               '    text: `' + text + '`');
 
-          last.blks[key] = cmd;
+          last.blks[cmd.tag + ':' + cmd.id] = cmd;
         }
         last.content.push(cmd);
         stack.push(cmd);
@@ -1113,9 +1009,8 @@ File.prototype.process = function process() {
       this.content.push(line);
     else if ( hasInclCmd(text) ) {
       cmd = new Incl(line, this);
-      key = cmd.tag + ':' + cmd.id;
 
-      if ( hasOwnCmd(this, key) )
+      if ( ownsCmd(this, cmd) )
         throw new Error('duplicate `include` command\n' +
           '    src-linenum: `' + (++i) + '`\n' +
           '    src-file: `' + this.path + '`\n' +
@@ -1123,7 +1018,7 @@ File.prototype.process = function process() {
           '    file: `' + line.file.path + '`\n' +
           '    text: `' + text + '`');
 
-      this.incls[key] = cmd;
+      this.incls[cmd.tag + ':' + cmd.id] = cmd;
       this.content.push(cmd);
     }
     else if ( hasCloseCmd(text) )
@@ -1143,9 +1038,8 @@ File.prototype.process = function process() {
     else {
       if ( hasCondCmd(text) ) {
         cmd = new Cond(line, this);
-        key = cmd.tag + ':' + cmd.id;
 
-        if ( hasOwnCmd(this, key) )
+        if ( ownsCmd(this, cmd) )
           throw new Error('duplicate `conditional` command\n' +
             '    src-linenum: `' + (++i) + '`\n' +
             '    src-file: `' + this.path + '`\n' +
@@ -1153,13 +1047,12 @@ File.prototype.process = function process() {
             '    file: `' + line.file.path + '`\n' +
             '    text: `' + text + '`');
 
-        this.conds[key] = cmd;
+        this.conds[cmd.tag + ':' + cmd.id] = cmd;
       }
       else {
         cmd = new Blk(line, this);
-        key = cmd.tag + ':' + cmd.id;
 
-        if ( hasOwnCmd(this, key) )
+        if ( ownsCmd(this, cmd) )
           throw new Error('duplicate `block` command\n' +
             '    src-linenum: `' + (++i) + '`\n' +
             '    src-file: `' + this.path + '`\n' +
@@ -1167,7 +1060,7 @@ File.prototype.process = function process() {
             '    file: `' + line.file.path + '`\n' +
             '    text: `' + text + '`');
 
-        this.blks[key] = cmd;
+        this.blks[cmd.tag + ':' + cmd.id] = cmd;
       }
       this.content.push(cmd);
       stack.push(cmd);
@@ -1237,24 +1130,29 @@ File.prototype.compile = function compile(dest, state, alter) {
   var i;
 
   if ( !isUndefined(alter) && !isFunction(alter) )
-    throw new TypeError('invalid `alter` data type (valid types: `(!function(string): string)=`)');
+    throw new TypeError('invalid `alter` data type\n' +
+      '    valid-types: `(!function(string): string)=`');
   if ( !isObject(state) || !isBooleanMap(state) )
-    throw new TypeError('invalid `state` data type (valid types: `!Object<string, boolean>`)');
+    throw new TypeError('invalid `state` data type\n' +
+      '    valid-types: `!Object<string, boolean>`');
   if ( !isString(dest) )
-    throw new TypeError('invalid `dest` data type (valid types: `string`)');
+    throw new TypeError('invalid `dest` data type\n' +
+      '    valid-types: `string`');
 
   if (!dest)
-    throw new Error('invalid empty `dest` `string`');
+    throw new Error('invalid empty `string` for `dest`');
 
   dest = resolvePath(dest);
 
   if ( !DEST_EXT.test(dest) )
-    throw new Error('invalid `dest` file ext (must match `' + DEST_EXT.toString() + '`)');
+    throw new Error('invalid `dest` file extension\n' +
+      '    should-match: `' + DEST_EXT.toString() + '`');
 
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
-    throw new Error('invalid `dest` directory path `' + path + '` (must be a readable directory)');
+    throw new Error('invalid readable directory path for `dest`\n' +
+      '    path: `' + path + '`');
 
   ////////////////////////////////////////////////////////////////////////////
   // ADD COMPILE LOGIC HERE
@@ -1264,12 +1162,14 @@ File.prototype.compile = function compile(dest, state, alter) {
     result = alter(result);
 
     if ( !isString(result) )
-      throw new TypeError('invalid returned `alter` data type (valid types: `string`)');
+      throw new TypeError('invalid returned `alter` data type\n' +
+        '    valid-types: `string`');
   }
 
   return toFile(result, dest);
 };
 /// #}}} @func File.prototype.compile
+
 /// #}}} @group FILE-PROTOTYPE
 
 /// #{{{ @group EXPORTS
@@ -1277,8 +1177,6 @@ File.prototype.compile = function compile(dest, state, alter) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-File.isFileNode = isFileNode;
-File.isFile = isFileNode;
 module.exports = File;
 
 /// #}}} @group EXPORTS
