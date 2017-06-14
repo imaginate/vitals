@@ -509,7 +509,7 @@ function mkInsArgs(insert) {
   var i;
 
   args = [ insert.index, 1 ];
-  lines = insert.lines;
+  lines = insert.def.lines;
   len = lines.length;
   i = -1;
   while (++i < len)
