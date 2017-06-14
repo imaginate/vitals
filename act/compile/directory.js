@@ -71,28 +71,13 @@ var freezeObject = loadHelper('freeze-object');
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
+
 /// #}}} @group OBJECT-CONTROL
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DIR_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var DIR_TYPE_ID = freezeObject({});
-/// #}}} @const DIR_TYPE_ID
-
-/// #{{{ @const SRC_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var SRC_EXT = /\.js$/;
-/// #}}} @const SRC_EXT
 
 /// #{{{ @const DEST_EXT
 /**
@@ -102,6 +87,14 @@ var SRC_EXT = /\.js$/;
 var DEST_EXT = /\.js$/;
 /// #}}} @const DEST_EXT
 
+/// #{{{ @const DIR_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var DIR_TYPE_ID = require('./type-ids.js').directory;
+/// #}}} @const DIR_TYPE_ID
+
 /// #{{{ @const IS
 /**
  * @private
@@ -109,6 +102,15 @@ var DEST_EXT = /\.js$/;
  */
 var IS = loadHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const SRC_EXT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var SRC_EXT = /\.js$/;
+/// #}}} @const SRC_EXT
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -256,8 +258,8 @@ var getPathNode = require('./get-path-node.js');
 /// #{{{ @func hasOwnProp
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
 var hasOwnProp = loadHelper('has-own-property');
@@ -278,23 +280,13 @@ var isBoolean = IS.boolean;
  * @param {!Object} vals
  * @return {boolean}
  */
-function isBooleanMap(vals) {
-
-  /** @type {string} */
-  var key;
-
-  for (key in vals) {
-    if ( hasOwnProp(vals, key) && !isBoolean(vals[key]) )
-      return false;
-  }
-  return true;
-}
+var isBooleanMap = IS.booleanHashMap;
 /// #}}} @func isBooleanMap
 
 /// #{{{ @func isDirectory
 /**
  * @private
- * @param {string} val
+ * @param {string} path
  * @return {boolean}
  */
 var isDirectory = IS.directory;
@@ -306,15 +298,13 @@ var isDirectory = IS.directory;
  * @param {*} val
  * @return {boolean}
  */
-function isDirNode(val) {
-  return isObject(val) && 'type' in val && val.type === DIR_TYPE_ID;
-}
+var isDirNode = require('./is-directory-node.js');
 /// #}}} @func isDirNode
 
 /// #{{{ @func isFile
 /**
  * @private
- * @param {string} val
+ * @param {string} path
  * @return {boolean}
  */
 var isFile = IS.file;
@@ -326,7 +316,7 @@ var isFile = IS.file;
  * @param {*} val
  * @return {boolean}
  */
-var isFileNode = require('./file.js').isFileNode;
+var isFileNode = require('./is-file-node.js');
 /// #}}} @func isFileNode
 
 /// #{{{ @func isFunction
@@ -374,6 +364,16 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #{{{ @func ownsCmd
+/**
+ * @private
+ * @param {(!File|!Blk|!Cond)} src
+ * @param {(string|!Blk|!Cond|!Incl)} node
+ * @return {boolean}
+ */
+var ownsCmd = require('./owns-command.js');
+/// #}}} @func ownsCmd
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -391,6 +391,7 @@ var resolvePath = loadHelper('resolve-path');
  */
 var trimPathName = loadHelper('trim-pathname');
 /// #}}} @func trimPathName
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -478,6 +479,7 @@ function mkFiles(parent) {
   sealObject(files);
 }
 /// #}}} @func mkFiles
+
 /// #}}} @group METHODS
 
 /// #{{{ @group CONSTRUCTORS
@@ -497,13 +499,16 @@ function mkFiles(parent) {
 function Dir(path, parent) {
 
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type (valid types: `string`)');
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
   if (!path)
-    throw new Error('invalid empty `path` `string`');
+    throw new Error('invalid empty `string` for `path`');
   if ( !isDirectory(path) )
-    throw new Error('invalid `path` `string` (must be a readable directory)');
+    throw new Error('invalid readable directory path `string` for `path`\n' +
+      '    path: `' + path + '`');
   if ( !isNull(parent) && !isUndefined(parent) && !isDirNode(parent) )
-    throw new TypeError('invalid `parent` data type (valid types: `?Dir=`)');
+    throw new TypeError('invalid `parent` data type\n' +
+      '    valid-types: `?Dir=`');
 
   /// #{{{ @group Dir-Constants
 
@@ -656,6 +661,7 @@ function Dir(path, parent) {
  */
 var File = require('./file.js');
 /// #}}} @func File
+
 /// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group DIR-PROTOTYPE
@@ -781,45 +787,52 @@ Dir.prototype.compile = function compile(src, dest, state, alter) {
   var path;
 
   if ( !isUndefined(alter) && !isFunction(alter) )
-    throw new TypeError('invalid `alter` data type (valid types: `(!function(string): string)=`)');
+    throw new TypeError('invalid `alter` data type\n' +
+      '    valid-types: `(!function(string): string)=`');
   if ( !isObject(state) || !isBooleanMap(state) )
-    throw new TypeError('invalid `state` data type (valid types: `!Object<string, boolean>`)');
+    throw new TypeError('invalid `state` data type\n' +
+      '    valid-types: `!Object<string, boolean>`');
   if ( !isString(dest) )
-    throw new TypeError('invalid `dest` data type (valid types: `string`)');
+    throw new TypeError('invalid `dest` data type\n' +
+      '    valid-types: `string`');
   if ( !isString(src) )
-    throw new TypeError('invalid `src` data type (valid types: `string`)');
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `string`');
 
   if (!dest)
-    throw new Error('invalid empty `dest` `string`');
+    throw new Error('invalid empty `string` for `dest`');
 
   dest = resolvePath(dest);
 
   if ( !DEST_EXT.test(dest) )
-    throw new Error('invalid `dest` file ext (must match `' + DEST_EXT.toString() + '`)');
+    throw new Error('invalid `dest` file extension\n' +
+      '    should-match: `' + DEST_EXT.toString() + '`');
 
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
-    throw new Error('invalid `dest` directory path `' + path + '` (must be a readable directory)');
+    throw new Error('invalid readable directory path for `dest`\n' +
+      '    path: `' + path + '`');
 
   if (!src)
-    throw new Error('invalid empty `src` `string`');
+    throw new Error('invalid empty `string` for `src`');
   if ( !SRC_EXT.test(src) )
-    throw new Error('invalid `src` file ext (must match `' + SRC_EXT.toString() + '`)');
+    throw new Error('invalid `src` file extension\n' +
+      '    should-match: `' + SRC_EXT.toString() + '`');
 
   src = cleanPath(src);
   node = getPathNode(this, src);
 
-  if (!node)
-    throw new Error('invalid `src` file path `' + src + '` (must exist within `Dir` tree)');
-  if ( !isFileNode(node) )
-    throw new TypeError('invalid `src` file path `' + src + '` (must lead to a `File`, not a `Dir`)');
+  if ( !node || !isFileNode(node) )
+    throw new Error('invalid relative `File` node path for `src`\n' +
+      '    path: `' + src + '`');
 
   return isFunction(alter)
     ? node.compile(dest, state, alter)
     : node.compile(dest, state);
 };
 /// #}}} @func Dir.prototype.compile
+
 /// #}}} @group DIR-PROTOTYPE
 
 /// #{{{ @group EXPORTS
@@ -827,8 +840,6 @@ Dir.prototype.compile = function compile(src, dest, state, alter) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-Dir.isDirNode = isDirNode;
-Dir.isDir = isDirNode;
 module.exports = Dir;
 
 /// #}}} @group EXPORTS
