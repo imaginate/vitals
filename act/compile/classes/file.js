@@ -525,12 +525,46 @@ function mkInsArgs(insert) {
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func Blk
+/**
+ * @private
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Blk = require('./block.js');
+/// #}}} @func Blk
+
+/// #{{{ @func Cond
+/**
+ * @private
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Cond = require('./conditional.js');
+/// #}}} @func Cond
+
+/// #{{{ @func Def
+/**
+ * @private
+ * @param {!Line} open
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Def = require('./define.js');
+/// #}}} @func Def
+
 /// #{{{ @func Dir
 /**
  * @private
  * @param {string} path
- * @param {?Dir=} dir
- * @return {void}
+ * @param {?Dir=} parent
  * @constructor
  * @struct
  */
@@ -542,7 +576,6 @@ var Dir = require('./directory.js');
  * @public
  * @param {string} path
  * @param {!Dir} parent
- * @return {void}
  * @constructor
  * @struct
  */
@@ -760,6 +793,42 @@ function File(path, parent) {
   sealObject(this);
 }
 /// #}}} @func File
+
+/// #{{{ @func Incl
+/**
+ * @private
+ * @param {!Line} line
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Incl = require('./include.js');
+/// #}}} @func Incl
+
+/// #{{{ @func Ins
+/**
+ * @private
+ * @param {!Line} line
+ * @param {number} index
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Ins = require('./insert.js');
+/// #}}} @func Ins
+
+/// #{{{ @func Line
+/**
+ * @private
+ * @param {string} text
+ * @param {number} linenum
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Line = require('./line.js');
+/// #}}} @func Line
 
 /// #}}} @group CONSTRUCTORS
 

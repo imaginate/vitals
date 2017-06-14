@@ -492,7 +492,6 @@ function mkFiles(parent) {
  * @public
  * @param {string} path
  * @param {?Dir=} parent
- * @return {void}
  * @constructor
  * @struct
  */
@@ -654,8 +653,7 @@ function Dir(path, parent) {
 /**
  * @private
  * @param {string} path
- * @param {!Dir} dir
- * @return {void}
+ * @param {!Dir} parent
  * @constructor
  * @struct
  */

@@ -379,11 +379,11 @@ The [line class][line] wraps each line of text within every [File][file] instanc
 |:------------|
 | `Line`      |
 
-|    | Parameter                                | Data Type  | Description
-|:---|:-----------------------------------------|:-----------|:------------
-| 1  | <a name="line-construct-text"></a>text   | *`string`* | The UTF-8 encoded text for the new [Line][line].
-| 2  | <a name="line-construct-index"></a>index | *`number`* | The line `number` relative to its parent [File][file].
-| 3  | <a name="line-construct-file"></a>file   | *`!File`*  | The parent [File][file] instance.
+|    | Parameter                                    | Data Type  | Description
+|:---|:---------------------------------------------|:-----------|:------------
+| 1  | <a name="line-construct-text"></a>text       | *`string`* | The UTF-8 encoded text for the new [Line][line].
+| 2  | <a name="line-construct-linenum"></a>linenum | *`number`* | The line `number` relative to its parent [File][file].
+| 3  | <a name="line-construct-file"></a>file       | *`!File`*  | The parent [File][file] instance.
 <br>
 
 [line-construct-text]: #user-content-line-construct-text
