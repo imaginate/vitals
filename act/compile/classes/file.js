@@ -92,7 +92,7 @@ var DEST_EXT = /\.js$/;
  * @private
  * @const {!Object}
  */
-var FILE_TYPE_ID = require('./type-ids.js').file;
+var FILE_TYPE_ID = loadHelper('type-ids').file;
 /// #}}} @const FILE_TYPE_ID
 
 /// #{{{ @const IS
@@ -262,7 +262,7 @@ var getPathName = loadHelper('get-pathname');
  * @param {string} path
  * @return {(?Dir|?File)}
  */
-var getPathNode = require('./get-path-node.js');
+var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
 /// #{{{ @func hasCmd
@@ -271,7 +271,7 @@ var getPathNode = require('./get-path-node.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasCmd = require('./has-command.js');
+var hasCmd = loadHelper('has-command');
 /// #}}} @func hasCmd
 
 /// #{{{ @func hasBlkCmd
@@ -280,7 +280,7 @@ var hasCmd = require('./has-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasBlkCmd = require('./has-block-command.js');
+var hasBlkCmd = loadHelper('has-block-command');
 /// #}}} @func hasBlkCmd
 
 /// #{{{ @func hasCloseCmd
@@ -289,7 +289,7 @@ var hasBlkCmd = require('./has-block-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasCloseCmd = require('./has-close-command.js');
+var hasCloseCmd = loadHelper('has-close-command');
 /// #}}} @func hasCloseCmd
 
 /// #{{{ @func hasCondCmd
@@ -298,7 +298,7 @@ var hasCloseCmd = require('./has-close-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasCondCmd = require('./has-conditional-command.js');
+var hasCondCmd = loadHelper('has-conditional-command');
 /// #}}} @func hasCondCmd
 
 /// #{{{ @func hasDefCmd
@@ -307,7 +307,7 @@ var hasCondCmd = require('./has-conditional-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasDefCmd = require('./has-define-command.js');
+var hasDefCmd = loadHelper('has-define-command');
 /// #}}} @func hasDefCmd
 
 /// #{{{ @func hasInclCmd
@@ -316,7 +316,7 @@ var hasDefCmd = require('./has-define-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasInclCmd = require('./has-include-command.js');
+var hasInclCmd = loadHelper('has-include-command');
 /// #}}} @func hasInclCmd
 
 /// #{{{ @func hasInsCmd
@@ -325,7 +325,7 @@ var hasInclCmd = require('./has-include-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasInsCmd = require('./has-insert-command.js');
+var hasInsCmd = loadHelper('has-insert-command');
 /// #}}} @func hasInsCmd
 
 /// #{{{ @func hasOpenCmd
@@ -334,7 +334,7 @@ var hasInsCmd = require('./has-insert-command.js');
  * @param {string} val
  * @return {boolean}
  */
-var hasOpenCmd = require('./has-open-command.js');
+var hasOpenCmd = loadHelper('has-open-command');
 /// #}}} @func hasOpenCmd
 
 /// #{{{ @func hasOwnProp
@@ -380,7 +380,7 @@ var isDirectory = IS.directory;
  * @param {*} val
  * @return {boolean}
  */
-var isDirNode = require('./is-directory-node.js');
+var isDirNode = loadHelper('is-directory-node');
 /// #}}} @func isDirNode
 
 /// #{{{ @func isFile
@@ -398,7 +398,7 @@ var isFile = IS.file;
  * @param {*} val
  * @return {boolean}
  */
-var isFileNode = require('./is-file-node.js');
+var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
 /// #{{{ @func isFunction
@@ -453,7 +453,7 @@ var isUndefined = IS.undefined;
  * @param {(string|!Blk|!Cond|!Incl)} node
  * @return {boolean}
  */
-var ownsCmd = require('./owns-command.js');
+var ownsCmd = loadHelper('owns-command');
 /// #}}} @func ownsCmd
 
 /// #{{{ @func resolvePath

@@ -92,7 +92,7 @@ var DEST_EXT = /\.js$/;
  * @private
  * @const {!Object}
  */
-var DIR_TYPE_ID = require('./type-ids.js').directory;
+var DIR_TYPE_ID = loadHelper('type-ids').directory;
 /// #}}} @const DIR_TYPE_ID
 
 /// #{{{ @const IS
@@ -252,7 +252,7 @@ var getPathName = loadHelper('get-pathname');
  * @param {string} path
  * @return {(?Dir|?File)}
  */
-var getPathNode = require('./get-path-node.js');
+var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
 /// #{{{ @func hasOwnProp
@@ -298,7 +298,7 @@ var isDirectory = IS.directory;
  * @param {*} val
  * @return {boolean}
  */
-var isDirNode = require('./is-directory-node.js');
+var isDirNode = loadHelper('is-directory-node');
 /// #}}} @func isDirNode
 
 /// #{{{ @func isFile
@@ -316,7 +316,7 @@ var isFile = IS.file;
  * @param {*} val
  * @return {boolean}
  */
-var isFileNode = require('./is-file-node.js');
+var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
 /// #{{{ @func isFunction
@@ -371,7 +371,7 @@ var isUndefined = IS.undefined;
  * @param {(string|!Blk|!Cond|!Incl)} node
  * @return {boolean}
  */
-var ownsCmd = require('./owns-command.js');
+var ownsCmd = loadHelper('owns-command');
 /// #}}} @func ownsCmd
 
 /// #{{{ @func resolvePath
