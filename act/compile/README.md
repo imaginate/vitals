@@ -22,79 +22,96 @@ This guide describes every compile class, defines each member and method of ever
 Each file-system class wraps a different file-system component for the compiler.
 
 - [Directory Class][dir]
-  - [Constructor][dir-construct]
-  - [Members][dir-members]
-  - [Methods][dir-methods]
+  - [Dir Constructor][dir-new]
+  - [Dir Instance Properties][dir-props]
+  - [Dir.prototype.load][dir-load]
+  - [Dir.prototype.preprocess][dir-preprocess]
+  - [Dir.prototype.process][dir-process]
+  - [Dir.prototype.compile][dir-compile]
 - [File Class][file]
-  - [Constructor][file-construct]
-  - [Members][file-members]
-  - [Methods][file-methods]
+  - [File Constructor][file-new]
+  - [File Instance Properties][file-props]
+  - [File.prototype.load][file-load]
+  - [File.prototype.preprocess][file-preprocess]
+  - [File.prototype.process][file-process]
+  - [File.prototype.compile][file-compile]
 - [Line Class][line]
-  - [Constructor][line-construct]
-  - [Members][line-members]
-  - [Methods][line-methods]
+  - [Line Constructor][line-new]
+  - [Line Instance Properties][line-props]
 <br>
 
 [fs]: #user-content-fs
 [dir]: #user-content-dir
 [file]: #user-content-file
 [line]: #user-content-line
-[dir-construct]: #user-content-dir-construct
-[file-construct]: #user-content-file-construct
-[line-construct]: #user-content-line-construct
-[dir-members]: #user-content-dir-members
-[file-members]: #user-content-file-members
-[line-members]: #user-content-line-members
-[dir-methods]: #user-content-dir-methods
-[file-methods]: #user-content-file-methods
-[line-methods]: #user-content-line-methods
+[dir-new]: #user-content-dir-constructor
+[file-new]: #user-content-file-constructor
+[line-new]: #user-content-line-constructor
+[dir-props]: #user-content-dir-members
+[file-props]: #user-content-file-members
+[line-props]: #user-content-line-members
+[dir-load]: #user-content-dir-prototype-load
+[dir-preprocess]: #user-content-dir-prototype-preprocess
+[dir-process]: #user-content-dir-prototype-process
+[dir-compile]: #user-content-dir-prototype-compile
+[file-load]: #user-content-file-prototype-load
+[file-preprocess]: #user-content-file-prototype-preprocess
+[file-process]: #user-content-file-prototype-process
+[file-compile]: #user-content-file-prototype-compile
+[dir-load-params]: #user-content-dir-prototype-load-parameters
+[dir-preprocess-params]: #user-content-dir-prototype-preprocess-parameters
+[dir-process-params]: #user-content-dir-prototype-process-parameters
+[dir-compile-params]: #user-content-dir-prototype-compile-parameters
+[file-load-params]: #user-content-file-prototype-load-parameters
+[file-preprocess-params]: #user-content-file-prototype-preprocess-parameters
+[file-process-params]: #user-content-file-prototype-process-parameters
+[file-compile-params]: #user-content-file-prototype-compile-parameters
+[dir-load-returns]: #user-content-dir-prototype-load-returns
+[dir-preprocess-returns]: #user-content-dir-prototype-preprocess-returns
+[dir-process-returns]: #user-content-dir-prototype-process-returns
+[dir-compile-returns]: #user-content-dir-prototype-compile-returns
+[file-load-returns]: #user-content-file-prototype-load-returns
+[file-preprocess-returns]: #user-content-file-prototype-preprocess-returns
+[file-process-returns]: #user-content-file-prototype-process-returns
+[file-compile-returns]: #user-content-file-prototype-compile-returns
 
 <a name="dir"></a>
 ## Directory Class
-The [directory class][dir] wraps each directory node within the *src* tree.
+The [directory class][dir], `Dir`, wraps each directory node within the *src* tree.
 
-- [Directory Constructor][dir-construct]
-- [Directory Members][dir-members]
-- [Directory Methods][dir-methods]
-  - [Dir.prototype.load][dir-load]
-  - [Dir.prototype.preprocess][dir-preprocess]
-  - [Dir.prototype.process][dir-process]
-  - [Dir.prototype.compile][dir-compile]
+- [Dir Constructor][dir-new]
+- [Dir Instance Properties][dir-props]
+- [Dir.prototype.load][dir-load]
+  - [Parameters][dir-load-params]
+  - [Returns][dir-load-returns]
+- [Dir.prototype.preprocess][dir-preprocess]
+  - [Parameters][dir-preprocess-params]
+  - [Returns][dir-preprocess-returns]
+- [Dir.prototype.process][dir-process]
+  - [Parameters][dir-process-params]
+  - [Returns][dir-process-returns]
+- [Dir.prototype.compile][dir-compile]
+  - [Parameters][dir-compile-params]
+  - [Returns][dir-compile-returns]
 <br>
 
-[dir-load]: #user-content-dir-method-load
-[dir-preprocess]: #user-content-dir-method-preprocess
-[dir-process]: #user-content-dir-method-process
-[dir-compile]: #user-content-dir-method-compile
-[dir-load-params]: #user-content-dir-method-load-params
-[dir-preprocess-params]: #user-content-dir-method-preprocess-params
-[dir-process-params]: #user-content-dir-method-process-params
-[dir-compile-params]: #user-content-dir-method-compile-params
-[dir-load-returns]: #user-content-dir-method-load-returns
-[dir-preprocess-returns]: #user-content-dir-method-preprocess-returns
-[dir-process-returns]: #user-content-dir-method-process-returns
-[dir-compile-returns]: #user-content-dir-method-compile-returns
+<a name="dir-constructor"></a>
+## Dir Constructor
+This method creates `Dir` instances. Use the `new` keyword when calling `Dir` (e.g. `dir = new Dir("path/to/directory");`).
 
-<a name="dir-construct"></a>
-### Directory Constructor
-
-| Constructor |
-|:------------|
-| `Dir`       |
-
-|    | Parameter                                 | Data Type  | Description
-|:---|:------------------------------------------|:-----------|:------------
-| 1  | <a name="dir-construct-path"></a>path     | *`string`* | The file path to the directory node being wrapped. The directory path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
-| 2  | <a name="dir-construct-parent"></a>parent | *`?Dir=`*  | The parent [Dir][dir] instance. This parameter is required for all [Dir][dir] instances except for the root [Dir][dir] instance (i.e. since the root instance is the only exposed instance, this parameter is not a part of the public API).
+|    | Parameter                                   | Data Type  | Description
+|:---|:--------------------------------------------|:-----------|:------------
+| 1  | <a name="dir-constructor-path"></a>path     | *`string`* | The file path to the directory node being wrapped. The directory path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
+| 2  | <a name="dir-constructor-parent"></a>parent | *`?Dir=`*  | The parent [Dir][dir] instance. This parameter is required for all [Dir][dir] instances except for the root [Dir][dir] instance (i.e. since the root instance is the only exposed instance, this parameter is not a part of the public API).
 <br>
 
-[dir-construct-path]: #user-content-dir-construct-path
-[dir-construct-parent]: #user-content-dir-construct-parent
+[dir-new-path]: #user-content-dir-constructor-path
+[dir-new-parent]: #user-content-dir-constructor-parent
 
 <a name="dir-members"></a>
-### Directory Members
+## Dir Instance Properties
 
-| Member                                 | Data Type                  | Description
+| Property Name                          | Data Type                  | Description
 |:---------------------------------------|:---------------------------|:------------
 | <a name="dir-member-type"></a>type     | *`!Object`*                | A pointer to a unique `object` instance designated for the [Dir][dir] class.
 | <a name="dir-member-name"></a>name     | *`string`*                 | The [Dir][dir] instance's directory name.
@@ -113,141 +130,119 @@ The [directory class][dir] wraps each directory node within the *src* tree.
 [dir-dirs]: #user-content-dir-member-dirs
 [dir-files]: #user-content-dir-member-files
 
-<a name="dir-methods"></a>
-### Directory Methods
-
-- [Dir.prototype.load][dir-load]
-  - [Parameters][dir-load-params]
-  - [Returns][dir-load-returns]
-- [Dir.prototype.preprocess][dir-preprocess]
-  - [Parameters][dir-preprocess-params]
-  - [Returns][dir-preprocess-returns]
-- [Dir.prototype.process][dir-process]
-  - [Parameters][dir-process-params]
-  - [Returns][dir-process-returns]
-- [Dir.prototype.compile][dir-compile]
-  - [Parameters][dir-compile-params]
-  - [Returns][dir-compile-returns]
-
-<a name="dir-method-load"></a>
-### Dir.prototype.load
+<a name="dir-prototype-load"></a>
+## Dir.prototype.load
 This method triggers [Dir.prototype.load][dir-load] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.load][file-load] for each [File][file] instance within the [files][dir-files] `array`.
 
-<a name="dir-method-load-params"></a>
-#### Dir.prototype.load Parameters
-This method has no parameters.
+<a name="dir-prototype-load-parameters"></a>
+### Parameters
+[Dir.prototype.load][dir-load] has no parameters.
 
-<a name="dir-method-load-returns"></a>
-#### Dir.prototype.load Returns
+<a name="dir-prototype-load-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Dir.prototype.load][dir-load] does not return a value.
+<br>
 
-<a name="dir-method-preprocess"></a>
-### Dir.prototype.preprocess
+<a name="dir-prototype-preprocess"></a>
+## Dir.prototype.preprocess
 This method triggers [Dir.prototype.preprocess][dir-preprocess] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.preprocess][file-preprocess] for each [File][file] instance within the [files][dir-files] `array`.
 
-<a name="dir-method-preprocess-params"></a>
-#### Dir.prototype.preprocess Parameters
-This method has no parameters.
+<a name="dir-prototype-preprocess-parameters"></a>
+### Parameters
+[Dir.prototype.preprocess][dir-preprocess] has no parameters.
 
-<a name="dir-method-preprocess-returns"></a>
-#### Dir.prototype.preprocess Returns
+<a name="dir-prototype-preprocess-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Dir.prototype.preprocess][dir-preprocess] does not return a value.
+<br>
 
-<a name="dir-method-process"></a>
-### Dir.prototype.process
+<a name="dir-prototype-process"></a>
+## Dir.prototype.process
 This method triggers [Dir.prototype.process][dir-process] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.process][file-process] for each [File][file] instance within the [files][dir-files] `array`.
 
-<a name="dir-method-process-params"></a>
-#### Dir.prototype.process Parameters
-This method has no parameters.
+<a name="dir-prototype-process-parameters"></a>
+### Parameters
+[Dir.prototype.process][dir-process] has no parameters.
 
-<a name="dir-method-process-returns"></a>
-#### Dir.prototype.process Returns
+<a name="dir-prototype-process-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Dir.prototype.process][dir-process] does not return a value.
+<br>
 
-<a name="dir-method-compile"></a>
-### Dir.prototype.compile
+<a name="dir-prototype-compile"></a>
+## Dir.prototype.compile
 This method triggers [File.prototype.compile][file-compile] for the [File][file] instance that matches the file path defined by the [src][dir-compile-src] parameter.
 
-<a name="dir-method-compile-params"></a>
-#### Dir.prototype.compile Parameters
+<a name="dir-prototype-compile-parameters"></a>
+### Parameters
 
-|    | Parameter                                    | Data Type                        | Description
-|:---|:---------------------------------------------|:---------------------------------|:------------
-| 1  | <a name="dir-method-compile-src"></a>src     | *`string`*                       | The file path to the source [File][file] instance you want to call [File.prototype.compile][file-compile] from. The file path must be RELATIVE TO THE ROOT [Dir][dir] instance (as only the root [Dir][dir] instance API is exposed to users). NO ABSOLUTE PATHS are allowed for this parameter.
-| 2  | <a name="dir-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result of [File.prototype.compile][file-compile]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-compile-dest] path must already exist. If a file exists at the resolved [dest][dir-compile-dest] path, it is overwritten.
-| 3  | <a name="dir-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-compile-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][dir-compile-state] or an error will be thrown.
-| 4  | <a name="dir-method-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][dir-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result of [File.prototype.compile][file-compile] before it is saved to the [dest][dir-compile-dest].
+|    | Parameter                                       | Data Type                        | Description
+|:---|:------------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="dir-prototype-compile-src"></a>src     | *`string`*                       | The file path to the source [File][file] instance you want to call [File.prototype.compile][file-compile] from. The file path must be RELATIVE TO THE ROOT [Dir][dir] instance (as only the root [Dir][dir] instance API is exposed to users). NO ABSOLUTE PATHS are allowed for this parameter.
+| 2  | <a name="dir-prototype-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result of [File.prototype.compile][file-compile]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-compile-dest] path must already exist. If a file exists at the resolved [dest][dir-compile-dest] path, it is overwritten.
+| 3  | <a name="dir-prototype-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-compile-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][dir-compile-state] or an error will be thrown.
+| 4  | <a name="dir-prototype-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][dir-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result of [File.prototype.compile][file-compile] before it is saved to the [dest][dir-compile-dest].
 
-[dir-compile-src]: #user-content-dir-method-compile-src
-[dir-compile-dest]: #user-content-dir-method-compile-dest
-[dir-compile-state]: #user-content-dir-method-compile-state
-[dir-compile-alter]: #user-content-dir-method-compile-alter
+[dir-compile-src]: #user-content-dir-prototype-compile-src
+[dir-compile-dest]: #user-content-dir-prototype-compile-dest
+[dir-compile-state]: #user-content-dir-prototype-compile-state
+[dir-compile-alter]: #user-content-dir-prototype-compile-alter
 
-<a name="dir-method-compile-returns"></a>
-#### Dir.prototype.compile Returns
+<a name="dir-prototype-compile-returns"></a>
+### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`string`*  | The compiled result (UTF-8 encoded) that was saved to the [dest][dir-compile-dest].
+| *`string`*  | [Dir.prototype.compile][dir-compile] returns the compiled result (UTF-8 encoded) that is saved to the [dest][dir-compile-dest].
 <br>
 
 
 <a name="file"></a>
 ## File Class
-The [file class][file] wraps each file node within the *src* tree.
+The [file class][file], `File`, wraps each file node within the *src* tree.
 
-- [File Constructor][file-construct]
-- [File Members][file-members]
-- [File Methods][file-methods]
-  - [File.prototype.load][file-load]
-  - [File.prototype.preprocess][file-preprocess]
-  - [File.prototype.process][file-process]
-  - [File.prototype.compile][file-compile]
+- [File Constructor][file-new]
+- [File Instance Properties][file-props]
+- [File.prototype.load][file-load]
+  - [Parameters][file-load-params]
+  - [Returns][file-load-returns]
+- [File.prototype.preprocess][file-preprocess]
+  - [Parameters][file-preprocess-params]
+  - [Returns][file-preprocess-returns]
+- [File.prototype.process][file-process]
+  - [Parameters][file-process-params]
+  - [Returns][file-process-returns]
+- [File.prototype.compile][file-compile]
+  - [Parameters][file-compile-params]
+  - [Returns][file-compile-returns]
 <br>
 
-[file-load]: #user-content-file-method-load
-[file-preprocess]: #user-content-file-method-preprocess
-[file-process]: #user-content-file-method-process
-[file-compile]: #user-content-file-method-compile
-[file-load-params]: #user-content-file-method-load-params
-[file-preprocess-params]: #user-content-file-method-preprocess-params
-[file-process-params]: #user-content-file-method-process-params
-[file-compile-params]: #user-content-file-method-compile-params
-[file-load-returns]: #user-content-file-method-load-returns
-[file-preprocess-returns]: #user-content-file-method-preprocess-returns
-[file-process-returns]: #user-content-file-method-process-returns
-[file-compile-returns]: #user-content-file-method-compile-returns
+<a name="file-constructor"></a>
+## File Constructor
+This method creates `File` instances. Use the `new` keyword when calling `File` (e.g. `file = new File("path/to/file.js", dir);`).
 
-<a name="file-construct"></a>
-### File Constructor
-
-| Constructor |
-|:------------|
-| `File`      |
-
-|    | Parameter                                  | Data Type  | Description
-|:---|:-------------------------------------------|:-----------|:------------
-| 1  | <a name="file-construct-path"></a>path     | *`string`* | The file path to the file node being wrapped. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
-| 2  | <a name="file-construct-parent"></a>parent | *`!Dir`*   | The parent [Dir][dir] instance.
+|    | Parameter                                    | Data Type  | Description
+|:---|:---------------------------------------------|:-----------|:------------
+| 1  | <a name="file-constructor-path"></a>path     | *`string`* | The file path to the file node being wrapped. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory).
+| 2  | <a name="file-constructor-parent"></a>parent | *`!Dir`*   | The parent [Dir][dir] instance.
 <br>
 
-[file-construct-path]: #user-content-file-construct-path
-[file-construct-parent]: #user-content-file-construct-parent
+[file-new-path]: #user-content-file-constructor-path
+[file-new-parent]: #user-content-file-constructor-parent
 
 <a name="file-members"></a>
-### File Members
+## File Instance Properties
 
-| Member                                    | Data Type                               | Description
+| Property Name                             | Data Type                               | Description
 |:------------------------------------------|:----------------------------------------|:------------
 | <a name="file-member-type"></a>type       | *`!Object`*                             | A pointer to a unique `object` instance designated for the [File][file] class.
 | <a name="file-member-name"></a>name       | *`string`*                              | The [File][file] instance's file name.
@@ -276,124 +271,107 @@ The [file class][file] wraps each file node within the *src* tree.
 [file-inserts]: #user-content-file-member-inserts
 [file-content]: #user-content-file-member-content
 
-<a name="file-methods"></a>
-### File Methods
-
-- [File.prototype.load][file-load]
-  - [Parameters][file-load-params]
-  - [Returns][file-load-returns]
-- [File.prototype.preprocess][file-preprocess]
-  - [Parameters][file-preprocess-params]
-  - [Returns][file-preprocess-returns]
-- [File.prototype.process][file-process]
-  - [Parameters][file-process-params]
-  - [Returns][file-process-returns]
-- [File.prototype.compile][file-compile]
-  - [Parameters][file-compile-params]
-  - [Returns][file-compile-returns]
-
-<a name="file-method-load"></a>
-### File.prototype.load
+<a name="file-prototype-load"></a>
+## File.prototype.load
 This method causes the [File][file] instance's [path][file-path] to be read, a new [Line][line] instance to be constructed and pushed to the [File][file] instance's [lines][file-lines] `array` for each line within the [File][file], a new [Def][def] instance to be constructed and defined in the [File][file] instance's [defs][file-defs] `object` for each [Def][def] within the [File][file], and each [Line][line] within the [lines][def-lines] `array` of each [Def][def] instance to be spliced from the [File][file] instance's [lines][file-lines] `array`.
 
-<a name="file-method-load-params"></a>
-#### File.prototype.load Parameters
-This method has no parameters.
+<a name="file-prototype-load-parameters"></a>
+### Parameters
+[File.prototype.load][file-load] has no parameters.
 
-<a name="file-method-load-returns"></a>
-#### File.prototype.load Returns
+<a name="file-prototype-load-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [File.prototype.load][file-load] does not return a value.
+<br>
 
-<a name="file-method-preprocess"></a>
-### File.prototype.preprocess
+<a name="file-prototype-preprocess"></a>
+## File.prototype.preprocess
 This method causes a new [Ins][ins] instance to be constructed and pushed to the [File][file] instance's [inserts][file-inserts] `array` for each [Ins][ins] within the [File][file], each [Ins][ins] instance's [line][ins-line] property's [Line][line] instance to spliced from the [File][file] instance's [lines][file-lines] `array`, and each [Line][line] instance from each [Ins][ins] instance's [lines][ins-lines] `array` to be spliced to the [File][file] instance's [lines][file-lines] `array`.
 
-<a name="file-method-preprocess-params"></a>
-#### File.prototype.preprocess Parameters
-This method has no parameters.
+<a name="file-prototype-preprocess-parameters"></a>
+### Parameters
+[File.prototype.preprocess][file-preprocess] has no parameters.
 
-<a name="file-method-preprocess-returns"></a>
-#### File.prototype.preprocess Returns
+<a name="file-prototype-preprocess-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [File.prototype.preprocess][file-preprocess] does not return a value.
+<br>
 
-<a name="file-method-process"></a>
-### File.prototype.process
+<a name="file-prototype-process"></a>
+## File.prototype.process
 This method causes a new [Blk][blk], [Cond][cond], or [Incl][incl] instance to be constructed and defined in the [File][file] instance's [blks][file-blks], [conds][file-conds], or [incls][file-incls] `object` for each [Blk][blk], [Cond][cond], and [Incl][incl] within the root scope of the [File][file] instance and the [File][file] instance's [content][file-content] `array` to be filled (in order of appearance) with each [Line][line], [Blk][blk], [Cond][cond], and [Incl][incl] within the root scope of the [File][file] instance.
 
-<a name="file-method-process-params"></a>
-#### File.prototype.process Parameters
-This method has no parameters.
+<a name="file-prototype-process-parameters"></a>
+### Parameters
+[File.prototype.process][file-process] has no parameters.
 
-<a name="file-method-process-returns"></a>
-#### File.prototype.process Returns
+<a name="file-prototype-process-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [File.prototype.process][file-process] does not return a value.
+<br>
 
-<a name="file-method-compile"></a>
-### File.prototype.compile
+<a name="file-prototype-compile"></a>
+## File.prototype.compile
 This method creates a compiled destination file, [dest][file-compile-dest].
 
-<a name="file-method-compile-params"></a>
-#### File.prototype.compile Parameters
+<a name="file-prototype-compile-parameters"></a>
+### Parameters
 
-|    | Parameter                                     | Data Type                        | Description
-|:---|:----------------------------------------------|:---------------------------------|:------------
-| 1  | <a name="file-method-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest] path, it is overwritten.
-| 2  | <a name="file-method-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown.
-| 3  | <a name="file-method-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result before it is saved to the [dest][file-compile-dest].
+|    | Parameter                                        | Data Type                        | Description
+|:---|:-------------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="file-prototype-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest] path, it is overwritten.
+| 2  | <a name="file-prototype-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown.
+| 3  | <a name="file-prototype-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result before it is saved to the [dest][file-compile-dest].
 
-[file-compile-dest]: #user-content-file-method-compile-dest
-[file-compile-state]: #user-content-file-method-compile-state
-[file-compile-alter]: #user-content-file-method-compile-alter
+[file-compile-dest]: #user-content-file-prototype-compile-dest
+[file-compile-state]: #user-content-file-prototype-compile-state
+[file-compile-alter]: #user-content-file-prototype-compile-alter
 
-<a name="file-method-compile-returns"></a>
-#### File.prototype.compile Returns
+<a name="file-prototype-compile-returns"></a>
+### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`string`*  | The compiled result (UTF-8 encoded) that was saved to the [dest][file-compile-dest].
+| *`string`*  | [File.prototype.compile][file-compile] returns the compiled result (UTF-8 encoded) that is saved to the [dest][file-compile-dest].
 <br>
 
 
 <a name="line"></a>
 ## Line Class
-The [line class][line] wraps each line of text within every [File][file] instance.
+The [line class][line], `Line`, wraps each line of text within every [File][file] instance.
 
-- [Line Constructor][line-construct]
-- [Line Members][line-members]
-- [Line Methods][line-methods]
+- [Line Constructor][line-new]
+- [Line Instance Properties][line-props]
 <br>
 
-<a name="line-construct"></a>
-### Line Constructor
+<a name="line-constructor"></a>
+## Line Constructor
+This method creates `Line` instances. Use the `new` keyword when calling `Line` (e.g. `line = new Line("line-text", 1, file);`).
 
-| Constructor |
-|:------------|
-| `Line`      |
-
-|    | Parameter                                    | Data Type  | Description
-|:---|:---------------------------------------------|:-----------|:------------
-| 1  | <a name="line-construct-text"></a>text       | *`string`* | The UTF-8 encoded text for the new [Line][line].
-| 2  | <a name="line-construct-linenum"></a>linenum | *`number`* | The line `number` relative to its parent [File][file].
-| 3  | <a name="line-construct-file"></a>file       | *`!File`*  | The parent [File][file] instance.
+|    | Parameter                                      | Data Type  | Description
+|:---|:-----------------------------------------------|:-----------|:------------
+| 1  | <a name="line-constructor-text"></a>text       | *`string`* | The UTF-8 encoded text for the new [Line][line].
+| 2  | <a name="line-constructor-linenum"></a>linenum | *`number`* | The line `number` relative to its parent [File][file].
+| 3  | <a name="line-constructor-file"></a>file       | *`!File`*  | The parent [File][file] instance.
 <br>
 
-[line-construct-text]: #user-content-line-construct-text
-[line-construct-index]: #user-content-line-construct-index
-[line-construct-file]: #user-content-line-construct-file
+[line-new-text]: #user-content-line-constructor-text
+[line-new-index]: #user-content-line-constructor-index
+[line-new-file]: #user-content-line-constructor-file
 
 <a name="line-members"></a>
-### Line Members
+## Line Instance Properties
 
-| Member                                    | Data Type   | Description
+| Property Name                             | Data Type   | Description
 |:------------------------------------------|:------------|:------------
 | <a name="line-member-type"></a>type       | *`!Object`* | A pointer to a unique `object` instance designated for the [Line][line] class.
 | <a name="line-member-file"></a>file       | *`!File`*   | A pointer to the parent [File][file] instance of the [Line][line] instance.
@@ -405,11 +383,6 @@ The [line class][line] wraps each line of text within every [File][file] instanc
 [line-file]: #user-content-line-member-file
 [line-text]: #user-content-line-member-text
 [line-linenum]: #user-content-line-member-linenum
-
-<a name="line-methods"></a>
-### Line Methods
-The [Line][line] class has no methods.
-<br>
 
 
 <a name="syntax"></a>
