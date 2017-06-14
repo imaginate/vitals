@@ -411,23 +411,17 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 3. <p><a name="rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
 4. <p><a name="rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
 5. <p><a name="rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
-6. <p><a name="rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-grps">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
-7. <p><a name="rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-grps">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
-
-
-### GOTO
-- [Group Commands][grps]
-  - [Block Command][blk]
-  - [Conditional Command][cond]
-  - [Define Command][def]
-- [Reference Commands][refs]
-  - [Include Command][incl]
-  - [Insert Command][ins]
+6. <p><a name="rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-groups">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
+7. <p><a name="rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-groups">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
 <br>
 
 [syntax]: #user-content-syntax
-[grps]: #user-content-grps
-[grp]: #user-content-grps
+[root-scope]: #user-content-root-cmd-scope
+[root-cmd]: #user-content-root-cmd-scope
+[grps]: #user-content-groups
+[grp]: #user-content-groups
+[open-cmd]: #user-content-open-cmd
+[close-cmd]: #user-content-close-cmd
 [refs]: #user-content-refs
 [ref]: #user-content-refs
 [blk]: #user-content-blk
@@ -435,100 +429,123 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 [def]: #user-content-def
 [incl]: #user-content-incl
 [ins]: #user-content-ins
-[blk-construct]: #user-content-blk-construct
-[cond-construct]: #user-content-cond-construct
-[def-construct]: #user-content-def-construct
-[incl-construct]: #user-content-incl-construct
-[ins-construct]: #user-content-ins-construct
-[blk-members]: #user-content-blk-members
-[cond-members]: #user-content-cond-members
-[def-members]: #user-content-def-members
-[incl-members]: #user-content-incl-members
-[ins-members]: #user-content-ins-members
-[blk-methods]: #user-content-blk-methods
-[cond-methods]: #user-content-cond-methods
-[def-methods]: #user-content-def-methods
-[incl-methods]: #user-content-incl-methods
-[ins-methods]: #user-content-ins-methods
-[root-scope]: #user-content-root-scope
-[open-cmd]: #user-content-open-cmd
-[close-cmd]: #user-content-close-cmd
+[blk-act]: #user-content-blk-actions
+[cond-act]: #user-content-cond-actions
+[def-act]: #user-content-def-actions
+[incl-act]: #user-content-incl-actions
+[ins-act]: #user-content-ins-actions
+[blk-new]: #user-content-blk-constructor
+[cond-new]: #user-content-cond-constructor
+[def-new]: #user-content-def-constructor
+[incl-new]: #user-content-incl-constructor
+[ins-new]: #user-content-ins-constructor
+[blk-props]: #user-content-blk-members
+[cond-props]: #user-content-cond-members
+[def-props]: #user-content-def-members
+[incl-props]: #user-content-incl-members
+[ins-props]: #user-content-ins-members
+[blk-is-close]: #user-content-blk-prototype-is-close
+[blk-set-close]: #user-content-blk-prototype-set-close
+[cond-is-close]: #user-content-cond-prototype-is-close
+[cond-set-close]: #user-content-cond-prototype-set-close
+[def-is-close]: #user-content-def-prototype-is-close
+[def-set-close]: #user-content-def-prototype-set-close
+[blk-is-close-params]: #user-content-blk-prototype-is-close-parameters
+[blk-set-close-params]: #user-content-blk-prototype-set-close-parameters
+[cond-is-close-params]: #user-content-cond-prototype-is-close-parameters
+[cond-set-close-params]: #user-content-cond-prototype-set-close-parameters
+[def-is-close-params]: #user-content-def-prototype-is-close-parameters
+[def-set-close-params]: #user-content-def-prototype-set-close-parameters
+[blk-is-close-returns]: #user-content-blk-prototype-is-close-returns
+[blk-set-close-returns]: #user-content-blk-prototype-set-close-returns
+[cond-is-close-returns]: #user-content-cond-prototype-is-close-returns
+[cond-set-close-returns]: #user-content-cond-prototype-set-close-returns
+[def-is-close-returns]: #user-content-def-prototype-is-close-returns
+[def-set-close-returns]: #user-content-def-prototype-set-close-returns
 
-<a name="grps"></a>
-## Groups
-[Group][grps] *commands* are how you define scopes of code that can be referenced from other [file][file] or [root][root-scope] scopes (i.e. let's avoid infinite include or insert loops -- meaning you cannot reference [groups][grps] within the same [root scope][root-scope]) and that can be flexibly enabled or disabled. Every [group][grps] *command* type has an [open][open-cmd] and [close][close-cmd] *command*.
+<a name="root-cmd-scope"></a>
+## Root Command Scope
+When the term *root scope* is used in respect to a *command* (i.e. not a [Dir][dir] or [File][file] root scope), it refers to each [grouping][grps] *command* at the [File][file] root scope (i.e. not defined within another *command's* scope).
+<br><br>
 
-<a name="root-scope"></a>
-### Root Scope
-The term *root scope* refers to every *command* whose parent scope is the [file][file] (i.e. not defined within another *command's* scope).
+<a name="groups"></a>
+## Group Commands
+[Group][grps] *commands* are how you define scopes of code that can be referenced from other [file][file] or [command][root-cmd] root scopes (i.e. let's avoid infinite include or insert loops -- meaning you cannot reference [groups][grps] within the same [root scope][root-cmd]) and that can be flexibly enabled or disabled. Every [group][grps] *command* type has an [open][open-cmd] and [close][close-cmd] *command*.
 
-<a name="open-cmd"></a>
-### Open Command
-The [open][open-cmd] *command* starts a new group. All three [group][grps] *command* types use three curly open brackets, `"{{{"`, within the *action* to denote an [open][open-cmd] *command* (e.g. `"/// #{{{ @tag id"`).
-
-<a name="close-cmd"></a>
-### Close Command
-The [close][close-cmd] *command* ends an existing group. All three [group][grps] *command* types require [groups][grps] to close the most recent [group][grps] first and that the [tag][blk-tag] and [ID][blk-id] of the [close][close-cmd] *command* exactly match that of the [open][open-cmd] *command*. All three [group][grps] *command* types also use three curly close brackets, `"}}}"`, within the *action* to denote a [close][close-cmd] *command* (e.g. `"/// #}}} @tag id"`).
-
-### GOTO
-- [Block Class][blk]
-  - [Constructor][blk-construct]
-  - [Members][blk-members]
-  - [Methods][blk-methods]
-- [Conditional Class][cond]
-  - [Constructor][cond-construct]
-  - [Members][cond-members]
-  - [Methods][cond-methods]
-- [Define Class][def]
-  - [Constructor][def-construct]
-  - [Members][def-members]
-  - [Methods][def-methods]
+- [Open Commands][open-cmd]
+- [Close Commands][close-cmd]
+- [Block Command & Class][blk]
+  - [Blk Action Syntax][blk-act]
+  - [Blk Constructor][blk-new]
+  - [Blk Instance Properties][blk-props]
+  - [Blk.prototype.isClose][blk-is-close]
+  - [Blk.prototype.setClose][blk-set-close]
+- [Conditional Command & Class][cond]
+  - [Cond Action Syntax][cond-act]
+  - [Cond Constructor][cond-new]
+  - [Cond Instance Properties][cond-props]
+  - [Cond.prototype.isClose][cond-is-close]
+  - [Cond.prototype.setClose][cond-set-close]
+- [Define Command & Class][def]
+  - [Def Action Syntax][def-act]
+  - [Def Constructor][def-new]
+  - [Def Instance Properties][def-props]
+  - [Def.prototype.isClose][def-is-close]
+  - [Def.prototype.setClose][def-set-close]
 <br>
 
+<a name="open-cmd"></a>
+## Open Commands
+The [open][open-cmd] *command* starts a new group. All three [group][grps] *command* types use three curly open brackets, `"{{{"`, within the *action* to denote an [open][open-cmd] *command* (e.g. `"/// #{{{ @tag id"`).
+<br><br>
+
+<a name="close-cmd"></a>
+## Close Commands
+The [close][close-cmd] *command* ends an existing group. All three [group][grps] *command* types require [groups][grps] to close the most recent [group][grps] first and that the [tag][blk-tag] and [ID][blk-id] of the [close][close-cmd] *command* exactly match that of the [open][open-cmd] *command*. All three [group][grps] *command* types also use three curly close brackets, `"}}}"`, within the *action* to denote a [close][close-cmd] *command* (e.g. `"/// #}}} @tag id"`).
+<br><br>
+
 <a name="blk"></a>
-## Block Class
-A general [grouping][grps] *command* that may be [included][incl] from other [file][file] or [root][root-scope] scopes.
+## Block Command & Class
+The [block][blk] *command* is a general [grouping][grps] *command* that may be [included][incl] from other [file][file] scopes. The [block class][blk], `Blk`, wraps each [block][blk] *command*.
+
+- [Blk Action Syntax][blk-act]
+- [Blk Constructor][blk-new]
+- [Blk Instance Properties][blk-props]
+- [Blk.prototype.isClose][blk-is-close]
+  - [Parameters][blk-is-close-params]
+  - [Returns][blk-is-close-returns]
+- [Blk.prototype.setClose][blk-set-close]
+  - [Parameters][blk-set-close-params]
+  - [Returns][blk-set-close-returns]
+<br>
+
+<a name="blk-actions"></a>
+## Blk Action Syntax
 
 | Open Action | Close Action |
 |:------------|:-------------|
 | `"#{{{"`    | `"#}}}"`     |
-
-- [Block Constructor][blk-construct]
-- [Block Members][blk-members]
-- [Block Methods][blk-methods]
-  - [Blk.prototype.isClose][blk-is-close]
-  - [Blk.prototype.setClose][blk-set-close]
 <br>
 
-[blk-is-close]: #user-content-blk-method-is-close
-[blk-set-close]: #user-content-blk-method-set-close
-[blk-is-close-params]: #user-content-blk-method-is-close-params
-[blk-set-close-params]: #user-content-blk-method-set-close-params
-[blk-is-close-returns]: #user-content-blk-method-is-close-returns
-[blk-set-close-returns]: #user-content-blk-method-set-close-returns
+<a name="blk-constructor"></a>
+## Blk Constructor
+This method creates `Blk` instances. Use the `new` keyword when calling `Blk` (e.g. `blk = new Blk(line, file, cmd);`).
 
-<a name="blk-construct"></a>
-### Block Constructor
-
-| Constructor |
-|:------------|
-| `Blk`       |
-
-|    | Parameter                                 | Data Type          | Description
-|:---|:------------------------------------------|:-------------------|:------------
-| 1  | <a name="blk-construct-open"></a>open     | *`!Line`*          | The opening [Line][line] instance.
-| 2  | <a name="blk-construct-file"></a>file     | *`!File`*          | The parent [File][file] instance.
-| 3  | <a name="blk-construct-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
+|    | Parameter                                   | Data Type          | Description
+|:---|:--------------------------------------------|:-------------------|:------------
+| 1  | <a name="blk-constructor-open"></a>open     | *`!Line`*          | The opening [Line][line] instance.
+| 2  | <a name="blk-constructor-file"></a>file     | *`!File`*          | The parent [File][file] instance.
+| 3  | <a name="blk-constructor-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
 <br>
 
-[blk-construct-open]: #user-content-blk-construct-open
-[blk-construct-file]: #user-content-blk-construct-file
-[blk-construct-parent]: #user-content-blk-construct-parent
+[blk-new-open]: #user-content-blk-constructor-open
+[blk-new-file]: #user-content-blk-constructor-file
+[blk-new-parent]: #user-content-blk-constructor-parent
 
 <a name="blk-members"></a>
-### Block Members
+## Blk Instance Properties
 
-| Member                                   | Data Type                               | Description
+| Property Name                            | Data Type                               | Description
 |:-----------------------------------------|:----------------------------------------|:------------
 | <a name="blk-member-type"></a>type       | *`!Object`*                             | A pointer to a unique `object` instance designated for the [Blk][blk] class.
 | <a name="blk-member-tag"></a>tag         | *`string`*                              | The [Blk][blk] instance's [tag][blk-tag] name (e.g. `"/// #{{{ @tag id"`).
@@ -555,103 +572,92 @@ A general [grouping][grps] *command* that may be [included][incl] from other [fi
 [blk-incls]: #user-content-blk-member-incls
 [blk-content]: #user-content-blk-member-content
 
-<a name="blk-methods"></a>
-### Block Methods
-
-- [Blk.prototype.isClose][blk-is-close]
-  - [Parameters][blk-is-close-params]
-  - [Returns][blk-is-close-returns]
-- [Blk.prototype.setClose][blk-set-close]
-  - [Parameters][blk-set-close-params]
-  - [Returns][blk-set-close-returns]
-
-<a name="blk-method-is-close"></a>
-### Blk.prototype.isClose
+<a name="blk-prototype-is-close"></a>
+## Blk.prototype.isClose
 This method tests if a line of text is a valid closing [block][blk] *command* and if it matches the [block][blk] instance's [tag][blk-tag] and [ID][blk-id].
 
-<a name="blk-method-is-close-params"></a>
-#### Blk.prototype.isClose Parameters
+<a name="blk-prototype-is-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                   | Data Type  | Description
-|:---|:--------------------------------------------|:-----------|:------------
-| 1  | <a name="blk-method-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
+|    | Parameter                                      | Data Type  | Description
+|:---|:-----------------------------------------------|:-----------|:------------
+| 1  | <a name="blk-prototype-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
 
-[blk-is-close-text]: #user-content-blk-method-is-close-text
+[blk-is-close-text]: #user-content-blk-prototype-is-close-text
 
-<a name="blk-method-is-close-returns"></a>
-#### Blk.prototype.isClose Returns
+<a name="blk-prototype-is-close-returns"></a>
+### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`boolean`* | The result of the [close][close-cmd] *command* test.
+| *`boolean`* | [Blk.prototype.isClose][blk-is-close] returns the result of the [close][close-cmd] *command* test.
+<br>
 
-<a name="blk-method-set-close"></a>
-### Blk.prototype.setClose
+<a name="blk-prototype-set-close"></a>
+## Blk.prototype.setClose
 This method sets the [close][blk-close] property for the [Blk][blk] instance.
 
-<a name="blk-method-set-close-params"></a>
-#### Blk.prototype.setClose Parameters
+<a name="blk-prototype-set-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                      | Data Type | Description
-|:---|:-----------------------------------------------|:----------|:------------
-| 1  | <a name="blk-method-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
+|    | Parameter                                         | Data Type | Description
+|:---|:--------------------------------------------------|:----------|:------------
+| 1  | <a name="blk-prototype-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
 
-[blk-set-close-close]: #user-content-blk-method-set-close-close
+[blk-set-close-close]: #user-content-blk-prototype-set-close-close
 
-<a name="blk-method-set-close-returns"></a>
-#### Blk.prototype.setClose Returns
+<a name="blk-prototype-set-close-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Blk.prototype.setClose][blk-set-close] does not return a value.
 <br>
 
 
 <a name="cond"></a>
-### Conditional Class
-A [grouping][grps] *command* that shows or hides itself based upon the [state][file-compile-state] `object` passed to [File.prototype.compile][file-compile] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from other [file][file] or [root][root-scope] scopes.
+## Conditional Command & Class
+The [conditional][cond] *command* is a special [grouping][grps] *command* that shows or hides its [content][cond-content] based upon the [state][file-compile-state] `object` passed to [File.prototype.compile][file-compile] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from within other [file][file] or [command][root-cmd] root scopes. The [conditional class][cond], `Cond`, wraps each [conditional][cond] *command*.
+
+- [Cond Action Syntax][cond-act]
+- [Cond Constructor][cond-new]
+- [Cond Instance Properties][cond-props]
+- [Cond.prototype.isClose][cond-is-close]
+  - [Parameters][cond-is-close-params]
+  - [Returns][cond-is-close-returns]
+- [Cond.prototype.setClose][cond-set-close]
+  - [Parameters][cond-set-close-params]
+  - [Returns][cond-set-close-returns]
+<br>
+
+<a name="cond-actions"></a>
+## Cond Action Syntax
 
 | Open Action   | Close Action  |
 |:--------------|:--------------|
 | `"#if{{{"`    | `"#if}}}"`    |
 | `"#ifnot{{{"` | `"#ifnot}}}"` |
-
-- [Conditional Constructor][cond-construct]
-- [Conditional Members][cond-members]
-- [Conditional Methods][cond-methods]
-  - [Cond.prototype.isClose][cond-is-close]
-  - [Cond.prototype.setClose][cond-set-close]
 <br>
 
-[cond-is-close]: #user-content-cond-method-is-close
-[cond-set-close]: #user-content-cond-method-set-close
-[cond-is-close-params]: #user-content-cond-method-is-close-params
-[cond-set-close-params]: #user-content-cond-method-set-close-params
-[cond-is-close-returns]: #user-content-cond-method-is-close-returns
-[cond-set-close-returns]: #user-content-cond-method-set-close-returns
+<a name="cond-constructor"></a>
+## Cond Constructor
+This method creates `Cond` instances. Use the `new` keyword when calling `Cond` (e.g. `cond = new Cond(line, file, cmd);`).
 
-<a name="cond-construct"></a>
-### Conditional Constructor
-
-| Constructor |
-|:------------|
-| `Cond`      |
-
-|    | Parameter                                  | Data Type          | Description
-|:---|:-------------------------------------------|:-------------------|:------------
-| 1  | <a name="cond-construct-open"></a>open     | *`!Line`*          | The opening [Line][line] instance.
-| 2  | <a name="cond-construct-file"></a>file     | *`!File`*          | The parent [File][file] instance.
-| 3  | <a name="cond-construct-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
+|    | Parameter                                    | Data Type          | Description
+|:---|:---------------------------------------------|:-------------------|:------------
+| 1  | <a name="cond-constructor-open"></a>open     | *`!Line`*          | The opening [Line][line] instance.
+| 2  | <a name="cond-constructor-file"></a>file     | *`!File`*          | The parent [File][file] instance.
+| 3  | <a name="cond-constructor-parent"></a>parent | *`(?Blk\|?Cond)=`* | The parent [Blk][blk] or [Cond][cond] instance.
 <br>
 
-[cond-construct-open]: #user-content-cond-construct-open
-[cond-construct-file]: #user-content-cond-construct-file
-[cond-construct-parent]: #user-content-cond-construct-parent
+[cond-new-open]: #user-content-cond-constructor-open
+[cond-new-file]: #user-content-cond-constructor-file
+[cond-new-parent]: #user-content-cond-constructor-parent
 
 <a name="cond-members"></a>
-### Conditional Members
+## Cond Instance Properties
 
-| Member                                    | Data Type                               | Description
+| Property Name                             | Data Type                               | Description
 |:------------------------------------------|:----------------------------------------|:------------
 | <a name="cond-member-type"></a>type       | *`!Object`*                             | A pointer to a unique `object` instance designated for the [Cond][cond] class.
 | <a name="cond-member-tag"></a>tag         | *`string`*                              | The [Cond][cond] instance's [tag][cond-tag] name (e.g. `"/// #if{{{ @tag id"`).
@@ -680,100 +686,89 @@ A [grouping][grps] *command* that shows or hides itself based upon the [state][f
 [cond-incls]: #user-content-cond-member-incls
 [cond-content]: #user-content-cond-member-content
 
-<a name="cond-methods"></a>
-### Conditional Methods
-
-- [Cond.prototype.isClose][cond-is-close]
-  - [Parameters][cond-is-close-params]
-  - [Returns][cond-is-close-returns]
-- [Cond.prototype.setClose][cond-set-close]
-  - [Parameters][cond-set-close-params]
-  - [Returns][cond-set-close-returns]
-
-<a name="cond-method-is-close"></a>
-### Cond.prototype.isClose
+<a name="cond-prototype-is-close"></a>
+## Cond.prototype.isClose
 This method tests if a line of text is a valid closing [conditional][cond] *command* and if it matches the [conditional][cond] instance's [tag][cond-tag] and [ID][cond-id].
 
-<a name="cond-method-is-close-params"></a>
-#### Cond.prototype.isClose Parameters
+<a name="cond-prototype-is-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                    | Data Type  | Description
-|:---|:---------------------------------------------|:-----------|:------------
-| 1  | <a name="cond-method-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
+|    | Parameter                                       | Data Type  | Description
+|:---|:------------------------------------------------|:-----------|:------------
+| 1  | <a name="cond-prototype-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
 
-[cond-is-close-text]: #user-content-cond-method-is-close-text
+[cond-is-close-text]: #user-content-cond-prototype-is-close-text
 
-<a name="cond-method-is-close-returns"></a>
-#### Cond.prototype.isClose Returns
+<a name="cond-prototype-is-close-returns"></a>
+### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`boolean`* | The result of the [close][close-cmd] *command* test.
+| *`boolean`* | [Cond.prototype.isClose][cond-is-close] returns the result of the [close][close-cmd] *command* test.
+<br>
 
-<a name="cond-method-set-close"></a>
-### Cond.prototype.setClose
+<a name="cond-prototype-set-close"></a>
+## Cond.prototype.setClose
 This method sets the [close][cond-close] property for the [Cond][cond] instance.
 
-<a name="cond-method-set-close-params"></a>
-#### Cond.prototype.setClose Parameters
+<a name="cond-prototype-set-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                      | Data Type | Description
-|:---|:-----------------------------------------------|:----------|:------------
-| 1  | <a name="cond-method-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
+|    | Parameter                                          | Data Type | Description
+|:---|:---------------------------------------------------|:----------|:------------
+| 1  | <a name="cond-prototype-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
 
-[cond-set-close-close]: #user-content-cond-method-set-close-close
+[cond-set-close-close]: #user-content-cond-prototype-set-close-close
 
-<a name="cond-method-set-close-returns"></a>
-#### Cond.prototype.setClose Returns
+<a name="cond-prototype-set-close-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Cond.prototype.setClose][cond-set-close] does not return a value.
 <br>
 
 
 <a name="def"></a>
-## Define Class
-A special [grouping][grps] *command* for defining a simple C-like macro. [Define][def] *commands* must be defined in the root scope of a [file][file] before all other *command* types. [Define][def] *commands* may be [inserted][ins] from all other [File][file], [Block][blk], or [Conditional][cond] scopes.
+## Define Command & Class
+The [define][def] *command* is a special [grouping][grps] *command* for defining simple C-like macros. [Define][def] *commands* must be defined in the root scope of a [File][file] before all other *command* types. [Define][def] *commands* may be [inserted][ins] from all other [File][file], [Block][blk], or [Conditional][cond] scopes. The [define class][def], `Def`, wraps each [define][def] *command*.
+
+- [Def Action Syntax][def-act]
+- [Def Constructor][def-new]
+- [Def Instance Properties][def-props]
+- [Def.prototype.isClose][def-is-close]
+  - [Parameters][def-is-close-params]
+  - [Returns][def-is-close-returns]
+- [Def.prototype.setClose][def-set-close]
+  - [Parameters][def-set-close-params]
+  - [Returns][def-set-close-returns]
+<br>
+
+<a name="def-actions"></a>
+## Def Action Syntax
 
 | Open Action | Close Action |
 |:------------|:-------------|
 | `"#def{{{"` | `"#def}}}"`  |
-
-- [Define Constructor][def-construct]
-- [Define Members][def-members]
-- [Define Methods][def-methods]
-  - [Def.prototype.isClose][def-is-close]
-  - [Def.prototype.setClose][def-set-close]
 <br>
 
-[def-is-close]: #user-content-def-method-is-close
-[def-set-close]: #user-content-def-method-set-close
-[def-is-close-params]: #user-content-def-method-is-close-params
-[def-set-close-params]: #user-content-def-method-set-close-params
-[def-is-close-returns]: #user-content-def-method-is-close-returns
-[def-set-close-returns]: #user-content-def-method-set-close-returns
+<a name="def-constructor"></a>
+## Def Constructor
+This method creates `Def` instances. Use the `new` keyword when calling `Def` (e.g. `def = new Def(line, file);`).
 
-<a name="def-construct"></a>
-### Define Constructor
-
-| Constructor |
-|:------------|
-| `Def`       |
-
-|    | Parameter                             | Data Type | Description
-|:---|:--------------------------------------|:----------|:------------
-| 1  | <a name="def-construct-open"></a>open | *`!Line`* | The opening [Line][line] instance.
-| 2  | <a name="def-construct-file"></a>file | *`!File`* | The parent [File][file] instance.
+|    | Parameter                               | Data Type | Description
+|:---|:----------------------------------------|:----------|:------------
+| 1  | <a name="def-constructor-open"></a>open | *`!Line`* | The opening [Line][line] instance.
+| 2  | <a name="def-constructor-file"></a>file | *`!File`* | The parent [File][file] instance.
 <br>
 
-[def-construct-open]: #user-content-def-construct-open
-[def-construct-file]: #user-content-def-construct-file
+[def-new-open]: #user-content-def-constructor-open
+[def-new-file]: #user-content-def-constructor-file
 
 <a name="def-members"></a>
-### Define Members
+## Def Instance Properties
 
-| Member                               | Data Type         | Description
+| Property Name                        | Data Type         | Description
 |:-------------------------------------|:------------------|:------------
 | <a name="def-member-type"></a>type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Def][def] class.
 | <a name="def-member-tag"></a>tag     | *`string`*        | The [Def][def] instance's [tag][def-tag] name (e.g. `"/// #{{{ @tag id"`).
@@ -792,60 +787,51 @@ A special [grouping][grps] *command* for defining a simple C-like macro. [Define
 [def-close]: #user-content-def-member-close
 [def-lines]: #user-content-def-member-lines
 
-<a name="def-methods"></a>
-### Define Methods
-
-- [Def.prototype.isClose][def-is-close]
-  - [Parameters][def-is-close-params]
-  - [Returns][def-is-close-returns]
-- [Def.prototype.setClose][def-set-close]
-  - [Parameters][def-set-close-params]
-  - [Returns][def-set-close-returns]
-
-<a name="def-method-is-close"></a>
-### Def.prototype.isClose
+<a name="def-prototype-is-close"></a>
+## Def.prototype.isClose
 This method tests if a line of text is a valid closing [define][def] *command* and if it matches the [define][def] instance's [tag][def-tag] and [ID][def-id].
 
-<a name="def-method-is-close-params"></a>
-#### Def.prototype.isClose Parameters
+<a name="def-prototype-is-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                   | Data Type  | Description
-|:---|:--------------------------------------------|:-----------|:------------
-| 1  | <a name="def-method-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
+|    | Parameter                                      | Data Type  | Description
+|:---|:-----------------------------------------------|:-----------|:------------
+| 1  | <a name="def-prototype-is-close-text"></a>text | *`string`* | The text of a [Line][line] instance to check.
 
-[def-is-close-text]: #user-content-def-method-is-close-text
+[def-is-close-text]: #user-content-def-prototype-is-close-text
 
-<a name="def-method-is-close-returns"></a>
-#### Def.prototype.isClose Returns
+<a name="def-prototype-is-close-returns"></a>
+### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`boolean`* | The result of the [close][close-cmd] *command* test.
+| *`boolean`* | [Def.prototype.isClose][def-is-close] returns the result of the [close][close-cmd] *command* test.
+<br>
 
-<a name="def-method-set-close"></a>
-### Def.prototype.setClose
+<a name="def-prototype-set-close"></a>
+## Def.prototype.setClose
 This method sets the [close][def-close] property for the [Def][def] instance.
 
-<a name="def-method-set-close-params"></a>
-#### Def.prototype.setClose Parameters
+<a name="def-prototype-set-close-parameters"></a>
+### Parameters
 
-|    | Parameter                                      | Data Type | Description
-|:---|:-----------------------------------------------|:----------|:------------
-| 1  | <a name="def-method-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
+|    | Parameter                                         | Data Type | Description
+|:---|:--------------------------------------------------|:----------|:------------
+| 1  | <a name="def-prototype-set-close-close"></a>close | *`!Line`* | The closing [Line][line] instance.
 
-[def-set-close-close]: #user-content-def-method-set-close-close
+[def-set-close-close]: #user-content-def-prototype-set-close-close
 
-<a name="def-method-set-close-returns"></a>
-#### Def.prototype.setClose Returns
+<a name="def-prototype-set-close-returns"></a>
+### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | This method does not return a value.
+| *`void`*  | [Def.prototype.setClose][def-set-close] does not return a value.
 <br>
 
 
 <a name="refs"></a>
-## References
+## Reference Commands
 <ADD-DESCRIP>
 
 ### GOTO
