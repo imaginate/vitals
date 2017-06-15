@@ -1,5 +1,5 @@
-# Compile Class & Syntax Specs
-This guide describes every compile class, defines each member and method of every class, and provides descriptive details for the compile syntax within the source. It is likely that this compiler will become its own separate project in the future. Thoughts and feedback appreciated.
+# Preprocessor Classes & Syntax Specs
+This guide describes every preprocessor class, defines each member and method of every class, and provides descriptive details for the preprocessor syntax within the source. It is likely that this preprocessor will become its own separate project in the future. Thoughts and feedback appreciated.
 <br><br>
 
 ## GOTO
@@ -19,22 +19,22 @@ This guide describes every compile class, defines each member and method of ever
 
 <a name="fs"></a>
 ## File System Wrappers
-Each file-system class wraps a different file-system component for the compiler.
+Each file-system class wraps a different file-system component for the preprocessor.
 
 - [Directory Class][dir]
   - [Dir Constructor][dir-new]
   - [Dir Instance Properties][dir-props]
   - [Dir.prototype.load][dir-load]
-  - [Dir.prototype.preprocess][dir-preprocess]
-  - [Dir.prototype.process][dir-process]
-  - [Dir.prototype.compile][dir-compile]
+  - [Dir.prototype.preparse][dir-preparse]
+  - [Dir.prototype.parse][dir-parse]
+  - [Dir.prototype.run][dir-run]
 - [File Class][file]
   - [File Constructor][file-new]
   - [File Instance Properties][file-props]
   - [File.prototype.load][file-load]
-  - [File.prototype.preprocess][file-preprocess]
-  - [File.prototype.process][file-process]
-  - [File.prototype.compile][file-compile]
+  - [File.prototype.preparse][file-preparse]
+  - [File.prototype.parse][file-parse]
+  - [File.prototype.run][file-run]
 - [Line Class][line]
   - [Line Constructor][line-new]
   - [Line Instance Properties][line-props]
@@ -51,29 +51,29 @@ Each file-system class wraps a different file-system component for the compiler.
 [file-props]: #user-content-file-members
 [line-props]: #user-content-line-members
 [dir-load]: #user-content-dir-prototype-load
-[dir-preprocess]: #user-content-dir-prototype-preprocess
-[dir-process]: #user-content-dir-prototype-process
-[dir-compile]: #user-content-dir-prototype-compile
+[dir-preparse]: #user-content-dir-prototype-preparse
+[dir-parse]: #user-content-dir-prototype-parse
+[dir-run]: #user-content-dir-prototype-run
 [file-load]: #user-content-file-prototype-load
-[file-preprocess]: #user-content-file-prototype-preprocess
-[file-process]: #user-content-file-prototype-process
-[file-compile]: #user-content-file-prototype-compile
+[file-preparse]: #user-content-file-prototype-preparse
+[file-parse]: #user-content-file-prototype-parse
+[file-run]: #user-content-file-prototype-run
 [dir-load-params]: #user-content-dir-prototype-load-parameters
-[dir-preprocess-params]: #user-content-dir-prototype-preprocess-parameters
-[dir-process-params]: #user-content-dir-prototype-process-parameters
-[dir-compile-params]: #user-content-dir-prototype-compile-parameters
+[dir-preparse-params]: #user-content-dir-prototype-preparse-parameters
+[dir-parse-params]: #user-content-dir-prototype-parse-parameters
+[dir-run-params]: #user-content-dir-prototype-run-parameters
 [file-load-params]: #user-content-file-prototype-load-parameters
-[file-preprocess-params]: #user-content-file-prototype-preprocess-parameters
-[file-process-params]: #user-content-file-prototype-process-parameters
-[file-compile-params]: #user-content-file-prototype-compile-parameters
+[file-preparse-params]: #user-content-file-prototype-preparse-parameters
+[file-parse-params]: #user-content-file-prototype-parse-parameters
+[file-run-params]: #user-content-file-prototype-run-parameters
 [dir-load-returns]: #user-content-dir-prototype-load-returns
-[dir-preprocess-returns]: #user-content-dir-prototype-preprocess-returns
-[dir-process-returns]: #user-content-dir-prototype-process-returns
-[dir-compile-returns]: #user-content-dir-prototype-compile-returns
+[dir-preparse-returns]: #user-content-dir-prototype-preparse-returns
+[dir-parse-returns]: #user-content-dir-prototype-parse-returns
+[dir-run-returns]: #user-content-dir-prototype-run-returns
 [file-load-returns]: #user-content-file-prototype-load-returns
-[file-preprocess-returns]: #user-content-file-prototype-preprocess-returns
-[file-process-returns]: #user-content-file-prototype-process-returns
-[file-compile-returns]: #user-content-file-prototype-compile-returns
+[file-preparse-returns]: #user-content-file-prototype-preparse-returns
+[file-parse-returns]: #user-content-file-prototype-parse-returns
+[file-run-returns]: #user-content-file-prototype-run-returns
 
 <a name="dir"></a>
 ## Directory Class
@@ -84,15 +84,15 @@ The [directory class][dir], `Dir`, wraps each directory node within the *src* tr
 - [Dir.prototype.load][dir-load]
   - [Parameters][dir-load-params]
   - [Returns][dir-load-returns]
-- [Dir.prototype.preprocess][dir-preprocess]
-  - [Parameters][dir-preprocess-params]
-  - [Returns][dir-preprocess-returns]
-- [Dir.prototype.process][dir-process]
-  - [Parameters][dir-process-params]
-  - [Returns][dir-process-returns]
-- [Dir.prototype.compile][dir-compile]
-  - [Parameters][dir-compile-params]
-  - [Returns][dir-compile-returns]
+- [Dir.prototype.preparse][dir-preparse]
+  - [Parameters][dir-preparse-params]
+  - [Returns][dir-preparse-returns]
+- [Dir.prototype.parse][dir-parse]
+  - [Parameters][dir-parse-params]
+  - [Returns][dir-parse-returns]
+- [Dir.prototype.run][dir-run]
+  - [Parameters][dir-run-params]
+  - [Returns][dir-run-returns]
 <br>
 
 <a name="dir-constructor"></a>
@@ -146,63 +146,63 @@ This method triggers [Dir.prototype.load][dir-load] for each [Dir][dir] instance
 | *`void`*  | [Dir.prototype.load][dir-load] does not return a value.
 <br>
 
-<a name="dir-prototype-preprocess"></a>
-## Dir.prototype.preprocess
-This method triggers [Dir.prototype.preprocess][dir-preprocess] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.preprocess][file-preprocess] for each [File][file] instance within the [files][dir-files] `array`.
+<a name="dir-prototype-preparse"></a>
+## Dir.prototype.preparse
+This method triggers [Dir.prototype.preparse][dir-preparse] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.preparse][file-preparse] for each [File][file] instance within the [files][dir-files] `array`.
 
-<a name="dir-prototype-preprocess-parameters"></a>
+<a name="dir-prototype-preparse-parameters"></a>
 ### Parameters
-[Dir.prototype.preprocess][dir-preprocess] has no parameters.
+[Dir.prototype.preparse][dir-preparse] has no parameters.
 
-<a name="dir-prototype-preprocess-returns"></a>
+<a name="dir-prototype-preparse-returns"></a>
 ### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | [Dir.prototype.preprocess][dir-preprocess] does not return a value.
+| *`void`*  | [Dir.prototype.preparse][dir-preparse] does not return a value.
 <br>
 
-<a name="dir-prototype-process"></a>
-## Dir.prototype.process
-This method triggers [Dir.prototype.process][dir-process] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.process][file-process] for each [File][file] instance within the [files][dir-files] `array`.
+<a name="dir-prototype-parse"></a>
+## Dir.prototype.parse
+This method triggers [Dir.prototype.parse][dir-parse] for each [Dir][dir] instance within the [dirs][dir-dirs] `array` and [File.prototype.parse][file-parse] for each [File][file] instance within the [files][dir-files] `array`.
 
-<a name="dir-prototype-process-parameters"></a>
+<a name="dir-prototype-parse-parameters"></a>
 ### Parameters
-[Dir.prototype.process][dir-process] has no parameters.
+[Dir.prototype.parse][dir-parse] has no parameters.
 
-<a name="dir-prototype-process-returns"></a>
+<a name="dir-prototype-parse-returns"></a>
 ### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | [Dir.prototype.process][dir-process] does not return a value.
+| *`void`*  | [Dir.prototype.parse][dir-parse] does not return a value.
 <br>
 
-<a name="dir-prototype-compile"></a>
-## Dir.prototype.compile
-This method triggers [File.prototype.compile][file-compile] for the [File][file] instance that matches the file path defined by the [src][dir-compile-src] parameter.
+<a name="dir-prototype-run"></a>
+## Dir.prototype.run
+This method triggers [File.prototype.run][file-run] for the [File][file] instance that matches the file path defined by the [src][dir-run-src] parameter.
 
-<a name="dir-prototype-compile-parameters"></a>
+<a name="dir-prototype-run-parameters"></a>
 ### Parameters
 
-|    | Parameter                                       | Data Type                        | Description
-|:---|:------------------------------------------------|:---------------------------------|:------------
-| 1  | <a name="dir-prototype-compile-src"></a>src     | *`string`*                       | The file path to the source [File][file] instance you want to call [File.prototype.compile][file-compile] from. The file path must be RELATIVE TO THE ROOT [Dir][dir] instance (as only the root [Dir][dir] instance API is exposed to users). NO ABSOLUTE PATHS are allowed for this parameter.
-| 2  | <a name="dir-prototype-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result of [File.prototype.compile][file-compile]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-compile-dest] path must already exist. If a file exists at the resolved [dest][dir-compile-dest] path, it is overwritten.
-| 3  | <a name="dir-prototype-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-compile-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][dir-compile-state] or an error will be thrown.
-| 4  | <a name="dir-prototype-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][dir-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result of [File.prototype.compile][file-compile] before it is saved to the [dest][dir-compile-dest].
+|    | Parameter                                   | Data Type                        | Description
+|:---|:--------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="dir-prototype-run-src"></a>src     | *`string`*                       | The file path to the source [File][file] instance you want to call [File.prototype.run][file-run] from. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE [Dir][dir] instance (i.e. since only the root [Dir][dir] instance is called from the exposed API, it is essentially relative to the root [Dir][dir] instance).
+| 2  | <a name="dir-prototype-run-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the preprocessed result of [File.prototype.run][file-run]. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][dir-run-dest] path must already exist. If a file exists at the resolved [dest][dir-run-dest] path, it is overwritten.
+| 3  | <a name="dir-prototype-run-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [src][dir-run-src] [File][file] instance's [content][file-content] `array`. Each [state][dir-run-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL within the [src][dir-run-src] MUST BE DEFINED in the [state][dir-run-state] or an error will be thrown.
+| 4  | <a name="dir-prototype-run-alter"></a>alter | *`(!function(string): string)=`* | The [alter][dir-run-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the preprocessed result of [File.prototype.run][file-run] before it is saved to the [dest][dir-run-dest].
 
-[dir-compile-src]: #user-content-dir-prototype-compile-src
-[dir-compile-dest]: #user-content-dir-prototype-compile-dest
-[dir-compile-state]: #user-content-dir-prototype-compile-state
-[dir-compile-alter]: #user-content-dir-prototype-compile-alter
+[dir-run-src]: #user-content-dir-prototype-run-src
+[dir-run-dest]: #user-content-dir-prototype-run-dest
+[dir-run-state]: #user-content-dir-prototype-run-state
+[dir-run-alter]: #user-content-dir-prototype-run-alter
 
-<a name="dir-prototype-compile-returns"></a>
+<a name="dir-prototype-run-returns"></a>
 ### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`string`*  | [Dir.prototype.compile][dir-compile] returns the compiled result (UTF-8 encoded) that is saved to the [dest][dir-compile-dest].
+| *`string`*  | [Dir.prototype.run][dir-run] returns the preprocessed result (UTF-8 encoded) that is saved to the [dest][dir-run-dest].
 <br>
 
 
@@ -215,15 +215,15 @@ The [file class][file], `File`, wraps each file node within the *src* tree.
 - [File.prototype.load][file-load]
   - [Parameters][file-load-params]
   - [Returns][file-load-returns]
-- [File.prototype.preprocess][file-preprocess]
-  - [Parameters][file-preprocess-params]
-  - [Returns][file-preprocess-returns]
-- [File.prototype.process][file-process]
-  - [Parameters][file-process-params]
-  - [Returns][file-process-returns]
-- [File.prototype.compile][file-compile]
-  - [Parameters][file-compile-params]
-  - [Returns][file-compile-returns]
+- [File.prototype.preparse][file-preparse]
+  - [Parameters][file-preparse-params]
+  - [Returns][file-preparse-returns]
+- [File.prototype.parse][file-parse]
+  - [Parameters][file-parse-params]
+  - [Returns][file-parse-returns]
+- [File.prototype.run][file-run]
+  - [Parameters][file-run-params]
+  - [Returns][file-run-returns]
 <br>
 
 <a name="file-constructor"></a>
@@ -287,61 +287,61 @@ This method causes the [File][file] instance's [path][file-path] to be read, a n
 | *`void`*  | [File.prototype.load][file-load] does not return a value.
 <br>
 
-<a name="file-prototype-preprocess"></a>
-## File.prototype.preprocess
+<a name="file-prototype-preparse"></a>
+## File.prototype.preparse
 This method causes a new [Ins][ins] instance to be constructed and pushed to the [File][file] instance's [inserts][file-inserts] `array` for each [Ins][ins] within the [File][file], each [Ins][ins] instance's [line][ins-line] property's [Line][line] instance to spliced from the [File][file] instance's [lines][file-lines] `array`, and each [Line][line] instance from each [Ins][ins] instance's [lines][ins-lines] `array` to be spliced to the [File][file] instance's [lines][file-lines] `array`.
 
-<a name="file-prototype-preprocess-parameters"></a>
+<a name="file-prototype-preparse-parameters"></a>
 ### Parameters
-[File.prototype.preprocess][file-preprocess] has no parameters.
+[File.prototype.preparse][file-preparse] has no parameters.
 
-<a name="file-prototype-preprocess-returns"></a>
+<a name="file-prototype-preparse-returns"></a>
 ### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | [File.prototype.preprocess][file-preprocess] does not return a value.
+| *`void`*  | [File.prototype.preparse][file-preparse] does not return a value.
 <br>
 
-<a name="file-prototype-process"></a>
-## File.prototype.process
+<a name="file-prototype-parse"></a>
+## File.prototype.parse
 This method causes a new [Blk][blk], [Cond][cond], or [Incl][incl] instance to be constructed and defined in the [File][file] instance's [blks][file-blks], [conds][file-conds], or [incls][file-incls] `object` for each [Blk][blk], [Cond][cond], and [Incl][incl] within the root scope of the [File][file] instance and the [File][file] instance's [content][file-content] `array` to be filled (in order of appearance) with each [Line][line], [Blk][blk], [Cond][cond], and [Incl][incl] within the root scope of the [File][file] instance.
 
-<a name="file-prototype-process-parameters"></a>
+<a name="file-prototype-parse-parameters"></a>
 ### Parameters
-[File.prototype.process][file-process] has no parameters.
+[File.prototype.parse][file-parse] has no parameters.
 
-<a name="file-prototype-process-returns"></a>
+<a name="file-prototype-parse-returns"></a>
 ### Returns
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | [File.prototype.process][file-process] does not return a value.
+| *`void`*  | [File.prototype.parse][file-parse] does not return a value.
 <br>
 
-<a name="file-prototype-compile"></a>
-## File.prototype.compile
-This method creates a compiled destination file, [dest][file-compile-dest].
+<a name="file-prototype-run"></a>
+## File.prototype.run
+This method runs the preprocessor on a parsed [File][file] instance and saves the result to a [destination][file-run-dest] file.
 
-<a name="file-prototype-compile-parameters"></a>
+<a name="file-prototype-run-parameters"></a>
 ### Parameters
 
-|    | Parameter                                        | Data Type                        | Description
-|:---|:-------------------------------------------------|:---------------------------------|:------------
-| 1  | <a name="file-prototype-compile-dest"></a>dest   | *`string`*                       | The file path to the destination you want to save the compiled result. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-compile-dest] path must already exist. If a file exists at the resolved [dest][file-compile-dest] path, it is overwritten.
-| 2  | <a name="file-prototype-compile-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-compile-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL MUST BE DEFINED within the [state][file-compile-state] or an error will be thrown.
-| 3  | <a name="file-prototype-compile-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-compile-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the compiled result before it is saved to the [dest][file-compile-dest].
+|    | Parameter                                    | Data Type                        | Description
+|:---|:---------------------------------------------|:---------------------------------|:------------
+| 1  | <a name="file-prototype-run-dest"></a>dest   | *`string`*                       | The file path to the destination that you want to save the preprocessed results to. The file path may be relative or absolute. If it is a relative path, it is RELATIVE TO THE CWD (current working directory). The directory path up to the file name of the resolved [dest][file-run-dest] path must already exist. If a file exists at the resolved [dest][file-run-dest] path, it is overwritten.
+| 2  | <a name="file-prototype-run-state"></a>state | *`!Object<string, boolean>`*     | The enabled, `true`, or disabled, `false`, state for every [conditional command][cond] defined within the [File][file] instance's [content][file-content] `array`. Each [state][file-run-state] `object` key must be *hashed* (i.e. created) by combining each [Cond][cond] instance's [tag][cond-tag] and [ID][cond-id] with a colon, `":"`, separating them (e.g. `"tag:id"`). EVERY CONDITIONAL within the [File][file] MUST BE DEFINED in the [state][file-run-state] or an error will be thrown.
+| 3  | <a name="file-prototype-run-alter"></a>alter | *`(!function(string): string)=`* | The [alter][file-run-alter] `function` is optional. If it is defined, it allows you to provide custom alterations to the preprocessed result before it is saved to the [dest][file-run-dest].
 
-[file-compile-dest]: #user-content-file-prototype-compile-dest
-[file-compile-state]: #user-content-file-prototype-compile-state
-[file-compile-alter]: #user-content-file-prototype-compile-alter
+[file-run-dest]: #user-content-file-prototype-run-dest
+[file-run-state]: #user-content-file-prototype-run-state
+[file-run-alter]: #user-content-file-prototype-run-alter
 
-<a name="file-prototype-compile-returns"></a>
+<a name="file-prototype-run-returns"></a>
 ### Returns
 
 | Data Type   | Description
 |:------------|:------------
-| *`string`*  | [File.prototype.compile][file-compile] returns the compiled result (UTF-8 encoded) that is saved to the [dest][file-compile-dest].
+| *`string`*  | [File.prototype.run][file-run] returns the preprocessed result (UTF-8 encoded) that is saved to the [dest][file-run-dest].
 <br>
 
 
@@ -387,7 +387,7 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 
 <a name="syntax"></a>
 ## Source Syntax
-The compile syntax has a simple layout and structure. It is built upon a single option, the *command*. A *command* is always one line. It is based upon one pattern with few variations to comprise the five total syntax *command* types available. The five *command* types are separated into two general types, [groups][grps] and [references][refs]. The [group commands][grps] create *scopes* of code (e.g. JavaScript) that can be enabled or disabled and be re-used. The [reference commands][refs] reference [groups][grps] of code from outside *scopes* (e.g. other [files][file]) to give you more flexible composability with any programming language (although for now, it is only JavaScript, but that is easy to change). All of the *commands* consist of four basic syntax components, and both of the [reference][refs] *command* types have a fifth.
+The preprocessor syntax has a simple layout and structure. It is built upon a single option, the *command*. A *command* is always one line. It is based upon one pattern with few variations to comprise the five total syntax *command* types available. The five *command* types are separated into two general types, [groups][grps] and [references][refs]. The [group commands][grps] create *scopes* of code (e.g. JavaScript) that can be enabled or disabled and be re-used. The [reference commands][refs] reference [groups][grps] of code from outside *scopes* (e.g. other [files][file]) to give you more flexible composability with any programming language (although for now, it is only JavaScript, but that is easy to change). All of the *commands* consist of four basic syntax components, and both of the [reference][refs] *command* types have a fifth.
 
 ### The 5 Commands
 ##### The Group Commands
@@ -406,12 +406,12 @@ The compile syntax has a simple layout and structure. It is built upon a single 
 5. <p><strong><a href="#user-content-cmd-rule7">Path</a></strong></p>
 
 ### The 7 Command Rules
-1. <p><a name="cmd-rule1"></a><strong>No Sharing</strong></p><p>A compile <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
-2. <p><a name="cmd-rule2"></a><strong>Start With 3</strong></p><p>A compile <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
-3. <p><a name="cmd-rule3"></a><strong>Hash It</strong></p><p>A compile <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
-4. <p><a name="cmd-rule4"></a><strong>Action Time</strong></p><p>A compile <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
-5. <p><a name="cmd-rule5"></a><strong>Tag It</strong></p><p>The compile <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
-6. <p><a name="cmd-rule6"></a><strong>ID It</strong></p><p>The compile <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-groups">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
+1. <p><a name="cmd-rule1"></a><strong>No Sharing</strong></p><p>A preprocessor <em>command</em> must NOT share a line with any other syntax (e.g. JavaScript or JSDoc).</p>
+2. <p><a name="cmd-rule2"></a><strong>Start With 3</strong></p><p>A preprocessor <em>command</em> must start with a <em>comment</em> component. A <em>comment</em> component consists of three forward slashes, <code>"///"</code>, followed by at least one space or tab character, <code>" "</code>. The <em>comment</em> component may only be preceded by space or tab characters.</p>
+3. <p><a name="cmd-rule3"></a><strong>Hash It</strong></p><p>A preprocessor <em>command</em> must use a hash tag, <code>"#"</code>, to start the <em>action</em> component. It must follow the <em>comment</em> component's space or tab character(s) (e.g. <code>"/// #"</code>).</p>
+4. <p><a name="cmd-rule4"></a><strong>Action Time</strong></p><p>A preprocessor <em>command</em> must act with an <em>action</em> component. The <em>command</em> type is defined by the <em>action</em>. The desired <em>action</em> syntax must be specified immediately after the hash tag followed by at least one space or tab character (e.g. <code>"/// #if{{{ "</code> or <code>"/// #include "</code>). See the <em>command</em> sections for each <em>command</em> type's <em>action</em> syntax.</p>
+5. <p><a name="cmd-rule5"></a><strong>Tag It</strong></p><p>The preprocessor <em>commmand</em> must be tagged with a <em>tag</em> component. A <em>tag</em> component follows the <em>action</em> and must start with an at symbol, <code>"@"</code>, followed by your choice of <em>tag</em> name (only alphanumerics, underscores, dots, and dashes allowed) and at least one space or tab character (e.g. <code>"/// #insert @tagname "</code> or <code>"/// #def}}} @tag-name "</code>).</p>
+6. <p><a name="cmd-rule6"></a><strong>ID It</strong></p><p>The preprocessor <em>commmand</em> must be a hipster with the <em>ID</em> component. The <em>ID</em> must be assigned after the <em>tag</em>. It may only contain alphanumerics, underscores, dots, dashes, and dollar signs (e.g. <code>"/// #{{{ @tagname uniqueID"</code>) and must be unique to all other <em>command IDs</em> with the SAME <em>tag</em> name and within the SAME <a href="#user-content-file">file</a> or <a href="#user-content-groups">group</a> <em>scope</em> (i.e. if you want to give two <em>commands</em> in the same <em>scope</em> the same <em>ID</em>, you must give them different <em>tag</em> names).</p>
 7. <p><a name="cmd-rule7"></a><strong>Ref Directions</strong></p><p>The <a href="#user-content-refs">reference</a> <em>command</em> must give directions with a <em>path</em> component to use a <a href="#user-content-groups">group</a> within another <a href="#user-content-file">file</a>. The <em>path</em> component must follow the space or tab character(s) that follow the <em>ID</em> component and must be a relative file path (e.g. <code>"/// #include @tag ID ../path/to/file.js"</code>). Note that space and tab characters are not allowed within file paths.</p>
 <br>
 
@@ -624,7 +624,7 @@ This method sets the [close][blk-close] property for the [Blk][blk] instance.
 
 <a name="cond"></a>
 ## Conditional Command & Class
-The [conditional][cond] *command* is a special [grouping][grps] *command* that shows or hides its [content][cond-content] based upon the [state][file-compile-state] `object` passed to [File.prototype.compile][file-compile] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from within other [file][file] or [command][root-cmd] root scopes. The [conditional class][cond], `Cond`, wraps each [conditional][cond] *command*.
+The [conditional][cond] *command* is a special [grouping][grps] *command* that shows or hides its [content][cond-content] based upon the [state][file-run-state] `object` passed to [File.prototype.run][file-run] (i.e. it can be easily enabled or disabled at will). Currently, it may NOT be [referenced][refs] from within other [file][file] or [command][root-cmd] root scopes. The [conditional class][cond], `Cond`, wraps each [conditional][cond] *command*.
 
 - [Cond Action Syntax][cond-act]
 - [Cond Constructor][cond-new]
@@ -914,7 +914,7 @@ This method creates `Incl` instances. Use the `new` keyword when calling `Incl` 
 
 <a name="ins"></a>
 ## Insert Command & Class
-The [insert][ins] *command* is a special [reference][refs] *command* that allows you to insert the [lines][def-lines] of any [define][def] *command* into the [lines][file-lines] of your current [file][file] during the [preprocess][file-preprocess] stage (i.e. before any [block][blk], [conditional][cond], or [include][incl] *commands* are processed). If you would like to [insert][ins] a [define][def] from the same [file][file], you do not need to add a [path component][cmd-rule7] to the [insert][ins] *command*. The [insert class][ins], `Ins`, wraps each [insert][ins] *command*.
+The [insert][ins] *command* is a special [reference][refs] *command* that allows you to insert the [lines][def-lines] of any [define][def] *command* into the [lines][file-lines] of your current [file][file] during the [preparse][file-preparse] stage (i.e. before any [block][blk], [conditional][cond], or [include][incl] *commands* are parsed). If you would like to [insert][ins] a [define][def] from the same [file][file], you do not need to add a [path component][cmd-rule7] to the [insert][ins] *command*. The [insert class][ins], `Ins`, wraps each [insert][ins] *command*.
 
 - [Ins Action Syntax][ins-act]
 - [Ins Constructor][ins-new]
