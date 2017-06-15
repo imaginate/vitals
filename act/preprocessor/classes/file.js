@@ -274,6 +274,18 @@ var getPathNode = loadHelper('get-path-node');
 var hasCmd = loadHelper('has-command');
 /// #}}} @func hasCmd
 
+/// #{{{ @func hasDirectory
+/**
+ * @private
+ * @param {string} src
+ *   The file path to check in.
+ * @param {string} path
+ *   The directory path to check for.
+ * @return {boolean}
+ */
+var hasDirectory = loadHelper('has-directory');
+/// #}}} @func hasDirectory
+
 /// #{{{ @func hasBlkCmd
 /**
  * @private
@@ -928,11 +940,11 @@ File.prototype.load = function load() {
 };
 /// #}}} @func File.prototype.load
 
-/// #{{{ @func File.prototype.preprocess
+/// #{{{ @func File.prototype.preparse
 /**
  * @return {void}
  */
-File.prototype.preprocess = function preprocess() {
+File.prototype.preparse = function preparse() {
 
   /** @type {!Array<!Ins>} */
   var inserts;
@@ -973,13 +985,13 @@ File.prototype.preprocess = function preprocess() {
   capObject(inserts);
   sealObject(inserts);
 };
-/// #}}} @func File.prototype.preprocess
+/// #}}} @func File.prototype.preparse
 
-/// #{{{ @func File.prototype.process
+/// #{{{ @func File.prototype.parse
 /**
  * @return {void}
  */
-File.prototype.process = function process() {
+File.prototype.parse = function parse() {
 
   /** @type {!Array<(!Blk|!Cond)>} */
   var stack;
@@ -1166,16 +1178,16 @@ File.prototype.process = function process() {
   sealObject(this.incls);
   sealObject(this.content);
 };
-/// #}}} @func File.prototype.process
+/// #}}} @func File.prototype.parse
 
-/// #{{{ @func File.prototype.compile
+/// #{{{ @func File.prototype.run
 /**
  * @param {string} dest
- *   The file path to the destination you want to save the compiled result.
- *   The file path may be relative or absolute. If it is a relative path, it
- *   is relative to the `cwd`. The directory path up to the file name of the
- *   resolved #dest path must already exist. If a file exists at the resolved
- *   #dest path, it is overwritten.
+ *   The file path to the destination you want to save the preprocessed
+ *   result. The file path may be relative or absolute. If it is a relative
+ *   path, it is relative to the `cwd`. The directory path up to the file name
+ *   of the resolved #dest path must already exist. If a file exists at the
+ *   resolved #dest path, it is overwritten.
  * @param {!Object<string, boolean>} state
  *   The enabled, `true`, or disabled, `false`, state for every conditional
  *   command defined within the `File` instance's *content* `array`. Each
@@ -1185,14 +1197,16 @@ File.prototype.process = function process() {
  *   be defined in the #state or an error will be thrown.
  * @param {(!function(string): string)=} alter
  *   The #alter `function` is optional. If it is defined, it allows you to
- *   provide custom alterations to the compiled result before it is saved to
- *   the #dest.
+ *   provide custom alterations to the preprocessed result before it is saved
+ *   to the #dest.
  * @return {string}
  */
-File.prototype.compile = function compile(dest, state, alter) {
+File.prototype.run = function run(dest, state, alter) {
 
   /** @type {string} */
   var result;
+  /** @type {string} */
+  var pwd;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -1210,18 +1224,23 @@ File.prototype.compile = function compile(dest, state, alter) {
 
   if (!dest)
     throw new Error('invalid empty `string` for `dest`');
-
-  dest = resolvePath(dest);
-
   if ( !DEST_EXT.test(dest) )
     throw new Error('invalid `dest` file extension\n' +
       '    should-match: `' + DEST_EXT.toString() + '`');
 
+  pwd = this.parent.path;
+  dest = resolvePath(dest);
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
     throw new Error('invalid readable directory path for `dest`\n' +
-      '    path: `' + path + '`');
+      '    dest-path: `' + dest + '`\n' +
+      '    dir-path: `' + path + '`');
+  if ( hasDirectory(dest, pwd) )
+    throw new Error('invalid `dest` file path location (' +
+      'must NOT be within parent `Dir`)\n' +
+      '    dir-path: `' + pwd + '`\n' +
+      '    dest-path: `' + dest + '`');
 
   ////////////////////////////////////////////////////////////////////////////
   // ADD COMPILE LOGIC HERE
@@ -1237,7 +1256,7 @@ File.prototype.compile = function compile(dest, state, alter) {
 
   return toFile(result, dest);
 };
-/// #}}} @func File.prototype.compile
+/// #}}} @func File.prototype.run
 
 /// #}}} @group FILE-PROTOTYPE
 
