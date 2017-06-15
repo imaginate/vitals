@@ -37,6 +37,18 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasDirectory
+/**
+ * @private
+ * @param {string} src
+ *   The file path to check in.
+ * @param {string} path
+ *   The directory path to check for.
+ * @return {boolean}
+ */
+var hasDirectory = require('./has-directory.js');
+/// #}}} @func hasDirectory
+
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -47,6 +59,15 @@ var IS = loadTaskHelper('is');
 var hasOwnProperty = loadTaskHelper('has-own-property');
 /// #}}} @func hasOwnProperty
 
+/// #{{{ @func isDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isDirectory = IS.directory;
+/// #}}} @func isDirectory
+
 /// #{{{ @func isDirNode
 /**
  * @private
@@ -55,6 +76,15 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
  */
 var isDirNode = require('./is-directory-node.js');
 /// #}}} @func isDirNode
+
+/// #{{{ @func isFile
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isFile = IS.file;
+/// #}}} @func isFile
 
 /// #{{{ @func isFileNode
 /**
@@ -73,6 +103,18 @@ var isFileNode = require('./is-file-node.js');
  */
 var isString = IS.string;
 /// #}}} @func isString
+
+/// #{{{ @func trimDirectory
+/**
+ * @private
+ * @param {string} src
+ *   The file path to trim from.
+ * @param {string} path
+ *   The directory path to trim.
+ * @return {string}
+ */
+var trimDirectory = require('./trim-directory.js');
+/// #}}} @func trimDirectory
 
 /// #}}} @group HELPERS
 
@@ -123,18 +165,33 @@ function getPathNode(src, path) {
   var names;
   /** @type {(?Dir|?File)} */
   var node;
+  /** @type {string} */
+  var pwd;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  if ( !isDirNode(src) && !isFileNode(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `!Dir|!File`');
   if ( !isString(path) )
     throw new TypeError('invalid `path` data type\n' +
       '    valid-types: `string`');
 
+  if ( isDirNode(src) )
+    pwd = src.path;
+  else if ( isFileNode(src) )
+    pwd = src.parent.path;
+  else
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `!Dir|!File`');
+
+  path = resolvePath(pwd, path);
+
+  if ( !isFile(path) && !isDirectory(path) )
+    return null;
+  if ( !hasDirectory(path, pwd) )
+    return null;
+
+  path = trimDirectory(path, pwd);
   names = path.split('/');
   node = src;
   len = names.length;
