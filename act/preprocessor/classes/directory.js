@@ -255,6 +255,18 @@ var getPathName = loadHelper('get-pathname');
 var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
+/// #{{{ @func hasDirectory
+/**
+ * @private
+ * @param {string} src
+ *   The file path to check in.
+ * @param {string} path
+ *   The directory path to check for.
+ * @return {boolean}
+ */
+var hasDirectory = loadHelper('has-directory');
+/// #}}} @func hasDirectory
+
 /// #{{{ @func hasOwnProp
 /**
  * @private
@@ -697,11 +709,11 @@ Dir.prototype.load = function load() {
 };
 /// #}}} @func Dir.prototype.load
 
-/// #{{{ @func Dir.prototype.preprocess
+/// #{{{ @func Dir.prototype.preparse
 /**
  * @return {void}
  */
-Dir.prototype.preprocess = function preprocess() {
+Dir.prototype.preparse = function preparse() {
 
   /** @type {!Object<string, !File>} */
   var files;
@@ -713,22 +725,22 @@ Dir.prototype.preprocess = function preprocess() {
   files = this.files;
   for (name in files) {
     if ( hasOwnProp(files, name) )
-      files[name].preprocess();
+      files[name].preparse();
   }
 
   dirs = this.dirs;
   for (name in dirs) {
     if ( hasOwnProp(dirs, name) )
-      dirs[name].preprocess();
+      dirs[name].preparse();
   }
 };
-/// #}}} @func Dir.prototype.preprocess
+/// #}}} @func Dir.prototype.preparse
 
-/// #{{{ @func Dir.prototype.process
+/// #{{{ @func Dir.prototype.parse
 /**
  * @return {void}
  */
-Dir.prototype.process = function process() {
+Dir.prototype.parse = function parse() {
 
   /** @type {!Object<string, !File>} */
   var files;
@@ -740,27 +752,28 @@ Dir.prototype.process = function process() {
   files = this.files;
   for (name in files) {
     if ( hasOwnProp(files, name) )
-      files[name].process();
+      files[name].parse();
   }
 
   dirs = this.dirs;
   for (name in dirs) {
     if ( hasOwnProp(dirs, name) )
-      dirs[name].process();
+      dirs[name].parse();
   }
 };
-/// #}}} @func Dir.prototype.process
+/// #}}} @func Dir.prototype.parse
 
-/// #{{{ @func Dir.prototype.compile
+/// #{{{ @func Dir.prototype.run
 /**
  * @param {string} src
  *   The file path to the source `File` instance you want to call
- *   `File.prototype.compile` from. The file path must be relative to the root
- *   `Dir` instance (as only the root `Dir` instance API is exposed to users).
- *   No absolute paths are allowed for this parameter.
+ *   `File.prototype.run` from. The file path may be relative or absolute. If
+ *   it is a relative path, it is relative to the `Dir` instance (i.e. since
+ *   only the root `Dir` instance is called from the exposed API, it is
+ *   essentially relative to the root `Dir` instance).
  * @param {string} dest
- *   The file path to the destination you want to save the compiled result of
- *   `File.prototype.compile`. The file path may be relative or absolute. If
+ *   The file path to the destination you want to save the preprocessed result
+ *   of `File.prototype.run`. The file path may be relative or absolute. If
  *   it is a relative path, it is relative to the `cwd`. The directory path up
  *   to the file name of the resolved #dest path must already exist. If a file
  *   exists at the resolved #dest path, it is overwritten.
@@ -773,16 +786,18 @@ Dir.prototype.process = function process() {
  *   defined in the #state or an error will be thrown.
  * @param {(!function(string): string)=} alter
  *   The #alter `function` is optional. If it is defined, it allows you to
- *   provide custom alterations to the compiled result of
- *   `File.prototype.compile` before it is saved to the #dest.
+ *   provide custom alterations to the preprocessed result of
+ *   `File.prototype.run` before it is saved to the #dest.
  * @return {string}
  */
-Dir.prototype.compile = function compile(src, dest, state, alter) {
+Dir.prototype.run = function run(src, dest, state, alter) {
 
   /** @type {(?Dir|?File)} */
   var node;
   /** @type {string} */
   var path;
+  /** @type {string} */
+  var pwd;
 
   if ( !isUndefined(alter) && !isFunction(alter) )
     throw new TypeError('invalid `alter` data type\n' +
@@ -797,20 +812,26 @@ Dir.prototype.compile = function compile(src, dest, state, alter) {
     throw new TypeError('invalid `src` data type\n' +
       '    valid-types: `string`');
 
+  pwd = this.path;
+
   if (!dest)
     throw new Error('invalid empty `string` for `dest`');
-
-  dest = resolvePath(dest);
-
   if ( !DEST_EXT.test(dest) )
     throw new Error('invalid `dest` file extension\n' +
       '    should-match: `' + DEST_EXT.toString() + '`');
 
+  dest = resolvePath(dest);
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
     throw new Error('invalid readable directory path for `dest`\n' +
-      '    path: `' + path + '`');
+      '    dest-path: `' + dest + '`\n' +
+      '    dir-path: `' + path + '`');
+  if ( hasDirectory(dest, pwd) )
+    throw new Error('invalid `dest` file path location (' +
+      'must NOT be within `Dir`)\n' +
+      '    dir-path: `' + pwd + '`\n' +
+      '    dest-path: `' + dest + '`');
 
   if (!src)
     throw new Error('invalid empty `string` for `src`');
@@ -818,18 +839,28 @@ Dir.prototype.compile = function compile(src, dest, state, alter) {
     throw new Error('invalid `src` file extension\n' +
       '    should-match: `' + SRC_EXT.toString() + '`');
 
-  src = cleanPath(src);
+  src = resolvePath(pwd, src);
+
+  if ( !isFile(src) )
+    throw new Error('invalid readable file path for `src`\n' +
+      '    src-path: `' + src + '`');
+  if ( !hasDirectory(src, pwd) )
+    throw new Error('invalid `src` file path location (' +
+      'must be within `Dir`)\n' +
+      '    dir-path: `' + pwd + '`\n' +
+      '    src-path: `' + src + '`');
+
   node = getPathNode(this, src);
 
-  if ( !node || !isFileNode(node) )
-    throw new Error('invalid relative `File` node path for `src`\n' +
-      '    path: `' + src + '`');
+  if ( !isFileNode(node) )
+    throw new Error('no `File` node found for `src` path\n' +
+      '    src-path: `' + src + '`');
 
   return isFunction(alter)
-    ? node.compile(dest, state, alter)
-    : node.compile(dest, state);
+    ? node.run(dest, state, alter)
+    : node.run(dest, state);
 };
-/// #}}} @func Dir.prototype.compile
+/// #}}} @func Dir.prototype.run
 
 /// #}}} @group DIR-PROTOTYPE
 
