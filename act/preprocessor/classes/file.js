@@ -103,14 +103,6 @@ var FILE_TYPE_ID = loadHelper('type-ids').file;
 var IS = loadHelper('is');
 /// #}}} @const IS
 
-/// #{{{ @const SRC_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var SRC_EXT = /\.js$/;
-/// #}}} @const SRC_EXT
-
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
