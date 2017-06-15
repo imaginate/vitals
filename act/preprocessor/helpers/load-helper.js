@@ -38,13 +38,13 @@ var resolvePath = loadTaskHelper('resolve-path');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const COMPILE_HELPER_DIR
+/// #{{{ @const JSPP_HELPER_DIR
 /**
  * @private
  * @const {string}
  */
-var COMPILE_HELPER_DIR = resolvePath(__dirname);
-/// #}}} @const COMPILE_HELPER_DIR
+var JSPP_HELPER_DIR = resolvePath(__dirname);
+/// #}}} @const JSPP_HELPER_DIR
 
 /// #{{{ @const IS
 /**
@@ -124,7 +124,7 @@ function loadHelper(name) {
     throw new Error('invalid empty `string` for `name`');
 
   name += '.js';
-  path = resolvePath(COMPILE_HELPER_DIR, name);
+  path = resolvePath(JSPP_HELPER_DIR, name);
 
   if ( !isFile(path) ) {
     path = resolvePath(TASK_HELPER_DIR, name);
@@ -133,7 +133,7 @@ function loadHelper(name) {
       throw new Error('invalid file path for `name`\n' +
         '    file-name: `' + name + '`\n' +
         '    task-path: `' + path + '`\n' +
-        '    compile-path: `' + resolvePath(COMPILE_HELPER_DIR, name) + '`');
+        '    jspp-path: `' + resolvePath(JSPP_HELPER_DIR, name) + '`');
   }
 
   return require(path);
