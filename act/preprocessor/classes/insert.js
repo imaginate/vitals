@@ -17,20 +17,33 @@
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
 
-/// #{{{ @group OBJECT-CONTROL
+/// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-// OBJECT-CONTROL
+// CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func capObject
+/// #{{{ @const INS_TYPE_ID
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @const {!Object}
  */
-var capObject = loadHelper('cap-object');
-/// #}}} @func capObject
+var INS_TYPE_ID = loadHelper('type-ids').insert;
+/// #}}} @const INS_TYPE_ID
+
+/// #{{{ @const IS
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var IS = loadHelper('is');
+/// #}}} @const IS
+
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
+//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func createObject
 /**
@@ -62,182 +75,14 @@ var defineProp = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func sealObject
+/// #{{{ @func getKeys
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
-
-/// #}}} @group OBJECT-CONTROL
-
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const INS_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var INS_TYPE_ID = loadHelper('type-ids').insert;
-/// #}}} @const INS_TYPE_ID
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- */
-var IS = loadHelper('is');
-/// #}}} @const IS
-
-/// #}}} @group CONSTANTS
-
-/// #{{{ @group HELPERS
-//////////////////////////////////////////////////////////////////////////////
-// HELPERS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func cleanDirpath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirpath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirpath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
-
-/// #{{{ @func getDirpaths
-/**
- * @private
- * @param {string} dirpath
- * @param {?Object|boolean=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid directory paths.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute directory paths instead of relative directory paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid
- *   An alias for `opts.validDirs`.
- * @param {?RegExp=} opts.invalid
- *   An alias for `opts.invalidDirs`.
- * @param {?RegExp=} opts.validDirs = `null`
- *   A pattern for matching valid directory paths. If #opts.validDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.validDirs pattern. Otherwise (i.e.
- *   if it does not have a forward slash), the path name is tested against the
- *   #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   A pattern for matching invalid directory paths. If #opts.invalidDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidDirs pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidDirs pattern.
+ * @param {(!Object|!Function)} src
  * @return {!Array<string>}
  */
-var getDirpaths = loadHelper('get-dirpaths');
-/// #}}} @func getDirpaths
-
-/// #{{{ @func getFileContent
-/**
- * @private
- * @param {string} filepath
- * @param {boolean=} buffer = `false`
- * @return {(!Buffer|string)}
- */
-var getFileContent = loadHelper('get-file-content');
-/// #}}} @func getFileContent
-
-/// #{{{ @func getFilepaths
-/**
- * @private
- * @param {string} dirpath
- * @param {?Object|boolean=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid files.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute file paths instead of relative file paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid = `null`
- *   A pattern for matching valid file or directory paths. If #opts.valid is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.valid pattern. Otherwise (i.e. if
- *   it does not have a forward slash), the path name is tested against the
- *   #opts.valid pattern.
- * @param {?RegExp=} opts.invalid = `null`
- *   A pattern for matching invalid file or directory paths. If #opts.invalid
- *   is `null`, no check is performed. If it is a `RegExp`, the source
- *   property is checked for a forward slash, `"/"`. If it has a forward
- *   slash, the path tree is tested against the #opts.invalid pattern.
- *   Otherwise (i.e. if it does not have a forward slash), the path name is
- *   tested against the #opts.invalid pattern.
- * @param {?RegExp=} opts.validDirs = `null`
- *   Only used when #opts.deep is `true`. A pattern for matching valid
- *   directory paths. If #opts.validDirs is `null`, no check is performed. If
- *   it is a `RegExp`, the source property is checked for a forward slash,
- *   `"/"`. If it has a forward slash, the path tree is tested against the
- *   #opts.validDirs pattern. Otherwise (i.e. if it does not have a forward
- *   slash), the path name is tested against the #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   Only used when #opts.deep is `true`. A pattern for matching invalid
- *   directory paths. If #opts.invalidDirs is `null`, no check is performed.
- *   If it is a `RegExp`, the source property is checked for a forward slash,
- *   `"/"`. If it has a forward slash, the path tree is tested against the
- *   #opts.invalidDirs pattern. Otherwise (i.e. if it does not have a forward
- *   slash), the path name is tested against the #opts.invalidDirs pattern.
- * @param {?RegExp=} opts.validFiles = `null`
- *   A pattern for matching valid file paths. If #opts.validFiles is `null`,
- *   no check is performed. If it is a `RegExp`, the source property is
- *   checked for a forward slash, `"/"`. If it has a forward slash, the path
- *   tree is tested against the #opts.validFiles pattern. Otherwise (i.e. if
- *   it does not have a forward slash), the path name is tested against the
- *   #opts.validFiles pattern.
- * @param {?RegExp=} opts.invalidFiles = `null`
- *   A pattern for matching invalid file paths. If #opts.invalidFiles is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidFiles pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidFiles pattern.
- * @return {!Array<string>}
- */
-var getFilepaths = loadHelper('get-filepaths');
-/// #}}} @func getFilepaths
-
-/// #{{{ @func getPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var getPathName = loadHelper('get-pathname');
-/// #}}} @func getPathName
+var getKeys = loadHelper('get-keys');
+/// #}}} @func getKeys
 
 /// #{{{ @func getPathNode
 /**
@@ -249,144 +94,51 @@ var getPathName = loadHelper('get-pathname');
 var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
-/// #{{{ @func hasCmd
+/// #{{{ @func getIdComponent
 /**
  * @private
- * @param {string} val
- * @return {boolean}
+ * @param {(string|!Line)} text
+ * @return {string}
  */
-var hasCmd = loadHelper('has-command');
-/// #}}} @func hasCmd
+var getIdComponent = loadHelper('get-id-component');
+/// #}}} @func getIdComponent
 
-/// #{{{ @func hasDirectory
+/// #{{{ @func getPathComponent
 /**
  * @private
- * @param {string} src
- *   The file path to check in.
- * @param {string} path
- *   The directory path to check for.
- * @return {boolean}
+ * @param {(string|!Line)} text
+ * @return {string}
  */
-var hasDirectory = loadHelper('has-directory');
-/// #}}} @func hasDirectory
+var getPathComponent = loadHelper('get-path-component');
+/// #}}} @func getPathComponent
 
-/// #{{{ @func hasBlkCmd
+/// #{{{ @func getTagComponent
 /**
  * @private
- * @param {string} val
- * @return {boolean}
+ * @param {(string|!Line)} text
+ * @return {string}
  */
-var hasBlkCmd = loadHelper('has-block-command');
-/// #}}} @func hasBlkCmd
+var getTagComponent = loadHelper('get-tag-component');
+/// #}}} @func getTagComponent
 
-/// #{{{ @func hasCloseCmd
+/// #{{{ @func hasValidInsert
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
-var hasCloseCmd = loadHelper('has-close-command');
-/// #}}} @func hasCloseCmd
+var hasValidInsert = loadHelper('has-valid-insert');
+/// #}}} @func hasValidInsert
 
-/// #{{{ @func hasCondCmd
+/// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {string} val
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-var hasCondCmd = loadHelper('has-conditional-command');
-/// #}}} @func hasCondCmd
-
-/// #{{{ @func hasDefCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasDefCmd = loadHelper('has-define-command');
-/// #}}} @func hasDefCmd
-
-/// #{{{ @func hasInclCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInclCmd = loadHelper('has-include-command');
-/// #}}} @func hasInclCmd
-
-/// #{{{ @func hasInsCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInsCmd = loadHelper('has-insert-command');
-/// #}}} @func hasInsCmd
-
-/// #{{{ @func hasOpenCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasOpenCmd = loadHelper('has-open-command');
-/// #}}} @func hasOpenCmd
-
-/// #{{{ @func hasOwnProp
-/**
- * @private
- * @param {!Object} src
- * @param {string} prop
- * @return {boolean}
- */
-var hasOwnProp = loadHelper('has-own-property');
-/// #}}} @func hasOwnProp
-
-/// #{{{ @func isBoolean
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBoolean = IS.boolean;
-/// #}}} @func isBoolean
-
-/// #{{{ @func isBooleanMap
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBooleanMap = IS.booleanHashMap;
-/// #}}} @func isBooleanMap
-
-/// #{{{ @func isDirectory
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isDirectory = IS.directory;
-/// #}}} @func isDirectory
-
-/// #{{{ @func isDirNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isDirNode = loadHelper('is-directory-node');
-/// #}}} @func isDirNode
-
-/// #{{{ @func isFile
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isFile = IS.file;
-/// #}}} @func isFile
+var hasOwnProperty = loadHelper('has-own-property');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isFileNode
 /**
@@ -397,88 +149,32 @@ var isFile = IS.file;
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
-/// #{{{ @func isFunction
+/// #{{{ @func isLineNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isFunction = IS.func;
-/// #}}} @func isFunction
+var isLineNode = loadHelper('is-line-node');
+/// #}}} @func isLineNode
 
-/// #{{{ @func isNull
+/// #{{{ @func isNumber
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isNull = IS.nil;
-/// #}}} @func isNull
+var isNumber = IS.number;
+/// #}}} @func isNumber
 
-/// #{{{ @func isObject
+/// #{{{ @func isWholeNumber
 /**
  * @private
- * @param {*} val
+ * @param {number} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
-
-/// #{{{ @func isUndefined
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isUndefined = IS.undefined;
-/// #}}} @func isUndefined
-
-/// #{{{ @func ownsCmd
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {boolean}
- */
-var ownsCmd = loadHelper('owns-command');
-/// #}}} @func ownsCmd
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadHelper('resolve-path');
-/// #}}} @func resolvePath
-
-/// #{{{ @func toFile
-/**
- * @private
- * @param {(!Buffer|string)} content
- * @param {string} filepath
- * @return {(!Buffer|string)}
- */
-var toFile = loadHelper('to-file');
-/// #}}} @func toFile
-
-/// #{{{ @func trimPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var trimPathName = loadHelper('trim-pathname');
-/// #}}} @func trimPathName
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
 
 /// #}}} @group HELPERS
 
@@ -487,13 +183,14 @@ var trimPathName = loadHelper('trim-pathname');
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func mkInsArgs
+/// #{{{ @func mkArgs
 /**
  * @private
- * @param {!Ins} insert
- * @return {!Array}
+ * @param {number} index
+ * @param {!Def} def
+ * @return {!Array<(number|!Line)>}
  */
-function mkInsArgs(insert) {
+function mkArgs(index, def) {
 
   /** @type {!Array<!Line>} */
   var lines;
@@ -504,15 +201,15 @@ function mkInsArgs(insert) {
   /** @type {number} */
   var i;
 
-  args = [ insert.index, 1 ];
-  lines = insert.def.lines;
+  args = [ index, 1 ];
+  lines = def.lines;
   len = lines.length;
   i = -1;
   while (++i < len)
     args.push(lines[i]);
-  return args;
+  return freezeObject(args);
 }
-/// #}}} @func mkInsArgs
+/// #}}} @func mkArgs
 
 /// #}}} @group METHODS
 
@@ -532,17 +229,27 @@ function mkInsArgs(insert) {
  */
 function Ins(line, index, file) {
 
+  /** @type {!Array<string>} */
+  var keys;
+
+  /// #{{{ @group Verify-Parameters
+
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
   if ( !isNumber(index) )
     throw new TypeError('invalid `index` data type\n' +
       '    valid-types: `number`');
+  if ( !isWholeNumber(index) || index < 0 )
+    throw new Error('invalid `number` for `index`\n' +
+      '    should-pass: `isWholeNumber(index) && index >= 0`');
   if ( !isFileNode(file) )
     throw new TypeError('invalid `file` data type\n' +
       '    valid-types: `!File`');
 
-  /// #{{{ @group Constants
+  /// #}}} @group Verify-Parameters
+
+  /// #{{{ @group Set-Constants
 
   /// #{{{ @const FILE
   /**
@@ -560,6 +267,76 @@ function Ins(line, index, file) {
   var LINE = line;
   /// #}}} @const LINE
 
+  /// #{{{ @const TEXT
+  /**
+   * @private
+   * @const {string}
+   */
+  var TEXT = LINE.text;
+  /// #}}} @const TEXT
+
+  /// #{{{ @const TAG
+  /**
+   * @private
+   * @const {string}
+   */
+  var TAG = getTagComponent(TEXT);
+  /// #}}} @const TAG
+
+  /// #{{{ @const ID
+  /**
+   * @private
+   * @const {string}
+   */
+  var ID = getIdComponent(TEXT);
+  /// #}}} @const ID
+
+  /// #{{{ @const KEY
+  /**
+   * @private
+   * @const {string}
+   */
+  var KEY = TAG + ':' + ID;
+  /// #}}} @const KEY
+
+  /// #{{{ @const PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATH = getPathComponent(TEXT);
+  /// #}}} @const PATH
+
+  /// #{{{ @const NODE
+  /**
+   * @private
+   * @const {(?Dir|?File)}
+   */
+  var NODE = !!PATH
+    ? getPathNode(FILE, PATH)
+    : FILE;
+  /// #}}} @const NODE
+
+  /// #{{{ @const DEFS
+  /**
+   * @private
+   * @const {?Object<string, !Def>}
+   */
+  var DEFS = isFileNode(NODE)
+    ? NODE.defs
+    : null;
+  /// #}}} @const DEFS
+
+  /// #{{{ @const DEF
+  /**
+   * @private
+   * @const {?Def}
+   */
+  var DEF = DEFS && hasOwnProperty(DEFS, KEY)
+    ? DEFS[KEY]
+    : null;
+  /// #}}} @const DEF
+
   /// #{{{ @const INDEX
   /**
    * @private
@@ -568,37 +345,62 @@ function Ins(line, index, file) {
   var INDEX = index;
   /// #}}} @const INDEX
 
-  ////////////////////////////////////////////////////////////////////////////
-  // PICK BACK UP HERE
-  ////////////////////////////////////////////////////////////////////////////
+  /// #}}} @group Set-Constants
 
-  /// #{{{ @const PATH
-  /**
-   * @private
-   * @const {string}
-   */
-  var PATH = resolvePath(path);
-  /// #}}} @const PATH
+  /// #{{{ @group Verify-Syntax
 
-  /// #{{{ @const NAME
-  /**
-   * @private
-   * @const {string}
-   */
-  var NAME = getPathName(PATH);
-  /// #}}} @const NAME
+  if (!TAG)
+    throw new Error('invalid `tag` component syntax\n' +
+      '    should-match: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
+      '    valid-chars: `"a-z", "A-Z", "0-9", "_", ".", "-"`\n' +
+      '    linenum: `' + LINE.linenum + '`\n' +
+      '    file: `' + LINE.file.path + '`\n' +
+      '    text: `' + TEXT + '`');
+  if (!ID)
+    throw new Error('invalid `ID` component syntax\n' +
+      '    should-match: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
+      '    valid-chars: `"a-z", "A-Z", "0-9", "_", ".", "-", "$"`\n' +
+      '    linenum: `' + LINE.linenum + '`\n' +
+      '    file: `' + LINE.file.path + '`\n' +
+      '    text: `' + TEXT + '`');
+  if ( !hasValidInsert(TEXT) )
+    throw new Error('invalid `insert` command syntax\n' +
+      '    linenum: `' + LINE.linenum + '`\n' +
+      '    file: `' + LINE.file.path + '`\n' +
+      '    text: `' + TEXT + '`');
 
-  /// #{{{ @const TREE
-  /**
-   * @private
-   * @const {string}
-   */
-  var TREE = PARENT.tree + name;
-  /// #}}} @const TREE
+  /// #}}} @group Verify-Syntax
 
-  /// #}}} @group File-Constants
+  /// #{{{ @group Verify-Path-Node
 
-  /// #{{{ @group File-Members
+  if (!DEFS)
+    throw new Error('no `File` node found for `path` component\n' +
+      '    linenum: `' + LINE.linenum + '`\n' +
+      '    file: `' + LINE.file.path + '`\n' +
+      '    text: `' + TEXT + '`\n' +
+      '    path: `' + PATH + '`');
+
+  /// #}}} @group Verify-Path-Node
+
+  /// #{{{ @group Verify-Def-Node
+
+  if (!DEF) {
+    keys = getKeys(DEFS);
+    throw new Error('no `Def` node found in inserted `File`\n' +
+      '    src-linenum: `' + LINE.linenum + '`\n' +
+      '    src-file: `' + LINE.file.path + '`\n' +
+      '    src-text: `' + TEXT + '`\n' +
+      '    src-def: `"' + KEY + '"`\n' +
+      '    ins-file: `' + NODE.path + '`\n' +
+      '    ins-defs:' +
+      (!keys.length
+        ? ' No `Def` Instances Found\n'
+        : '\n        `"' + keys.join('"`\n        `"') + '"`\n'));
+  }
+
+  /// #}}} @group Verify-Def-Node
+
+  /// #{{{ @group Insert-Members
 
   /// #{{{ @member type
   /**
@@ -606,38 +408,38 @@ function Ins(line, index, file) {
    * @const {!Object}
    */
   defineProp(this, 'type', {
-    'value': FILE_TYPE_ID,
+    'value': INS_TYPE_ID,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
   /// #}}} @member type
 
-  /// #{{{ @member name
+  /// #{{{ @member tag
   /**
    * @public
    * @const {string}
    */
-  defineProp(this, 'name', {
-    'value': NAME,
+  defineProp(this, 'tag', {
+    'value': TAG,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member name
+  /// #}}} @member tag
 
-  /// #{{{ @member tree
+  /// #{{{ @member id
   /**
    * @public
    * @const {string}
    */
-  defineProp(this, 'tree', {
-    'value': TREE,
+  defineProp(this, 'id', {
+    'value': ID,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member tree
+  /// #}}} @member id
 
   /// #{{{ @member path
   /**
@@ -652,541 +454,82 @@ function Ins(line, index, file) {
   });
   /// #}}} @member path
 
-  /// #{{{ @member parent
+  /// #{{{ @member file
   /**
    * @public
-   * @const {!Dir}
+   * @const {!File}
    */
-  defineProp(this, 'parent', {
-    'value': PARENT,
+  defineProp(this, 'file', {
+    'value': FILE,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member parent
+  /// #}}} @member file
 
-  /// #{{{ @member lines
+  /// #{{{ @member line
   /**
    * @public
-   * @const {!Array<!Line>}
+   * @const {!Line}
    */
-  defineProp(this, 'lines', {
-    'value': [],
+  defineProp(this, 'line', {
+    'value': LINE,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member lines
+  /// #}}} @member line
 
-  /// #{{{ @member defs
+  /// #{{{ @member def
   /**
    * @public
-   * @const {!Object<string, !Def>}
+   * @const {!Def}
    */
-  defineProp(this, 'defs', {
-    'value': {},
+  defineProp(this, 'def', {
+    'value': DEF,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member defs
+  /// #}}} @member def
 
-  /// #{{{ @member blks
+  /// #{{{ @member args
   /**
    * @public
-   * @const {!Object<string, !Blk>}
+   * @const {!Array<(number|!Line)>}
    */
-  defineProp(this, 'blks', {
-    'value': {},
+  defineProp(this, 'args', {
+    'value': mkArgs(INDEX, DEF),
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-  /// #}}} @member blks
+  /// #}}} @member args
 
-  /// #{{{ @member conds
-  /**
-   * @public
-   * @const {!Object<string, !Cond>}
-   */
-  defineProp(this, 'conds', {
-    'value': {},
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member conds
+  /// #}}} @group Insert-Members
 
-  /// #{{{ @member incls
-  /**
-   * @public
-   * @const {!Object<string, !Incl>}
-   */
-  defineProp(this, 'incls', {
-    'value': {},
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member incls
-
-  /// #{{{ @member inserts
-  /**
-   * @public
-   * @const {!Array<!Ins>}
-   */
-  defineProp(this, 'inserts', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member inserts
-
-  /// #{{{ @member content
-  /**
-   * @public
-   * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
-   */
-  defineProp(this, 'content', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member content
-
-  /// #}}} @group File-Members
-
-  capObject(this);
-  sealObject(this);
+  freezeObject(this);
 }
 /// #}}} @func Ins
 
 /// #}}} @group CONSTRUCTORS
 
-/// #{{{ @group FILE-PROTOTYPE
+/// #{{{ @group INS-PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
-// FILE-PROTOTYPE
+// INS-PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
-File.prototype = createObject(null);
-File.prototype.constructor = File;
+Ins.prototype = createObject(null);
+Ins.prototype.constructor = Ins;
 
-/// #{{{ @func File.prototype.load
-/**
- * @return {void}
- */
-File.prototype.load = function load() {
-
-  /** @type {boolean} */
-  var passedCmd;
-  /** @type {!Array<string>} */
-  var textRows;
-  /** @type {number} */
-  var linenum;
-  /** @type {!Array<!Line>} */
-  var lines;
-  /** @type {!Line} */
-  var line;
-  /** @type {string} */
-  var text;
-  /** @type {!Object<string, !Def>} */
-  var defs;
-  /** @type {?Def} */
-  var def;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  passedCmd = false;
-  textRows = getFileContent(this.path).split('\n');
-  lines = this.lines;
-  defs = this.defs;
-  def = null;
-  len = content.length;
-  i = -1;
-  while (++i < len) {
-    linenum = i + 1;
-    text = textRows[i];
-    line = new Line(text, linenum, this);
-    if (def) {
-      if ( !hasCmd(text) )
-        def.lines.push(line);
-      else if ( hasDefCmd(text) ) {
-        if ( !hasCloseCmd(text) )
-          throw new Error('invalid `define` within `define`\n' +
-            '    linenum: `' + linenum + '`\n' +
-            '    file: `' + this.path + '`\n' +
-            '    text: `' + text + '`');
-        if ( !def.isClose(text) )
-          throw new Error('invalid `close` command (must match the `open`)\n' +
-            '    linenum: `' + linenum + '`\n' +
-            '    file: `' + this.path + '`\n' +
-            '    text: `' + text + '`');
-
-        def.setClose(line);
-        def = null;
-      }
-      else if ( hasInsCmd(text) )
-        throw new Error('invalid `insert` within `define`\n' +
-          '    linenum: `' + linenum + '`\n' +
-          '    file: `' + this.path + '`\n' +
-          '    text: `' + text + '`');
-      else
-        def.lines.push(line);
-    }
-    else if ( !hasCmd(text) )
-      lines.push(line);
-    else if ( hasDefCmd(text) ) {
-      if ( passedCmd || !hasOpenCmd(text) )
-        throw new Error('invalid `define` command order\n' +
-          '    linenum: `' + linenum + '`\n' +
-          '    file: `' + this.path + '`\n' +
-          '    text: `' + text + '`');
-
-      def = new Def(line, this);
-      defs[def.tag + ':' + def.id] = def;
-    }
-    else {
-      if (!passedCmd)
-        passedCmd = true;
-      lines.push(line);
-    }
-  }
-
-  capObject(defs);
-  sealObject(defs);
-};
-/// #}}} @func File.prototype.load
-
-/// #{{{ @func File.prototype.preparse
-/**
- * @return {void}
- */
-File.prototype.preparse = function preparse() {
-
-  /** @type {!Array<!Ins>} */
-  var inserts;
-  /** @type {!Ins} */
-  var insert;
-  /** @type {!Array<!Line>} */
-  var lines;
-  /** @type {!Line} */
-  var line;
-  /** @type {!Array} */
-  var args;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  inserts = this.inserts;
-  lines = this.lines;
-  len = lines.length;
-  i = -1;
-  while (++i < len) {
-    line = lines[i];
-    if ( hasInsCmd(line.text) ) {
-      insert = new Ins(line, i, this);
-      inserts.push(insert);
-    }
-  }
-
-  i = inserts.length;
-  while (i--) {
-    insert = inserts[i];
-    args = mkInsArgs(insert);
-    lines.splice.apply(lines, args);
-  }
-
-  capObject(lines);
-  sealObject(lines);
-  capObject(inserts);
-  sealObject(inserts);
-};
-/// #}}} @func File.prototype.preparse
-
-/// #{{{ @func File.prototype.parse
-/**
- * @return {void}
- */
-File.prototype.parse = function parse() {
-
-  /** @type {!Array<(!Blk|!Cond)>} */
-  var stack;
-  /** @type {!Array<!Line>} */
-  var lines;
-  /** @type {!Line} */
-  var line;
-  /** @type {string} */
-  var text;
-  /** @type {(!Blk|!Cond)} */
-  var last;
-  /** @type {(!Blk|!Cond|!Incl)} */
-  var cmd;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  stack = [];
-  lines = this.lines;
-  len = lines.length;
-  i = -1;
-  while (++i < len) {
-    line = lines[i];
-    text = line.text;
-    if (stack.length) {
-      if ( !hasCmd(text) )
-        last.content.push(line);
-      else if ( hasInclCmd(text) ) {
-        cmd = new Incl(line, this, last);
-
-        if ( ownsCmd(last, cmd) )
-          throw new Error('duplicate `include` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
-
-        last.incls[cmd.tag + ':' + cmd.id] = cmd;
-        last.content.push(cmd);
-      }
-      else if ( hasOpenCmd(text) ) {
-        if ( hasCondCmd(text) ) {
-          cmd = new Cond(line, this, last);
-
-          if ( ownsCmd(last, cmd) )
-            throw new Error('duplicate `conditional` command\n' +
-              '    src-linenum: `' + (++i) + '`\n' +
-              '    src-file: `' + this.path + '`\n' +
-              '    linenum: `' + line.linenum + '`\n' +
-              '    file: `' + line.file.path + '`\n' +
-              '    text: `' + text + '`');
-
-          last.conds[cmd.tag + ':' + cmd.id] = cmd;
-        }
-        else {
-          cmd = new Blk(line, this, last);
-
-          if ( ownsCmd(last, cmd) )
-            throw new Error('duplicate `block` command\n' +
-              '    src-linenum: `' + (++i) + '`\n' +
-              '    src-file: `' + this.path + '`\n' +
-              '    linenum: `' + line.linenum + '`\n' +
-              '    file: `' + line.file.path + '`\n' +
-              '    text: `' + text + '`');
-
-          last.blks[cmd.tag + ':' + cmd.id] = cmd;
-        }
-        last.content.push(cmd);
-        stack.push(cmd);
-        last = cmd;
-      }
-      else if ( !hasCloseCmd(text) )
-        throw new Error('invalid `command` syntax\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
-      else if ( !last.isClose(text) )
-        throw new Error('invalid `close` command (must match the `open`)\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
-      else {
-        last.setClose(line);
-        stack.pop();
-        if (stack.length)
-          last = stack[stack.length - 1];
-      }
-    }
-    if ( !hasCmd(text) )
-      this.content.push(line);
-    else if ( hasInclCmd(text) ) {
-      cmd = new Incl(line, this);
-
-      if ( ownsCmd(this, cmd) )
-        throw new Error('duplicate `include` command\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
-
-      this.incls[cmd.tag + ':' + cmd.id] = cmd;
-      this.content.push(cmd);
-    }
-    else if ( hasCloseCmd(text) )
-      throw new Error('invalid `close` command (no `open` command)\n' +
-        '    src-linenum: `' + (++i) + '`\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + line.linenum + '`\n' +
-        '    file: `' + line.file.path + '`\n' +
-        '    text: `' + text + '`');
-    else if ( !hasOpenCmd(text) )
-      throw new Error('invalid `command` syntax\n' +
-        '    src-linenum: `' + (++i) + '`\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + line.linenum + '`\n' +
-        '    file: `' + line.file.path + '`\n' +
-        '    text: `' + text + '`');
-    else {
-      if ( hasCondCmd(text) ) {
-        cmd = new Cond(line, this);
-
-        if ( ownsCmd(this, cmd) )
-          throw new Error('duplicate `conditional` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
-
-        this.conds[cmd.tag + ':' + cmd.id] = cmd;
-      }
-      else {
-        cmd = new Blk(line, this);
-
-        if ( ownsCmd(this, cmd) )
-          throw new Error('duplicate `block` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
-
-        this.blks[cmd.tag + ':' + cmd.id] = cmd;
-      }
-      this.content.push(cmd);
-      stack.push(cmd);
-      last = cmd;
-    }
-  }
-
-  if (stack.length) {
-    if (stack.length === 1)
-      throw new Error('unclosed `open` command\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + stack[0].open.linenum + '`\n' +
-        '    file: `' + stack[0].open.file.path + '`\n' +
-        '    text: `' + stack[0].open.text + '`');
-
-    text = 'unclosed `open` commands\n' +
-      '    src-file: `' + this.path + '`';
-    len = stack.length;
-    i = -1;
-    while (++i < len)
-      text += '\n    command:\n' +
-        '        linenum: `' + stack[i].open.linenum + '`\n' +
-        '        file: `' + stack[0].open.file.path + '`\n' +
-        '        text: `' + stack[0].open.text + '`';
-    throw new Error(text);
-  }
-
-  capObject(this.blks);
-  capObject(this.conds);
-  capObject(this.incls);
-  capObject(this.content);
-  sealObject(this.blks);
-  sealObject(this.conds);
-  sealObject(this.incls);
-  sealObject(this.content);
-};
-/// #}}} @func File.prototype.parse
-
-/// #{{{ @func File.prototype.run
-/**
- * @param {string} dest
- *   The file path to the destination you want to save the preprocessed
- *   result. The file path may be relative or absolute. If it is a relative
- *   path, it is relative to the `cwd`. The directory path up to the file name
- *   of the resolved #dest path must already exist. If a file exists at the
- *   resolved #dest path, it is overwritten.
- * @param {!Object<string, boolean>} state
- *   The enabled, `true`, or disabled, `false`, state for every conditional
- *   command defined within the `File` instance's *content* `array`. Each
- *   #state `object` key must be *hashed* (i.e. created) by combining each
- *   `Cond` instance's *tag* and *ID* with a colon, `":"`, separating them
- *   (e.g. `"tag:id"`). Every `Cond` instance within the `File` instance must
- *   be defined in the #state or an error will be thrown.
- * @param {(!function(string): string)=} alter
- *   The #alter `function` is optional. If it is defined, it allows you to
- *   provide custom alterations to the preprocessed result before it is saved
- *   to the #dest.
- * @return {string}
- */
-File.prototype.run = function run(dest, state, alter) {
-
-  /** @type {string} */
-  var result;
-  /** @type {string} */
-  var pwd;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  if ( !isUndefined(alter) && !isFunction(alter) )
-    throw new TypeError('invalid `alter` data type\n' +
-      '    valid-types: `(!function(string): string)=`');
-  if ( !isObject(state) || !isBooleanMap(state) )
-    throw new TypeError('invalid `state` data type\n' +
-      '    valid-types: `!Object<string, boolean>`');
-  if ( !isString(dest) )
-    throw new TypeError('invalid `dest` data type\n' +
-      '    valid-types: `string`');
-
-  if (!dest)
-    throw new Error('invalid empty `string` for `dest`');
-  if ( !DEST_EXT.test(dest) )
-    throw new Error('invalid `dest` file extension\n' +
-      '    should-match: `' + DEST_EXT.toString() + '`');
-
-  pwd = this.parent.path;
-  dest = resolvePath(dest);
-  path = trimPathName(dest);
-
-  if ( !isDirectory(path) )
-    throw new Error('invalid readable directory path for `dest`\n' +
-      '    dest-path: `' + dest + '`\n' +
-      '    dir-path: `' + path + '`');
-  if ( hasDirectory(dest, pwd) )
-    throw new Error('invalid `dest` file path location (' +
-      'must NOT be within parent `Dir`)\n' +
-      '    dir-path: `' + pwd + '`\n' +
-      '    dest-path: `' + dest + '`');
-
-  ////////////////////////////////////////////////////////////////////////////
-  // ADD COMPILE LOGIC HERE
-  ////////////////////////////////////////////////////////////////////////////
-
-  if ( isFunction(alter) ) {
-    result = alter(result);
-
-    if ( !isString(result) )
-      throw new TypeError('invalid returned `alter` data type\n' +
-        '    valid-types: `string`');
-  }
-
-  return toFile(result, dest);
-};
-/// #}}} @func File.prototype.run
-
-/// #}}} @group FILE-PROTOTYPE
+/// #}}} @group INS-PROTOTYPE
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = File;
+module.exports = Ins;
 
 /// #}}} @group EXPORTS
 
