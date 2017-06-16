@@ -17,9 +17,32 @@
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
 
-/// #{{{ @group OBJECT-CONTROL
+/// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-// OBJECT-CONTROL
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const FILE_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var FILE_TYPE_ID = loadHelper('type-ids').file;
+/// #}}} @const FILE_TYPE_ID
+
+/// #{{{ @const IS
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var IS = loadHelper('is');
+/// #}}} @const IS
+
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func capObject
@@ -31,6 +54,24 @@ var loadHelper = require('./load-helper.js');
  */
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
+
+/// #{{{ @func cleanDirpath
+/**
+ * @private
+ * @param {string} dirpath
+ * @return {string}
+ */
+var cleanDirpath = loadHelper('clean-dirpath');
+/// #}}} @func cleanDirpath
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadHelper('clean-path');
+/// #}}} @func cleanPath
 
 /// #{{{ @func createObject
 /**
@@ -61,72 +102,6 @@ var defineProp = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
-
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
-
-/// #}}} @group OBJECT-CONTROL
-
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DEST_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var DEST_EXT = /\.js$/;
-/// #}}} @const DEST_EXT
-
-/// #{{{ @const FILE_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var FILE_TYPE_ID = loadHelper('type-ids').file;
-/// #}}} @const FILE_TYPE_ID
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- */
-var IS = loadHelper('is');
-/// #}}} @const IS
-
-/// #}}} @group CONSTANTS
-
-/// #{{{ @group HELPERS
-//////////////////////////////////////////////////////////////////////////////
-// HELPERS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func cleanDirpath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirpath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirpath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
 
 /// #{{{ @func getDirpaths
 /**
@@ -332,6 +307,15 @@ var hasInclCmd = loadHelper('has-include-command');
 var hasInsCmd = loadHelper('has-insert-command');
 /// #}}} @func hasInsCmd
 
+/// #{{{ @func hasJsExt
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var hasJsExt = loadHelper('has-file-ext').construct('.js');
+/// #}}} @func hasJsExt
+
 /// #{{{ @func hasOpenCmd
 /**
  * @private
@@ -469,6 +453,16 @@ var ownsCmd = loadHelper('owns-command');
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
+/// #{{{ @func sealObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
+
 /// #{{{ @func toFile
 /**
  * @private
@@ -489,40 +483,6 @@ var trimPathName = loadHelper('trim-pathname');
 /// #}}} @func trimPathName
 
 /// #}}} @group HELPERS
-
-/// #{{{ @group METHODS
-//////////////////////////////////////////////////////////////////////////////
-// METHODS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func mkInsArgs
-/**
- * @private
- * @param {!Ins} insert
- * @return {!Array}
- */
-function mkInsArgs(insert) {
-
-  /** @type {!Array<!Line>} */
-  var lines;
-  /** @type {!Array} */
-  var args;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  args = [ insert.index, 1 ];
-  lines = insert.def.lines;
-  len = lines.length;
-  i = -1;
-  while (++i < len)
-    args.push(lines[i]);
-  return args;
-}
-/// #}}} @func mkInsArgs
-
-/// #}}} @group METHODS
 
 /// #{{{ @group CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
@@ -563,17 +523,6 @@ var Cond = require('./conditional.js');
  */
 var Def = require('./define.js');
 /// #}}} @func Def
-
-/// #{{{ @func Dir
-/**
- * @private
- * @param {string} path
- * @param {?Dir=} parent
- * @constructor
- * @struct
- */
-var Dir = require('./directory.js');
-/// #}}} @func Dir
 
 /// #{{{ @func File
 /**
@@ -946,8 +895,6 @@ File.prototype.preparse = function preparse() {
   var lines;
   /** @type {!Line} */
   var line;
-  /** @type {!Array} */
-  var args;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -968,8 +915,7 @@ File.prototype.preparse = function preparse() {
   i = inserts.length;
   while (i--) {
     insert = inserts[i];
-    args = mkInsArgs(insert);
-    lines.splice.apply(lines, args);
+    lines.splice.apply(lines, insert.args);
   }
 
   capObject(lines);
@@ -1216,9 +1162,9 @@ File.prototype.run = function run(dest, state, alter) {
 
   if (!dest)
     throw new Error('invalid empty `string` for `dest`');
-  if ( !DEST_EXT.test(dest) )
+  if ( !hasJsExt(dest) )
     throw new Error('invalid `dest` file extension\n' +
-      '    should-match: `' + DEST_EXT.toString() + '`');
+      '    valid-exts: `".js"`');
 
   pwd = this.parent.path;
   dest = resolvePath(dest);
