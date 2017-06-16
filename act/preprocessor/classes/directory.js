@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * DIR CLASS
+ * DIRECTORY CLASS
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -17,9 +17,32 @@
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
 
-/// #{{{ @group OBJECT-CONTROL
+/// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-// OBJECT-CONTROL
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const DIR_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var DIR_TYPE_ID = loadHelper('type-ids').directory;
+/// #}}} @const DIR_TYPE_ID
+
+/// #{{{ @const IS
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var IS = loadHelper('is');
+/// #}}} @const IS
+
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func capObject
@@ -31,6 +54,24 @@ var loadHelper = require('./load-helper.js');
  */
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
+
+/// #{{{ @func cleanDirPath
+/**
+ * @private
+ * @param {string} dirpath
+ * @return {string}
+ */
+var cleanDirPath = loadHelper('clean-dirpath');
+/// #}}} @func cleanDirPath
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadHelper('clean-path');
+/// #}}} @func cleanPath
 
 /// #{{{ @func createObject
 /**
@@ -61,80 +102,6 @@ var defineProp = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
-
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
-
-/// #}}} @group OBJECT-CONTROL
-
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DEST_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var DEST_EXT = /\.js$/;
-/// #}}} @const DEST_EXT
-
-/// #{{{ @const DIR_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var DIR_TYPE_ID = loadHelper('type-ids').directory;
-/// #}}} @const DIR_TYPE_ID
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- */
-var IS = loadHelper('is');
-/// #}}} @const IS
-
-/// #{{{ @const SRC_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var SRC_EXT = /\.js$/;
-/// #}}} @const SRC_EXT
-
-/// #}}} @group CONSTANTS
-
-/// #{{{ @group HELPERS
-//////////////////////////////////////////////////////////////////////////////
-// HELPERS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func cleanDirpath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirpath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirpath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
 
 /// #{{{ @func getDirpaths
 /**
@@ -267,6 +234,15 @@ var getPathNode = loadHelper('get-path-node');
 var hasDirectory = loadHelper('has-directory');
 /// #}}} @func hasDirectory
 
+/// #{{{ @func hasJsExt
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var hasJsExt = loadHelper('has-file-ext').construct('.js');
+/// #}}} @func hasJsExt
+
 /// #{{{ @func hasOwnProp
 /**
  * @private
@@ -394,6 +370,16 @@ var ownsCmd = loadHelper('owns-command');
  */
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
+
+/// #{{{ @func sealObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
 
 /// #{{{ @func trimPathName
 /**
@@ -553,7 +539,7 @@ function Dir(path, parent) {
    * @const {string}
    */
   var TREE = !!PARENT
-    ? cleanDirpath(PARENT.tree + name)
+    ? cleanDirPath(PARENT.tree + name)
     : '';
   /// #}}} @const TREE
 
@@ -816,9 +802,9 @@ Dir.prototype.run = function run(src, dest, state, alter) {
 
   if (!dest)
     throw new Error('invalid empty `string` for `dest`');
-  if ( !DEST_EXT.test(dest) )
+  if ( !hasJsExt(dest) )
     throw new Error('invalid `dest` file extension\n' +
-      '    should-match: `' + DEST_EXT.toString() + '`');
+      '    valid-exts: `".js"`');
 
   dest = resolvePath(dest);
   path = trimPathName(dest);
@@ -835,9 +821,9 @@ Dir.prototype.run = function run(src, dest, state, alter) {
 
   if (!src)
     throw new Error('invalid empty `string` for `src`');
-  if ( !SRC_EXT.test(src) )
+  if ( !hasJsExt(src) )
     throw new Error('invalid `src` file extension\n' +
-      '    should-match: `' + SRC_EXT.toString() + '`');
+      '    valid-exts: `".js"`');
 
   src = resolvePath(pwd, src);
 
