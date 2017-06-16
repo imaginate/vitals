@@ -547,23 +547,23 @@ This method creates `Ins` instances. Use the `new` keyword when calling `Ins` (e
 |    | Parameter                           | Data Type  | Description
 |:---|:------------------------------------|:-----------|:------------
 | 1  | <a name="ins-param-line"></a>line   | *`!Line`*  | The defining [Line][line] instance.
-| 2  | <a name="ins-param-index"></a>index | *`number`* | The defining [index][ins-index] within the parent [File][file] instance's [lines][file-lines] `array`.
+| 2  | <a name="ins-param-index"></a>index | *`number`* | The index of the defining [Line][line] instance's place in the [File][file] instance's [lines][file-lines] `array`.
 | 3  | <a name="ins-param-file"></a>file   | *`!File`*  | The parent [File][file] instance.
 <br>
 
 <a name="ins-members"></a>
 ## Ins Instance Properties
 
-| Property Name                        | Data Type         | Description
-|:-------------------------------------|:------------------|:------------
-| <a name="ins-member-type"></a>type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Ins][ins] class.
-| <a name="ins-member-tag"></a>tag     | *`string`*        | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
-| <a name="ins-member-id"></a>id       | *`string`*        | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
-| <a name="ins-member-path"></a>path   | *`string`*        | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
-| <a name="ins-member-file"></a>file   | *`!File`*         | A pointer to the parent [File][file] instance.
-| <a name="ins-member-line"></a>line   | *`!Line`*         | A pointer to defining [Line][line] instance.
-| <a name="ins-member-def"></a>def     | *`!Def`*          | A pointer to the included [Def][def] instance.
-| <a name="ins-member-index"></a>index | *`number`*        | The index of the defining [Line][line] instance's place in the [File][file] instance's [lines][file-lines] `array`.
+| Property Name                      | Data Type                   | Description
+|:-----------------------------------|:----------------------------|:------------
+| <a name="ins-member-type"></a>type | *`!Object`*                 | A pointer to a unique `object` instance designated for the [Ins][ins] class.
+| <a name="ins-member-tag"></a>tag   | *`string`*                  | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
+| <a name="ins-member-id"></a>id     | *`string`*                  | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
+| <a name="ins-member-path"></a>path | *`string`*                  | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
+| <a name="ins-member-file"></a>file | *`!File`*                   | A pointer to the parent [File][file] instance.
+| <a name="ins-member-line"></a>line | *`!Line`*                   | A pointer to defining [Line][line] instance.
+| <a name="ins-member-def"></a>def   | *`!Def`*                    | A pointer to the included [Def][def] instance.
+| <a name="ins-member-args"></a>args | *`!Array<(number\|!Line)>`* | The [Function.prototype.apply][apply] *argsArray* value to [splice][splice] from the parent [File][file] instance's [lines][file-lines] `array`.
 <br>
 
 
@@ -867,6 +867,9 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 [grep-docs]: https://www.gnu.org/software/grep/manual/html_node/index.html
 [grep-guide]: https://www.linux.com/learn/getting-grip-gnu-grep
 
+[apply]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/apply
+[splice]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
+
 [lang]: #user-content-preprocessor-language
 [comps]: #user-content-command-components
 [rules]: #user-content-command-rules
@@ -1013,7 +1016,7 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 [ins-file]: #user-content-ins-member-file
 [ins-line]: #user-content-ins-member-line
 [ins-def]: #user-content-ins-member-def
-[ins-index]: #user-content-ins-member-index
+[ins-args]: #user-content-ins-member-args
 
 [dir-members]: #user-content-dir-members
 [dir-props]: #user-content-dir-members
