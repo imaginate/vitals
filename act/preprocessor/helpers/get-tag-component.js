@@ -45,6 +45,15 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasTagComponent
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var hasTagComponent = require('./has-tag-component.js');
+/// #}}} @func hasTagComponent
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -84,7 +93,9 @@ function getTagComponent(text) {
     throw new TypeError('invalid `text` data type\n' +
       '    valid-types: `(string|!Line)`');
 
-  return text.replace(CMD, '$1');
+  return hasTagComponent(text)
+    ? text.replace(CMD, '$1')
+    : '';
 }
 /// #}}} @func getTagComponent
 

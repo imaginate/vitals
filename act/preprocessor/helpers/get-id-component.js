@@ -45,6 +45,15 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasIdComponent
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var hasIdComponent = require('./has-id-component.js');
+/// #}}} @func hasIdComponent
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -84,7 +93,9 @@ function getIdComponent(text) {
     throw new TypeError('invalid `text` data type\n' +
       '    valid-types: `(string|!Line)`');
 
-  return text.replace(CMD, '$1');
+  return hasIdComponent(text)
+    ? text.replace(CMD, '$1')
+    : '';
 }
 /// #}}} @func getIdComponent
 
