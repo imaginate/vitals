@@ -173,9 +173,9 @@ var isUndefined = IS.undefined;
 /// #{{{ @func setError
 /**
  * @public
- * @param {(!Error|!RangeError|!SyntaxError|!TypeError)} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
  * @param {string} msg
- * @return {(!Error|!RangeError|!SyntaxError|!TypeError)}
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
 function setError(err, msg) {
 
@@ -209,6 +209,44 @@ function setError(err, msg) {
   return err;
 }
 /// #}}} @func setError
+
+/// #{{{ @func setDefChildError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} child
+ * @param {!Line} parent
+ * @return {!SyntaxError}
+ */
+function setDefChildError(err, child, parent) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(child) )
+    throw new TypeError('invalid `child` data type\n' +
+      '    valid-types: `!Line`');
+  if ( !isLineNode(parent) )
+    throw new TypeError('invalid `parent` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `define` command within another `define` scope\n' +
+    '    parent-define-opened-at:`\n' +
+    '        line-text: `' + parent.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + parent.before.linenum + '`\n' +
+    '            file: `' + parent.before.file.path + '`\n' +
+    '    child-define-opened-at:`\n' +
+    '        line-text: `' + child.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + child.before.linenum + '`\n' +
+    '            file: `' + child.before.file.path + '`';
+  return setError(err, msg);
+}
+/// #}}} @func setDefChildError
 
 /// #{{{ @func setDirError
 /**
@@ -402,6 +440,7 @@ function setWholeError(err, param, value) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
+setError.defChild = setDefChildError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.file = setFileError;
