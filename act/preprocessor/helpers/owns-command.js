@@ -124,7 +124,7 @@ function ownsCommand(src, node) {
       '    valid-types: `(!File|!Blk|!Cond)`)');
 
   if ( isBlkNode(node) || isCondNode(node) || isInclNode(node) )
-    key = node.tag + ':' + node.id;
+    key = node.key;
   else if ( !isString(node) )
     throw new TypeError('invalid `node` data type\n' +
       '    valid-types: `(string|!Blk|!Cond|!Incl)`)');
