@@ -214,6 +214,38 @@ function setError(err, msg) {
 }
 /// #}}} @func setError
 
+/// #{{{ @func setCmdError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setCmdError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `command` syntax\n' +
+    '    line-text: `' + line.text + '`\n' +
+    '    actual-line-location:\n' +
+    '        linenum: `' + line.before.linenum + '`\n' +
+    '        file: `' + line.before.file.path + '`\n' +
+    '    preparsed-line-location:\n' +
+    '        linenum: `' + line.after.linenum + '`\n' +
+    '        file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setCmdError
+
 /// #{{{ @func setDefChildError
 /**
  * @public
@@ -558,6 +590,7 @@ function setWholeError(err, param, value) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
+setError.cmd = setCmdError;
 setError.defChild = setDefChildError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
