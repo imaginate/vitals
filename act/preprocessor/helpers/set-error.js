@@ -366,6 +366,41 @@ function setFileError(err, param, path) {
 }
 /// #}}} @func setFileError
 
+/// #{{{ @func setIdError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setIdError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `id` component syntax\n' +
+    '    valid-id-regex: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
+    '    valid-id-chars: `"a-z", "A-Z", "0-9", "_", ".", "-", "$"`\n' +
+    '    id-defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + line.after.linenum + '`\n' +
+    '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setIdError
+
 /// #{{{ @func setIndexError
 /**
  * @public
@@ -663,6 +698,7 @@ setError.defChild = setDefChildError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.file = setFileError;
+setError.id = setIdError;
 setError.index = setIndexError;
 setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
