@@ -589,6 +589,7 @@ Each file-system class wraps a different file-system component for the preproces
 - [Line Class][line]
   - [Line Constructor][line-new]
   - [Line Instance Properties][line-props]
+  - [Line.prototype.setAfter][line-set-after]
 <br>
 
 
@@ -832,6 +833,9 @@ The [line class][line], `Line`, wraps each line of text within every [File][file
 
 - [Line Constructor][line-new]
 - [Line Instance Properties][line-props]
+- [Line.prototype.setAfter][line-set-after]
+  - [Parameters][line-set-after-params]
+  - [Returns][line-set-after-returns]
 <br>
 
 <a name="line-constructor"></a>
@@ -841,21 +845,44 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 |    | Parameter                                | Data Type  | Description
 |:---|:-----------------------------------------|:-----------|:------------
 | 1  | <a name="line-param-text"></a>text       | *`string`* | The UTF-8 encoded text for the new [Line][line].
-| 2  | <a name="line-param-linenum"></a>linenum | *`number`* | The line `number` relative to its parent [File][file].
-| 3  | <a name="line-param-file"></a>file       | *`!File`*  | The parent [File][file] instance.
+| 2  | <a name="line-param-linenum"></a>linenum | *`number`* | The line `number` relative to its original parent [File][file].
+| 3  | <a name="line-param-file"></a>file       | *`!File`*  | The original parent [File][file] instance.
 <br>
 
 <a name="line-members"></a>
 ## Line Instance Properties
 
-| Property Name                             | Data Type   | Description
-|:------------------------------------------|:------------|:------------
-| <a name="line-member-type"></a>type       | *`!Object`* | A pointer to a unique `object` instance designated for the [Line][line] class.
-| <a name="line-member-file"></a>file       | *`!File`*   | A pointer to the parent [File][file] instance of the [Line][line] instance.
-| <a name="line-member-text"></a>text       | *`string`*  | The [Line][line] instance's original UTF-8 encoded text. Note that all end-of-line characters (e.g. line-feeds and carriage-returns) are trimmed.
-| <a name="line-member-linenum"></a>linenum | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's original position within its [file][line-file] property's [File][file] instance's context. Note that the first [linenum][line-linenum] in a [File][file] is `1` (i.e. one-based).
+| Property Name                                           | Data Type   | Description
+|:--------------------------------------------------------|:------------|:------------
+| <a name="line-member-type"></a>type                     | *`!Object`* | A pointer to a unique `object` instance designated for the [Line][line] class.
+| <a name="line-member-text"></a>text                     | *`string`*  | The [Line][line] instance's original UTF-8 encoded text. Note that all end-of-line characters (e.g. line-feeds and carriage-returns) are trimmed.
+| <a name="line-member-before"></a>before                 | *`!Object`* | The original line data (i.e. before the [load][file-load] and [preparse][file-preparse] stages).
+| <a name="line-member-before-file"></a>before.file       | *`!File`*   | A pointer to the original parent [File][file] instance of the [Line][line] instance.
+| <a name="line-member-before-linenum"></a>before.linenum | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's original position within its original parent [File][file] instance's context. Note that the first [linenum][line-before-linenum] in a [File][file] is `1` (i.e. one-based).
+| <a name="line-member-after"></a>after                   | *`!Object`* | The preparsed line data (i.e. after the [load][file-load] and [preparse][file-preparse] stages).
+| <a name="line-member-after-file"></a>after.file         | *`!File`*   | A pointer to the preparsed parent [File][file] instance of the [Line][line] instance.
+| <a name="line-member-after-linenum"></a>after.linenum   | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's new position within its preparsed parent [File][file] instance's context. Note that the first [linenum][line-after-linenum] in a [File][file] is `1` (i.e. one-based).
 <br>
 
+<a name="line-prototype-set-after"></a>
+## Line.prototype.setAfter
+This method sets the [after][line-after] `object` for the [Line][line] instance.
+
+<a name="line-prototype-set-after-parameters"></a>
+### Parameters
+
+|    | Parameter                                                    | Data Type  | Description
+|:---|:-------------------------------------------------------------|:-----------|:------------
+| 1  | <a name="line-prototype-set-after-param-linenum"></a>linenum | *`number`* | The line `number` relative to its preparsed parent [File][file].
+| 2  | <a name="line-prototype-set-after-param-file"></a>file       | *`!File`*  | The preparsed parent [File][file] instance.
+
+<a name="line-prototype-set-after-returns"></a>
+### Returns
+
+| Data Type | Description
+|:----------|:------------
+| *`void`*  | [Line.prototype.setAfter][line-set-after] does not return a value.
+<br>
 
 
 [vitals]: https://github.com/imaginate/vitals
@@ -1047,9 +1074,13 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 [line-members]: #user-content-line-members
 [line-props]: #user-content-line-members
 [line-type]: #user-content-line-member-type
-[line-file]: #user-content-line-member-file
 [line-text]: #user-content-line-member-text
-[line-linenum]: #user-content-line-member-linenum
+[line-before]: #user-content-line-member-before
+[line-before-file]: #user-content-line-member-before-file
+[line-before-linenum]: #user-content-line-member-before-linenum
+[line-after]: #user-content-line-member-after
+[line-after-file]: #user-content-line-member-after-file
+[line-after-linenum]: #user-content-line-member-after-linenum
 
 [blk-is-close]: #user-content-blk-prototype-is-close
 [blk-is-close-params]: #user-content-blk-prototype-is-close-parameters
@@ -1119,4 +1150,10 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 [file-run-state]: #user-content-file-prototype-run-param-state
 [file-run-alter]: #user-content-file-prototype-run-param-alter
 [file-run-returns]: #user-content-file-prototype-run-returns
+
+[line-set-after]: #user-content-line-prototype-set-after
+[line-set-after-params]: #user-content-line-prototype-set-after-parameters
+[line-set-after-linenum]: #user-content-line-prototype-set-after-param-linenum
+[line-set-after-file]: #user-content-line-prototype-set-after-param-file
+[line-set-after-returns]: #user-content-line-prototype-set-after-returns
 
