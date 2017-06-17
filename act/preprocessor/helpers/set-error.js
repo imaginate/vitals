@@ -410,6 +410,39 @@ function setIndexError(err, param, index, min) {
 }
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNoCloseError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setNoCloseError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'no `close` command for `open` command\n' +
+    '    unclosed-open-defined-at:`\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + line.after.linenum + '`\n' +
+    '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoCloseError
+
 /// #{{{ @func setNoOpenError
 /**
  * @public
@@ -596,6 +629,7 @@ setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.file = setFileError;
 setError.index = setIndexError;
+setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
 setError.ownCmd = setOwnCmdError;
 setError.type = setTypeError;
