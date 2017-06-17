@@ -201,40 +201,43 @@ function setError(err, msg) {
       break;
   }
 
+  err.message = msg;
   err.msg = msg;
+
   err.jspp = true;
+
   return err;
 }
 /// #}}} @func setError
 
-/// #{{{ @func setTypeError
+/// #{{{ @func setDirError
 /**
  * @public
- * @param {!TypeError} err
+ * @param {!Error} err
  * @param {string} param
- * @param {string} types
- * @return {!TypeError}
+ * @param {string} path
+ * @return {!Error}
  */
-function setTypeError(err, param, types) {
+function setDirError(err, param, path) {
 
   /** @type {string} */
   var msg;
 
   if ( !isError(err) )
     throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!TypeError`');
+      '    valid-types: `!Error`');
   if ( !isString(param) )
     throw new TypeError('invalid `param` data type\n' +
       '    valid-types: `string`');
-  if ( !isString(types) )
-    throw new TypeError('invalid `types` data type\n' +
+  if ( !isString(path) )
+    throw new TypeError('invalid `path` data type\n' +
       '    valid-types: `string`');
 
-  msg = 'invalid `' + param + '` data type\n' +
-    '    valid-types: `' + types + '`';
+  msg = 'invalid readable directory path for `' + param + '`\n' +
+    '    received-path: `' + path + '`';
   return setError(err, msg);
 }
-/// #}}} @func setTypeError
+/// #}}} @func setDirError
 
 /// #{{{ @func setEmptyError
 /**
@@ -259,6 +262,35 @@ function setEmptyError(err, param) {
   return setError(err, msg);
 }
 /// #}}} @func setEmptyError
+
+/// #{{{ @func setFileError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+function setFileError(err, param, path) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!Error`');
+  if ( !isString(param) )
+    throw new TypeError('invalid `param` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(path) )
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid readable file path for `' + param + '`\n' +
+    '    received-path: `' + path + '`';
+  return setError(err, msg);
+}
+/// #}}} @func setFileError
 
 /// #{{{ @func setIndexError
 /**
@@ -304,6 +336,35 @@ function setIndexError(err, param, index, min) {
 }
 /// #}}} @func setIndexError
 
+/// #{{{ @func setTypeError
+/**
+ * @public
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+function setTypeError(err, param, types) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!TypeError`');
+  if ( !isString(param) )
+    throw new TypeError('invalid `param` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(types) )
+    throw new TypeError('invalid `types` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid `' + param + '` data type\n' +
+    '    valid-types: `' + types + '`';
+  return setError(err, msg);
+}
+/// #}}} @func setTypeError
+
 /// #{{{ @func setWholeError
 /**
  * @public
@@ -341,9 +402,11 @@ function setWholeError(err, param, value) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-setError.type = setTypeError;
+setError.dir = setDirError;
 setError.empty = setEmptyError;
+setError.file = setFileError;
 setError.index = setIndexError;
+setError.type = setTypeError;
 setError.whole = setWholeError;
 module.exports = setError;
 
