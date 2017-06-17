@@ -482,7 +482,7 @@ function setNoOpenError(err, line) {
  * @param {!ReferenceError} err
  * @param {(!Line|!Blk|!Cond|!Incl)} node1
  * @param {(!Line|!Blk|!Cond|!Incl)} node2
- * @param {(?Blk|?Cond)=} scope
+ * @param {(?Blk|?Cond)=} scope = `null`
  * @return {!ReferenceError}
  */
 function setOwnCmdError(err, node1, node2, scope) {
@@ -556,6 +556,41 @@ function setOwnCmdError(err, node1, node2, scope) {
   return setError(err, msg);
 }
 /// #}}} @func setOwnCmdError
+
+/// #{{{ @func setTagError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setTagError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `tag` component syntax\n' +
+    '    valid-tag-regex: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
+    '    valid-tag-chars: `"a-z", "A-Z", "0-9", "_", ".", "-"`\n' +
+    '    tag-defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + line.after.linenum + '`\n' +
+    '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setTagError
 
 /// #{{{ @func setTypeError
 /**
@@ -632,6 +667,7 @@ setError.index = setIndexError;
 setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
 setError.ownCmd = setOwnCmdError;
+setError.tag = setTagError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 module.exports = setError;
