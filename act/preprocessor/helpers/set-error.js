@@ -374,6 +374,87 @@ function setIndexError(err, param, index, min) {
 }
 /// #}}} @func setIndexError
 
+/// #{{{ @func setOwnCmdError
+/**
+ * @public
+ * @param {!ReferenceError} err
+ * @param {(!Line|!Blk|!Cond|!Incl)} node1
+ * @param {(!Line|!Blk|!Cond|!Incl)} node2
+ * @param {(?Blk|?Cond)=} scope
+ * @return {!ReferenceError}
+ */
+function setOwnCmdError(err, node1, node2, scope) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!ReferenceError`');
+
+  if ( isInclNode(node1) )
+    node1 = node1.line;
+  else if ( isBlkNode(node1) || isCondNode(node1) )
+    node1 = node1.open;
+  else if ( !isLineNode(node1) )
+    throw new TypeError('invalid `node1` data type\n' +
+      '    valid-types: `(!Line|!Blk|!Cond|!Incl)`');
+
+  if ( isInclNode(node2) )
+    node2 = node2.line;
+  else if ( isBlkNode(node2) || isCondNode(node2) )
+    node2 = node2.open;
+  else if ( !isLineNode(node2) )
+    throw new TypeError('invalid `node2` data type\n' +
+      '    valid-types: `(!Line|!Blk|!Cond|!Incl)`');
+
+  if ( isUndefined(scope) )
+    scope = null;
+  else if ( !isNull(scope) && !isBlkNode(scope) && !isCondNode(scope) )
+    throw new TypeError('invalid `scope` data type\n' +
+      '    valid-types: `(?Blk|?Cond)=`');
+
+  msg = 'duplicate `command` assignment in ';
+  msg += !!scope
+    ? isBlkNode(scope)
+      ? '`block`'
+      : '`conditional`'
+    : 'file root';
+  msg += ' scope\n';
+
+  if (scope)
+    msg += '' +
+      '    parent-scope-opened-at:`\n' +
+      '        line-text: `' + scope.open.text + '`\n' +
+      '        actual-line-location:\n' +
+      '            linenum: `' + scope.open.before.linenum + '`\n' +
+      '            file: `' + scope.open.before.file.path + '`\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + scope.open.after.linenum + '`\n' +
+      '            file: `' + scope.open.after.file.path + '`\n';
+
+  msg += '' +
+    '    first-duplicate-defined-at:`\n' +
+    '        line-text: `' + node1.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + node1.before.linenum + '`\n' +
+    '            file: `' + node1.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + node1.after.linenum + '`\n' +
+    '            file: `' + node1.after.file.path + '`\n' +
+    '    second-duplicate-defined-at:`\n' +
+    '        line-text: `' + node2.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + node2.before.linenum + '`\n' +
+    '            file: `' + node2.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + node2.after.linenum + '`\n' +
+    '            file: `' + node2.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setOwnCmdError
+
 /// #{{{ @func setTypeError
 /**
  * @public
@@ -445,6 +526,7 @@ setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.file = setFileError;
 setError.index = setIndexError;
+setError.ownCmd = setOwnCmdError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 module.exports = setError;
