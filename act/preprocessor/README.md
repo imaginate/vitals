@@ -96,6 +96,7 @@ The preprocessor language has a simple layout and structure. It is built upon a 
 5. [**Insert Commands**][insert]
 
           /// #insert @tag ID ../path/to/file.js
+          /// #insert @tag ID
 
 <br>
 
