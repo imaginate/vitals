@@ -592,6 +592,41 @@ function setOwnCmdError(err, node1, node2, scope) {
 }
 /// #}}} @func setOwnCmdError
 
+/// #{{{ @func setPathCompError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setPathCompError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `path` component syntax\n' +
+    '    valid-path-regex: `/[ \\t][^ \\t\\|]+[ \\t]*$/`\n' +
+    '    NOT-valid-path-chars: `" ", "\\t", "|"`\n' +
+    '    path-defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + line.after.linenum + '`\n' +
+    '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setPathCompError
+
 /// #{{{ @func setTagError
 /**
  * @public
@@ -703,6 +738,7 @@ setError.index = setIndexError;
 setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
 setError.ownCmd = setOwnCmdError;
+setError.pathComp = setPathCompError;
 setError.tag = setTagError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
