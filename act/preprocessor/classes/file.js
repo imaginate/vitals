@@ -55,24 +55,6 @@ var IS = loadHelper('is');
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
 
-/// #{{{ @func cleanDirpath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirpath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirpath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
-
 /// #{{{ @func createObject
 /**
  * @private
@@ -103,44 +85,6 @@ var defineProp = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func getDirpaths
-/**
- * @private
- * @param {string} dirpath
- * @param {?Object|boolean=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid directory paths.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute directory paths instead of relative directory paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid
- *   An alias for `opts.validDirs`.
- * @param {?RegExp=} opts.invalid
- *   An alias for `opts.invalidDirs`.
- * @param {?RegExp=} opts.validDirs = `null`
- *   A pattern for matching valid directory paths. If #opts.validDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.validDirs pattern. Otherwise (i.e.
- *   if it does not have a forward slash), the path name is tested against the
- *   #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   A pattern for matching invalid directory paths. If #opts.invalidDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidDirs pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidDirs pattern.
- * @return {!Array<string>}
- */
-var getDirpaths = loadHelper('get-dirpaths');
-/// #}}} @func getDirpaths
-
 /// #{{{ @func getFileContent
 /**
  * @private
@@ -151,67 +95,15 @@ var getDirpaths = loadHelper('get-dirpaths');
 var getFileContent = loadHelper('get-file-content');
 /// #}}} @func getFileContent
 
-/// #{{{ @func getFilepaths
+/// #{{{ @func getOwnedCommand
 /**
  * @private
- * @param {string} dirpath
- * @param {?Object|boolean=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid files.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute file paths instead of relative file paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid = `null`
- *   A pattern for matching valid file or directory paths. If #opts.valid is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.valid pattern. Otherwise (i.e. if
- *   it does not have a forward slash), the path name is tested against the
- *   #opts.valid pattern.
- * @param {?RegExp=} opts.invalid = `null`
- *   A pattern for matching invalid file or directory paths. If #opts.invalid
- *   is `null`, no check is performed. If it is a `RegExp`, the source
- *   property is checked for a forward slash, `"/"`. If it has a forward
- *   slash, the path tree is tested against the #opts.invalid pattern.
- *   Otherwise (i.e. if it does not have a forward slash), the path name is
- *   tested against the #opts.invalid pattern.
- * @param {?RegExp=} opts.validDirs = `null`
- *   Only used when #opts.deep is `true`. A pattern for matching valid
- *   directory paths. If #opts.validDirs is `null`, no check is performed. If
- *   it is a `RegExp`, the source property is checked for a forward slash,
- *   `"/"`. If it has a forward slash, the path tree is tested against the
- *   #opts.validDirs pattern. Otherwise (i.e. if it does not have a forward
- *   slash), the path name is tested against the #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   Only used when #opts.deep is `true`. A pattern for matching invalid
- *   directory paths. If #opts.invalidDirs is `null`, no check is performed.
- *   If it is a `RegExp`, the source property is checked for a forward slash,
- *   `"/"`. If it has a forward slash, the path tree is tested against the
- *   #opts.invalidDirs pattern. Otherwise (i.e. if it does not have a forward
- *   slash), the path name is tested against the #opts.invalidDirs pattern.
- * @param {?RegExp=} opts.validFiles = `null`
- *   A pattern for matching valid file paths. If #opts.validFiles is `null`,
- *   no check is performed. If it is a `RegExp`, the source property is
- *   checked for a forward slash, `"/"`. If it has a forward slash, the path
- *   tree is tested against the #opts.validFiles pattern. Otherwise (i.e. if
- *   it does not have a forward slash), the path name is tested against the
- *   #opts.validFiles pattern.
- * @param {?RegExp=} opts.invalidFiles = `null`
- *   A pattern for matching invalid file paths. If #opts.invalidFiles is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidFiles pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidFiles pattern.
- * @return {!Array<string>}
+ * @param {(!File|!Blk|!Cond)} src
+ * @param {(string|!Blk|!Cond|!Incl)} node
+ * @return {(?Blk|?Cond|?Incl)}
  */
-var getFilepaths = loadHelper('get-filepaths');
-/// #}}} @func getFilepaths
+var getOwnedCommand = loadHelper('get-owned-command');
+/// #}}} @func getOwnedCommand
 
 /// #{{{ @func getPathName
 /**
@@ -232,14 +124,32 @@ var getPathName = loadHelper('get-pathname');
 var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
-/// #{{{ @func hasCmd
+/// #{{{ @func hasBlock
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasCmd = loadHelper('has-command');
-/// #}}} @func hasCmd
+var hasBlock = loadHelper('has-block-command');
+/// #}}} @func hasBlock
+
+/// #{{{ @func hasClose
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasClose = loadHelper('has-close-command');
+/// #}}} @func hasClose
+
+/// #{{{ @func hasCommand
+/**
+ * @private
+ * @param {string} val
+ * @return {boolean}
+ */
+var hasCommand = loadHelper('has-command');
+/// #}}} @func hasCommand
 
 /// #{{{ @func hasDirectory
 /**
@@ -253,59 +163,41 @@ var hasCmd = loadHelper('has-command');
 var hasDirectory = loadHelper('has-directory');
 /// #}}} @func hasDirectory
 
-/// #{{{ @func hasBlkCmd
+/// #{{{ @func hasConditional
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasBlkCmd = loadHelper('has-block-command');
-/// #}}} @func hasBlkCmd
+var hasConditional = loadHelper('has-conditional-command');
+/// #}}} @func hasConditional
 
-/// #{{{ @func hasCloseCmd
+/// #{{{ @func hasDefine
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasCloseCmd = loadHelper('has-close-command');
-/// #}}} @func hasCloseCmd
+var hasDefine = loadHelper('has-define-command');
+/// #}}} @func hasDefine
 
-/// #{{{ @func hasCondCmd
+/// #{{{ @func hasInclude
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasCondCmd = loadHelper('has-conditional-command');
-/// #}}} @func hasCondCmd
+var hasInclude = loadHelper('has-include-command');
+/// #}}} @func hasInclude
 
-/// #{{{ @func hasDefCmd
+/// #{{{ @func hasInsert
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasDefCmd = loadHelper('has-define-command');
-/// #}}} @func hasDefCmd
-
-/// #{{{ @func hasInclCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInclCmd = loadHelper('has-include-command');
-/// #}}} @func hasInclCmd
-
-/// #{{{ @func hasInsCmd
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInsCmd = loadHelper('has-insert-command');
-/// #}}} @func hasInsCmd
+var hasInsert = loadHelper('has-insert-command');
+/// #}}} @func hasInsert
 
 /// #{{{ @func hasJsExt
 /**
@@ -316,24 +208,24 @@ var hasInsCmd = loadHelper('has-insert-command');
 var hasJsExt = loadHelper('has-file-ext').construct('.js');
 /// #}}} @func hasJsExt
 
-/// #{{{ @func hasOpenCmd
+/// #{{{ @func hasOpen
 /**
  * @private
  * @param {string} val
  * @return {boolean}
  */
-var hasOpenCmd = loadHelper('has-open-command');
-/// #}}} @func hasOpenCmd
+var hasOpen = loadHelper('has-open-command');
+/// #}}} @func hasOpen
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @func hasOwnProperty
 /**
  * @private
  * @param {!Object} src
  * @param {string} prop
  * @return {boolean}
  */
-var hasOwnProp = loadHelper('has-own-property');
-/// #}}} @func hasOwnProp
+var hasOwnProperty = loadHelper('has-own-property');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isBoolean
 /**
@@ -398,6 +290,15 @@ var isFileNode = loadHelper('is-file-node');
 var isFunction = IS.func;
 /// #}}} @func isFunction
 
+/// #{{{ @func isLineNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isLineNode = loadHelper('is-line-node');
+/// #}}} @func isLineNode
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -434,16 +335,6 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
-/// #{{{ @func ownsCmd
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {boolean}
- */
-var ownsCmd = loadHelper('owns-command');
-/// #}}} @func ownsCmd
-
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -462,6 +353,121 @@ var resolvePath = loadHelper('resolve-path');
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = loadHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setCmdError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setCmdError = setError.cmd;
+/// #}}} @func setCmdError
+
+/// #{{{ @func setDefChildError
+/**
+ * @private
+ */
+var setDefChildError = setError.defChild;
+/// #}}} @func setDefChildError
+
+/// #{{{ @func setDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setDirError = setError.dir;
+/// #}}} @func setDirError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+var setIndexError = setError.index;
+/// #}}} @func setIndexError
+
+/// #{{{ @func setNoOpenError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setNoOpenError = setError.noOpen;
+/// #}}} @func setNoOpenError
+
+/// #{{{ @func setOwnCmdError
+/**
+ * @private
+ * @param {!ReferenceError} err
+ * @param {(!Line|!Blk|!Cond|!Incl)} node1
+ * @param {(!Line|!Blk|!Cond|!Incl)} node2
+ * @param {(?Blk|?Cond)=} scope = `null`
+ * @return {!ReferenceError}
+ */
+var setOwnCmdError = setError.ownCmd;
+/// #}}} @func setOwnCmdError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
 
 /// #{{{ @func toFile
 /**
@@ -535,16 +541,13 @@ var Def = require('./define.js');
 function File(path, parent) {
 
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
   if (!path)
-    throw new Error('invalid empty `string` for `path`');
+    throw setEmptyError(new Error, 'path');
   if ( !isFile(path) )
-    throw new Error('invalid readable file path `string` for `path`\n' +
-      '    path: `' + path + '`');
+    throw setFileError(new Error, 'path', path);
   if ( !isDirNode(parent) )
-    throw new TypeError('invalid `parent` data type\n' +
-      '    valid-types: `!Dir`');
+    throw setTypeError(new TypeError, 'parent', '!Dir');
 
   /// #{{{ @group File-Constants
 
@@ -832,24 +835,17 @@ File.prototype.load = function load() {
     text = textRows[i];
     line = new Line(text, linenum, this);
     if (def) {
-      if ( !hasCmd(text) )
+      if ( !hasCommand(text) )
         def.lines.push(line);
-      else if ( hasDefCmd(text) ) {
-        if ( !hasCloseCmd(text) )
-          throw new Error('invalid `define` within `define`\n' +
-            '    linenum: `' + linenum + '`\n' +
-            '    file: `' + this.path + '`\n' +
-            '    text: `' + text + '`');
-        if ( !def.isClose(text) )
-          throw new Error('invalid `close` command (must match the `open`)\n' +
-            '    linenum: `' + linenum + '`\n' +
-            '    file: `' + this.path + '`\n' +
-            '    text: `' + text + '`');
+      else if ( hasDefine(text) ) {
+
+        if ( !hasClose(text) )
+          throw setDefChild(new SyntaxError, line, def.open);
 
         def.setClose(line);
         def = null;
       }
-      else if ( hasInsCmd(text) )
+      else if ( hasInsert(text) )
         throw new Error('invalid `insert` within `define`\n' +
           '    linenum: `' + linenum + '`\n' +
           '    file: `' + this.path + '`\n' +
@@ -857,10 +853,10 @@ File.prototype.load = function load() {
       else
         def.lines.push(line);
     }
-    else if ( !hasCmd(text) )
+    else if ( !hasCommand(text) )
       lines.push(line);
-    else if ( hasDefCmd(text) ) {
-      if ( passedCmd || !hasOpenCmd(text) )
+    else if ( hasDefine(text) ) {
+      if ( passedCmd || !hasOpen(text) )
         throw new Error('invalid `define` command order\n' +
           '    linenum: `' + linenum + '`\n' +
           '    file: `' + this.path + '`\n' +
@@ -906,7 +902,7 @@ File.prototype.preparse = function preparse() {
   i = -1;
   while (++i < len) {
     line = lines[i];
-    if ( hasInsCmd(line.text) ) {
+    if ( hasInsert(line.text) ) {
       insert = new Ins(line, i, this);
       inserts.push(insert);
     }
@@ -916,6 +912,13 @@ File.prototype.preparse = function preparse() {
   while (i--) {
     insert = inserts[i];
     lines.splice.apply(lines, insert.args);
+  }
+
+  len = lines.length;
+  i = 0;
+  while (i < len) {
+    line = lines[i];
+    line.setAfter(++i, this);
   }
 
   capObject(lines);
@@ -931,190 +934,84 @@ File.prototype.preparse = function preparse() {
  */
 File.prototype.parse = function parse() {
 
-  /** @type {!Array<(!Blk|!Cond)>} */
-  var stack;
+  /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
+  var content;
   /** @type {!Array<!Line>} */
   var lines;
+  /** @type {!Object<string, !Incl>} */
+  var incls;
+  /** @type {!Object<string, !Cond>} */
+  var conds;
+  /** @type {!Object<string, !Blk>} */
+  var blks;
   /** @type {!Line} */
   var line;
   /** @type {string} */
   var text;
-  /** @type {(!Blk|!Cond)} */
-  var last;
   /** @type {(!Blk|!Cond|!Incl)} */
   var cmd;
+  /** @type {(?Blk|?Cond|?Incl)} */
+  var own;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  stack = [];
+  content = this.content;
   lines = this.lines;
+  incls = this.incls;
+  conds = this.conds;
+  blks = this.blks;
+
   len = lines.length;
   i = -1;
   while (++i < len) {
     line = lines[i];
     text = line.text;
-    if (stack.length) {
-      if ( !hasCmd(text) )
-        last.content.push(line);
-      else if ( hasInclCmd(text) ) {
-        cmd = new Incl(line, this, last);
-
-        if ( ownsCmd(last, cmd) )
-          throw new Error('duplicate `include` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
-
-        last.incls[cmd.tag + ':' + cmd.id] = cmd;
-        last.content.push(cmd);
-      }
-      else if ( hasOpenCmd(text) ) {
-        if ( hasCondCmd(text) ) {
-          cmd = new Cond(line, this, last);
-
-          if ( ownsCmd(last, cmd) )
-            throw new Error('duplicate `conditional` command\n' +
-              '    src-linenum: `' + (++i) + '`\n' +
-              '    src-file: `' + this.path + '`\n' +
-              '    linenum: `' + line.linenum + '`\n' +
-              '    file: `' + line.file.path + '`\n' +
-              '    text: `' + text + '`');
-
-          last.conds[cmd.tag + ':' + cmd.id] = cmd;
-        }
-        else {
-          cmd = new Blk(line, this, last);
-
-          if ( ownsCmd(last, cmd) )
-            throw new Error('duplicate `block` command\n' +
-              '    src-linenum: `' + (++i) + '`\n' +
-              '    src-file: `' + this.path + '`\n' +
-              '    linenum: `' + line.linenum + '`\n' +
-              '    file: `' + line.file.path + '`\n' +
-              '    text: `' + text + '`');
-
-          last.blks[cmd.tag + ':' + cmd.id] = cmd;
-        }
-        last.content.push(cmd);
-        stack.push(cmd);
-        last = cmd;
-      }
-      else if ( !hasCloseCmd(text) )
-        throw new Error('invalid `command` syntax\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
-      else if ( !last.isClose(text) )
-        throw new Error('invalid `close` command (must match the `open`)\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
-      else {
-        last.setClose(line);
-        stack.pop();
-        if (stack.length)
-          last = stack[stack.length - 1];
-      }
-    }
-    if ( !hasCmd(text) )
-      this.content.push(line);
-    else if ( hasInclCmd(text) ) {
+    if ( !hasCommand(text) )
+      content.push(line);
+    else if ( hasInclude(text) ) {
       cmd = new Incl(line, this);
+      own = getOwnedCommand(this, cmd.key);
 
-      if ( ownsCmd(this, cmd) )
-        throw new Error('duplicate `include` command\n' +
-          '    src-linenum: `' + (++i) + '`\n' +
-          '    src-file: `' + this.path + '`\n' +
-          '    linenum: `' + line.linenum + '`\n' +
-          '    file: `' + line.file.path + '`\n' +
-          '    text: `' + text + '`');
+      if (own)
+        throw setOwnCmdError(new ReferenceError, own, line);
 
-      this.incls[cmd.tag + ':' + cmd.id] = cmd;
-      this.content.push(cmd);
+      incls[cmd.key] = cmd;
+      content.push(cmd);
     }
-    else if ( hasCloseCmd(text) )
-      throw new Error('invalid `close` command (no `open` command)\n' +
-        '    src-linenum: `' + (++i) + '`\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + line.linenum + '`\n' +
-        '    file: `' + line.file.path + '`\n' +
-        '    text: `' + text + '`');
-    else if ( !hasOpenCmd(text) )
-      throw new Error('invalid `command` syntax\n' +
-        '    src-linenum: `' + (++i) + '`\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + line.linenum + '`\n' +
-        '    file: `' + line.file.path + '`\n' +
-        '    text: `' + text + '`');
+    else if ( hasClose(text) )
+      throw setNoOpenError(new SyntaxError, line);
+    else if ( !hasOpen(text) )
+      throw setCmdError(new SyntaxError, line);
     else {
-      if ( hasCondCmd(text) ) {
+      if ( hasConditional(text) ) {
         cmd = new Cond(line, this);
+        own = getOwnedCommand(this, cmd.key);
 
-        if ( ownsCmd(this, cmd) )
-          throw new Error('duplicate `conditional` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
+        if (own)
+          throw setOwnCmdError(new ReferenceError, own, line);
 
-        this.conds[cmd.tag + ':' + cmd.id] = cmd;
+        conds[cmd.key] = cmd;
       }
       else {
         cmd = new Blk(line, this);
+        own = getOwnedCommand(this, cmd.key);
 
-        if ( ownsCmd(this, cmd) )
-          throw new Error('duplicate `block` command\n' +
-            '    src-linenum: `' + (++i) + '`\n' +
-            '    src-file: `' + this.path + '`\n' +
-            '    linenum: `' + line.linenum + '`\n' +
-            '    file: `' + line.file.path + '`\n' +
-            '    text: `' + text + '`');
+        if (own)
+          throw setOwnCmdError(new ReferenceError, own, line);
 
-        this.blks[cmd.tag + ':' + cmd.id] = cmd;
+        blks[cmd.key] = cmd;
       }
-      this.content.push(cmd);
-      stack.push(cmd);
-      last = cmd;
+      content.push(cmd);
+      i = cmd.parse(lines, i, this);
     }
   }
 
-  if (stack.length) {
-    if (stack.length === 1)
-      throw new Error('unclosed `open` command\n' +
-        '    src-file: `' + this.path + '`\n' +
-        '    linenum: `' + stack[0].open.linenum + '`\n' +
-        '    file: `' + stack[0].open.file.path + '`\n' +
-        '    text: `' + stack[0].open.text + '`');
-
-    text = 'unclosed `open` commands\n' +
-      '    src-file: `' + this.path + '`';
-    len = stack.length;
-    i = -1;
-    while (++i < len)
-      text += '\n    command:\n' +
-        '        linenum: `' + stack[i].open.linenum + '`\n' +
-        '        file: `' + stack[0].open.file.path + '`\n' +
-        '        text: `' + stack[0].open.text + '`';
-    throw new Error(text);
-  }
-
-  capObject(this.blks);
-  capObject(this.conds);
-  capObject(this.incls);
-  capObject(this.content);
-  sealObject(this.blks);
-  sealObject(this.conds);
-  sealObject(this.incls);
-  sealObject(this.content);
+  freezeObject(blks);
+  freezeObject(conds);
+  freezeObject(incls);
+  freezeObject(content);
 };
 /// #}}} @func File.prototype.parse
 
@@ -1141,8 +1038,18 @@ File.prototype.parse = function parse() {
  */
 File.prototype.run = function run(dest, state, alter) {
 
+  /** @type {!Object<string, ?Incl>} */
+  var inclFiles;
+  /** @type {!Object<string, !Incl>} */
+  var inclNodes;
+  /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
+  var content;
   /** @type {string} */
   var result;
+  /** @type {(!Line|!Blk|!Cond|!Incl)} */
+  var node;
+  /** @type {string} */
+  var key;
   /** @type {string} */
   var pwd;
   /** @type {number} */
@@ -1151,20 +1058,16 @@ File.prototype.run = function run(dest, state, alter) {
   var i;
 
   if ( !isUndefined(alter) && !isFunction(alter) )
-    throw new TypeError('invalid `alter` data type\n' +
-      '    valid-types: `(!function(string): string)=`');
+    throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
   if ( !isObject(state) || !isBooleanMap(state) )
-    throw new TypeError('invalid `state` data type\n' +
-      '    valid-types: `!Object<string, boolean>`');
+    throw setTypeError(new TypeError, 'state', '!Object<string, boolean>');
   if ( !isString(dest) )
-    throw new TypeError('invalid `dest` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'dest', 'string');
 
   if (!dest)
-    throw new Error('invalid empty `string` for `dest`');
+    throw setEmptyError(new Error, 'dest');
   if ( !hasJsExt(dest) )
-    throw new Error('invalid `dest` file extension\n' +
-      '    valid-exts: `".js"`');
+    throw setExtError(new Error, 'dest', '.js');
 
   pwd = this.parent.path;
   dest = resolvePath(dest);
@@ -1180,9 +1083,64 @@ File.prototype.run = function run(dest, state, alter) {
       '    dir-path: `' + pwd + '`\n' +
       '    dest-path: `' + dest + '`');
 
-  ////////////////////////////////////////////////////////////////////////////
-  // ADD COMPILE LOGIC HERE
-  ////////////////////////////////////////////////////////////////////////////
+  freezeObject(state);
+
+  inclFiles = {};
+  inclFiles[this.tree] = null;
+  inclFiles = freezeObject(inclFiles);
+
+  inclNodes = {};
+
+  content = this.content;
+  result = '';
+  len = content.length;
+  i = -1;
+  while (++i < len) {
+    node = content[i];
+    if ( isLineNode(node) )
+      result += node.text + '\n';
+    else if ( isInclNode(node) ) {
+      key = node.file.tree + '|' + node.key;
+
+      if ( hasOwnProperty(inclNodes, key) )
+        throw new Error('duplicate `include` command\n' +
+          '    linenum: `' + inclNodes[key].line.linenum + '`\n' +
+          '    file: `' + inclNodes[key].line.file.path + '`\n' +
+          '    text: `' + inclNodes[key].line.text + '`\n' +
+          '    linenum: `' + node.line.linenum + '`\n' +
+          '    file: `' + node.line.file.path + '`\n' +
+          '    text: `' + node.line.text + '`');
+      if ( hasOwnProperty(inclFiles, node.cmd.file.tree) )
+        throw new Error('invalid `include` call to parent file\n' +
+          '    src-file: `' + node.file.path + '`\n' +
+          '    linenum: `' + node.line.linenum + '`\n' +
+          '    file: `' + node.line.file.path + '`\n' +
+          '    text: `' + node.line.text + '`');
+
+      defineProp(inclNodes, key, {
+        'value': node,
+        'writable': false,
+        'enumerable': true,
+        'configurable': false
+      });
+    }
+    else if ( isCondNode(node) ) {
+
+      if ( !hasOwnProperty(state, node.key) )
+        throw new Error('undefined `conditional` in `state`\n' +
+          '    missing-key: `"' + node.key + '"`');
+
+      if (state[node.key]) {
+        if (node.action)
+          result += node.run(state, inclFiles, inclNodes);
+      }
+      else if (!node.action)
+        result += node.run(state, inclFiles, inclNodes);
+    }
+    else {
+      result += node.run(state, inclFiles, inclNodes);
+    }
+  }
 
   if ( isFunction(alter) ) {
     result = alter(result);
