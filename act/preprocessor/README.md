@@ -289,6 +289,7 @@ This method creates `Blk` instances. Use the `new` keyword when calling `Blk` (e
 | <a name="blk-member-type"></a>type       | *`!Object`*                             | A pointer to a unique `object` instance designated for the [Blk][blk] class.
 | <a name="blk-member-tag"></a>tag         | *`string`*                              | The [Blk][blk] instance's [tag][blk-tag] name (e.g. `"/// #{{{ @tag id"`).
 | <a name="blk-member-id"></a>id           | *`string`*                              | The [Blk][blk] instance's [ID][blk-id] name (e.g. `"/// #}}} @tag id"`).
+| <a name="blk-member-key"></a>key         | *`string`*                              | The [Blk][blk] instance's *hashed* [key][blk-key] name (e.g. `"tag:id"`).
 | <a name="blk-member-file"></a>file       | *`!File`*                               | A pointer to the parent [File][file] instance.
 | <a name="blk-member-open"></a>open       | *`!Line`*                               | A pointer to opening [Line][line] instance.
 | <a name="blk-member-close"></a>close     | *`!Line`*                               | A pointer to closing [Line][line] instance.
@@ -371,6 +372,7 @@ This method creates `Cond` instances. Use the `new` keyword when calling `Cond` 
 | <a name="cond-member-type"></a>type       | *`!Object`*                             | A pointer to a unique `object` instance designated for the [Cond][cond] class.
 | <a name="cond-member-tag"></a>tag         | *`string`*                              | The [Cond][cond] instance's [tag][cond-tag] name (e.g. `"/// #if{{{ @tag id"`).
 | <a name="cond-member-id"></a>id           | *`string`*                              | The [Cond][cond] instance's [ID][cond-id] name (e.g. `"/// #ifnot}}} @tag id"`).
+| <a name="cond-member-key"></a>key         | *`string`*                              | The [Cond][cond] instance's *hashed* [key][cond-key] name (e.g. `"tag:id"`).
 | <a name="cond-member-action"></a>action   | *`boolean`*                             | The [Cond][cond] instance's *action* type. The `"#if{{{"` *action* is `true`, and the `"#ifnot{{{"` *action* is `false`.
 | <a name="cond-member-file"></a>file       | *`!File`*                               | A pointer to the parent [File][file] instance.
 | <a name="cond-member-open"></a>open       | *`!Line`*                               | A pointer to opening [Line][line] instance.
@@ -453,6 +455,7 @@ This method creates `Def` instances. Use the `new` keyword when calling `Def` (e
 | <a name="def-member-type"></a>type   | *`!Object`*       | A pointer to a unique `object` instance designated for the [Def][def] class.
 | <a name="def-member-tag"></a>tag     | *`string`*        | The [Def][def] instance's [tag][def-tag] name (e.g. `"/// #{{{ @tag id"`).
 | <a name="def-member-id"></a>id       | *`string`*        | The [Def][def] instance's [ID][def-id] name (e.g. `"/// #}}} @tag id"`).
+| <a name="def-member-key"></a>key     | *`string`*        | The [Def][def] instance's *hashed* [key][def-key] name (e.g. `"tag:id"`).
 | <a name="def-member-file"></a>file   | *`!File`*         | A pointer to the parent [File][file] instance.
 | <a name="def-member-open"></a>open   | *`!Line`*         | A pointer to opening [Line][line] instance.
 | <a name="def-member-close"></a>close | *`!Line`*         | A pointer to closing [Line][line] instance.
@@ -525,6 +528,7 @@ This method creates `Incl` instances. Use the `new` keyword when calling `Incl` 
 | <a name="incl-member-type"></a>type     | *`!Object`*       | A pointer to a unique `object` instance designated for the [Incl][incl] class.
 | <a name="incl-member-tag"></a>tag       | *`string`*        | The [Incl][incl] instance's [tag][incl-tag] name (e.g. `"/// #include @tag id"`).
 | <a name="incl-member-id"></a>id         | *`string`*        | The [Incl][incl] instance's [ID][incl-id] name (e.g. `"/// #include @tag id"`).
+| <a name="incl-member-key"></a>key       | *`string`*        | The [Incl][incl] instance's *hashed* [key][incl-key] name (e.g. `"tag:id"`).
 | <a name="incl-member-path"></a>path     | *`string`*        | The [Incl][incl] instance's [path][incl-path] value (e.g. `"/// #include @tag id ./path/to/file.js"`).
 | <a name="incl-member-file"></a>file     | *`!File`*         | A pointer to the parent [File][file] instance.
 | <a name="incl-member-line"></a>line     | *`!Line`*         | A pointer to defining [Line][line] instance.
@@ -560,6 +564,7 @@ This method creates `Ins` instances. Use the `new` keyword when calling `Ins` (e
 | <a name="ins-member-type"></a>type | *`!Object`*                 | A pointer to a unique `object` instance designated for the [Ins][ins] class.
 | <a name="ins-member-tag"></a>tag   | *`string`*                  | The [Ins][ins] instance's [tag][ins-tag] name (e.g. `"/// #insert @tag id"`).
 | <a name="ins-member-id"></a>id     | *`string`*                  | The [Ins][ins] instance's [ID][ins-id] name (e.g. `"/// #insert @tag id"`).
+| <a name="ins-member-key"></a>key   | *`string`*                  | The [Ins][ins] instance's *hashed* [key][ins-key] name (e.g. `"tag:id"`).
 | <a name="ins-member-path"></a>path | *`string`*                  | The [Ins][ins] instance's [path][ins-path] value (e.g. `"/// #insert @tag id ./path/to/file.js"`).
 | <a name="ins-member-file"></a>file | *`!File`*                   | A pointer to the parent [File][file] instance.
 | <a name="ins-member-line"></a>line | *`!Line`*                   | A pointer to defining [Line][line] instance.
@@ -990,6 +995,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [blk-type]: #user-content-blk-member-type
 [blk-tag]: #user-content-blk-member-tag
 [blk-id]: #user-content-blk-member-id
+[blk-key]: #user-content-blk-member-key
 [blk-file]: #user-content-blk-member-file
 [blk-open]: #user-content-blk-member-open
 [blk-close]: #user-content-blk-member-close
@@ -1004,6 +1010,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [cond-type]: #user-content-cond-member-type
 [cond-tag]: #user-content-cond-member-tag
 [cond-id]: #user-content-cond-member-id
+[cond-key]: #user-content-cond-member-key
 [cond-action]: #user-content-cond-member-action
 [cond-file]: #user-content-cond-member-file
 [cond-open]: #user-content-cond-member-open
@@ -1019,6 +1026,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [def-type]: #user-content-def-member-type
 [def-tag]: #user-content-def-member-tag
 [def-id]: #user-content-def-member-id
+[def-key]: #user-content-def-member-key
 [def-file]: #user-content-def-member-file
 [def-open]: #user-content-def-member-open
 [def-close]: #user-content-def-member-close
@@ -1029,6 +1037,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [incl-type]: #user-content-incl-member-type
 [incl-tag]: #user-content-incl-member-tag
 [incl-id]: #user-content-incl-member-id
+[incl-key]: #user-content-incl-member-key
 [incl-path]: #user-content-incl-member-path
 [incl-file]: #user-content-incl-member-file
 [incl-line]: #user-content-incl-member-line
@@ -1040,6 +1049,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [ins-type]: #user-content-ins-member-type
 [ins-tag]: #user-content-ins-member-tag
 [ins-id]: #user-content-ins-member-id
+[ins-key]: #user-content-ins-member-key
 [ins-path]: #user-content-ins-member-path
 [ins-file]: #user-content-ins-member-file
 [ins-line]: #user-content-ins-member-line
