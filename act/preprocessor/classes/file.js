@@ -540,6 +540,8 @@ var Def = require('./define.js');
  */
 function File(path, parent) {
 
+  /// #{{{ @step verify-parameters
+
   if ( !isString(path) )
     throw setTypeError(new TypeError, 'path', 'string');
   if (!path)
@@ -549,7 +551,9 @@ function File(path, parent) {
   if ( !isDirNode(parent) )
     throw setTypeError(new TypeError, 'parent', '!Dir');
 
-  /// #{{{ @group File-Constants
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
 
   /// #{{{ @const PARENT
   /**
@@ -583,9 +587,9 @@ function File(path, parent) {
   var TREE = PARENT.tree + name;
   /// #}}} @const TREE
 
-  /// #}}} @group File-Constants
+  /// #}}} @step set-constants
 
-  /// #{{{ @group File-Members
+  /// #{{{ @step set-members
 
   /// #{{{ @member type
   /**
@@ -743,10 +747,14 @@ function File(path, parent) {
   });
   /// #}}} @member content
 
-  /// #}}} @group File-Members
+  /// #}}} @step set-members
+
+  /// #{{{ @step lock-instance
 
   capObject(this);
   sealObject(this);
+
+  /// #}}} @step lock-instance
 }
 /// #}}} @func File
 
@@ -788,9 +796,9 @@ var Line = require('./line.js');
 
 /// #}}} @group CONSTRUCTORS
 
-/// #{{{ @group FILE-PROTOTYPE
+/// #{{{ @group PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
-// FILE-PROTOTYPE
+// PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
 File.prototype = createObject(null);
@@ -883,6 +891,8 @@ File.prototype.load = function load() {
  */
 File.prototype.preparse = function preparse() {
 
+  /// #{{{ @step declare-variables
+
   /** @type {!Array<!Ins>} */
   var inserts;
   /** @type {!Ins} */
@@ -896,8 +906,17 @@ File.prototype.preparse = function preparse() {
   /** @type {number} */
   var i;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
+
   inserts = this.inserts;
   lines = this.lines;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step load-inserts
+
   len = lines.length;
   i = -1;
   while (++i < len) {
@@ -908,11 +927,19 @@ File.prototype.preparse = function preparse() {
     }
   }
 
+  /// #}}} @step load-inserts
+
+  /// #{{{ @step insert-lines
+
   i = inserts.length;
   while (i--) {
     insert = inserts[i];
     lines.splice.apply(lines, insert.args);
   }
+
+  /// #}}} @step insert-lines
+
+  /// #{{{ @step update-lines
 
   len = lines.length;
   i = 0;
@@ -921,10 +948,16 @@ File.prototype.preparse = function preparse() {
     line.setAfter(++i, this);
   }
 
+  /// #}}} @step update-lines
+
+  /// #{{{ @step lock-members
+
   capObject(lines);
   sealObject(lines);
   capObject(inserts);
   sealObject(inserts);
+
+  /// #}}} @step lock-members
 };
 /// #}}} @func File.prototype.preparse
 
@@ -933,6 +966,8 @@ File.prototype.preparse = function preparse() {
  * @return {void}
  */
 File.prototype.parse = function parse() {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
   var content;
@@ -957,20 +992,37 @@ File.prototype.parse = function parse() {
   /** @type {number} */
   var i;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
+
   content = this.content;
   lines = this.lines;
   incls = this.incls;
   conds = this.conds;
   blks = this.blks;
 
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step parse-scoped-lines
+
   len = lines.length;
   i = -1;
   while (++i < len) {
     line = lines[i];
     text = line.text;
-    if ( !hasCommand(text) )
+    /// #{{{ @step parse-scoped-line
+
+    if ( !hasCommand(text) ) {
+      /// #{{{ @step parse-line-of-code
+
       content.push(line);
+
+      /// #}}} @step parse-line-of-code
+    }
     else if ( hasInclude(text) ) {
+      /// #{{{ @step parse-include-command
+
       cmd = new Incl(line, this);
       own = getOwnedCommand(this, cmd.key);
 
@@ -979,13 +1031,19 @@ File.prototype.parse = function parse() {
 
       incls[cmd.key] = cmd;
       content.push(cmd);
+
+      /// #}}} @step parse-include-command
     }
     else if ( hasClose(text) )
       throw setNoOpenError(new SyntaxError, line);
     else if ( !hasOpen(text) )
       throw setCmdError(new SyntaxError, line);
     else {
+      /// #{{{ @step parse-group-command
+
       if ( hasConditional(text) ) {
+        /// #{{{ @step parse-conditional-command
+
         cmd = new Cond(line, this);
         own = getOwnedCommand(this, cmd.key);
 
@@ -993,8 +1051,12 @@ File.prototype.parse = function parse() {
           throw setOwnCmdError(new ReferenceError, own, line);
 
         conds[cmd.key] = cmd;
+
+        /// #}}} @step parse-conditional-command
       }
       else {
+        /// #{{{ @step parse-block-command
+
         cmd = new Blk(line, this);
         own = getOwnedCommand(this, cmd.key);
 
@@ -1002,16 +1064,28 @@ File.prototype.parse = function parse() {
           throw setOwnCmdError(new ReferenceError, own, line);
 
         blks[cmd.key] = cmd;
+
+        /// #}}} @step parse-block-command
       }
       content.push(cmd);
       i = cmd.parse(lines, i, this);
+
+      /// #}}} @step parse-group-command
     }
+
+    /// #}}} @step parse-scoped-line
   }
+
+  /// #}}} @step parse-scoped-lines
+
+  /// #{{{ @step freeze-members
 
   freezeObject(blks);
   freezeObject(conds);
   freezeObject(incls);
   freezeObject(content);
+
+  /// #}}} @step freeze-members
 };
 /// #}}} @func File.prototype.parse
 
@@ -1154,7 +1228,7 @@ File.prototype.run = function run(dest, state, alter) {
 };
 /// #}}} @func File.prototype.run
 
-/// #}}} @group FILE-PROTOTYPE
+/// #}}} @group PROTOTYPE
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
