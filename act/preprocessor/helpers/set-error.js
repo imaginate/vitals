@@ -37,6 +37,15 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func hasDefine
+/**
+ * @private
+ * @param {string} text
+ * @return {boolean}
+ */
+var hasDefine = require('./has-define-command.js');
+/// #}}} @func hasDefine
+
 /// #{{{ @func isBlkNode
 /**
  * @private
@@ -234,7 +243,7 @@ function setCloseError(err, line) {
       '    valid-types: `!Line`');
 
   msg = 'invalid `close` command syntax for `close` parameter\n' +
-    '    closed-defined-at:`\n' +
+    '    closed-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
@@ -347,13 +356,19 @@ function setDefChildError(err, child, parent) {
     throw new TypeError('invalid `parent` data type\n' +
       '    valid-types: `!Line`');
 
-  msg = 'invalid `define` command within another `define` scope\n' +
-    '    parent-define-opened-at:`\n' +
+  msg = hasDefine(child.text)
+    ? 'invalid `define` command within another `define` scope'
+    : 'invalid `insert` command within `define` scope';
+  msg += '\n' +
+    '    parent-define-opened-at:\n' +
     '        line-text: `' + parent.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + parent.before.linenum + '`\n' +
-    '            file: `' + parent.before.file.path + '`\n' +
-    '    child-define-opened-at:`\n' +
+    '            file: `' + parent.before.file.path + '`\n';
+  msg += hasDefine(child.text)
+    ? '    child-define-opened-at:'
+    : '    child-insert-defined-at:';
+  msg += '\n' +
     '        line-text: `' + child.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + child.before.linenum + '`\n' +
@@ -543,7 +558,7 @@ function setNoCloseError(err, line) {
       '    valid-types: `!Line`');
 
   msg = 'no `close` command for `open` command\n' +
-    '    unclosed-open-defined-at:`\n' +
+    '    unclosed-open-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
@@ -576,7 +591,7 @@ function setNoOpenError(err, line) {
       '    valid-types: `!Line`');
 
   msg = 'no `open` command for `close` command\n' +
-    '    invalid-close-defined-at:`\n' +
+    '    invalid-close-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
@@ -639,7 +654,7 @@ function setOwnCmdError(err, node1, node2, scope) {
 
   if (scope)
     msg += '' +
-      '    parent-scope-opened-at:`\n' +
+      '    parent-scope-opened-at:\n' +
       '        line-text: `' + scope.open.text + '`\n' +
       '        actual-line-location:\n' +
       '            linenum: `' + scope.open.before.linenum + '`\n' +
@@ -649,7 +664,7 @@ function setOwnCmdError(err, node1, node2, scope) {
       '            file: `' + scope.open.after.file.path + '`\n';
 
   msg += '' +
-    '    first-duplicate-defined-at:`\n' +
+    '    first-duplicate-defined-at:\n' +
     '        line-text: `' + node1.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + node1.before.linenum + '`\n' +
@@ -657,7 +672,7 @@ function setOwnCmdError(err, node1, node2, scope) {
     '        preparsed-line-location:\n' +
     '            linenum: `' + node1.after.linenum + '`\n' +
     '            file: `' + node1.after.file.path + '`\n' +
-    '    second-duplicate-defined-at:`\n' +
+    '    second-duplicate-defined-at:\n' +
     '        line-text: `' + node2.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + node2.before.linenum + '`\n' +
