@@ -186,6 +186,15 @@ var hasOwnProperty = loadHelper('has-own-property');
 var hasValidBlock = loadHelper('has-valid-block');
 /// #}}} @func hasValidBlock
 
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
 /// #{{{ @func isBlkNode
 /**
  * @private
@@ -297,6 +306,27 @@ var sealObject = loadHelper('seal-object');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
+/// #{{{ @func setCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setCloseError = setError.close;
+/// #}}} @func setCloseError
+
+/// #{{{ @func setCloseMatchError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} open
+ * @param {!Line} close
+ * @return {!SyntaxError}
+ */
+var setCloseMatchError = setError.closeMatch;
+/// #}}} @func setCloseMatchError
+
 /// #{{{ @func setCmdError
 /**
  * @private
@@ -405,7 +435,7 @@ var setWholeError = setError.whole;
  */
 function Blk(open, file, parent) {
 
-  /// #{{{ @group Verify-Parameters
+  /// #{{{ @step verify-parameters
 
   if ( !isLineNode(open) )
     throw setTypeError(new TypeError, 'open', '!Line');
@@ -417,9 +447,9 @@ function Blk(open, file, parent) {
       && !isCondNode(parent) )
     throw setTypeError(new TypeError, 'parent', '(?Blk|?Cond)=');
 
-  /// #}}} @group Verify-Parameters
+  /// #}}} @step verify-parameters
 
-  /// #{{{ @group Set-Constants
+  /// #{{{ @step set-constants
 
   /// #{{{ @const PARENT
   /**
@@ -479,9 +509,9 @@ function Blk(open, file, parent) {
   var KEY = TAG + ':' + ID;
   /// #}}} @const KEY
 
-  /// #}}} @group Set-Constants
+  /// #}}} @step set-constants
 
-  /// #{{{ @group Verify-Syntax
+  /// #{{{ @step verify-syntax
 
   if (!TAG)
     throw setTagError(new SyntaxError, OPEN);
@@ -490,9 +520,9 @@ function Blk(open, file, parent) {
   if ( !hasValidBlock(TEXT) )
     throw setCmdError(new SyntaxError, OPEN);
 
-  /// #}}} @group Verify-Syntax
+  /// #}}} @step verify-syntax
 
-  /// #{{{ @group Block-Members
+  /// #{{{ @step set-members
 
   /// #{{{ @member type
   /**
@@ -650,10 +680,14 @@ function Blk(open, file, parent) {
   });
   /// #}}} @member content
 
-  /// #}}} @group Block-Members
+  /// #}}} @step set-members
+
+  /// #{{{ @step lock-instance
 
   capObject(this);
   sealObject(this);
+
+  /// #}}} @step lock-instance
 }
 /// #}}} @func Blk
 
@@ -676,6 +710,8 @@ Blk.prototype.constructor = Blk;
  */
 Blk.prototype.parse = function parse(lines, i, file) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
   var content;
   /** @type {!Object<string, !Incl>} */
@@ -695,18 +731,48 @@ Blk.prototype.parse = function parse(lines, i, file) {
   /** @type {number} */
   var len;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isArray(lines) )
+    throw setTypeError(new TypeError, 'lines', '!Array<!Line>');
+  if ( !isNumber(i) )
+    throw setTypeError(new TypeError, 'i', 'number');
+  if ( !isWholeNumber(i) || i < 0 )
+    throw setIndexError(new RangeError, 'i', i);
+  if ( !isFileNode(file) )
+    throw setTypeError(new TypeError, 'file', '!File');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-member-refs
+
   content = this.content;
   incls = this.incls;
   conds = this.conds;
   blks = this.blks;
 
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step parse-scoped-lines
+
   len = lines.length;
   while (++i < len) {
     line = lines[i];
     text = line.text;
-    if ( !hasCommand(text) )
+    /// #{{{ @step parse-scoped-line
+
+    if ( !hasCommand(text) ) {
+      /// #{{{ @step parse-line-of-code
+
       content.push(line);
+
+      /// #}}} @step parse-line-of-code
+    }
     else if ( hasInclude(text) ) {
+      /// #{{{ @step parse-include-command
+
       cmd = new Incl(line, file, this);
       own = getOwnedCommand(this, cmd.key);
 
@@ -715,9 +781,15 @@ Blk.prototype.parse = function parse(lines, i, file) {
 
       incls[cmd.key] = cmd;
       content.push(cmd);
+
+      /// #}}} @step parse-include-command
     }
     else if ( hasOpen(text) ) {
+      /// #{{{ @step parse-group-command
+
       if ( hasConditional(text) ) {
+        /// #{{{ @step parse-conditional-command
+
         cmd = new Cond(line, file, this);
         own = getOwnedCommand(this, cmd.key);
 
@@ -725,8 +797,12 @@ Blk.prototype.parse = function parse(lines, i, file) {
           throw setOwnCmdError(new ReferenceError, own, line, this);
 
         conds[cmd.key] = cmd;
+
+        /// #}}} @step parse-conditional-command
       }
       else {
+        /// #{{{ @step parse-block-command
+
         cmd = new Blk(line, file, this);
         own = getOwnedCommand(this, cmd.key);
 
@@ -734,27 +810,51 @@ Blk.prototype.parse = function parse(lines, i, file) {
           throw setOwnCmdError(new ReferenceError, own, line, this);
 
         blks[cmd.key] = cmd;
+
+        /// #}}} @step parse-block-command
       }
       content.push(cmd);
       i = cmd.parse(lines, i, file);
+
+      /// #}}} @step parse-group-command
     }
     else if ( !hasClose(text) )
       throw setCmdError(new SyntaxError, line);
     else {
+      /// #{{{ @step parse-close-command
+
       this.setClose(line);
+
+      /// #}}} @step parse-close-command
       break;
     }
+
+    /// #}}} @step parse-scoped-line
   }
+
+  /// #}}} @step parse-scoped-lines
+
+  /// #{{{ @step verify-close
 
   if (!this.close)
     throw setNoCloseError(new SyntaxError, this.open);
+
+  /// #}}} @step verify-close
+
+  /// #{{{ @step freeze-members
 
   freezeObject(blks);
   freezeObject(conds);
   freezeObject(incls);
   freezeObject(content);
 
+  /// #}}} @step freeze-members
+
+  /// #{{{ @step return-index
+
   return i;
+
+  /// #}}} @step return-index
 };
 /// #}}} @func Blk.prototype.parse
 
@@ -849,22 +949,61 @@ Blk.prototype.run = function run(state, inclFiles, inclNodes) {
  */
 Blk.prototype.setClose = function setClose(close) {
 
-  /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
-  var content;
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
-  var result;
-  /** @type {(!Line|!Blk|!Cond|!Incl)} */
-  var node;
+  var text;
   /** @type {string} */
-  var key;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
+  var tag;
+  /** @type {string} */
+  var id;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
 
   if ( !isLineNode(close) )
     throw setTypeError(new TypeError, 'close', '!Line');
 
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step verify-syntax
+
+  text = close.text;
+  tag = getTagComponent(text);
+  id = getIdComponent(text);
+
+  if ( !hasClose(text) )
+    throw setCloseError(new SyntaxError, close);
+  if ( !hasBlock(text) )
+    throw setCloseMatchError(new SyntaxError, this.open, close);
+  if (!tag)
+    throw setTagError(new SyntaxError, close);
+  if (!id)
+    throw setIdError(new SyntaxError, close);
+  if ( !hasValidBlock(text) )
+    throw setCmdError(new SyntaxError, close);
+  if (tag !== this.tag || id !== this.id)
+    throw setCloseMatchError(new SyntaxError, this.open, close);
+
+  /// #}}} @step verify-syntax
+
+  /// #{{{ @step set-members
+
+  /// #{{{ @member close
+  /**
+   * @public
+   * @const {!Line}
+   */
+  defineProp(this, 'close', {
+    'value': close,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member close
+
+  /// #}}} @step set-members
 };
 /// #}}} @func Blk.prototype.setClose
 
