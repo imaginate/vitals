@@ -17,9 +17,9 @@
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
 
-/// #{{{ @group OBJECT-CONTROL
+/// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
-// OBJECT-CONTROL
+// HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func freezeObject
@@ -32,36 +32,12 @@ var loadTaskHelper = require('./load-task-helper.js');
 var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #}}} @group OBJECT-CONTROL
+/// #}}} @group HELPERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DIR_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var DIR_TYPE_ID = freezeObject({});
-/// #}}} @const DIR_TYPE_ID
-
-/// #{{{ @const FILE_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var FILE_TYPE_ID = freezeObject({});
-/// #}}} @const FILE_TYPE_ID
-
-/// #{{{ @const LINE_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var LINE_TYPE_ID = freezeObject({});
-/// #}}} @const LINE_TYPE_ID
 
 /// #{{{ @const BLK_TYPE_ID
 /**
@@ -79,6 +55,14 @@ var BLK_TYPE_ID = freezeObject({});
 var COND_TYPE_ID = freezeObject({});
 /// #}}} @const COND_TYPE_ID
 
+/// #{{{ @const COND_FLAGS_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var COND_FLAGS_TYPE_ID = freezeObject({});
+/// #}}} @const COND_FLAGS_TYPE_ID
+
 /// #{{{ @const DEF_TYPE_ID
 /**
  * @private
@@ -86,6 +70,22 @@ var COND_TYPE_ID = freezeObject({});
  */
 var DEF_TYPE_ID = freezeObject({});
 /// #}}} @const DEF_TYPE_ID
+
+/// #{{{ @const DIR_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var DIR_TYPE_ID = freezeObject({});
+/// #}}} @const DIR_TYPE_ID
+
+/// #{{{ @const FILE_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var FILE_TYPE_ID = freezeObject({});
+/// #}}} @const FILE_TYPE_ID
 
 /// #{{{ @const INCL_TYPE_ID
 /**
@@ -103,6 +103,14 @@ var INCL_TYPE_ID = freezeObject({});
 var INS_TYPE_ID = freezeObject({});
 /// #}}} @const INS_TYPE_ID
 
+/// #{{{ @const LINE_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var LINE_TYPE_ID = freezeObject({});
+/// #}}} @const LINE_TYPE_ID
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group EXPORTS
@@ -113,31 +121,66 @@ var INS_TYPE_ID = freezeObject({});
 /// #{{{ @const TYPE_IDS
 /**
  * @private
- * @const {!Object}
+ * @const {!Object<string, !Object>}
  */
 var TYPE_IDS = freezeObject({
 
-  'directory': DIR_TYPE_ID,
-  'dir': DIR_TYPE_ID,
+  'BLK': BLK_TYPE_ID,
+  'Blk': BLK_TYPE_ID,
+  'blk': BLK_TYPE_ID,
+  'BLOCK': BLK_TYPE_ID,
+  'Block': BLK_TYPE_ID,
+  'block': BLK_TYPE_ID,
 
+  'COND': COND_TYPE_ID,
+  'Cond': COND_TYPE_ID,
+  'cond': COND_TYPE_ID,
+  'CONDITIONAL': COND_TYPE_ID,
+  'Conditional': COND_TYPE_ID,
+  'conditional': COND_TYPE_ID,
+
+  'COND_FLAGS': COND_FLAGS_TYPE_ID,
+  'CondFlags': COND_FLAGS_TYPE_ID,
+  'condFlags': COND_FLAGS_TYPE_ID,
+  'CONDITIONAL_FLAGS': COND_FLAGS_TYPE_ID,
+  'ConditionalFlags': COND_FLAGS_TYPE_ID,
+  'conditionalFlags': COND_FLAGS_TYPE_ID,
+
+  'DEF': DEF_TYPE_ID,
+  'Def': DEF_TYPE_ID,
+  'def': DEF_TYPE_ID,
+  'DEFINE': DEF_TYPE_ID,
+  'Define': DEF_TYPE_ID,
+  'define': DEF_TYPE_ID,
+
+  'DIR': DIR_TYPE_ID,
+  'Dir': DIR_TYPE_ID,
+  'dir': DIR_TYPE_ID,
+  'DIRECTORY': DIR_TYPE_ID,
+  'Directory': DIR_TYPE_ID,
+  'directory': DIR_TYPE_ID,
+
+  'FILE': FILE_TYPE_ID,
+  'File': FILE_TYPE_ID,
   'file': FILE_TYPE_ID,
 
+  'LINE': LINE_TYPE_ID,
+  'Line': LINE_TYPE_ID,
   'line': LINE_TYPE_ID,
 
-  'block': BLK_TYPE_ID,
-  'blk': BLK_TYPE_ID,
-
-  'conditional': COND_TYPE_ID,
-  'cond': COND_TYPE_ID,
-
-  'define': DEF_TYPE_ID,
-  'def': DEF_TYPE_ID,
-
-  'include': INCL_TYPE_ID,
+  'INCL': INCL_TYPE_ID,
+  'Incl': INCL_TYPE_ID,
   'incl': INCL_TYPE_ID,
+  'INCLUDE': INCL_TYPE_ID,
+  'Include': INCL_TYPE_ID,
+  'include': INCL_TYPE_ID,
 
-  'insert': INS_TYPE_ID,
-  'ins': INS_TYPE_ID
+  'INS': INS_TYPE_ID,
+  'Ins': INS_TYPE_ID,
+  'ins': INS_TYPE_ID,
+  'INSERT': INS_TYPE_ID,
+  'Insert': INS_TYPE_ID,
+  'insert': INS_TYPE_ID
 
 });
 /// #}}} @const TYPE_IDS
