@@ -27,7 +27,7 @@ var loadTaskHelper = require('./load-task-helper.js');
  * @private
  * @const {!RegExp}
  */
-var ID = /^(?:\*?:)?[a-zA-Z0-9_\.\-\$\?\*]+$/;
+var ID = /^:?[a-zA-Z0-9_\.\-\$\?\*]+$/;
 /// #}}} @const ID
 
 /// #{{{ @const IS

@@ -35,7 +35,7 @@ var IS = loadTaskHelper('is');
  * @private
  * @const {!RegExp}
  */
-var TAG = /^[a-zA-Z0-9_\.\-\?\*]+(?::\*?)?$/;
+var TAG = /^[a-zA-Z0-9_\.\-\?\*]+:?$/;
 /// #}}} @const TAG
 
 /// #}}} @group CONSTANTS

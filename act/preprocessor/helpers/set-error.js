@@ -1125,7 +1125,7 @@ function setStateIdError(err, tag, id) {
       '    valid-types: `string`');
 
   msg = 'invalid `ID` key name within `state`\n' +
-    '    valid-id-key-regex: `/^(\\*?:)?[a-zA-Z0-9_\\.\\-\\$\\?\\*]+$/`\n' +
+    '    valid-id-key-regex: `/^:?[a-zA-Z0-9_\\.\\-\\$\\?\\*]+$/`\n' +
     '    parent-tag-name: `"' + tag + '"`\n' +
     '    bad-id-key-name: `"' + id + '"`';
 
@@ -1153,7 +1153,7 @@ function setStateTagError(err, key) {
       '    valid-types: `string`');
 
   msg = 'invalid `tag` key name within `state`\n' +
-    '    valid-tag-key-regex: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+(:\\*?)?$/`\n' +
+    '    valid-tag-key-regex: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+:?$/`\n' +
     '    bad-tag-key-name: `"' + key + '"`';
 
   return setError(err, msg);
