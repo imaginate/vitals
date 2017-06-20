@@ -853,6 +853,36 @@ function setPathCompError(err, line, loading) {
 }
 /// #}}} @func setPathCompError
 
+/// #{{{ @func setPathNodeError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+function setPathNodeError(err, param, path) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!Error`');
+  if ( !isString(param) )
+    throw new TypeError('invalid `param` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(path) )
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'no `File` node found for `' + param + '` path\n' +
+    '    received-path: `' + path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setPathNodeError
+
 /// #{{{ @func setTagError
 /**
  * @public
@@ -976,6 +1006,7 @@ setError.noOpen = setNoOpenError;
 setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
 setError.pathComp = setPathCompError;
+setError.pathNode = setPathNodeError;
 setError.tag = setTagError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
