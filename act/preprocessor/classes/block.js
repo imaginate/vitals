@@ -319,6 +319,7 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCloseError = setError.close;
@@ -329,6 +330,7 @@ var setCloseError = setError.close;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -347,6 +349,10 @@ var setEmptyError = setError.empty;
 /// #{{{ @func setIdError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
  */
 var setIdError = setError.id;
 /// #}}} @func setIdError
@@ -369,6 +375,7 @@ var setIndexError = setError.index;
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setMatchError = setError.match;
@@ -379,6 +386,7 @@ var setMatchError = setError.match;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoCloseError = setError.noClose;
@@ -389,6 +397,7 @@ var setNoCloseError = setError.noClose;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setOpenError = setError.open;
@@ -409,6 +418,10 @@ var setOwnCmdError = setError.ownCmd;
 /// #{{{ @func setTagError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
 /// #}}} @func setTagError

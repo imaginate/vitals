@@ -300,6 +300,7 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCloseError = setError.close;
@@ -310,6 +311,7 @@ var setCloseError = setError.close;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -335,6 +337,10 @@ var setEmptyError = setError.empty;
 /// #{{{ @func setIdError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
  */
 var setIdError = setError.id;
 /// #}}} @func setIdError
@@ -357,6 +363,7 @@ var setIndexError = setError.index;
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setMatchError = setError.match;
@@ -367,6 +374,7 @@ var setMatchError = setError.match;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoCloseError = setError.noClose;
@@ -377,6 +385,7 @@ var setNoCloseError = setError.noClose;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setOpenError = setError.open;
@@ -385,6 +394,10 @@ var setOpenError = setError.open;
 /// #{{{ @func setTagError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
 /// #}}} @func setTagError
@@ -494,13 +507,13 @@ function Def(open, file) {
   /// #{{{ @step verify-syntax
 
   if (!TAG)
-    throw setTagError(new SyntaxError, OPEN);
+    throw setTagError(new SyntaxError, OPEN, true);
   if (!ID)
-    throw setIdError(new SyntaxError, OPEN);
+    throw setIdError(new SyntaxError, OPEN, true);
   if ( !hasOpen(TEXT) )
-    throw setOpenError(new SyntaxError, OPEN);
+    throw setOpenError(new SyntaxError, OPEN, true);
   if ( !hasValidDefine(TEXT) )
-    throw setCmdError(new SyntaxError, OPEN);
+    throw setCmdError(new SyntaxError, OPEN, true);
 
   /// #}}} @step verify-syntax
 
@@ -699,7 +712,7 @@ Def.prototype.load = function load(textRows, i, len, file) {
   /// #{{{ @step verify-close
 
   if (!this.close)
-    throw setNoCloseError(new SyntaxError, this.open);
+    throw setNoCloseError(new SyntaxError, this.open, true);
 
   /// #}}} @step verify-close
 
@@ -750,17 +763,17 @@ Def.prototype.setClose = function setClose(close) {
   id = getIdComponent(text);
 
   if ( !hasClose(text) )
-    throw setCloseError(new SyntaxError, close);
+    throw setCloseError(new SyntaxError, close, true);
   if ( !hasDefine(text) )
-    throw setMatchError(new SyntaxError, this.open, close);
+    throw setMatchError(new SyntaxError, this.open, close, true);
   if (!tag)
-    throw setTagError(new SyntaxError, close);
+    throw setTagError(new SyntaxError, close, true);
   if (!id)
-    throw setIdError(new SyntaxError, close);
+    throw setIdError(new SyntaxError, close, true);
   if ( !hasValidDefine(text) )
-    throw setCmdError(new SyntaxError, close);
+    throw setCmdError(new SyntaxError, close, true);
   if (tag !== this.tag || id !== this.id)
-    throw setMatchError(new SyntaxError, this.open, close);
+    throw setMatchError(new SyntaxError, this.open, close, true);
 
   /// #}}} @step verify-syntax
 

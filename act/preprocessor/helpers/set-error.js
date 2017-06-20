@@ -55,6 +55,15 @@ var hasDefine = require('./has-define-command.js');
 var isBlkNode = require('./is-block-node.js');
 /// #}}} @func isBlkNode
 
+/// #{{{ @func isBoolean
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
+
 /// #{{{ @func isDirNode
 /**
  * @private
@@ -228,9 +237,10 @@ function setError(err, msg) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setCloseError(err, line) {
+function setCloseError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -241,16 +251,22 @@ function setCloseError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `close` command syntax for `close` parameter\n' +
     '    close-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -261,9 +277,10 @@ function setCloseError(err, line) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setCmdError(err, line) {
+function setCmdError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -274,15 +291,21 @@ function setCmdError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `command` syntax\n' +
     '    line-text: `' + line.text + '`\n' +
     '    actual-line-location:\n' +
     '        linenum: `' + line.before.linenum + '`\n' +
-    '        file: `' + line.before.file.path + '`\n' +
-    '    preparsed-line-location:\n' +
-    '        linenum: `' + line.after.linenum + '`\n' +
-    '        file: `' + line.after.file.path + '`';
+    '        file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '    preparsed-line-location:\n' +
+      '        linenum: `' + line.after.linenum + '`\n' +
+      '        file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -419,9 +442,10 @@ function setFileError(err, param, path) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setIdError(err, line) {
+function setIdError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -432,6 +456,9 @@ function setIdError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `id` component syntax\n' +
     '    valid-id-regex: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
@@ -440,10 +467,13 @@ function setIdError(err, line) {
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -499,9 +529,10 @@ function setIndexError(err, param, index, min) {
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setMatchError(err, open, close) {
+function setMatchError(err, open, close, loading) {
 
   /** @type {string} */
   var msg;
@@ -515,24 +546,35 @@ function setMatchError(err, open, close) {
   if ( !isLineNode(close) )
     throw new TypeError('invalid `close` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'unmatching `open` and `close` command\n' +
     '    open-defined-at:\n' +
     '        line-text: `' + open.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + open.before.linenum + '`\n' +
-    '            file: `' + open.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + open.after.linenum + '`\n' +
-    '            file: `' + open.after.file.path + '`\n' +
+    '            file: `' + open.before.file.path + '`\n';
+
+  if (!loading)
+    msg += '' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + open.after.linenum + '`\n' +
+      '            file: `' + open.after.file.path + '`\n';
+
+  msg += '' +
     '    close-defined-at:\n' +
     '        line-text: `' + close.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + close.before.linenum + '`\n' +
-    '            file: `' + close.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + close.after.linenum + '`\n' +
-    '            file: `' + close.after.file.path + '`';
+    '            file: `' + close.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + close.after.linenum + '`\n' +
+      '            file: `' + close.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -543,9 +585,10 @@ function setMatchError(err, open, close) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setNoCloseError(err, line) {
+function setNoCloseError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -556,16 +599,22 @@ function setNoCloseError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'no `close` command for `open` command\n' +
     '    unclosed-open-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -576,9 +625,10 @@ function setNoCloseError(err, line) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setNoOpenError(err, line) {
+function setNoOpenError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -589,16 +639,22 @@ function setNoOpenError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'no `open` command for `close` command\n' +
     '    invalid-close-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -609,9 +665,10 @@ function setNoOpenError(err, line) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setOpenError(err, line) {
+function setOpenError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -622,16 +679,22 @@ function setOpenError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `open` command syntax for `open` parameter\n' +
     '    open-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
@@ -758,9 +821,10 @@ function setPathCompError(err, line) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setTagError(err, line) {
+function setTagError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -771,6 +835,9 @@ function setTagError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `tag` component syntax\n' +
     '    valid-tag-regex: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
@@ -779,10 +846,13 @@ function setTagError(err, line) {
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
