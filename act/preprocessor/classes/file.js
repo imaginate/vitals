@@ -386,6 +386,15 @@ var isNumber = IS.number;
 var isObject = IS.object;
 /// #}}} @func isObject
 
+/// #{{{ @func isStateObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isStateObject = loadHelper('is-state-object');
+/// #}}} @func isStateObject
+
 /// #{{{ @func isString
 /**
  * @private
@@ -641,6 +650,16 @@ var Blk = require('./block.js');
  */
 var Cond = require('./conditional.js');
 /// #}}} @func Cond
+
+/// #{{{ @func CondFlags
+/**
+ * @private
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @constructor
+ * @struct
+ */
+var CondFlags = require('./conditional-flags.js');
+/// #}}} @func CondFlags
 
 /// #{{{ @func Def
 /**
@@ -1224,13 +1243,20 @@ File.prototype.parse = function parse() {
  *   path, it is relative to the `cwd`. The directory path up to the file name
  *   of the resolved #dest path must already exist. If a file exists at the
  *   resolved #dest path, it is overwritten.
- * @param {!Object<string, boolean>} state
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
  *   The enabled, `true`, or disabled, `false`, state for every conditional
  *   command defined within the `File` instance's *content* `array`. Each
- *   #state `object` key must be *hashed* (i.e. created) by combining each
- *   `Cond` instance's *tag* and *ID* with a colon, `":"`, separating them
- *   (e.g. `"tag:id"`). Every `Cond` instance within the `File` instance must
- *   be defined in the #state or an error will be thrown.
+ *   parent *state* `object` key must be a `Cond` instance's *tag*, *ID* (note
+ *   that a leading colon, `":id"` or `"*:id"`, is required for parent *ID*
+ *   key names), or *key* (e.g. `"tag:id"`). Parent *tag* keys may use a
+ *   `boolean` or an `object` with *ID* key names and `boolean` values for
+ *   their value. Parent *ID* or *key* keys must use a `boolean` value. The
+ *   asterisk, `"*"`, denotes any number of wildcard characters within a *tag*
+ *   or *ID* (within a *key* it only applies to the *tag* or *ID* where it is
+ *   defined - it does NOT cross-over the separating colon). The question
+ *   mark, `"?"`, denotes a single wildcard character within a *tag*, *ID*, or
+ *   *key*. Every `Cond` instance within the `File` instance must be defined
+ *   in the *state* or an error will be thrown.
  * @param {(!function(string): string)=} alter
  *   The *alter* `function` is optional. If it is defined, it allows you to
  *   provide custom alterations to the preprocessed result before it is saved
@@ -1241,6 +1267,8 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!CondFlags} */
+  var condFlags;
   /** @type {!Object<string, ?Incl>} */
   var inclFiles;
   /** @type {!Object<string, !Incl>} */
@@ -1251,8 +1279,6 @@ File.prototype.run = function run(dest, state, alter) {
   var result;
   /** @type {(!Line|!Blk|!Cond|!Incl)} */
   var node;
-  /** @type {string} */
-  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -1264,12 +1290,13 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step verify-data-types
 
-  if ( !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
-  if ( !isObject(state) || !isBooleanMap(state) )
-    throw setTypeError(new TypeError, 'state', '!Object<string, boolean>');
   if ( !isString(dest) )
     throw setTypeError(new TypeError, 'dest', 'string');
+  if ( !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  if ( !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
 
   /// #}}} @step verify-data-types
 
@@ -1302,7 +1329,8 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @group conditionals
 
-  freezeObject(state);
+  condFlags = new CondFlags(state);
+  condFlags.load();
 
   /// #}}} @group conditionals
 
@@ -1326,6 +1354,14 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step process-content
 
+  len = content.length;
+  i = -1;
+  while (++i < len) {
+    node = content[i];
+    result += isLineNode(node)
+      ? node.text + '\n'
+      : node.run(condFlags, inclFiles, inclNodes);
+  }
 
   /// #}}} @step process-content
 
