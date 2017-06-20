@@ -243,7 +243,7 @@ function setCloseError(err, line) {
       '    valid-types: `!Line`');
 
   msg = 'invalid `close` command syntax for `close` parameter\n' +
-    '    closed-defined-at:\n' +
+    '    close-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
@@ -604,6 +604,39 @@ function setNoOpenError(err, line) {
 }
 /// #}}} @func setNoOpenError
 
+/// #{{{ @func setOpenError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setOpenError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'invalid `open` command syntax for `open` parameter\n' +
+    '    open-defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + line.after.linenum + '`\n' +
+    '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setOpenError
+
 /// #{{{ @func setOwnCmdError
 /**
  * @public
@@ -832,6 +865,7 @@ setError.id = setIdError;
 setError.index = setIndexError;
 setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
+setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
 setError.pathComp = setPathCompError;
 setError.tag = setTagError;
