@@ -256,51 +256,6 @@ function setCloseError(err, line) {
 }
 /// #}}} @func setCloseError
 
-/// #{{{ @func setCloseMatchError
-/**
- * @public
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-function setCloseMatchError(err, open, close) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
-  if ( !isLineNode(open) )
-    throw new TypeError('invalid `open` data type\n' +
-      '    valid-types: `!Line`');
-  if ( !isLineNode(close) )
-    throw new TypeError('invalid `close` data type\n' +
-      '    valid-types: `!Line`');
-
-  msg = 'unmatching `open` and `close` command\n' +
-    '    open-defined-at:\n' +
-    '        line-text: `' + open.text + '`\n' +
-    '        actual-line-location:\n' +
-    '            linenum: `' + open.before.linenum + '`\n' +
-    '            file: `' + open.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + open.after.linenum + '`\n' +
-    '            file: `' + open.after.file.path + '`\n' +
-    '    close-defined-at:\n' +
-    '        line-text: `' + close.text + '`\n' +
-    '        actual-line-location:\n' +
-    '            linenum: `' + close.before.linenum + '`\n' +
-    '            file: `' + close.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + close.after.linenum + '`\n' +
-    '            file: `' + close.after.file.path + '`';
-
-  return setError(err, msg);
-}
-/// #}}} @func setCloseMatchError
-
 /// #{{{ @func setCmdError
 /**
  * @public
@@ -537,6 +492,51 @@ function setIndexError(err, param, index, min) {
   return setError(err, msg);
 }
 /// #}}} @func setIndexError
+
+/// #{{{ @func setMatchError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} open
+ * @param {!Line} close
+ * @return {!SyntaxError}
+ */
+function setMatchError(err, open, close) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(open) )
+    throw new TypeError('invalid `open` data type\n' +
+      '    valid-types: `!Line`');
+  if ( !isLineNode(close) )
+    throw new TypeError('invalid `close` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'unmatching `open` and `close` command\n' +
+    '    open-defined-at:\n' +
+    '        line-text: `' + open.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + open.before.linenum + '`\n' +
+    '            file: `' + open.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + open.after.linenum + '`\n' +
+    '            file: `' + open.after.file.path + '`\n' +
+    '    close-defined-at:\n' +
+    '        line-text: `' + close.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + close.before.linenum + '`\n' +
+    '            file: `' + close.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + close.after.linenum + '`\n' +
+    '            file: `' + close.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setMatchError
 
 /// #{{{ @func setNoCloseError
 /**
@@ -855,7 +855,6 @@ function setWholeError(err, param, value) {
 //////////////////////////////////////////////////////////////////////////////
 
 setError.close = setCloseError;
-setError.closeMatch = setCloseMatchError;
 setError.cmd = setCmdError;
 setError.defChild = setDefChildError;
 setError.dir = setDirError;
@@ -863,6 +862,7 @@ setError.empty = setEmptyError;
 setError.file = setFileError;
 setError.id = setIdError;
 setError.index = setIndexError;
+setError.match = setMatchError;
 setError.noClose = setNoCloseError;
 setError.noOpen = setNoOpenError;
 setError.open = setOpenError;
