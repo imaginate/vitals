@@ -1073,6 +1073,93 @@ function setRetError(err, method, types) {
 }
 /// #}}} @func setRetError
 
+/// #{{{ @func setStateError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} key
+ * @return {!RangeError}
+ */
+function setStateError(err, key) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!RangeError`');
+  if ( !isString(key) )
+    throw new TypeError('invalid `key` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid key name within `state`\n' +
+    '    valid-regex-opt1: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+(:[a-zA-Z0-9_\\.\\-\\$\\?\\*]*)?$/`\n' +
+    '    valid-regex-opt2: `/^[a-zA-Z0-9_\\.\\-\\?\\*]*:[a-zA-Z0-9_\\.\\-\\$\\?\\*]+$/`\n' +
+    '    bad-key-name: `"' + key + '"`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setStateError
+
+/// #{{{ @func setStateIdError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} tag
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setStateIdError(err, tag, id) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!RangeError`');
+  if ( !isString(tag) )
+    throw new TypeError('invalid `tag` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(id) )
+    throw new TypeError('invalid `id` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid `ID` key name within `state`\n' +
+    '    valid-id-key-regex: `/^(\\*?:)?[a-zA-Z0-9_\\.\\-\\$\\?\\*]+$/`\n' +
+    '    parent-tag-name: `"' + tag + '"`\n' +
+    '    bad-id-key-name: `"' + id + '"`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setStateIdError
+
+/// #{{{ @func setStateTagError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} key
+ * @return {!RangeError}
+ */
+function setStateTagError(err, key) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!RangeError`');
+  if ( !isString(key) )
+    throw new TypeError('invalid `key` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid `tag` key name within `state`\n' +
+    '    valid-tag-key-regex: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+(:\\*?)?$/`\n' +
+    '    bad-tag-key-name: `"' + key + '"`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setStateTagError
+
 /// #{{{ @func setTagError
 /**
  * @public
@@ -1201,6 +1288,9 @@ setError.ownCmd = setOwnCmdError;
 setError.pathComp = setPathCompError;
 setError.pathNode = setPathNodeError;
 setError.ret = setRetError;
+setError.state = setStateError;
+setError.stateId = setStateIdError;
+setError.stateTag = setStateTagError;
 setError.tag = setTagError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
