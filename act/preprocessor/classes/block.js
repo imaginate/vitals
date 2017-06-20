@@ -237,6 +237,15 @@ var isBlkNode = loadHelper('is-block-node');
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
+/// #{{{ @func isCondFlagsNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isCondFlagsNode = loadHelper('is-conditional-flags-node');
+/// #}}} @func isCondFlagsNode
+
 /// #{{{ @func isFileNode
 /**
  * @private
@@ -895,12 +904,14 @@ Blk.prototype.parse = function parse(lines, i, file) {
 
 /// #{{{ @func Blk.prototype.run
 /**
- * @param {!Object<string, boolean>} state
+ * @param {!CondFlags} condFlags
  * @param {!Object<string, ?Incl>} inclFiles
  * @param {!Object<string, !Incl>} inclNodes
  * @return {string}
  */
-Blk.prototype.run = function run(state, inclFiles, inclNodes) {
+Blk.prototype.run = function run(condFlags, inclFiles, inclNodes) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
   var content;
@@ -908,72 +919,58 @@ Blk.prototype.run = function run(state, inclFiles, inclNodes) {
   var result;
   /** @type {(!Line|!Blk|!Cond|!Incl)} */
   var node;
-  /** @type {string} */
-  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  if ( !isObject(state) || !isBooleanMap(state) )
-    throw setTypeError(new TypeError, 'state', '!Object<string, boolean>');
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondFlagsNode(condFlags) )
+    throw setTypeError(new TypeError, 'condFlags', '!CondFlags');
   if ( !isObject(inclFiles) )
     throw setTypeError(new TypeError, 'inclFiles', '!Object<string, ?Incl>');
   if ( !isObject(inclNodes) )
     throw setTypeError(new TypeError, 'inclNodes', '!Object<string, !Incl>');
 
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step setup-refs
+
+  /// #{{{ @group members
+
   content = this.content;
+
+  /// #}}} @group members
+
+  /// #{{{ @group results
+
   result = '';
+
+  /// #}}} @group results
+
+  /// #}}} @step setup-refs
+
+  /// #{{{ @step process-content
+
   len = content.length;
   i = -1;
   while (++i < len) {
     node = content[i];
-    if ( isLineNode(node) )
-      result += node.text + '\n';
-    else if ( isInclNode(node) ) {
-      key = node.file.tree + '|' + node.key;
-
-      if ( hasOwnProperty(inclNodes, key) )
-        throw new Error('duplicate `include` command\n' +
-          '    linenum: `' + inclNodes[key].line.linenum + '`\n' +
-          '    file: `' + inclNodes[key].line.file.path + '`\n' +
-          '    text: `' + inclNodes[key].line.text + '`\n' +
-          '    linenum: `' + node.line.linenum + '`\n' +
-          '    file: `' + node.line.file.path + '`\n' +
-          '    text: `' + node.line.text + '`');
-      if ( hasOwnProperty(inclFiles, node.cmd.file.tree) )
-        throw new Error('invalid `include` call to parent file\n' +
-          '    src-file: `' + node.file.path + '`\n' +
-          '    linenum: `' + node.line.linenum + '`\n' +
-          '    file: `' + node.line.file.path + '`\n' +
-          '    text: `' + node.line.text + '`');
-
-      defineProperty(inclNodes, key, {
-        'value': node,
-        'writable': false,
-        'enumerable': true,
-        'configurable': false
-      });
-    }
-    else if ( isCondNode(node) ) {
-
-      if ( !hasOwnProperty(state, node.key) )
-        throw new Error('undefined `conditional` in `state`\n' +
-          '    missing-key: `"' + key + '"`');
-
-      if (state[node.key]) {
-        if (node.action)
-          result += node.run(state, inclFiles, inclNodes);
-      }
-      else if (!node.action)
-        result += node.run(state, inclFiles, inclNodes);
-    }
-    else {
-      result += node.run(state, inclFiles, inclNodes);
-    }
+    result += isLineNode(node)
+      ? node.text + '\n'
+      : node.run(condFlags, inclFiles, inclNodes);
   }
 
+  /// #}}} @step process-content
+
+  /// #{{{ @step return-results
+
   return result;
+
+  /// #}}} @step return-results
 };
 /// #}}} @func Blk.prototype.run
 
