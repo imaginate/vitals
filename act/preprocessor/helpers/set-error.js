@@ -496,7 +496,7 @@ function setExtError(err, param, path, exts) {
       '    valid-types: `(string|!Array<string>)`');
 
   msg = 'invalid file extension for `' + param + '`\n' +
-    '    valid-extensions: `"' + exts + '"`\n' +;
+    '    valid-extensions: `"' + exts + '"`\n' +
     '    received-path: `' + path + '`';
 
   return setError(err, msg);
@@ -617,6 +617,48 @@ function setIndexError(err, param, index, min) {
   return setError(err, msg);
 }
 /// #}}} @func setIndexError
+
+/// #{{{ @func setLocError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {!Dir} parent
+ * @param {boolean} contain
+ * @return {!RangeError}
+ */
+function setLocError(err, param, path, parent, contain) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!RangeError`');
+  if ( !isString(param) )
+    throw new TypeError('invalid `param` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(path) )
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
+  if ( !isDirNode(parent) )
+    throw new TypeError('invalid `parent` data type\n' +
+      '    valid-types: `!Dir`');
+  if ( !isBoolean(contain) )
+    throw new TypeError('invalid `contain` data type\n' +
+      '    valid-types: `boolean`');
+
+  msg = 'invalid file path location for `' + param + '`\n';
+  msg += contain
+    ? '    valid'
+    : '    NOT-valid';
+  msg += '-dir-container: `' + parent.path + '`\n' +
+    '    received-path: `' + path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setLocError
 
 /// #{{{ @func setMatchError
 /**
@@ -1119,6 +1161,7 @@ setError.ext = setExtError;
 setError.file = setFileError;
 setError.id = setIdError;
 setError.index = setIndexError;
+setError.loc = setLocError;
 setError.match = setMatchError;
 setError.noClose = setNoCloseError;
 setError.noDef = setNoDefError;
