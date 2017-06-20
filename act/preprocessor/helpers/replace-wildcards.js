@@ -65,8 +65,8 @@ function replaceWildcards(src) {
     throw new TypeError('invalid `src` data type\n' +
       '    valid-types: `string`');
 
-  src = src.replace(/\*/g, '.*');
-  return src.replace(/\?/g, '.');
+  src = src.replace(/\?/g, '[a-zA-Z0-9_.\\-$$]?');
+  return src.replace(/\*/g, '[a-zA-Z0-9_.\\-$$]*');
 }
 /// #}}} @func replaceWildcards
 
