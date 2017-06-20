@@ -45,6 +45,8 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group STATE
+
 /// #{{{ @func capObject
 /**
  * @private
@@ -64,7 +66,7 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProp
+/// #{{{ @func defineProperty
 /**
  * @private
  * @param {!Object} src
@@ -72,8 +74,8 @@ var createObject = loadHelper('create-object');
  * @param {!Object} descriptor
  * @return {!Object}
  */
-var defineProp = loadHelper('define-property');
-/// #}}} @func defineProp
+var defineProperty = loadHelper('define-property');
+/// #}}} @func defineProperty
 
 /// #{{{ @func freezeObject
 /**
@@ -84,6 +86,20 @@ var defineProp = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
+
+/// #{{{ @func sealObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
+
+/// #}}} @group STATE
+
+/// #{{{ @group GET
 
 /// #{{{ @func getIdComponent
 /**
@@ -112,6 +128,10 @@ var getOwnedCommand = loadHelper('get-owned-command');
  */
 var getTagComponent = loadHelper('get-tag-component');
 /// #}}} @func getTagComponent
+
+/// #}}} @group GET
+
+/// #{{{ @group HAS
 
 /// #{{{ @func hasBlock
 /**
@@ -185,6 +205,10 @@ var hasOwnProperty = loadHelper('has-own-property');
  */
 var hasValidBlock = loadHelper('has-valid-block');
 /// #}}} @func hasValidBlock
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isArray
 /**
@@ -276,25 +300,9 @@ var isUndefined = IS.undefined;
 var isWholeNumber = IS.wholeNumber;
 /// #}}} @func isWholeNumber
 
-/// #{{{ @func ownsCommand
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {boolean}
- */
-var ownsCommand = loadHelper('owns-command');
-/// #}}} @func ownsCommand
+/// #}}} @group IS
 
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -315,17 +323,6 @@ var setError = loadHelper('set-error');
  */
 var setCloseError = setError.close;
 /// #}}} @func setCloseError
-
-/// #{{{ @func setCloseMatchError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-var setCloseMatchError = setError.closeMatch;
-/// #}}} @func setCloseMatchError
 
 /// #{{{ @func setCmdError
 /**
@@ -366,6 +363,17 @@ var setIdError = setError.id;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setMatchError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} open
+ * @param {!Line} close
+ * @return {!SyntaxError}
+ */
+var setMatchError = setError.match;
+/// #}}} @func setMatchError
+
 /// #{{{ @func setNoCloseError
 /**
  * @private
@@ -375,6 +383,16 @@ var setIndexError = setError.index;
  */
 var setNoCloseError = setError.noClose;
 /// #}}} @func setNoCloseError
+
+/// #{{{ @func setOpenError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setOpenError = setError.open;
+/// #}}} @func setOpenError
 
 /// #{{{ @func setOwnCmdError
 /**
@@ -416,6 +434,8 @@ var setTypeError = setError.type;
  */
 var setWholeError = setError.whole;
 /// #}}} @func setWholeError
+
+/// #}}} @group ERROR
 
 /// #}}} @group HELPERS
 
@@ -517,6 +537,8 @@ function Blk(open, file, parent) {
     throw setTagError(new SyntaxError, OPEN);
   if (!ID)
     throw setIdError(new SyntaxError, OPEN);
+  if ( !hasOpen(TEXT) )
+    throw setOpenError(new SyntaxError, OPEN);
   if ( !hasValidBlock(TEXT) )
     throw setCmdError(new SyntaxError, OPEN);
 
@@ -529,7 +551,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Object}
    */
-  defineProp(this, 'type', {
+  defineProperty(this, 'type', {
     'value': BLK_TYPE_ID,
     'writable': false,
     'enumerable': true,
@@ -542,7 +564,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'tag', {
+  defineProperty(this, 'tag', {
     'value': TAG,
     'writable': false,
     'enumerable': true,
@@ -555,7 +577,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'id', {
+  defineProperty(this, 'id', {
     'value': ID,
     'writable': false,
     'enumerable': true,
@@ -568,7 +590,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'key', {
+  defineProperty(this, 'key', {
     'value': KEY,
     'writable': false,
     'enumerable': true,
@@ -581,7 +603,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!File}
    */
-  defineProp(this, 'file', {
+  defineProperty(this, 'file', {
     'value': FILE,
     'writable': false,
     'enumerable': true,
@@ -594,7 +616,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Line}
    */
-  defineProp(this, 'open', {
+  defineProperty(this, 'open', {
     'value': OPEN,
     'writable': false,
     'enumerable': true,
@@ -607,7 +629,7 @@ function Blk(open, file, parent) {
    * @public
    * @type {?Line}
    */
-  defineProp(this, 'close', {
+  defineProperty(this, 'close', {
     'value': null,
     'writable': true,
     'enumerable': true,
@@ -620,7 +642,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {(?Blk|?Cond)}
    */
-  defineProp(this, 'parent', {
+  defineProperty(this, 'parent', {
     'value': PARENT,
     'writable': false,
     'enumerable': true,
@@ -633,7 +655,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Object<string, !Blk>}
    */
-  defineProp(this, 'blks', {
+  defineProperty(this, 'blks', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -646,7 +668,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Object<string, !Cond>}
    */
-  defineProp(this, 'conds', {
+  defineProperty(this, 'conds', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -659,7 +681,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Object<string, !Incl>}
    */
-  defineProp(this, 'incls', {
+  defineProperty(this, 'incls', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -672,7 +694,7 @@ function Blk(open, file, parent) {
    * @public
    * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
    */
-  defineProp(this, 'content', {
+  defineProperty(this, 'content', {
     'value': [],
     'writable': false,
     'enumerable': true,
@@ -913,7 +935,7 @@ Blk.prototype.run = function run(state, inclFiles, inclNodes) {
           '    file: `' + node.line.file.path + '`\n' +
           '    text: `' + node.line.text + '`');
 
-      defineProp(inclNodes, key, {
+      defineProperty(inclNodes, key, {
         'value': node,
         'writable': false,
         'enumerable': true,
@@ -976,7 +998,7 @@ Blk.prototype.setClose = function setClose(close) {
   if ( !hasClose(text) )
     throw setCloseError(new SyntaxError, close);
   if ( !hasBlock(text) )
-    throw setCloseMatchError(new SyntaxError, this.open, close);
+    throw setMatchError(new SyntaxError, this.open, close);
   if (!tag)
     throw setTagError(new SyntaxError, close);
   if (!id)
@@ -984,7 +1006,7 @@ Blk.prototype.setClose = function setClose(close) {
   if ( !hasValidBlock(text) )
     throw setCmdError(new SyntaxError, close);
   if (tag !== this.tag || id !== this.id)
-    throw setCloseMatchError(new SyntaxError, this.open, close);
+    throw setMatchError(new SyntaxError, this.open, close);
 
   /// #}}} @step verify-syntax
 
@@ -995,7 +1017,7 @@ Blk.prototype.setClose = function setClose(close) {
    * @public
    * @const {!Line}
    */
-  defineProp(this, 'close', {
+  defineProperty(this, 'close', {
     'value': close,
     'writable': false,
     'enumerable': true,
