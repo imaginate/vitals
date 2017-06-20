@@ -576,6 +576,19 @@ function Ins(line, index, file) {
   });
   /// #}}} @member id
 
+  /// #{{{ @member key
+  /**
+   * @public
+   * @const {string}
+   */
+  defineProperty(this, 'key', {
+    'value': KEY,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member key
+
   /// #{{{ @member path
   /**
    * @public
