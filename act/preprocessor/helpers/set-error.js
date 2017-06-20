@@ -311,6 +311,36 @@ function setCmdError(err, line, loading) {
 }
 /// #}}} @func setCmdError
 
+/// #{{{ @func setDefError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+function setDefError(err, line) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+
+  msg = 'out-of-order `define` command - must precede all other commands\n'
+    '    defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setDefError
+
 /// #{{{ @func setDefChildError
 /**
  * @public
@@ -926,6 +956,7 @@ function setWholeError(err, param, value) {
 
 setError.close = setCloseError;
 setError.cmd = setCmdError;
+setError.def = setDefError;
 setError.defChild = setDefChildError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
