@@ -846,6 +846,35 @@ function setNoOpenError(err, line, loading) {
 }
 /// #}}} @func setNoOpenError
 
+/// #{{{ @func setNoStateError
+/**
+ * @public
+ * @param {!ReferenceError} err
+ * @param {!Cond} cond
+ * @return {!ReferenceError}
+ */
+function setNoStateError(err, cond) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!ReferenceError`');
+  if ( !isCondNode(cond) )
+    throw new TypeError('invalid `cond` data type\n' +
+      '    valid-types: `!Cond`');
+
+  msg = 'undefined `conditional` command in `state` parameter\n' +
+    '    conditional-command:\n' +
+    '        tag: `' + cond.tag + '`\n' +
+    '        id: `' + cond.id + '`\n' +
+    '        key: `' + cond.key + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoStateError
+
 /// #{{{ @func setOpenError
 /**
  * @public
@@ -1283,6 +1312,7 @@ setError.match = setMatchError;
 setError.noClose = setNoCloseError;
 setError.noDef = setNoDefError;
 setError.noOpen = setNoOpenError;
+setError.noState = setNoStateError;
 setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
 setError.pathComp = setPathCompError;
