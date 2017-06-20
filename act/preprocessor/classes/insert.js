@@ -45,6 +45,18 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group STATE
+
+/// #{{{ @func capObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var capObject = loadHelper('cap-object');
+/// #}}} @func capObject
+
 /// #{{{ @func createObject
 /**
  * @private
@@ -54,7 +66,7 @@ var IS = loadHelper('is');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProp
+/// #{{{ @func defineProperty
 /**
  * @private
  * @param {!Object} src
@@ -62,8 +74,8 @@ var createObject = loadHelper('create-object');
  * @param {!Object} descriptor
  * @return {!Object}
  */
-var defineProp = loadHelper('define-property');
-/// #}}} @func defineProp
+var defineProperty = loadHelper('define-property');
+/// #}}} @func defineProperty
 
 /// #{{{ @func freezeObject
 /**
@@ -75,14 +87,19 @@ var defineProp = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func getKeys
+/// #{{{ @func sealObject
 /**
  * @private
- * @param {(!Object|!Function)} src
- * @return {!Array<string>}
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
  */
-var getKeys = loadHelper('get-keys');
-/// #}}} @func getKeys
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
+
+/// #}}} @group STATE
+
+/// #{{{ @group GET
 
 /// #{{{ @func getPathNode
 /**
@@ -121,14 +138,18 @@ var getPathComponent = loadHelper('get-path-component');
 var getTagComponent = loadHelper('get-tag-component');
 /// #}}} @func getTagComponent
 
-/// #{{{ @func hasValidInsert
+/// #}}} @group GET
+
+/// #{{{ @group HAS
+
+/// #{{{ @func hasAnyPathComponent
 /**
  * @private
  * @param {string} text
  * @return {boolean}
  */
-var hasValidInsert = loadHelper('has-valid-insert');
-/// #}}} @func hasValidInsert
+var hasAnyPathComponent = loadHelper('has-any-path-component');
+/// #}}} @func hasAnyPathComponent
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -139,6 +160,19 @@ var hasValidInsert = loadHelper('has-valid-insert');
  */
 var hasOwnProperty = loadHelper('has-own-property');
 /// #}}} @func hasOwnProperty
+
+/// #{{{ @func hasValidInsert
+/**
+ * @private
+ * @param {string} text
+ * @return {boolean}
+ */
+var hasValidInsert = loadHelper('has-valid-insert');
+/// #}}} @func hasValidInsert
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isFileNode
 /**
@@ -158,6 +192,15 @@ var isFileNode = loadHelper('is-file-node');
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
 
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
 /// #{{{ @func isNumber
 /**
  * @private
@@ -167,6 +210,15 @@ var isLineNode = loadHelper('is-line-node');
 var isNumber = IS.number;
 /// #}}} @func isNumber
 
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
 /// #{{{ @func isWholeNumber
 /**
  * @private
@@ -175,6 +227,122 @@ var isNumber = IS.number;
  */
 var isWholeNumber = IS.wholeNumber;
 /// #}}} @func isWholeNumber
+
+/// #}}} @group IS
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = loadHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setCmdError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
+ */
+var setCmdError = setError.cmd;
+/// #}}} @func setCmdError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setIdError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
+ */
+var setIdError = setError.id;
+/// #}}} @func setIdError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+var setIndexError = setError.index;
+/// #}}} @func setIndexError
+
+/// #{{{ @func setNoDefError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {!Line} line
+ * @param {string} key
+ * @param {!File} file
+ * @return {!Error}
+ */
+var setNoDefError = setError.noDef;
+/// #}}} @func setNoDefError
+
+/// #{{{ @func setPathCompError
+/**
+ * @private
+ * @param {(!SyntaxError|!Error)} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {(!SyntaxError|!Error)}
+ */
+var setPathCompError = setError.pathComp;
+/// #}}} @func setPathCompError
+
+/// #{{{ @func setTagError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @param {boolean=} loading = `false`
+ * @return {!SyntaxError}
+ */
+var setTagError = setError.tag;
+/// #}}} @func setTagError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
+
+/// #}}} @group ERROR
 
 /// #}}} @group HELPERS
 
@@ -229,27 +397,20 @@ function mkArgs(index, def) {
  */
 function Ins(line, index, file) {
 
-  /** @type {!Array<string>} */
-  var keys;
-
-  /// #{{{ @group Verify-Parameters
+  /// #{{{ @step verify-parameters
 
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isNumber(index) )
-    throw new TypeError('invalid `index` data type\n' +
-      '    valid-types: `number`');
+    throw setTypeError(new TypeError, 'index', 'number');
   if ( !isWholeNumber(index) || index < 0 )
-    throw new Error('invalid `number` for `index`\n' +
-      '    should-pass: `isWholeNumber(index) && index >= 0`');
+    throw setIndexError(new RangeError, 'index', index);
   if ( !isFileNode(file) )
-    throw new TypeError('invalid `file` data type\n' +
-      '    valid-types: `!File`');
+    throw setTypeError(new TypeError, 'file', '!File');
 
-  /// #}}} @group Verify-Parameters
+  /// #}}} @step verify-parameters
 
-  /// #{{{ @group Set-Constants
+  /// #{{{ @step set-constants
 
   /// #{{{ @const FILE
   /**
@@ -345,69 +506,43 @@ function Ins(line, index, file) {
   var INDEX = index;
   /// #}}} @const INDEX
 
-  /// #}}} @group Set-Constants
+  /// #}}} @step set-constants
 
-  /// #{{{ @group Verify-Syntax
+  /// #{{{ @step verify-syntax
 
   if (!TAG)
-    throw new Error('invalid `tag` component syntax\n' +
-      '    should-match: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
-      '    valid-chars: `"a-z", "A-Z", "0-9", "_", ".", "-"`\n' +
-      '    linenum: `' + LINE.linenum + '`\n' +
-      '    file: `' + LINE.file.path + '`\n' +
-      '    text: `' + TEXT + '`');
+    throw setTagError(new SyntaxError, LINE, true);
   if (!ID)
-    throw new Error('invalid `ID` component syntax\n' +
-      '    should-match: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
-      '    valid-chars: `"a-z", "A-Z", "0-9", "_", ".", "-", "$"`\n' +
-      '    linenum: `' + LINE.linenum + '`\n' +
-      '    file: `' + LINE.file.path + '`\n' +
-      '    text: `' + TEXT + '`');
+    throw setIdError(new SyntaxError, LINE, true);
+  if ( hasAnyPathComponent(TEXT) && !PATH )
+    throw setPathCompError(new SyntaxError, LINE, true);
   if ( !hasValidInsert(TEXT) )
-    throw new Error('invalid `insert` command syntax\n' +
-      '    linenum: `' + LINE.linenum + '`\n' +
-      '    file: `' + LINE.file.path + '`\n' +
-      '    text: `' + TEXT + '`');
+    throw setCmdError(new SyntaxError, LINE, true);
 
-  /// #}}} @group Verify-Syntax
+  /// #}}} @step verify-syntax
 
-  /// #{{{ @group Verify-Path-Node
+  /// #{{{ @step verify-path-node
 
   if (!DEFS)
-    throw new Error('no `File` node found for `path` component\n' +
-      '    linenum: `' + LINE.linenum + '`\n' +
-      '    file: `' + LINE.file.path + '`\n' +
-      '    text: `' + TEXT + '`\n' +
-      '    path: `' + PATH + '`');
+    throw setPathCompError(new Error, LINE, true);
 
-  /// #}}} @group Verify-Path-Node
+  /// #}}} @step verify-path-node
 
-  /// #{{{ @group Verify-Def-Node
+  /// #{{{ @step verify-def-node
 
-  if (!DEF) {
-    keys = getKeys(DEFS);
-    throw new Error('no `Def` node found in inserted `File`\n' +
-      '    src-linenum: `' + LINE.linenum + '`\n' +
-      '    src-file: `' + LINE.file.path + '`\n' +
-      '    src-text: `' + TEXT + '`\n' +
-      '    src-def: `"' + KEY + '"`\n' +
-      '    ins-file: `' + NODE.path + '`\n' +
-      '    ins-defs:' +
-      (!keys.length
-        ? ' No `Def` Instances Found\n'
-        : '\n        `"' + keys.join('"`\n        `"') + '"`\n'));
-  }
+  if (!DEF)
+    throw setNoDefError(new Error, LINE, KEY, NODE);
 
-  /// #}}} @group Verify-Def-Node
+  /// #}}} @step verify-def-node
 
-  /// #{{{ @group Insert-Members
+  /// #{{{ @step set-members
 
   /// #{{{ @member type
   /**
    * @public
    * @const {!Object}
    */
-  defineProp(this, 'type', {
+  defineProperty(this, 'type', {
     'value': INS_TYPE_ID,
     'writable': false,
     'enumerable': true,
@@ -420,7 +555,7 @@ function Ins(line, index, file) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'tag', {
+  defineProperty(this, 'tag', {
     'value': TAG,
     'writable': false,
     'enumerable': true,
@@ -433,7 +568,7 @@ function Ins(line, index, file) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'id', {
+  defineProperty(this, 'id', {
     'value': ID,
     'writable': false,
     'enumerable': true,
@@ -446,7 +581,7 @@ function Ins(line, index, file) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'path', {
+  defineProperty(this, 'path', {
     'value': PATH,
     'writable': false,
     'enumerable': true,
@@ -459,7 +594,7 @@ function Ins(line, index, file) {
    * @public
    * @const {!File}
    */
-  defineProp(this, 'file', {
+  defineProperty(this, 'file', {
     'value': FILE,
     'writable': false,
     'enumerable': true,
@@ -472,7 +607,7 @@ function Ins(line, index, file) {
    * @public
    * @const {!Line}
    */
-  defineProp(this, 'line', {
+  defineProperty(this, 'line', {
     'value': LINE,
     'writable': false,
     'enumerable': true,
@@ -485,7 +620,7 @@ function Ins(line, index, file) {
    * @public
    * @const {!Def}
    */
-  defineProp(this, 'def', {
+  defineProperty(this, 'def', {
     'value': DEF,
     'writable': false,
     'enumerable': true,
@@ -498,7 +633,7 @@ function Ins(line, index, file) {
    * @public
    * @const {!Array<(number|!Line)>}
    */
-  defineProp(this, 'args', {
+  defineProperty(this, 'args', {
     'value': mkArgs(INDEX, DEF),
     'writable': false,
     'enumerable': true,
@@ -506,23 +641,27 @@ function Ins(line, index, file) {
   });
   /// #}}} @member args
 
-  /// #}}} @group Insert-Members
+  /// #}}} @step set-members
+
+  /// #{{{ @step freeze-instance
 
   freezeObject(this);
+
+  /// #}}} @step freeze-instance
 }
 /// #}}} @func Ins
 
 /// #}}} @group CONSTRUCTORS
 
-/// #{{{ @group INS-PROTOTYPE
+/// #{{{ @group PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
-// INS-PROTOTYPE
+// PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
 Ins.prototype = createObject(null);
 Ins.prototype.constructor = Ins;
 
-/// #}}} @group INS-PROTOTYPE
+/// #}}} @group PROTOTYPE
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
