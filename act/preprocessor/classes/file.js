@@ -505,6 +505,18 @@ var setDirError = setError.dir;
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
+/// #{{{ @func setExtError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {(string|!Array<string>)} exts
+ * @return {!RangeError}
+ */
+var setExtError = setError.ext;
+/// #}}} @func setExtError
+
 /// #{{{ @func setFileError
 /**
  * @private
@@ -528,6 +540,19 @@ var setFileError = setError.file;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setLocError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {!Dir} parent
+ * @param {boolean} contain
+ * @return {!RangeError}
+ */
+var setLocError = setError.loc;
+/// #}}} @func setLocError
+
 /// #{{{ @func setNoOpenError
 /**
  * @private
@@ -550,6 +575,17 @@ var setNoOpenError = setError.noOpen;
  */
 var setOwnCmdError = setError.ownCmd;
 /// #}}} @func setOwnCmdError
+
+/// #{{{ @func setRetError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} method
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setRetError = setError.ret;
+/// #}}} @func setRetError
 
 /// #{{{ @func setTypeError
 /**
@@ -1043,14 +1079,12 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step update-lines
 
-  /// #{{{ @step lock-members
+  /// #{{{ @step freeze-members
 
-  capObject(lines);
-  sealObject(lines);
-  capObject(inserts);
-  sealObject(inserts);
+  freezeObject(lines);
+  freezeObject(inserts);
 
-  /// #}}} @step lock-members
+  /// #}}} @step freeze-members
 };
 /// #}}} @func File.prototype.preparse
 
@@ -1198,12 +1232,14 @@ File.prototype.parse = function parse() {
  *   (e.g. `"tag:id"`). Every `Cond` instance within the `File` instance must
  *   be defined in the #state or an error will be thrown.
  * @param {(!function(string): string)=} alter
- *   The #alter `function` is optional. If it is defined, it allows you to
+ *   The *alter* `function` is optional. If it is defined, it allows you to
  *   provide custom alterations to the preprocessed result before it is saved
- *   to the #dest.
+ *   to the *dest*.
  * @return {string}
  */
 File.prototype.run = function run(dest, state, alter) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Object<string, ?Incl>} */
   var inclFiles;
@@ -1217,12 +1253,16 @@ File.prototype.run = function run(dest, state, alter) {
   var node;
   /** @type {string} */
   var key;
-  /** @type {string} */
-  var pwd;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  /// #{{{ @step verify-data-types
 
   if ( !isUndefined(alter) && !isFunction(alter) )
     throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
@@ -1231,26 +1271,42 @@ File.prototype.run = function run(dest, state, alter) {
   if ( !isString(dest) )
     throw setTypeError(new TypeError, 'dest', 'string');
 
+  /// #}}} @step verify-data-types
+
+  /// #{{{ @step verify-dest-path
+
   if (!dest)
     throw setEmptyError(new Error, 'dest');
   if ( !hasJsExt(dest) )
-    throw setExtError(new Error, 'dest', '.js');
+    throw setExtError(new RangeError, 'dest', dest, '.js');
 
-  pwd = this.parent.path;
   dest = resolvePath(dest);
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
-    throw new Error('invalid readable directory path for `dest`\n' +
-      '    dest-path: `' + dest + '`\n' +
-      '    dir-path: `' + path + '`');
-  if ( hasDirectory(dest, pwd) )
-    throw new Error('invalid `dest` file path location (' +
-      'must NOT be within parent `Dir`)\n' +
-      '    dir-path: `' + pwd + '`\n' +
-      '    dest-path: `' + dest + '`');
+    throw setDirError(new Error, 'dest', path);
+  if ( hasDirectory(dest, this.parent.path) )
+    throw setLocError(new RangeError, 'dest', dest, this.parent, false);
+
+  /// #}}} @step verify-dest-path
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step setup-refs
+
+  /// #{{{ @group members
+
+  content = this.content;
+
+  /// #}}} @group members
+
+  /// #{{{ @group conditionals
 
   freezeObject(state);
+
+  /// #}}} @group conditionals
+
+  /// #{{{ @group includes
 
   inclFiles = {};
   inclFiles[this.tree] = null;
@@ -1258,66 +1314,37 @@ File.prototype.run = function run(dest, state, alter) {
 
   inclNodes = {};
 
-  content = this.content;
+  /// #}}} @group includes
+
+  /// #{{{ @group results
+
   result = '';
-  len = content.length;
-  i = -1;
-  while (++i < len) {
-    node = content[i];
-    if ( isLineNode(node) )
-      result += node.text + '\n';
-    else if ( isInclNode(node) ) {
-      key = node.file.tree + '|' + node.key;
 
-      if ( hasOwnProperty(inclNodes, key) )
-        throw new Error('duplicate `include` command\n' +
-          '    linenum: `' + inclNodes[key].line.linenum + '`\n' +
-          '    file: `' + inclNodes[key].line.file.path + '`\n' +
-          '    text: `' + inclNodes[key].line.text + '`\n' +
-          '    linenum: `' + node.line.linenum + '`\n' +
-          '    file: `' + node.line.file.path + '`\n' +
-          '    text: `' + node.line.text + '`');
-      if ( hasOwnProperty(inclFiles, node.cmd.file.tree) )
-        throw new Error('invalid `include` call to parent file\n' +
-          '    src-file: `' + node.file.path + '`\n' +
-          '    linenum: `' + node.line.linenum + '`\n' +
-          '    file: `' + node.line.file.path + '`\n' +
-          '    text: `' + node.line.text + '`');
+  /// #}}} @group results
 
-      defineProperty(inclNodes, key, {
-        'value': node,
-        'writable': false,
-        'enumerable': true,
-        'configurable': false
-      });
-    }
-    else if ( isCondNode(node) ) {
+  /// #}}} @step setup-refs
 
-      if ( !hasOwnProperty(state, node.key) )
-        throw new Error('undefined `conditional` in `state`\n' +
-          '    missing-key: `"' + node.key + '"`');
+  /// #{{{ @step process-content
 
-      if (state[node.key]) {
-        if (node.action)
-          result += node.run(state, inclFiles, inclNodes);
-      }
-      else if (!node.action)
-        result += node.run(state, inclFiles, inclNodes);
-    }
-    else {
-      result += node.run(state, inclFiles, inclNodes);
-    }
-  }
+
+  /// #}}} @step process-content
+
+  /// #{{{ @step run-alter
 
   if ( isFunction(alter) ) {
     result = alter(result);
 
     if ( !isString(result) )
-      throw new TypeError('invalid returned `alter` data type\n' +
-        '    valid-types: `string`');
+      throw setRetError(new TypeError, 'alter', 'string');
   }
 
+  /// #}}} @step run-alter
+
+  /// #{{{ @step save-and-return
+
   return toFile(result, dest);
+
+  /// #}}} @step save-and-return
 };
 /// #}}} @func File.prototype.run
 
