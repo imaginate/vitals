@@ -1043,6 +1043,36 @@ function setPathNodeError(err, param, path) {
 }
 /// #}}} @func setPathNodeError
 
+/// #{{{ @func setRetError
+/**
+ * @public
+ * @param {!TypeError} err
+ * @param {string} method
+ * @param {string} types
+ * @return {!TypeError}
+ */
+function setRetError(err, method, types) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!TypeError`');
+  if ( !isString(method) )
+    throw new TypeError('invalid `method` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(types) )
+    throw new TypeError('invalid `types` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'invalid data type returned by `' + method + '`\n' +
+    '    valid-types: `' + types + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setRetError
+
 /// #{{{ @func setTagError
 /**
  * @public
@@ -1170,6 +1200,7 @@ setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
 setError.pathComp = setPathCompError;
 setError.pathNode = setPathNodeError;
+setError.ret = setRetError;
 setError.tag = setTagError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
