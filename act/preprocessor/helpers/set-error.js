@@ -814,10 +814,10 @@ function setOwnCmdError(err, node1, node2, scope) {
 /// #{{{ @func setPathCompError
 /**
  * @public
- * @param {!SyntaxError} err
+ * @param {(!SyntaxError|!Error)} err
  * @param {!Line} line
  * @param {boolean=} loading = `false`
- * @return {!SyntaxError}
+ * @return {(!SyntaxError|!Error)}
  */
 function setPathCompError(err, line, loading) {
 
@@ -826,7 +826,7 @@ function setPathCompError(err, line, loading) {
 
   if ( !isError(err) )
     throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+      '    valid-types: `(!SyntaxError|!Error)`');
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
@@ -834,9 +834,13 @@ function setPathCompError(err, line, loading) {
     throw new TypeError('invalid `loading` data type\n' +
       '    valid-types: `boolean=`');
 
-  msg = 'invalid `path` component syntax\n' +
-    '    valid-path-regex: `/[ \\t][^ \\t\\|]+[ \\t]*$/`\n' +
-    '    NOT-valid-path-chars: `" ", "\\t", "|"`\n' +
+  msg = err.name === 'SyntaxError'
+    ? 'invalid `path` component syntax\n' +
+      '    valid-path-regex: `/[ \\t][^ \\t\\|]+[ \\t]*$/`\n' +
+      '    NOT-valid-path-chars: `" ", "\\t", "|"`'
+    : 'no `File` node found for `path` component';
+
+  msg += '\n' +
     '    path-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
