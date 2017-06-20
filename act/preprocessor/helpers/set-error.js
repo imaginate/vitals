@@ -816,9 +816,10 @@ function setOwnCmdError(err, node1, node2, scope) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setPathCompError(err, line) {
+function setPathCompError(err, line, loading) {
 
   /** @type {string} */
   var msg;
@@ -829,6 +830,9 @@ function setPathCompError(err, line) {
   if ( !isLineNode(line) )
     throw new TypeError('invalid `line` data type\n' +
       '    valid-types: `!Line`');
+  if ( !isUndefined(loading) && !isBoolean(loading) )
+    throw new TypeError('invalid `loading` data type\n' +
+      '    valid-types: `boolean=`');
 
   msg = 'invalid `path` component syntax\n' +
     '    valid-path-regex: `/[ \\t][^ \\t\\|]+[ \\t]*$/`\n' +
@@ -837,10 +841,13 @@ function setPathCompError(err, line) {
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + line.after.linenum + '`\n' +
-    '            file: `' + line.after.file.path + '`';
+    '            file: `' + line.before.file.path + '`';
+
+  if (!loading)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
 
   return setError(err, msg);
 }
