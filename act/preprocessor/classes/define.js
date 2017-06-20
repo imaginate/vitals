@@ -315,6 +315,13 @@ var setCloseError = setError.close;
 var setCmdError = setError.cmd;
 /// #}}} @func setCmdError
 
+/// #{{{ @func setDefChildError
+/**
+ * @private
+ */
+var setDefChildError = setError.defChild;
+/// #}}} @func setDefChildError
+
 /// #{{{ @func setEmptyError
 /**
  * @private
@@ -626,26 +633,37 @@ Def.prototype.constructor = Def;
 
 /// #{{{ @func Def.prototype.load
 /**
- * @param {!Array<!Line>} lines
+ * @param {!Array<string>} textRows
  * @param {number} i
+ * @param {number} len
  * @param {!File} file
  * @return {number}
  */
-Def.prototype.load = function load(lines, i, file) {
+Def.prototype.load = function load(textRows, i, len, file) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Array<!Line>} */
+  var lines;
+  /** @type {!Line} */
+  var line;
+  /** @type {string} */
+  var text;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step verify-parameters
 
-  if ( !isArray(lines) )
-    throw setTypeError(new TypeError, 'lines', '!Array<!Line>');
+  if ( !isArray(textRows) )
+    throw setTypeError(new TypeError, 'textRows', '!Array<string>');
   if ( !isNumber(i) )
     throw setTypeError(new TypeError, 'i', 'number');
   if ( !isWholeNumber(i) || i < 0 )
     throw setIndexError(new RangeError, 'i', i);
+  if ( !isNumber(len) )
+    throw setTypeError(new TypeError, 'len', 'number');
+  if ( !isWholeNumber(len) || len < 0 )
+    throw setIndexError(new RangeError, 'len', len);
   if ( !isFileNode(file) )
     throw setTypeError(new TypeError, 'file', '!File');
 
@@ -653,10 +671,30 @@ Def.prototype.load = function load(lines, i, file) {
 
   /// #{{{ @step set-member-refs
 
+  lines = this.lines;
 
   /// #}}} @step set-member-refs
 
-  // @todo LOAD LOGIC HERE
+  /// #{{{ @step load-lines
+
+  while (++i < len) {
+    text = textRows[i];
+    line = new Line(text, i + 1, file);
+    if ( hasCommand(text) ) {
+      if ( hasInsert(text) )
+        throw setDefChildError(new SyntaxError, line, this.open);
+      else if ( hasDefine(text) ) {
+        if ( !hasClose(text) )
+          throw setDefChildError(new SyntaxError, line, this.open);
+
+        this.setClose(line);
+        break;
+      }
+    }
+    lines.push(line);
+  }
+
+  /// #}}} @step load-lines
 
   /// #{{{ @step verify-close
 
@@ -667,7 +705,7 @@ Def.prototype.load = function load(lines, i, file) {
 
   /// #{{{ @step freeze-instance
 
-  freezeObject(this.lines);
+  freezeObject(lines);
   freezeObject(this);
 
   /// #}}} @step freeze-instance
