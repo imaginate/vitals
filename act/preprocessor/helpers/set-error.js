@@ -55,6 +55,15 @@ var getKeys = loadTaskHelper('get-keys');
 var hasDefine = require('./has-define-command.js');
 /// #}}} @func hasDefine
 
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
 /// #{{{ @func isBlkNode
 /**
  * @private
@@ -180,6 +189,15 @@ var isObject = IS.object;
  */
 var isString = IS.string;
 /// #}}} @func isString
+
+/// #{{{ @func isStringList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isStringList = IS.stringList;
+/// #}}} @func isStringList
 
 /// #{{{ @func isUndefined
 /**
@@ -446,6 +464,44 @@ function setEmptyError(err, param) {
   return setError(err, msg);
 }
 /// #}}} @func setEmptyError
+
+/// #{{{ @func setExtError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {(string|!Array<string>)} exts
+ * @return {!RangeError}
+ */
+function setExtError(err, param, path, exts) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!RangeError`');
+  if ( !isString(param) )
+    throw new TypeError('invalid `param` data type\n' +
+      '    valid-types: `string`');
+  if ( !isString(path) )
+    throw new TypeError('invalid `path` data type\n' +
+      '    valid-types: `string`');
+
+  if ( isArray(exts) && isStringList(exts) )
+    exts = exts.join('", "');
+  else if ( !isString(exts) ) {
+    throw new TypeError('invalid `exts` data type\n' +
+      '    valid-types: `(string|!Array<string>)`');
+
+  msg = 'invalid file extension for `' + param + '`\n' +
+    '    valid-extensions: `"' + exts + '"`\n' +;
+    '    received-path: `' + path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setExtError
 
 /// #{{{ @func setFileError
 /**
@@ -1059,6 +1115,7 @@ setError.def = setDefError;
 setError.defChild = setDefChildError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
+setError.ext = setExtError;
 setError.file = setFileError;
 setError.id = setIdError;
 setError.index = setIndexError;
