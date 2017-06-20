@@ -45,6 +45,8 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group STATE
+
 /// #{{{ @func capObject
 /**
  * @private
@@ -64,7 +66,7 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProp
+/// #{{{ @func defineProperty
 /**
  * @private
  * @param {!Object} src
@@ -72,8 +74,8 @@ var createObject = loadHelper('create-object');
  * @param {!Object} descriptor
  * @return {!Object}
  */
-var defineProp = loadHelper('define-property');
-/// #}}} @func defineProp
+var defineProperty = loadHelper('define-property');
+/// #}}} @func defineProperty
 
 /// #{{{ @func freezeObject
 /**
@@ -84,6 +86,20 @@ var defineProp = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
+
+/// #{{{ @func sealObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
+
+/// #}}} @group STATE
+
+/// #{{{ @group GET
 
 /// #{{{ @func getFileContent
 /**
@@ -124,10 +140,14 @@ var getPathName = loadHelper('get-pathname');
 var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
 
+/// #}}} @group GET
+
+/// #{{{ @group HAS
+
 /// #{{{ @func hasBlock
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasBlock = loadHelper('has-block-command');
@@ -136,7 +156,7 @@ var hasBlock = loadHelper('has-block-command');
 /// #{{{ @func hasClose
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasClose = loadHelper('has-close-command');
@@ -145,11 +165,29 @@ var hasClose = loadHelper('has-close-command');
 /// #{{{ @func hasCommand
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasCommand = loadHelper('has-command');
 /// #}}} @func hasCommand
+
+/// #{{{ @func hasConditional
+/**
+ * @private
+ * @param {string} text
+ * @return {boolean}
+ */
+var hasConditional = loadHelper('has-conditional-command');
+/// #}}} @func hasConditional
+
+/// #{{{ @func hasDefine
+/**
+ * @private
+ * @param {string} text
+ * @return {boolean}
+ */
+var hasDefine = loadHelper('has-define-command');
+/// #}}} @func hasDefine
 
 /// #{{{ @func hasDirectory
 /**
@@ -163,28 +201,10 @@ var hasCommand = loadHelper('has-command');
 var hasDirectory = loadHelper('has-directory');
 /// #}}} @func hasDirectory
 
-/// #{{{ @func hasConditional
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasConditional = loadHelper('has-conditional-command');
-/// #}}} @func hasConditional
-
-/// #{{{ @func hasDefine
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasDefine = loadHelper('has-define-command');
-/// #}}} @func hasDefine
-
 /// #{{{ @func hasInclude
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasInclude = loadHelper('has-include-command');
@@ -193,7 +213,7 @@ var hasInclude = loadHelper('has-include-command');
 /// #{{{ @func hasInsert
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasInsert = loadHelper('has-insert-command');
@@ -211,7 +231,7 @@ var hasJsExt = loadHelper('has-file-ext').construct('.js');
 /// #{{{ @func hasOpen
 /**
  * @private
- * @param {string} val
+ * @param {string} text
  * @return {boolean}
  */
 var hasOpen = loadHelper('has-open-command');
@@ -220,12 +240,34 @@ var hasOpen = loadHelper('has-open-command');
 /// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
 var hasOwnProperty = loadHelper('has-own-property');
 /// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
+
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
+/// #{{{ @func isBlkNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isBlkNode = loadHelper('is-block-node');
+/// #}}} @func isBlkNode
 
 /// #{{{ @func isBoolean
 /**
@@ -244,6 +286,15 @@ var isBoolean = IS.boolean;
  */
 var isBooleanMap = IS.booleanHashMap;
 /// #}}} @func isBooleanMap
+
+/// #{{{ @func isCondNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isCondNode = loadHelper('is-conditional-node');
+/// #}}} @func isCondNode
 
 /// #{{{ @func isDirectory
 /**
@@ -290,6 +341,15 @@ var isFileNode = loadHelper('is-file-node');
 var isFunction = IS.func;
 /// #}}} @func isFunction
 
+/// #{{{ @func isInclNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isInclNode = loadHelper('is-include-node');
+/// #}}} @func isInclNode
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -307,6 +367,15 @@ var isLineNode = loadHelper('is-line-node');
  */
 var isNull = IS.nil;
 /// #}}} @func isNull
+
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
 
 /// #{{{ @func isObject
 /**
@@ -335,6 +404,19 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #{{{ @func isWholeNumber
+/**
+ * @private
+ * @param {number} val
+ * @return {boolean}
+ */
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
+
+/// #}}} @group IS
+
+/// #{{{ @group TO
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -344,15 +426,32 @@ var isUndefined = IS.undefined;
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func sealObject
+/// #{{{ @func toFile
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(!Buffer|string)} content
+ * @param {string} filepath
+ * @return {(!Buffer|string)}
  */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var toFile = loadHelper('to-file');
+/// #}}} @func toFile
+
+/// #}}} @group TO
+
+/// #{{{ @group TRIM
+
+/// #{{{ @func trimPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimPathName = loadHelper('trim-pathname');
+/// #}}} @func trimPathName
+
+/// #}}} @group TRIM
+
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -369,17 +468,21 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
 /// #}}} @func setCmdError
 
-/// #{{{ @func setDefChildError
+/// #{{{ @func setDefError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
  */
-var setDefChildError = setError.defChild;
-/// #}}} @func setDefChildError
+var setDefError = setError.def;
+/// #}}} @func setDefError
 
 /// #{{{ @func setDirError
 /**
@@ -430,6 +533,7 @@ var setIndexError = setError.index;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
+ * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoOpenError = setError.noOpen;
@@ -469,24 +573,7 @@ var setTypeError = setError.type;
 var setWholeError = setError.whole;
 /// #}}} @func setWholeError
 
-/// #{{{ @func toFile
-/**
- * @private
- * @param {(!Buffer|string)} content
- * @param {string} filepath
- * @return {(!Buffer|string)}
- */
-var toFile = loadHelper('to-file');
-/// #}}} @func toFile
-
-/// #{{{ @func trimPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var trimPathName = loadHelper('trim-pathname');
-/// #}}} @func trimPathName
+/// #}}} @group ERROR
 
 /// #}}} @group HELPERS
 
@@ -596,7 +683,7 @@ function File(path, parent) {
    * @public
    * @const {!Object}
    */
-  defineProp(this, 'type', {
+  defineProperty(this, 'type', {
     'value': FILE_TYPE_ID,
     'writable': false,
     'enumerable': true,
@@ -609,7 +696,7 @@ function File(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'name', {
+  defineProperty(this, 'name', {
     'value': NAME,
     'writable': false,
     'enumerable': true,
@@ -622,7 +709,7 @@ function File(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'tree', {
+  defineProperty(this, 'tree', {
     'value': TREE,
     'writable': false,
     'enumerable': true,
@@ -635,7 +722,7 @@ function File(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'path', {
+  defineProperty(this, 'path', {
     'value': PATH,
     'writable': false,
     'enumerable': true,
@@ -648,7 +735,7 @@ function File(path, parent) {
    * @public
    * @const {!Dir}
    */
-  defineProp(this, 'parent', {
+  defineProperty(this, 'parent', {
     'value': PARENT,
     'writable': false,
     'enumerable': true,
@@ -661,7 +748,7 @@ function File(path, parent) {
    * @public
    * @const {!Array<!Line>}
    */
-  defineProp(this, 'lines', {
+  defineProperty(this, 'lines', {
     'value': [],
     'writable': false,
     'enumerable': true,
@@ -674,7 +761,7 @@ function File(path, parent) {
    * @public
    * @const {!Object<string, !Def>}
    */
-  defineProp(this, 'defs', {
+  defineProperty(this, 'defs', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -687,7 +774,7 @@ function File(path, parent) {
    * @public
    * @const {!Object<string, !Blk>}
    */
-  defineProp(this, 'blks', {
+  defineProperty(this, 'blks', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -700,7 +787,7 @@ function File(path, parent) {
    * @public
    * @const {!Object<string, !Cond>}
    */
-  defineProp(this, 'conds', {
+  defineProperty(this, 'conds', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -713,7 +800,7 @@ function File(path, parent) {
    * @public
    * @const {!Object<string, !Incl>}
    */
-  defineProp(this, 'incls', {
+  defineProperty(this, 'incls', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -726,7 +813,7 @@ function File(path, parent) {
    * @public
    * @const {!Array<!Ins>}
    */
-  defineProp(this, 'inserts', {
+  defineProperty(this, 'inserts', {
     'value': [],
     'writable': false,
     'enumerable': true,
@@ -739,7 +826,7 @@ function File(path, parent) {
    * @public
    * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
    */
-  defineProp(this, 'content', {
+  defineProperty(this, 'content', {
     'value': [],
     'writable': false,
     'enumerable': true,
@@ -810,12 +897,10 @@ File.prototype.constructor = File;
  */
 File.prototype.load = function load() {
 
-  /** @type {boolean} */
-  var passedCmd;
+  /// #{{{ @step declare-variables
+
   /** @type {!Array<string>} */
   var textRows;
-  /** @type {number} */
-  var linenum;
   /** @type {!Array<!Line>} */
   var lines;
   /** @type {!Line} */
@@ -824,64 +909,72 @@ File.prototype.load = function load() {
   var text;
   /** @type {!Object<string, !Def>} */
   var defs;
-  /** @type {?Def} */
+  /** @type {!Def} */
   var def;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  passedCmd = false;
-  textRows = getFileContent(this.path).split('\n');
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
+
   lines = this.lines;
   defs = this.defs;
-  def = null;
-  len = content.length;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step load-file-text
+
+  textRows = getFileContent(this.path).split('\n');
+
+  /// #}}} @step load-file-text
+
+  /// #{{{ @step load-defines
+
+  len = textRows.length;
   i = -1;
   while (++i < len) {
-    linenum = i + 1;
     text = textRows[i];
-    line = new Line(text, linenum, this);
-    if (def) {
-      if ( !hasCommand(text) )
-        def.lines.push(line);
-      else if ( hasDefine(text) ) {
-
-        if ( !hasClose(text) )
-          throw setDefChild(new SyntaxError, line, def.open);
-
-        def.setClose(line);
-        def = null;
-      }
-      else if ( hasInsert(text) )
-        throw new Error('invalid `insert` within `define`\n' +
-          '    linenum: `' + linenum + '`\n' +
-          '    file: `' + this.path + '`\n' +
-          '    text: `' + text + '`');
-      else
-        def.lines.push(line);
-    }
-    else if ( !hasCommand(text) )
+    line = new Line(text, i + 1, this);
+    if ( !hasCommand(text) )
       lines.push(line);
     else if ( hasDefine(text) ) {
-      if ( passedCmd || !hasOpen(text) )
-        throw new Error('invalid `define` command order\n' +
-          '    linenum: `' + linenum + '`\n' +
-          '    file: `' + this.path + '`\n' +
-          '    text: `' + text + '`');
+      if ( !hasOpen(text) )
+        throw setNoOpenError(new SyntaxError, line, true);
 
       def = new Def(line, this);
-      defs[def.tag + ':' + def.id] = def;
+      defs[def.key] = def;
+      i = def.load(textRows, i, len, this);
     }
     else {
-      if (!passedCmd)
-        passedCmd = true;
       lines.push(line);
+      break;
     }
   }
 
-  capObject(defs);
-  sealObject(defs);
+  /// #}}} @step load-defines
+
+  /// #{{{ @step load-lines
+
+  while (++i < len) {
+    text = textRows[i];
+    line = new Line(text, i + 1, this);
+
+    if ( hasDefine(text) )
+      throw setDefError(new SyntaxError, line);
+
+    lines.push(line);
+  }
+
+  /// #}}} @step load-lines
+
+  /// #{{{ @step freeze-members
+
+  freezeObject(defs);
+
+  /// #}}} @step freeze-members
 };
 /// #}}} @func File.prototype.load
 
@@ -1191,7 +1284,7 @@ File.prototype.run = function run(dest, state, alter) {
           '    file: `' + node.line.file.path + '`\n' +
           '    text: `' + node.line.text + '`');
 
-      defineProp(inclNodes, key, {
+      defineProperty(inclNodes, key, {
         'value': node,
         'writable': false,
         'enumerable': true,
