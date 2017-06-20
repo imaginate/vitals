@@ -37,6 +37,15 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func getKeys
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @return {!Array<string>}
+ */
+var getKeys = loadTaskHelper('get-keys');
+/// #}}} @func getKeys
+
 /// #{{{ @func hasDefine
 /**
  * @private
@@ -650,6 +659,55 @@ function setNoCloseError(err, line, loading) {
 }
 /// #}}} @func setNoCloseError
 
+/// #{{{ @func setNoDefError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {!Line} line
+ * @param {string} key
+ * @param {!File} file
+ * @return {!Error}
+ */
+function setNoDefError(err, line, key, file) {
+
+  /** @type {!Array<string>} */
+  var keys;
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!Error`');
+  if ( !isLineNode(line) )
+    throw new TypeError('invalid `line` data type\n' +
+      '    valid-types: `!Line`');
+  if ( !isString(key) )
+    throw new TypeError('invalid `key` data type\n' +
+      '    valid-types: `string`');
+  if ( !isFileNode(file) )
+    throw new TypeError('invalid `file` data type\n' +
+      '    valid-types: `!File`');
+
+  msg = 'no matching `Def` node found in inserted `File`\n' +
+    '    insert-defined-at:\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`\n' +
+    '    insert-def-key: `' + key + '`\n' +
+    '    insert-file-path: `' + file.path + '`\n' +
+    '    insert-defs-keys:';
+
+  keys = getKeys(file.defs);
+  msg += keys.length === 0
+    ? ' <no-def-instances>'
+    : '\n' +
+      '        `"' + keys.join('"`\n        `"') + '"`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoDefError
+
 /// #{{{ @func setNoOpenError
 /**
  * @public
@@ -1006,6 +1064,7 @@ setError.id = setIdError;
 setError.index = setIndexError;
 setError.match = setMatchError;
 setError.noClose = setNoCloseError;
+setError.noDef = setNoDefError;
 setError.noOpen = setNoOpenError;
 setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
