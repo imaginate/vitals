@@ -151,6 +151,15 @@ var isBoolean = IS.boolean;
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
+/// #{{{ @func isCondFlagsNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isCondFlagsNode = loadHelper('is-conditional-flags-node');
+/// #}}} @func isCondFlagsNode
+
 /// #{{{ @func isInstanceOf
 /**
  * @private
@@ -368,6 +377,235 @@ var setWholeError = setError.whole;
 
 /// #}}} @group HELPERS
 
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func mkApproxState
+/**
+ * @private
+ * @param {!CondFlags} flags
+ * @param {string} name
+ * @param {boolean} state
+ * @return {!CondFlags}
+ */
+function mkApproxState(flags, name, state) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!RegExp} */
+  var patt;
+  /** @type {string} */
+  var key;
+  /** @type {string} */
+  var src;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isString(name) )
+    throw setTypeError(new TypeError, 'name', 'string');
+  if ( !isBoolean(state) )
+    throw setTypeError(new TypeError, 'state', 'boolean');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-key
+
+  key = trimColon(name);
+
+  /// #}}} @step make-key
+
+  /// #{{{ @step make-pattern
+
+  src = escapeNonWild(key);
+  src = replaceWild(src);
+  src = '^' + src + '$';
+  patt = new RegExp(src);
+  patt.state = state;
+
+  /// #}}} @step make-pattern
+
+  /// #{{{ @step make-state
+
+  if ( !hasStateId(name) )
+    flags.approxTags[key] = patt;
+  else if ( hasStateTag(name) )
+    flags.approxKeys[key] = patt;
+  else
+    flags.approxIds[key] = patt;
+
+  /// #}}} @step make-state
+
+  /// #{{{ @step return-instance
+
+  return flags;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func mkApproxState
+
+/// #{{{ @func mkExactState
+/**
+ * @private
+ * @param {!CondFlags} flags
+ * @param {string} name
+ * @param {boolean} state
+ * @return {!CondFlags}
+ */
+function mkExactState(flags, name, state) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var key;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isString(name) )
+    throw setTypeError(new TypeError, 'name', 'string');
+  if ( !isBoolean(state) )
+    throw setTypeError(new TypeError, 'state', 'boolean');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-key
+
+  key = trimColon(name);
+
+  /// #}}} @step make-key
+
+  /// #{{{ @step make-state
+
+  if ( !hasStateId(name) )
+    flags.exactTags[key] = state;
+  else if ( hasStateTag(name) )
+    flags.exactKeys[key] = state;
+  else
+    flags.exactIds[key] = state;
+
+  /// #}}} @step make-state
+
+  /// #{{{ @step return-instance
+
+  return flags;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func mkExactState
+
+/// #{{{ @func mkState
+/**
+ * @private
+ * @param {!CondFlags} flags
+ * @param {string} name
+ * @param {boolean} state
+ * @return {!CondFlags}
+ */
+function mkState(flags, name, state) {
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isString(name) )
+    throw setTypeError(new TypeError, 'name', 'string');
+  if ( !isBoolean(state) )
+    throw setTypeError(new TypeError, 'state', 'boolean');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-state
+
+  flags = hasWildcard(name)
+    ? mkApproxState(flags, name, state)
+    : mkExactState(flags, name, state);
+
+  /// #}}} @step make-state
+
+  /// #{{{ @step return-instance
+
+  return flags;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func mkState
+
+/// #{{{ @func mkStates
+/**
+ * @private
+ * @param {!CondFlags} flags
+ * @return {!CondFlags}
+ */
+function mkStates(flags) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object<string, (boolean|!Object<string, boolean>)>} */
+  var state;
+  /** @type {(boolean|!Object<string, boolean>)} */
+  var val;
+  /** @type {string} */
+  var key;
+  /** @type {string} */
+  var tag;
+  /** @type {string} */
+  var id;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-state-ref
+
+  state = flags.state;
+
+  /// #}}} @step set-state-ref
+
+  /// #{{{ @step make-states
+
+  for (key in state) {
+    if ( hasOwnProperty(state, key) ) {
+      val = state[key];
+      if ( isBoolean(val) )
+        mkState(flags, key, val);
+      else {
+        tag = trimColon(key);
+        for (id in val) {
+          if ( hasOwnProperty(val, id) ) {
+            key = tag + ':' + trimColon(id);
+            mkState(flags, key, val[id]);
+          }
+        }
+      }
+    }
+  }
+
+  /// #}}} @step make-states
+
+  /// #{{{ @step return-instance
+
+  return flags;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func mkStates
+
+/// #}}} @group METHODS
+
 /// #{{{ @group CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
@@ -556,6 +794,18 @@ function CondFlags(state) {
   sealObject(this);
 
   /// #}}} @step lock-instance
+
+  /// #{{{ @step make-states
+
+  mkStates(this);
+
+  /// #}}} @step make-states
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this, true);
+
+  /// #}}} @step freeze-instance
 }
 /// #}}} @func CondFlags
 
@@ -568,159 +818,6 @@ function CondFlags(state) {
 
 CondFlags.prototype = createObject(null);
 CondFlags.prototype.constructor = CondFlags;
-
-/// #{{{ @func CondFlags.prototype.load
-/**
- * @return {void}
- */
-CondFlags.prototype.load = function load() {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Object<string, (boolean|!Object<string, boolean>)>} */
-  var state;
-  /** @type {(boolean|!Object<string, boolean>)} */
-  var val;
-  /** @type {string} */
-  var key;
-  /** @type {string} */
-  var tag;
-  /** @type {string} */
-  var id;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step set-member-refs
-
-  state = this.state;
-
-  /// #}}} @step set-member-refs
-
-  /// #{{{ @step load-flags
-
-  for (key in state) {
-    if ( hasOwnProperty(state, key) ) {
-      val = state[key];
-      if ( isBoolean(val) )
-        this.add(key, val);
-      else {
-        tag = trimColon(key);
-        for (id in val) {
-          if ( hasOwnProperty(val, id) ) {
-            key = tag + ':' + trimColon(id);
-            this.add(key, val[id]);
-          }
-        }
-      }
-    }
-  }
-
-  /// #}}} @step load-flags
-
-  /// #{{{ @step freeze-instance
-
-  freezeObject(this, true);
-
-  /// #}}} @step freeze-instance
-};
-/// #}}} @func CondFlags.prototype.load
-
-/// #{{{ @func CondFlags.prototype.add
-/**
- * @param {string} name
- * @param {boolean} state
- * @return {void}
- */
-CondFlags.prototype.add = function add(name, state) {
-
-  if ( hasWildcard(name) )
-    this.addApprox(name, state);
-  else
-    this.addExact(name, state);
-};
-/// #}}} @func CondFlags.prototype.add
-
-/// #{{{ @func CondFlags.prototype.addApprox
-/**
- * @param {string} name
- * @param {boolean} state
- * @return {void}
- */
-CondFlags.prototype.addApprox = function addApprox(name, state) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!RegExp} */
-  var patt;
-  /** @type {string} */
-  var key;
-  /** @type {string} */
-  var src;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step make-key
-
-  key = trimColon(name);
-
-  /// #}}} @step make-key
-
-  /// #{{{ @step make-pattern
-
-  src = escapeNonWild(key);
-  src = replaceWild(src);
-  src = '^' + src + '$';
-  patt = new RegExp(src);
-  patt.state = state;
-
-  /// #}}} @step make-pattern
-
-  /// #{{{ @step append-property
-
-  if ( !hasStateId(name) )
-    this.approxTags[key] = patt;
-  else if ( hasStateTag(name) )
-    this.approxKeys[key] = patt;
-  else
-    this.approxIds[key] = patt;
-
-  /// #}}} @step append-property
-};
-/// #}}} @func CondFlags.prototype.addApprox
-
-/// #{{{ @func CondFlags.prototype.addExact
-/**
- * @param {string} name
- * @param {boolean} state
- * @return {void}
- */
-CondFlags.prototype.addExact = function addExact(name, state) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var key;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step make-key
-
-  key = trimColon(name);
-
-  /// #}}} @step make-key
-
-  /// #{{{ @step append-property
-
-  if ( !hasStateId(name) )
-    this.exactTags[key] = state;
-  else if ( hasStateTag(name) )
-    this.exactKeys[key] = state;
-  else
-    this.exactIds[key] = state;
-
-  /// #}}} @step append-property
-};
-/// #}}} @func CondFlags.prototype.addExact
 
 /// #{{{ @func CondFlags.prototype.getState
 /**
