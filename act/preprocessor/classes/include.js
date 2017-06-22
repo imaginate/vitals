@@ -99,6 +99,19 @@ var sealObject = loadHelper('seal-object');
 
 /// #}}} @group STATE
 
+/// #{{{ @group COPY
+
+/// #{{{ @func cloneObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @return {!Object}
+ */
+var cloneObject = loadHelper('clone-object');
+/// #}}} @func cloneObject
+
+/// #}}} @group COPY
+
 /// #{{{ @group GET
 
 /// #{{{ @func getPathNode
