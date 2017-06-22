@@ -350,6 +350,16 @@ var isFunction = IS.func;
 var isInclNode = loadHelper('is-include-node');
 /// #}}} @func isInclNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -558,6 +568,16 @@ var setIndexError = setError.index;
 var setLocError = setError.loc;
 /// #}}} @func setLocError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoOpenError
 /**
  * @private
@@ -677,6 +697,13 @@ var Def = require('./define.js');
  * @struct
  */
 function File(path, parent) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, File) )
+    throw setNewError(new SyntaxError, 'File');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 

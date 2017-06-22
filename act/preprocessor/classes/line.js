@@ -110,6 +110,16 @@ var sealObject = loadHelper('seal-object');
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isNumber
 /**
  * @private
@@ -163,6 +173,16 @@ var setError = loadHelper('set-error');
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -193,6 +213,13 @@ var setTypeError = setError.type;
  * @struct
  */
 function Line(text, linenum, file) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Line) )
+    throw setNewError(new SyntaxError, 'Line');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 

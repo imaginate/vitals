@@ -273,6 +273,16 @@ var isFileNode = loadHelper('is-file-node');
 var isInclNode = loadHelper('is-include-node');
 /// #}}} @func isInclNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -399,6 +409,16 @@ var setIndexError = setError.index;
 var setMatchError = setError.match;
 /// #}}} @func setMatchError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoCloseError
 /**
  * @private
@@ -485,6 +505,13 @@ var setWholeError = setError.whole;
  * @struct
  */
 function Cond(open, file, parent) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Cond) )
+    throw setNewError(new SyntaxError, 'Cond');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 

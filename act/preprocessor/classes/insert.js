@@ -183,6 +183,16 @@ var hasValidInsert = loadHelper('has-valid-insert');
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -285,6 +295,16 @@ var setIdError = setError.id;
  */
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
+
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
 
 /// #{{{ @func setNoDefError
 /**
@@ -396,6 +416,13 @@ function mkArgs(index, def) {
  * @struct
  */
 function Ins(line, index, file) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Ins) )
+    throw setNewError(new SyntaxError, 'Ins');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 

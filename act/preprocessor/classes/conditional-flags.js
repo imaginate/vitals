@@ -151,6 +151,16 @@ var isBoolean = IS.boolean;
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -281,6 +291,16 @@ var setEmptyError = setError.empty;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoStateError
 /**
  * @private
@@ -372,6 +392,13 @@ function CondFlags(state) {
   var id;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, CondFlags) )
+    throw setNewError(new SyntaxError, 'CondFlags');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 

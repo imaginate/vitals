@@ -223,6 +223,16 @@ var isCondFlagsNode = loadHelper('is-conditional-flags-node');
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -346,6 +356,16 @@ var setInclError = setError.incl;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoBlkError
 /**
  * @private
@@ -432,6 +452,13 @@ var setWholeError = setError.whole;
  * @struct
  */
 function Incl(line, file, parent) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Incl) )
+    throw setNewError(new SyntaxError, 'Incl');
+
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 
