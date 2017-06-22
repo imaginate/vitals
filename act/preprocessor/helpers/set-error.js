@@ -491,7 +491,7 @@ function setExtError(err, param, path, exts) {
 
   if ( isArray(exts) && isStringList(exts) )
     exts = exts.join('", "');
-  else if ( !isString(exts) ) {
+  else if ( !isString(exts) )
     throw new TypeError('invalid `exts` data type\n' +
       '    valid-types: `(string|!Array<string>)`');
 
@@ -528,6 +528,7 @@ function setFileError(err, param, path) {
 
   msg = 'invalid readable file path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setFileError
