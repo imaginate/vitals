@@ -579,7 +579,7 @@ function Incl(line, file, parent) {
 
   /// #{{{ @step verify-path-node
 
-  if (!LINK || FILE === LINK)
+  if (!LINK)
     throw setPathCompError(new Error, LINE);
 
   /// #}}} @step verify-path-node
@@ -724,6 +724,13 @@ function Incl(line, file, parent) {
   sealObject(this);
 
   /// #}}} @step lock-instance
+
+  /// #{{{ @step catch-include-loop
+
+  if (FILE === LINK)
+    throw setTreeError(new ReferenceError, null, this);
+
+  /// #}}} @step catch-include-loop
 }
 /// #}}} @func Incl
 
@@ -809,6 +816,8 @@ Incl.prototype.run = function run(condFlags, inclFiles, inclNodes) {
   /// #{{{ @step declare-variables
 
   /** @type {string} */
+  var result;
+  /** @type {string} */
   var tree;
   /** @type {string} */
   var key;
@@ -828,7 +837,8 @@ Incl.prototype.run = function run(condFlags, inclFiles, inclNodes) {
 
   /// #{{{ @step load-include
 
-  this.load();
+  if (!this.cmd)
+    this.load();
 
   /// #}}} @step load-include
 
@@ -839,16 +849,21 @@ Incl.prototype.run = function run(condFlags, inclFiles, inclNodes) {
 
   /// #}}} @step set-member-refs
 
-  /// #{{{ @step verify-include
+  /// #{{{ @step catch-include-loop
 
   if ( hasOwnProperty(inclFiles, tree) )
     throw setTreeError(new ReferenceError, inclFiles[tree], this);
+
+  /// #}}} @step catch-include-loop
+
+  /// #{{{ @step catch-include-duplicate
+
   if ( hasOwnProperty(inclNodes, key) )
     throw setInclError(new ReferenceError, inclNodes[tree], this);
 
-  /// #}}} @step verify-include
+  /// #}}} @step catch-include-duplicate
 
-  /// #{{{ @step update-includes
+  /// #{{{ @step update-include-management
 
   inclFiles = cloneObject(inclFiles);
   inclFiles[tree] = this;
@@ -861,13 +876,19 @@ Incl.prototype.run = function run(condFlags, inclFiles, inclNodes) {
     'configurable': false
   });
 
-  /// #}}} @step update-includes
+  /// #}}} @step update-include-management
 
-  /// #{{{ @step run-and-return
+  /// #{{{ @step get-results
 
-  return this.cmd.run(condFlags, inclFiles, inclNodes);
+  result = this.cmd.run(condFlags, inclFiles, inclNodes);
 
-  /// #}}} @step run-and-return
+  /// #}}} @step get-results
+
+  /// #{{{ @step return-results
+
+  return result;
+
+  /// #}}} @step return-results
 };
 /// #}}} @func Incl.prototype.run
 
