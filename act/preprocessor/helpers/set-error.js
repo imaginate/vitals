@@ -596,6 +596,51 @@ function setIdError(err, line, loading) {
 }
 /// #}}} @func setIdError
 
+/// #{{{ @func setInclError
+/**
+ * @public
+ * @param {!ReferenceError} err
+ * @param {!Incl} incl1
+ * @param {!Incl} incl2
+ * @return {!ReferenceError}
+ */
+function setInclError(err, incl1, incl2) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!ReferenceError`');
+  if ( !isInclNode(incl1) )
+    throw new TypeError('invalid `incl1` data type\n' +
+      '    valid-types: `!Incl`');
+  if ( !isInclNode(incl2) )
+    throw new TypeError('invalid `incl2` data type\n' +
+      '    valid-types: `!Incl`');
+
+  msg = 'duplicate `include` commands\n' +
+    '    first-duplicate-defined-at:\n' +
+    '        line-text: `' + incl1.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + incl1.line.before.linenum + '`\n' +
+    '            file: `' + incl1.line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + incl1.line.after.linenum + '`\n' +
+    '            file: `' + incl1.line.after.file.path + '`\n' +
+    '    second-duplicate-defined-at:\n' +
+    '        line-text: `' + incl2.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + incl2.line.before.linenum + '`\n' +
+    '            file: `' + incl2.line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + incl2.line.after.linenum + '`\n' +
+    '            file: `' + incl2.line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setInclError
+
 /// #{{{ @func setIndexError
 /**
  * @public
@@ -1333,6 +1378,7 @@ setError.empty = setEmptyError;
 setError.ext = setExtError;
 setError.file = setFileError;
 setError.id = setIdError;
+setError.incl = setInclError;
 setError.index = setIndexError;
 setError.loc = setLocError;
 setError.match = setMatchError;
