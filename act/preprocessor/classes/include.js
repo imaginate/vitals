@@ -404,7 +404,7 @@ var setTagError = setError.tag;
 /**
  * @private
  * @param {!ReferenceError} err
- * @param {!Incl} incl1
+ * @param {?Incl} incl1
  * @param {!Incl} incl2
  * @return {!ReferenceError}
  */
@@ -739,7 +739,7 @@ Incl.prototype.constructor = Incl;
 
 /// #{{{ @func Incl.prototype.load
 /**
- * @return {void}
+ * @return {!Incl}
  */
 Incl.prototype.load = function load() {
 
@@ -788,6 +788,12 @@ Incl.prototype.load = function load() {
   freezeObject(this);
 
   /// #}}} @step freeze-instance
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
 };
 /// #}}} @func Incl.prototype.load
 
