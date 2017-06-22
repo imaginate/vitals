@@ -278,15 +278,6 @@ var isBlkNode = loadHelper('is-block-node');
 var isBoolean = IS.boolean;
 /// #}}} @func isBoolean
 
-/// #{{{ @func isBooleanMap
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBooleanMap = IS.booleanHashMap;
-/// #}}} @func isBooleanMap
-
 /// #{{{ @func isCondNode
 /**
  * @private
