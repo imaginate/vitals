@@ -50,9 +50,9 @@ var IS = loadHelper('is');
 /// #{{{ @func capObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
@@ -80,19 +80,29 @@ var defineProperty = loadHelper('define-property');
 /// #{{{ @func freezeObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
+/// #{{{ @func lockObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var lockObject = loadHelper('lock-object');
+/// #}}} @func lockObject
+
 /// #{{{ @func sealObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
@@ -916,8 +926,7 @@ function File(path, parent) {
 
   /// #{{{ @step lock-instance
 
-  capObject(this);
-  sealObject(this);
+  lockObject(this);
 
   /// #}}} @step lock-instance
 }
@@ -1019,22 +1028,32 @@ File.prototype.load = function load() {
 
   /// #}}} @step load-file-text
 
-  /// #{{{ @step load-defines
+  /// #{{{ @step make-lines
+
+  /// #{{{ @step make-defs
 
   len = textRows.length;
-  i = -1;
-  while (++i < len) {
+  i = 0;
+  while (i < len) {
     text = textRows[i];
-    line = new Line(text, i + 1, this);
+    line = new Line(text, ++i, this);
     if ( !hasCommand(text) )
       lines.push(line);
     else if ( hasDefine(text) ) {
+    /// #{{{ @step make-def
+
       if ( !hasOpen(text) )
         throw setNoOpenError(new SyntaxError, line, true);
 
       def = new Def(line, this);
+
+      if ( hasOwnProperty(defs, def.key) )
+        throw setOwnDefError(new ReferenceError, defs[def.key], def);
+
       defs[def.key] = def;
       i = def.load(textRows, i, len, this);
+
+    /// #}}} @step make-def
     }
     else {
       lines.push(line);
@@ -1042,13 +1061,13 @@ File.prototype.load = function load() {
     }
   }
 
-  /// #}}} @step load-defines
+  /// #}}} @step make-defs
 
-  /// #{{{ @step load-lines
+  /// #{{{ @step finish-making-lines
 
-  while (++i < len) {
+  while (i < len) {
     text = textRows[i];
-    line = new Line(text, i + 1, this);
+    line = new Line(text, ++i, this);
 
     if ( hasDefine(text) )
       throw setDefError(new SyntaxError, line);
@@ -1056,13 +1075,15 @@ File.prototype.load = function load() {
     lines.push(line);
   }
 
-  /// #}}} @step load-lines
+  /// #}}} @step finish-making-lines
 
-  /// #{{{ @step freeze-defs
+  /// #}}} @step make-lines
 
-  freezeObject(defs);
+  /// #{{{ @step lock-defs
 
-  /// #}}} @step freeze-defs
+  lockObject(defs);
+
+  /// #}}} @step lock-defs
 
   /// #{{{ @step return-instance
 
@@ -1116,11 +1137,11 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step make-inserts
 
-  /// #{{{ @step freeze-inserts
+  /// #{{{ @step lock-inserts
 
-  freezeObject(inserts);
+  lockObject(inserts);
 
-  /// #}}} @step freeze-inserts
+  /// #}}} @step lock-inserts
 
   /// #{{{ @step set-inserts
 
@@ -1160,11 +1181,13 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step update-lines
 
-  /// #{{{ @step freeze-lines
+  /// #{{{ @step freeze-members
 
+  freezeObject(inserts);
   freezeObject(lines);
+  freezeObject(defs);
 
-  /// #}}} @step freeze-lines
+  /// #}}} @step freeze-members
 
   /// #{{{ @step freeze-instance
 

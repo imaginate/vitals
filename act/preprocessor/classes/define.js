@@ -50,9 +50,9 @@ var IS = loadHelper('is');
 /// #{{{ @func capObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
@@ -80,19 +80,29 @@ var defineProperty = loadHelper('define-property');
 /// #{{{ @func freezeObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
+/// #{{{ @func lockObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var lockObject = loadHelper('lock-object');
+/// #}}} @func lockObject
+
 /// #{{{ @func sealObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
@@ -715,26 +725,24 @@ Def.prototype.load = function load(textRows, i, len, file) {
 
   /// #}}} @step set-member-refs
 
-  /// #{{{ @step load-lines
+  /// #{{{ @step make-lines
 
-  while (++i < len) {
+  while (i < len) {
     text = textRows[i];
-    line = new Line(text, i + 1, file);
-    if ( hasCommand(text) ) {
-      if ( hasInsert(text) )
-        throw setDefChildError(new SyntaxError, line, this.open);
-      else if ( hasDefine(text) ) {
-        if ( !hasClose(text) )
-          throw setDefChildError(new SyntaxError, line, this.open);
-
-        this.setClose(line);
-        break;
-      }
+    line = new Line(text, ++i, file);
+    if ( hasInsert(text) )
+      throw setDefChildError(new SyntaxError, line, this.open);
+    else if ( !hasDefine(text) )
+      lines.push(line);
+    else if ( !hasClose(text) )
+      throw setDefChildError(new SyntaxError, line, this.open);
+    else {
+      this.setClose(line);
+      break;
     }
-    lines.push(line);
   }
 
-  /// #}}} @step load-lines
+  /// #}}} @step make-lines
 
   /// #{{{ @step verify-close
 
@@ -743,9 +751,14 @@ Def.prototype.load = function load(textRows, i, len, file) {
 
   /// #}}} @step verify-close
 
-  /// #{{{ @step freeze-instance
+  /// #{{{ @step freeze-lines
 
   freezeObject(lines);
+
+  /// #}}} @step freeze-lines
+
+  /// #{{{ @step freeze-instance
+
   freezeObject(this);
 
   /// #}}} @step freeze-instance

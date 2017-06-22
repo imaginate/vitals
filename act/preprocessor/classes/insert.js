@@ -50,9 +50,9 @@ var IS = loadHelper('is');
 /// #{{{ @func capObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
@@ -80,19 +80,29 @@ var defineProperty = loadHelper('define-property');
 /// #{{{ @func freezeObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
+/// #{{{ @func lockObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var lockObject = loadHelper('lock-object');
+/// #}}} @func lockObject
+
 /// #{{{ @func sealObject
 /**
  * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 var sealObject = loadHelper('seal-object');
 /// #}}} @func sealObject
