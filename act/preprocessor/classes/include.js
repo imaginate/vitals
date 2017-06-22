@@ -539,7 +539,7 @@ function Incl(line, file, parent) {
 
   /// #{{{ @step verify-path-node
 
-  if (!LINK)
+  if (!LINK || FILE === LINK)
     throw setPathCompError(new Error, LINE);
 
   /// #}}} @step verify-path-node
