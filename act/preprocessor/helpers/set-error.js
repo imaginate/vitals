@@ -1086,6 +1086,45 @@ function setOwnCmdError(err, node1, node2, scope) {
 }
 /// #}}} @func setOwnCmdError
 
+/// #{{{ @func setOwnDefError
+/**
+ * @public
+ * @param {!ReferenceError} err
+ * @param {!Def} def1
+ * @param {!Def} def2
+ * @return {!ReferenceError}
+ */
+function setOwnDefError(err, def1, def2) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!ReferenceError`');
+  if ( !isDefNode(def1) )
+    throw new TypeError('invalid `def1` data type\n' +
+      '    valid-types: `!Def`');
+  if ( !isDefNode(def2) )
+    throw new TypeError('invalid `def2` data type\n' +
+      '    valid-types: `!Def`');
+
+  msg = 'duplicate `define` command assignment\n' +
+    '    first-duplicate-opened-at:\n' +
+    '        line-text: `' + def1.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + def1.line.before.linenum + '`\n' +
+    '            file: `' + def1.line.before.file.path + '`\n' +
+    '    second-duplicate-opened-at:\n' +
+    '        line-text: `' + def2.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + def2.line.before.linenum + '`\n' +
+    '            file: `' + def2.line.before.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setOwnDefError
+
 /// #{{{ @func setPathCompError
 /**
  * @public
@@ -1463,6 +1502,7 @@ setError.noOpen = setNoOpenError;
 setError.noState = setNoStateError;
 setError.open = setOpenError;
 setError.ownCmd = setOwnCmdError;
+setError.ownDef = setOwnDefError;
 setError.pathComp = setPathCompError;
 setError.pathNode = setPathNodeError;
 setError.ret = setRetError;
