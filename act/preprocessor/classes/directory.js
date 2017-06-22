@@ -895,11 +895,12 @@ function Dir(path, parent) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step freeze-instance
+  /// #{{{ @step lock-instance
 
-  freezeObject(this);
+  capObject(this);
+  sealObject(this);
 
-  /// #}}} @step freeze-instance
+  /// #}}} @step lock-instance
 
   /// #{{{ @step make-child-nodes
 
@@ -907,6 +908,12 @@ function Dir(path, parent) {
   mkDirs(this);
 
   /// #}}} @step make-child-nodes
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
 }
 /// #}}} @func Dir
 
