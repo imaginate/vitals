@@ -287,6 +287,15 @@ var isBoolean = IS.boolean;
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
+/// #{{{ @func isCondFlagsNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isCondFlagsNode = loadHelper('is-conditional-flags-node');
+/// #}}} @func isCondFlagsNode
+
 /// #{{{ @func isDirectory
 /**
  * @private
@@ -880,13 +889,13 @@ function File(path, parent) {
   /// #{{{ @member inserts
   /**
    * @public
-   * @const {!Array<!Ins>}
+   * @type {?Array<!Ins>}
    */
   defineProperty(this, 'inserts', {
-    'value': [],
-    'writable': false,
+    'value': null,
+    'writable': true,
     'enumerable': true,
-    'configurable': false
+    'configurable': true
   });
   /// #}}} @member inserts
 
@@ -905,11 +914,12 @@ function File(path, parent) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step freeze-instance
+  /// #{{{ @step lock-instance
 
-  freezeObject(this);
+  capObject(this);
+  sealObject(this);
 
-  /// #}}} @step freeze-instance
+  /// #}}} @step lock-instance
 }
 /// #}}} @func File
 
@@ -1087,13 +1097,13 @@ File.prototype.preparse = function preparse() {
 
   /// #{{{ @step set-member-refs
 
-  inserts = this.inserts;
   lines = this.lines;
 
   /// #}}} @step set-member-refs
 
-  /// #{{{ @step load-inserts
+  /// #{{{ @step make-inserts
 
+  inserts = [];
   len = lines.length;
   i = -1;
   while (++i < len) {
@@ -1104,7 +1114,30 @@ File.prototype.preparse = function preparse() {
     }
   }
 
-  /// #}}} @step load-inserts
+  /// #}}} @step make-inserts
+
+  /// #{{{ @step freeze-inserts
+
+  freezeObject(inserts);
+
+  /// #}}} @step freeze-inserts
+
+  /// #{{{ @step set-inserts
+
+  /// #{{{ @member inserts
+  /**
+   * @public
+   * @const {!Array<!Ins>}
+   */
+  defineProperty(this, 'inserts', {
+    'value': inserts,
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member inserts
+
+  /// #}}} @step set-inserts
 
   /// #{{{ @step insert-lines
 
@@ -1127,12 +1160,17 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step update-lines
 
-  /// #{{{ @step freeze-members
+  /// #{{{ @step freeze-lines
 
   freezeObject(lines);
-  freezeObject(inserts);
 
-  /// #}}} @step freeze-members
+  /// #}}} @step freeze-lines
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
 
   /// #{{{ @step return-instance
 
@@ -1284,7 +1322,7 @@ File.prototype.parse = function parse() {
  *   path, it is relative to the `cwd`. The directory path up to the file name
  *   of the resolved #dest path must already exist. If a file exists at the
  *   resolved #dest path, it is overwritten.
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)} state
  *   The enabled, `true`, or disabled, `false`, state for every conditional
  *   command defined within the `File` instance's *content* `array`. Each
  *   parent *state* `object` key must be a `Cond` instance's *tag*, *ID* (note
@@ -1333,9 +1371,9 @@ File.prototype.run = function run(dest, state, alter) {
 
   if ( !isString(dest) )
     throw setTypeError(new TypeError, 'dest', 'string');
-  if ( !isStateObject(state) )
+  if ( !isCondFlagsNode(state) && !isStateObject(state) )
     throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
+      '(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)');
   if ( !isUndefined(alter) && !isFunction(alter) )
     throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
 
@@ -1368,7 +1406,9 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step make-cond-flags
 
-  condFlags = new CondFlags(state);
+  condFlags = isCondFlagsNode(state)
+    ? state
+    : new CondFlags(state);
 
   /// #}}} @step make-cond-flags
 
