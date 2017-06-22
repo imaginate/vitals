@@ -533,7 +533,8 @@ This method creates `Incl` instances. Use the `new` keyword when calling `Incl` 
 | <a name="incl-member-file"></a>file     | *`!File`*         | A pointer to the parent [File][file] instance.
 | <a name="incl-member-line"></a>line     | *`!Line`*         | A pointer to defining [Line][line] instance.
 | <a name="incl-member-parent"></a>parent | *`(?Blk\|?Cond)`* | A pointer to the parent [Blk][blk] or [Cond][cond] instance. It is `null` if it is at the root scope of the [File][file] instance (i.e. it becomes like a [root][root] [group][grps] *command*).
-| <a name="incl-member-cmd"></a>cmd       | *`!Blk`*          | A pointer to the included [Blk][blk] instance.
+| <a name="incl-member-link"></a>link     | *`!File`*         | A pointer to the included [File][file] instance.
+| <a name="incl-member-cmd"></a>cmd       | *`?Blk`*          | A pointer to the included [Blk][blk] instance.
 <br>
 
 
@@ -1042,6 +1043,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 [incl-file]: #user-content-incl-member-file
 [incl-line]: #user-content-incl-member-line
 [incl-parent]: #user-content-incl-member-parent
+[incl-link]: #user-content-incl-member-link
 [incl-cmd]: #user-content-incl-member-cmd
 
 [ins-members]: #user-content-ins-members
