@@ -583,6 +583,7 @@ function isNanHashMap(val) {
  *     The `object` must **not** own any properties to be considered empty.
  *   - *`*`*!$
  *     All other data types are **not** considered empty.
+ * @public
  * @param {*} val
  * @return {boolean}
  */
@@ -613,6 +614,23 @@ function isEmpty(val) {
   return true;
 }
 /// #}}} @func isEmpty
+
+/// #{{{ @func isInstanceOf
+/**
+ * @public
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+function isInstanceOf(inst, constructor) {
+
+  if ( !isFunction(constructor) ) 
+    throw new TypeError('invalid `constructor` data type\n' +
+      '    valid-types: `!Function`');
+
+  return isObject(inst) && inst instanceof constructor;
+}
+/// #}}} @func isInstanceOf
 
 /// #}}} @group SPECIAL-METHODS
 
@@ -1051,6 +1069,11 @@ var IS = {
   'nanmap':     isNanHashMap,
 
   'empty': isEmpty,
+
+  'instanceOf': isInstanceOf,
+  'instOf':     isInstanceOf,
+  'instof':     isInstanceOf,
+  'of':         isInstanceOf,
 
   'cappedHashMap': isCapped,
   'cappedhashmap': isCapped,
