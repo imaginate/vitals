@@ -864,10 +864,10 @@ This method creates `Line` instances. Use the `new` keyword when calling `Line` 
 | <a name="line-member-text"></a>text                     | *`string`*  | The [Line][line] instance's original UTF-8 encoded text. Note that all end-of-line characters (e.g. line-feeds and carriage-returns) are trimmed.
 | <a name="line-member-before"></a>before                 | *`!Object`* | The original line data (i.e. before the [load][file-load] and [preparse][file-preparse] stages).
 | <a name="line-member-before-file"></a>before.file       | *`!File`*   | A pointer to the original parent [File][file] instance of the [Line][line] instance.
-| <a name="line-member-before-linenum"></a>before.linenum | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's original position within its original parent [File][file] instance's context. Note that the first [linenum][line-before-linenum] in a [File][file] is `1` (i.e. one-based).
+| <a name="line-member-before-linenum"></a>before.linenum | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's original position within its original parent [File][file] instance's context. Note that the first [before.linenum][line-before-linenum] in a [File][file] is `1` (i.e. one-based).
 | <a name="line-member-after"></a>after                   | *`!Object`* | The preparsed line data (i.e. after the [load][file-load] and [preparse][file-preparse] stages).
-| <a name="line-member-after-file"></a>after.file         | *`!File`*   | A pointer to the preparsed parent [File][file] instance of the [Line][line] instance.
-| <a name="line-member-after-linenum"></a>after.linenum   | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's new position within its preparsed parent [File][file] instance's context. Note that the first [linenum][line-after-linenum] in a [File][file] is `1` (i.e. one-based).
+| <a name="line-member-after-file"></a>after.file         | *`?File`*   | A pointer to the preparsed parent [File][file] instance of the [Line][line] instance. Note that the initial value for [after.file][line-after-file] (i.e. before [Line.prototype.setAfter][line-set-after] is called) is `null`.
+| <a name="line-member-after-linenum"></a>after.linenum   | *`number`*  | A positive `integer` (i.e. a whole `number` greater than `0`) representing the [Line][line] instance's new position within its preparsed parent [File][file] instance's context. Note that the first [after.linenum][line-after-linenum] in a [File][file] is `1` (i.e. one-based). Also note that the initial value for [after.linenum][line-after-linenum] (i.e. before [Line.prototype.setAfter][line-set-after] is called) is `0`.
 <br>
 
 <a name="line-prototype-set-after"></a>
@@ -887,7 +887,7 @@ This method sets the [after][line-after] `object` for the [Line][line] instance.
 
 | Data Type | Description
 |:----------|:------------
-| *`void`*  | [Line.prototype.setAfter][line-set-after] does not return a value.
+| *`!Line`* | [Line.prototype.setAfter][line-set-after] returns the [Line][line] that it sets.
 <br>
 
 
