@@ -996,6 +996,16 @@ File.prototype.load = function load() {
   /// #{{{ @step load-file-text
 
   textRows = getFileContent(this.path).split('\n');
+  switch (textRows.length) {
+    case 0:
+      textRows.push('');
+      break;
+    case 1:
+      if ( !isString(textRows[0]) )
+        textRows[0] = '';
+      break;
+  }
+  freezeObject(textRows);
 
   /// #}}} @step load-file-text
 
@@ -1038,17 +1048,17 @@ File.prototype.load = function load() {
 
   /// #}}} @step load-lines
 
-  /// #{{{ @step freeze-members
+  /// #{{{ @step freeze-defs
 
   freezeObject(defs);
 
-  /// #}}} @step freeze-members
+  /// #}}} @step freeze-defs
 
-  /// #{{{ @step return-file
+  /// #{{{ @step return-instance
 
   return this;
 
-  /// #}}} @step return-file
+  /// #}}} @step return-instance
 };
 /// #}}} @func File.prototype.load
 
@@ -1124,11 +1134,11 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step freeze-members
 
-  /// #{{{ @step return-file
+  /// #{{{ @step return-instance
 
   return this;
 
-  /// #}}} @step return-file
+  /// #}}} @step return-instance
 };
 /// #}}} @func File.prototype.preparse
 
@@ -1258,11 +1268,11 @@ File.prototype.parse = function parse() {
 
   /// #}}} @step freeze-members
 
-  /// #{{{ @step return-file
+  /// #{{{ @step return-instance
 
   return this;
 
-  /// #}}} @step return-file
+  /// #}}} @step return-instance
 };
 /// #}}} @func File.prototype.parse
 
