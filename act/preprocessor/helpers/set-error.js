@@ -1303,6 +1303,51 @@ function setTagError(err, line, loading) {
 }
 /// #}}} @func setTagError
 
+/// #{{{ @func setTreeError
+/**
+ * @public
+ * @param {!ReferenceError} err
+ * @param {!Incl} incl1
+ * @param {!Incl} incl2
+ * @return {!ReferenceError}
+ */
+function setTreeError(err, incl1, incl2) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!ReferenceError`');
+  if ( !isInclNode(incl1) )
+    throw new TypeError('invalid `incl1` data type\n' +
+      '    valid-types: `!Incl`');
+  if ( !isInclNode(incl2) )
+    throw new TypeError('invalid `incl2` data type\n' +
+      '    valid-types: `!Incl`');
+
+  msg = 'invalid file loop for `include` command\n' +
+    '    initial-include-defined-at:\n' +
+    '        line-text: `' + incl1.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + incl1.line.before.linenum + '`\n' +
+    '            file: `' + incl1.line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + incl1.line.after.linenum + '`\n' +
+    '            file: `' + incl1.line.after.file.path + '`\n' +
+    '    looping-include-defined-at:\n' +
+    '        line-text: `' + incl2.line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + incl2.line.before.linenum + '`\n' +
+    '            file: `' + incl2.line.before.file.path + '`\n' +
+    '        preparsed-line-location:\n' +
+    '            linenum: `' + incl2.line.after.linenum + '`\n' +
+    '            file: `' + incl2.line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setTreeError
+
 /// #{{{ @func setTypeError
 /**
  * @public
@@ -1395,6 +1440,7 @@ setError.state = setStateError;
 setError.stateId = setStateIdError;
 setError.stateTag = setStateTagError;
 setError.tag = setTagError;
+setError.tree = setTreeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 module.exports = setError;
