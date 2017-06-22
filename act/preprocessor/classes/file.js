@@ -905,12 +905,11 @@ function File(path, parent) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step lock-instance
+  /// #{{{ @step freeze-instance
 
-  capObject(this);
-  sealObject(this);
+  freezeObject(this);
 
-  /// #}}} @step lock-instance
+  /// #}}} @step freeze-instance
 }
 /// #}}} @func File
 
@@ -962,7 +961,7 @@ File.prototype.constructor = File;
 
 /// #{{{ @func File.prototype.load
 /**
- * @return {void}
+ * @return {!File}
  */
 File.prototype.load = function load() {
 
@@ -1044,12 +1043,18 @@ File.prototype.load = function load() {
   freezeObject(defs);
 
   /// #}}} @step freeze-members
+
+  /// #{{{ @step return-file
+
+  return this;
+
+  /// #}}} @step return-file
 };
 /// #}}} @func File.prototype.load
 
 /// #{{{ @func File.prototype.preparse
 /**
- * @return {void}
+ * @return {!File}
  */
 File.prototype.preparse = function preparse() {
 
@@ -1118,12 +1123,18 @@ File.prototype.preparse = function preparse() {
   freezeObject(inserts);
 
   /// #}}} @step freeze-members
+
+  /// #{{{ @step return-file
+
+  return this;
+
+  /// #}}} @step return-file
 };
 /// #}}} @func File.prototype.preparse
 
 /// #{{{ @func File.prototype.parse
 /**
- * @return {void}
+ * @return {!File}
  */
 File.prototype.parse = function parse() {
 
@@ -1246,6 +1257,12 @@ File.prototype.parse = function parse() {
   freezeObject(content);
 
   /// #}}} @step freeze-members
+
+  /// #{{{ @step return-file
+
+  return this;
+
+  /// #}}} @step return-file
 };
 /// #}}} @func File.prototype.parse
 
@@ -1333,22 +1350,19 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step setup-refs
-
-  /// #{{{ @group members
+  /// #{{{ @step set-member-refs
 
   content = this.content;
 
-  /// #}}} @group members
+  /// #}}} @step set-member-refs
 
-  /// #{{{ @group conditionals
+  /// #{{{ @step make-cond-flags
 
   condFlags = new CondFlags(state);
-  condFlags.load();
 
-  /// #}}} @group conditionals
+  /// #}}} @step make-cond-flags
 
-  /// #{{{ @group includes
+  /// #{{{ @step setup-include-management
 
   inclFiles = {};
   inclFiles[this.tree] = null;
@@ -1356,15 +1370,13 @@ File.prototype.run = function run(dest, state, alter) {
 
   inclNodes = {};
 
-  /// #}}} @group includes
+  /// #}}} @step setup-include-management
 
-  /// #{{{ @group results
+  /// #{{{ @step setup-results
 
   result = '';
 
-  /// #}}} @group results
-
-  /// #}}} @step setup-refs
+  /// #}}} @step setup-results
 
   /// #{{{ @step process-content
 
@@ -1390,11 +1402,17 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #}}} @step run-alter
 
-  /// #{{{ @step save-and-return
+  /// #{{{ @step save-results
 
-  return toFile(result, dest);
+  toFile(result, dest);
 
-  /// #}}} @step save-and-return
+  /// #}}} @step save-results
+
+  /// #{{{ @step return-results
+
+  return result;
+
+  /// #}}} @step return-results
 };
 /// #}}} @func File.prototype.run
 
