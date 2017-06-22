@@ -20,6 +20,7 @@
  */
 var IS = require('./is.js');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -27,15 +28,15 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwnProp = require('./has-own-property.js');
-/// #}}} @func hasOwnProp
+var hasOwnProperty = require('./has-own-property.js');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isBoolean
 /**
@@ -81,6 +82,7 @@ var isObject = IS.object;
  */
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -96,24 +98,24 @@ var isUndefined = IS.undefined;
  */
 var seal = (function sealPrivateScope() {
 
-  /** @type {!function} */
-  var seal;
+  /**
+   * @private
+   * @const {?function}
+   */
+  var seal = 'seal' in Object
+    ? Object.seal
+    : null;
 
-  if ( !('seal' in Object) || !isFunction(Object['seal']) )
-    throw new Error('incompatible platform (must support `Object.seal`)');
-
-  seal = Object['seal'];
+  if ( !isFunction(seal) )
+    throw new Error('missing JS engine support for `Object.seal`');
 
   try {
     seal(function(){});
     return seal;
   }
   catch (e) {
-    return function seal(src) {
-      return isFunction(src)
-        ? src
-        : seal(src);
-    };
+    throw new Error('incomplete JS engine support for `Object.seal`\n' +
+      '    `Object.seal` failed with `function` as `src`');
   }
 })();
 /// #}}} @func seal
@@ -121,8 +123,8 @@ var seal = (function sealPrivateScope() {
 /// #{{{ @func sealDeep
 /**
  * @private
- * @param {!Object} src
- * @return {!Object}
+ * @param {(!Object|!Function)} src
+ * @return {(!Object|!Function)}
  */
 function sealDeep(src) {
 
@@ -132,15 +134,17 @@ function sealDeep(src) {
   var val;
 
   for (key in src) {
-    if ( hasOwnProp(src, key) ) {
+    if ( hasOwnProperty(src, key) ) {
       val = src[key];
-      if ( isObject(val) )
+      if ( isObject(val) || isFunction(val) ) {
         sealDeep(val);
+      }
     }
   }
   return seal(src);
 }
 /// #}}} @func sealDeep
+
 /// #}}} @group METHODS
 
 /// #{{{ @group EXPORTS
@@ -151,20 +155,22 @@ function sealDeep(src) {
 /// #{{{ @func sealObject
 /**
  * @public
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 function sealObject(src, deep) {
 
   if ( !isUndefined(deep) && !isBoolean(deep) )
-    throw new TypeError('invalid `deep` data type (valid types: `boolean=`)');
+    throw new TypeError('invalid `deep` data type\n' +
+      '    valid-types: `boolean=`');
 
   if ( isNull(src) )
     return null;
 
-  if ( !isObject(src) )
-    throw new TypeError('invalid `src` data type (valid types: `?Object`)');
+  if ( !isObject(src) && !isFunction(src) )
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `?Object|?Function`');
 
   return deep
     ? sealDeep(src)
