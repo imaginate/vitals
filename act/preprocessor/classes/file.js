@@ -27,7 +27,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object}
  */
-var FILE_TYPE_ID = loadHelper('type-ids').file;
+var FILE_TYPE_ID = loadHelper('type-ids').FILE;
 /// #}}} @const FILE_TYPE_ID
 
 /// #{{{ @const IS
@@ -445,10 +445,6 @@ var resolvePath = loadHelper('resolve-path');
 var toFile = loadHelper('to-file');
 /// #}}} @func toFile
 
-/// #}}} @group TO
-
-/// #{{{ @group TRIM
-
 /// #{{{ @func trimPathName
 /**
  * @private
@@ -458,7 +454,7 @@ var toFile = loadHelper('to-file');
 var trimPathName = loadHelper('trim-pathname');
 /// #}}} @func trimPathName
 
-/// #}}} @group TRIM
+/// #}}} @group TO
 
 /// #{{{ @group ERROR
 
