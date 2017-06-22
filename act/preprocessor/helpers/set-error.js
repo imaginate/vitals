@@ -37,6 +37,8 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group GET
+
 /// #{{{ @func getKeys
 /**
  * @private
@@ -46,6 +48,19 @@ var IS = loadTaskHelper('is');
 var getKeys = loadTaskHelper('get-keys');
 /// #}}} @func getKeys
 
+/// #}}} @group GET
+
+/// #{{{ @group HAS
+
+/// #{{{ @func hasAnyPathComponent
+/**
+ * @private
+ * @param {string} text
+ * @return {boolean}
+ */
+var hasAnyPathComponent = require('./has-any-path-component.js');
+/// #}}} @func hasAnyPathComponent
+
 /// #{{{ @func hasDefine
 /**
  * @private
@@ -54,6 +69,10 @@ var getKeys = loadTaskHelper('get-keys');
  */
 var hasDefine = require('./has-define-command.js');
 /// #}}} @func hasDefine
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isArray
 /**
@@ -207,6 +226,8 @@ var isStringList = IS.stringList;
  */
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
+
+/// #}}} @group IS
 
 /// #}}} @group HELPERS
 
@@ -1020,14 +1041,19 @@ function setPathCompError(err, line, loading) {
     throw new TypeError('invalid `loading` data type\n' +
       '    valid-types: `boolean=`');
 
-  msg = err.name === 'SyntaxError'
-    ? 'invalid `path` component syntax\n' +
+  if (err.name !== 'SyntaxError')
+    msg = 'no `File` node found for `path` component';
+  else {
+    msg = hasAnyPathComponent(line.text)
+      ? 'invalid `path` component syntax'
+      : 'invalid empty `path` component';
+    msg += '\n' +
       '    valid-path-regex: `/[ \\t][^ \\t\\|]+[ \\t]*$/`\n' +
-      '    NOT-valid-path-chars: `" ", "\\t", "|"`'
-    : 'no `File` node found for `path` component';
+      '    NOT-valid-path-chars: `" ", "\\t", "|"`';
+  }
 
   msg += '\n' +
-    '    path-defined-at:\n' +
+    '    line-defined-at:\n' +
     '        line-text: `' + line.text + '`\n' +
     '        actual-line-location:\n' +
     '            linenum: `' + line.before.linenum + '`\n' +
