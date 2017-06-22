@@ -291,6 +291,15 @@ var isNull = IS.nil;
 var isNumber = IS.number;
 /// #}}} @func isNumber
 
+/// #{{{ @func isObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObject = IS.object;
+/// #}}} @func isObject
+
 /// #{{{ @func isUndefined
 /**
  * @private
