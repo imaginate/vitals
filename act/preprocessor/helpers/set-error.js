@@ -1330,7 +1330,7 @@ function setTagError(err, line, loading) {
 /**
  * @public
  * @param {!ReferenceError} err
- * @param {!Incl} incl1
+ * @param {?Incl} incl1
  * @param {!Incl} incl2
  * @return {!ReferenceError}
  */
@@ -1342,7 +1342,7 @@ function setTreeError(err, incl1, incl2) {
   if ( !isError(err) )
     throw new TypeError('invalid `err` data type\n' +
       '    valid-types: `!ReferenceError`');
-  if ( !isInclNode(incl1) )
+  if ( !isNull(incl1) && !isInclNode(incl1) )
     throw new TypeError('invalid `incl1` data type\n' +
       '    valid-types: `!Incl`');
   if ( !isInclNode(incl2) )
@@ -1350,14 +1350,20 @@ function setTreeError(err, incl1, incl2) {
       '    valid-types: `!Incl`');
 
   msg = 'invalid file loop for `include` command\n' +
-    '    initial-include-defined-at:\n' +
-    '        line-text: `' + incl1.line.text + '`\n' +
-    '        actual-line-location:\n' +
-    '            linenum: `' + incl1.line.before.linenum + '`\n' +
-    '            file: `' + incl1.line.before.file.path + '`\n' +
-    '        preparsed-line-location:\n' +
-    '            linenum: `' + incl1.line.after.linenum + '`\n' +
-    '            file: `' + incl1.line.after.file.path + '`\n' +
+    '    loop-causing-included-file: `' + incl2.link.path + '`\n';
+
+  if (incl1)
+    msg += '' +
+      '    initial-include-defined-at:\n' +
+      '        line-text: `' + incl1.line.text + '`\n' +
+      '        actual-line-location:\n' +
+      '            linenum: `' + incl1.line.before.linenum + '`\n' +
+      '            file: `' + incl1.line.before.file.path + '`\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + incl1.line.after.linenum + '`\n' +
+      '            file: `' + incl1.line.after.file.path + '`\n';
+
+  msg += '' +
     '    looping-include-defined-at:\n' +
     '        line-text: `' + incl2.line.text + '`\n' +
     '        actual-line-location:\n' +
