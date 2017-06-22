@@ -20,6 +20,7 @@
  */
 var IS = require('./is.js');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -27,15 +28,15 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwnProp = require('./has-own-property.js');
-/// #}}} @func hasOwnProp
+var hasOwnProperty = require('./has-own-property.js');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isBoolean
 /**
@@ -81,6 +82,7 @@ var isObject = IS.object;
  */
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -101,22 +103,19 @@ var cap = (function capPrivateScope() {
    * @const {?function}
    */
   var cap = 'preventExtensions' in Object
-    ? Object['preventExtensions']
+    ? Object.preventExtensions
     : null;
 
   if ( !isFunction(cap) )
-    throw new Error('incompatible platform (must support `Object.preventExtensions`)');
+    throw new Error('missing JS engine support for `Object.preventExtensions`');
 
   try {
     cap(function(){});
     return cap;
   }
   catch (e) {
-    return function cap(src) {
-      return isFunction(src)
-        ? src
-        : cap(src);
-    };
+    throw new Error('incomplete JS engine support for `Object.preventExtensions`\n' +
+      '    `Object.preventExtensions` failed with `function` as `src`');
   }
 })();
 /// #}}} @func cap
@@ -124,8 +123,8 @@ var cap = (function capPrivateScope() {
 /// #{{{ @func capDeep
 /**
  * @private
- * @param {!Object} src
- * @return {!Object}
+ * @param {(!Object|!Function)} src
+ * @return {(!Object|!Function)}
  */
 function capDeep(src) {
 
@@ -135,15 +134,17 @@ function capDeep(src) {
   var val;
 
   for (key in src) {
-    if ( hasOwnProp(src, key) ) {
+    if ( hasOwnProperty(src, key) ) {
       val = src[key];
-      if ( isObject(val) )
+      if ( isObject(val) || isFunction(val) ) {
         capDeep(val);
+      }
     }
   }
   return cap(src);
 }
 /// #}}} @func capDeep
+
 /// #}}} @group METHODS
 
 /// #{{{ @group EXPORTS
@@ -154,20 +155,22 @@ function capDeep(src) {
 /// #{{{ @func capObject
 /**
  * @public
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
 function capObject(src, deep) {
 
   if ( !isUndefined(deep) && !isBoolean(deep) )
-    throw new TypeError('invalid `deep` data type (valid types: `boolean=`)');
+    throw new TypeError('invalid `deep` data type\n' +
+      '    valid-types: `boolean=`');
 
   if ( isNull(src) )
     return null;
 
-  if ( !isObject(src) )
-    throw new TypeError('invalid `src` data type (valid types: `?Object`)');
+  if ( !isObject(src) && !isFunction(src) )
+    throw new TypeError('invalid `src` data type\n' +
+      '    valid-types: `?Object|?Function`');
 
   return deep
     ? capDeep(src)
