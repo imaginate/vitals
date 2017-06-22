@@ -784,6 +784,30 @@ function setMatchError(err, open, close, loading) {
 }
 /// #}}} @func setMatchError
 
+/// #{{{ @func setNewError
+/**
+ * @public
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+function setNewError(err, constructor) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw new TypeError('invalid `err` data type\n' +
+      '    valid-types: `!SyntaxError`');
+  if ( !isString(constructor) )
+    throw new TypeError('invalid `constructor` data type\n' +
+      '    valid-types: `string`');
+
+  msg = 'missing `new` keyword for `' + constructor + '` call';
+  return setError(err, msg);
+}
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoCloseError
 /**
  * @public
@@ -866,8 +890,7 @@ function setNoDefError(err, line, key, file) {
   keys = getKeys(file.defs);
   msg += keys.length === 0
     ? ' <no-def-instances>'
-    : '\n' +
-      '        `"' + keys.join('"`\n        `"') + '"`';
+    : '\n        `"' + keys.join('"`\n        `"') + '"`';
 
   return setError(err, msg);
 }
@@ -1427,6 +1450,7 @@ setError.incl = setInclError;
 setError.index = setIndexError;
 setError.loc = setLocError;
 setError.match = setMatchError;
+setError.new_ = setNewError;
 setError.noClose = setNoCloseError;
 setError.noDef = setNoDefError;
 setError.noOpen = setNoOpenError;
