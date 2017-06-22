@@ -27,7 +27,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object}
  */
-var DIR_TYPE_ID = loadHelper('type-ids').directory;
+var DIR_TYPE_ID = loadHelper('type-ids').DIR;
 /// #}}} @const DIR_TYPE_ID
 
 /// #{{{ @const IS
@@ -45,6 +45,8 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group STATE
+
 /// #{{{ @func capObject
 /**
  * @private
@@ -55,24 +57,6 @@ var IS = loadHelper('is');
 var capObject = loadHelper('cap-object');
 /// #}}} @func capObject
 
-/// #{{{ @func cleanDirPath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirPath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirPath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
-
 /// #{{{ @func createObject
 /**
  * @private
@@ -82,7 +66,7 @@ var cleanPath = loadHelper('clean-path');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProp
+/// #{{{ @func defineProperty
 /**
  * @private
  * @param {!Object} src
@@ -90,8 +74,8 @@ var createObject = loadHelper('create-object');
  * @param {!Object} descriptor
  * @return {!Object}
  */
-var defineProp = loadHelper('define-property');
-/// #}}} @func defineProp
+var defineProperty = loadHelper('define-property');
+/// #}}} @func defineProperty
 
 /// #{{{ @func freezeObject
 /**
@@ -102,6 +86,20 @@ var defineProp = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
+
+/// #{{{ @func sealObject
+/**
+ * @private
+ * @param {?Object} src
+ * @param {boolean=} deep
+ * @return {?Object}
+ */
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
+
+/// #}}} @group STATE
+
+/// #{{{ @group GET
 
 /// #{{{ @func getDirpaths
 /**
@@ -203,6 +201,16 @@ var getDirpaths = loadHelper('get-dirpaths');
 var getFilepaths = loadHelper('get-filepaths');
 /// #}}} @func getFilepaths
 
+/// #{{{ @func getOwnedCommand
+/**
+ * @private
+ * @param {(!File|!Blk|!Cond)} src
+ * @param {(string|!Blk|!Cond|!Incl)} node
+ * @return {(?Blk|?Cond|?Incl)}
+ */
+var getOwnedCommand = loadHelper('get-owned-command');
+/// #}}} @func getOwnedCommand
+
 /// #{{{ @func getPathName
 /**
  * @private
@@ -221,6 +229,10 @@ var getPathName = loadHelper('get-pathname');
  */
 var getPathNode = loadHelper('get-path-node');
 /// #}}} @func getPathNode
+
+/// #}}} @group GET
+
+/// #{{{ @group HAS
 
 /// #{{{ @func hasDirectory
 /**
@@ -243,15 +255,19 @@ var hasDirectory = loadHelper('has-directory');
 var hasJsExt = loadHelper('has-file-ext').construct('.js');
 /// #}}} @func hasJsExt
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @func hasOwnProperty
 /**
  * @private
  * @param {(!Object|!Function)} src
  * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwnProp = loadHelper('has-own-property');
-/// #}}} @func hasOwnProp
+var hasOwnProperty = loadHelper('has-own-property');
+/// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isBoolean
 /**
@@ -262,14 +278,14 @@ var hasOwnProp = loadHelper('has-own-property');
 var isBoolean = IS.boolean;
 /// #}}} @func isBoolean
 
-/// #{{{ @func isBooleanMap
+/// #{{{ @func isCondFlagsNode
 /**
  * @private
- * @param {!Object} vals
+ * @param {*} val
  * @return {boolean}
  */
-var isBooleanMap = IS.booleanHashMap;
-/// #}}} @func isBooleanMap
+var isCondFlagsNode = loadHelper('is-conditional-flags-node');
+/// #}}} @func isCondFlagsNode
 
 /// #{{{ @func isDirectory
 /**
@@ -316,6 +332,16 @@ var isFileNode = loadHelper('is-file-node');
 var isFunction = IS.func;
 /// #}}} @func isFunction
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -325,6 +351,15 @@ var isFunction = IS.func;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -333,6 +368,15 @@ var isNull = IS.nil;
  */
 var isObject = IS.object;
 /// #}}} @func isObject
+
+/// #{{{ @func isStateObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isStateObject = loadHelper('is-state-object');
+/// #}}} @func isStateObject
 
 /// #{{{ @func isString
 /**
@@ -352,15 +396,36 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
-/// #{{{ @func ownsCmd
+/// #{{{ @func isWholeNumber
 /**
  * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
+ * @param {number} val
  * @return {boolean}
  */
-var ownsCmd = loadHelper('owns-command');
-/// #}}} @func ownsCmd
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
+
+/// #}}} @group IS
+
+/// #{{{ @group TO
+
+/// #{{{ @func cleanDirPath
+/**
+ * @private
+ * @param {string} dirpath
+ * @return {string}
+ */
+var cleanDirPath = loadHelper('clean-dirpath');
+/// #}}} @func cleanDirPath
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadHelper('clean-path');
+/// #}}} @func cleanPath
 
 /// #{{{ @func resolvePath
 /**
@@ -371,16 +436,6 @@ var ownsCmd = loadHelper('owns-command');
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {?Object} src
- * @param {boolean=} deep
- * @return {?Object}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
-
 /// #{{{ @func trimPathName
 /**
  * @private
@@ -389,6 +444,134 @@ var sealObject = loadHelper('seal-object');
  */
 var trimPathName = loadHelper('trim-pathname');
 /// #}}} @func trimPathName
+
+/// #}}} @group TO
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = loadHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setDirError = setError.dir;
+/// #}}} @func setDirError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setExtError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {(string|!Array<string>)} exts
+ * @return {!RangeError}
+ */
+var setExtError = setError.ext;
+/// #}}} @func setExtError
+
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+var setIndexError = setError.index;
+/// #}}} @func setIndexError
+
+/// #{{{ @func setLocError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {!Dir} parent
+ * @param {boolean} contain
+ * @return {!RangeError}
+ */
+var setLocError = setError.loc;
+/// #}}} @func setLocError
+
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
+/// #{{{ @func setPathNodeError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setPathNodeError = setError.pathNode;
+/// #}}} @func setPathNodeError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
+
+/// #}}} @group ERROR
 
 /// #}}} @group HELPERS
 
@@ -401,9 +584,11 @@ var trimPathName = loadHelper('trim-pathname');
 /**
  * @private
  * @param {!Dir} parent
- * @return {void}
+ * @return {!Object<string, !Dir>}
  */
 function mkDirs(parent) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<string>} */
   var paths;
@@ -418,13 +603,27 @@ function mkDirs(parent) {
   /** @type {number} */
   var i;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-dirs-ref
+
   dirs = parent.dirs;
+
+  /// #}}} @step set-dirs-ref
+
+  /// #{{{ @step get-dir-paths
+
   paths = getDirpaths(parent.path, {
     'deep': false,
     'full': true,
     'extend': true,
     'invalidDirs': /^\./
   });
+
+  /// #}}} @step get-dir-paths
+
+  /// #{{{ @step make-dir-nodes
+
   len = paths.length;
   i = -1;
   while (++i < len) {
@@ -433,8 +632,19 @@ function mkDirs(parent) {
     dirs[dir.name] = dir;
   }
 
-  capObject(dirs);
-  sealObject(dirs);
+  /// #}}} @step make-dir-nodes
+
+  /// #{{{ @step freeze-dirs
+
+  freezeObject(dirs);
+
+  /// #}}} @step freeze-dirs
+
+  /// #{{{ @step return-dirs
+
+  return dirs;
+
+  /// #}}} @step return-dirs
 }
 /// #}}} @func mkDirs
 
@@ -442,29 +652,45 @@ function mkDirs(parent) {
 /**
  * @private
  * @param {!Dir} parent
- * @return {void}
+ * @return {!Object<string, !File>}
  */
 function mkFiles(parent) {
 
-  /** @type {!Array<string>} */
-  var paths;
+  /// #{{{ @step declare-variables
+
   /** @type {!Object<string, !File>} */
   var files;
-  /** @type {string} */
-  var path;
+  /** @type {!Array<string>} */
+  var paths;
   /** @type {!File} */
   var file;
+  /** @type {string} */
+  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-files-ref
+
   files = parent.files;
+
+  /// #}}} @step set-files-ref
+
+  /// #{{{ @step get-file-paths
+
   paths = getFilepaths(parent.path, {
     'deep': false,
     'full': true,
     'validFiles': /\.js$/
   });
+
+  /// #}}} @step get-file-paths
+
+  /// #{{{ @step make-file-nodes
+
   len = paths.length;
   i = -1;
   while (++i < len) {
@@ -473,8 +699,19 @@ function mkFiles(parent) {
     files[file.name] = file;
   }
 
-  capObject(files);
-  sealObject(files);
+  /// #}}} @step make-file-nodes
+
+  /// #{{{ @step freeze-files
+
+  freezeObject(files);
+
+  /// #}}} @step freeze-files
+
+  /// #{{{ @step return-files
+
+  return files;
+
+  /// #}}} @step return-files
 }
 /// #}}} @func mkFiles
 
@@ -484,6 +721,16 @@ function mkFiles(parent) {
 //////////////////////////////////////////////////////////////////////////////
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func CondFlags
+/**
+ * @private
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @constructor
+ * @struct
+ */
+var CondFlags = require('./conditional-flags.js');
+/// #}}} @func CondFlags
 
 /// #{{{ @func Dir
 /**
@@ -495,19 +742,27 @@ function mkFiles(parent) {
  */
 function Dir(path, parent) {
 
-  if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
-  if (!path)
-    throw new Error('invalid empty `string` for `path`');
-  if ( !isDirectory(path) )
-    throw new Error('invalid readable directory path `string` for `path`\n' +
-      '    path: `' + path + '`');
-  if ( !isNull(parent) && !isUndefined(parent) && !isDirNode(parent) )
-    throw new TypeError('invalid `parent` data type\n' +
-      '    valid-types: `?Dir=`');
+  /// #{{{ @step verify-new-keyword
 
-  /// #{{{ @group Dir-Constants
+  if ( !isInstanceOf(this, Dir) )
+    throw setNewError(new SyntaxError, 'Dir');
+
+  /// #}}} @step verify-new-keyword
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+  if ( !isDirectory(path) )
+    throw setDirError(new Error, 'path', path);
+  if ( !isNull(parent) && !isUndefined(parent) && !isDirNode(parent) )
+    throw setTypeError(new TypeError, 'parent', '?Dir=');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
 
   /// #{{{ @const PARENT
   /**
@@ -543,16 +798,16 @@ function Dir(path, parent) {
     : '';
   /// #}}} @const TREE
 
-  /// #}}} @group Dir-Constants
+  /// #}}} @step set-constants
 
-  /// #{{{ @group Dir-Members
+  /// #{{{ @step set-members
 
   /// #{{{ @member type
   /**
    * @public
    * @const {!Object}
    */
-  defineProp(this, 'type', {
+  defineProperty(this, 'type', {
     'value': DIR_TYPE_ID,
     'writable': false,
     'enumerable': true,
@@ -565,7 +820,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'name', {
+  defineProperty(this, 'name', {
     'value': NAME,
     'writable': false,
     'enumerable': true,
@@ -578,7 +833,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'tree', {
+  defineProperty(this, 'tree', {
     'value': TREE,
     'writable': false,
     'enumerable': true,
@@ -591,7 +846,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProp(this, 'path', {
+  defineProperty(this, 'path', {
     'value': PATH,
     'writable': false,
     'enumerable': true,
@@ -604,7 +859,7 @@ function Dir(path, parent) {
    * @public
    * @const {?Dir}
    */
-  defineProp(this, 'parent', {
+  defineProperty(this, 'parent', {
     'value': PARENT,
     'writable': false,
     'enumerable': true,
@@ -617,7 +872,7 @@ function Dir(path, parent) {
    * @public
    * @const {!Object<string, !Dir>}
    */
-  defineProp(this, 'dirs', {
+  defineProperty(this, 'dirs', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -630,7 +885,7 @@ function Dir(path, parent) {
    * @public
    * @const {!Object<string, !File>}
    */
-  defineProp(this, 'files', {
+  defineProperty(this, 'files', {
     'value': {},
     'writable': false,
     'enumerable': true,
@@ -638,12 +893,20 @@ function Dir(path, parent) {
   });
   /// #}}} @member files
 
-  /// #}}} @group Dir-Members
+  /// #}}} @step set-members
 
-  sealObject(this);
-  capObject(this);
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
+
+  /// #{{{ @step make-child-nodes
+
   mkFiles(this);
   mkDirs(this);
+
+  /// #}}} @step make-child-nodes
 }
 /// #}}} @func Dir
 
@@ -660,9 +923,9 @@ var File = require('./file.js');
 
 /// #}}} @group CONSTRUCTORS
 
-/// #{{{ @group DIR-PROTOTYPE
+/// #{{{ @group PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
-// DIR-PROTOTYPE
+// PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
 Dir.prototype = createObject(null);
@@ -670,9 +933,11 @@ Dir.prototype.constructor = Dir;
 
 /// #{{{ @func Dir.prototype.load
 /**
- * @return {void}
+ * @return {!Dir}
  */
 Dir.prototype.load = function load() {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Object<string, !File>} */
   var files;
@@ -680,26 +945,54 @@ Dir.prototype.load = function load() {
   var dirs;
   /** @type {string} */
   var name;
+  /** @type {!File} */
+  var file;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
 
   files = this.files;
+  dirs = this.dirs;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step load-files
+
   for (name in files) {
-    if ( hasOwnProp(files, name) )
-      files[name].load();
+    if ( hasOwnProperty(files, name) ) {
+      file = files[name];
+      if (file.lines.length === 0)
+        file.load();
+    }
   }
 
-  dirs = this.dirs;
+  /// #}}} @step load-files
+
+  /// #{{{ @step load-dirs
+
   for (name in dirs) {
-    if ( hasOwnProp(dirs, name) )
+    if ( hasOwnProperty(dirs, name) )
       dirs[name].load();
   }
+
+  /// #}}} @step load-dirs
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
 };
 /// #}}} @func Dir.prototype.load
 
 /// #{{{ @func Dir.prototype.preparse
 /**
- * @return {void}
+ * @return {!Dir}
  */
 Dir.prototype.preparse = function preparse() {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Object<string, !File>} */
   var files;
@@ -707,26 +1000,54 @@ Dir.prototype.preparse = function preparse() {
   var dirs;
   /** @type {string} */
   var name;
+  /** @type {!File} */
+  var file;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
 
   files = this.files;
+  dirs = this.dirs;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step preparse-files
+
   for (name in files) {
-    if ( hasOwnProp(files, name) )
-      files[name].preparse();
+    if ( hasOwnProperty(files, name) ) {
+      file = files[name];
+      if (!file.inserts)
+        file.preparse();
+    }
   }
 
-  dirs = this.dirs;
+  /// #}}} @step preparse-files
+
+  /// #{{{ @step preparse-dirs
+
   for (name in dirs) {
-    if ( hasOwnProp(dirs, name) )
+    if ( hasOwnProperty(dirs, name) )
       dirs[name].preparse();
   }
+
+  /// #}}} @step preparse-dirs
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
 };
 /// #}}} @func Dir.prototype.preparse
 
 /// #{{{ @func Dir.prototype.parse
 /**
- * @return {void}
+ * @return {!Dir}
  */
 Dir.prototype.parse = function parse() {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Object<string, !File>} */
   var files;
@@ -734,18 +1055,44 @@ Dir.prototype.parse = function parse() {
   var dirs;
   /** @type {string} */
   var name;
+  /** @type {!File} */
+  var file;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-member-refs
 
   files = this.files;
+  dirs = this.dirs;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step parse-files
+
   for (name in files) {
-    if ( hasOwnProp(files, name) )
-      files[name].parse();
+    if ( hasOwnProperty(files, name) ) {
+      file = files[name];
+      if (file.content.length === 0)
+        file.parse();
+    }
   }
 
-  dirs = this.dirs;
+  /// #}}} @step parse-files
+
+  /// #{{{ @step parse-dirs
+
   for (name in dirs) {
-    if ( hasOwnProp(dirs, name) )
+    if ( hasOwnProperty(dirs, name) )
       dirs[name].parse();
   }
+
+  /// #}}} @step parse-dirs
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
 };
 /// #}}} @func Dir.prototype.parse
 
@@ -762,93 +1109,127 @@ Dir.prototype.parse = function parse() {
  *   of `File.prototype.run`. The file path may be relative or absolute. If
  *   it is a relative path, it is relative to the `cwd`. The directory path up
  *   to the file name of the resolved #dest path must already exist. If a file
- *   exists at the resolved #dest path, it is overwritten.
- * @param {!Object<string, boolean>} state
+ *   exists at the resolved *dest* path, it is overwritten.
+ * @param {(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)} state
  *   The enabled, `true`, or disabled, `false`, state for every conditional
- *   command defined within the #src `File` instance's *content* `array`. Each
- *   #state `object` key must be *hashed* (i.e. created) by combining each
- *   `Cond` instance's *tag* and *ID* with a colon, `":"`, separating them
- *   (e.g. `"tag:id"`). Every `Cond` instance within the #src `File` must be
- *   defined in the #state or an error will be thrown.
+ *   command defined within the *src* `File` instance's *content* `array`.
+ *   Each parent *state* `object` key must be a `Cond` instance's *tag*, *ID*
+ *   (note that a leading colon, `":id"` or `"*:id"`, is required for parent
+ *   *ID* key names), or *key* (e.g. `"tag:id"`). Parent *tag* keys may use a
+ *   `boolean` or an `object` with *ID* key names and `boolean` values for
+ *   their value. Parent *ID* or *key* keys must use a `boolean` value. The
+ *   asterisk, `"*"`, denotes any number of wildcard characters within a *tag*
+ *   or *ID* (within a *key* it only applies to the *tag* or *ID* where it is
+ *   defined - it does NOT cross-over the separating colon). The question
+ *   mark, `"?"`, denotes a single wildcard character within a *tag*, *ID*, or
+ *   *key*. Every `Cond` instance within the *src* `File` instance must be
+ *   defined in the *state* or an error will be thrown.
  * @param {(!function(string): string)=} alter
- *   The #alter `function` is optional. If it is defined, it allows you to
+ *   The *alter* `function` is optional. If it is defined, it allows you to
  *   provide custom alterations to the preprocessed result of
- *   `File.prototype.run` before it is saved to the #dest.
+ *   `File.prototype.run` before it is saved to the *dest*.
  * @return {string}
  */
 Dir.prototype.run = function run(src, dest, state, alter) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {!CondFlags} */
+  var condFlags;
+  /** @type {string} */
+  var result;
   /** @type {(?Dir|?File)} */
   var node;
   /** @type {string} */
   var path;
-  /** @type {string} */
-  var pwd;
 
-  if ( !isUndefined(alter) && !isFunction(alter) )
-    throw new TypeError('invalid `alter` data type\n' +
-      '    valid-types: `(!function(string): string)=`');
-  if ( !isObject(state) || !isBooleanMap(state) )
-    throw new TypeError('invalid `state` data type\n' +
-      '    valid-types: `!Object<string, boolean>`');
-  if ( !isString(dest) )
-    throw new TypeError('invalid `dest` data type\n' +
-      '    valid-types: `string`');
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameter-data-types
+
   if ( !isString(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'src', 'string');
+  if ( !isString(dest) )
+    throw setTypeError(new TypeError, 'dest', 'string');
+  if ( !isCondFlagsNode(state) && !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)');
+  if ( !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
 
-  pwd = this.path;
+  /// #}}} @step verify-parameter-data-types
+
+  /// #{{{ @step verify-src-path
+
+  if (!src)
+    throw setEmptyError(new Error, 'src');
+  if ( !hasJsExt(src) )
+    throw setExtError(new RangeError, 'src', src, '.js');
+
+  src = resolvePath(this.path, src);
+
+  if ( !isFile(src) )
+    throw setFileError(new Error, 'src', src);
+  if ( !hasDirectory(src, this.path) )
+    throw setLocError(new RangeError, 'src', src, this, true);
+
+  /// #}}} @step verify-src-path
+
+  /// #{{{ @step get-src-node
+
+  node = getPathNode(this, src);
+
+  /// #}}} @step get-src-node
+
+  /// #{{{ @step verify-src-node
+
+  if ( !isFileNode(node) )
+    throw setPathNodeError(new Error, 'src', src);
+
+  /// #}}} @step verify-src-node
+
+  /// #{{{ @step verify-dest-path
 
   if (!dest)
-    throw new Error('invalid empty `string` for `dest`');
+    throw setEmptyError(new Error, 'dest');
   if ( !hasJsExt(dest) )
-    throw new Error('invalid `dest` file extension\n' +
-      '    valid-exts: `".js"`');
+    throw setExtError(new RangeError, 'dest', dest, '.js');
 
   dest = resolvePath(dest);
   path = trimPathName(dest);
 
   if ( !isDirectory(path) )
-    throw new Error('invalid readable directory path for `dest`\n' +
-      '    dest-path: `' + dest + '`\n' +
-      '    dir-path: `' + path + '`');
-  if ( hasDirectory(dest, pwd) )
-    throw new Error('invalid `dest` file path location (' +
-      'must NOT be within `Dir`)\n' +
-      '    dir-path: `' + pwd + '`\n' +
-      '    dest-path: `' + dest + '`');
+    throw setDirError(new Error, 'dest', path);
+  if ( hasDirectory(dest, this.path) )
+    throw setLocError(new RangeError, 'dest', dest, this, false);
 
-  if (!src)
-    throw new Error('invalid empty `string` for `src`');
-  if ( !hasJsExt(src) )
-    throw new Error('invalid `src` file extension\n' +
-      '    valid-exts: `".js"`');
+  /// #}}} @step verify-dest-path
 
-  src = resolvePath(pwd, src);
+  /// #{{{ @step make-cond-flags
 
-  if ( !isFile(src) )
-    throw new Error('invalid readable file path for `src`\n' +
-      '    src-path: `' + src + '`');
-  if ( !hasDirectory(src, pwd) )
-    throw new Error('invalid `src` file path location (' +
-      'must be within `Dir`)\n' +
-      '    dir-path: `' + pwd + '`\n' +
-      '    src-path: `' + src + '`');
+  condFlags = isCondFlagsNode(state)
+    ? state
+    : new CondFlags(state);
 
-  node = getPathNode(this, src);
+  /// #}}} @step make-cond-flags
 
-  if ( !isFileNode(node) )
-    throw new Error('no `File` node found for `src` path\n' +
-      '    src-path: `' + src + '`');
+  /// #{{{ @step get-results
 
-  return isFunction(alter)
-    ? node.run(dest, state, alter)
-    : node.run(dest, state);
+  result = isFunction(alter)
+    ? node.run(dest, condFlags, alter)
+    : node.run(dest, condFlags);
+
+  /// #}}} @step get-results
+
+  /// #{{{ @step return-results
+
+  return result;
+
+  /// #}}} @step return-results
 };
 /// #}}} @func Dir.prototype.run
 
-/// #}}} @group DIR-PROTOTYPE
+/// #}}} @group PROTOTYPE
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
