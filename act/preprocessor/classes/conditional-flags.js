@@ -695,6 +695,49 @@ CondFlags.prototype.addExact = function addExact(name, state) {
 };
 /// #}}} @func CondFlags.prototype.addExact
 
+/// #{{{ @func CondFlags.prototype.getState
+/**
+ * @param {!Cond} cond
+ * @return {boolean}
+ */
+CondFlags.prototype.getState = function getState(cond) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {(boolean|undefined)} */
+  var state;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isCondNode(cond) )
+    throw setTypeError(new TypeError, 'cond', '!Cond');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-state
+
+  state = this.getKey(cond.key);
+  if ( isUndefined(state) ) {
+    state = this.getTag(cond.tag);
+    if ( isUndefined(state) ) {
+      state = this.getId(cond.id);
+      if ( isUndefined(state) )
+        throw setNoStateError(new ReferenceError, cond);
+    }
+  }
+
+  /// #}}} @step get-state
+
+  /// #{{{ @step return-state
+
+  return state;
+
+  /// #}}} @step return-state
+};
+/// #}}} @func CondFlags.prototype.getState
+
 /// #{{{ @func CondFlags.prototype.getKey
 /**
  * @param {string} key
@@ -838,51 +881,6 @@ CondFlags.prototype.getId = function getId(id) {
   /// #}}} @step check-approx
 };
 /// #}}} @func CondFlags.prototype.getId
-
-/// #{{{ @func CondFlags.prototype.isOn
-/**
- * @param {!Cond} cond
- * @return {boolean}
- */
-CondFlags.prototype.isOn = function isOn(cond) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {(boolean|undefined)} */
-  var state;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  if ( !isCondNode(cond) )
-    throw setTypeError(new TypeError, 'cond', '!Cond');
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step get-state
-
-  state = this.getKey(cond.key);
-  if ( isUndefined(state) ) {
-    state = this.getTag(cond.tag);
-    if ( isUndefined(state) ) {
-      state = this.getId(cond.id);
-      if ( isUndefined(state) )
-        throw setNoStateError(new ReferenceError, cond);
-    }
-  }
-
-  /// #}}} @step get-state
-
-  /// #{{{ @step return-state
-
-  return cond.action
-    ? state
-    : !state;
-
-  /// #}}} @step return-state
-};
-/// #}}} @func CondFlags.prototype.isOn
 
 /// #}}} @group PROTOTYPE
 
