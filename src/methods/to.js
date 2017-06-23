@@ -11,30 +11,32 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $writeFile ../helpers/write-file.js
-/// #if}}} @env FS
-/// #if}}} @env SOLO
+/// #if}}} @scope FS
+/// #if}}} @scope SOLO
 
 /// #{{{ @super to
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
 var to = (function toPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs to
+  /// #if{{{ @docrefs to
   /// @docref [join]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
   /// @docref [prim]:(https://developer.mozilla.org/en-US/docs/Glossary/Primitive)
   /// @docref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
@@ -45,17 +47,20 @@ var to = (function toPrivateScope() {
   /// @docref [str2num]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number#Convert_numeric_strings_to_numbers)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [regx-src]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
-  /// #}}} @docrefs to
+  /// #if}}} @docrefs to
 
+  /// #ifnot{{{ @scope DOCS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var to = {};
+  /// #ifnot}}} @scope DOCS_ONLY
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.to.string
   /// @alias vitals.to.str
@@ -72,6 +77,8 @@ var to = (function toPrivateScope() {
    *   #separator value to join each indexed property.
    * @return {string}
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function toString(val, separator) {
 
     switch (arguments['length']) {
@@ -97,9 +104,11 @@ var to = (function toPrivateScope() {
   }
   to['string'] = toString;
   to['str'] = toString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
   /// #{{{ @submethod number
+  /// #{{{ @docs number
   /// @section base
   /// @method vitals.to.number
   /// @alias vitals.to.num
@@ -122,6 +131,8 @@ var to = (function toPrivateScope() {
    *   - *`null`*!$
    *     This method will return `0`.
    */
+  /// #}}} @docs number
+  /// #if{{{ @code number
   function toNumber(val) {
 
     if (arguments['length'] < 1)
@@ -150,9 +161,11 @@ var to = (function toPrivateScope() {
   }
   to['number'] = toNumber;
   to['num'] = toNumber;
+  /// #if}}} @code number
   /// #}}} @submethod number
 
   /// #{{{ @submethod boolean
+  /// #{{{ @docs boolean
   /// @section base
   /// @method vitals.to.boolean
   /// @alias vitals.to.bool
@@ -163,6 +176,8 @@ var to = (function toPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
+  /// #}}} @docs boolean
+  /// #if{{{ @code boolean
   function toBoolean(val) {
 
     if (arguments['length'] < 1)
@@ -172,9 +187,11 @@ var to = (function toPrivateScope() {
   }
   to['boolean'] = toBoolean;
   to['bool'] = toBoolean;
+  /// #if}}} @code boolean
   /// #}}} @submethod boolean
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.to.array
   /// @alias vitals.to.arr
@@ -201,6 +218,8 @@ var to = (function toPrivateScope() {
    *   - `" "`
    * @return {!Array}
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function toArray(val, separator) {
 
     switch (arguments['length']) {
@@ -238,9 +257,11 @@ var to = (function toPrivateScope() {
   }
   to['array'] = toArray;
   to['arr'] = toArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod regexp
+  /// #{{{ @docs regexp
   /// @section base
   /// @method vitals.to.regexp
   /// @alias vitals.to.regex
@@ -256,6 +277,8 @@ var to = (function toPrivateScope() {
    *   new `RegExp`.
    * @return {!RegExp}
    */
+  /// #}}} @docs regexp
+  /// #if{{{ @code regexp
   function toRegExp(source, flags) {
 
     switch (arguments['length']) {
@@ -286,9 +309,11 @@ var to = (function toPrivateScope() {
   to['regexp'] = toRegExp;
   to['regex'] = toRegExp;
   to['re'] = toRegExp;
+  /// #if}}} @code regexp
   /// #}}} @submethod regexp
 
   /// #{{{ @submethod upperCase
+  /// #{{{ @docs upperCase
   /// @section base
   /// @method vitals.to.upperCase
   /// @alias vitals.to.upper
@@ -299,6 +324,8 @@ var to = (function toPrivateScope() {
    * @param {string} source
    * @return {string}
    */
+  /// #}}} @docs upperCase
+  /// #if{{{ @code upperCase
   function toUpperCase(source) {
 
     if (arguments['length'] < 1)
@@ -310,9 +337,11 @@ var to = (function toPrivateScope() {
   }
   to['upperCase'] = toUpperCase;
   to['upper'] = toUpperCase;
+  /// #if}}} @code upperCase
   /// #}}} @submethod upperCase
 
   /// #{{{ @submethod lowerCase
+  /// #{{{ @docs lowerCase
   /// @section base
   /// @method vitals.to.lowerCase
   /// @alias vitals.to.lower
@@ -323,6 +352,8 @@ var to = (function toPrivateScope() {
    * @param {string} source
    * @return {string}
    */
+  /// #}}} @docs lowerCase
+  /// #if{{{ @code lowerCase
   function toLowerCase(source) {
 
     if (arguments['length'] < 1)
@@ -334,11 +365,13 @@ var to = (function toPrivateScope() {
   }
   to['lowerCase'] = toLowerCase;
   to['lower'] = toLowerCase;
+  /// #if}}} @code lowerCase
   /// #}}} @submethod lowerCase
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @submethod file
+  /// #{{{ @docs file
   /// @section fs
   /// @method vitals.to.file
   /**
@@ -368,6 +401,8 @@ var to = (function toPrivateScope() {
    * @return {(!Buffer|string)}
    *   The original #contents (without any normalization applied).
    */
+  /// #}}} @docs file
+  /// #if{{{ @code file
   function toFile(contents, dest, opts) {
 
     /** @type {string} */
@@ -470,13 +505,14 @@ var to = (function toPrivateScope() {
     return _toFileByStr(contents, dest, opts);
   }
   to['file'] = toFile;
+  /// #if}}} @code file
   /// #}}} @submethod file
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #{{{ @group To-Helpers
+  /// #if{{{ @helpers to
 
-  /// #if{{{ @env FS
-  /// #{{{ @group Main-Helpers
+  /// #if{{{ @scope FS
+  /// #{{{ @group main
 
   /// #{{{ @func _toFileByBuff
   /**
@@ -534,9 +570,9 @@ var to = (function toPrivateScope() {
   }
   /// #}}} @func _toFileByStr
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Default-Options
+  /// #{{{ @group defaults
 
   /// #{{{ @const _DFLT_FILE_OPTS
   /**
@@ -550,10 +586,10 @@ var to = (function toPrivateScope() {
   };
   /// #}}} @const _DFLT_FILE_OPTS
 
-  /// #}}} @group Default-Options
-  /// #if}}} @env FS
+  /// #}}} @group defaults
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -565,22 +601,24 @@ var to = (function toPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group To-Helpers
+  /// #if}}} @helpers to
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return to;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['to'] = to;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super to
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = to;
 vitals['to'] = to;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
