@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -19,17 +19,19 @@
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super remap
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var remap = (function remapPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs remap
+  /// #if{{{ @docrefs remap
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
   /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
@@ -46,9 +48,10 @@ var remap = (function remapPrivateScope() {
   /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs remap
+  /// #if}}} @docrefs remap
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.remap
   /**
@@ -123,6 +126,8 @@ var remap = (function remapPrivateScope() {
    *     version of `vitals`).
    * @return {(!Object|!Array|string)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function remap(source, iteratee, replacement, thisArg) {
 
     switch (arguments['length']) {
@@ -177,9 +182,11 @@ var remap = (function remapPrivateScope() {
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.remap.object
   /// @alias vitals.remap.obj
@@ -216,6 +223,8 @@ var remap = (function remapPrivateScope() {
    *   version of `vitals`).
    * @return {!Object} 
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function remapObject(source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -251,9 +260,11 @@ var remap = (function remapPrivateScope() {
   }
   remap['object'] = remapObject;
   remap['obj'] = remapObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.remap.array
   /// @alias vitals.remap.arr
@@ -298,6 +309,8 @@ var remap = (function remapPrivateScope() {
    *   version of `vitals`).
    * @return {!Array}
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function remapArray(source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -345,9 +358,11 @@ var remap = (function remapPrivateScope() {
   }
   remap['array'] = remapArray;
   remap['arr'] = remapArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.remap.string
   /// @alias vitals.remap.str
@@ -388,6 +403,8 @@ var remap = (function remapPrivateScope() {
    *   version of `vitals`).
    * @return {string}
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function remapString(source, pattern, replacement, thisArg) {
 
     switch (arguments['length']) {
@@ -420,11 +437,12 @@ var remap = (function remapPrivateScope() {
   }
   remap['string'] = remapString;
   remap['str'] = remapString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
-  /// #{{{ @group Remap-Helpers
+  /// #if{{{ @helpers remap
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _remapObj
   /**
@@ -561,9 +579,9 @@ var remap = (function remapPrivateScope() {
   }
   /// #}}} @func _remapStr
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Bind-Helpers
+  /// #{{{ @group bind
 
   /// #{{{ @func _bindIteratee
   /**
@@ -637,9 +655,9 @@ var remap = (function remapPrivateScope() {
   }
   /// #}}} @func _bindReplacement
 
-  /// #}}} @group Bind-Helpers
+  /// #}}} @group bind
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -651,22 +669,24 @@ var remap = (function remapPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Remap-Helpers
+  /// #if}}} @helpers remap
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return remap;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['remap'] = remap;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super remap
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = remap;
 vitals['remap'] = remap;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
