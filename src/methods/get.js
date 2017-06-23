@@ -554,10 +554,15 @@ var get = (function getPrivateScope() {
   /// #if}}} @code file
   /// #}}} @submethod file
 
-  /// #{{{ @submethod dirpaths
-  /// #{{{ @docs dirpaths
+  /// #{{{ @submethod directoryPaths
+  /// #{{{ @docs directoryPaths
   /// @section fs
-  /// @method vitals.get.dirpaths
+  /// @method vitals.get.directoryPaths
+  /// @alias vitals.get.directorypaths
+  /// @alias vitals.get.directories
+  /// @alias vitals.get.dirPaths
+  /// @alias vitals.get.dirpaths
+  /// @alias vitals.get.dirs
   /**
    * @description
    *   Gets all of the directory paths within a directory tree.
@@ -687,13 +692,13 @@ var get = (function getPrivateScope() {
    *   An alias for the #opts.extendInvalidDirs option.
    * @return {!Array<string>}
    */
-  /// #}}} @docs dirpaths
-  /// #if{{{ @code dirpaths
-  function getDirpaths(source, opts) {
+  /// #}}} @docs directoryPaths
+  /// #if{{{ @code directoryPaths
+  function getDirectoryPaths(source, opts) {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'dirpaths');
+        throw _mkErr(new ERR, 'no #source defined', 'directoryPaths');
 
       case 1:
         /** @dict */
@@ -723,7 +728,7 @@ var get = (function getPrivateScope() {
 
         if ( !$is.obj(opts) )
           throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
-            'dirpaths');
+            'directoryPaths');
 
         /** @dict */
         opts = $cloneObj(opts);
@@ -732,7 +737,7 @@ var get = (function getPrivateScope() {
           opts['recursive'] = VOID;
         else if ( !$is.bool(opts['recursive']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'deep') )
           opts['deep'] = $is.bool(opts['recursive'])
@@ -740,13 +745,13 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['deep'];
         else if ( !$is.bool(opts['deep']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'basepath') )
           opts['basepath'] = VOID;
         else if ( !$is.bool(opts['basepath']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.basepath', opts['basepath'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'base') )
           opts['base'] = $is.bool(opts['basepath'])
@@ -754,13 +759,13 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['base'];
         else if ( !$is.bool(opts['base']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.base', opts['base'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'absolute') )
           opts['absolute'] = VOID;
         else if ( !$is.bool(opts['absolute']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.absolute', opts['absolute'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'abs') )
           opts['abs'] = $is.bool(opts['absolute'])
@@ -768,13 +773,13 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['abs'];
         else if ( !$is.bool(opts['abs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.abs', opts['abs'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'wildcard') )
           opts['wildcard'] = VOID;
         else if ( !$is.bool(opts['wildcard']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.wildcard', opts['wildcard'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'glob') )
           opts['glob'] = $is.bool(opts['wildcard'])
@@ -782,13 +787,13 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['glob'];
         else if ( !$is.bool(opts['glob']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.glob', opts['glob'],
-            'boolean=', 'dirpaths');
+            'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'extendValid') )
           opts['extendValid'] = VOID;
         else if ( !$is.bool(opts['extendValid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValid',
-            opts['extendValid'], 'boolean=', 'dirpaths');
+            opts['extendValid'], 'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'extendValidDirs') )
           opts['extendValidDirs'] = $is.bool(opts['extendValid'])
@@ -796,13 +801,13 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['extendValidDirs'];
         else if ( !$is.bool(opts['extendValidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValidDirs',
-            opts['extendValidDirs'], 'boolean=', 'dirpaths');
+            opts['extendValidDirs'], 'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'extendInvalid') )
           opts['extendInvalid'] = VOID;
         else if ( !$is.bool(opts['extendInvalid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalid',
-            opts['extendInvalid'], 'boolean=', 'dirpaths');
+            opts['extendInvalid'], 'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'extendInvalidDirs') )
           opts['extendInvalidDirs'] = $is.bool(opts['extendInvalid'])
@@ -810,14 +815,14 @@ var get = (function getPrivateScope() {
             : _DFLT_DIRS_OPTS['extendInvalidDirs'];
         else if ( !$is.bool(opts['extendInvalidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalidDirs',
-            opts['extendInvalidDirs'], 'boolean=', 'dirpaths');
+            opts['extendInvalidDirs'], 'boolean=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'valid') )
           opts['valid'] = VOID;
         else if ( !_isPattOpt(opts['valid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.valid', opts['valid'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'dirpaths');
+            'string=, string=, string=): *)=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'validDirs') ) {
           if ( !$is.void(opts['valid']) )
@@ -830,14 +835,14 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['validDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.validDirs', opts['validDirs'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'dirpaths');
+            'string=, string=, string=): *)=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'invalid') )
           opts['invalid'] = VOID;
         else if ( !_isPattOpt(opts['invalid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalid', opts['invalid'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'dirpaths');
+            'string=, string=, string=): *)=', 'directoryPaths');
 
         if ( !$hasOpt(opts, 'invalidDirs') ) {
           if ( !$is.void(opts['invalid']) )
@@ -850,22 +855,29 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['invalidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalidDirs',
             opts['invalidDirs'], '(?RegExp|?Array<string>|?string|?function' +
-            '(string=, string=, string=): *)=', 'dirpaths');
+            '(string=, string=, string=): *)=', 'directoryPaths');
     }
 
     if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'dirpaths');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string',
+        'directoryPaths');
     else if (!source)
-      throw _mkErr(new ERR, 'invalid empty #source `string`', 'dirpaths');
+      throw _mkErr(new ERR, 'invalid empty #source `string`',
+        'directoryPaths');
     else if ( !$is.dir(source) )
       throw _mkErr(new ERR, 'invalid #source directory path `' + source + '`',
-        'dirpaths');
+        'directoryPaths');
 
     return _getDirs(source, opts);
   }
-  get['dirpaths'] = getDirpaths;
-  /// #if}}} @code dirpaths
-  /// #}}} @submethod dirpaths
+  get['directoryPaths'] = getDirectoryPaths;
+  get['directorypaths'] = getDirectoryPaths;
+  get['directories'] = getDirectoryPaths;
+  get['dirPaths'] = getDirectoryPaths;
+  get['dirpaths'] = getDirectoryPaths;
+  get['dirs'] = getDirectoryPaths;
+  /// #if}}} @code directoryPaths
+  /// #}}} @submethod directoryPaths
 
   /// #{{{ @submethod filepaths
   /// #{{{ @docs filepaths
