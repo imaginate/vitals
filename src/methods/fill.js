@@ -10,28 +10,31 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super fill
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var fill = (function fillPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs fill
+  /// #if{{{ @docrefs fill
   /// @docref [str-func]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
-  /// #}}} @docrefs fill
+  /// #if}}} @docrefs fill
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.fill
   /**
@@ -65,6 +68,8 @@ var fill = (function fillPrivateScope() {
    *   **not** included in the range of filled properties if it exists.
    * @return {(?Array|?Object|?Function|?string)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function fill(source, keys, val, start, end) {
 
     switch (arguments['length']) {
@@ -118,9 +123,11 @@ var fill = (function fillPrivateScope() {
 
     return _fillKeys(source, keys, val);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.fill.object
   /// @alias vitals.fill.obj
@@ -143,6 +150,8 @@ var fill = (function fillPrivateScope() {
    *   The value to fill the `object` or `function` with.
    * @return {(!Object|!Function)}
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function fillObject(source, keys, val) {
 
     switch (arguments['length']) {
@@ -175,9 +184,11 @@ var fill = (function fillPrivateScope() {
   }
   fill['object'] = fillObject;
   fill['obj'] = fillObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.fill.array
   /// @alias vitals.fill.arr
@@ -202,6 +213,8 @@ var fill = (function fillPrivateScope() {
    *   the range of filled properties if it exists.
    * @return {!Array}
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function fillArray(source, val, start, end) {
 
     switch (arguments['length']) {
@@ -265,9 +278,11 @@ var fill = (function fillPrivateScope() {
   }
   fill['array'] = fillArray;
   fill['arr'] = fillArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.fill.string
   /// @alias vitals.fill.str
@@ -282,6 +297,8 @@ var fill = (function fillPrivateScope() {
    *   `string` is converted to a `string`.
    * @return {string}
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function fillString(count, val) {
 
     switch (arguments['length']) {
@@ -301,11 +318,12 @@ var fill = (function fillPrivateScope() {
   }
   fill['string'] = fillString;
   fill['str'] = fillString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
-  /// #{{{ @group Fill-Helpers
+  /// #if{{{ @helpers fill
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _fillObj
   /**
@@ -416,9 +434,9 @@ var fill = (function fillPrivateScope() {
   }
   /// #}}} @func _fillStr
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -430,22 +448,24 @@ var fill = (function fillPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Fill-Helpers
+  /// #if}}} @helpers fill
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return fill;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['fill'] = fill;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super fill
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = fill;
 vitals['fill'] = fill;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
