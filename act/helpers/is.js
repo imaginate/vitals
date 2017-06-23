@@ -37,12 +37,20 @@
 var FS = require('fs');
 /// #}}} @const FS
 
+/// #{{{ @const MODE
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var MODE = /^0?[0-7]{1,3}$/;
+/// #}}} @const MODE
+
 /// #{{{ @const SEMANTIC
 /**
  * @private
  * @const {!RegExp}
  */
-var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
+var SEMANTIC = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
 /// #}}} @const SEMANTIC
 
 /// #{{{ @const STAT_DUMMY
@@ -647,7 +655,7 @@ function isInstanceOf(inst, constructor) {
  * @return {boolean}
  */
 function isSemanticVersion(val) {
-  return isString(val) && !!val && SEMANTIC.test(val);
+  return !!val && isString(val) && SEMANTIC.test(val);
 }
 /// #}}} @func isSemanticVersion
 
@@ -921,6 +929,17 @@ function isDirectory(path) {
 }
 /// #}}} @func isDirectory
 
+/// #{{{ @func isFileMode
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isFileMode(val) {
+  return !!val && isString(val) && MODE.test(val);
+}
+/// #}}} @func isFileMode
+
 /// #{{{ @func isFile
 /**
  * @public
@@ -1180,6 +1199,20 @@ var IS = {
   'dirPath':       isDirectory,
   'dirpath':       isDirectory,
   'dir':           isDirectory,
+
+  'directoryMode': isFileMode,
+  'directorymode': isFileMode,
+  'directoryMod':  isFileMode,
+  'directorymod':  isFileMode,
+  'fileMode':      isFileMode,
+  'filemode':      isFileMode,
+  'fileMod':       isFileMode,
+  'filemod':       isFileMode,
+  'dirMode':       isFileMode,
+  'dirmode':       isFileMode,
+  'dirMod':        isFileMode,
+  'dirmod':        isFileMode,
+  'mode':          isFileMode,
 
   'filePath': isFile,
   'filepath': isFile,
