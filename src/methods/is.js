@@ -11,30 +11,32 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super is
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope DOCS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS_ONLY
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
-/// #if}}} @env FS_ONLY
+/// #if}}} @scope FS_ONLY
 var is = (function isPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs is
+  /// #if{{{ @docrefs is
   /// @docref [arr]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Indexed_collections_Arrays_and_typed_Arrays)
   /// @docref [doc]:(https://developer.mozilla.org/en-US/docs/Web/API/Document)
   /// @docref [nan]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN)
@@ -57,19 +59,20 @@ var is = (function isPrivateScope() {
   /// @docref [bool-desc]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean#Description)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs is
+  /// #if}}} @docrefs is
 
-  /// #if{{{ @env FS_ONLY
+  /// #if{{{ @scope FS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var is = {};
-  /// #if}}} @env FS_ONLY
+  /// #if}}} @scope FS_ONLY
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.is
   /**
@@ -88,6 +91,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function is(types, val) {
 
     /** @type {string} */
@@ -129,10 +134,12 @@ var is = (function isPrivateScope() {
       ? _checkVals(checks, arguments, nullable)
       : _checkVal(checks, val, nullable);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
-  /// #ifnot{{{ @env IS_MAIN_ONLY
+  /// #ifnot{{{ @scope IS_MAIN_ONLY
   /// #{{{ @submethod null
+  /// #{{{ @docs null
   /// @section base
   /// @method vitals.is.null
   /// @alias vitals.is.nil
@@ -146,6 +153,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs null
+  /// #if{{{ @code null
   function isNull(val) {
     switch (arguments['length']) {
       case 0:
@@ -158,9 +167,11 @@ var is = (function isPrivateScope() {
   }
   is['null'] = isNull;
   is['nil'] = isNull;
+  /// #if}}} @code null
   /// #}}} @submethod null
 
   /// #{{{ @submethod undefined
+  /// #{{{ @docs undefined
   /// @section base
   /// @method vitals.is.undefined
   /// @alias vitals.is.void
@@ -174,6 +185,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs undefined
+  /// #if{{{ @code undefined
   function isUndefined(val) {
     switch (arguments['length']) {
       case 0:
@@ -186,9 +199,11 @@ var is = (function isPrivateScope() {
   }
   is['undefined'] = isUndefined;
   is['void'] = isUndefined;
+  /// #if}}} @code undefined
   /// #}}} @submethod undefined
 
   /// #{{{ @submethod boolean
+  /// #{{{ @docs boolean
   /// @section base
   /// @method vitals.is.boolean
   /// @alias vitals.is.bool
@@ -203,6 +218,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs boolean
+  /// #if{{{ @code boolean
   function isBoolean(val) {
     switch (arguments['length']) {
       case 0:
@@ -215,9 +232,11 @@ var is = (function isPrivateScope() {
   }
   is['boolean'] = isBoolean;
   is['bool'] = isBoolean;
+  /// #if}}} @code boolean
   /// #}}} @submethod boolean
 
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.is.string
   /// @alias vitals.is.str
@@ -232,6 +251,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function isString(val) {
     switch (arguments['length']) {
       case 0:
@@ -244,9 +265,11 @@ var is = (function isPrivateScope() {
   }
   is['string'] = isString;
   is['str'] = isString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
   /// #{{{ @submethod _string
+  /// #{{{ @docs _string
   /// @section base
   /// @method vitals.is._string
   /// @alias vitals.is._str
@@ -261,6 +284,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs _string
+  /// #if{{{ @code _string
   function isNonEmptyString(val) {
     switch (arguments['length']) {
       case 0:
@@ -273,9 +298,11 @@ var is = (function isPrivateScope() {
   }
   is['_string'] = isNonEmptyString;
   is['_str'] = isNonEmptyString;
+  /// #if}}} @code _string
   /// #}}} @submethod _string
 
   /// #{{{ @submethod number
+  /// #{{{ @docs number
   /// @section base
   /// @method vitals.is.number
   /// @alias vitals.is.num
@@ -290,6 +317,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs number
+  /// #if{{{ @code number
   function isNumber(val) {
     switch (arguments['length']) {
       case 0:
@@ -302,9 +331,11 @@ var is = (function isPrivateScope() {
   }
   is['number'] = isNumber;
   is['num'] = isNumber;
+  /// #if}}} @code number
   /// #}}} @submethod number
 
   /// #{{{ @submethod _number
+  /// #{{{ @docs _number
   /// @section base
   /// @method vitals.is._number
   /// @alias vitals.is._num
@@ -319,6 +350,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs _number
+  /// #if{{{ @code _number
   function isNonZeroNumber(val) {
     switch (arguments['length']) {
       case 0:
@@ -331,9 +364,11 @@ var is = (function isPrivateScope() {
   }
   is['_number'] = isNonZeroNumber;
   is['_num'] = isNonZeroNumber;
+  /// #if}}} @code _number
   /// #}}} @submethod _number
 
   /// #{{{ @submethod nan
+  /// #{{{ @docs nan
   /// @section base
   /// @method vitals.is.nan
   /**
@@ -346,6 +381,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs nan
+  /// #if{{{ @code nan
   function isNan(val) {
     switch (arguments['length']) {
       case 0:
@@ -357,9 +394,11 @@ var is = (function isPrivateScope() {
     }
   }
   is['nan'] = isNan;
+  /// #if}}} @code nan
   /// #}}} @submethod nan
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.is.object
   /// @alias vitals.is.obj
@@ -373,6 +412,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function isObject(val) {
     switch (arguments['length']) {
       case 0:
@@ -385,9 +426,11 @@ var is = (function isPrivateScope() {
   }
   is['object'] = isObject;
   is['obj'] = isObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod _object
+  /// #{{{ @docs _object
   /// @section base
   /// @method vitals.is._object
   /// @alias vitals.is._obj
@@ -407,6 +450,8 @@ var is = (function isPrivateScope() {
    * @param {...*} val
    * @return {boolean}
    */
+  /// #}}} @docs _object
+  /// #if{{{ @code _object
   function isObjectOrFunction(val) {
     switch (arguments['length']) {
       case 0:
@@ -419,9 +464,11 @@ var is = (function isPrivateScope() {
   }
   is['_object'] = isObjectOrFunction;
   is['_obj'] = isObjectOrFunction;
+  /// #if}}} @code _object
   /// #}}} @submethod _object
 
   /// #{{{ @submethod func
+  /// #{{{ @docs func
   /// @section base
   /// @method vitals.is.func
   /// @alias vitals.is.fn
@@ -443,6 +490,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs func
+  /// #if{{{ @code func
   function isFunction(val) {
     switch (arguments['length']) {
       case 0:
@@ -460,9 +509,11 @@ var is = (function isPrivateScope() {
     is['function'] = isFunction;
   }
   catch (e) {}
+  /// #if}}} @code func
   /// #}}} @submethod func
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.is.array
   /// @alias vitals.is.arr
@@ -477,6 +528,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function isArray(val) {
     switch (arguments['length']) {
       case 0:
@@ -489,9 +542,11 @@ var is = (function isPrivateScope() {
   }
   is['array'] = isArray;
   is['arr'] = isArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod _array
+  /// #{{{ @docs _array
   /// @section base
   /// @method vitals.is._array
   /// @alias vitals.is._arr
@@ -506,6 +561,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs _array
+  /// #if{{{ @code _array
   function isArrayOrArguments(val) {
     switch (arguments['length']) {
       case 0:
@@ -518,9 +575,11 @@ var is = (function isPrivateScope() {
   }
   is['_array'] = isArrayOrArguments;
   is['_arr'] = isArrayOrArguments;
+  /// #if}}} @code _array
   /// #}}} @submethod _array
 
   /// #{{{ @submethod regexp
+  /// #{{{ @docs regexp
   /// @section base
   /// @method vitals.is.regexp
   /// @alias vitals.is.regex
@@ -537,6 +596,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs regexp
+  /// #if{{{ @code regexp
   function isRegExp(val) {
     switch (arguments['length']) {
       case 0:
@@ -551,9 +612,11 @@ var is = (function isPrivateScope() {
   is['regex'] = isRegExp;
   is['regx'] = isRegExp;
   is['re'] = isRegExp;
+  /// #if}}} @code regexp
   /// #}}} @submethod regexp
 
   /// #{{{ @submethod date
+  /// #{{{ @docs date
   /// @section base
   /// @method vitals.is.date
   /**
@@ -567,6 +630,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs date
+  /// #if{{{ @code date
   function isDate(val) {
     switch (arguments['length']) {
       case 0:
@@ -578,9 +643,11 @@ var is = (function isPrivateScope() {
     }
   }
   is['date'] = isDate;
+  /// #if}}} @code date
   /// #}}} @submethod date
 
   /// #{{{ @submethod error
+  /// #{{{ @docs error
   /// @section base
   /// @method vitals.is.error
   /// @alias vitals.is.err
@@ -595,6 +662,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs error
+  /// #if{{{ @code error
   function isError(val) {
     switch (arguments['length']) {
       case 0:
@@ -607,9 +676,11 @@ var is = (function isPrivateScope() {
   }
   is['error'] = isError;
   is['err'] = isError;
+  /// #if}}} @code error
   /// #}}} @submethod error
 
   /// #{{{ @submethod args
+  /// #{{{ @docs args
   /// @section base
   /// @method vitals.is.args
   /**
@@ -623,6 +694,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs args
+  /// #if{{{ @code args
   function isArguments(val) {
     switch (arguments['length']) {
       case 0:
@@ -634,9 +707,11 @@ var is = (function isPrivateScope() {
     }
   }
   is['args'] = isArguments;
+  /// #if}}} @code args
   /// #}}} @submethod args
 
   /// #{{{ @submethod document
+  /// #{{{ @docs document
   /// @section base
   /// @method vitals.is.document
   /// @alias vitals.is.doc
@@ -651,6 +726,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs document
+  /// #if{{{ @code document
   function isDocument(val) {
     switch (arguments['length']) {
       case 0:
@@ -663,9 +740,11 @@ var is = (function isPrivateScope() {
   }
   is['document'] = isDocument;
   is['doc'] = isDocument;
+  /// #if}}} @code document
   /// #}}} @submethod document
 
   /// #{{{ @submethod element
+  /// #{{{ @docs element
   /// @section base
   /// @method vitals.is.element
   /// @alias vitals.is.elem
@@ -680,6 +759,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs element
+  /// #if{{{ @code element
   function isElement(val) {
     switch (arguments['length']) {
       case 0:
@@ -692,9 +773,11 @@ var is = (function isPrivateScope() {
   }
   is['element'] = isElement;
   is['elem'] = isElement;
+  /// #if}}} @code element
   /// #}}} @submethod element
 
   /// #{{{ @submethod empty
+  /// #{{{ @docs empty
   /// @section base
   /// @method vitals.is.empty
   /**
@@ -728,6 +811,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs empty
+  /// #if{{{ @code empty
   function isEmpty(val) {
     switch (arguments['length']) {
       case 0:
@@ -739,9 +824,11 @@ var is = (function isPrivateScope() {
     }
   }
   is['empty'] = isEmpty;
+  /// #if}}} @code empty
   /// #}}} @submethod empty
 
   /// #{{{ @submethod frozen
+  /// #{{{ @docs frozen
   /// @section base
   /// @method vitals.is.frozen
   /**
@@ -754,6 +841,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs frozen
+  /// #if{{{ @code frozen
   function isFrozen(val) {
     switch (arguments['length']) {
       case 0:
@@ -765,9 +854,11 @@ var is = (function isPrivateScope() {
     }
   }
   is['frozen'] = isFrozen;
+  /// #if}}} @code frozen
   /// #}}} @submethod frozen
 
   /// #{{{ @submethod wholeNumber
+  /// #{{{ @docs wholeNumber
   /// @section base
   /// @method vitals.is.wholeNumber
   /// @alias vitals.is.whole
@@ -783,6 +874,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs wholeNumber
+  /// #if{{{ @code wholeNumber
   function isWholeNumber(val) {
     switch (arguments['length']) {
       case 0:
@@ -795,9 +888,11 @@ var is = (function isPrivateScope() {
   }
   is['wholeNumber'] = isWholeNumber;
   is['whole'] = isWholeNumber;
+  /// #if}}} @code wholeNumber
   /// #}}} @submethod wholeNumber
 
   /// #{{{ @submethod oddNumber
+  /// #{{{ @docs oddNumber
   /// @section base
   /// @method vitals.is.oddNumber
   /// @alias vitals.is.odd
@@ -812,6 +907,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs oddNumber
+  /// #if{{{ @code oddNumber
   function isOddNumber(val) {
     switch (arguments['length']) {
       case 0:
@@ -824,9 +921,11 @@ var is = (function isPrivateScope() {
   }
   is['oddNumber'] = isOddNumber;
   is['odd'] = isOddNumber;
+  /// #if}}} @code oddNumber
   /// #}}} @submethod oddNumber
 
   /// #{{{ @submethod evenNumber
+  /// #{{{ @docs evenNumber
   /// @section base
   /// @method vitals.is.evenNumber
   /// @alias vitals.is.even
@@ -841,6 +940,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs evenNumber
+  /// #if{{{ @code evenNumber
   function isEvenNumber(val) {
     switch (arguments['length']) {
       case 0:
@@ -853,12 +954,14 @@ var is = (function isPrivateScope() {
   }
   is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
+  /// #if}}} @code evenNumber
   /// #}}} @submethod evenNumber
-  /// #ifnot}}} @env IS_MAIN_ONLY
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope IS_MAIN_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @submethod buffer
+  /// #{{{ @docs buffer
   /// @section fs
   /// @method vitals.is.buffer
   /// @alias vitals.is.buff
@@ -873,6 +976,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs buffer
+  /// #if{{{ @code buffer
   function isBuffer(val) {
     switch (arguments['length']) {
       case 0:
@@ -886,9 +991,11 @@ var is = (function isPrivateScope() {
   is['buffer'] = isBuffer;
   is['buff'] = isBuffer;
   is['buf'] = isBuffer;
+  /// #if}}} @code buffer
   /// #}}} @submethod buffer
 
   /// #{{{ @submethod directory
+  /// #{{{ @docs directory
   /// @section fs
   /// @method vitals.is.directory
   /// @alias vitals.is.dir
@@ -902,6 +1009,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs directory
+  /// #if{{{ @code directory
   function isDirectory(val) {
     switch (arguments['length']) {
       case 0:
@@ -914,9 +1023,11 @@ var is = (function isPrivateScope() {
   }
   is['directory'] = isDirectory;
   is['dir'] = isDirectory;
+  /// #if}}} @code directory
   /// #}}} @submethod directory
 
   /// #{{{ @submethod file
+  /// #{{{ @docs file
   /// @section fs
   /// @method vitals.is.file
   /**
@@ -929,6 +1040,8 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
+  /// #}}} @docs file
+  /// #if{{{ @code file
   function isFile(val) {
     switch (arguments['length']) {
       case 0:
@@ -940,13 +1053,14 @@ var is = (function isPrivateScope() {
     }
   }
   is['file'] = isFile;
+  /// #if}}} @code file
   /// #}}} @submethod file
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Is-Helpers
+  /// #if{{{ @helpers is
 
-  /// #ifnot{{{ @env IS_MAIN_ONLY
-  /// #{{{ @group Main-Helpers
+  /// #ifnot{{{ @scope IS_MAIN_ONLY
+  /// #{{{ @group main
 
   /// #{{{ @func _are
   /**
@@ -969,7 +1083,7 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _are
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @func _isFrozen
   /**
    * @private
@@ -1037,13 +1151,13 @@ var is = (function isPrivateScope() {
     return $is.even(val);
   }
   /// #}}} @func _isEven
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #}}} @group Main-Helpers
-  /// #ifnot}}} @env IS_MAIN_ONLY
+  /// #}}} @group main
+  /// #ifnot}}} @scope IS_MAIN_ONLY
 
-  /// #ifnot{{{ @env FS_ONLY
-  /// #{{{ @group Check-Helpers
+  /// #ifnot{{{ @scope FS_ONLY
+  /// #{{{ @group check
 
   /// #{{{ @func _checkVal
   /**
@@ -1089,9 +1203,9 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _checkVals
 
-  /// #}}} @group Check-Helpers
+  /// #}}} @group check
 
-  /// #{{{ @group Data-Types
+  /// #{{{ @group types
 
   /// #{{{ @const _TYPES
   /**
@@ -1422,9 +1536,9 @@ var is = (function isPrivateScope() {
   })();
   /// #}}} @const _TYPES
 
-  /// #}}} @group Data-Types
+  /// #}}} @group types
 
-  /// #{{{ @group Parse-Helpers
+  /// #{{{ @group parse
 
   /// #{{{ @const _ALL_SPECIALS
   /**
@@ -1627,10 +1741,10 @@ var is = (function isPrivateScope() {
   }
   /// #}}} @func _getNullable
 
-  /// #}}} @group Parse-Helpers
-  /// #ifnot}}} @env FS_ONLY
+  /// #}}} @group parse
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -1642,24 +1756,26 @@ var is = (function isPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Is-Helpers
+  /// #if}}} @helpers is
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return is;
 })();
-/// #ifnot{{{ @env SOLO
-/// #ifnot{{{ @env IS_MAIN_ONLY
+/// #ifnot{{{ @scope SOLO
+/// #ifnot{{{ @scope IS_MAIN_ONLY
 vitals['is'] = is;
-/// #ifnot}}} @env IS_MAIN_ONLY
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope IS_MAIN_ONLY
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super is
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = is;
 vitals['is'] = is;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
