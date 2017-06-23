@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -246,11 +253,10 @@ var isUndefined = IS.undefined;
 function setError(err, msg) {
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `(!Error|!RangeError|!SyntaxError|!TypeError)`');
+    throw setTypeError(new TypeError, 'err',
+      '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)');
   if ( !isString(msg) )
-    throw new TypeError('invalid `msg` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'msg', 'string');
 
   switch (err.name) {
 
@@ -294,14 +300,11 @@ function setCloseError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `close` command syntax for `close` parameter\n' +
     '    close-defined-at:\n' +
@@ -334,14 +337,11 @@ function setCmdError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `command` syntax\n' +
     '    line-text: `' + line.text + '`\n' +
@@ -372,11 +372,9 @@ function setDefError(err, line) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
 
   msg = 'out-of-order `define` command - must precede all other commands\n'
     '    defined-at:\n' +
@@ -403,14 +401,11 @@ function setDefChildError(err, child, parent) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(child) )
-    throw new TypeError('invalid `child` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'child', '!Line');
   if ( !isLineNode(parent) )
-    throw new TypeError('invalid `parent` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'parent', '!Line');
 
   msg = hasDefine(child.text)
     ? 'invalid `define` command within another `define` scope'
@@ -447,17 +442,15 @@ function setDirError(err, param, path) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   msg = 'invalid readable directory path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setDirError
@@ -475,13 +468,12 @@ function setEmptyError(err, param) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
 
   msg = 'invalid empty `string` for `' + param + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setEmptyError
@@ -501,20 +493,16 @@ function setExtError(err, param, path, exts) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   if ( isArray(exts) && isStringList(exts) )
     exts = exts.join('", "');
   else if ( !isString(exts) )
-    throw new TypeError('invalid `exts` data type\n' +
-      '    valid-types: `(string|!Array<string>)`');
+    throw setTypeError(new TypeError, 'exts', '(string|!Array<string>)');
 
   msg = 'invalid file extension for `' + param + '`\n' +
     '    valid-extensions: `"' + exts + '"`\n' +
@@ -538,14 +526,11 @@ function setFileError(err, param, path) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   msg = 'invalid readable file path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
@@ -568,14 +553,11 @@ function setIdError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `id` component syntax\n' +
     '    valid-id-regex: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
@@ -610,14 +592,11 @@ function setInclError(err, incl1, incl2) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!ReferenceError`');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
   if ( !isInclNode(incl1) )
-    throw new TypeError('invalid `incl1` data type\n' +
-      '    valid-types: `!Incl`');
+    throw setTypeError(new TypeError, 'incl1', '!Incl');
   if ( !isInclNode(incl2) )
-    throw new TypeError('invalid `incl2` data type\n' +
-      '    valid-types: `!Incl`');
+    throw setTypeError(new TypeError, 'incl2', '!Incl');
 
   msg = 'duplicate `include` commands\n' +
     '    first-duplicate-defined-at:\n' +
@@ -658,29 +637,25 @@ function setIndexError(err, param, index, min) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isNumber(index) )
-    throw new TypeError('invalid `index` data type\n' +
-      '    valid-types: `number`');
+    throw setTypeError(new TypeError, 'index', 'number');
 
   if ( isUndefined(min) )
     min = 0;
   else if ( !isNumber(min) )
-    throw new TypeError('invalid `min` data type\n' +
-      '    valid-types: `number=`');
+    throw setTypeError(new TypeError, 'min', 'number=');
   else if ( !isWholeNumber(min) )
-    throw new RangeError('invalid `number` for `min`\n' +
-      '    valid-range-test: `isWholeNumber(min)`\n' +
-      '    value-received: `' + min + '`');
+    throw setWholeError(new RangeError, 'min', min);
 
   valid = 'isWholeNumber(' + param + ') && ' + param + ' >= ' + min;
+
   msg = 'invalid `number` for `' + param + '`\n' +
     '    valid-range-test: `' + valid + '`\n' +
     '    value-received: `' + index + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setIndexError
@@ -701,20 +676,15 @@ function setLocError(err, param, path, parent, contain) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
   if ( !isDirNode(parent) )
-    throw new TypeError('invalid `parent` data type\n' +
-      '    valid-types: `!Dir`');
+    throw setTypeError(new TypeError, 'parent', '!Dir');
   if ( !isBoolean(contain) )
-    throw new TypeError('invalid `contain` data type\n' +
-      '    valid-types: `boolean`');
+    throw setTypeError(new TypeError, 'contain', 'boolean');
 
   msg = 'invalid file path location for `' + param + '`\n';
   msg += contain
@@ -742,17 +712,13 @@ function setMatchError(err, open, close, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(open) )
-    throw new TypeError('invalid `open` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'open', '!Line');
   if ( !isLineNode(close) )
-    throw new TypeError('invalid `close` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'close', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'unmatching `open` and `close` command\n' +
     '    open-defined-at:\n' +
@@ -797,13 +763,12 @@ function setNewError(err, constructor) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isString(constructor) )
-    throw new TypeError('invalid `constructor` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'constructor', 'string');
 
   msg = 'missing `new` keyword for `' + constructor + '` call';
+
   return setError(err, msg);
 }
 /// #}}} @func setNewError
@@ -822,14 +787,11 @@ function setNoCloseError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'no `close` command for `open` command\n' +
     '    unclosed-open-defined-at:\n' +
@@ -865,17 +827,13 @@ function setNoDefError(err, line, key, file) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isString(key) )
-    throw new TypeError('invalid `key` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'key', 'string');
   if ( !isFileNode(file) )
-    throw new TypeError('invalid `file` data type\n' +
-      '    valid-types: `!File`');
+    throw setTypeError(new TypeError, 'file', '!File');
 
   msg = 'no matching `Def` node found in inserted `File`\n' +
     '    insert-defined-at:\n' +
@@ -910,14 +868,11 @@ function setNoOpenError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'no `open` command for `close` command\n' +
     '    invalid-close-defined-at:\n' +
@@ -949,11 +904,9 @@ function setNoStateError(err, cond) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!ReferenceError`');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
   if ( !isCondNode(cond) )
-    throw new TypeError('invalid `cond` data type\n' +
-      '    valid-types: `!Cond`');
+    throw setTypeError(new TypeError, 'cond', '!Cond');
 
   msg = 'undefined `conditional` command in `state` parameter\n' +
     '    conditional-command:\n' +
@@ -979,14 +932,11 @@ function setOpenError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `open` command syntax for `open` parameter\n' +
     '    open-defined-at:\n' +
@@ -1020,30 +970,26 @@ function setOwnCmdError(err, node1, node2, scope) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!ReferenceError`');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
 
   if ( isInclNode(node1) )
     node1 = node1.line;
   else if ( isBlkNode(node1) || isCondNode(node1) )
     node1 = node1.open;
   else if ( !isLineNode(node1) )
-    throw new TypeError('invalid `node1` data type\n' +
-      '    valid-types: `(!Line|!Blk|!Cond|!Incl)`');
+    throw setTypeError(new TypeError, 'node1', '(!Line|!Blk|!Cond|!Incl)');
 
   if ( isInclNode(node2) )
     node2 = node2.line;
   else if ( isBlkNode(node2) || isCondNode(node2) )
     node2 = node2.open;
   else if ( !isLineNode(node2) )
-    throw new TypeError('invalid `node2` data type\n' +
-      '    valid-types: `(!Line|!Blk|!Cond|!Incl)`');
+    throw setTypeError(new TypeError, 'node2', '(!Line|!Blk|!Cond|!Incl)');
 
   if ( isUndefined(scope) )
     scope = null;
   else if ( !isNull(scope) && !isBlkNode(scope) && !isCondNode(scope) )
-    throw new TypeError('invalid `scope` data type\n' +
-      '    valid-types: `(?Blk|?Cond)=`');
+    throw setTypeError(new TypeError, 'scope', '(?Blk|?Cond)=');
 
   msg = 'duplicate `command` assignment in ';
   msg += !!scope
@@ -1100,14 +1046,11 @@ function setOwnDefError(err, def1, def2) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!ReferenceError`');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
   if ( !isDefNode(def1) )
-    throw new TypeError('invalid `def1` data type\n' +
-      '    valid-types: `!Def`');
+    throw setTypeError(new TypeError, 'def1', '!Def');
   if ( !isDefNode(def2) )
-    throw new TypeError('invalid `def2` data type\n' +
-      '    valid-types: `!Def`');
+    throw setTypeError(new TypeError, 'def2', '!Def');
 
   msg = 'duplicate `define` command assignment\n' +
     '    first-duplicate-opened-at:\n' +
@@ -1139,14 +1082,11 @@ function setPathCompError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `(!SyntaxError|!Error)`');
+    throw setTypeError(new TypeError, 'err', '(!SyntaxError|!Error)');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   if (err.name !== 'SyntaxError')
     msg = 'no `File` node found for `path` component';
@@ -1190,14 +1130,11 @@ function setPathNodeError(err, param, path) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   msg = 'no `File` node found for `' + param + '` path\n' +
     '    received-path: `' + path + '`';
@@ -1220,14 +1157,11 @@ function setRetError(err, method, types) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!TypeError`');
+    throw setTypeError(new TypeError, 'err', '!TypeError');
   if ( !isString(method) )
-    throw new TypeError('invalid `method` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'method', 'string');
   if ( !isString(types) )
-    throw new TypeError('invalid `types` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'types', 'string');
 
   msg = 'invalid data type returned by `' + method + '`\n' +
     '    valid-types: `' + types + '`';
@@ -1249,11 +1183,9 @@ function setStateError(err, key) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(key) )
-    throw new TypeError('invalid `key` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'key', 'string');
 
   msg = 'invalid key name within `state`\n' +
     '    valid-regex-opt1: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+(:[a-zA-Z0-9_\\.\\-\\$\\?\\*]*)?$/`\n' +
@@ -1278,14 +1210,11 @@ function setStateIdError(err, tag, id) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(tag) )
-    throw new TypeError('invalid `tag` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'tag', 'string');
   if ( !isString(id) )
-    throw new TypeError('invalid `id` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'id', 'string');
 
   msg = 'invalid `ID` key name within `state`\n' +
     '    valid-id-key-regex: `/^:?[a-zA-Z0-9_\\.\\-\\$\\?\\*]+$/`\n' +
@@ -1309,11 +1238,9 @@ function setStateTagError(err, key) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(key) )
-    throw new TypeError('invalid `key` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'key', 'string');
 
   msg = 'invalid `tag` key name within `state`\n' +
     '    valid-tag-key-regex: `/^[a-zA-Z0-9_\\.\\-\\?\\*]+:?$/`\n' +
@@ -1337,14 +1264,11 @@ function setTagError(err, line, loading) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
-    throw new TypeError('invalid `line` data type\n' +
-      '    valid-types: `!Line`');
+    throw setTypeError(new TypeError, 'line', '!Line');
   if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw new TypeError('invalid `loading` data type\n' +
-      '    valid-types: `boolean=`');
+    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `tag` component syntax\n' +
     '    valid-tag-regex: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
@@ -1379,14 +1303,11 @@ function setTreeError(err, incl1, incl2) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!ReferenceError`');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
   if ( !isNull(incl1) && !isInclNode(incl1) )
-    throw new TypeError('invalid `incl1` data type\n' +
-      '    valid-types: `!Incl`');
+    throw setTypeError(new TypeError, 'incl1', '?Incl');
   if ( !isInclNode(incl2) )
-    throw new TypeError('invalid `incl2` data type\n' +
-      '    valid-types: `!Incl`');
+    throw setTypeError(new TypeError, 'incl2', '!Incl');
 
   msg = 'invalid file loop for `include` command\n' +
     '    loop-causing-included-file: `' + incl2.link.path + '`\n';
@@ -1430,17 +1351,15 @@ function setTypeError(err, param, types) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!TypeError`');
+    throw setTypeError(new TypeError, 'err', '!TypeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(types) )
-    throw new TypeError('invalid `types` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'types', 'string');
 
   msg = 'invalid `' + param + '` data type\n' +
     '    valid-types: `' + types + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setTypeError
@@ -1459,18 +1378,16 @@ function setWholeError(err, param, value) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
-  if ( !isNumber(index) )
-    throw new TypeError('invalid `value` data type\n' +
-      '    valid-types: `number`');
+    throw setTypeError(new TypeError, 'param', 'string');
+  if ( !isNumber(value) )
+    throw setTypeError(new TypeError, 'value', 'number');
 
   msg = 'invalid `number` for `' + param + '`\n' +
     '    valid-range-test: `isWholeNumber(' + param + ')`\n' +
     '    value-received: `' + value + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setWholeError
