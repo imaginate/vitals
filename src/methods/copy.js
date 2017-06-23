@@ -11,17 +11,17 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
 /// #include @helper $getFlags ../helpers/get-flags.js
 /// #include @helper $cloneRegx ../helpers/clone-regx.js
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $mkdir ../helpers/mkdir.js
 /// #include @helper $fixEol ../helpers/fix-eol.js
@@ -32,27 +32,29 @@
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
 /// #include @helper $writeFile ../helpers/write-file.js
-/// #if}}} @env FS
-/// #if}}} @env SOLO
+/// #if}}} @scope FS
+/// #if}}} @scope SOLO
 
 /// #{{{ @super copy
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope DOCS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS_ONLY
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
-/// #if}}} @env FS_ONLY
+/// #if}}} @scope FS_ONLY
 var copy = (function copyPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs copy
+  /// #if{{{ @docrefs copy
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
   /// @docref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
@@ -64,19 +66,20 @@ var copy = (function copyPrivateScope() {
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
   /// @docref [regex-global]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global)
   /// @docref [regex-source]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
-  /// #}}} @docrefs copy
+  /// #if}}} @docrefs copy
 
-  /// #if{{{ @env FS_ONLY
+  /// #if{{{ @scope FS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var copy = {};
-  /// #if}}} @env FS_ONLY
+  /// #if}}} @scope FS_ONLY
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.copy
   /**
@@ -92,6 +95,8 @@ var copy = (function copyPrivateScope() {
    *   `function`.
    * @return {*}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function copy(val, deep) {
 
     switch (arguments['length']) {
@@ -114,9 +119,11 @@ var copy = (function copyPrivateScope() {
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.copy.object
   /// @alias vitals.copy.obj
@@ -132,6 +139,8 @@ var copy = (function copyPrivateScope() {
    * @return {!Object}
    *   A new `object` [copied][clone] from the #source.
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function copyObject(source, deep) {
 
     switch (arguments['length']) {
@@ -151,9 +160,11 @@ var copy = (function copyPrivateScope() {
   }
   copy['object'] = copyObject;
   copy['obj'] = copyObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.copy.array
   /// @alias vitals.copy.arr
@@ -177,6 +188,8 @@ var copy = (function copyPrivateScope() {
    * @return {!Array}
    *   A new `array` [copied][clone] from the #source.
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function copyArray(source, deep) {
 
     switch (arguments['length']) {
@@ -201,9 +214,11 @@ var copy = (function copyPrivateScope() {
   copy['array'] = copyArray;
   copy['arr'] = copyArray;
   copy['args'] = copyArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod regexp
+  /// #{{{ @docs regexp
   /// @section base
   /// @method vitals.copy.regexp
   /// @alias vitals.copy.regex
@@ -228,6 +243,8 @@ var copy = (function copyPrivateScope() {
    *   A new `RegExp` with the [RegExp.prototype.source][regex-source] value
    *   and the `RegExp` flag settings of the provided #source `RegExp`.
    */
+  /// #}}} @docs regexp
+  /// #if{{{ @code regexp
   function copyRegExp(source, flags) {
 
     switch (arguments['length']) {
@@ -255,9 +272,11 @@ var copy = (function copyPrivateScope() {
   copy['regex'] = copyRegExp;
   copy['regx'] = copyRegExp;
   copy['re'] = copyRegExp;
+  /// #if}}} @code regexp
   /// #}}} @submethod regexp
 
   /// #{{{ @submethod func
+  /// #{{{ @docs func
   /// @section base
   /// @method vitals.copy.func
   /// @alias vitals.copy.fn
@@ -284,6 +303,8 @@ var copy = (function copyPrivateScope() {
    * @return {!Function}
    *   A new `function` [copied][clone] from the #source.
    */
+  /// #}}} @docs func
+  /// #if{{{ @code func
   function copyFunction(source, deep) {
 
     switch (arguments['length']) {
@@ -310,11 +331,13 @@ var copy = (function copyPrivateScope() {
     copy['function'] = copyFunction;
   }
   catch (e) {}
+  /// #if}}} @code func
   /// #}}} @submethod func
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @submethod file
+  /// #{{{ @docs file
   /// @section fs
   /// @method vitals.copy.file
   /**
@@ -354,6 +377,8 @@ var copy = (function copyPrivateScope() {
    * @return {(!Buffer|string)}
    *   The #source file's contents.
    */
+  /// #}}} @docs file
+  /// #if{{{ @code file
   function copyFile(source, dest, opts) {
 
     switch (arguments['length']) {
@@ -462,9 +487,11 @@ var copy = (function copyPrivateScope() {
     return _copyFile(source, dest, opts);
   }
   copy['file'] = copyFile;
+  /// #if}}} @code file
   /// #}}} @submethod file
 
   /// #{{{ @submethod directory
+  /// #{{{ @docs directory
   /// @section fs
   /// @method vitals.copy.directory
   /// @alias vitals.copy.dir
@@ -509,6 +536,8 @@ var copy = (function copyPrivateScope() {
    * @return {!Array<string>}
    *   An `array` of each file name copied from the #source to the #dest.
    */
+  /// #}}} @docs directory
+  /// #if{{{ @code directory
   function copyDirectory(source, dest, opts) {
 
     switch (arguments['length']) {
@@ -633,14 +662,15 @@ var copy = (function copyPrivateScope() {
   }
   copy['directory'] = copyDirectory;
   copy['dir'] = copyDirectory;
+  /// #if}}} @code directory
   /// #}}} @submethod directory
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Copy-Helpers
+  /// #if{{{ @helpers copy
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @func _copyObj
   /**
    * @private
@@ -710,9 +740,9 @@ var copy = (function copyPrivateScope() {
       : $merge(funcCopy, func);
   }
   /// #}}} @func _copyFunc
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @func _copyFile
   /**
    * @private
@@ -1042,11 +1072,11 @@ var copy = (function copyPrivateScope() {
     return paths;
   }
   /// #}}} @func _copyDirByStrWithEncodeEol
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @group RegExp-Helpers
 
   /// #{{{ @const _ADD_FLAG
@@ -1195,9 +1225,9 @@ var copy = (function copyPrivateScope() {
   /// #}}} @func _mergeDeep
 
   /// #}}} @group Merge-Helpers
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @group Default-Options
 
   /// #{{{ @const _DFLT_FILE_OPTS
@@ -1470,9 +1500,9 @@ var copy = (function copyPrivateScope() {
   /// #}}} @func _mkSubDirs
 
   /// #}}} @group File-System-Helpers
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -1484,22 +1514,24 @@ var copy = (function copyPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Copy-Helpers
+  /// #if}}} @helpers copy
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return copy;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['copy'] = copy;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super copy
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = copy;
 vitals['copy'] = copy;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
