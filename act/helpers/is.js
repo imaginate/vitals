@@ -398,6 +398,17 @@ function isNumber(val) {
 }
 /// #}}} @func isNumber
 
+/// #{{{ @func isInteger
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isInteger(val) {
+  return isNumber(val) && isWholeNumber(val);
+}
+/// #}}} @func isInteger
+
 /// #{{{ @func isNan
 /**
  * @public
@@ -1122,6 +1133,9 @@ var IS = {
 
   'number': isNumber,
   'num':    isNumber,
+
+  'integer': isInteger,
+  'int':     isInteger,
 
   'nan': isNan,
 
