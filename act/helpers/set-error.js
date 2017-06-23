@@ -126,12 +126,10 @@ var isUndefined = IS.undefined;
 function setError(err, msg) {
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `(' +
-      '!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)`');
+    throw setTypeError(new TypeError, 'err',
+      '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)');
   if ( !isString(msg) )
-    throw new TypeError('invalid `msg` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'msg', 'string');
 
   switch (err.name) {
 
@@ -173,14 +171,11 @@ function setDirError(err, param, path) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   msg = 'invalid readable directory path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
@@ -201,11 +196,9 @@ function setEmptyError(err, param) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
 
   msg = 'invalid empty `string` for `' + param + '`';
   return setError(err, msg);
@@ -227,20 +220,16 @@ function setExtError(err, param, path, exts) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   if ( isArray(exts) && isStringList(exts) )
     exts = exts.join('", "');
   else if ( !isString(exts) )
-    throw new TypeError('invalid `exts` data type\n' +
-      '    valid-types: `(string|!Array<string>)`');
+    throw setTypeError(new TypeError, 'exts', '(string|!Array<string>)');
 
   msg = 'invalid file extension for `' + param + '`\n' +
     '    valid-extensions: `"' + exts + '"`\n' +
@@ -264,14 +253,11 @@ function setFileError(err, param, path) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!Error`');
+    throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   msg = 'invalid readable file path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
@@ -297,24 +283,18 @@ function setIndexError(err, param, index, min) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isNumber(index) )
-    throw new TypeError('invalid `index` data type\n' +
-      '    valid-types: `number`');
+    throw setTypeError(new TypeError, 'index', 'number');
 
   if ( isUndefined(min) )
     min = 0;
   else if ( !isNumber(min) )
-    throw new TypeError('invalid `min` data type\n' +
-      '    valid-types: `number=`');
+    throw setTypeError(new TypeError, 'min', 'number=');
   else if ( !isWholeNumber(min) )
-    throw new RangeError('invalid `number` for `min`\n' +
-      '    valid-range-test: `isWholeNumber(min)`\n' +
-      '    value-received: `' + min + '`');
+    throw setWholeError(new RangeError, 'min', min);
 
   valid = 'isWholeNumber(' + param + ') && ' + param + ' >= ' + min;
 
@@ -339,13 +319,12 @@ function setNewError(err, constructor) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!SyntaxError`');
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isString(constructor) )
-    throw new TypeError('invalid `constructor` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'constructor', 'string');
 
   msg = 'missing `new` keyword for `' + constructor + '` call';
+
   return setError(err, msg);
 }
 /// #}}} @func setNewError
@@ -364,14 +343,11 @@ function setRetError(err, method, types) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!TypeError`');
+    throw setTypeError(new TypeError, 'err', '!TypeError');
   if ( !isString(method) )
-    throw new TypeError('invalid `method` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'method', 'string');
   if ( !isString(types) )
-    throw new TypeError('invalid `types` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'types', 'string');
 
   msg = 'invalid data type returned by `' + method + '`\n' +
     '    valid-types: `' + types + '`';
@@ -394,17 +370,15 @@ function setTypeError(err, param, types) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!TypeError`');
+    throw setTypeError(new TypeError, 'err', '!TypeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isString(types) )
-    throw new TypeError('invalid `types` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'types', 'string');
 
   msg = 'invalid `' + param + '` data type\n' +
     '    valid-types: `' + types + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setTypeError
@@ -423,14 +397,11 @@ function setWholeError(err, param, value) {
   var msg;
 
   if ( !isError(err) )
-    throw new TypeError('invalid `err` data type\n' +
-      '    valid-types: `!RangeError`');
+    throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
-    throw new TypeError('invalid `param` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'param', 'string');
   if ( !isNumber(index) )
-    throw new TypeError('invalid `value` data type\n' +
-      '    valid-types: `number`');
+    throw setTypeError(new TypeError, 'value', 'number');
 
   msg = 'invalid `number` for `' + param + '`\n' +
     '    valid-range-test: `isWholeNumber(' + param + ')`\n' +
