@@ -11,6 +11,7 @@
 
 /// #def{{{ @code EXPORT
   /// #{{{ @group export
+  vitals['VERSION'] = VERSION;
   /// #if{{{ @env NODE
   module.exports = vitals;
   /// #if}}} @env NODE

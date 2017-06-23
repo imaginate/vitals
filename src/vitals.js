@@ -159,18 +159,19 @@ function newVitals(method) {
 
   vitals = _loadSections(sections);
   vitals = _loadMethods(vitals, methods, sections);
-  vitals['VERSION'] = VERSION;
-  vitals['version'] = VERSION;
   vitals['mkGlobal'] = _newMkGlobal(vitals, sections, methods);
+  vitals['makeGlobal'] = vitals['mkGlobal'];
   vitals['construct'] = newVitals;
   vitals['newVitals'] = newVitals;
   return vitals;
 }
 /// #}}} @func newVitals
 
-/// #{{{ @group Private-Helpers
+/// #{{{ @helpers new-vitals
 
-/// #{{{ @group Main-Constants
+/// #{{{ @group main
+
+/// #{{{ @group constants
 
 /// #{{{ @const _SECTIONS
 /**
@@ -311,9 +312,9 @@ var _VALID_RANGE = [
 ];
 /// #}}} @const _VALID_RANGE
 
-/// #}}} @group Main-Constants
+/// #}}} @group constants
 
-/// #{{{ @group Main-Methods
+/// #{{{ @group methods
 
 /// #{{{ @func _newMkGlobal
 /**
@@ -603,9 +604,11 @@ function _requireSection(section) {
 }
 /// #}}} @func _requireSection
 
-/// #}}} @group Main-Methods
+/// #}}} @group methods
 
-/// #{{{ @group In-Helpers
+/// #}}} @group main
+
+/// #{{{ @group in
 
 /// #{{{ @func _inFs
 /**
@@ -645,9 +648,9 @@ function _inSections(sections, method) {
 }
 /// #}}} @func _inSections
 
-/// #}}} @group In-Helpers
+/// #}}} @group in
 
-/// #{{{ @group Is-Helpers
+/// #{{{ @group is
 
 /// #{{{ @func _isMethod
 /**
@@ -751,9 +754,9 @@ function _isValidStrArr(methods) {
 }
 /// #}}} @func _isValidStrArr
 
-/// #}}} @group Is-Helpers
+/// #}}} @group is
 
-/// #{{{ @group Error-Helpers
+/// #{{{ @group errors
 
 /// #{{{ @const _MK_ERR
 /**
@@ -765,13 +768,12 @@ var _MK_ERR = $mkErrs();
 /// #}}} @const _MK_ERR
 /// #insert @code MK_ERR ./macros/mk-err.js
 
-/// #}}} @group Error-Helpers
+/// #}}} @group errors
 
-/// #}}} @group Private-Helpers
+/// #}}} @helpers new-vitals
 
 /// #{{{ @group exports
 newVitals['VERSION'] = VERSION;
-newVitals['version'] = VERSION;
 newVitals['construct'] = newVitals;
 newVitals['newVitals'] = newVitals;
 module.exports = newVitals;
