@@ -224,19 +224,19 @@ var setWholeError = setError.whole;
 
 /// #}}} @group ERROR
 
-/// #{{{ @group FS
+/// #{{{ @group MAKE
 
-/// #{{{ @func mkdir
+/// #{{{ @func makeDirectory
 /**
  * @private
  * @param {string} path
- * @param {string} mode
- * @return {void}
+ * @param {string=} mode = `"0755"`
+ * @return {string}
  */
-var mkdir = require('fs').mkdirSync;
-/// #}}} @func mkdir
+var makeDirectory = loadHelper('make-directory');
+/// #}}} @func makeDirectory
 
-/// #}}} @group FS
+/// #}}} @group MAKE
 
 /// #{{{ @group GOOG
 
@@ -619,7 +619,7 @@ function buildBranches(dir, branches, src, dest, state, alter) {
   /// #{{{ @step make-dest
 
   if ( !isDirectory(dest) )
-    mkdir(dest, MODE);
+    makeDirectory(dest, MODE);
 
   /// #}}} @step make-dest
 
@@ -648,8 +648,12 @@ function buildBranches(dir, branches, src, dest, state, alter) {
  */
 function buildBranch(dir, branch, src, dest, state, alter) {
 
+  /// #{{{ @step make-dest
+
   if ( !isDirectory(dest) )
-    mkdir(dest, MODE);
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
 
   src = hasOwnProperty(branch, 'src')
     ? resolvePath(src, branch.src)
@@ -689,8 +693,12 @@ function buildFiles(dir, files, src, dest, state, alter) {
   /** @type {number} */
   var i;
 
+  /// #{{{ @step make-dest
+
   if ( !isDirectory(dest) )
-    mkdir(dest, MODE);
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
 
   len = files.length;
   i = -1;
