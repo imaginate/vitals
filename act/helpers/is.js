@@ -823,6 +823,24 @@ function isFrozen(src) {
 }
 /// #}}} @func isFrozen
 
+/// #{{{ @func isLocked
+/**
+ * @public
+ * @param {(?Object|?Function)} src
+ * @return {boolean}
+ */
+function isLocked(src) {
+
+  if ( isNull(src) )
+    return false;
+
+  if ( !isObject(src) && !isFunction(src) )
+    throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+
+  return !objectIsExtensible(src) && objectIsSealed(src);
+}
+/// #}}} @func isLocked
+
 /// #{{{ @func isSealed
 /**
  * @public
@@ -1252,6 +1270,12 @@ var IS = {
   'frozenMap':     isFrozen,
   'frozenmap':     isFrozen,
   'frozen':        isFrozen,
+
+  'lockedHashMap': isLocked,
+  'lockedhashmap': isLocked,
+  'lockedMap':     isLocked,
+  'lockedmap':     isLocked,
+  'locked':        isLocked,
 
   'sealedHashMap': isSealed,
   'sealedhashmap': isSealed,
