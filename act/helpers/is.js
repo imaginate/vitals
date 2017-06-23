@@ -37,6 +37,14 @@
 var FS = require('fs');
 /// #}}} @const FS
 
+/// #{{{ @const SEMANTIC
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
+/// #}}} @const SEMANTIC
+
 /// #{{{ @const STAT_DUMMY
 /**
  * @private
@@ -632,6 +640,17 @@ function isInstanceOf(inst, constructor) {
 }
 /// #}}} @func isInstanceOf
 
+/// #{{{ @func isSemanticVersion
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isSemanticVersion(val) {
+  return isString(val) && !!val && SEMANTIC.test(val);
+}
+/// #}}} @func isSemanticVersion
+
 /// #}}} @group SPECIAL-METHODS
 
 /// #{{{ @group OBJECT-STATE-METHODS
@@ -1074,6 +1093,13 @@ var IS = {
   'instOf':     isInstanceOf,
   'instof':     isInstanceOf,
   'of':         isInstanceOf,
+
+  'semanticVersion': isSemanticVersion,
+  'semanticversion': isSemanticVersion,
+  'semVersion':      isSemanticVersion,
+  'semversion':      isSemanticVersion,
+  'semVer':          isSemanticVersion,
+  'semver':          isSemanticVersion,
 
   'cappedHashMap': isCapped,
   'cappedhashmap': isCapped,
