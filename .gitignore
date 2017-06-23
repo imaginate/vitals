@@ -37,7 +37,7 @@ Temporary Items/
 build/
 coverage/
 devel/
-dist/
+docs/
 lib-cov/
 log/
 logs/
