@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -18,21 +18,24 @@
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super run
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var run = (function runPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs run
+  /// #if{{{ @docrefs run
   /// @docref [spawn]:(https://nodejs.org/api/child_process.html#child_process_child_process_spawnsync_command_args_options)
-  /// #}}} @docrefs run
+  /// #if}}} @docrefs run
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section shell
   /// @method vitals.run
   /**
@@ -77,6 +80,8 @@ var run = (function runPrivateScope() {
    * @param {number=} opts.maxBuffer
    * @return {(!Buffer|string)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function run(cmd, opts) {
 
     /** @type {!Object<string, *>} */
@@ -174,9 +179,10 @@ var run = (function runPrivateScope() {
 
     return _cleanStdout(result['stdout'], opts['eol'], opts['buffer']);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
-  /// #{{{ @group Run-Helpers
+  /// #if{{{ @helpers run
 
   /// #{{{ @const _DFLT_OPTS
   /**
@@ -216,7 +222,7 @@ var run = (function runPrivateScope() {
   }
   /// #}}} @func _cleanStdout
 
-  /// #{{{ @group Spawn
+  /// #{{{ @group spawn
 
   /// #{{{ @typedef SpawnSync-Return
   /*
@@ -245,9 +251,9 @@ var run = (function runPrivateScope() {
   var _spawn = CP['spawnSync'];
   /// #}}} @func _spawn
 
-  /// #}}} @group Spawn
+  /// #}}} @group spawn
 
-  /// #{{{ @group Exit-Codes
+  /// #{{{ @group exit-codes
 
   /// #{{{ @const _EXIT_CODES
   /**
@@ -283,9 +289,9 @@ var run = (function runPrivateScope() {
   }
   /// #}}} @func _getExitCode
 
-  /// #}}} @group Exit-Codes
+  /// #}}} @group exit-codes
 
-  /// #{{{ @group Space-Helpers
+  /// #{{{ @group space
 
   /// #{{{ @const _ANY_SPACE
   /**
@@ -323,9 +329,9 @@ var run = (function runPrivateScope() {
   }
   /// #}}} @func _trimSpace
 
-  /// #}}} @group Space-Helpers
+  /// #}}} @group space
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -337,22 +343,24 @@ var run = (function runPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Run-Helpers
+  /// #if}}} @helpers run
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return run;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['run'] = run;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super run
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = run;
 vitals['run'] = run;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
