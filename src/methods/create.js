@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -20,22 +20,25 @@
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
 /// #include @super amend ./amend.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super create
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var create = (function createPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs create
+  /// #if{{{ @docrefs create
   /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
   /// @docref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
-  /// #}}} @docrefs create
+  /// #if}}} @docrefs create
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section strict
   /// @method vitals.create
   /**
@@ -54,6 +57,8 @@ var create = (function createPrivateScope() {
    * @param {(!function(*, *): *)=} setter
    * @return {!Object}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function create(proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
@@ -78,9 +83,11 @@ var create = (function createPrivateScope() {
         return amend['apply'](NIL, args);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section strict
   /// @method vitals.create.object
   /// @alias vitals.create.obj
@@ -100,6 +107,8 @@ var create = (function createPrivateScope() {
    * @param {(!function(*, *): *)=} setter
    * @return {!Object}
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function createObject(proto, props, val, descriptor, strongType, setter) {
 
     /** @type {!Array} */
@@ -126,11 +135,12 @@ var create = (function createPrivateScope() {
   }
   create['object'] = createObject;
   create['obj'] = createObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
-  /// #{{{ @group Create-Helpers
+  /// #if{{{ @helpers create
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -142,22 +152,24 @@ var create = (function createPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Create-Helpers
+  /// #if}}} @helpers create
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return create;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['create'] = create;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super create
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = create;
 vitals['create'] = create;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
