@@ -10,25 +10,28 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super seal
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var seal = (function sealPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs seal
+  /// #if{{{ @docrefs seal
   /// @docref [seal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal)
-  /// #}}} @docrefs seal
+  /// #if}}} @docrefs seal
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section strict
   /// @method vitals.seal
   /**
@@ -42,6 +45,8 @@ var seal = (function sealPrivateScope() {
    *   Whether to recursively [seal][seal] the #obj properties.
    * @return {(?Object|?Function)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function seal(obj, deep) {
 
     switch (arguments['length']) {
@@ -72,9 +77,11 @@ var seal = (function sealPrivateScope() {
           : _seal(obj);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section strict
   /// @method vitals.seal.object
   /// @alias vitals.seal.obj
@@ -89,6 +96,8 @@ var seal = (function sealPrivateScope() {
    *   Whether to recursively [seal][seal] the #obj properties.
    * @return {(?Object|?Function)}
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function sealObject(obj, deep) {
 
     switch (arguments['length']) {
@@ -123,11 +132,12 @@ var seal = (function sealPrivateScope() {
   }
   seal['object'] = sealObject;
   seal['obj'] = sealObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
-  /// #{{{ @group Seal-Helpers
+  /// #if{{{ @helpers seal
 
-  /// #{{{ @group Seal-Polyfills
+  /// #{{{ @group polyfills
 
   /// #{{{ @func _ObjectSeal
   /**
@@ -161,9 +171,9 @@ var seal = (function sealPrivateScope() {
   })();
   /// #}}} @func _ObjectSeal
 
-  /// #}}} @group Seal-Polyfills
+  /// #}}} @group polyfills
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _seal
   /**
@@ -194,9 +204,9 @@ var seal = (function sealPrivateScope() {
   }
   /// #}}} @func _deepSeal
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -208,22 +218,24 @@ var seal = (function sealPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Seal-Helpers
+  /// #if}}} @helpers seal
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return seal;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['seal'] = seal;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super seal
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = seal;
 vitals['seal'] = seal;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
