@@ -83,7 +83,7 @@ var loadJsppHelper = require('./preprocessor/helpers/load-helper.js');
  * @private
  * @const {!Object}
  */
-var CONFIG = require('./preprocessor/config.json');
+var CONFIG = require('./build.json');
 /// #}}} @const CONFIG
 
 /// #{{{ @const IS
