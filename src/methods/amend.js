@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -18,23 +18,26 @@
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super amend
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var amend = (function amendPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs amend
+  /// #if{{{ @docrefs amend
   /// @docref [descriptor]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty#Description)
   /// @docref [define-prop]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
   /// @docref [define-props]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties)
-  /// #}}} @docrefs amend
+  /// #if}}} @docrefs amend
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section strict
   /// @method vitals.amend
   /**
@@ -99,6 +102,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function amend(source, props, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
@@ -268,9 +273,11 @@ var amend = (function amendPrivateScope() {
       ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
       : _amendProps(source, props, descriptor, strongType, setter);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod config
+  /// #{{{ @docs config
   /// @section strict
   /// @method vitals.amend.config
   /**
@@ -300,6 +307,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs config
+  /// #if{{{ @code config
   function amendConfig(source, props, descriptor) {
 
     switch (arguments['length']) {
@@ -359,9 +368,11 @@ var amend = (function amendPrivateScope() {
     }
   }
   amend['config'] = amendConfig;
+  /// #if}}} @code config
   /// #}}} @submethod config
 
   /// #{{{ @submethod property
+  /// #{{{ @docs property
   /// @section strict
   /// @method vitals.amend.property
   /// @alias vitals.amend.prop
@@ -403,6 +414,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs property
+  /// #if{{{ @code property
   function amendProperty(source, key, val, descriptor, strongType, setter) {
 
     /** @type {boolean} */
@@ -484,9 +497,11 @@ var amend = (function amendPrivateScope() {
   }
   amend['property'] = amendProperty;
   amend['prop'] = amendProperty;
+  /// #if}}} @code property
   /// #}}} @submethod property
 
   /// #{{{ @submethod property.config
+  /// #{{{ @docs property.config
   /// @section strict
   /// @method vitals.amend.property.config
   /// @alias vitals.amend.prop.config
@@ -501,6 +516,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs property.config
+  /// #if{{{ @code property.config
   function amendPropertyConfig(source, key, descriptor) {
 
     switch (arguments['length']) {
@@ -528,9 +545,11 @@ var amend = (function amendPrivateScope() {
   }
   amend['property']['config'] = amendPropertyConfig;
   amend['prop']['config'] = amendPropertyConfig;
+  /// #if}}} @code property.config
   /// #}}} @submethod property.config
 
   /// #{{{ @submethod properties
+  /// #{{{ @docs properties
   /// @section strict
   /// @method vitals.amend.properties
   /// @alias vitals.amend.props
@@ -596,6 +615,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs properties
+  /// #if{{{ @code properties
   function amendProperties(
     source, props, val, descriptor, strongType, setter) {
 
@@ -776,9 +797,11 @@ var amend = (function amendPrivateScope() {
   }
   amend['properties'] = amendProperties;
   amend['props'] = amendProperties;
+  /// #if}}} @code properties
   /// #}}} @submethod properties
 
   /// #{{{ @submethod properties.config
+  /// #{{{ @docs properties.config
   /// @section strict
   /// @method vitals.amend.properties.config
   /// @alias vitals.amend.props.config
@@ -809,6 +832,8 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
+  /// #}}} @docs properties.config
+  /// #if{{{ @code properties.config
   function amendPropertiesConfig(source, props, descriptor) {
 
     switch (arguments['length']) {
@@ -872,11 +897,12 @@ var amend = (function amendPrivateScope() {
   }
   amend['properties']['config'] = amendPropertiesConfig;
   amend['props']['config'] = amendPropertiesConfig;
+  /// #if}}} @code properties.config
   /// #}}} @submethod properties.config
 
-  /// #{{{ @group Amend-Helpers
+  /// #if{{{ @helpers amend
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _amendProp
   /**
@@ -968,9 +994,413 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _amendConfigs
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Property-Setup
+  /// #{{{ @group descriptors
+
+  /// #{{{ @group constants
+
+  /// #{{{ @const _DATA_DESCRIPTOR
+  /**
+   * @private
+   * @const {!Object<string, boolean>}
+   * @dict
+   */
+  var _DATA_DESCRIPTOR = {
+    'writable': YES,
+    'enumerable': YES,
+    'configurable': YES
+  };
+  /// #}}} @const _DATA_DESCRIPTOR
+
+  /// #{{{ @const _ACCESSOR_DESCRIPTOR
+  /**
+   * @private
+   * @const {!Object<string, boolean>}
+   * @dict
+   */
+  var _ACCESSOR_DESCRIPTOR = {
+    'enumerable': YES,
+    'configurable': YES
+  };
+  /// #}}} @const _ACCESSOR_DESCRIPTOR
+
+  /// #{{{ @const _DESCRIPTOR_PROPS
+  /**
+   * @private
+   * @const {!Object<string, boolean>}
+   * @dict
+   */
+  var _DESCRIPTOR_PROPS = {
+    'get': YES,
+    'set': YES,
+    'value': YES,
+    'writable': YES,
+    'enumerable': YES,
+    'configurable': YES
+  };
+  /// #}}} @const _DESCRIPTOR_PROPS
+
+  /// #}}} @group constants
+
+  /// #{{{ @group setup
+
+  /// #{{{ @func _setupDescriptor
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupDescriptor(val, descriptor) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = $cloneObj(descriptor);
+    val = _isDescriptor(val)
+      ? val
+      : { 'value': val };
+    return $merge(prop, val);
+  }
+  /// #}}} @func _setupDescriptor
+
+  /// #{{{ @func _setupDescriptorWithSetter
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {!function=} strongType
+   * @param {!function=} setter
+   * @return {!Object}
+   */
+  function _setupDescriptorWithSetter(val, descriptor, strongType, setter) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = $cloneObj(descriptor);
+
+    if ( _isDescriptor(val) ) {
+      prop = $merge(prop, val);
+      if ( $own(prop, 'writable') || _isAccessor(prop) )
+        return prop;
+      val = prop['value'];
+      prop = _cloneAccessor(prop);
+    }
+
+    prop = _setupGetSet(val, prop, strongType, setter);
+    return prop;
+  }
+  /// #}}} @func _setupDescriptorWithSetter
+
+  /// #{{{ @func _setupDescriptorByKey
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _setupDescriptorByKey(val, descriptor) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = $cloneObj(descriptor);
+    prop['value'] = val;
+    return prop;
+  }
+  /// #}}} @func _setupDescriptorByKey
+
+  /// #{{{ @func _setupDescriptorByKeyWithSetter
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {!function=} strongType
+   * @param {!function=} setter
+   * @return {!Object}
+   */
+  function _setupDescriptorByKeyWithSetter(
+    val, descriptor, strongType, setter) {
+
+    /** @type {!Object} */
+    var prop;
+
+    prop = $cloneObj(descriptor);
+    prop = _setupGetSet(val, prop, strongType, setter);
+    return prop;
+  }
+  /// #}}} @func _setupDescriptorByKeyWithSetter
+
+  /// #{{{ @func _setupGetSet
+  /**
+   * @private
+   * @param {*} val
+   * @param {!Object} descriptor
+   * @param {!function=} strongType
+   * @param {!function=} setter
+   * @return {!Object}
+   */
+  function _setupGetSet(val, descriptor, strongType, setter) {
+    descriptor['get'] = function get() {
+      return val;
+    };
+    descriptor['set'] = strongType && setter
+      ? function set(newVal) {
+          if ( !strongType(newVal) )
+            throw _mkStrongTypeErr(new TYPE_ERR,
+              'invalid data type for property value: `' + newVal + '`');
+          val = setter(newVal, val);
+        }
+      : strongType
+        ? function set(newVal) {
+            if ( !strongType(newVal) )
+              throw _mkStrongTypeErr(new TYPE_ERR,
+                'invalid data type for property value: `' + newVal + '`');
+            val = newVal;
+          }
+        : function set(newVal) {
+            val = setter(newVal, val);
+          };
+    return descriptor;
+  }
+  /// #}}} @func _setupGetSet
+
+  /// #}}} @group setup
+
+  /// #{{{ @group tests
+
+  /// #{{{ @func _isDescriptor
+  /**
+   * @private
+   * @param {*} val
+   * @return {boolean}
+   */
+  function _isDescriptor(val) {
+
+    /** @type {string} */
+    var key;
+
+    if ( !$is.obj(val) )
+      return NO;
+
+    for (key in val) {
+      if ( $own(val, key) && !$own(_DESCRIPTOR_PROPS, key) )
+        return NO;
+    }
+    return YES;
+  }
+  /// #}}} @func _isDescriptor
+
+  /// #{{{ @func _isData
+  /**
+   * @private
+   * @param {?Object} obj
+   * @return {boolean}
+   */
+  function _isData(obj) {
+    return $is.obj(obj) && ( $own(obj, 'value') || $own(obj, 'writable') );
+  }
+  /// #}}} @func _isData
+
+  /// #{{{ @func _isAccessor
+  /**
+   * @private
+   * @param {?Object} obj
+   * @return {boolean}
+   */
+  function _isAccessor(obj) {
+    return $is.obj(obj) && ( $own(obj, 'get') || $own(obj, 'set') );
+  }
+  /// #}}} @func _isAccessor
+
+  /// #}}} @group tests
+
+  /// #{{{ @group clone
+
+  /// #{{{ @func _cloneAccessor
+  /**
+   * @private
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  function _cloneAccessor(descriptor) {
+
+    /** @type {!Object} */
+    var accessor;
+    /** @type {string} */
+    var key;
+
+    accessor = {};
+    for (key in descriptor) {
+      if ( $own(descriptor, key) && key !== 'value' )
+        accessor[key] = descriptor[key];
+    }
+    return accessor;
+  }
+  /// #}}} @func _cloneAccessor
+
+  /// #}}} @group clone
+
+  /// #{{{ @group getters
+
+  /// #{{{ @func _getDescriptor
+  /**
+   * @private
+   * @param {?Object} descriptor
+   * @param {boolean=} hasSetter
+   * @return {!Object}
+   */
+  function _getDescriptor(descriptor, hasSetter) {
+
+    /** @type {!Object} */
+    var defaultDescriptor;
+
+    if ( hasSetter && _isData(descriptor) ) {
+      defaultDescriptor = {};
+      if ( $is.bool(descriptor['enumerable']) )
+        defaultDescriptor['enumerable'] = descriptor['enumerable'];
+      if ( $is.bool(descriptor['configurable']) )
+        defaultDescriptor['configurable'] = descriptor['configurable'];
+      descriptor = defaultDescriptor;
+    }
+
+    defaultDescriptor = hasSetter || _isAccessor(descriptor)
+      ? _ACCESSOR_DESCRIPTOR
+      : _DATA_DESCRIPTOR;
+    defaultDescriptor = $cloneObj(defaultDescriptor);
+    return $merge(defaultDescriptor, descriptor);
+  }
+  /// #}}} @func _getDescriptor
+
+  /// #{{{ @func _getStrongType
+  /**
+   * @private
+   * @param {string=} strongType
+   * @return {(!function|undefined)}
+   */
+  function _getStrongType(strongType) {
+    return strongType && function strongTypeCheck(newVal) {
+      return is(strongType, newVal);
+    };
+  }
+  /// #}}} @func _getStrongType
+
+  /// #}}} @group getters
+
+  /// #}}} @group descriptors
+
+  /// #{{{ @group object-properties
+
+  /// #{{{ @group polyfills
+
+  /// #{{{ @const _HAS_DEFINE_PROPS
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var _HAS_DEFINE_PROPS = (function _HAS_DEFINE_PROPS_PrivateScope() {
+
+    /** @type {!Object} */
+    var descriptor;
+    /** @type {string} */
+    var name;
+    /** @type {!Object} */
+    var obj;
+    /** @type {string} */
+    var key;
+
+    name = 'defineProperties';
+
+    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
+      return NO;
+
+    name = 'defineProperty';
+
+    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
+      return NO;
+
+    /** @dict */ 
+    obj = {};
+    /** @dict */ 
+    descriptor = {};
+
+    descriptor['value'] = obj;
+    descriptor['enumerable'] = NO;
+
+    try {
+      OBJ[name](obj, 'key', descriptor);
+      for (key in obj) {
+        if (key === 'key')
+          return NO;
+      }
+    }
+    catch (e) {
+      return NO;
+    }
+
+    return obj['key'] === obj;
+  })();
+  /// #}}} @const _HAS_DEFINE_PROPS
+
+  /// #{{{ @func _ObjDefineProp
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {string} key
+   * @param {!Object} descriptor
+   * @return {!Object}
+   */
+  var _ObjDefineProp = (function _ObjDefinePropPrivateScope() {
+
+    if (_HAS_DEFINE_PROPS)
+      return OBJ['defineProperty'];
+
+    return function defineProperty(obj, key, descriptor) {
+      obj[key] = $own(descriptor, 'get')
+        ? descriptor['get']()
+        : descriptor['value'];
+      return obj;
+    };
+  })();
+  /// #}}} @func _ObjDefineProp
+
+  /// #{{{ @func _ObjDefineProps
+  /**
+   * @private
+   * @param {!Object} obj
+   * @param {!Object<string, !Object>} props
+   * @return {!Object}
+   */
+  var _ObjDefineProps = (function _ObjDefinePropsPrivateScope() {
+
+    if (_HAS_DEFINE_PROPS)
+      return OBJ['defineProperties'];
+
+    return function defineProperties(obj, props) {
+
+      /** @type {!Object} */
+      var descriptor;
+      /** @type {string} */
+      var key;
+
+      for (key in props) {
+        if ( $own(props, key) ) {
+          descriptor = props[key];
+          obj[key] = $own(descriptor, 'get')
+            ? descriptor['get']()
+            : descriptor['value'];
+        }
+      }
+      return obj;
+    };
+  })();
+  /// #}}} @func _ObjDefineProps
+
+  /// #}}} @group polyfills
+
+  /// #{{{ @group setup
 
   /// #{{{ @func _setupProps
   /**
@@ -1112,395 +1542,9 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _setupConfigs
 
-  /// #}}} @group Property-Setup
+  /// #}}} @group setup
 
-  /// #{{{ @group Descriptor-Setup
-
-  /// #{{{ @func _setupDescriptor
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @return {!Object}
-   */
-  function _setupDescriptor(val, descriptor) {
-
-    /** @type {!Object} */
-    var prop;
-
-    prop = $cloneObj(descriptor);
-    val = _isDescriptor(val)
-      ? val
-      : { 'value': val };
-    return $merge(prop, val);
-  }
-  /// #}}} @func _setupDescriptor
-
-  /// #{{{ @func _setupDescriptorWithSetter
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @param {!function=} strongType
-   * @param {!function=} setter
-   * @return {!Object}
-   */
-  function _setupDescriptorWithSetter(val, descriptor, strongType, setter) {
-
-    /** @type {!Object} */
-    var prop;
-
-    prop = $cloneObj(descriptor);
-
-    if ( _isDescriptor(val) ) {
-      prop = $merge(prop, val);
-      if ( $own(prop, 'writable') || _isAccessor(prop) )
-        return prop;
-      val = prop['value'];
-      prop = _cloneAccessor(prop);
-    }
-
-    prop = _setupGetSet(val, prop, strongType, setter);
-    return prop;
-  }
-  /// #}}} @func _setupDescriptorWithSetter
-
-  /// #{{{ @func _setupDescriptorByKey
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @return {!Object}
-   */
-  function _setupDescriptorByKey(val, descriptor) {
-
-    /** @type {!Object} */
-    var prop;
-
-    prop = $cloneObj(descriptor);
-    prop['value'] = val;
-    return prop;
-  }
-  /// #}}} @func _setupDescriptorByKey
-
-  /// #{{{ @func _setupDescriptorByKeyWithSetter
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @param {!function=} strongType
-   * @param {!function=} setter
-   * @return {!Object}
-   */
-  function _setupDescriptorByKeyWithSetter(
-    val, descriptor, strongType, setter) {
-
-    /** @type {!Object} */
-    var prop;
-
-    prop = $cloneObj(descriptor);
-    prop = _setupGetSet(val, prop, strongType, setter);
-    return prop;
-  }
-  /// #}}} @func _setupDescriptorByKeyWithSetter
-
-  /// #{{{ @func _setupGetSet
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @param {!function=} strongType
-   * @param {!function=} setter
-   * @return {!Object}
-   */
-  function _setupGetSet(val, descriptor, strongType, setter) {
-    descriptor['get'] = function get() {
-      return val;
-    };
-    descriptor['set'] = strongType && setter
-      ? function set(newVal) {
-          if ( !strongType(newVal) )
-            throw _mkStrongTypeErr(new TYPE_ERR,
-              'invalid data type for property value: `' + newVal + '`');
-          val = setter(newVal, val);
-        }
-      : strongType
-        ? function set(newVal) {
-            if ( !strongType(newVal) )
-              throw _mkStrongTypeErr(new TYPE_ERR,
-                'invalid data type for property value: `' + newVal + '`');
-            val = newVal;
-          }
-        : function set(newVal) {
-            val = setter(newVal, val);
-          };
-    return descriptor;
-  }
-  /// #}}} @func _setupGetSet
-
-  /// #}}} @group Descriptor-Setup
-
-  /// #{{{ @group Descriptor-Helpers
-
-  /// #{{{ @const _DATA_DESCRIPTOR
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @dict
-   */
-  var _DATA_DESCRIPTOR = {
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
-  };
-  /// #}}} @const _DATA_DESCRIPTOR
-
-  /// #{{{ @const _ACCESSOR_DESCRIPTOR
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @dict
-   */
-  var _ACCESSOR_DESCRIPTOR = {
-    'enumerable': YES,
-    'configurable': YES
-  };
-  /// #}}} @const _ACCESSOR_DESCRIPTOR
-
-  /// #{{{ @const _DESCRIPTOR_PROPS
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @dict
-   */
-  var _DESCRIPTOR_PROPS = {
-    'get': YES,
-    'set': YES,
-    'value': YES,
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
-  };
-  /// #}}} @const _DESCRIPTOR_PROPS
-
-  /// #{{{ @func _isDescriptor
-  /**
-   * @private
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _isDescriptor(val) {
-
-    /** @type {string} */
-    var key;
-
-    if ( !$is.obj(val) )
-      return NO;
-
-    for (key in val) {
-      if ( $own(val, key) && !$own(_DESCRIPTOR_PROPS, key) )
-        return NO;
-    }
-    return YES;
-  }
-  /// #}}} @func _isDescriptor
-
-  /// #{{{ @func _isData
-  /**
-   * @private
-   * @param {?Object} obj
-   * @return {boolean}
-   */
-  function _isData(obj) {
-    return $is.obj(obj) && ( $own(obj, 'value') || $own(obj, 'writable') );
-  }
-  /// #}}} @func _isData
-
-  /// #{{{ @func _isAccessor
-  /**
-   * @private
-   * @param {?Object} obj
-   * @return {boolean}
-   */
-  function _isAccessor(obj) {
-    return $is.obj(obj) && ( $own(obj, 'get') || $own(obj, 'set') );
-  }
-  /// #}}} @func _isAccessor
-
-  /// #{{{ @func _getDescriptor
-  /**
-   * @private
-   * @param {?Object} descriptor
-   * @param {boolean=} hasSetter
-   * @return {!Object}
-   */
-  function _getDescriptor(descriptor, hasSetter) {
-
-    /** @type {!Object} */
-    var defaultDescriptor;
-
-    if ( hasSetter && _isData(descriptor) ) {
-      defaultDescriptor = {};
-      if ( $is.bool(descriptor['enumerable']) )
-        defaultDescriptor['enumerable'] = descriptor['enumerable'];
-      if ( $is.bool(descriptor['configurable']) )
-        defaultDescriptor['configurable'] = descriptor['configurable'];
-      descriptor = defaultDescriptor;
-    }
-
-    defaultDescriptor = hasSetter || _isAccessor(descriptor)
-      ? _ACCESSOR_DESCRIPTOR
-      : _DATA_DESCRIPTOR;
-    defaultDescriptor = $cloneObj(defaultDescriptor);
-    return $merge(defaultDescriptor, descriptor);
-  }
-  /// #}}} @func _getDescriptor
-
-  /// #{{{ @func _cloneAccessor
-  /**
-   * @private
-   * @param {!Object} descriptor
-   * @return {!Object}
-   */
-  function _cloneAccessor(descriptor) {
-
-    /** @type {!Object} */
-    var accessor;
-    /** @type {string} */
-    var key;
-
-    accessor = {};
-    for (key in descriptor) {
-      if ( $own(descriptor, key) && key !== 'value' )
-        accessor[key] = descriptor[key];
-    }
-    return accessor;
-  }
-  /// #}}} @func _cloneAccessor
-
-  /// #{{{ @func _getStrongType
-  /**
-   * @private
-   * @param {string=} strongType
-   * @return {(!function|undefined)}
-   */
-  function _getStrongType(strongType) {
-    return strongType && function strongTypeCheck(newVal) {
-      return is(strongType, newVal);
-    };
-  }
-  /// #}}} @func _getStrongType
-
-  /// #}}} @group Descriptor-Helpers
-
-  /// #{{{ @group Define-Props-Polyfills
-
-  /// #{{{ @const _HAS_DEFINE_PROPS
-  /**
-   * @private
-   * @const {boolean}
-   */
-  var _HAS_DEFINE_PROPS = (function _HAS_DEFINE_PROPS_PrivateScope() {
-
-    /** @type {!Object} */
-    var descriptor;
-    /** @type {string} */
-    var name;
-    /** @type {!Object} */
-    var obj;
-    /** @type {string} */
-    var key;
-
-    name = 'defineProperties';
-
-    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return NO;
-
-    name = 'defineProperty';
-
-    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return NO;
-
-    /** @dict */ 
-    obj = {};
-    /** @dict */ 
-    descriptor = {};
-
-    descriptor['value'] = obj;
-    descriptor['enumerable'] = NO;
-
-    try {
-      OBJ[name](obj, 'key', descriptor);
-      for (key in obj) {
-        if (key === 'key')
-          return NO;
-      }
-    }
-    catch (e) {
-      return NO;
-    }
-
-    return obj['key'] === obj;
-  })();
-  /// #}}} @const _HAS_DEFINE_PROPS
-
-  /// #{{{ @func _ObjDefineProp
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {string} key
-   * @param {!Object} descriptor
-   * @return {!Object}
-   */
-  var _ObjDefineProp = (function _ObjDefinePropPrivateScope() {
-
-    if (_HAS_DEFINE_PROPS)
-      return OBJ['defineProperty'];
-
-    return function defineProperty(obj, key, descriptor) {
-      obj[key] = $own(descriptor, 'get')
-        ? descriptor['get']()
-        : descriptor['value'];
-      return obj;
-    };
-  })();
-  /// #}}} @func _ObjDefineProp
-
-  /// #{{{ @func _ObjDefineProps
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {!Object<string, !Object>} props
-   * @return {!Object}
-   */
-  var _ObjDefineProps = (function _ObjDefinePropsPrivateScope() {
-
-    if (_HAS_DEFINE_PROPS)
-      return OBJ['defineProperties'];
-
-    return function defineProperties(obj, props) {
-
-      /** @type {!Object} */
-      var descriptor;
-      /** @type {string} */
-      var key;
-
-      for (key in props) {
-        if ( $own(props, key) ) {
-          descriptor = props[key];
-          obj[key] = $own(descriptor, 'get')
-            ? descriptor['get']()
-            : descriptor['value'];
-        }
-      }
-      return obj;
-    };
-  })();
-  /// #}}} @func _ObjDefineProps
-
-  /// #}}} @group Define-Props-Polyfills
-
-  /// #{{{ @group Object-Prop-Tests
+  /// #{{{ @group tests
 
   /// #{{{ @func _hasKeys
   /**
@@ -1553,9 +1597,11 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _strongTypeCheckProps
 
-  /// #}}} @group Object-Prop-Tests
+  /// #}}} @group tests
 
-  /// #{{{ @group Error-Helpers
+  /// #}}} @group object-properties
+
+  /// #{{{ @group errors
 
   /// #{{{ @func _mkStrongTypeErr
   /**
@@ -1586,22 +1632,24 @@ var amend = (function amendPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Amend-Helpers
+  /// #if}}} @helpers amend
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return amend;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['amend'] = amend;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super amend
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = amend;
 vitals['amend'] = amend;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
