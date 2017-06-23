@@ -10,24 +10,26 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $cloneArr ../helpers/clone-arr.js
 /// #include @helper $cloneFun ../helpers/clone-fun.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super roll
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var roll = (function rollPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs roll
+  /// #if{{{ @docrefs roll
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
   /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
@@ -44,9 +46,10 @@ var roll = (function rollPrivateScope() {
   /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs roll
+  /// #if}}} @docrefs roll
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.roll
   /**
@@ -127,6 +130,8 @@ var roll = (function rollPrivateScope() {
    *     version of `vitals`).
    * @return {*}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function roll(base, source, iteratee, thisArg) {
 
     /** @type {boolean} */
@@ -185,9 +190,11 @@ var roll = (function rollPrivateScope() {
         ? _rollBaseObj(base, source, iteratee, thisArg)
         : _rollObj(source, iteratee, thisArg);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod up
+  /// #{{{ @docs up
   /// @section base
   /// @method vitals.roll.up
   /**
@@ -270,6 +277,8 @@ var roll = (function rollPrivateScope() {
    *     version of `vitals`).
    * @return {*}
    */
+  /// #}}} @docs up
+  /// #if{{{ @code up
   function rollUp(base, source, iteratee, thisArg) {
 
     /** @type {boolean} */
@@ -329,9 +338,11 @@ var roll = (function rollPrivateScope() {
         : _rollObjUp(source, iteratee, thisArg);
   }
   roll['up'] = rollUp;
+  /// #if}}} @code up
   /// #}}} @submethod up
 
   /// #{{{ @submethod down
+  /// #{{{ @docs down
   /// @section base
   /// @method vitals.roll.down
   /**
@@ -414,6 +425,8 @@ var roll = (function rollPrivateScope() {
    *     version of `vitals`).
    * @return {*}
    */
+  /// #}}} @docs down
+  /// #if{{{ @code down
   function rollDown(base, source, iteratee, thisArg) {
 
     /** @type {boolean} */
@@ -473,11 +486,12 @@ var roll = (function rollPrivateScope() {
         : _rollObjDown(source, iteratee, thisArg);
   }
   roll['down'] = rollDown;
+  /// #if}}} @code down
   /// #}}} @submethod down
 
-  /// #{{{ @group Roll-Helpers
+  /// #if{{{ @helpers roll
 
-  /// #{{{ @group Object-Helpers
+  /// #{{{ @group object
 
   /// #{{{ @func _rollObj
   /**
@@ -883,9 +897,9 @@ var roll = (function rollPrivateScope() {
   }
   /// #}}} @func _rollBaseObjDown
 
-  /// #}}} @group Object-Helpers
+  /// #}}} @group object
 
-  /// #{{{ @group Array-Helpers
+  /// #{{{ @group array
 
   /// #{{{ @func _rollArr
   /**
@@ -1183,9 +1197,9 @@ var roll = (function rollPrivateScope() {
   }
   /// #}}} @func _rollBaseArrDown
 
-  /// #}}} @group Array-Helpers
+  /// #}}} @group array
 
-  /// #{{{ @group Cycle-Helpers
+  /// #{{{ @group cycle
 
   /// #{{{ @func _rollCycle
   /**
@@ -1320,9 +1334,9 @@ var roll = (function rollPrivateScope() {
   }
   /// #}}} @func _rollCycleDown
 
-  /// #}}} @group Cycle-Helpers
+  /// #}}} @group cycle
 
-  /// #{{{ @group Bind-Helpers
+  /// #{{{ @group bind
 
   /// #{{{ @func _bindMap
   /**
@@ -1436,9 +1450,9 @@ var roll = (function rollPrivateScope() {
   }
   /// #}}} @func _bindPrevCycle
 
-  /// #}}} @group Bind-Helpers
+  /// #}}} @group bind
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -1450,22 +1464,24 @@ var roll = (function rollPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Roll-Helpers
+  /// #if}}} @helpers roll
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return roll;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['roll'] = roll;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super roll
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = roll;
 vitals['roll'] = roll;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
