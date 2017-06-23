@@ -50,7 +50,7 @@ var MODE = /^0?[0-7]{1,3}$/;
  * @private
  * @const {!RegExp}
  */
-var SEMANTIC = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
+var SEMANTIC = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+(?:\.[0-9]+)?)?$/;
 /// #}}} @const SEMANTIC
 
 /// #{{{ @const STAT_DUMMY
