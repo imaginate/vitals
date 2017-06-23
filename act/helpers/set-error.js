@@ -400,7 +400,7 @@ function setWholeError(err, param, value) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
   if ( !isString(param) )
     throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(index) )
+  if ( !isNumber(value) )
     throw setTypeError(new TypeError, 'value', 'number');
 
   msg = 'invalid `number` for `' + param + '`\n' +
