@@ -3,13 +3,17 @@
   "dest": "dist/",
   "minify": false,
   "state": {
+    "code": false,
+    "docrefs": false,
     "env": {
       "ARGS_POLYFILL": false,
       "NODE": false,
       "USE_STRICT": false
     },
+    "helpers": false,
     "scope": {
       "CONSTRUCTOR": false,
+      "DOCS_ONLY": false,
       "FS": false,
       "FS_ONLY": false,
       "IS_MAIN_ONLY": false,
@@ -21,9 +25,11 @@
       "dest": "browser/",
       "minify": true,
       "state": {
+        "code": true,
         "env": {
           "ARGS_POLYFILL": true
-        }
+        },
+        "helpers": true
       },
       "files": [
         {
@@ -158,10 +164,12 @@
     "node": {
       "dest": "node/",
       "state": {
+        "code": true,
         "env": {
           "NODE": true,
           "USE_STRICT": true
-        }
+        },
+        "helpers": true
       },
       "files": [
         {
