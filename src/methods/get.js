@@ -11,16 +11,16 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $getFlags ../helpers/get-flags.js
 /// #include @helper $cloneRegx ../helpers/clone-regx.js
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
@@ -29,27 +29,29 @@
 /// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $readFile ../helpers/read-file.js
-/// #if}}} @env FS
-/// #if}}} @env SOLO
+/// #if}}} @scope FS
+/// #if}}} @scope SOLO
 
 /// #{{{ @super get
-/// #ifnot{{{ @env FS_ONLY
+/// #ifnot{{{ @scope DOCS_ONLY
+/// #ifnot{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
-/// #ifnot}}} @env FS_ONLY
-/// #if{{{ @env FS_ONLY
+/// #ifnot}}} @scope FS_ONLY
+/// #if{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Object<string, !Function>}
  * @dict
  */
-/// #if}}} @env FS_ONLY
+/// #if}}} @scope FS_ONLY
 var get = (function getPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs get
+  /// #if{{{ @docrefs get
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [join]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
   /// @docref [pipe]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#alternation)
@@ -59,19 +61,20 @@ var get = (function getPrivateScope() {
   /// @docref [source]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/source)
   /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
   /// @docref [special]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#Special_characters_meaning_in_regular_expressions)
-  /// #}}} @docrefs get
+  /// #if}}} @docrefs get
 
-  /// #if{{{ @env FS_ONLY
+  /// #if{{{ @scope FS_ONLY
   /**
    * @public
    * @type {!Object<string, !Function>}
    * @dict
    */
   var get = {};
-  /// #if}}} @env FS_ONLY
+  /// #if}}} @scope FS_ONLY
 
-  /// #ifnot{{{ @env FS_ONLY
+  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.get
   /**
@@ -111,6 +114,8 @@ var get = (function getPrivateScope() {
    *     [strict equality][equal] test) the #val.
    * @return {!Array}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function get(source, val) {
 
     switch (arguments['length']) {
@@ -146,9 +151,11 @@ var get = (function getPrivateScope() {
             : _byValKeys(source, val);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod keys
+  /// #{{{ @docs keys
   /// @section base
   /// @method vitals.get.keys
   /**
@@ -166,6 +173,8 @@ var get = (function getPrivateScope() {
    *   the value matches (via a [strict equality][equal] test) the #val.
    * @return {!Array}
    */
+  /// #}}} @docs keys
+  /// #if{{{ @code keys
   function getKeys(source, val) {
 
     switch (arguments['length']) {
@@ -190,9 +199,11 @@ var get = (function getPrivateScope() {
     }
   }
   get['keys'] = getKeys;
+  /// #if}}} @code keys
   /// #}}} @submethod keys
 
   /// #{{{ @submethod keys.byKey
+  /// #{{{ @docs keys.byKey
   /// @section base
   /// @method vitals.get.keys.byKey
   /**
@@ -208,6 +219,8 @@ var get = (function getPrivateScope() {
    *   property key name matches in the #source.
    * @return {!Array<string>}
    */
+  /// #}}} @docs keys.byKey
+  /// #if{{{ @code keys.byKey
   function getKeysByKey(source, key) {
 
     switch (arguments['length']) {
@@ -226,9 +239,11 @@ var get = (function getPrivateScope() {
     }
   }
   get['keys']['byKey'] = getKeysByKey;
+  /// #if}}} @code keys.byKey
   /// #}}} @submethod keys.byKey
 
   /// #{{{ @submethod keys.byValue
+  /// #{{{ @docs keys.byValue
   /// @section base
   /// @method vitals.get.keys.byValue
   /// @alias vitals.get.keys.byVal
@@ -242,6 +257,8 @@ var get = (function getPrivateScope() {
    * @param {*} val
    * @return {!Array}
    */
+  /// #}}} @docs keys.byValue
+  /// #if{{{ @code keys.byValue
   function getKeysByValue(source, val) {
 
     switch (arguments['length']) {
@@ -261,9 +278,11 @@ var get = (function getPrivateScope() {
   }
   get['keys']['byValue'] = getKeysByValue;
   get['keys']['byVal'] = getKeysByValue;
+  /// #if}}} @code keys.byValue
   /// #}}} @submethod keys.byValue
 
   /// #{{{ @submethod indexes
+  /// #{{{ @docs indexes
   /// @section base
   /// @method vitals.get.indexes
   /// @alias vitals.get.ii
@@ -291,6 +310,8 @@ var get = (function getPrivateScope() {
    *     a @has#pattern test) the #val.
    * @return {!Array}
    */
+  /// #}}} @docs indexes
+  /// #if{{{ @code indexes
   function getIndexes(source, val) {
 
     /** @type {number} */
@@ -330,9 +351,11 @@ var get = (function getPrivateScope() {
   }
   get['indexes'] = getIndexes;
   get['ii'] = getIndexes;
+  /// #if}}} @code indexes
   /// #}}} @submethod indexes
 
   /// #{{{ @submethod values
+  /// #{{{ @docs values
   /// @section base
   /// @method vitals.get.values
   /// @alias vitals.get.vals
@@ -362,6 +385,8 @@ var get = (function getPrivateScope() {
    *     test) the #val.
    * @return {!Array}
    */
+  /// #}}} @docs values
+  /// #if{{{ @code values
   function getValues(source, val) {
 
     switch (arguments['length']) {
@@ -390,11 +415,13 @@ var get = (function getPrivateScope() {
   }
   get['values'] = getValues;
   get['vals'] = getValues;
+  /// #if}}} @code values
   /// #}}} @submethod values
-  /// #ifnot}}} @env FS_ONLY
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
+  /// #if{{{ @scope FS
   /// #{{{ @submethod file
+  /// #{{{ @docs file
   /// @section fs
   /// @method vitals.get.file
   /**
@@ -428,6 +455,8 @@ var get = (function getPrivateScope() {
    *   - `"CRLF"`
    * @return {(!Buffer|string)}
    */
+  /// #}}} @docs file
+  /// #if{{{ @code file
   function getFile(path, opts) {
 
     switch (arguments['length']) {
@@ -522,9 +551,11 @@ var get = (function getPrivateScope() {
     return _getFile(path, opts);
   }
   get['file'] = getFile;
+  /// #if}}} @code file
   /// #}}} @submethod file
 
   /// #{{{ @submethod dirpaths
+  /// #{{{ @docs dirpaths
   /// @section fs
   /// @method vitals.get.dirpaths
   /**
@@ -656,6 +687,8 @@ var get = (function getPrivateScope() {
    *   An alias for the #opts.extendInvalidDirs option.
    * @return {!Array<string>}
    */
+  /// #}}} @docs dirpaths
+  /// #if{{{ @code dirpaths
   function getDirpaths(source, opts) {
 
     switch (arguments['length']) {
@@ -831,9 +864,11 @@ var get = (function getPrivateScope() {
     return _getDirs(source, opts);
   }
   get['dirpaths'] = getDirpaths;
+  /// #if}}} @code dirpaths
   /// #}}} @submethod dirpaths
 
   /// #{{{ @submethod filepaths
+  /// #{{{ @docs filepaths
   /// @section fs
   /// @method vitals.get.filepaths
   /**
@@ -1190,6 +1225,8 @@ var get = (function getPrivateScope() {
    *   overwrites its default value.
    * @return {!Array<string>}
    */
+  /// #}}} @docs filepaths
+  /// #if{{{ @code filepaths
   function getFilepaths(source, opts) {
 
     switch (arguments['length']) {
@@ -1416,13 +1453,14 @@ var get = (function getPrivateScope() {
     return _getFiles(source, opts);
   }
   get['filepaths'] = getFilepaths;
+  /// #if}}} @code filepaths
   /// #}}} @submethod filepaths
-  /// #if}}} @env FS
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Get-Helpers
+  /// #if{{{ @helpers get
 
-  /// #ifnot{{{ @env FS_ONLY
-  /// #{{{ @group Object-Helpers
+  /// #ifnot{{{ @scope FS_ONLY
+  /// #{{{ @group object
 
   /// #{{{ @func _allKeys
   /**
@@ -1543,9 +1581,9 @@ var get = (function getPrivateScope() {
   }
   /// #}}} @func _byKeyObjVals
 
-  /// #}}} @group Object-Helpers
+  /// #}}} @group object
 
-  /// #{{{ @group Array-Helpers
+  /// #{{{ @group array
 
   /// #{{{ @func _allIndexes
   /**
@@ -1598,9 +1636,9 @@ var get = (function getPrivateScope() {
   }
   /// #}}} @func _byValIndexes
 
-  /// #}}} @group Array-Helpers
+  /// #}}} @group array
 
-  /// #{{{ @group String-Helpers
+  /// #{{{ @group string
 
   /// #{{{ @func _strIndexes
   /**
@@ -1738,11 +1776,11 @@ var get = (function getPrivateScope() {
   }
   /// #}}} @func _byStrStrVals
 
-  /// #}}} @group String-Helpers
-  /// #ifnot}}} @env FS_ONLY
+  /// #}}} @group string
+  /// #ifnot}}} @scope FS_ONLY
 
-  /// #if{{{ @env FS
-  /// #{{{ @group File-System-Helpers
+  /// #if{{{ @scope FS
+  /// #{{{ @group file-system
 
   /// #{{{ @group Main-Helpers
 
@@ -3131,10 +3169,10 @@ var get = (function getPrivateScope() {
 
   /// #}}} @group Test-Factories
 
-  /// #}}} @group File-System-Helpers
-  /// #if}}} @env FS
+  /// #}}} @group file-system
+  /// #if}}} @scope FS
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -3146,22 +3184,24 @@ var get = (function getPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Get-Helpers
+  /// #if}}} @helpers get
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return get;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['get'] = get;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super get
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = get;
 vitals['get'] = get;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
