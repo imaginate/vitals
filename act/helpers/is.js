@@ -216,6 +216,41 @@ function objectToString(obj) {
 }
 /// #}}} @func objectToString
 
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+function setError(err, msg) {
+
+  switch (err.name) {
+
+    case 'RangeError':
+      err.range = true;
+      break;
+
+    case 'ReferenceError':
+      err.reference = true;
+      break;
+
+    case 'SyntaxError':
+      err.syntax = true;
+      break;
+
+    case 'TypeError':
+      err.type = true;
+      break;
+  }
+
+  err.message = msg;
+  err.msg = msg;
+
+  return err;
+}
+/// #}}} @func setError
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group PRIMITIVE-METHODS
@@ -417,8 +452,10 @@ function isError(val) {
 (function isArgumentsTest() {
 
   if ( !isArguments(arguments) )
-    throw new Error('incompatible platform (must support ' +
-      '`Object.prototype.toString.call(arguments) === "[object Arguments]"`)');
+    throw setError(new Error,
+      'incomplete JS engine support when testing `arguments` instances\n' +
+      '    failed: `Object.prototype.toString.call(arguments)' +
+      ' === "[object Arguments]"`');
 
 })();
 /// #}}} @group ENV-ARGUMENTS-TEST
@@ -641,7 +678,8 @@ function isEmpty(val) {
 function isInstanceOf(inst, constructor) {
 
   if ( !isFunction(constructor) ) 
-    throw new TypeError('invalid `constructor` data type\n' +
+    throw setError(new TypeError,
+      'invalid `constructor` data type\n' +
       '    valid-types: `!Function`');
 
   return isObject(inst) && inst instanceof constructor;
@@ -678,7 +716,9 @@ function isCapped(src) {
     return false;
 
   if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
+    throw setError(new TypeError, 
+      'invalid `src` data type\n' +
+      '    valid-types: `(?Object|?Function)`');
 
   return !objectIsExtensible(src);
 }
@@ -696,7 +736,9 @@ function isFrozen(src) {
     return false;
 
   if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
+    throw setError(new TypeError, 
+      'invalid `src` data type\n' +
+      '    valid-types: `(?Object|?Function)`');
 
   return objectIsFrozen(src);
 }
@@ -714,7 +756,9 @@ function isSealed(src) {
     return false;
 
   if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` type (valid types: `!Object|!Function`)');
+    throw setError(new TypeError, 
+      'invalid `src` data type\n' +
+      '    valid-types: `(?Object|?Function)`');
 
   return objectIsSealed(src);
 }
@@ -736,7 +780,9 @@ function isSealed(src) {
 function isWholeNumber(val) {
 
   if ( !isNumber(val) ) 
-    throw new TypeError('invalid `val` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val` data type\n' +
+      '    valid-types: `number`');
 
   return !(val % 1);
 }
@@ -751,9 +797,14 @@ function isWholeNumber(val) {
 function isOddNumber(val) {
 
   if ( !isNumber(val) ) 
-    throw new TypeError('invalid `val` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val` data type\n' +
+      '    valid-types: `number`');
   if ( !isWholeNumber(val) ) 
-    throw new RangeError('invalid `val` number (must be a whole number)');
+    throw setError(new RangeError, 
+      'invalid `number` for `val` parameter\n' +
+      '    valid-range-test: `isWholeNumber(val)`\n' +
+      '    value-received: `' + val + '`');
 
   return !!(val % 2);
 }
@@ -768,9 +819,14 @@ function isOddNumber(val) {
 function isEvenNumber(val) {
 
   if ( !isNumber(val) )
-    throw new TypeError('invalid `val` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val` data type\n' +
+      '    valid-types: `number`');
   if ( !isWholeNumber(val) )
-    throw new RangeError('invalid `val` number (must be a whole number)');
+    throw setError(new RangeError, 
+      'invalid `number` for `val` parameter\n' +
+      '    valid-range-test: `isWholeNumber(val)`\n' +
+      '    value-received: `' + val + '`');
 
   return !(val % 2);
 }
@@ -786,11 +842,17 @@ function isEvenNumber(val) {
 function isEqualTo(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 === val2;
 }
@@ -806,11 +868,17 @@ function isEqualTo(val1, val2) {
 function isGreaterThan(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 > val2;
 }
@@ -826,11 +894,17 @@ function isGreaterThan(val1, val2) {
 function isGreaterOrEqual(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 >= val2;
 }
@@ -846,11 +920,17 @@ function isGreaterOrEqual(val1, val2) {
 function isLessThan(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 < val2;
 }
@@ -866,11 +946,17 @@ function isLessThan(val1, val2) {
 function isLessOrEqual(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 <= val2;
 }
@@ -886,11 +972,17 @@ function isLessOrEqual(val1, val2) {
 function isNotEqualTo(val1, val2) {
 
   if ( !isNumber(val1) )
-    throw new TypeError('invalid `val1` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val1` data type\n' +
+      '    valid-types: `number`');
   if ( !isNumber(val2) )
-    throw new TypeError('invalid `val2` type (must be a number)');
+    throw setError(new TypeError, 
+      'invalid `val2` data type\n' +
+      '    valid-types: `number`');
   if ( arguments.length > 2 )
-    throw new Error('invalid param count (only 2 params allowed)');
+    throw setError(new Error,
+      'more than `2` parameters defined\n' +
+      '    arguments.length: `' + arguments.length + '`');
 
   return val1 !== val2;
 }
@@ -923,7 +1015,9 @@ function isBuffer(val) {
 function isDirectory(path) {
 
   if ( !isString(path) )
-    throw new TypeError('invalid `path` type (must be a string)');
+    throw setError(new TypeError, 
+      'invalid `path` data type\n' +
+      '    valid-types: `string`');
 
   return !!path && getFileStats(path).isDirectory();
 }
@@ -949,7 +1043,9 @@ function isFileMode(val) {
 function isFile(path) {
 
   if ( !isString(path) )
-    throw new TypeError('invalid `path` type (must be a string)');
+    throw setError(new TypeError, 
+      'invalid `path` data type\n' +
+      '    valid-types: `string`');
 
   return !!path && getFileStats(path).isFile();
 }
