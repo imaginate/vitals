@@ -66,13 +66,6 @@
 /// #include @helper $merge ./helpers/merge.js
 /// #include @helper $sliceArr ./helpers/slice-arr.js
 
-/// #{{{ @const VERSION
-/**
- * @const {string}
- */
-var VERSION = '4.1.3';
-/// #}}} @const VERSION
-
 /// #{{{ @func newVitals
 /**
  * @public

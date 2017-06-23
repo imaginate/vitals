@@ -17,6 +17,7 @@
  */
 
 /// #{{{ @core constants
+/// #include @constant VERSION ../constants/version.js
 /// #include @constant ENV ../constants/env.js
 /// #include @constant ROOT ../constants/env.js
 /// #include @constant ARR ../constants/constructor.js
