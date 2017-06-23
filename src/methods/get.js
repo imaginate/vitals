@@ -879,10 +879,12 @@ var get = (function getPrivateScope() {
   /// #if}}} @code directoryPaths
   /// #}}} @submethod directoryPaths
 
-  /// #{{{ @submethod filepaths
-  /// #{{{ @docs filepaths
+  /// #{{{ @submethod filePaths
+  /// #{{{ @docs filePaths
   /// @section fs
-  /// @method vitals.get.filepaths
+  /// @method vitals.get.filePaths
+  /// @alias vitals.get.filepaths
+  /// @alias vitals.get.files
   /**
    * @description
    *   Gets all of the file paths within a directory tree.
@@ -1237,13 +1239,13 @@ var get = (function getPrivateScope() {
    *   overwrites its default value.
    * @return {!Array<string>}
    */
-  /// #}}} @docs filepaths
-  /// #if{{{ @code filepaths
-  function getFilepaths(source, opts) {
+  /// #}}} @docs filePaths
+  /// #if{{{ @code filePaths
+  function getFilePaths(source, opts) {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'filepaths');
+        throw _mkErr(new ERR, 'no #source defined', 'filePaths');
 
       case 1:
         /** @dict */
@@ -1273,7 +1275,7 @@ var get = (function getPrivateScope() {
 
         if ( !$is.obj(opts) )
           throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?boolean)=',
-            'filepaths');
+            'filePaths');
 
         /** @dict */
         opts = $cloneObj(opts);
@@ -1282,7 +1284,7 @@ var get = (function getPrivateScope() {
           opts['recursive'] = VOID;
         else if ( !$is.bool(opts['recursive']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.recursive', opts['recursive'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'deep') )
           opts['deep'] = $is.bool(opts['recursive'])
@@ -1290,13 +1292,13 @@ var get = (function getPrivateScope() {
             : _DFLT_FILES_OPTS['deep'];
         else if ( !$is.bool(opts['deep']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.deep', opts['deep'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'basepath') )
           opts['basepath'] = VOID;
         else if ( !$is.bool(opts['basepath']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.basepath', opts['basepath'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'base') )
           opts['base'] = $is.bool(opts['basepath'])
@@ -1304,13 +1306,13 @@ var get = (function getPrivateScope() {
             : _DFLT_FILES_OPTS['base'];
         else if ( !$is.bool(opts['base']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.base', opts['base'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'absolute') )
           opts['absolute'] = VOID;
         else if ( !$is.bool(opts['absolute']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.absolute', opts['absolute'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'abs') )
           opts['abs'] = $is.bool(opts['absolute'])
@@ -1318,13 +1320,13 @@ var get = (function getPrivateScope() {
             : _DFLT_FILES_OPTS['abs'];
         else if ( !$is.bool(opts['abs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.abs', opts['abs'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'wildcard') )
           opts['wildcard'] = VOID;
         else if ( !$is.bool(opts['wildcard']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.wildcard', opts['wildcard'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'glob') )
           opts['glob'] = $is.bool(opts['wildcard'])
@@ -1332,55 +1334,55 @@ var get = (function getPrivateScope() {
             : _DFLT_FILES_OPTS['glob'];
         else if ( !$is.bool(opts['glob']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.glob', opts['glob'],
-            'boolean=', 'filepaths');
+            'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendValid') )
           opts['extendValid'] = _DFLT_FILES_OPTS['extendValid'];
         else if ( !$is.bool(opts['extendValid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValid',
-            opts['extendValid'], 'boolean=', 'filepaths');
+            opts['extendValid'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendInvalid') )
           opts['extendInvalid'] = _DFLT_FILES_OPTS['extendInvalid'];
         else if ( !$is.bool(opts['extendInvalid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalid',
-            opts['extendInvalid'], 'boolean=', 'filepaths');
+            opts['extendInvalid'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendValidDirs') )
           opts['extendValidDirs'] = _DFLT_FILES_OPTS['extendValidDirs'];
         else if ( !$is.bool(opts['extendValidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValidDirs',
-            opts['extendValidDirs'], 'boolean=', 'filepaths');
+            opts['extendValidDirs'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendInvalidDirs') )
           opts['extendInvalidDirs'] = _DFLT_FILES_OPTS['extendInvalidDirs'];
         else if ( !$is.bool(opts['extendInvalidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalidDirs',
-            opts['extendInvalidDirs'], 'boolean=', 'filepaths');
+            opts['extendInvalidDirs'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendValidExts') )
           opts['extendValidExts'] = _DFLT_FILES_OPTS['extendValidExts'];
         else if ( !$is.bool(opts['extendValidExts']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValidExts',
-            opts['extendValidExts'], 'boolean=', 'filepaths');
+            opts['extendValidExts'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendInvalidExts') )
           opts['extendInvalidExts'] = _DFLT_FILES_OPTS['extendInvalidExts'];
         else if ( !$is.bool(opts['extendInvalidExts']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalidExts',
-            opts['extendInvalidExts'], 'boolean=', 'filepaths');
+            opts['extendInvalidExts'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendValidFiles') )
           opts['extendValidFiles'] = _DFLT_FILES_OPTS['extendValidFiles'];
         else if ( !$is.bool(opts['extendValidFiles']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendValidFiles',
-            opts['extendValidFiles'], 'boolean=', 'filepaths');
+            opts['extendValidFiles'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'extendInvalidFiles') )
           opts['extendInvalidFiles'] = _DFLT_FILES_OPTS['extendInvalidFiles'];
         else if ( !$is.bool(opts['extendInvalidFiles']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.extendInvalidFiles',
-            opts['extendInvalidFiles'], 'boolean=', 'filepaths');
+            opts['extendInvalidFiles'], 'boolean=', 'filePaths');
 
         if ( !$hasOpt(opts, 'valid') ) {
           opts['valid'] = _DFLT_FILES_OPTS['valid'];
@@ -1389,7 +1391,7 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['valid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.valid', opts['valid'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'filepaths');
+            'string=, string=, string=): *)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'invalid') ) {
           opts['invalid'] = _DFLT_FILES_OPTS['invalid'];
@@ -1398,7 +1400,7 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['invalid']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalid', opts['invalid'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'filepaths');
+            'string=, string=, string=): *)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'validDirs') ) {
           opts['validDirs'] = _DFLT_FILES_OPTS['validDirs'];
@@ -1407,7 +1409,7 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['validDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.validDirs', opts['validDirs'],
             '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'filepaths');
+            'string=, string=, string=): *)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'invalidDirs') ) {
           opts['invalidDirs'] = _DFLT_FILES_OPTS['invalidDirs'];
@@ -1416,7 +1418,7 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['invalidDirs']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalidDirs',
             opts['invalidDirs'], '(?RegExp|?Array<string>|?string|?function' +
-            '(string=, string=, string=): *)=', 'filepaths');
+            '(string=, string=, string=): *)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'validExts') ) {
           opts['validExts'] = _DFLT_FILES_OPTS['validExts'];
@@ -1424,7 +1426,7 @@ var get = (function getPrivateScope() {
         }
         else if ( !_isExtOpt(opts['validExts']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.validExts', opts['validExts'],
-            '(?RegExp|?Array<string>|?string)=', 'filepaths');
+            '(?RegExp|?Array<string>|?string)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'invalidExts') ) {
           opts['invalidExts'] = _DFLT_FILES_OPTS['invalidExts'];
@@ -1433,7 +1435,7 @@ var get = (function getPrivateScope() {
         else if ( !_isExtOpt(opts['invalidExts']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalidExts',
             opts['invalidExts'], '(?RegExp|?Array<string>|?string)=',
-            'filepaths');
+            'filePaths');
 
         if ( !$hasOpt(opts, 'validFiles') ) {
           opts['validFiles'] = _DFLT_FILES_OPTS['validFiles'];
@@ -1442,7 +1444,7 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['validFiles']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.validFiles',
             opts['validFiles'], '(?RegExp|?Array<string>|?string|?function(' +
-            'string=, string=, string=): *)=', 'filepaths');
+            'string=, string=, string=): *)=', 'filePaths');
 
         if ( !$hasOpt(opts, 'invalidFiles') ) {
           opts['invalidFiles'] = _DFLT_FILES_OPTS['invalidFiles'];
@@ -1451,22 +1453,24 @@ var get = (function getPrivateScope() {
         else if ( !_isPattOpt(opts['invalidFiles']) )
           throw _mkTypeErr(new TYPE_ERR, 'opts.invalidFiles',
             opts['invalidFiles'], '(?RegExp|?Array<string>|?string|' +
-            '?function(string=, string=, string=): *)=', 'filepaths');
+            '?function(string=, string=, string=): *)=', 'filePaths');
     }
 
     if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'filepaths');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'filePaths');
     else if (!source)
-      throw _mkErr(new ERR, 'invalid empty #source `string`', 'filepaths');
+      throw _mkErr(new ERR, 'invalid empty #source `string`', 'filePaths');
     else if ( !$is.dir(source) )
       throw _mkErr(new ERR, 'invalid #source directory path `' + source + '`',
-        'filepaths');
+        'filePaths');
 
     return _getFiles(source, opts);
   }
-  get['filepaths'] = getFilepaths;
-  /// #if}}} @code filepaths
-  /// #}}} @submethod filepaths
+  get['filePaths'] = getFilePaths;
+  get['filepaths'] = getFilePaths;
+  get['files'] = getFilePaths;
+  /// #if}}} @code filePaths
+  /// #}}} @submethod filePaths
   /// #if}}} @scope FS
 
   /// #if{{{ @helpers get
