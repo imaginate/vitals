@@ -3,7 +3,7 @@
  * VERSION TASK
  * ---------------------------------------------------------------------------
  * @file
- *   This task updates the version number in the entire repo. Use
+ *   This task updates the semantic version for the *vitals* repo. Use
  *   `act version` to run it.
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -16,28 +16,43 @@
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-exports['desc'] = 'updates version for the repo';
+exports['desc'] = 'updates semantic version for vitals repo';
 exports['value'] = 'x.x.x-pre.x';
 exports['default'] = '-all';
 exports['methods'] = {
   'all': {
-    'desc': 'updates version for entire repo',
+    'desc': 'updates semantic version for entire repo',
     'value': 'x.x.x-pre.x',
-    'method': updateAllVersion
+    'method': updateAll
+  },
+  'src': {
+    'desc': 'updates semantic version in the source code',
+    'value': 'x.x.x-pre.x',
+    'method': updateSrc
+  },
+  'dist': {
+    'desc': 'updates semantic version in the compiled code',
+    'value': 'x.x.x-pre.x',
+    'method': updateDist
   },
   'npm': {
-    'desc': 'updates only npm version',
+    'desc': 'updates semantic version for npm in package & readme',
     'value': 'x.x.x-pre.x',
-    'method': updateNPMVersion
+    'method': updateNpm
   },
   'docs': {
-    'desc': 'updates the docs version',
+    'desc': 'updates semantic version for vitals docs',
     'value': 'x.x.x-pre.x',
-    'method': updateDocsVersion
+    'method': updateDocs
   }
 };
 
 /// #}}} @group EXPORTS
+
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func loadHelper
 /**
@@ -45,53 +60,23 @@ exports['methods'] = {
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./_load-helper.js');
+var loadHelper = require('./helpers/load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const SEMANTIC
+/// #{{{ @const CONFIG
 /**
  * @private
- * @const {!RegExp}
+ * @const {!Object}
  */
-var SEMANTIC  = /^[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?$/;
-/// #}}} @const SEMANTIC
-
-/// #{{{ @const NPM_BADGE
-/**
- * @private
- * @const {!RegExp}
- */
-var NPM_BADGE = /(badge\/npm-)[0-9]+\.[0-9]+\.[0-9]+(?:--[a-z]+\.?[0-9]*)?/;
-/// #}}} @const NPM_BADGE
-
-/// #{{{ @const ALL_VERSION
-/**
- * @private
- * @const {!RegExp}
- */
-var ALL_VERSION = /\b(v?)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?\b/g;
-/// #}}} @const ALL_VERSION
-
-/// #{{{ @const NPM_VERSION
-/**
- * @private
- * @const {!RegExp}
- */
-var NPM_VERSION = /("version": ")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+\.?[0-9]*)?/;
-/// #}}} @const NPM_VERSION
-
-/// #{{{ @const REPO_ROOT
-/**
- * @private
- * @const {string}
- */
-var REPO_ROOT = loadHelper('get-repo-root')();
-/// #}}} @const REPO_ROOT
+var CONFIG = require('./build.json');
+/// #}}} @const CONFIG
 
 /// #{{{ @const IS
 /**
@@ -100,6 +85,30 @@ var REPO_ROOT = loadHelper('get-repo-root')();
  */
 var IS = loadHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const SEMVER
+/**
+ * @private
+ * @const {!Object<string, !RegExp>}
+ * @struct
+ */
+var SEMVER = {
+  ANY: /\b(v?)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+(?:\.[0-9]+)?)?\b/,
+  BADGE: /(badge\/npm-)[0-9]+\.[0-9]+\.[0-9]+(?:--[a-z]+(?:\.[0-9]+)?)?(?=[a-z]+\.svg)/,
+  CONST: /\b(var[ \t]+VERSION[ \t]*=[ \t]*')[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+(?:\.[0-9]+)?)?(?=';)/,
+  DOCTAG: /\b(@version[ \t]+)[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+(?:\.[0-9]+)?)?\b/,
+  NODEPKG: /("version"[ \t]*:[ \t]*")[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z]+(?:\.[0-9]+)?)?(?=")/
+};
+/// #}}} @const SEMVER
+
+/// #{{{ @const VERSION
+/**
+ * @private
+ * @const {string}
+ */
+var VERSION = loadHelper('get-version')();
+/// #}}} @const VERSION
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -107,28 +116,151 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isSemVersion
-/**
- * @private
- * @param {string} version
- * @return {boolean}
- */
-function isSemVersion(version) {
-  return !!version && SEMANTIC.test(version);
-}
-/// #}}} @func isSemVersion
+/// #{{{ @group ERROR
 
-/// #{{{ @func getFile
+/// #{{{ @func setError
 /**
  * @private
- * @param {string} filepath
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = loadHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setDirError = setError.dir;
+/// #}}} @func setDirError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setExtError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} path
+ * @param {(string|!Array<string>)} exts
+ * @return {!RangeError}
+ */
+var setExtError = setError.ext;
+/// #}}} @func setExtError
+
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+var setIndexError = setError.index;
+/// #}}} @func setIndexError
+
+/// #{{{ @func setRetError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} method
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setRetError = setError.ret;
+/// #}}} @func setRetError
+
+/// #{{{ @func setSemVerError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} version
+ * @return {!RangeError}
+ */
+function setSemVerError(err, version) {
+
+  /** @type {string} */
+  var patt;
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  if ( !isString(version) )
+    throw setTypeError(new TypeError, 'version', 'string');
+
+  patt = '/^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z]+(\\.[0-9]+)?)?$/';
+
+  msg = 'invalid semantic version for `version` parameter\n' +
+    '    valid-semver-pattern: `' + patt + '`\n' +
+    '    received-version: `' + version + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setSemVerError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group GET
+
+/// #{{{ @func getFileContent
+/**
+ * @private
+ * @param {string} path
  * @param {boolean=} buffer
  * @return {(!Buffer|string)}
  */
-var getFile = loadHelper('get-file-content');
-/// #}}} @func getFile
+var getFileContent = loadHelper('get-file-content');
+/// #}}} @func getFileContent
 
-/// #{{{ @func getFilepaths
+/// #{{{ @func getFilePaths
 /**
  * @private
  * @param {string} dirpath
@@ -187,16 +319,179 @@ var getFile = loadHelper('get-file-content');
  *   against the #opts.invalidFiles pattern.
  * @return {!Array<string>}
  */
-var getFilepaths = loadHelper('get-filepaths');
-/// #}}} @func getFilepaths
+var getFilePaths = loadHelper('get-filepaths');
+/// #}}} @func getFilePaths
 
-/// #{{{ @func getVersion
+/// #}}} @group GET
+
+/// #{{{ @group HAS
+
+/// #{{{ @func hasOwnProperty
 /**
  * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnProperty = loadHelper('has-own-property');
+/// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
+
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
+/// #{{{ @func isDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isDirectory = IS.directory;
+/// #}}} @func isDirectory
+
+/// #{{{ @func isFile
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isFile = IS.file;
+/// #}}} @func isFile
+
+/// #{{{ @func isFunction
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFunction = IS.func;
+/// #}}} @func isFunction
+
+/// #{{{ @func isList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isList = IS.list;
+/// #}}} @func isList
+
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
+/// #{{{ @func isObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObject = IS.object;
+/// #}}} @func isObject
+
+/// #{{{ @func isRegExp
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isRegExp = IS.regexp;
+/// #}}} @func isRegExp
+
+/// #{{{ @func isSemanticVersion
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isSemanticVersion = IS.semanticVersion;
+/// #}}} @func isSemanticVersion
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #{{{ @func isStringList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isStringList = IS.stringList;
+/// #}}} @func isStringList
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
+/// #}}} @group IS
+
+/// #{{{ @group MAKE
+
+/// #{{{ @func makeBadge
+/**
+ * @private
+ * @param {string} version
  * @return {string}
  */
-var getVersion = loadHelper('get-version');
-/// #}}} @func getVersion
+function makeBadge(version) {
+
+  if ( !isString(version) )
+    throw setTypeError(new TypeError, 'version', 'string');
+
+  return version.replace(/-/g, '--');
+}
+/// #}}} @func makeBadge
+
+/// #}}} @group MAKE
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func cloneObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @return {!Object}
+ */
+var cloneObject = loadHelper('clone-object');
+/// #}}} @func cloneObject
+
+/// #{{{ @func mergeObject
+/**
+ * @private
+ * @param {...(?Object|?Function)} src
+ * @return {!Object}
+ */
+var mergeObject = loadHelper('merge-object');
+/// #}}} @func mergeObject
+
+/// #}}} @group OBJECT
+
+/// #{{{ @group PATH
 
 /// #{{{ @func resolvePath
 /**
@@ -207,6 +502,10 @@ var getVersion = loadHelper('get-version');
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
+/// #}}} @group PATH
+
+/// #{{{ @group TO
+
 /// #{{{ @func toFile
 /**
  * @private
@@ -216,191 +515,479 @@ var resolvePath = loadHelper('resolve-path');
  */
 var toFile = loadHelper('to-file');
 /// #}}} @func toFile
+
+/// #}}} @group TO
+
+/// #{{{ @group UPDATE
+
+/// #{{{ @func update
+/**
+ * @private
+ * @param {(!Array<string>|string)} path
+ * @param {!RegExp} pattern
+ * @param {string} version
+ * @return {void}
+ */
+var update = (function updatePrivateScope() {
+
+  /// #{{{ @func update
+  /**
+   * @param {(!Array<string>|string)} path
+   * @param {!RegExp} pattern
+   * @param {string} version
+   * @return {void}
+   */
+  function update(path, pattern, version) {
+
+    /// #{{{ @step declare-variables
+
+    /** @type {string} */
+    var replacement;
+
+    /// #}}} @step declare-variables
+
+    /// #{{{ @step verify-parameters
+
+    if ( !isString(path) && !isStringList(path) )
+      throw setTypeError(new TypeError, 'path', '(!Array<string>|string)');
+    if ( !isRegExp(pattern) )
+      throw setTypeError(new TypeError, 'pattern', '!RegExp');
+    if ( !isString(version) )
+      throw setTypeError(new TypeError, 'version', 'string');
+
+    /// #}}} @step verify-parameters
+
+    /// #{{{ @step make-replacement
+
+    replacement = '$1' + version;
+
+    /// #}}} @step make-replacement
+
+    /// #{{{ @step update-paths
+
+    if ( isString(path) )
+      _update(path, pattern, replacement);
+    else
+      _updateEach(path, pattern, replacement);
+
+    /// #}}} @step update-paths
+  }
+  /// #}}} @func update
+
+  /// #{{{ @func _update
+  /**
+   * @private
+   * @param {string} path
+   * @param {!RegExp} pattern
+   * @param {string} replacement
+   * @return {void}
+   */
+  function _update(path, pattern, replacement) {
+
+    /** @type {string} */
+    var content;
+
+    content = getFileContent(path);
+    content = content.replace(pattern, replacement);
+    toFile(content, path);
+  }
+  /// #}}} @func _update
+
+  /// #{{{ @func _updateEach
+  /**
+   * @private
+   * @param {!Array<string>} paths
+   * @param {!RegExp} pattern
+   * @param {string} replacement
+   * @return {void}
+   */
+  function _updateEach(paths, pattern, replacement) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = paths.length;
+    i = -1;
+    while (++i < len)
+      _update(paths[i], pattern, replacement);
+  }
+  /// #}}} @func _updateEach
+
+  return update;
+})();
+/// #}}} @func update
+
+/// #}}} @group UPDATE
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group MAIN-METHODS
+/// #{{{ @group PATHS
 //////////////////////////////////////////////////////////////////////////////
-// MAIN-METHODS
+// PATHS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func updateAllVersion
+/// #{{{ @const REPO
+/**
+ * @private
+ * @const {string}
+ */
+var REPO = loadHelper('get-repo-root')();
+/// #}}} @const REPO
+
+/// #{{{ @const DIR
+/**
+ * @private
+ * @const {!Object<string, string>}
+ * @struct
+ */
+var DIR = {
+  REPO: REPO,
+  SRC: resolvePath(REPO, CONFIG.src),
+  DIST: resolvePath(REPO, CONFIG.dest),
+  DOCS: resolvePath(REPO, CONFIG.dest, CONFIG.branches.docs.dest),
+  TMPLS: resolvePath(REPO, './act/docs/templates')
+};
+/// #}}} @const DIR
+
+/// #{{{ @const FILE
+/**
+ * @private
+ * @const {!Object<string, string>}
+ * @struct
+ */
+var FILE = {
+  PKG: resolvePath(REPO, './package.json'),
+  CONST: resolvePath(SRC, './constants/version.js'),
+  README: resolvePath(REPO, './README.md')
+};
+/// #}}} @const FILE
+
+/// #}}} @group PATHS
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func updateAll
 /**
  * @public
- * @param {string} version
+ * @param {(?string|undefined)=} version = `require("../package.json").version`
  */
-function updateAllVersion(version) {
+function updateAll(version) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<string>} */
   var files;
   /** @type {string} */
-  var path;
+  var badge;
 
-  if ( !isSemVersion(version) )
-    throw new Error('invalid `version` (must be a semantic version)');
+  /// #}}} @step declare-variables
 
-  files = getFilepaths(REPO_ROOT, {
-    'deep': false,
-    'full': true,
-    'validFiles': /\.js$/
-  });
-  insertVersions(files, version);
+  /// #{{{ @step setup-version
 
-  path = resolvePath(REPO_ROOT, './src');
-  files = getFilepaths(path, {
+  if ( !isNull(version) && !isUndefined(version) && !isString(version) )
+    throw setTypeError(new TypeError, 'version', '?string=');
+
+  if (!version)
+    version = VERSION;
+
+  if ( !isSemanticVersion(version) )
+    throw setSemVerError(new RangeError, version);
+
+  /// #}}} @step setup-version
+
+  /// #{{{ @step make-badge
+
+  badge = makeBadge(version);
+
+  /// #}}} @step make-badge
+
+  /// #{{{ @step update-src
+
+  if ( !isDirectory(DIR.SRC) )
+    throw setDirError(new Error, 'DIR.SRC', DIR.SRC);
+  if ( !isFile(FILE.CONST) )
+    throw setFileError(new Error, 'FILE.CONST', FILE.CONST);
+
+  files = getFilePaths(DIR.SRC, {
     'deep': true,
     'full': true,
-    'validFiles': /\.js$/
+    'validFiles': /\.js$/,
+    'invalidFiles': /^\./
   });
-  insertVersions(files, version);
+  update(files, SEMVER.DOCTAG, version);
+  update(FILE.CONST, SEMVER.CONST, version);
 
-  updateNPMVersion(version);
+  /// #}}} @step update-src
+
+  /// #{{{ @step update-dist
+
+  if ( isDirectory(DIR.DIST) ) {
+    files = getFilePaths(DIR.DIST, {
+      'deep': true,
+      'full': true,
+      'validFiles': /\.js$/,
+      'invalidFiles': /^\./
+    });
+    update(files, SEMVER.CONST, version);
+    update(files, SEMVER.DOCTAG, version);
+  }
+
+  /// #}}} @step update-dist
+
+  /// #{{{ @step update-npm
+
+  if ( !isFile(FILE.PKG) )
+    throw setFileError(new Error, 'FILE.PKG', FILE.PKG);
+  if ( !isFile(FILE.README) )
+    throw setFileError(new Error, 'FILE.README', FILE.README);
+
+  update(FILE.PKG, SEMVER.NODEPKG, version);
+  update(FILE.README, SEMVER.BADGE, badge);
+
+  /// #}}} @step update-npm
+
+  /// #{{{ @step update-docs
+
+  if ( isDirectory(DIR.DOCS) ) {
+    files = getFilePaths(DIR.DOCS, {
+      'deep': true,
+      'full': true,
+      'validFiles': /\.md$/,
+      'invalidFiles': /^\./
+    });
+    update(files, SEMVER.BADGE, badge);
+  }
+
+  /// #}}} @step update-docs
+
+  /// #{{{ @step update-templates
+
+  if ( !isDirectory(DIR.TMPLS) )
+    throw setDirError(new Error, 'DIR.TMPLS', DIR.TMPLS);
+
+  files = getFilePaths(DIR.TMPLS, {
+    'deep': true,
+    'full': true,
+    'validFiles': /\.(?:md|tmpl)$/,
+    'invalidFiles': /^\./
+  });
+  update(files, SEMVER.BADGE, badge);
+
+  /// #}}} @step update-templates
 }
-/// #}}} @func updateAllVersion
+/// #}}} @func updateAll
 
-/// #{{{ @func updateNPMVersion
+/// #{{{ @func updateSrc
 /**
  * @public
- * @param {string} version
+ * @param {(?string|undefined)=} version = `require("../package.json").version`
  */
-function updateNPMVersion(version) {
+function updateSrc(version) {
 
-  /** @type {string} */
-  var content;
-  /** @type {string} */
-  var path;
+  /// #{{{ @step declare-variables
 
-  if ( !isSemVersion(version) )
-    throw new Error('invalid `version` (must be a semantic version)');
+  /** @type {!Array<string>} */
+  var files;
 
-  path = resolvePath(REPO_ROOT, './README.md');
-  insertBadge(path, version);
+  /// #}}} @step declare-variables
 
-  path = resolvePath(REPO_ROOT, './package.json');
-  content = getFile(path);
-  content = content.replace(NPM_VERSION, '$1' + version);
-  toFile(content, path);
+  /// #{{{ @step setup-version
+
+  if ( !isNull(version) && !isUndefined(version) && !isString(version) )
+    throw setTypeError(new TypeError, 'version', '?string=');
+
+  if (!version)
+    version = VERSION;
+
+  if ( !isSemanticVersion(version) )
+    throw setSemVerError(new RangeError, version);
+
+  /// #}}} @step setup-version
+
+  /// #{{{ @step update-src
+
+  if ( !isDirectory(DIR.SRC) )
+    throw setDirError(new Error, 'DIR.SRC', DIR.SRC);
+  if ( !isFile(FILE.CONST) )
+    throw setFileError(new Error, 'FILE.CONST', FILE.CONST);
+
+  files = getFilePaths(DIR.SRC, {
+    'deep': true,
+    'full': true,
+    'validFiles': /\.js$/,
+    'invalidFiles': /^\./
+  });
+  update(files, SEMVER.DOCTAG, version);
+  update(FILE.CONST, SEMVER.CONST, version);
+
+  /// #}}} @step update-src
 }
-/// #}}} @func updateNPMVersion
+/// #}}} @func updateSrc
 
-/// #{{{ @func updateDocsVersion
+/// #{{{ @func updateDist
 /**
  * @public
- * @param {string=} version
+ * @param {(?string|undefined)=} version = `require("../package.json").version`
  */
-function updateDocsVersion(version) {
+function updateDist(version) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var files;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step setup-version
+
+  if ( !isNull(version) && !isUndefined(version) && !isString(version) )
+    throw setTypeError(new TypeError, 'version', '?string=');
+
+  if (!version)
+    version = VERSION;
+
+  if ( !isSemanticVersion(version) )
+    throw setSemVerError(new RangeError, version);
+
+  /// #}}} @step setup-version
+
+  /// #{{{ @step update-dist
+
+  if ( !isDirectory(DIR.DIST) )
+    throw setDirError(new Error, 'DIR.DIST', DIR.DIST);
+
+  files = getFilePaths(DIR.DIST, {
+    'deep': true,
+    'full': true,
+    'validFiles': /\.js$/,
+    'invalidFiles': /^\./
+  });
+  update(files, SEMVER.CONST, version);
+  update(files, SEMVER.DOCTAG, version);
+
+  /// #}}} @step update-dist
+}
+/// #}}} @func updateDist
+
+/// #{{{ @func updateNpm
+/**
+ * @public
+ * @param {(?string|undefined)=} version = `require("../package.json").version`
+ */
+function updateNpm(version) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var badge;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step setup-version
+
+  if ( !isNull(version) && !isUndefined(version) && !isString(version) )
+    throw setTypeError(new TypeError, 'version', '?string=');
+
+  if (!version)
+    version = VERSION;
+
+  if ( !isSemanticVersion(version) )
+    throw setSemVerError(new RangeError, version);
+
+  /// #}}} @step setup-version
+
+  /// #{{{ @step make-badge
+
+  badge = makeBadge(version);
+
+  /// #}}} @step make-badge
+
+  /// #{{{ @step update-npm
+
+  if ( !isFile(FILE.PKG) )
+    throw setFileError(new Error, 'FILE.PKG', FILE.PKG);
+  if ( !isFile(FILE.README) )
+    throw setFileError(new Error, 'FILE.README', FILE.README);
+
+  update(FILE.PKG, SEMVER.NODEPKG, version);
+  update(FILE.README, SEMVER.BADGE, badge);
+
+  /// #}}} @step update-npm
+}
+/// #}}} @func updateNpm
+
+/// #{{{ @func updateDocs
+/**
+ * @public
+ * @param {(?string|undefined)=} version = `require("../package.json").version`
+ */
+function updateDocs(version) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<string>} */
   var files;
   /** @type {string} */
-  var path;
+  var badge;
 
-  version = version || getVersion();
+  /// #}}} @step declare-variables
 
-  if ( !isSemVersion(version) )
-    throw new Error('invalid `version` (must be a semantic version)');
+  /// #{{{ @step setup-version
 
-  path = resolvePath(REPO_ROOT, '../vitals-wiki');
-  files = getFilepaths(path, {
-    'deep': false,
-    'full': true,
-    'validFiles': /\.md$/
-  });
-  insertBadges(files, version);
+  if ( !isNull(version) && !isUndefined(version) && !isString(version) )
+    throw setTypeError(new TypeError, 'version', '?string=');
 
-  path = resolvePath(REPO_ROOT, './act/mk-doc/templates');
-  files = getFilepaths(path, {
+  if (!version)
+    version = VERSION;
+
+  if ( !isSemanticVersion(version) )
+    throw setSemVerError(new RangeError, version);
+
+  /// #}}} @step setup-version
+
+  /// #{{{ @step make-badge
+
+  badge = makeBadge(version);
+
+  /// #}}} @step make-badge
+
+  /// #{{{ @step update-docs
+
+  if ( !isDirectory(DIR.DOCS) )
+    throw setDirError(new Error, 'DIR.DOCS', DIR.DOCS);
+
+  files = getFilePaths(DIR.DOCS, {
     'deep': true,
     'full': true,
-    'validFiles': /\.(?:tmpl|md)$/
+    'validFiles': /\.md$/,
+    'invalidFiles': /^\./
   });
-  insertBadges(files, version);
+  update(files, SEMVER.BADGE, badge);
+
+  /// #}}} @step update-docs
+
+  /// #{{{ @step update-templates
+
+  if ( !isDirectory(DIR.TMPLS) )
+    throw setDirError(new Error, 'DIR.TMPLS', DIR.TMPLS);
+
+  files = getFilePaths(DIR.TMPLS, {
+    'deep': true,
+    'full': true,
+    'validFiles': /\.(?:md|tmpl)$/,
+    'invalidFiles': /^\./
+  });
+  update(files, SEMVER.BADGE, badge);
+
+  /// #}}} @step update-templates
 }
-/// #}}} @func updateDocsVersion
-/// #}}} @group MAIN-METHODS
+/// #}}} @func updateDocs
 
-/// #{{{ @group INSERT-METHODS
-//////////////////////////////////////////////////////////////////////////////
-// INSERT-METHODS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func insertBadge
-/**
- * @private
- * @param {string} filepath
- * @param {string} version
- * @return {void}
- */
-function insertBadge(filepath, version) {
-
-  /** @type {string} */
-  var content;
-
-  version = '$1' + version.replace(/-/g, '--');
-  content = getFile(filepath);
-  content = content.replace(NPM_BADGE, version);
-  toFile(content, filepath);
-}
-/// #}}} @func insertBadge
-
-/// #{{{ @func insertBadges
-/**
- * @private
- * @param {!Array<string>} files
- * @param {string} version
- * @return {void}
- */
-function insertBadges(files, version) {
-
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  len = files.length;
-  i = -1;
-  while (++i < len)
-    insertBadge(files[i], version);
-}
-/// #}}} @func insertBadges
-
-/// #{{{ @func insertVersion
-/**
- * @private
- * @param {string} filepath
- * @param {string} version
- * @return {void}
- */
-function insertVersion(filepath, version) {
-
-  /** @type {string} */
-  var content;
-
-  content = getFile(filepath);
-  content = content.replace(ALL_VERSION, '$1' + version);
-  toFile(content, filepath);
-}
-/// #}}} @func insertVersion
-
-/// #{{{ @func insertVersions
-/**
- * @private
- * @param {!Array<string>} files
- * @param {string} version
- * @return {void}
- */
-function insertVersions(files, version) {
-
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  len = files.length;
-  i = -1;
-  while (++i < len)
-    insertVersion(files[i], version);
-}
-/// #}}} @func insertVersions
-/// #}}} @group INSERT-METHODS
+/// #}}} @group METHODS
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
