@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -18,17 +18,19 @@
 /// #include @helper $cloneFun ../helpers/clone-fun.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super each
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var each = (function eachPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs each
+  /// #if{{{ @docrefs each
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
   /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
@@ -40,9 +42,10 @@ var each = (function eachPrivateScope() {
   /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs each
+  /// #if}}} @docrefs each
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.each
   /**
@@ -122,6 +125,8 @@ var each = (function eachPrivateScope() {
    *   The original #source value (unless the #source is a `string` which will
    *   result in an `array`).
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function each(source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -159,9 +164,11 @@ var each = (function eachPrivateScope() {
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.each.object
   /// @alias vitals.each.obj
@@ -194,6 +201,8 @@ var each = (function eachPrivateScope() {
    * @return {(!Object|!Function)}
    *   The original #source value.
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function eachObject(source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -221,9 +230,11 @@ var each = (function eachPrivateScope() {
   }
   each['object'] = eachObject;
   each['obj'] = eachObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.each.array
   /// @alias vitals.each.arr
@@ -265,6 +276,8 @@ var each = (function eachPrivateScope() {
    *   The original #source value (unless the #source is a `string` which will
    *   result in an `array`).
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function eachArray(source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -298,9 +311,11 @@ var each = (function eachPrivateScope() {
   }
   each['array'] = eachArray;
   each['arr'] = eachArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod cycle
+  /// #{{{ @docs cycle
   /// @section base
   /// @method vitals.each.cycle
   /// @alias vitals.each.time
@@ -331,6 +346,8 @@ var each = (function eachPrivateScope() {
    * @return {number}
    *   The original #cycles value.
    */
+  /// #}}} @docs cycle
+  /// #if{{{ @code cycle
   function eachCycle(cycles, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -360,11 +377,12 @@ var each = (function eachPrivateScope() {
   }
   each['cycle'] = eachCycle;
   each['time'] = eachCycle;
+  /// #if}}} @code cycle
   /// #}}} @submethod cycle
 
-  /// #{{{ @group Each-Helpers
+  /// #if{{{ @helpers each
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _eachObj
   /**
@@ -513,9 +531,9 @@ var each = (function eachPrivateScope() {
   }
   /// #}}} @func _eachCycle
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Bind-Helpers
+  /// #{{{ @group bind
 
   /// #{{{ @func _bindMap
   /**
@@ -571,9 +589,9 @@ var each = (function eachPrivateScope() {
   }
   /// #}}} @func _bindCycle
 
-  /// #}}} @group Bind-Helpers
+  /// #}}} @group bind
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -585,22 +603,24 @@ var each = (function eachPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Each-Helpers
+  /// #if}}} @helpers each
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return each;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['each'] = each;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super each
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = each;
 vitals['each'] = each;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
