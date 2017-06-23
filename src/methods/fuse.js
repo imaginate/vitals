@@ -10,30 +10,33 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super fuse
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var fuse = (function fusePrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs fuse
+  /// #if{{{ @docrefs fuse
   /// @docref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
   /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
   /// @docref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
   /// @docref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
-  /// #}}} @docrefs fuse
+  /// #if}}} @docrefs fuse
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.fuse
   /**
@@ -63,6 +66,8 @@ var fuse = (function fusePrivateScope() {
    *     #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function fuse(dest, val) {
 
     switch (arguments['length']) {
@@ -109,9 +114,11 @@ var fuse = (function fusePrivateScope() {
           : _fuseObjs(dest, val);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod value
+  /// #{{{ @docs value
   /// @section base
   /// @method vitals.fuse.value
   /// @alias vitals.fuse.val
@@ -135,6 +142,8 @@ var fuse = (function fusePrivateScope() {
    *     Each #val is converted to a `string` and appended to the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
+  /// #}}} @docs value
+  /// #if{{{ @code value
   function fuseValue(dest, val) {
 
     switch (arguments['length']) {
@@ -179,9 +188,11 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['value'] = fuseValue;
   fuse['val'] = fuseValue;
+  /// #if}}} @code value
   /// #}}} @submethod value
 
   /// #{{{ @submethod value.start
+  /// #{{{ @docs value.start
   /// @section base
   /// @method vitals.fuse.value.start
   /// @alias vitals.fuse.value.top
@@ -208,6 +219,8 @@ var fuse = (function fusePrivateScope() {
    *     the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
+  /// #}}} @docs value.start
+  /// #if{{{ @code value.start
   function fuseValueStart(dest, val) {
 
     switch (arguments['length']) {
@@ -254,9 +267,11 @@ var fuse = (function fusePrivateScope() {
   fuse['value']['top'] = fuseValueStart;
   fuse['val']['start'] = fuseValueStart;
   fuse['val']['top'] = fuseValueStart;
+  /// #if}}} @code value.start
   /// #}}} @submethod value.start
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.fuse.object
   /// @alias vitals.fuse.obj
@@ -281,6 +296,8 @@ var fuse = (function fusePrivateScope() {
    *     value is reset to `undefined`).
    * @return {(!Object|!Function)}
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function fuseObject(dest, val) {
 
     switch (arguments['length']) {
@@ -310,9 +327,11 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['object'] = fuseObject;
   fuse['obj'] = fuseObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.fuse.array
   /// @alias vitals.fuse.arr
@@ -333,6 +352,8 @@ var fuse = (function fusePrivateScope() {
    *     The #val is [pushed][push] to the #dest.
    * @return {!Array}
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function fuseArray(dest, val) {
 
     switch (arguments['length']) {
@@ -364,9 +385,11 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['array'] = fuseArray;
   fuse['arr'] = fuseArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.fuse.string
   /// @alias vitals.fuse.str
@@ -380,6 +403,8 @@ var fuse = (function fusePrivateScope() {
    *   values. Each #val is converted to a `string` and appended to the #dest.
    * @return {string}
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function fuseString(dest, val) {
 
     switch (arguments['length']) {
@@ -407,11 +432,12 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['string'] = fuseString;
   fuse['str'] = fuseString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
-  /// #{{{ @group Fuse-Helpers
+  /// #if{{{ @helpers fuse
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _fuseObj
   /**
@@ -710,9 +736,9 @@ var fuse = (function fusePrivateScope() {
   }
   /// #}}} @func _fuseStrsTop
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -724,22 +750,24 @@ var fuse = (function fusePrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Fuse-Helpers
+  /// #if}}} @helpers fuse
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return fuse;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['fuse'] = fuse;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super fuse
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = fuse;
 vitals['fuse'] = fuse;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
