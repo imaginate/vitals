@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -21,17 +21,19 @@
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @super is ./is.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super cut
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @type {!Function<string, !Function>}
  * @dict
  */
 var cut = (function cutPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs cut
+  /// #if{{{ @docrefs cut
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
   /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
@@ -47,9 +49,10 @@ var cut = (function cutPrivateScope() {
   /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs cut
+  /// #if}}} @docrefs cut
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.cut
   /**
@@ -131,6 +134,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array|string)}
    *   The amended #source.
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function cut(source, val, thisArg) {
 
     switch (arguments['length']) {
@@ -187,9 +192,11 @@ var cut = (function cutPrivateScope() {
         return _cutProps(source, val);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod property
+  /// #{{{ @docs property
   /// @section base
   /// @method vitals.cut.property
   /// @alias vitals.cut.prop
@@ -266,6 +273,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
+  /// #}}} @docs property
+  /// #if{{{ @code property
   function cutProperty(source, val, thisArg) {
 
     switch (arguments['length']) {
@@ -312,9 +321,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['property'] = cutProperty;
   cut['prop'] = cutProperty;
+  /// #if}}} @code property
   /// #}}} @submethod property
 
   /// #{{{ @submethod key
+  /// #{{{ @docs key
   /// @section base
   /// @method vitals.cut.key
   /**
@@ -329,6 +340,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function)}
    *   The amended #source.
    */
+  /// #}}} @docs key
+  /// #if{{{ @code key
   function cutKey(source, key) {
 
     switch (arguments['length']) {
@@ -345,9 +358,11 @@ var cut = (function cutPrivateScope() {
     return _cutKey(source, key);
   }
   cut['key'] = cutKey;
+  /// #if}}} @code key
   /// #}}} @submethod key
 
   /// #{{{ @submethod index
+  /// #{{{ @docs index
   /// @section base
   /// @method vitals.cut.index
   /// @alias vitals.cut.i
@@ -392,6 +407,8 @@ var cut = (function cutPrivateScope() {
    *   The amended #source or when an array-like `object` is defined for the
    *   #source, an amended copy (via [slice][slice]) of #source.
    */
+  /// #}}} @docs index
+  /// #if{{{ @code index
   function cutIndex(source, index, toIndex) {
 
     switch (arguments['length']) {
@@ -449,9 +466,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['index'] = cutIndex;
   cut['i'] = cutIndex;
+  /// #if}}} @code index
   /// #}}} @submethod index
 
   /// #{{{ @submethod type
+  /// #{{{ @docs type
   /// @section base
   /// @method vitals.cut.type
   /**
@@ -476,6 +495,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
+  /// #}}} @docs type
+  /// #if{{{ @code type
   function cutType(source, type) {
 
     switch (arguments['length']) {
@@ -502,9 +523,11 @@ var cut = (function cutPrivateScope() {
     return _cutType(source, type);
   }
   cut['type'] = cutType;
+  /// #if}}} @code type
   /// #}}} @submethod type
 
   /// #{{{ @submethod value
+  /// #{{{ @docs value
   /// @section base
   /// @method vitals.cut.value
   /// @alias vitals.cut.val
@@ -529,6 +552,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
+  /// #}}} @docs value
+  /// #if{{{ @code value
   function cutValue(source, val) {
 
     switch (arguments['length']) {
@@ -549,9 +574,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['value'] = cutValue;
   cut['val'] = cutValue;
+  /// #if}}} @code value
   /// #}}} @submethod value
 
   /// #{{{ @submethod pattern
+  /// #{{{ @docs pattern
   /// @section base
   /// @method vitals.cut.pattern
   /// @alias vitals.cut.patt
@@ -567,6 +594,8 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    *   The amended #source.
    */
+  /// #}}} @docs pattern
+  /// #if{{{ @code pattern
   function cutPattern(source, pattern) {
 
     switch (arguments['length']) {
@@ -583,9 +612,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['pattern'] = cutPattern;
   cut['patt'] = cutPattern;
+  /// #if}}} @code pattern
   /// #}}} @submethod pattern
 
   /// #{{{ @submethod properties
+  /// #{{{ @docs properties
   /// @section base
   /// @method vitals.cut.properties
   /// @alias vitals.cut.props
@@ -627,6 +658,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
+  /// #}}} @docs properties
+  /// #if{{{ @code properties
   function cutProperties(source, val) {
 
     switch (arguments['length']) {
@@ -654,9 +687,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['properties'] = cutProperties;
   cut['props'] = cutProperties;
+  /// #if}}} @code properties
   /// #}}} @submethod properties
 
   /// #{{{ @submethod keys
+  /// #{{{ @docs keys
   /// @section base
   /// @method vitals.cut.keys
   /**
@@ -672,6 +707,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function)}
    *   The amended #source.
    */
+  /// #}}} @docs keys
+  /// #if{{{ @code keys
   function cutKeys(source, key) {
 
     switch (arguments['length']) {
@@ -695,9 +732,11 @@ var cut = (function cutPrivateScope() {
       : _cutKey(source, key);
   }
   cut['keys'] = cutKeys;
+  /// #if}}} @code keys
   /// #}}} @submethod keys
 
   /// #{{{ @submethod indexes
+  /// #{{{ @docs indexes
   /// @section base
   /// @method vitals.cut.indexes
   /// @alias vitals.cut.ii
@@ -728,6 +767,8 @@ var cut = (function cutPrivateScope() {
    *   The amended #source or when an array-like `object` is defined for the
    *   #source, an amended copy (via [slice][slice]) of #source.
    */
+  /// #}}} @docs indexes
+  /// #if{{{ @code indexes
   function cutIndexes(source, index) {
 
     switch (arguments['length']) {
@@ -774,9 +815,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['indexes'] = cutIndexes;
   cut['ii'] = cutIndexes;
+  /// #if}}} @code indexes
   /// #}}} @submethod indexes
 
   /// #{{{ @submethod values
+  /// #{{{ @docs values
   /// @section base
   /// @method vitals.cut.values
   /// @alias vitals.cut.vals
@@ -802,6 +845,8 @@ var cut = (function cutPrivateScope() {
    * @return {(!Object|!Function|!Array)}
    *   The amended #source.
    */
+  /// #}}} @docs values
+  /// #if{{{ @code values
   function cutValues(source, val) {
 
     switch (arguments['length']) {
@@ -829,9 +874,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['values'] = cutValues;
   cut['vals'] = cutValues;
+  /// #if}}} @code values
   /// #}}} @submethod values
 
   /// #{{{ @submethod patterns
+  /// #{{{ @docs patterns
   /// @section base
   /// @method vitals.cut.patterns
   /// @alias vitals.cut.patts
@@ -849,6 +896,8 @@ var cut = (function cutPrivateScope() {
    * @return {string}
    *   The amended #source.
    */
+  /// #}}} @docs patterns
+  /// #if{{{ @code patterns
   function cutPatterns(source, pattern) {
 
     switch (arguments['length']) {
@@ -872,11 +921,12 @@ var cut = (function cutPrivateScope() {
   }
   cut['patterns'] = cutPatterns;
   cut['patts'] = cutPatterns;
+  /// #if}}} @code patterns
   /// #}}} @submethod patterns
 
-  /// #{{{ @group Cut-Helpers
+  /// #if{{{ @helpers cut
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _cutProp
   /**
@@ -1089,9 +1139,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _cutPatterns
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Delete-Helpers
+  /// #{{{ @group delete
 
   /// #{{{ @func _deleteKey
   /**
@@ -1211,9 +1261,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _deleteVals
 
-  /// #}}} @group Delete-Helpers
+  /// #}}} @group delete
 
-  /// #{{{ @group Splice-Helpers
+  /// #{{{ @group splice
 
   /// #{{{ @func _spliceKey
   /**
@@ -1354,9 +1404,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _spliceVals
 
-  /// #}}} @group Splice-Helpers
+  /// #}}} @group splice
 
-  /// #{{{ @group Filter-Helpers
+  /// #{{{ @group filter
 
   /// #{{{ @func _filterObj
   /**
@@ -1465,9 +1515,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _filterArr
 
-  /// #}}} @group Filter-Helpers
+  /// #}}} @group filter
 
-  /// #{{{ @group Sort-Helpers
+  /// #{{{ @group sort
 
   /// #{{{ @func _sortIndexes
   /**
@@ -1767,9 +1817,9 @@ var cut = (function cutPrivateScope() {
   })();
   /// #}}} @func _sortIndexes
 
-  /// #}}} @group Sort-Helpers
+  /// #}}} @group sort
 
-  /// #{{{ @group Bind-Helpers
+  /// #{{{ @group bind
 
   /// #{{{ @func _bind
   /**
@@ -1799,9 +1849,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _bind
 
-  /// #}}} @group Bind-Helpers
+  /// #}}} @group bind
 
-  /// #{{{ @group Is-Helpers
+  /// #{{{ @group is
 
   /// #{{{ @func _isIntArr
   /**
@@ -1878,9 +1928,9 @@ var cut = (function cutPrivateScope() {
   }
   /// #}}} @func _isWholeNumArr
 
-  /// #}}} @group Is-Helpers
+  /// #}}} @group is
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -1892,22 +1942,24 @@ var cut = (function cutPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Cut-Helpers
+  /// #if}}} @helpers cut
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return cut;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['cut'] = cut;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super cut
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = cut;
 vitals['cut'] = cut;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
