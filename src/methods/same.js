@@ -10,25 +10,28 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super same
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var same = (function samePrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs same
+  /// #if{{{ @docrefs same
   /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
-  /// #}}} @docrefs same
+  /// #if}}} @docrefs same
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.same
   /**
@@ -39,6 +42,8 @@ var same = (function samePrivateScope() {
    * @param {*} val2
    * @return {boolean}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function same(val1, val2) {
 
     switch (arguments['length']) {
@@ -50,9 +55,11 @@ var same = (function samePrivateScope() {
 
     return val1 === val2;
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod loose
+  /// #{{{ @docs loose
   /// @section base
   /// @method vitals.same.loose
   /// @alias vitals.same.ish
@@ -64,6 +71,8 @@ var same = (function samePrivateScope() {
    * @param {*} val2
    * @return {boolean}
    */
+  /// #}}} @docs loose
+  /// #if{{{ @code loose
   function sameLoose(val1, val2) {
 
     switch (arguments['length']) {
@@ -77,11 +86,12 @@ var same = (function samePrivateScope() {
   }
   same['loose'] = sameLoose;
   same['ish'] = sameLoose;
+  /// #if}}} @code loose
   /// #}}} @submethod loose
 
-  /// #{{{ @group Same-Helpers
+  /// #if{{{ @helpers same
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -93,22 +103,24 @@ var same = (function samePrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Same-Helpers
+  /// #if}}} @helpers same
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return same;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['same'] = same;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super same
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = same;
 vitals['same'] = same;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
