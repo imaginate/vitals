@@ -10,31 +10,34 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @helper $sliceStr ../helpers/slice-str.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super slice
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var slice = (function slicePrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs slice
+  /// #if{{{ @docrefs slice
   /// @docref [clone]:(https://en.wikipedia.org/wiki/Cloning_(programming))
   /// @docref [arr-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [str-slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice)
   /// @docref [str-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/length)
-  /// #}}} @docrefs slice
+  /// #if}}} @docrefs slice
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.slice
   /**
@@ -92,6 +95,8 @@ var slice = (function slicePrivateScope() {
    *   - *`null`*!$
    *     This method returns `null`.
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function slice(source, start, end) {
 
     switch (arguments['length']) {
@@ -141,9 +146,11 @@ var slice = (function slicePrivateScope() {
 
     return $sliceArr(source, start, end);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.slice.array
   /// @alias vitals.slice.arr
@@ -186,6 +193,8 @@ var slice = (function slicePrivateScope() {
    *   - *`null`*!$
    *     This method returns `null`.
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function sliceArray(source, start, end) {
 
     switch (arguments['length']) {
@@ -236,9 +245,11 @@ var slice = (function slicePrivateScope() {
   }
   slice['array'] = sliceArray;
   slice['arr'] = sliceArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod string
+  /// #{{{ @docs string
   /// @section base
   /// @method vitals.slice.string
   /// @alias vitals.slice.str
@@ -263,6 +274,8 @@ var slice = (function slicePrivateScope() {
    * @return {string}
    *   This method returns the new [copied][clone] `string`.
    */
+  /// #}}} @docs string
+  /// #if{{{ @code string
   function sliceString(source, start, end) {
 
     switch (arguments['length']) {
@@ -306,11 +319,12 @@ var slice = (function slicePrivateScope() {
   }
   slice['string'] = sliceString;
   slice['str'] = sliceString;
+  /// #if}}} @code string
   /// #}}} @submethod string
 
-  /// #{{{ @group Slice-Helpers
+  /// #if{{{ @helpers slice
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -322,22 +336,24 @@ var slice = (function slicePrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Slice-Helpers
+  /// #if}}} @helpers slice
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return slice;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['slice'] = slice;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super slice
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = slice;
 vitals['slice'] = slice;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
