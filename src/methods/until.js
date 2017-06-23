@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -18,17 +18,19 @@
 /// #include @helper $cloneFun ../helpers/clone-fun.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super until
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var until = (function untilPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs until
+  /// #if{{{ @docrefs until
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [bind]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind)
   /// @docref [call]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call)
@@ -41,9 +43,10 @@ var until = (function untilPrivateScope() {
   /// @docref [endless]:(https://en.wikipedia.org/wiki/Infinite_loop)
   /// @docref [func-name]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/name)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
-  /// #}}} @docrefs until
+  /// #if}}} @docrefs until
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.until
   /**
@@ -153,6 +156,8 @@ var until = (function untilPrivateScope() {
    *   [strict equality][equal] test) the #end value, this method will return
    *   `true`. Otherwise, it will return `false`.
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function until(end, source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -210,9 +215,11 @@ var until = (function untilPrivateScope() {
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section base
   /// @method vitals.until.object
   /// @alias vitals.until.obj
@@ -254,6 +261,8 @@ var until = (function untilPrivateScope() {
    *   [strict equality][equal] test) the #end value, this method will return
    *   `true`. Otherwise, it will return `false`.
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function untilObject(end, source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -283,9 +292,11 @@ var until = (function untilPrivateScope() {
   }
   until['object'] = untilObject;
   until['obj'] = untilObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
   /// #{{{ @submethod array
+  /// #{{{ @docs array
   /// @section base
   /// @method vitals.until.array
   /// @alias vitals.until.arr
@@ -337,6 +348,8 @@ var until = (function untilPrivateScope() {
    *   [strict equality][equal] test) the #end value, this method will return
    *   `true`. Otherwise, it will return `false`.
    */
+  /// #}}} @docs array
+  /// #if{{{ @code array
   function untilArray(end, source, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -372,9 +385,11 @@ var until = (function untilPrivateScope() {
   }
   until['array'] = untilArray;
   until['arr'] = untilArray;
+  /// #if}}} @code array
   /// #}}} @submethod array
 
   /// #{{{ @submethod cycle
+  /// #{{{ @docs cycle
   /// @section base
   /// @method vitals.until.cycle
   /// @alias vitals.until.time
@@ -413,6 +428,8 @@ var until = (function untilPrivateScope() {
    *   [strict equality][equal] test) the #end value, this method will return
    *   `true`. Otherwise, it will return `false`.
    */
+  /// #}}} @docs cycle
+  /// #if{{{ @code cycle
   function untilCycle(end, cycles, iteratee, thisArg) {
 
     switch (arguments['length']) {
@@ -444,11 +461,12 @@ var until = (function untilPrivateScope() {
   }
   until['cycle'] = untilCycle;
   until['time'] = untilCycle;
+  /// #if}}} @code cycle
   /// #}}} @submethod cycle
 
-  /// #{{{ @group Until-Helpers
+  /// #if{{{ @helpers until
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _untilEnd
   /**
@@ -641,9 +659,9 @@ var until = (function untilPrivateScope() {
   }
   /// #}}} @func _untilCycle
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Bind-Helpers
+  /// #{{{ @group bind
 
   /// #{{{ @func _bindEnd
   /**
@@ -718,9 +736,9 @@ var until = (function untilPrivateScope() {
   }
   /// #}}} @func _bindCycle
 
-  /// #}}} @group Bind-Helpers
+  /// #}}} @group bind
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -732,22 +750,24 @@ var until = (function untilPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Until-Helpers
+  /// #if}}} @helpers until
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return until;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['until'] = until;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super until
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = until;
 vitals['until'] = until;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
