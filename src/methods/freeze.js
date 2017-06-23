@@ -10,25 +10,28 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super freeze
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var freeze = (function freezePrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs freeze
+  /// #if{{{ @docrefs freeze
   /// @docref [freeze]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
-  /// #}}} @docrefs freeze
+  /// #if}}} @docrefs freeze
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section strict
   /// @method vitals.freeze
   /**
@@ -42,6 +45,8 @@ var freeze = (function freezePrivateScope() {
    *   Whether to recursively [freeze][freeze] the #obj properties.
    * @return {(?Object|?Function)}
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function freeze(obj, deep) {
 
     switch (arguments['length']) {
@@ -72,9 +77,11 @@ var freeze = (function freezePrivateScope() {
           : _freeze(obj);
     }
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod object
+  /// #{{{ @docs object
   /// @section strict
   /// @method vitals.freeze.object
   /// @alias vitals.freeze.obj
@@ -89,6 +96,8 @@ var freeze = (function freezePrivateScope() {
    *   Whether to recursively [freeze][freeze] the #obj properties.
    * @return {(?Object|?Function)}
    */
+  /// #}}} @docs object
+  /// #if{{{ @code object
   function freezeObject(obj, deep) {
 
     switch (arguments['length']) {
@@ -123,11 +132,12 @@ var freeze = (function freezePrivateScope() {
   }
   freeze['object'] = freezeObject;
   freeze['obj'] = freezeObject;
+  /// #if}}} @code object
   /// #}}} @submethod object
 
-  /// #{{{ @group Freeze-Helpers
+  /// #if{{{ @helpers freeze
 
-  /// #{{{ @group Freeze-Polyfills
+  /// #{{{ @group polyfills
 
   /// #{{{ @func _ObjectFreeze
   /**
@@ -161,9 +171,9 @@ var freeze = (function freezePrivateScope() {
   })();
   /// #}}} @func _ObjectFreeze
 
-  /// #}}} @group Freeze-Polyfills
+  /// #}}} @group polyfills
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _freeze
   /**
@@ -194,9 +204,9 @@ var freeze = (function freezePrivateScope() {
   }
   /// #}}} @func _deepFreeze
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -208,22 +218,24 @@ var freeze = (function freezePrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Freeze-Helpers
+  /// #if}}} @helpers freeze
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return freeze;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['freeze'] = freeze;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super freeze
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = freeze;
 vitals['freeze'] = freeze;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
