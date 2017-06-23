@@ -10,7 +10,7 @@
  * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
@@ -19,17 +19,19 @@
 /// #include @helper $inObj ../helpers/in-obj.js
 /// #include @helper $inStr ../helpers/in-str.js
 /// #include @helper $ownEnum ../helpers/own-enum.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 /// #{{{ @super has
+/// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function<string, !Function>}
  * @dict
  */
 var has = (function hasPrivateScope() {
+/// #ifnot}}} @scope DOCS_ONLY
 
-  /// #{{{ @docrefs has
+  /// #if{{{ @docrefs has
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
   /// @docref [test]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/test)
@@ -40,9 +42,10 @@ var has = (function hasPrivateScope() {
   /// @docref [string]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String)
   /// @docref [indexof]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf)
   /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
-  /// #}}} @docrefs has
+  /// #if}}} @docrefs has
 
   /// #{{{ @submethod main
+  /// #{{{ @docs main
   /// @section base
   /// @method vitals.has
   /**
@@ -106,6 +109,8 @@ var has = (function hasPrivateScope() {
    *     index result from [String.prototype.indexOf][indexof] (i.e.
    *     `return source.indexOf(val) !== -1;`).
    */
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function has(source, val) {
 
     switch (arguments['length']) {
@@ -131,9 +136,11 @@ var has = (function hasPrivateScope() {
         ? _ownMatch(source, val)
         : $own(source, val);
   }
+  /// #if}}} @code main
   /// #}}} @submethod main
 
   /// #{{{ @submethod key
+  /// #{{{ @docs key
   /// @section base
   /// @method vitals.has.key
   /**
@@ -162,6 +169,8 @@ var has = (function hasPrivateScope() {
    *     This method returns the result of a safe call to
    *     [Object.prototype.hasOwnProperty][own].
    */
+  /// #}}} @docs key
+  /// #if{{{ @code key
   function hasKey(source, key) {
 
     switch (arguments['length']) {
@@ -181,9 +190,11 @@ var has = (function hasPrivateScope() {
     return $own(source, key);
   }
   has['key'] = hasKey;
+  /// #if}}} @code key
   /// #}}} @submethod key
 
   /// #{{{ @submethod value
+  /// #{{{ @docs value
   /// @section base
   /// @method vitals.has.value
   /// @alias vitals.has.val
@@ -223,6 +234,8 @@ var has = (function hasPrivateScope() {
    *     This method checks each indexed property in the #source for one
    *     matching value.
    */
+  /// #}}} @docs value
+  /// #if{{{ @code value
   function hasValue(source, val) {
 
     switch (arguments['length']) {
@@ -245,9 +258,11 @@ var has = (function hasPrivateScope() {
   }
   has['value'] = hasValue;
   has['val'] = hasValue;
+  /// #if}}} @code value
   /// #}}} @submethod value
 
   /// #{{{ @submethod pattern
+  /// #{{{ @docs pattern
   /// @section base
   /// @method vitals.has.pattern
   /**
@@ -277,6 +292,8 @@ var has = (function hasPrivateScope() {
    *   [String.prototype.indexOf][indexof] (i.e.
    *   `return source.indexOf(val) !== -1;`).
    */
+  /// #}}} @docs pattern
+  /// #if{{{ @code pattern
   function hasPattern(source, pattern) {
 
     switch (arguments['length']) {
@@ -292,9 +309,11 @@ var has = (function hasPrivateScope() {
     return $match(source, pattern);
   }
   has['pattern'] = hasPattern;
+  /// #if}}} @code pattern
   /// #}}} @submethod pattern
 
   /// #{{{ @submethod substring
+  /// #{{{ @docs substring
   /// @section base
   /// @method vitals.has.substring
   /// @alias vitals.has.substr
@@ -321,6 +340,8 @@ var has = (function hasPrivateScope() {
    *   result from [String.prototype.indexOf][indexof] (i.e.
    *   `return source.indexOf(val) !== -1;`).
    */
+  /// #}}} @docs substring
+  /// #if{{{ @code substring
   function hasSubstring(source, val) {
 
     switch (arguments['length']) {
@@ -337,9 +358,11 @@ var has = (function hasPrivateScope() {
   }
   has['substring'] = hasSubstring;
   has['substr'] = hasSubstring;
+  /// #if}}} @code substring
   /// #}}} @submethod substring
 
   /// #{{{ @submethod enumerableKey
+  /// #{{{ @docs enumerableKey
   /// @section base
   /// @method vitals.has.enumerableKey
   /// @alias vitals.has.enumerable
@@ -380,6 +403,8 @@ var has = (function hasPrivateScope() {
    *     [Object.prototype.hasOwnProperty][own] and
    *     [Object.prototype.propertyIsEnumerable][enum].
    */
+  /// #}}} @docs enumerableKey
+  /// #if{{{ @code enumerableKey
   function hasEnumerableKey(source, key) {
 
     switch (arguments['length']) {
@@ -405,11 +430,12 @@ var has = (function hasPrivateScope() {
     has['enum'] = hasEnumerableKey;
   }
   catch (e) {}
+  /// #if}}} @code enumerableKey
   /// #}}} @submethod enumerableKey
 
-  /// #{{{ @group Has-Helpers
+  /// #if{{{ @helpers has
 
-  /// #{{{ @group Main-Helpers
+  /// #{{{ @group main
 
   /// #{{{ @func _ownMatch
   /**
@@ -431,9 +457,9 @@ var has = (function hasPrivateScope() {
   }
   /// #}}} @func _ownMatch
 
-  /// #}}} @group Main-Helpers
+  /// #}}} @group main
 
-  /// #{{{ @group Error-Helpers
+  /// #{{{ @group errors
 
   /// #{{{ @const _MK_ERR
   /**
@@ -445,22 +471,24 @@ var has = (function hasPrivateScope() {
   /// #}}} @const _MK_ERR
   /// #insert @code MK_ERR ../macros/mk-err.js
 
-  /// #}}} @group Error-Helpers
+  /// #}}} @group errors
 
-  /// #}}} @group Has-Helpers
+  /// #if}}} @helpers has
 
+/// #ifnot{{{ @scope DOCS_ONLY
   return has;
 })();
-/// #ifnot{{{ @env SOLO
+/// #ifnot{{{ @scope SOLO
 vitals['has'] = has;
-/// #ifnot}}} @env SOLO
+/// #ifnot}}} @scope SOLO
+/// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super has
 
-/// #if{{{ @env SOLO
+/// #if{{{ @scope SOLO
 var vitals = has;
 vitals['has'] = has;
 /// #insert @code EXPORT ../macros/export.js
 /// #insert @wrapper CLOSE ../macros/wrapper.js
-/// #if}}} @env SOLO
+/// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
