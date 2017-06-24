@@ -659,7 +659,7 @@ var DIR = {
  */
 var FILE = {
   PKG: resolvePath(REPO, './package.json'),
-  CONST: resolvePath(SRC, './constants/version.js'),
+  CONST: resolvePath(DIR.SRC, './constants/version.js'),
   README: resolvePath(REPO, './README.md')
 };
 /// #}}} @const FILE
