@@ -19,6 +19,10 @@
 exports['desc'] = 'builds distributable versions of vitals';
 exports['default'] = '-dist';
 exports['methods'] = {
+  'all': {
+    'desc': 'builds all vitals distributables & documentation',
+    'method': buildAll
+  },
   'dist': {
     'desc': 'builds browser & node versions of vitals',
     'method': buildDist
@@ -132,6 +136,127 @@ var STATE = CONFIG.state;
  */
 var setError = loadHelper('set-error');
 /// #}}} @func setError
+
+/// #{{{ @func setBuildEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} key
+ * @param {string} prop
+ * @return {!Error}
+ */
+function setBuildEmptyError(err, key, prop) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isString(prop) )
+    throw setTypeError(new TypeError, 'prop', 'string');
+
+  prop = key + '.' + prop;
+
+  msg = 'invalid empty `string` for `build` task property `' + prop + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setBuildEmptyError
+
+/// #{{{ @func setBuildOwnError
+/**
+ * @private
+ * @param {!ReferenceError} err
+ * @param {string} key
+ * @param {string} prop
+ * @return {!ReferenceError}
+ */
+function setBuildOwnError(err, key, prop) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isString(prop) )
+    throw setTypeError(new TypeError, 'prop', 'string');
+
+  prop = key + '.' + prop;
+
+  msg = 'missing required `build` task property `' + prop + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setBuildOwnError
+
+/// #{{{ @func setBuildSlashError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} key
+ * @param {string} prop
+ * @param {string} path
+ * @return {!RangeError}
+ */
+function setBuildSlashError(err, key, prop, path) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isString(prop) )
+    throw setTypeError(new TypeError, 'prop', 'string');
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+
+  prop = key + '.' + prop;
+
+  msg = 'invalid dir notation for `build` task property `' + prop + '`\n' +
+    '    valid-end-char: `"/"`\n' +
+    '    bad-dir-path: `' + path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setBuildSlashError
+
+/// #{{{ @func setBuildTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} key
+ * @param {string} prop
+ * @param {string} types
+ * @return {!TypeError}
+ */
+function setBuildTypeError(err, key, prop, types) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isString(prop) )
+    throw setTypeError(new TypeError, 'prop', 'string');
+  if ( !isString(types) )
+    throw setTypeError(new TypeError, 'types', 'string');
+
+  prop = key + '.' + prop;
+
+  msg = 'invalid `build` task property data type for `' + prop + '`\n' +
+    '    valid-types: `' + types + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setBuildTypeError
 
 /// #{{{ @func setDirError
 /**
@@ -267,6 +392,15 @@ var hasOwnProperty = loadHelper('has-own-property');
 
 /// #{{{ @group IS
 
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
 /// #{{{ @func isDirectory
 /**
  * @private
@@ -284,6 +418,15 @@ var isDirectory = IS.directory;
  */
 var isDirNode = loadJsppHelper('is-directory-node');
 /// #}}} @func isDirNode
+
+/// #{{{ @func isError
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isError = IS.error;
+/// #}}} @func isError
 
 /// #{{{ @func isFunction
 /**
@@ -303,6 +446,15 @@ var isFunction = IS.func;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -320,6 +472,15 @@ var isObject = IS.object;
  */
 var isObjectHashMap = IS.objectHashMap;
 /// #}}} @func isObjectHashMap
+
+/// #{{{ @func isObjectList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObjectList = IS.objectList;
+/// #}}} @func isObjectList
 
 /// #{{{ @func isStateObject
 /**
@@ -436,10 +597,467 @@ var DEST = resolvePath(REPO, CONFIG.dest);
 
 /// #}}} @group PATHS
 
+/// #{{{ @group BUILDERS
+//////////////////////////////////////////////////////////////////////////////
+// BUILDERS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func buildBranches
+/**
+ * @private
+ * @param {!Dir} dir
+ * @param {string} key
+ * @param {!Object<string, !Object>} branches
+ * @param {string} src
+ * @param {string} dest
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {(?function(string): string)=} alter
+ * @return {void}
+ */
+function buildBranches(dir, key, branches, src, dest, state, alter) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var newkey;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isDirNode(dir) )
+    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isObject(branches) || !isObjectHashMap(branches) )
+    throw setTypeError(new TypeError, 'branches', '!Object<string, !Object>');
+  if ( !isString(src) )
+    throw setTypeError(new TypeError, 'src', 'string');
+  if (!src)
+    throw setEmptyError(new Error, 'src');
+  if ( !isDirectory(src) )
+    throw setDirError(new Error, 'src', src);
+  if ( !isString(dest) )
+    throw setTypeError(new TypeError, 'dest', 'string');
+  if (!dest)
+    throw setEmptyError(new Error, 'dest');
+  if ( !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-key-const
+
+  /// #{{{ @const KEY
+  /**
+   * @private
+   * @const {string}
+   */
+  var KEY = key;
+  /// #}}} @const KEY
+
+  /// #}}} @step set-key-const
+
+  /// #{{{ @step make-dest
+
+  if ( !isDirectory(dest) )
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
+
+  /// #{{{ @step build-each-branch
+
+  for (key in branches) {
+    if ( hasOwnProperty(branches, key) ) {
+      newkey = !!KEY
+        ? KEY + '.' + key
+        : key;
+      buildBranch(dir, newkey, branches[key], src, dest, state, alter);
+    }
+  }
+
+  /// #}}} @step build-each-branch
+}
+/// #}}} @func buildBranches
+
+/// #{{{ @func buildBranch
+/**
+ * @private
+ * @param {!Dir} dir
+ * @param {string} key
+ * @param {!Object} branch
+ * @param {string} src
+ * @param {string} dest
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {(?function(string): string)=} alter
+ * @return {void}
+ */
+function buildBranch(dir, key, branch, src, dest, state, alter) {
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isDirNode(dir) )
+    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isObject(branch) )
+    throw setTypeError(new TypeError, 'branch', '!Object');
+  if ( !isString(src) )
+    throw setTypeError(new TypeError, 'src', 'string');
+  if (!src)
+    throw setEmptyError(new Error, 'src');
+  if ( !isDirectory(src) )
+    throw setDirError(new Error, 'src', src);
+  if ( !isString(dest) )
+    throw setTypeError(new TypeError, 'dest', 'string');
+  if (!dest)
+    throw setEmptyError(new Error, 'dest');
+  if ( !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step resolve-paths
+
+  src = resolvePath(src);
+  dest = resolvePath(dest);
+
+  /// #}}} @step resolve-paths
+
+  /// #{{{ @step make-dest
+
+  if ( !isDirectory(dest) )
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
+
+  /// #{{{ @step update-src
+
+  if ( hasOwnProperty(branch, 'src') ) {
+
+    if ( !isString(branch.src) )
+      throw setBuildTypeError(new TypeError, key, 'src', 'string');
+
+    if (!!branch.src) {
+
+      if ( !hasEndSlash(branch.src) )
+        throw setBuildSlashError(new RangeError, key, 'src', branch.src);
+
+      src = resolvePath(src, branch.src);
+    }
+  }
+
+  /// #}}} @step update-src
+
+  /// #{{{ @step update-dest
+
+  if ( hasOwnProperty(branch, 'dest') ) {
+
+    if ( !isString(branch.dest) )
+      throw setBuildTypeError(new TypeError, key, 'dest', 'string');
+
+    if (!!branch.dest) {
+
+      if ( !hasEndSlash(branch.dest) )
+        throw setBuildSlashError(new RangeError, key, 'dest', branch.dest);
+
+      dest = resolvePath(dest, branch.dest);
+    }
+  }
+
+  /// #}}} @step update-dest
+
+  /// #{{{ @step update-state
+
+  state = cloneObject(state);
+
+  if ( hasOwnProperty(branch, 'state') ) {
+
+    if ( !isStateObject(branch.state) )
+      throw setBuildTypeError(new TypeError, key, 'state',
+        '!Object<string, (boolean|!Object<string, boolean>)>');
+
+    state = mergeObject(state, branch.state);
+  }
+
+  /// #}}} @step update-state
+
+  /// #{{{ @step build-files
+
+  if ( hasOwnProperty(branch, 'files') )
+    buildFiles(dir, key, branch.files, src, dest, state, alter);
+
+  /// #}}} @step build-files
+
+  /// #{{{ @step build-branches
+
+  if ( hasOwnProperty(branch, 'branches') )
+    buildBranches(dir, key, branch.branches, src, dest, state, alter);
+
+  /// #}}} @step build-branches
+}
+/// #}}} @func buildBranch
+
+/// #{{{ @func buildFiles
+/**
+ * @private
+ * @param {!Dir} dir
+ * @param {string} key
+ * @param {!Array<!Object>} files
+ * @param {string} src
+ * @param {string} dest
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {(?function(string): string)=} alter
+ * @return {void}
+ */
+function buildFiles(dir, key, files, src, dest, state, alter) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var file;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isDirNode(dir) )
+    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isArray(files) || !isObjectList(files) )
+    throw setTypeError(new TypeError, 'files', '!Array<!Object>');
+  if ( !isString(src) )
+    throw setTypeError(new TypeError, 'src', 'string');
+  if (!src)
+    throw setEmptyError(new Error, 'src');
+  if ( !isDirectory(src) )
+    throw setDirError(new Error, 'src', src);
+  if ( !isString(dest) )
+    throw setTypeError(new TypeError, 'dest', 'string');
+  if (!dest)
+    throw setEmptyError(new Error, 'dest');
+  if ( !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-key-const
+
+  /// #{{{ @const KEY
+  /**
+   * @private
+   * @const {string}
+   */
+  var KEY = key;
+  /// #}}} @const KEY
+
+  /// #}}} @step set-key-const
+
+  /// #{{{ @step make-dest
+
+  if ( !isDirectory(dest) )
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
+
+  /// #{{{ @step build-each-file
+
+  len = files.length;
+  i = -1;
+  while (++i < len) {
+    file = files[i];
+    key = 'files[' + i + ']';
+
+    if ( !isObject(file) )
+      throw setBuildTypeError(new TypeError, KEY, key, '!Object');
+
+    key = KEY + '.' + key;
+    buildFile(dir, key, file, src, dest, state, alter);
+  }
+
+  /// #}}} @step build-each-file
+}
+/// #}}} @func buildFiles
+
+/// #{{{ @func buildFile
+/**
+ * @private
+ * @param {!Dir} dir
+ * @param {string} key
+ * @param {!Object} file
+ * @param {string} src
+ * @param {string} dest
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {(?function(string): string)=} alter
+ * @return {string}
+ */
+function buildFile(dir, key, file, src, dest, state, alter) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var result;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isDirNode(dir) )
+    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isObject(file) )
+    throw setTypeError(new TypeError, 'file', '!Object');
+  if ( !isString(src) )
+    throw setTypeError(new TypeError, 'src', 'string');
+  if (!src)
+    throw setEmptyError(new Error, 'src');
+  if ( !isDirectory(src) )
+    throw setDirError(new Error, 'src', src);
+  if ( !isString(dest) )
+    throw setTypeError(new TypeError, 'dest', 'string');
+  if (!dest)
+    throw setEmptyError(new Error, 'dest');
+  if ( !isStateObject(state) )
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
+    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-dest
+
+  if ( !isDirectory(dest) )
+    makeDirectory(dest, MODE);
+
+  /// #}}} @step make-dest
+
+  /// #{{{ @step setup-src
+
+  if ( !hasOwnProperty(file, 'src') )
+    throw setBuildOwnError(new ReferenceError, key, 'src');
+  if ( !isString(file.src) )
+    throw setBuildTypeError(new TypeError, key, 'src', 'string');
+  if (!file.src)
+    throw setBuildEmptyError(new Error, key, 'src');
+
+  src = resolvePath(src, file.src);
+
+  if ( !isFile(src) )
+    throw setFileError(new Error, key + '.src', src);
+
+  /// #}}} @step setup-src
+
+  /// #{{{ @step setup-dest
+
+  if ( !hasOwnProperty(file, 'dest') )
+    throw setBuildOwnError(new ReferenceError, key, 'dest');
+  if ( !isString(file.dest) )
+    throw setBuildTypeError(new TypeError, key, 'dest', 'string');
+  if (!file.dest)
+    throw setBuildEmptyError(new Error, key, 'dest');
+
+  dest = resolvePath(dest, file.dest);
+
+  /// #}}} @step setup-dest
+
+  /// #{{{ @step update-state
+
+  state = cloneObject(state);
+
+  if ( hasOwnProperty(file, 'state') ) {
+
+    if ( !isStateObject(file.state) )
+      throw setBuildTypeError(new TypeError, key, 'state',
+        '!Object<string, (boolean|!Object<string, boolean>)>');
+
+    state = mergeObject(state, file.state);
+  }
+
+  /// #}}} @step update-state
+
+  /// #{{{ @step build-file
+
+  result = alter
+    ? dir.run(src, dest, state, alter)
+    : dir.run(src, dest, state);
+
+  /// #}}} @step build-file
+
+  /// #{{{ @step return-results
+
+  return result;
+
+  /// #}}} @step return-results
+}
+/// #}}} @func buildFile
+
+/// #}}} @group BUILDERS
+
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func buildAll
+/**
+ * @public
+ * @return {void}
+ */
+function buildAll() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var branch;
+  /** @type {!Dir} */
+  var dir;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step preprocess-source
+
+  dir = initPreprocessor(SRC);
+
+  /// #}}} @step preprocess-source
+
+  /// #{{{ @step build-browser-dist
+
+  branch = CONFIG.branches.browser;
+  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
+
+  /// #}}} @step build-browser-dist
+
+  /// #{{{ @step build-node-dist
+
+  branch = CONFIG.branches.node;
+  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
+
+  /// #}}} @step build-node-dist
+
+  /// #{{{ @step build-docs
+
+  branch = CONFIG.branches.docs;
+  buildBranch(dir, 'docs', branch, SRC, DEST, STATE);
+
+  /// #}}} @step build-docs
+}
+/// #}}} @func buildAll
 
 /// #{{{ @func buildDist
 /**
@@ -466,14 +1084,14 @@ function buildDist() {
   /// #{{{ @step build-browser-dist
 
   branch = CONFIG.branches.browser;
-  buildBranch(dir, branch, SRC, DEST, STATE);
+  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-browser-dist
 
   /// #{{{ @step build-node-dist
 
   branch = CONFIG.branches.node;
-  buildBranch(dir, branch, SRC, DEST, STATE);
+  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-node-dist
 }
@@ -504,7 +1122,7 @@ function buildBrowser() {
   /// #{{{ @step build-browser-dist
 
   branch = CONFIG.branches.browser;
-  buildBranch(dir, branch, SRC, DEST, STATE);
+  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-browser-dist
 }
@@ -535,7 +1153,7 @@ function buildNode() {
   /// #{{{ @step build-node-dist
 
   branch = CONFIG.branches.node;
-  buildBranch(dir, branch, SRC, DEST, STATE);
+  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-node-dist
 }
@@ -566,175 +1184,11 @@ function buildDocs() {
   /// #{{{ @step build-docs
 
   branch = CONFIG.branches.docs;
-  buildBranch(dir, branch, SRC, DEST, STATE);
+  buildBranch(dir, 'docs', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-docs
 }
 /// #}}} @func buildDocs
-
-/// #{{{ @func buildBranches
-/**
- * @private
- * @param {!Dir} dir
- * @param {!Object<string, !Object>} branches
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
- * @return {void}
- */
-function buildBranches(dir, branches, src, dest, state, alter) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var key;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  if ( !isDirNode(dir) )
-    throw setTypeError(new TypeError, 'dir', '!Dir');
-  if ( !isObject(branches) || !isObjectHashMap(branches) )
-    throw setTypeError(new TypeError, 'branches', '!Object<string, !Object>');
-  if ( !isString(src) )
-    throw setTypeError(new TypeError, 'src', 'string');
-  if (!src)
-    throw setEmptyError(new Error, 'src');
-  if ( !isDirectory(src) )
-    throw setDirError(new Error, 'src', src);
-  if ( !isString(dest) )
-    throw setTypeError(new TypeError, 'dest', 'string');
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !isStateObject(state) )
-    throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
-  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) )
-    makeDirectory(dest, MODE);
-
-  /// #}}} @step make-dest
-
-  /// #{{{ @step build-each-branch
-
-  for (key in branches) {
-    if ( hasOwnProperty(branches, key) ) {
-      buildBranch(dir, branches[key], src, dest, state, alter);
-    }
-  }
-
-  /// #}}} @step build-each-branch
-}
-/// #}}} @func buildBranches
-
-/// #{{{ @func buildBranch
-/**
- * @private
- * @param {!Dir} dir
- * @param {!Object} branch
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
- * @return {void}
- */
-function buildBranch(dir, branch, src, dest, state, alter) {
-
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) )
-    makeDirectory(dest, MODE);
-
-  /// #}}} @step make-dest
-
-  src = hasOwnProperty(branch, 'src')
-    ? resolvePath(src, branch.src)
-    : resolvePath(src);
-  dest = hasOwnProperty(branch, 'dest')
-    ? resolvePath(dest, branch.dest)
-    : resolvePath(dest);
-  state = hasOwnProperty(branch, 'state')
-    ? mergeObject(state, branch.state)
-    : cloneObject(state);
-
-  if ( hasOwnProperty(branch, 'files') )
-    buildFiles(dir, branch.files, src, dest, state, alter);
-
-  if ( hasOwnProperty(branch, 'branches') )
-    buildBranches(dir, branch.branches, src, dest, state, alter);
-}
-/// #}}} @func buildBranch
-
-/// #{{{ @func buildFiles
-/**
- * @private
- * @param {!Dir} dir
- * @param {!Array<!Object>} files
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
- * @return {void}
- */
-function buildFiles(dir, files, src, dest, state, alter) {
-
-  /** @type {!Array<!Object>} */
-  var files;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) )
-    makeDirectory(dest, MODE);
-
-  /// #}}} @step make-dest
-
-  len = files.length;
-  i = -1;
-  while (++i < len)
-    buildFile(dir, files[i], src, dest, state, alter);
-}
-/// #}}} @func buildFiles
-
-/// #{{{ @func buildFile
-/**
- * @private
- * @param {!Dir} dir
- * @param {!Object} file
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
- * @return {string}
- */
-function buildFile(dir, file, src, dest, state, alter) {
-
-  if ( !hasOwnProperty(file, 'src') )
-    throw new ReferenceError('missing `src` property for a `file` in `config`');
-  if ( !hasOwnProperty(file, 'dest') )
-    throw new ReferenceError('missing `dest` property for a `file` in `config`');
-
-  src = resolvePath(src, file.src);
-  dest = resolvePath(dest, file.dest);
-  state = hasOwnProperty(file, 'state')
-    ? mergeObject(state, file.state)
-    : cloneObject(state);
-  return alter
-    ? dir.run(src, dest, state, alter)
-    : dir.run(src, dest, state);
-}
-/// #}}} @func buildFile
 
 /// #}}} @group METHODS
 
