@@ -38,6 +38,14 @@ var resolvePath = loadTaskHelper('resolve-path');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const DIR_PATH
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var DIR_PATH = /^.*\//;
+/// #}}} @const DIR_PATH
+
 /// #{{{ @const DOCS_HELPER_DIR
 /**
  * @private
@@ -53,6 +61,14 @@ var DOCS_HELPER_DIR = resolvePath(__dirname);
  */
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const JS_EXT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var JS_EXT = /\.js$/;
+/// #}}} @const JS_EXT
 
 /// #{{{ @const TASK_HELPER_DIR
 /**
@@ -94,8 +110,18 @@ var isString = IS.string;
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadHelper('set-error');
+var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
 
 /// #{{{ @func setFileError
 /**
@@ -119,15 +145,6 @@ var setFileError = setError.file;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func trimJsExt
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var trimJsExt = loadTaskHelper('trim-file-ext').construct('.js');
-/// #}}} @func trimJsExt
-
 /// #}}} @group HELPERS
 
 /// #{{{ @group EXPORTS
@@ -149,7 +166,8 @@ function loadHelper(name) {
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
 
-  name = trimJsExt(name);
+  name = name.replace(DIR_PATH, '');
+  name = name.replace(JS_EXT, '');
 
   if (!name)
     throw setEmptyError(new Error, 'name');

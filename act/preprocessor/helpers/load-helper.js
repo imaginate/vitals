@@ -38,6 +38,14 @@ var resolvePath = loadTaskHelper('resolve-path');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const DIR_PATH
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var DIR_PATH = /^.*\//;
+/// #}}} @const DIR_PATH
+
 /// #{{{ @const JSPP_HELPER_DIR
 /**
  * @private
@@ -53,6 +61,14 @@ var JSPP_HELPER_DIR = resolvePath(__dirname);
  */
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const JS_EXT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var JS_EXT = /\.js$/;
+/// #}}} @const JS_EXT
 
 /// #{{{ @const TASK_HELPER_DIR
 /**
@@ -87,14 +103,47 @@ var isFile = IS.file;
 var isString = IS.string;
 /// #}}} @func isString
 
-/// #{{{ @func trimJsExt
+/// #{{{ @func setError
 /**
  * @private
- * @param {string} path
- * @return {string}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var trimJsExt = loadTaskHelper('trim-file-ext').construct('.js');
-/// #}}} @func trimJsExt
+var setError = loadTaskHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
 
 /// #}}} @group HELPERS
 
@@ -115,13 +164,13 @@ function loadHelper(name) {
   var path;
 
   if ( !isString(name) )
-    throw new TypeError('invalid `name` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'name', 'string');
 
-  name = trimJsExt(name);
+  name = name.replace(DIR_PATH, '');
+  name = name.replace(JS_EXT, '');
 
   if (!name)
-    throw new Error('invalid empty `string` for `name`');
+    throw setEmptyError(new Error, 'name');
 
   name += '.js';
   path = resolvePath(JSPP_HELPER_DIR, name);
@@ -130,7 +179,8 @@ function loadHelper(name) {
     path = resolvePath(TASK_HELPER_DIR, name);
 
     if ( !isFile(path) )
-      throw new Error('invalid file path for `name`\n' +
+      throw setError(new Error,
+        'invalid readable file path for helper `name`\n' +
         '    file-name: `' + name + '`\n' +
         '    task-path: `' + path + '`\n' +
         '    jspp-path: `' + resolvePath(JSPP_HELPER_DIR, name) + '`');
