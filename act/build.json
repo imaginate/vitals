@@ -368,6 +368,98 @@
           ]
         }
       }
+    },
+    "docs": {
+      "src": "docs/",
+      "dest": "../docs/",
+      "state": {
+        "docrefs": true,
+        "env": {
+          "NODE": true
+        },
+        "scope": {
+          "DOCS_ONLY": true,
+          "FS": true
+        }
+      },
+      "files": [
+        {
+          "src": "amend.js",
+          "dest": "amend.js"
+        },
+        {
+          "src": "copy.js",
+          "dest": "copy.js"
+        },
+        {
+          "src": "create.js",
+          "dest": "create.js"
+        },
+        {
+          "src": "cut.js",
+          "dest": "cut.js"
+        },
+        {
+          "src": "each.js",
+          "dest": "each.js"
+        },
+        {
+          "src": "fill.js",
+          "dest": "fill.js"
+        },
+        {
+          "src": "freeze.js",
+          "dest": "freeze.js"
+        },
+        {
+          "src": "fuse.js",
+          "dest": "fuse.js"
+        },
+        {
+          "src": "get.js",
+          "dest": "get.js"
+        },
+        {
+          "src": "has.js",
+          "dest": "has.js"
+        },
+        {
+          "src": "is.js",
+          "dest": "is.js"
+        },
+        {
+          "src": "remap.js",
+          "dest": "remap.js"
+        },
+        {
+          "src": "roll.js",
+          "dest": "roll.js"
+        },
+        {
+          "src": "run.js",
+          "dest": "run.js"
+        },
+        {
+          "src": "same.js",
+          "dest": "same.js"
+        },
+        {
+          "src": "seal.js",
+          "dest": "seal.js"
+        },
+        {
+          "src": "slice.js",
+          "dest": "slice.js"
+        },
+        {
+          "src": "to.js",
+          "dest": "to.js"
+        },
+        {
+          "src": "until.js",
+          "dest": "until.js"
+        }
+      ]
     }
   }
 }
