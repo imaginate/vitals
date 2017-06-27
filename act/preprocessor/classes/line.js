@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -111,15 +118,6 @@ var sealObject = loadHelper('seal-object');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isFileNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFileNode = loadHelper('is-file-node');
-/// #}}} @func isFileNode
-
 /// #{{{ @func isInstanceOf
 /**
  * @private
@@ -130,14 +128,14 @@ var isFileNode = loadHelper('is-file-node');
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
 
-/// #{{{ @func isNumber
+/// #{{{ @func isLocNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isNumber = IS.number;
-/// #}}} @func isNumber
+var isLocNode = loadHelper('is-location-node');
+/// #}}} @func isLocNode
 
 /// #{{{ @func isString
 /**
@@ -147,15 +145,6 @@ var isNumber = IS.number;
  */
 var isString = IS.string;
 /// #}}} @func isString
-
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
@@ -170,18 +159,6 @@ var isWholeNumber = IS.wholeNumber;
  */
 var setError = loadHelper('set-error');
 /// #}}} @func setError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
 
 /// #{{{ @func setNewError
 /**
@@ -217,12 +194,12 @@ var setTypeError = setError.type;
 /**
  * @public
  * @param {string} text
- * @param {number} linenum
- * @param {!File} file
+ * @param {!Loc} before
+ * @param {?Loc=} after
  * @constructor
  * @struct
  */
-function Line(text, linenum, file) {
+function Line(text, before, after) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -235,12 +212,10 @@ function Line(text, linenum, file) {
 
   if ( !isString(text) )
     throw setTypeError(new TypeError, 'text', 'string');
-  if ( !isNumber(linenum) )
-    throw setTypeError(new TypeError, 'linenum', 'number');
-  if ( !isWholeNumber(linenum) || linenum < 1 )
-    throw setIndexError(new RangeError, 'linenum', linenum, 1);
-  if ( !isFileNode(file) )
-    throw setTypeError(new TypeError, 'file', '!File');
+  if ( !isLocNode(before) )
+    throw setTypeError(new TypeError, 'before', '!Loc');
+  if ( !isNull(after) && !isUndefined(after) && !isLocNode(after) )
+    throw setTypeError(new TypeError, 'after', '?Loc=');
 
   /// #}}} @step verify-parameters
 
@@ -275,90 +250,36 @@ function Line(text, linenum, file) {
   /// #{{{ @member before
   /**
    * @public
-   * @const {!Object}
+   * @const {!Loc}
    */
   defineProperty(this, 'before', {
-    'value': {},
+    'value': before,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
   /// #}}} @member before
 
-  /// #{{{ @member before.file
-  /**
-   * @public
-   * @const {!File}
-   */
-  defineProperty(this.before, 'file', {
-    'value': file,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member before.file
-
-  /// #{{{ @member before.linenum
-  /**
-   * @public
-   * @const {number}
-   */
-  defineProperty(this.before, 'linenum', {
-    'value': linenum,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member before.linenum
-
   /// #{{{ @member after
   /**
    * @public
-   * @const {!Object}
+   * @const {?Loc}
    */
   defineProperty(this, 'after', {
-    'value': {},
+    'value': after || null,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
   /// #}}} @member after
 
-  /// #{{{ @member after.file
-  /**
-   * @public
-   * @type {?File}
-   */
-  defineProperty(this.after, 'file', {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
-  /// #}}} @member after.file
-
-  /// #{{{ @member after.linenum
-  /**
-   * @public
-   * @type {number}
-   */
-  defineProperty(this.after, 'linenum', {
-    'value': 0,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
-  /// #}}} @member after.linenum
-
   /// #}}} @step set-members
 
-  /// #{{{ @step update-states
+  /// #{{{ @step freeze-instance
 
-  freezeObject(this.before);
-  capObject(this.after);
   freezeObject(this);
 
-  /// #}}} @step update-states
+  /// #}}} @step freeze-instance
 }
 /// #}}} @func Line
 
@@ -371,69 +292,6 @@ function Line(text, linenum, file) {
 
 Line.prototype = createObject(null);
 Line.prototype.constructor = Line;
-
-/// #{{{ @func Line.prototype.setAfter
-/**
- * @param {number} linenum
- * @param {!File} file
- * @return {!Line}
- */
-Line.prototype.setAfter = function setAfter(linenum, file) {
-
-  /// #{{{ @step verify-parameters
-
-  if ( !isNumber(linenum) )
-    throw setTypeError(new TypeError, 'linenum', 'number');
-  if ( !isWholeNumber(linenum) || linenum < 1 )
-    throw setIndexError(new RangeError, 'linenum', linenum, 1);
-  if ( !isFileNode(file) )
-    throw setTypeError(new TypeError, 'file', '!File');
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step set-members
-
-  /// #{{{ @member after.file
-  /**
-   * @public
-   * @const {!File}
-   */
-  defineProperty(this.after, 'file', {
-    'value': file,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member after.file
-
-  /// #{{{ @member after.linenum
-  /**
-   * @public
-   * @const {number}
-   */
-  defineProperty(this.after, 'linenum', {
-    'value': linenum,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-  /// #}}} @member after.linenum
-
-  /// #}}} @step set-members
-
-  /// #{{{ @step update-states
-
-  freezeObject(this.after);
-
-  /// #}}} @step update-states
-
-  /// #{{{ @step return-instance
-
-  return this;
-
-  /// #}}} @step return-instance
-};
-/// #}}} @func Line.prototype.setAfter
 
 /// #}}} @group PROTOTYPE
 
