@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +34,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object}
  */
-var INS_TYPE_ID = loadHelper('type-ids').insert;
+var INS_TYPE_ID = loadHelper('type-ids').INS;
 /// #}}} @const INS_TYPE_ID
 
 /// #{{{ @const IS
@@ -267,7 +274,6 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -288,7 +294,6 @@ var setEmptyError = setError.empty;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setIdError = setError.id;
@@ -333,7 +338,6 @@ var setNoDefError = setError.noDef;
  * @private
  * @param {(!SyntaxError|!Error)} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {(!SyntaxError|!Error)}
  */
 var setPathCompError = setError.pathComp;
@@ -344,7 +348,6 @@ var setPathCompError = setError.pathComp;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
@@ -548,20 +551,20 @@ function Ins(line, index, file) {
   /// #{{{ @step verify-syntax
 
   if (!TAG)
-    throw setTagError(new SyntaxError, LINE, true);
+    throw setTagError(new SyntaxError, LINE);
   if (!ID)
-    throw setIdError(new SyntaxError, LINE, true);
+    throw setIdError(new SyntaxError, LINE);
   if ( hasAnyPathComponent(TEXT) && !PATH )
-    throw setPathCompError(new SyntaxError, LINE, true);
+    throw setPathCompError(new SyntaxError, LINE);
   if ( !hasValidInsert(TEXT) )
-    throw setCmdError(new SyntaxError, LINE, true);
+    throw setCmdError(new SyntaxError, LINE);
 
   /// #}}} @step verify-syntax
 
   /// #{{{ @step verify-path-node
 
   if (!DEFS)
-    throw setPathCompError(new Error, LINE, true);
+    throw setPathCompError(new Error, LINE);
 
   /// #}}} @step verify-path-node
 
