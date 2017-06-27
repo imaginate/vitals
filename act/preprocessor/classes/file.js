@@ -759,7 +759,7 @@ function File(path, parent) {
    * @private
    * @const {string}
    */
-  var TREE = PARENT.tree + name;
+  var TREE = PARENT.tree + NAME;
   /// #}}} @const TREE
 
   /// #}}} @step set-constants
