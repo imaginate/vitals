@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -316,7 +323,6 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -337,7 +343,6 @@ var setEmptyError = setError.empty;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setIdError = setError.id;
@@ -393,7 +398,6 @@ var setNoBlkError = setError.noBlk;
  * @private
  * @param {(!SyntaxError|!Error)} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {(!SyntaxError|!Error)}
  */
 var setPathCompError = setError.pathComp;
@@ -404,7 +408,6 @@ var setPathCompError = setError.pathComp;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
