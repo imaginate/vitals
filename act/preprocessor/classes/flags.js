@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * CONDITIONAL-FLAGS CLASS
+ * FLAGS CLASS
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -29,13 +29,13 @@ var loadHelper = require('./load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const COND_FLAGS_TYPE_ID
+/// #{{{ @const FLAGS_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var COND_FLAGS_TYPE_ID = loadHelper('type-ids').COND_FLAGS;
-/// #}}} @const COND_FLAGS_TYPE_ID
+var FLAGS_TYPE_ID = loadHelper('type-ids').FLAGS;
+/// #}}} @const FLAGS_TYPE_ID
 
 /// #{{{ @const IS
 /**
@@ -168,14 +168,14 @@ var isBoolean = IS.boolean;
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
-/// #{{{ @func isCondFlagsNode
+/// #{{{ @func isFlagsNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isCondFlagsNode = loadHelper('is-conditional-flags-node');
-/// #}}} @func isCondFlagsNode
+var isFlagsNode = loadHelper('is-flags-node');
+/// #}}} @func isFlagsNode
 
 /// #{{{ @func isInstanceOf
 /**
@@ -402,10 +402,10 @@ var setWholeError = setError.whole;
 /// #{{{ @func mkApproxState
 /**
  * @private
- * @param {!CondFlags} flags
+ * @param {!Flags} flags
  * @param {string} name
  * @param {boolean} state
- * @return {!CondFlags}
+ * @return {!Flags}
  */
 function mkApproxState(flags, name, state) {
 
@@ -422,8 +422,8 @@ function mkApproxState(flags, name, state) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isCondFlagsNode(flags) )
-    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!Flags');
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
   if ( !isBoolean(state) )
@@ -469,10 +469,10 @@ function mkApproxState(flags, name, state) {
 /// #{{{ @func mkExactState
 /**
  * @private
- * @param {!CondFlags} flags
+ * @param {!Flags} flags
  * @param {string} name
  * @param {boolean} state
- * @return {!CondFlags}
+ * @return {!Flags}
  */
 function mkExactState(flags, name, state) {
 
@@ -485,8 +485,8 @@ function mkExactState(flags, name, state) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isCondFlagsNode(flags) )
-    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!Flags');
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
   if ( !isBoolean(state) )
@@ -522,17 +522,17 @@ function mkExactState(flags, name, state) {
 /// #{{{ @func mkState
 /**
  * @private
- * @param {!CondFlags} flags
+ * @param {!Flags} flags
  * @param {string} name
  * @param {boolean} state
- * @return {!CondFlags}
+ * @return {!Flags}
  */
 function mkState(flags, name, state) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isCondFlagsNode(flags) )
-    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!Flags');
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
   if ( !isBoolean(state) )
@@ -559,8 +559,8 @@ function mkState(flags, name, state) {
 /// #{{{ @func mkStates
 /**
  * @private
- * @param {!CondFlags} flags
- * @return {!CondFlags}
+ * @param {!Flags} flags
+ * @return {!Flags}
  */
 function mkStates(flags) {
 
@@ -581,8 +581,8 @@ function mkStates(flags) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isCondFlagsNode(flags) )
-    throw setTypeError(new TypeError, 'flags', '!CondFlags');
+  if ( !isFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!Flags');
 
   /// #}}} @step verify-parameters
 
@@ -628,14 +628,14 @@ function mkStates(flags) {
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func CondFlags
+/// #{{{ @func Flags
 /**
  * @public
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
  * @constructor
  * @struct
  */
-function CondFlags(state) {
+function Flags(state) {
 
   /// #{{{ @step declare-variables
 
@@ -650,8 +650,8 @@ function CondFlags(state) {
 
   /// #{{{ @step verify-new-keyword
 
-  if ( !isInstanceOf(this, CondFlags) )
-    throw setNewError(new SyntaxError, 'CondFlags');
+  if ( !isInstanceOf(this, Flags) )
+    throw setNewError(new SyntaxError, 'Flags');
 
   /// #}}} @step verify-new-keyword
 
@@ -705,7 +705,7 @@ function CondFlags(state) {
    * @const {!Object}
    */
   defineProperty(this, 'type', {
-    'value': COND_FLAGS_TYPE_ID,
+    'value': FLAGS_TYPE_ID,
     'writable': false,
     'enumerable': true,
     'configurable': false
@@ -805,12 +805,11 @@ function CondFlags(state) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step lock-instance
+  /// #{{{ @step cap-instance
 
   capObject(this);
-  sealObject(this);
 
-  /// #}}} @step lock-instance
+  /// #}}} @step cap-instance
 
   /// #{{{ @step make-states
 
@@ -824,7 +823,7 @@ function CondFlags(state) {
 
   /// #}}} @step freeze-instance
 }
-/// #}}} @func CondFlags
+/// #}}} @func Flags
 
 /// #}}} @group CONSTRUCTORS
 
@@ -833,15 +832,15 @@ function CondFlags(state) {
 // PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
-CondFlags.prototype = createObject(null);
-CondFlags.prototype.constructor = CondFlags;
+Flags.prototype = createObject(null);
+Flags.prototype.constructor = Flags;
 
-/// #{{{ @func CondFlags.prototype.getState
+/// #{{{ @func Flags.prototype.getState
 /**
  * @param {!Cond} cond
  * @return {boolean}
  */
-CondFlags.prototype.getState = function getState(cond) {
+Flags.prototype.getState = function getState(cond) {
 
   /// #{{{ @step declare-variables
 
@@ -877,14 +876,14 @@ CondFlags.prototype.getState = function getState(cond) {
 
   /// #}}} @step return-state
 };
-/// #}}} @func CondFlags.prototype.getState
+/// #}}} @func Flags.prototype.getState
 
-/// #{{{ @func CondFlags.prototype.getKey
+/// #{{{ @func Flags.prototype.getKey
 /**
  * @param {string} key
  * @return {(boolean|undefined)}
  */
-CondFlags.prototype.getKey = function getKey(key) {
+Flags.prototype.getKey = function getKey(key) {
 
   /// #{{{ @step declare-variables
 
@@ -925,14 +924,14 @@ CondFlags.prototype.getKey = function getKey(key) {
 
   /// #}}} @step check-approx
 };
-/// #}}} @func CondFlags.prototype.getKey
+/// #}}} @func Flags.prototype.getKey
 
-/// #{{{ @func CondFlags.prototype.getTag
+/// #{{{ @func Flags.prototype.getTag
 /**
  * @param {string} tag
  * @return {(boolean|undefined)}
  */
-CondFlags.prototype.getTag = function getTag(tag) {
+Flags.prototype.getTag = function getTag(tag) {
 
   /// #{{{ @step declare-variables
 
@@ -973,14 +972,14 @@ CondFlags.prototype.getTag = function getTag(tag) {
 
   /// #}}} @step check-approx
 };
-/// #}}} @func CondFlags.prototype.getTag
+/// #}}} @func Flags.prototype.getTag
 
-/// #{{{ @func CondFlags.prototype.getId
+/// #{{{ @func Flags.prototype.getId
 /**
  * @param {string} id
  * @return {(boolean|undefined)}
  */
-CondFlags.prototype.getId = function getId(id) {
+Flags.prototype.getId = function getId(id) {
 
   /// #{{{ @step declare-variables
 
@@ -1021,7 +1020,7 @@ CondFlags.prototype.getId = function getId(id) {
 
   /// #}}} @step check-approx
 };
-/// #}}} @func CondFlags.prototype.getId
+/// #}}} @func Flags.prototype.getId
 
 /// #}}} @group PROTOTYPE
 
@@ -1030,7 +1029,7 @@ CondFlags.prototype.getId = function getId(id) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = CondFlags;
+module.exports = Flags;
 
 /// #}}} @group EXPORTS
 
