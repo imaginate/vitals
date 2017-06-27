@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * LINE-LOCATION CLASS
+ * LOCATION CLASS
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -29,13 +29,13 @@ var loadHelper = require('./load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const LINE_LOC_TYPE_ID
+/// #{{{ @const LOC_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var LINE_LOC_TYPE_ID = loadHelper('type-ids').LINE_LOC;
-/// #}}} @const LINE_LOC_TYPE_ID
+var LOC_TYPE_ID = loadHelper('type-ids').LOC;
+/// #}}} @const LOC_TYPE_ID
 
 /// #{{{ @const IS
 /**
@@ -211,7 +211,7 @@ var setTypeError = setError.type;
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func LineLoc
+/// #{{{ @func Loc
 /**
  * @public
  * @param {number} linenum
@@ -219,12 +219,12 @@ var setTypeError = setError.type;
  * @constructor
  * @struct
  */
-function LineLoc(linenum, file) {
+function Loc(linenum, file) {
 
   /// #{{{ @step verify-new-keyword
 
-  if ( !isInstanceOf(this, LineLoc) )
-    throw setNewError(new SyntaxError, 'LineLoc');
+  if ( !isInstanceOf(this, Loc) )
+    throw setNewError(new SyntaxError, 'Loc');
 
   /// #}}} @step verify-new-keyword
 
@@ -247,7 +247,7 @@ function LineLoc(linenum, file) {
    * @const {!Object}
    */
   defineProperty(this, 'type', {
-    'value': LINE_LOC_TYPE_ID,
+    'value': LOC_TYPE_ID,
     'writable': false,
     'enumerable': true,
     'configurable': false
@@ -288,7 +288,7 @@ function LineLoc(linenum, file) {
 
   /// #}}} @step freeze-instance
 }
-/// #}}} @func LineLoc
+/// #}}} @func Loc
 
 /// #}}} @group CONSTRUCTORS
 
@@ -297,8 +297,8 @@ function LineLoc(linenum, file) {
 // PROTOTYPE
 //////////////////////////////////////////////////////////////////////////////
 
-LineLoc.prototype = createObject(null);
-LineLoc.prototype.constructor = LineLoc;
+Loc.prototype = createObject(null);
+Loc.prototype.constructor = Loc;
 
 /// #}}} @group PROTOTYPE
 
@@ -307,7 +307,7 @@ LineLoc.prototype.constructor = LineLoc;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = LineLoc;
+module.exports = Loc;
 
 /// #}}} @group EXPORTS
 
