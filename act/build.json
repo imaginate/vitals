@@ -1,4 +1,5 @@
 {
+  "created": "2014",
   "src": "src/",
   "dest": "dist/",
   "minify": false,
