@@ -352,20 +352,13 @@ function Line(text, linenum, file) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step lock-members
+  /// #{{{ @step update-states
 
   freezeObject(this.before);
-  sealObject(this.after);
   capObject(this.after);
+  freezeObject(this);
 
-  /// #}}} @step lock-members
-
-  /// #{{{ @step lock-instance
-
-  capObject(this);
-  sealObject(this);
-
-  /// #}}} @step lock-instance
+  /// #}}} @step update-states
 }
 /// #}}} @func Line
 
@@ -428,17 +421,11 @@ Line.prototype.setAfter = function setAfter(linenum, file) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step freeze-members
+  /// #{{{ @step update-states
 
   freezeObject(this.after);
 
-  /// #}}} @step freeze-members
-
-  /// #{{{ @step freeze-instance
-
-  freezeObject(this);
-
-  /// #}}} @step freeze-instance
+  /// #}}} @step update-states
 
   /// #{{{ @step return-instance
 
