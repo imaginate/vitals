@@ -291,10 +291,9 @@ function setError(err, msg) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setCloseError(err, line, loading) {
+function setCloseError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -303,8 +302,6 @@ function setCloseError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `close` command syntax for `close` parameter\n' +
     '    close-defined-at:\n' +
@@ -313,7 +310,7 @@ function setCloseError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -328,10 +325,9 @@ function setCloseError(err, line, loading) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setCmdError(err, line, loading) {
+function setCmdError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -340,8 +336,6 @@ function setCmdError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `command` syntax\n' +
     '    line-text: `' + line.text + '`\n' +
@@ -349,7 +343,7 @@ function setCmdError(err, line, loading) {
     '        linenum: `' + line.before.linenum + '`\n' +
     '        file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '    preparsed-line-location:\n' +
       '        linenum: `' + line.after.linenum + '`\n' +
@@ -544,10 +538,9 @@ function setFileError(err, param, path) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setIdError(err, line, loading) {
+function setIdError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -556,8 +549,6 @@ function setIdError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `id` component syntax\n' +
     '    valid-id-regex: `/[ \\t][a-zA-Z0-9_\\.\\-\\$]+[ \\t]?/`\n' +
@@ -568,7 +559,7 @@ function setIdError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -703,10 +694,9 @@ function setLocError(err, param, path, parent, contain) {
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setMatchError(err, open, close, loading) {
+function setMatchError(err, open, close) {
 
   /** @type {string} */
   var msg;
@@ -717,8 +707,6 @@ function setMatchError(err, open, close, loading) {
     throw setTypeError(new TypeError, 'open', '!Line');
   if ( !isLineNode(close) )
     throw setTypeError(new TypeError, 'close', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'unmatching `open` and `close` command\n' +
     '    open-defined-at:\n' +
@@ -727,7 +715,7 @@ function setMatchError(err, open, close, loading) {
     '            linenum: `' + open.before.linenum + '`\n' +
     '            file: `' + open.before.file.path + '`\n';
 
-  if (!loading)
+  if (open.after)
     msg += '' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + open.after.linenum + '`\n' +
@@ -740,7 +728,7 @@ function setMatchError(err, open, close, loading) {
     '            linenum: `' + close.before.linenum + '`\n' +
     '            file: `' + close.before.file.path + '`';
 
-  if (!loading)
+  if (close.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + close.after.linenum + '`\n' +
@@ -778,10 +766,9 @@ function setNewError(err, constructor) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setNoCloseError(err, line, loading) {
+function setNoCloseError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -790,8 +777,6 @@ function setNoCloseError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'no `close` command for `open` command\n' +
     '    unclosed-open-defined-at:\n' +
@@ -800,7 +785,7 @@ function setNoCloseError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -859,10 +844,9 @@ function setNoDefError(err, line, key, file) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setNoOpenError(err, line, loading) {
+function setNoOpenError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -871,8 +855,6 @@ function setNoOpenError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'no `open` command for `close` command\n' +
     '    invalid-close-defined-at:\n' +
@@ -881,7 +863,7 @@ function setNoOpenError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -923,10 +905,9 @@ function setNoStateError(err, cond) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setOpenError(err, line, loading) {
+function setOpenError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -935,8 +916,6 @@ function setOpenError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `open` command syntax for `open` parameter\n' +
     '    open-defined-at:\n' +
@@ -945,7 +924,7 @@ function setOpenError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -1073,10 +1052,9 @@ function setOwnDefError(err, def1, def2) {
  * @public
  * @param {(!SyntaxError|!Error)} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {(!SyntaxError|!Error)}
  */
-function setPathCompError(err, line, loading) {
+function setPathCompError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -1085,8 +1063,6 @@ function setPathCompError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '(!SyntaxError|!Error)');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   if (err.name !== 'SyntaxError')
     msg = 'no `File` node found for `path` component';
@@ -1106,7 +1082,7 @@ function setPathCompError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
@@ -1255,10 +1231,9 @@ function setStateTagError(err, key) {
  * @public
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
-function setTagError(err, line, loading) {
+function setTagError(err, line) {
 
   /** @type {string} */
   var msg;
@@ -1267,8 +1242,6 @@ function setTagError(err, line, loading) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
   if ( !isLineNode(line) )
     throw setTypeError(new TypeError, 'line', '!Line');
-  if ( !isUndefined(loading) && !isBoolean(loading) )
-    throw setTypeError(new TypeError, 'loading', 'boolean=');
 
   msg = 'invalid `tag` component syntax\n' +
     '    valid-tag-regex: `/[ \\t]@[a-zA-Z0-9_\\.\\-]+[ \\t]/`\n' +
@@ -1279,7 +1252,7 @@ function setTagError(err, line, loading) {
     '            linenum: `' + line.before.linenum + '`\n' +
     '            file: `' + line.before.file.path + '`';
 
-  if (!loading)
+  if (line.after)
     msg += '\n' +
       '        preparsed-line-location:\n' +
       '            linenum: `' + line.after.linenum + '`\n' +
