@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -17,21 +22,7 @@
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
 
-/// #{{{ @group INIT-HELPERS
-//////////////////////////////////////////////////////////////////////////////
-// INIT-HELPERS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
-
-/// #}}} @group INIT-HELPERS
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -45,14 +36,6 @@ var resolvePath = loadTaskHelper('resolve-path');
  */
 var DIR_PATH = /^.*\//;
 /// #}}} @const DIR_PATH
-
-/// #{{{ @const JSPP_HELPER_DIR
-/**
- * @private
- * @const {string}
- */
-var JSPP_HELPER_DIR = resolvePath(__dirname);
-/// #}}} @const JSPP_HELPER_DIR
 
 /// #{{{ @const IS
 /**
@@ -70,20 +53,52 @@ var IS = loadTaskHelper('is');
 var JS_EXT = /\.js$/;
 /// #}}} @const JS_EXT
 
-/// #{{{ @const TASK_HELPER_DIR
-/**
- * @private
- * @const {string}
- */
-var TASK_HELPER_DIR = resolvePath(__dirname, '../../helpers');
-/// #}}} @const TASK_HELPER_DIR
-
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = loadTaskHelper('create-object');
+/// #}}} @func createObject
+
+/// #{{{ @func defineProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {!Object} descriptor
+ * @return {!Object}
+ */
+var defineProperty = loadTaskHelper('define-property');
+/// #}}} @func defineProperty
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadTaskHelper('freeze-object');
+/// #}}} @func freezeObject
+
+/// #{{{ @func hasOwnProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnProperty = loadTaskHelper('has-own-property');
+/// #}}} @func hasOwnProperty
 
 /// #{{{ @func isFile
 /**
@@ -102,6 +117,15 @@ var isFile = IS.file;
  */
 var isString = IS.string;
 /// #}}} @func isString
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
 
 /// #{{{ @func setError
 /**
@@ -147,10 +171,38 @@ var setTypeError = setError.type;
 
 /// #}}} @group HELPERS
 
+/// #{{{ @group PATHS
+//////////////////////////////////////////////////////////////////////////////
+// PATHS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const DIR
+/**
+ * @private
+ * @const {!Object<string, string>}
+ * @struct
+ */
+var DIR = freezeObject({
+  JSPP: resolvePath(__dirname),
+  TASK: resolvePath(__dirname, '../../helpers')
+});
+/// #}}} @const DIR
+
+/// #}}} @group PATHS
+
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const CACHE
+/**
+ * @private
+ * @const {!Object<string, (!Object|!Function)>}
+ * @dict
+ */
+var CACHE = createObject(null);
+/// #}}} @const CACHE
 
 /// #{{{ @func loadHelper
 /**
@@ -162,31 +214,43 @@ function loadHelper(name) {
 
   /** @type {string} */
   var path;
+  /** @type {string} */
+  var key;
 
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
 
   name = name.replace(DIR_PATH, '');
-  name = name.replace(JS_EXT, '');
+  key = name.replace(JS_EXT, '');
 
-  if (!name)
+  if (!key)
     throw setEmptyError(new Error, 'name');
 
-  name += '.js';
-  path = resolvePath(JSPP_HELPER_DIR, name);
+  if ( hasOwnProperty(CACHE, key) )
+    return CACHE[key];
+
+  name = key + '.js';
+  path = resolvePath(DIR.JSPP, name);
 
   if ( !isFile(path) ) {
-    path = resolvePath(TASK_HELPER_DIR, name);
+    path = resolvePath(DIR.TASK, name);
 
     if ( !isFile(path) )
       throw setError(new Error,
         'invalid readable file path for helper `name`\n' +
         '    file-name: `' + name + '`\n' +
         '    task-path: `' + path + '`\n' +
-        '    jspp-path: `' + resolvePath(JSPP_HELPER_DIR, name) + '`');
+        '    jspp-path: `' + resolvePath(DIR.JSPP, name) + '`');
   }
 
-  return require(path);
+  defineProperty(CACHE, key, {
+    'value': require(path),
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+
+  return CACHE[key];
 }
 /// #}}} @func loadHelper
 
