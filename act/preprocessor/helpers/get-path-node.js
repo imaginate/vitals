@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -36,6 +43,15 @@ var IS = loadTaskHelper('is');
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadTaskHelper('clean-path');
+/// #}}} @func cleanPath
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -101,18 +117,6 @@ var isString = IS.string;
 var resolvePath = loadTaskHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func trimDirectory
-/**
- * @private
- * @param {string} src
- *   The file path to trim from.
- * @param {string} path
- *   The directory path to trim.
- * @return {string}
- */
-var trimDirectory = require('./trim-directory.js');
-/// #}}} @func trimDirectory
-
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -158,6 +162,8 @@ function getNode(src, name) {
  */
 function getPathNode(src, path) {
 
+  /** @type {string} */
+  var resolved;
   /** @type {!Array<string>} */
   var names;
   /** @type {(?Dir|?File)} */
@@ -177,12 +183,12 @@ function getPathNode(src, path) {
     throw new TypeError('invalid `src` data type\n' +
       '    valid-types: `!Dir|!File`');
 
-  path = resolvePath(src.path, path);
+  path = cleanPath(path);
+  resolved = resolvePath(src.path, path);
 
-  if ( !isFile(path) && !isDirectory(path) )
+  if ( !isFile(resolved) && !isDirectory(resolved) )
     return null;
 
-  path = trimDirectory(path, src.path);
   names = path.split('/');
   node = src;
   len = names.length;
