@@ -62,14 +62,6 @@ var BLK_TYPE_ID = freezeObject({});
 var COND_TYPE_ID = freezeObject({});
 /// #}}} @const COND_TYPE_ID
 
-/// #{{{ @const COND_FLAGS_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var COND_FLAGS_TYPE_ID = freezeObject({});
-/// #}}} @const COND_FLAGS_TYPE_ID
-
 /// #{{{ @const DEF_TYPE_ID
 /**
  * @private
@@ -93,6 +85,14 @@ var DIR_TYPE_ID = freezeObject({});
  */
 var FILE_TYPE_ID = freezeObject({});
 /// #}}} @const FILE_TYPE_ID
+
+/// #{{{ @const FLAGS_TYPE_ID
+/**
+ * @private
+ * @const {!Object}
+ */
+var FLAGS_TYPE_ID = freezeObject({});
+/// #}}} @const FLAGS_TYPE_ID
 
 /// #{{{ @const INCL_TYPE_ID
 /**
@@ -154,13 +154,6 @@ var TYPE_IDS = freezeObject({
   'Conditional': COND_TYPE_ID,
   'conditional': COND_TYPE_ID,
 
-  'COND_FLAGS': COND_FLAGS_TYPE_ID,
-  'CondFlags': COND_FLAGS_TYPE_ID,
-  'condFlags': COND_FLAGS_TYPE_ID,
-  'CONDITIONAL_FLAGS': COND_FLAGS_TYPE_ID,
-  'ConditionalFlags': COND_FLAGS_TYPE_ID,
-  'conditionalFlags': COND_FLAGS_TYPE_ID,
-
   'DEF': DEF_TYPE_ID,
   'Def': DEF_TYPE_ID,
   'def': DEF_TYPE_ID,
@@ -178,6 +171,10 @@ var TYPE_IDS = freezeObject({
   'FILE': FILE_TYPE_ID,
   'File': FILE_TYPE_ID,
   'file': FILE_TYPE_ID,
+
+  'FLAGS': FLAGS_TYPE_ID,
+  'Flags': FLAGS_TYPE_ID,
+  'flags': FLAGS_TYPE_ID,
 
   'LINE': LINE_TYPE_ID,
   'Line': LINE_TYPE_ID,
