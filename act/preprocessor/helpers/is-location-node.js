@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-LINE-LOCATION-NODE HELPER
+ * IS-LOCATION-NODE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -37,13 +37,13 @@ var loadTaskHelper = require('./load-task-helper.js');
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
-/// #{{{ @const LINE_LOC_TYPE_ID
+/// #{{{ @const LOC_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var LINE_LOC_TYPE_ID = require('./type-ids.js').LINE_LOC;
-/// #}}} @const LINE_LOC_TYPE_ID
+var LOC_TYPE_ID = require('./type-ids.js').LOC;
+/// #}}} @const LOC_TYPE_ID
 
 /// #}}} @group CONSTANTS
 
@@ -68,18 +68,18 @@ var isObject = IS.object;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isLineLocationNode
+/// #{{{ @func isLocationNode
 /**
  * @public
  * @param {*} val
  * @return {boolean}
  */
-function isLineLocationNode(val) {
-  return isObject(val) && 'type' in val && val.type === LINE_LOC_TYPE_ID;
+function isLocationNode(val) {
+  return isObject(val) && 'type' in val && val.type === LOC_TYPE_ID;
 }
-/// #}}} @func isLineLocationNode
+/// #}}} @func isLocationNode
 
-module.exports = isLineLocationNode;
+module.exports = isLocationNode;
 
 /// #}}} @group EXPORTS
 
