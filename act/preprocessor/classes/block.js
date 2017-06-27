@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +34,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object}
  */
-var BLK_TYPE_ID = loadHelper('type-ids').block;
+var BLK_TYPE_ID = loadHelper('type-ids').BLK;
 /// #}}} @const BLK_TYPE_ID
 
 /// #{{{ @const IS
@@ -357,7 +364,6 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCloseError = setError.close;
@@ -368,7 +374,6 @@ var setCloseError = setError.close;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -389,7 +394,6 @@ var setEmptyError = setError.empty;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setIdError = setError.id;
@@ -413,7 +417,6 @@ var setIndexError = setError.index;
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setMatchError = setError.match;
@@ -434,7 +437,6 @@ var setNewError = setError.new_;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoCloseError = setError.noClose;
@@ -445,7 +447,6 @@ var setNoCloseError = setError.noClose;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setOpenError = setError.open;
@@ -468,7 +469,6 @@ var setOwnCmdError = setError.ownCmd;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
