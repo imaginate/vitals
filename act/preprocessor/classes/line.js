@@ -137,6 +137,15 @@ var isInstanceOf = IS.instanceOf;
 var isLocNode = loadHelper('is-location-node');
 /// #}}} @func isLocNode
 
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
 /// #{{{ @func isString
 /**
  * @private
@@ -145,6 +154,15 @@ var isLocNode = loadHelper('is-location-node');
  */
 var isString = IS.string;
 /// #}}} @func isString
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
 
 /// #}}} @group IS
 
