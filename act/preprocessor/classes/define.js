@@ -671,6 +671,18 @@ function Def(open, file) {
 }
 /// #}}} @func Def
 
+/// #{{{ @func Line
+/**
+ * @private
+ * @param {string} text
+ * @param {number} linenum
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Line = require('./line.js');
+/// #}}} @func Line
+
 /// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group PROTOTYPE
