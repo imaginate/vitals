@@ -1,12 +1,17 @@
 /**
  * ---------------------------------------------------------------------------
- * IS-CONDITIONAL-FLAGS-NODE HELPER
+ * IS-FLAGS-NODE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 'use strict';
+
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func loadTaskHelper
 /**
@@ -17,18 +22,20 @@
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
 
+/// #}}} @group LOADERS
+
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const COND_FLAGS_TYPE_ID
+/// #{{{ @const FLAGS_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var COND_FLAGS_TYPE_ID = require('./type-ids.js').COND_FLAGS;
-/// #}}} @const COND_FLAGS_TYPE_ID
+var FLAGS_TYPE_ID = require('./type-ids.js').FLAGS;
+/// #}}} @const FLAGS_TYPE_ID
 
 /// #{{{ @const IS
 /**
@@ -61,18 +68,18 @@ var isObject = IS.object;
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isConditionalFlagsNode
+/// #{{{ @func isFlagsNode
 /**
  * @public
  * @param {*} val
  * @return {boolean}
  */
-function isConditionalFlagsNode(val) {
-  return isObject(val) && 'type' in val && val.type === COND_FLAGS_TYPE_ID;
+function isFlagsNode(val) {
+  return isObject(val) && 'type' in val && val.type === FLAGS_TYPE_ID;
 }
-/// #}}} @func isConditionalFlagsNode
+/// #}}} @func isFlagsNode
 
-module.exports = isConditionalFlagsNode;
+module.exports = isFlagsNode;
 
 /// #}}} @group EXPORTS
 
