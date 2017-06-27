@@ -64,6 +64,14 @@ var STAT_DUMMY = {
 };
 /// #}}} @const STAT_DUMMY
 
+/// #{{{ @const YEAR
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var YEAR = /^2[0-9]{3}$/;
+/// #}}} @const YEAR
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -79,6 +87,14 @@ var STAT_DUMMY = {
  */
 var _getFileStats = FS.statSync;
 /// #}}} @func _getFileStats
+
+/// #{{{ @func _getFullYear
+/**
+ * @private
+ * @return {number}
+ */
+var _getFullYear = Date.prototype.getUTCFullYear;
+/// #}}} @func _getFullYear
 
 /// #{{{ @func _hasOwnProperty
 /**
@@ -121,6 +137,17 @@ function getFileStats(filepath) {
   }
 }
 /// #}}} @func getFileStats
+
+/// #{{{ @func getFullYear
+/**
+ * @private
+ * @param {!Date} date
+ * @return {number}
+ */
+function getFullYear(date) {
+  return _getFullYear.call(date);
+}
+/// #}}} @func getFullYear
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -280,6 +307,124 @@ function setArgsError(err, len) {
   return setError(err, msg);
 }
 /// #}}} @func setArgsError
+
+/// #{{{ @func setCompareError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param1
+ * @param {string} shouldBe
+ * @param {string} param2
+ * @param {number} value1
+ * @param {number} value2
+ * @return {!RangeError}
+ */
+function setCompareError(err, param1, shouldBe, param2, value1, value2) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  if ( !isString(param1) )
+    throw setTypeError(new TypeError, 'param1', 'string');
+  if ( !isString(shouldBe) )
+    throw setTypeError(new TypeError, 'shouldBe', 'string');
+  if ( !isString(param2) )
+    throw setTypeError(new TypeError, 'param2', 'string');
+  if ( !isNumber(value1) )
+    throw setTypeError(new TypeError, 'value1', 'number');
+  if ( !isNumber(value2) )
+    throw setTypeError(new TypeError, 'value2', 'number');
+
+  switch (shouldBe) {
+    case '===':
+    case '==':
+    case '=':
+      shouldBe = 'equal to';
+      break;
+
+    case '<':
+      shouldBe = 'less than';
+      break;
+
+    case '>':
+      shouldBe = 'greater than';
+      break;
+
+    case '<=':
+      shouldBe = 'less than or equal to';
+      break;
+
+    case '>=':
+      shouldBe = 'greater than or equal to';
+      break;
+  }
+
+  msg = '`' + param1 + '` must be ' + shouldBe + ' `' + param2 + '`\n' +
+    '    ' + param1 + '-value: `' + value1 + '`\n' +
+    '    ' + param2 + '-value: `' + value2 + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setCompareError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+function setNoArgError(err, param) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!Error');
+  if ( !isString(param) )
+    throw setTypeError(new TypeError, 'param', 'string');
+
+  msg = 'no `' + param + '` parameter passed on `function` call';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setRangeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @param {number} min
+ * @param {number} max
+ * @return {!RangeError}
+ */
+function setRangeError(err, param, value, min, max) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  if ( !isString(param) )
+    throw setTypeError(new TypeError, 'param', 'string');
+  if ( !isNumber(value) )
+    throw setTypeError(new TypeError, 'value', 'number');
+  if ( !isNumber(min) )
+    throw setTypeError(new TypeError, 'min', 'number');
+  if ( !isNumber(max) )
+    throw setTypeError(new TypeError, 'max', 'number');
+
+  msg = 'invalid `number` for `' + param + '`\n' +
+    '    valid-range-test: `' + min + ' <= ' + param + ' <= ' + max + '`\n' +
+    '    value-received: `' + value + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setRangeError
 
 /// #{{{ @func setTypeError
 /**
@@ -791,6 +936,114 @@ function isSemanticVersion(val) {
 }
 /// #}}} @func isSemanticVersion
 
+/// #{{{ @func isYear
+/**
+ * @public
+ * @param {*} val
+ *   If the *val* is not a `number` or `string`, this method will return
+ *   `false`.
+ * @param {(!Date|number|string)=} min = `2000`
+ *   The *min* year may NOT be less than `2000` or greater than `2999`. The
+ *   *min* year must be less than or equal to the *max* year.
+ * @param {(!Date|number|string)=} max = `2999`
+ *   The *max* year may NOT be less than `2000` or greater than `2999`. The
+ *   *max* year must be greater than or equal to the *min* year.
+ * @return {boolean}
+ */
+function isYear(val, min, max) {
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'val');
+
+    case 1:
+      min = 2000;
+      max = 2999;
+      break;
+
+    case 2:
+      max = 2999;
+
+      if ( isUndefined(min) ) {
+        min = 2000;
+        break;
+      }
+
+      if ( isDate(min) )
+        min = getFullYear(min);
+      else if ( isString(min) )
+        min = Number(min);
+      else if ( !isNumber(min) )
+        throw setTypeError(new TypeError, 'min', '(!Date|number|string)=');
+
+      if ( !isWholeNumber(min) )
+        throw setWholeError(new RangeError, 'min', min);
+
+      if (min < 2000 || min > 2999)
+        throw setRangeError(new RangeError, 'min', min, 2000, 2999);
+
+      break;
+
+    default:
+      if ( isUndefined(min) ) {
+        min = 2000;
+        if ( isUndefined(max) ) {
+          max = 2999;
+          break;
+        }
+      }
+      else if ( isDate(min) )
+        min = getFullYear(min);
+      else if ( isString(min) )
+        min = Number(min);
+      else if ( !isNumber(min) )
+        throw setTypeError(new TypeError, 'min', '(!Date|number|string)=');
+
+      if ( isUndefined(max) )
+        max = 2999;
+      else if ( isDate(max) )
+        max = getFullYear(max);
+      else if ( isString(max) )
+        max = Number(max);
+      else if ( !isNumber(max) )
+        throw setTypeError(new TypeError, 'max', '(!Date|number|string)=');
+
+      if ( !isWholeNumber(min) )
+        throw setWholeError(new RangeError, 'min', min);
+      if ( !isWholeNumber(max) )
+        throw setWholeError(new RangeError, 'max', max);
+
+      if (min < 2000 || min > 2999)
+        throw setRangeError(new RangeError, 'min', min, 2000, 2999);
+      if (max < 2000 || max > 2999)
+        throw setRangeError(new RangeError, 'max', max, 2000, 2999);
+
+      if (min > max)
+        throw setCompareError(new RangeError, 'min', '<=', 'max', min, max);
+      if (max < min)
+        throw setCompareError(new RangeError, 'max', '>=', 'min', max, min);
+  }
+
+  if (!val)
+    return false;
+
+  if ( isNumber(val) ) {
+
+    if (val < min || val > max)
+      return false;
+
+    val = String(val);
+    return !!val && YEAR.test(val);
+  }
+
+  if ( !isString(val) || !YEAR.test(val) )
+    return false;
+
+  val = Number(val);
+  return val >= min && val <= max;
+}
+/// #}}} @func isYear
+
 /// #}}} @group SPECIAL-METHODS
 
 /// #{{{ @group OBJECT-STATE-METHODS
@@ -1272,6 +1525,8 @@ var IS = {
   'semversion':      isSemanticVersion,
   'semVer':          isSemanticVersion,
   'semver':          isSemanticVersion,
+
+  'year': isYear,
 
   'cappedHashMap': isCapped,
   'cappedhashmap': isCapped,
