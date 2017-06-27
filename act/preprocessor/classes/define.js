@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +34,7 @@ var loadHelper = require('./load-helper.js');
  * @private
  * @const {!Object}
  */
-var DEF_TYPE_ID = loadHelper('type-ids').define;
+var DEF_TYPE_ID = loadHelper('type-ids').DEF;
 /// #}}} @const DEF_TYPE_ID
 
 /// #{{{ @const IS
@@ -265,6 +272,15 @@ var isInstanceOf = IS.instanceOf;
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
 
+/// #{{{ @func isLocNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isLocNode = loadHelper('is-location-node');
+/// #}}} @func isLocNode
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -320,7 +336,6 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCloseError = setError.close;
@@ -331,7 +346,6 @@ var setCloseError = setError.close;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -340,6 +354,10 @@ var setCmdError = setError.cmd;
 /// #{{{ @func setDefChildError
 /**
  * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} child
+ * @param {!Line} parent
+ * @return {!SyntaxError}
  */
 var setDefChildError = setError.defChild;
 /// #}}} @func setDefChildError
@@ -359,7 +377,6 @@ var setEmptyError = setError.empty;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setIdError = setError.id;
@@ -383,7 +400,6 @@ var setIndexError = setError.index;
  * @param {!SyntaxError} err
  * @param {!Line} open
  * @param {!Line} close
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setMatchError = setError.match;
@@ -404,7 +420,6 @@ var setNewError = setError.new_;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoCloseError = setError.noClose;
@@ -415,7 +430,6 @@ var setNoCloseError = setError.noClose;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setOpenError = setError.open;
@@ -426,7 +440,6 @@ var setOpenError = setError.open;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setTagError = setError.tag;
@@ -544,13 +557,13 @@ function Def(open, file) {
   /// #{{{ @step verify-syntax
 
   if (!TAG)
-    throw setTagError(new SyntaxError, OPEN, true);
+    throw setTagError(new SyntaxError, OPEN);
   if (!ID)
-    throw setIdError(new SyntaxError, OPEN, true);
+    throw setIdError(new SyntaxError, OPEN);
   if ( !hasOpen(TEXT) )
-    throw setOpenError(new SyntaxError, OPEN, true);
+    throw setOpenError(new SyntaxError, OPEN);
   if ( !hasValidDefine(TEXT) )
-    throw setCmdError(new SyntaxError, OPEN, true);
+    throw setCmdError(new SyntaxError, OPEN);
 
   /// #}}} @step verify-syntax
 
@@ -662,12 +675,11 @@ function Def(open, file) {
 
   /// #}}} @step set-members
 
-  /// #{{{ @step lock-instance
+  /// #{{{ @step cap-instance
 
   capObject(this);
-  sealObject(this);
 
-  /// #}}} @step lock-instance
+  /// #}}} @step cap-instance
 }
 /// #}}} @func Def
 
@@ -675,13 +687,24 @@ function Def(open, file) {
 /**
  * @private
  * @param {string} text
- * @param {number} linenum
- * @param {!File} file
+ * @param {!Loc} before
+ * @param {?Loc=} after
  * @constructor
  * @struct
  */
 var Line = require('./line.js');
 /// #}}} @func Line
+
+/// #{{{ @func Loc
+/**
+ * @private
+ * @param {number} linenum
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Loc = require('./location.js');
+/// #}}} @func Loc
 
 /// #}}} @group CONSTRUCTORS
 
@@ -711,6 +734,8 @@ Def.prototype.load = function load(textRows, i, len, file) {
   var line;
   /** @type {string} */
   var text;
+  /** @type {!Loc} */
+  var loc;
 
   /// #}}} @step declare-variables
 
@@ -741,7 +766,8 @@ Def.prototype.load = function load(textRows, i, len, file) {
 
   while (i < len) {
     text = textRows[i];
-    line = new Line(text, ++i, file);
+    loc = new Loc(++i, file);
+    line = new Line(text, loc);
     if ( hasInsert(text) )
       throw setDefChildError(new SyntaxError, line, this.open);
     else if ( !hasDefine(text) )
@@ -759,18 +785,13 @@ Def.prototype.load = function load(textRows, i, len, file) {
   /// #{{{ @step verify-close
 
   if (!this.close)
-    throw setNoCloseError(new SyntaxError, this.open, true);
+    throw setNoCloseError(new SyntaxError, this.open);
 
   /// #}}} @step verify-close
 
-  /// #{{{ @step freeze-lines
-
-  freezeObject(lines);
-
-  /// #}}} @step freeze-lines
-
   /// #{{{ @step freeze-instance
 
+  freezeObject(lines);
   freezeObject(this);
 
   /// #}}} @step freeze-instance
@@ -815,17 +836,17 @@ Def.prototype.setClose = function setClose(close) {
   id = getIdComponent(text);
 
   if ( !hasClose(text) )
-    throw setCloseError(new SyntaxError, close, true);
+    throw setCloseError(new SyntaxError, close);
   if ( !hasDefine(text) )
-    throw setMatchError(new SyntaxError, this.open, close, true);
+    throw setMatchError(new SyntaxError, this.open, close);
   if (!tag)
-    throw setTagError(new SyntaxError, close, true);
+    throw setTagError(new SyntaxError, close);
   if (!id)
-    throw setIdError(new SyntaxError, close, true);
+    throw setIdError(new SyntaxError, close);
   if ( !hasValidDefine(text) )
-    throw setCmdError(new SyntaxError, close, true);
+    throw setCmdError(new SyntaxError, close);
   if (tag !== this.tag || id !== this.id)
-    throw setMatchError(new SyntaxError, this.open, close, true);
+    throw setMatchError(new SyntaxError, this.open, close);
 
   /// #}}} @step verify-syntax
 
