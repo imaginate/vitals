@@ -804,7 +804,7 @@ function Dir(path, parent) {
    * @const {string}
    */
   var TREE = !!PARENT
-    ? cleanDirPath(PARENT.tree + name)
+    ? cleanDirPath(PARENT.tree + NAME)
     : '';
   /// #}}} @const TREE
 
