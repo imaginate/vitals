@@ -66,7 +66,7 @@ var IS = loadHelper('is');
  */
 var PATT = {
   ANY: /(copyright[ \t]*)2[0-9]{3}(?:-2[0-9]{3})?/i,
-  DOCTAG: /\b(@copyright[ \t]+)2[0-9]{3}(?:-2[0-9]{3})?\b/
+  DOCTAG: /(@copyright[ \t]+)2[0-9]{3}(?:-2[0-9]{3})?\b/
 };
 /// #}}} @const PATT
 
