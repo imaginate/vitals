@@ -11,7 +11,7 @@
  *   `$objStr` was defined after `$is`, `vitals` would fail because `$is`
  *   relies upon `$objStr` within an IIFE, an immediately-invoked function
  *   expression, to polyfill its test for `arguments` instances).
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)

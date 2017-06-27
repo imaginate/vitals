@@ -2,7 +2,7 @@
  * ---------------------------------------------------------------------------
  * VERSION CONSTANT
  * ---------------------------------------------------------------------------
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
@@ -13,7 +13,7 @@
 /**
  * @const {string}
  */
-var VERSION = '4.1.3';
+var VERSION = '5.0.0';
 /// #}}} @constant VERSION
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

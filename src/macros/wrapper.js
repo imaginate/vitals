@@ -2,7 +2,7 @@
  *----------------------------------------------------------------------------
  * WRAPPER MACROS
  *----------------------------------------------------------------------------
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)

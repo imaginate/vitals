@@ -3,7 +3,7 @@
  * VITALS.FUSE
  * ---------------------------------------------------------------------------
  * @section base
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals.fuse](https://github.com/imaginate/vitals/wiki/vitals.fuse)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)

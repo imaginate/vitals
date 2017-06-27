@@ -9,7 +9,7 @@
  *   important (e.g. if `ARR` was defined after `ARR_PROTO`, `vitals` would
  *   fail because `ARR_PROTO` references `ARR` to lookup the `prototype` for
  *   the global `Array` constructor.
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)

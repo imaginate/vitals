@@ -3,7 +3,7 @@
  * VITALS.CREATE
  * ---------------------------------------------------------------------------
  * @section strict
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals.create](https://github.com/imaginate/vitals/wiki/vitals.create)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)

@@ -3,7 +3,7 @@
  * VITALS.ROLL
  * ---------------------------------------------------------------------------
  * @section base
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals.roll](https://github.com/imaginate/vitals/wiki/vitals.roll)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)

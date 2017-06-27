@@ -4,7 +4,7 @@
  * ---------------------------------------------------------------------------
  * @section base
  * @section fs
- * @version 4.1.3
+ * @version 5.0.0
  * @see [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
