@@ -505,6 +505,18 @@ var setWholeError = setError.whole;
 // CONSTRUCTORS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func Blk
+/**
+ * @private
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Blk = require('./block.js');
+/// #}}} @func Blk
+
 /// #{{{ @func Cond
 /**
  * @public
@@ -801,6 +813,18 @@ function Cond(open, file, parent) {
   /// #}}} @step lock-instance
 }
 /// #}}} @func Cond
+
+/// #{{{ @func Incl
+/**
+ * @private
+ * @param {!Line} line
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Incl = require('./include.js');
+/// #}}} @func Incl
 
 /// #}}} @group CONSTRUCTORS
 

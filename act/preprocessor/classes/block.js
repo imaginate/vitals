@@ -781,6 +781,30 @@ function Blk(open, file, parent) {
 }
 /// #}}} @func Blk
 
+/// #{{{ @func Cond
+/**
+ * @private
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Cond = require('./conditional.js');
+/// #}}} @func Cond
+
+/// #{{{ @func Incl
+/**
+ * @private
+ * @param {!Line} line
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
+ */
+var Incl = require('./include.js');
+/// #}}} @func Incl
+
 /// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group PROTOTYPE
