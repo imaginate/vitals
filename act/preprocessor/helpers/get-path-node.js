@@ -104,6 +104,15 @@ var isFileNode = require('./is-file-node.js');
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
 /// #{{{ @func trimDirectory
 /**
  * @private
