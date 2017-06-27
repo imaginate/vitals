@@ -37,18 +37,6 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasDirectory
-/**
- * @private
- * @param {string} src
- *   The file path to check in.
- * @param {string} path
- *   The directory path to check for.
- * @return {boolean}
- */
-var hasDirectory = require('./has-directory.js');
-/// #}}} @func hasDirectory
-
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -174,8 +162,6 @@ function getPathNode(src, path) {
   var names;
   /** @type {(?Dir|?File)} */
   var node;
-  /** @type {string} */
-  var pwd;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -185,22 +171,18 @@ function getPathNode(src, path) {
     throw new TypeError('invalid `path` data type\n' +
       '    valid-types: `string`');
 
-  if ( isDirNode(src) )
-    pwd = src.path;
-  else if ( isFileNode(src) )
-    pwd = src.parent.path;
-  else
+  if ( isFileNode(src) )
+    src = src.parent;
+  else if ( !isDirNode(src) )
     throw new TypeError('invalid `src` data type\n' +
       '    valid-types: `!Dir|!File`');
 
-  path = resolvePath(pwd, path);
+  path = resolvePath(src.path, path);
 
   if ( !isFile(path) && !isDirectory(path) )
     return null;
-  if ( !hasDirectory(path, pwd) )
-    return null;
 
-  path = trimDirectory(path, pwd);
+  path = trimDirectory(path, src.path);
   names = path.split('/');
   node = src;
   len = names.length;
