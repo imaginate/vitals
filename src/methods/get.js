@@ -8,7 +8,7 @@
  * @see [vitals.get](https://github.com/imaginate/vitals/wiki/vitals.get)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 /// #if{{{ @scope SOLO

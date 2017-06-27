@@ -3,7 +3,7 @@
  * VITALS UNIT TESTS HELPER: isDirectory
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Annotations:
  * @see [JSDoc3](http://usejsdoc.org)

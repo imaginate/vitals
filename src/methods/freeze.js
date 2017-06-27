@@ -7,7 +7,7 @@
  * @see [vitals.freeze](https://github.com/imaginate/vitals/wiki/vitals.freeze)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 /// #if{{{ @scope SOLO

@@ -6,7 +6,7 @@
  *   This task updates the copyright year for the entire repo. Use `act year`
  *   to run it.
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 'use strict';

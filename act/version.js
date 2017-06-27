@@ -6,7 +6,7 @@
  *   This task updates the semantic version for the *vitals* repo. Use
  *   `act version` to run it.
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
 'use strict';

@@ -3,7 +3,7 @@
  * VITALS UNIT TESTS HELPER: log
  * -----------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
  *
  * Supporting Libraries:
  * @see [log-ocd]{@link https://github.com/imaginate/log-ocd}
