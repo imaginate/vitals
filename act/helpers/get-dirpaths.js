@@ -77,6 +77,15 @@ var cloneObject = require('./clone-object.js');
 var getPathname = require('./get-pathname.js');
 /// #}}} @func getPathname
 
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
 /// #{{{ @func isBoolean
 /**
  * @private
