@@ -19,7 +19,7 @@
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
+var loadHelper = require('./.load-helper.js');
 /// #}}} @func loadHelper
 
 /// #}}} @group LOADERS
