@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadHelper = require('./load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -379,6 +386,15 @@ var isInstanceOf = IS.instanceOf;
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
 
+/// #{{{ @func isLocNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isLocNode = loadHelper('is-location-node');
+/// #}}} @func isLocNode
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -493,7 +509,6 @@ var setError = loadHelper('set-error');
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setCmdError = setError.cmd;
@@ -593,7 +608,6 @@ var setNewError = setError.new_;
  * @private
  * @param {!SyntaxError} err
  * @param {!Line} line
- * @param {boolean=} loading = `false`
  * @return {!SyntaxError}
  */
 var setNoOpenError = setError.noOpen;
@@ -960,13 +974,24 @@ var Ins = require('./insert.js');
 /**
  * @private
  * @param {string} text
- * @param {number} linenum
- * @param {!File} file
+ * @param {!Loc} before
+ * @param {?Loc=} after
  * @constructor
  * @struct
  */
 var Line = require('./line.js');
 /// #}}} @func Line
+
+/// #{{{ @func Loc
+/**
+ * @private
+ * @param {number} linenum
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Loc = require('./location.js');
+/// #}}} @func Loc
 
 /// #}}} @group CONSTRUCTORS
 
@@ -998,6 +1023,8 @@ File.prototype.load = function load() {
   var defs;
   /** @type {!Def} */
   var def;
+  /** @type {!Loc} */
+  var loc;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -1036,14 +1063,15 @@ File.prototype.load = function load() {
   i = 0;
   while (i < len) {
     text = textRows[i];
-    line = new Line(text, ++i, this);
+    loc = new Loc(++i, this);
+    line = new Line(text, loc);
     if ( !hasCommand(text) )
       lines.push(line);
     else if ( hasDefine(text) ) {
     /// #{{{ @step make-def
 
       if ( !hasOpen(text) )
-        throw setNoOpenError(new SyntaxError, line, true);
+        throw setNoOpenError(new SyntaxError, line);
 
       def = new Def(line, this);
 
@@ -1067,7 +1095,8 @@ File.prototype.load = function load() {
 
   while (i < len) {
     text = textRows[i];
-    line = new Line(text, ++i, this);
+    loc = new Loc(++i, this);
+    line = new Line(text, loc);
 
     if ( hasDefine(text) )
       throw setDefError(new SyntaxError, line);
@@ -1079,11 +1108,11 @@ File.prototype.load = function load() {
 
   /// #}}} @step make-lines
 
-  /// #{{{ @step lock-defs
+  /// #{{{ @step freeze-defs
 
-  lockObject(defs);
+  freezeObject(defs);
 
-  /// #}}} @step lock-defs
+  /// #}}} @step freeze-defs
 
   /// #{{{ @step return-instance
 
@@ -1109,6 +1138,8 @@ File.prototype.preparse = function preparse() {
   var lines;
   /** @type {!Line} */
   var line;
+  /** @type {!Loc} */
+  var loc;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -1125,23 +1156,23 @@ File.prototype.preparse = function preparse() {
   /// #{{{ @step make-inserts
 
   inserts = [];
-  len = lines.length;
-  i = -1;
-  while (++i < len) {
+  i = lines.length;
+  while (i--) {
     line = lines[i];
     if ( hasInsert(line.text) ) {
       insert = new Ins(line, i, this);
+      lines.splice.apply(lines, insert.args);
       inserts.push(insert);
     }
   }
 
   /// #}}} @step make-inserts
 
-  /// #{{{ @step lock-inserts
+  /// #{{{ @step freeze-inserts
 
-  lockObject(inserts);
+  freezeObject(inserts);
 
-  /// #}}} @step lock-inserts
+  /// #}}} @step freeze-inserts
 
   /// #{{{ @step set-inserts
 
@@ -1160,37 +1191,21 @@ File.prototype.preparse = function preparse() {
 
   /// #}}} @step set-inserts
 
-  /// #{{{ @step insert-lines
-
-  i = inserts.length;
-  while (i--) {
-    insert = inserts[i];
-    lines.splice.apply(lines, insert.args);
-  }
-
-  /// #}}} @step insert-lines
-
   /// #{{{ @step update-lines
 
   len = lines.length;
-  i = 0;
-  while (i < len) {
+  i = -1;
+  while (++i < len) {
     line = lines[i];
-    line.setAfter(++i, this);
+    loc = new Loc(i + 1, this);
+    lines[i] = new Line(line.text, line.before, loc);
   }
 
   /// #}}} @step update-lines
 
-  /// #{{{ @step freeze-members
-
-  freezeObject(inserts);
-  freezeObject(lines);
-  freezeObject(defs);
-
-  /// #}}} @step freeze-members
-
   /// #{{{ @step freeze-instance
 
+  freezeObject(lines);
   freezeObject(this);
 
   /// #}}} @step freeze-instance
