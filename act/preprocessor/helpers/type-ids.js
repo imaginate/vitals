@@ -118,13 +118,13 @@ var INS_TYPE_ID = freezeObject({});
 var LINE_TYPE_ID = freezeObject({});
 /// #}}} @const LINE_TYPE_ID
 
-/// #{{{ @const LINE_LOC_TYPE_ID
+/// #{{{ @const LOC_TYPE_ID
 /**
  * @private
  * @const {!Object}
  */
-var LINE_LOC_TYPE_ID = freezeObject({});
-/// #}}} @const LINE_LOC_TYPE_ID
+var LOC_TYPE_ID = freezeObject({});
+/// #}}} @const LOC_TYPE_ID
 
 /// #}}} @group CONSTANTS
 
@@ -183,12 +183,12 @@ var TYPE_IDS = freezeObject({
   'Line': LINE_TYPE_ID,
   'line': LINE_TYPE_ID,
 
-  'LINE_LOC':      LINE_LOC_TYPE_ID,
-  'LineLoc':       LINE_LOC_TYPE_ID,
-  'lineLoc':       LINE_LOC_TYPE_ID,
-  'LINE_LOCATION': LINE_LOC_TYPE_ID,
-  'LineLocation':  LINE_LOC_TYPE_ID,
-  'lineLocation':  LINE_LOC_TYPE_ID,
+  'LOC':      LOC_TYPE_ID,
+  'Loc':      LOC_TYPE_ID,
+  'loc':      LOC_TYPE_ID,
+  'LOCATION': LOC_TYPE_ID,
+  'Location': LOC_TYPE_ID,
+  'location': LOC_TYPE_ID,
 
   'INCL': INCL_TYPE_ID,
   'Incl': INCL_TYPE_ID,
