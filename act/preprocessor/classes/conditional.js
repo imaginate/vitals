@@ -263,14 +263,14 @@ var isBlkNode = loadHelper('is-block-node');
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
-/// #{{{ @func isCondFlagsNode
+/// #{{{ @func isFlagsNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isCondFlagsNode = loadHelper('is-conditional-flags-node');
-/// #}}} @func isCondFlagsNode
+var isFlagsNode = loadHelper('is-flags-node');
+/// #}}} @func isFlagsNode
 
 /// #{{{ @func isFileNode
 /**
@@ -995,7 +995,7 @@ Cond.prototype.parse = function parse(lines, i, file) {
 
 /// #{{{ @func Cond.prototype.run
 /**
- * @param {!CondFlags} condFlags
+ * @param {!Flags} condFlags
  * @param {!Object<string, ?Incl>} inclFiles
  * @param {!Object<string, !Incl>} inclNodes
  * @return {string}
@@ -1021,8 +1021,8 @@ Cond.prototype.run = function run(condFlags, inclFiles, inclNodes) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isCondFlagsNode(condFlags) )
-    throw setTypeError(new TypeError, 'condFlags', '!CondFlags');
+  if ( !isFlagsNode(condFlags) )
+    throw setTypeError(new TypeError, 'condFlags', '!Flags');
   if ( !isObject(inclFiles) )
     throw setTypeError(new TypeError, 'inclFiles', '!Object<string, ?Incl>');
   if ( !isObject(inclNodes) )

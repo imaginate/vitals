@@ -304,14 +304,14 @@ var isBoolean = IS.boolean;
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
-/// #{{{ @func isCondFlagsNode
+/// #{{{ @func isFlagsNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isCondFlagsNode = loadHelper('is-conditional-flags-node');
-/// #}}} @func isCondFlagsNode
+var isFlagsNode = loadHelper('is-flags-node');
+/// #}}} @func isFlagsNode
 
 /// #{{{ @func isDirectory
 /**
@@ -691,15 +691,15 @@ var Blk = require('./block.js');
 var Cond = require('./conditional.js');
 /// #}}} @func Cond
 
-/// #{{{ @func CondFlags
+/// #{{{ @func Flags
 /**
  * @private
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
  * @constructor
  * @struct
  */
-var CondFlags = require('./conditional-flags.js');
-/// #}}} @func CondFlags
+var Flags = require('./flags.js');
+/// #}}} @func Flags
 
 /// #{{{ @func Def
 /**
@@ -1360,7 +1360,7 @@ File.prototype.parse = function parse() {
  *   path, it is relative to the `cwd`. The directory path up to the file name
  *   of the resolved #dest path must already exist. If a file exists at the
  *   resolved #dest path, it is overwritten.
- * @param {(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)} state
+ * @param {(!Object<string, (boolean|!Object<string, boolean>)>|!Flags)} state
  *   The enabled, `true`, or disabled, `false`, state for every conditional
  *   command defined within the `File` instance's *content* `array`. Each
  *   parent *state* `object` key must be a `Cond` instance's *tag*, *ID* (note
@@ -1384,7 +1384,7 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {!CondFlags} */
+  /** @type {!Flags} */
   var condFlags;
   /** @type {!Object<string, ?Incl>} */
   var inclFiles;
@@ -1409,9 +1409,9 @@ File.prototype.run = function run(dest, state, alter) {
 
   if ( !isString(dest) )
     throw setTypeError(new TypeError, 'dest', 'string');
-  if ( !isCondFlagsNode(state) && !isStateObject(state) )
+  if ( !isFlagsNode(state) && !isStateObject(state) )
     throw setTypeError(new TypeError, 'state',
-      '(!Object<string, (boolean|!Object<string, boolean>)>|!CondFlags)');
+      '(!Object<string, (boolean|!Object<string, boolean>)>|!Flags)');
   if ( !isUndefined(alter) && !isFunction(alter) )
     throw setTypeError(new TypeError, 'alter', '(!function(string): string)=');
 
@@ -1444,9 +1444,9 @@ File.prototype.run = function run(dest, state, alter) {
 
   /// #{{{ @step make-cond-flags
 
-  condFlags = isCondFlagsNode(state)
+  condFlags = isFlagsNode(state)
     ? state
-    : new CondFlags(state);
+    : new Flags(state);
 
   /// #}}} @step make-cond-flags
 
