@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * DEFINE-METHODS HELPER
+ * SETUP-METHODS HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
@@ -370,7 +370,7 @@ function Method(proto, name, path) {
   if ( hasOwnProperty(proto, name) )
     throw setError(new ReferenceError,
       'duplicate method assignment for ' +
-      '`' + proto.constructor.name + '.prototype.' + name + '`');
+      '`' + proto.__NAME + '.prototype.' + name + '`');
 
   defineProperty(proto, name, {
     'value': null,
@@ -429,13 +429,6 @@ function Method(proto, name, path) {
 }
 /// #}}} @func Method
 
-/// #}}} @group CONSTRUCTORS
-
-/// #{{{ @group PROTOTYPE
-//////////////////////////////////////////////////////////////////////////////
-// PROTOTYPE
-//////////////////////////////////////////////////////////////////////////////
-
 Method.prototype = createObject(null);
 
 defineProperty(Method.prototype, 'constructor', {
@@ -444,6 +437,13 @@ defineProperty(Method.prototype, 'constructor', {
   'enumerable': false,
   'configurable': false
 });
+
+/// #}}} @group CONSTRUCTORS
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func Method.prototype.load
 /**
@@ -466,94 +466,154 @@ Method.prototype.load = function load() {
 };
 /// #}}} @func Method.prototype.load
 
-/// #}}} @group PROTOTYPE
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func defineMethods
+/// #{{{ @func setupMethod
 /**
- * @public
+ * @private
+ * @param {!Object<string, (!Method|string)>} methods
  * @param {!Object} proto
- * @param {string} name
  * @param {string} path
- * @return {!Object}
+ * @return {!Method}
  */
-function defineMethods(proto, name, path) {
+function setupMethod(methods, proto, path) {
 
-  /** @type {!Object<string, !Method>} */
-  var methods;
+  /// #{{{ @step declare-variables
+
   /** @type {!Method} */
   var method;
-  /** @type {!Array<string>} */
-  var paths;
+  /** @type {string} */
+  var name;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isObject(methods) )
+    throw setTypeError(new TypeError, 'methods', '!Object');
   if ( !isObject(proto) )
     throw setTypeError(new TypeError, 'proto', '!Object');
-  if ( !isString(name) )
-    throw setTypeError(new TypeError, 'name', 'string');
   if ( !isString(path) )
     throw setTypeError(new TypeError, 'path', 'string');
 
-  if (!name)
-    throw setEmptyError(new Error, 'name');
   if (!path)
     throw setEmptyError(new Error, 'path');
 
-  if ( !isDirectory(path) )
-    throw setDirError(new Error, 'path', path);
+  if ( !isFile(path) )
+    throw setFileError(new Error, 'path', path);
 
-  defineProperty(proto, '__NAME', {
-    'value': name,
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-name
+
+  name = getPathName(path);
+  name = trimJsExt(name);
+
+  /// #}}} @step make-name
+
+  /// #{{{ @step make-method
+
+  method = new Method(proto, name, path);
+
+  /// #}}} @step make-method
+
+  /// #{{{ @step define-method
+
+  defineProperty(methods, name, {
+    'value': method,
     'writable': false,
-    'enumerable': false,
+    'enumerable': true,
     'configurable': false
   });
-  defineProperty(proto, '__DIR', {
-    'value': path,
-    'writable': false,
-    'enumerable': false,
-    'configurable': false
-  });
 
-  methods = {};
+  /// #}}} @step define-method
 
-  paths = getFilePaths(path, {
+  /// #{{{ @step return-method
+
+  return method;
+
+  /// #}}} @step return-method
+}
+/// #}}} @func setupMethod
+
+/// #{{{ @func setupMethods
+/**
+ * @public
+ * @param {!Object<string, (!Method|string)>} methods
+ * @param {!Object} proto
+ * @return {!Object}
+ */
+function setupMethods(methods, proto) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isObject(methods) )
+    throw setTypeError(new TypeError, 'methods', '!Object');
+  if ( !isString(methods.__DIR) )
+    throw setTypeError(new TypeError, 'methods.__DIR', 'string');
+  if ( !isObject(proto) )
+    throw setTypeError(new TypeError, 'proto', '!Object');
+
+  if (!methods.__DIR)
+    throw setEmptyError(new Error, 'methods.__DIR');
+
+  if ( !isDirectory(methods.__DIR) )
+    throw setDirError(new Error, 'methods.__DIR', methods.__DIR);
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-method-file-paths
+
+  paths = getFilePaths(methods.__DIR, {
     'deep': false,
     'full': true,
     'extend': false,
     'validFiles': /\.js$/,
     'invalidFiles': /^\./
   });
+
+  /// #}}} @step get-method-file-paths
+
+  /// #{{{ @step setup-each-method
+
   len = paths.length;
   i = -1;
-  while (++i < len) {
-    path = paths[i];
-    name = getPathName(path);
-    name = trimJsExt(name);
-    method = new Method(proto, name, path);
-    defineProperty(methods, name, {
-      'value': method,
-      'writable': false,
-      'enumerable': true,
-      'configurable': false
-    });
-  }
+  while (++i < len)
+    setupMethod(methods, proto, paths[i]);
 
-  defineProperty(proto, '__METHODS', {
-    'value': freezeObject(methods),
-    'writable': false,
-    'enumerable': false,
-    'configurable': false
-  });
+  /// #}}} @step setup-each-method
 
-  return proto;
+  /// #{{{ @step freeze-methods
+
+  freezeObject(methods);
+
+  /// #}}} @step freeze-methods
+
+  /// #{{{ @step return-methods
+
+  return methods;
+
+  /// #}}} @step return-methods
 }
-/// #}}} @func defineMethods
+/// #}}} @func setupMethods
 
-module.exports = defineMethods;
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+
+module.exports = setupMethods;
 
 /// #}}} @group EXPORTS
 
