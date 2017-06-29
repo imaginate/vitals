@@ -53,69 +53,196 @@ var IS = loadHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @group STATE
+/// #{{{ @group CONSTRUCTORS
 
-/// #{{{ @func capObject
+/// #{{{ @func Blk
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
  */
-var capObject = loadHelper('cap-object');
-/// #}}} @func capObject
+var Blk = loadClass('block');
+/// #}}} @func Blk
 
-/// #{{{ @func createObject
+/// #{{{ @func Cond
 /**
  * @private
- * @param {?Object} proto
- * @return {!Object}
+ * @param {!Line} open
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
  */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
+var Cond = loadClass('conditional');
+/// #}}} @func Cond
 
-/// #{{{ @func defineProperty
+/// #{{{ @func Incl
 /**
  * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
+ * @param {!Line} line
+ * @param {!File} file
+ * @param {(?Blk|?Cond)=} parent
+ * @constructor
+ * @struct
  */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
+var Incl = loadClass('include');
+/// #}}} @func Incl
 
-/// #{{{ @func freezeObject
+/// #}}} @group CONSTRUCTORS
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var freezeObject = loadHelper('freeze-object');
-/// #}}} @func freezeObject
+var setError = loadHelper('set-error');
+/// #}}} @func setError
 
-/// #{{{ @func lockObject
+/// #{{{ @func setCloseError
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
  */
-var lockObject = loadHelper('lock-object');
-/// #}}} @func lockObject
+var setCloseError = setError.close;
+/// #}}} @func setCloseError
 
-/// #{{{ @func sealObject
+/// #{{{ @func setCmdError
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
  */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var setCmdError = setError.cmd;
+/// #}}} @func setCmdError
 
-/// #}}} @group STATE
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setIdError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setIdError = setError.id;
+/// #}}} @func setIdError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+var setIndexError = setError.index;
+/// #}}} @func setIndexError
+
+/// #{{{ @func setMatchError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} open
+ * @param {!Line} close
+ * @return {!SyntaxError}
+ */
+var setMatchError = setError.match;
+/// #}}} @func setMatchError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setNoCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setNoCloseError = setError.noClose;
+/// #}}} @func setNoCloseError
+
+/// #{{{ @func setOpenError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setOpenError = setError.open;
+/// #}}} @func setOpenError
+
+/// #{{{ @func setOwnCmdError
+/**
+ * @private
+ * @param {!ReferenceError} err
+ * @param {(!Line|!Blk|!Cond|!Incl)} node1
+ * @param {(!Line|!Blk|!Cond|!Incl)} node2
+ * @param {(?Blk|?Cond)=} scope = `null`
+ * @return {!ReferenceError}
+ */
+var setOwnCmdError = setError.ownCmd;
+/// #}}} @func setOwnCmdError
+
+/// #{{{ @func setTagError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Line} line
+ * @return {!SyntaxError}
+ */
+var setTagError = setError.tag;
+/// #}}} @func setTagError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
+
+/// #}}} @group ERROR
 
 /// #{{{ @group GET
 
@@ -282,16 +409,6 @@ var isFileNode = loadHelper('is-file-node');
 var isInclNode = loadHelper('is-include-node');
 /// #}}} @func isInclNode
 
-/// #{{{ @func isInstanceOf
-/**
- * @private
- * @param {*} inst
- * @param {!Function} constructor
- * @return {boolean}
- */
-var isInstanceOf = IS.instanceOf;
-/// #}}} @func isInstanceOf
-
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -348,201 +465,71 @@ var isWholeNumber = IS.wholeNumber;
 
 /// #}}} @group IS
 
-/// #{{{ @group ERROR
+/// #{{{ @group OBJECT
 
-/// #{{{ @func setError
+/// #{{{ @func capObject
 /**
  * @private
- * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
- * @param {string} msg
- * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var setError = loadHelper('set-error');
-/// #}}} @func setError
+var capObject = loadHelper('cap-object');
+/// #}}} @func capObject
 
-/// #{{{ @func setCloseError
+/// #{{{ @func createObject
 /**
  * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
+ * @param {?Object} proto
+ * @return {!Object}
  */
-var setCloseError = setError.close;
-/// #}}} @func setCloseError
+var createObject = loadHelper('create-object');
+/// #}}} @func createObject
 
-/// #{{{ @func setCmdError
+/// #{{{ @func defineProperty
 /**
  * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {!Object} descriptor
+ * @return {!Object}
  */
-var setCmdError = setError.cmd;
-/// #}}} @func setCmdError
+var defineProperty = loadHelper('define-property');
+/// #}}} @func defineProperty
 
-/// #{{{ @func setEmptyError
+/// #{{{ @func freezeObject
 /**
  * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
+var freezeObject = loadHelper('freeze-object');
+/// #}}} @func freezeObject
 
-/// #{{{ @func setIdError
+/// #{{{ @func lockObject
 /**
  * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var setIdError = setError.id;
-/// #}}} @func setIdError
+var lockObject = loadHelper('lock-object');
+/// #}}} @func lockObject
 
-/// #{{{ @func setIndexError
+/// #{{{ @func sealObject
 /**
  * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
+var sealObject = loadHelper('seal-object');
+/// #}}} @func sealObject
 
-/// #{{{ @func setMatchError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-var setMatchError = setError.match;
-/// #}}} @func setMatchError
-
-/// #{{{ @func setNewError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {string} constructor
- * @return {!SyntaxError}
- */
-var setNewError = setError.new_;
-/// #}}} @func setNewError
-
-/// #{{{ @func setNoCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setNoCloseError = setError.noClose;
-/// #}}} @func setNoCloseError
-
-/// #{{{ @func setOpenError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setOpenError = setError.open;
-/// #}}} @func setOpenError
-
-/// #{{{ @func setOwnCmdError
-/**
- * @private
- * @param {!ReferenceError} err
- * @param {(!Line|!Blk|!Cond|!Incl)} node1
- * @param {(!Line|!Blk|!Cond|!Incl)} node2
- * @param {(?Blk|?Cond)=} scope = `null`
- * @return {!ReferenceError}
- */
-var setOwnCmdError = setError.ownCmd;
-/// #}}} @func setOwnCmdError
-
-/// #{{{ @func setTagError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setTagError = setError.tag;
-/// #}}} @func setTagError
-
-/// #{{{ @func setTypeError
-/**
- * @private
- * @param {!TypeError} err
- * @param {string} param
- * @param {string} types
- * @return {!TypeError}
- */
-var setTypeError = setError.type;
-/// #}}} @func setTypeError
-
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
-/// #}}} @group ERROR
+/// #}}} @group OBJECT
 
 /// #}}} @group HELPERS
-
-/// #{{{ @group CONSTRUCTORS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTRUCTORS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func Blk
-/**
- * @private
- * @param {!Line} open
- * @param {!File} file
- * @param {(?Blk|?Cond)=} parent
- * @constructor
- * @struct
- */
-var Blk = loadClass('block');
-/// #}}} @func Blk
-
-/// #{{{ @func Cond
-/**
- * @private
- * @param {!Line} open
- * @param {!File} file
- * @param {(?Blk|?Cond)=} parent
- * @constructor
- * @struct
- */
-var Cond = loadClass('conditional');
-/// #}}} @func Cond
-
-/// #{{{ @func Incl
-/**
- * @private
- * @param {!Line} line
- * @param {!File} file
- * @param {(?Blk|?Cond)=} parent
- * @constructor
- * @struct
- */
-var Incl = loadClass('include');
-/// #}}} @func Incl
-
-/// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
