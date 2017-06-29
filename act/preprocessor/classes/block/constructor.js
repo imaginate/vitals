@@ -326,6 +326,24 @@ var setTypeError = setError.type;
 
 /// #}}} @group ERROR
 
+/// #{{{ @group SETUP
+
+/// #{{{ @func setupPrototype
+/**
+ * @private
+ * @param {string} classname
+ * @param {!Function} constructor
+ * @param {string} funcname
+ *   The constructor's name.
+ * @param {string} path
+ *   The absolute path to the directory containing the methods for the class.
+ * @return {!Function}
+ */
+var setupPrototype = loadHelper('setup-prototype');
+/// #}}} @func setupPrototype
+
+/// #}}} @group SETUP
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group PATHS
@@ -340,7 +358,7 @@ var setTypeError = setError.type;
  */
 var DIR = freezeObject({
   MAIN: resolvePath(__dirname),
-  PROTO: resolvePath(__dirname, './methods')
+  METHODS: resolvePath(__dirname, './methods')
 });
 /// #}}} @const DIR
 
@@ -627,26 +645,9 @@ function Blk(open, file, parent) {
 }
 /// #}}} @func Blk
 
+setupPrototype('block', Blk, 'Blk', DIR.METHODS);
+
 /// #}}} @group CONSTRUCTORS
-
-/// #{{{ @group PROTOTYPE
-//////////////////////////////////////////////////////////////////////////////
-// PROTOTYPE
-//////////////////////////////////////////////////////////////////////////////
-
-Blk.prototype = createObject(null);
-
-defineProperty(Blk.prototype, 'constructor', {
-  'value': Blk,
-  'writable': false,
-  'enumerable': false,
-  'configurable': false
-});
-
-defineMethods(Blk.prototype, 'block', DIR.PROTO);
-capObject(Blk.prototype);
-
-/// #}}} @group PROTOTYPE
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
