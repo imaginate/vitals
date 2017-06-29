@@ -261,7 +261,7 @@ function loadHelper(name) {
   key = name;
   name += '.js';
 
-  if ( hasOwnProperty(CACHE, key) )
+  if (key in CACHE)
     return CACHE[key];
 
   path = resolvePath(DIR.JSPP, name);
