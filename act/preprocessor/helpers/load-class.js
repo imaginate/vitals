@@ -29,6 +29,14 @@ var loadTaskHelper = require('./load-task-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const CACHE_KEY
+/**
+ * @private
+ * @const {string}
+ */
+var CACHE_KEY = '__VITALS_JSPP_CLASS_CACHE';
+/// #}}} @const CACHE_KEY
+
 /// #{{{ @const IS
 /**
  * @private
@@ -64,17 +72,6 @@ var JS_EXT = /\.js$/;
 var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setDirError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setDirError = setError.dir;
-/// #}}} @func setDirError
-
 /// #{{{ @func setEmptyError
 /**
  * @private
@@ -85,16 +82,15 @@ var setDirError = setError.dir;
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
-/// #{{{ @func setFileError
+/// #{{{ @func setNoArgError
 /**
  * @private
  * @param {!Error} err
  * @param {string} param
- * @param {string} path
  * @return {!Error}
  */
-var setFileError = setError.file;
-/// #}}} @func setFileError
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
 
 /// #{{{ @func setTypeError
 /**
@@ -109,81 +105,21 @@ var setTypeError = setError.type;
 
 /// #}}} @group ERROR
 
-/// #{{{ @group FS
-
-/// #{{{ @func getDirectoryPaths
-/**
- * @private
- * @param {string} dirpath
- * @param {(?Object|boolean)=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid directory paths.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute directory paths instead of relative directory paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid
- *   An alias for `opts.validDirs`.
- * @param {?RegExp=} opts.invalid
- *   An alias for `opts.invalidDirs`.
- * @param {?RegExp=} opts.validDirs = `null`
- *   A pattern for matching valid directory paths. If #opts.validDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.validDirs pattern. Otherwise (i.e.
- *   if it does not have a forward slash), the path name is tested against the
- *   #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   A pattern for matching invalid directory paths. If #opts.invalidDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidDirs pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidDirs pattern.
- * @return {!Array<string>}
- */
-var getDirectoryPaths = loadTaskHelper('get-directory-paths');
-/// #}}} @func getDirectoryPaths
-
-/// #}}} @group FS
-
-/// #{{{ @group HAS
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadTaskHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
-/// #}}} @group HAS
-
 /// #{{{ @group IS
 
-/// #{{{ @func isDirectory
+/// #{{{ @func isCacheLoaded
 /**
  * @private
- * @param {string} path
+ * @param {string} cacheKey
+ * @param {(...string)=} ignoreKey
+ *   If `global[cacheKey].__LOADED` is an `object` (i.e. not a `boolean`), the
+ *   #ignoreKey parameter allows you to set key names within the `"__LOADED"`
+ *   `object` that are not required to be `true` for this `function` to return
+ *   `true`.
  * @return {boolean}
  */
-var isDirectory = IS.directory;
-/// #}}} @func isDirectory
-
-/// #{{{ @func isFile
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isFile = IS.file;
-/// #}}} @func isFile
+var isCacheLoaded = require('./is-cache-loaded.js');
+/// #}}} @func isCacheLoaded
 
 /// #{{{ @func isFunction
 /**
@@ -232,40 +168,6 @@ var isUndefined = IS.undefined;
 
 /// #}}} @group IS
 
-/// #{{{ @group OBJECT
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadTaskHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadTaskHelper('define-property');
-/// #}}} @func defineProperty
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadTaskHelper('freeze-object');
-/// #}}} @func freezeObject
-
-/// #}}} @group OBJECT
-
 /// #{{{ @group PATH
 
 /// #{{{ @func getPathName
@@ -277,50 +179,18 @@ var freezeObject = loadTaskHelper('freeze-object');
 var getPathName = loadTaskHelper('get-path-name');
 /// #}}} @func getPathName
 
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
-
 /// #}}} @group PATH
 
 /// #}}} @group HELPERS
-
-/// #{{{ @group PATHS
-//////////////////////////////////////////////////////////////////////////////
-// PATHS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DIR
-/**
- * @private
- * @const {!Object<string, string>}
- * @struct
- */
-var DIR = freezeObject({
-  CLASSES: resolvePath(__dirname, '../classes')
-});
-/// #}}} @const DIR
-
-/// #}}} @group PATHS
 
 /// #{{{ @group CACHE
 //////////////////////////////////////////////////////////////////////////////
 // CACHE
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const HAS_GLOBAL_CACHE
-/**
- * @private
- * @const {boolean}
- */
-var HAS_GLOBAL_CACHE = '__VITALS_JSPP_CLASS_CACHE' in global
-  && isObject(global.__VITALS_CLASS_LOAD_CACHE);
-/// #}}} @const HAS_GLOBAL_CACHE
+if ( !isCacheLoaded(CACHE_KEY) )
+  throw setError(new Error,
+    'called jspp `loadClass` before `setupClasses` completed');
 
 /// #{{{ @const CACHE
 /**
@@ -328,21 +198,8 @@ var HAS_GLOBAL_CACHE = '__VITALS_JSPP_CLASS_CACHE' in global
  * @const {!Object<string, !Function>}
  * @dict
  */
-var CACHE = HAS_GLOBAL_CACHE
-  ? global.__VITALS_JSPP_CLASS_CACHE
-  : makeCache(DIR.CLASSES);
+var CACHE = global[CACHE_KEY];
 /// #}}} @const CACHE
-
-/// #{{{ @const global.__VITALS_JSPP_CLASS_CACHE
-if (!HAS_GLOBAL_CACHE) {
-  defineProperty(global, '__VITALS_JSPP_CLASS_CACHE', {
-    'value': CACHE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-}
-/// #}}} @const global.__VITALS_JSPP_CLASS_CACHE
 
 /// #}}} @group CACHE
 
@@ -359,8 +216,12 @@ if (!HAS_GLOBAL_CACHE) {
  */
 function loadClass(name) {
 
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'name');
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
+  if (!name)
+    throw setEmptyError(new Error, 'name');
 
   name = getPathName(name);
   name = name.replace(JS_EXT, '');
@@ -369,124 +230,12 @@ function loadClass(name) {
     throw setEmptyError(new Error, 'name');
   if ( !(name in CACHE) )
     throw setError(new Error,
-      'invalid jspp `class` name for `name` parameter\n' +
+      'invalid jspp `classname` for `name` parameter\n' +
       '    invalid-name: `' + name + '`');
 
   return CACHE[name];
 }
 /// #}}} @func loadClass
-
-/// #{{{ @func makeCache
-/**
- * @private
- * @param {string} path
- * @return {!Object}
- */
-function makeCache(path) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Object<string, !Method>} */
-  var methods;
-  /** @type {!Object<string, !Function>} */
-  var cache;
-  /** @type {!Object} */
-  var proto;
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {string} */
-  var name;
-  /** @type {string} */
-  var key;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
-  if (!path)
-    throw setEmptyError(new Error, 'path');
-  if ( !isDirectory(path) )
-    throw setDirError(new Error, 'path', path);
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-empty-cache
-
-  cache = createObject(null);
-
-  /// #}}} @step make-empty-cache
-
-  /// #{{{ @step get-class-dirs
-
-  paths = getDirectoryPaths(path, {
-    'deep': false,
-    'full': true,
-    'extend': true,
-    'validDirs': /^[a-z\-]+$/,
-    'invalidDirs': /^\./
-  });
-
-  /// #}}} @step get-class-dirs
-
-  /// #{{{ @step require-each-constructor
-
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    path = paths[i];
-    name = getPathName(path);
-
-    if (!name)
-      throw setError(new RangeError,
-        'invalid empty `class` name for directory path\n' +
-        '    dir-path: `' + path + '`');
-
-    path = resolvePath(path, './constructor.js');
-
-    if ( !isFile(path) )
-      throw setFileError(new Error, 'path', path);
-
-    defineProperty(cache, name, {
-      'value': require(path),
-      'writable': false,
-      'enumerable': true,
-      'configurable': false
-    });
-
-    if ( !isFunction(cache[name]) )
-      throw setError(new TypeError,
-        'invalid data type exported for `' + name + '` class constructor\n' +
-        '    module-path: `' + path + '`');
-  }
-
-  /// #}}} @step require-each-constructor
-
-  /// #{{{ @step require-each-method
-
-  for (name in cache) {
-    proto = cache[name].prototype;
-    methods = proto.__METHODS;
-    for (key in methods) {
-      methods[key].load();
-    }
-    freezeObject(proto);
-  }
-
-  /// #}}} @step require-each-method
-
-  /// #{{{ @step return-cache
-
-  return cache;
-
-  /// #}}} @step return-cache
-}
-/// #}}} @func makeCache
 
 /// #}}} @group METHODS
 
