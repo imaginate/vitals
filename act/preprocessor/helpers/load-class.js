@@ -390,6 +390,8 @@ function makeCache(path) {
   var methods;
   /** @type {!Object<string, !Function>} */
   var cache;
+  /** @type {!Object} */
+  var proto;
   /** @type {!Array<string>} */
   var paths;
   /** @type {string} */
@@ -468,10 +470,12 @@ function makeCache(path) {
   /// #{{{ @step require-each-method
 
   for (name in cache) {
-    methods = cache[name].prototype.__METHODS;
+    proto = cache[name].prototype;
+    methods = proto.__METHODS;
     for (key in methods) {
       methods[key].load();
     }
+    freezeObject(proto);
   }
 
   /// #}}} @step require-each-method
