@@ -761,6 +761,29 @@ function setNewError(err, constructor) {
 }
 /// #}}} @func setNewError
 
+/// #{{{ @func setNoArgError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+function setNoArgError(err, param) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!Error');
+  if ( !isString(param) )
+    throw setTypeError(new TypeError, 'param', 'string');
+
+  msg = 'no `' + param + '` parameter defined for `function` call';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setNoCloseError
 /**
  * @public
@@ -1386,6 +1409,7 @@ setError.index = setIndexError;
 setError.loc = setLocError;
 setError.match = setMatchError;
 setError.new_ = setNewError;
+setError.noArg = setNoArgError;
 setError.noClose = setNoCloseError;
 setError.noDef = setNoDefError;
 setError.noOpen = setNoOpenError;
