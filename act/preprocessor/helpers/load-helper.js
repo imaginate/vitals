@@ -195,26 +195,36 @@ var DIR = freezeObject({
 // CACHE
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const global.__JSPP_LOAD_CACHE
+/// #{{{ @const HAS_GLOBAL_CACHE
+/**
+ * @private
+ * @const {boolean}
+ */
+var HAS_GLOBAL_CACHE = '__VITALS_JSPP_LOAD_CACHE' in global
+  && isObject(global.__VITALS_JSPP_LOAD_CACHE);
+/// #}}} @const HAS_GLOBAL_CACHE
 
-if ( !('__JSPP_LOAD_CACHE' in global) || !isObject(global.__JSPP_LOAD_CACHE) )
-  defineProperty(global, '__JSPP_LOAD_CACHE', {
-    'value': createObject(null),
+/// #{{{ @const CACHE
+/**
+ * @public
+ * @const {!Object<string, (!Object|!Function)>}
+ * @dict
+ */
+var CACHE = HAS_GLOBAL_CACHE
+  ? global.__VITALS_JSPP_LOAD_CACHE
+  : createObject(null);
+/// #}}} @const CACHE
+
+/// #{{{ @const global.__VITALS_JSPP_LOAD_CACHE
+if (!HAS_GLOBAL_CACHE) {
+  defineProperty(global, '__VITALS_JSPP_LOAD_CACHE', {
+    'value': CACHE,
     'writable': false,
     'enumerable': true,
     'configurable': false
   });
-
-/// #}}} @const global.__JSPP_LOAD_CACHE
-
-/// #{{{ @const CACHE
-/**
- * @private
- * @const {!Object<string, (!Object|!Function)>}
- * @dict
- */
-var CACHE = global.__JSPP_LOAD_CACHE;
-/// #}}} @const CACHE
+}
+/// #}}} @const global.__VITALS_JSPP_LOAD_CACHE
 
 /// #}}} @group CACHE
 
