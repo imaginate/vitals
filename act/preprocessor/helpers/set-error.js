@@ -778,7 +778,7 @@ function setNoArgError(err, param) {
   if ( !isString(param) )
     throw setTypeError(new TypeError, 'param', 'string');
 
-  msg = 'no `' + param + '` parameter defined for `function` call';
+  msg = 'no required `' + param + '` parameter defined for `function` call';
 
   return setError(err, msg);
 }
