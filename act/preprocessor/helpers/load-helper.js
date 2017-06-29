@@ -190,10 +190,22 @@ var DIR = freezeObject({
 
 /// #}}} @group PATHS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group CACHE
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// CACHE
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const global.__JSPP_LOAD_CACHE
+
+if ( !('__JSPP_LOAD_CACHE' in global) || !isObject(global.__JSPP_LOAD_CACHE) )
+  defineProperty(global, '__JSPP_LOAD_CACHE', {
+    'value': createObject(null),
+    'writable': false,
+    'enumerable': true,
+    'configurable': false
+  });
+
+/// #}}} @const global.__JSPP_LOAD_CACHE
 
 /// #{{{ @const CACHE
 /**
@@ -201,8 +213,15 @@ var DIR = freezeObject({
  * @const {!Object<string, (!Object|!Function)>}
  * @dict
  */
-var CACHE = createObject(null);
+var CACHE = global.__JSPP_LOAD_CACHE;
 /// #}}} @const CACHE
+
+/// #}}} @group CACHE
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func loadHelper
 /**
@@ -253,6 +272,13 @@ function loadHelper(name) {
   return CACHE[key];
 }
 /// #}}} @func loadHelper
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = loadHelper;
 
