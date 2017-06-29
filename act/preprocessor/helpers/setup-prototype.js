@@ -44,80 +44,7 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func capObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var capObject = loadTaskHelper('cap-object');
-/// #}}} @func capObject
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadTaskHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadTaskHelper('define-property');
-/// #}}} @func defineProperty
-
-/// #{{{ @func isDirectory
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isDirectory = IS.directory;
-/// #}}} @func isDirectory
-
-/// #{{{ @func isFunction
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFunction = IS.func;
-/// #}}} @func isFunction
-
-/// #{{{ @func isObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isObject = IS.object;
-/// #}}} @func isObject
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -128,16 +55,6 @@ var resolvePath = loadTaskHelper('resolve-path');
  */
 var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
-
-/// #{{{ @func setNoArgError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setNoArgError = setError.noArg;
-/// #}}} @func setNoArgError
 
 /// #{{{ @func setDirError
 /**
@@ -160,6 +77,16 @@ var setDirError = setError.dir;
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -171,6 +98,123 @@ var setEmptyError = setError.empty;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isBoolean
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
+
+/// #{{{ @func isDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isDirectory = IS.directory;
+/// #}}} @func isDirectory
+
+/// #{{{ @func isFunction
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFunction = IS.func;
+/// #}}} @func isFunction
+
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
+/// #{{{ @func isObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObject = IS.object;
+/// #}}} @func isObject
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
+/// #}}} @group IS
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func capObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var capObject = loadTaskHelper('cap-object');
+/// #}}} @func capObject
+
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = loadTaskHelper('create-object');
+/// #}}} @func createObject
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadTaskHelper('freeze-object');
+/// #}}} @func freezeObject
+
+/// #}}} @group OBJECT
+
+/// #{{{ @group PATH
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
+/// #}}} @group PATH
+
+/// #{{{ @group SETUP
+
 /// #{{{ @func setupMethods
 /**
  * @private
@@ -178,8 +222,34 @@ var setTypeError = setError.type;
  * @param {!Object} proto
  * @return {!Object}
  */
-var setupMethods = loadTaskHelper('setup-methods');
+var setupMethods = require('./setup-methods.js');
 /// #}}} @func setupMethods
+
+/// #{{{ @func setupOffProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
+ */
+var setupOffProperty = require('./setup-off-property.js');
+/// #}}} @func setupOffProperty
+
+/// #{{{ @func setupOnProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setupOnProperty = require('./setup-on-property.js');
+/// #}}} @func setupOnProperty
+
+/// #}}} @group SETUP
 
 /// #}}} @group HELPERS
 
@@ -187,56 +257,6 @@ var setupMethods = loadTaskHelper('setup-methods');
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func setupProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {*} value
- * @return {!Object}
- */
-function setupProperty(src, key, value) {
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'src');
-    case 1:
-      throw setNoArgError(new Error, 'key');
-    case 2:
-      throw setNoArgError(new Error, 'value');
-  }
-
-  if ( !isObject(src) )
-    throw setTypeError(new TypeError, 'src', '!Object');
-  if ( !isString(key) )
-    throw setTypeError(new TypeError, 'key', 'string');
-
-  if (!key)
-    throw setEmptyError(new Error, 'key');
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step define-property
-
-  defineProperty(src, key, {
-    'value': value,
-    'writable': false,
-    'enumerable': false,
-    'configurable': false
-  });
-
-  /// #}}} @step define-property
-
-  /// #{{{ @step return-src
-
-  return src;
-
-  /// #}}} @step return-src
-}
-/// #}}} @func setupProperty
 
 /// #{{{ @func setupPrototype
 /**
@@ -295,25 +315,25 @@ function setupPrototype(classname, constructor, funcname, path) {
   proto = createObject(null);
   constructor.prototype = proto;
 
-  setupProperty(proto, 'constructor', constructor);
-  setupProperty(proto, '__CLASSNAME', classname);
-  setupProperty(proto, '__NAME', funcname);
+  setupOffProperty(proto, 'constructor', constructor);
+  setupOffProperty(proto, '__CLASSNAME', classname);
+  setupOffProperty(proto, '__NAME', funcname);
 
   /// #}}} @step make-prototype-object
 
   /// #{{{ @step setup-prototype-methods
 
   methods = createObject(null);
-  setupProperty(methods, '__DIR', path);
+  setupOffProperty(methods, '__DIR', path);
   methods = setupMethods(methods, proto);
 
-  setupProperty(proto, '__METHODS', methods);
+  setupOffProperty(proto, '__METHODS', methods);
 
   /// #}}} @step setup-prototype-methods
 
   /// #{{{ @step complete-prototype-setup
 
-  setupProperty(proto, '__SETUP', true);
+  setupOffProperty(proto, '__SETUP', true);
   capObject(proto);
 
   /// #}}} @step complete-prototype-setup
