@@ -19,8 +19,23 @@
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./helpers/load-helper.js');
+var loadHelper = require('./.load-helper.js');
 /// #}}} @func loadHelper
+
+/// #{{{ @step setupClasses
+
+loadHelper('setup-classes');
+
+/// #}}} @step setupClasses
+
+/// #{{{ @func loadClass
+/**
+ * @private
+ * @param {string} name
+ * @return {!Function}
+ */
+var loadClass = loadHelper('load-class');
+/// #}}} @func loadClass
 
 /// #}}} @group LOADERS
 
@@ -43,6 +58,79 @@ var IS = loadHelper('is');
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group CONSTRUCTORS
+
+/// #{{{ @func Dir
+/**
+ * @private
+ * @param {string} path
+ * @param {?Dir=} parent
+ * @constructor
+ * @struct
+ */
+var Dir = loadClass('directory');
+/// #}}} @func Dir
+
+/// #}}} @group CONSTRUCTORS
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = loadHelper('set-error');
+/// #}}} @func setError
+
+/// #{{{ @func setDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setDirError = setError.dir;
+/// #}}} @func setDirError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
 
 /// #{{{ @func isDirectory
 /**
@@ -89,6 +177,10 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #}}} @group IS
+
+/// #{{{ @group PATH
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -98,71 +190,13 @@ var isUndefined = IS.undefined;
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func setError
-/**
- * @private
- * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
- * @param {string} msg
- * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
- */
-var setError = loadHelper('set-error');
-/// #}}} @func setError
-
-/// #{{{ @func setDirError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setDirError = setError.dir;
-/// #}}} @func setDirError
-
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
-/// #{{{ @func setTypeError
-/**
- * @private
- * @param {!TypeError} err
- * @param {string} param
- * @param {string} types
- * @return {!TypeError}
- */
-var setTypeError = setError.type;
-/// #}}} @func setTypeError
+/// #}}} @group PATH
 
 /// #}}} @group HELPERS
 
-/// #{{{ @group CONSTRUCTORS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// CONSTRUCTORS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func Dir
-/**
- * @private
- * @param {string} path
- * @param {?Dir=} parent
- * @constructor
- * @struct
- */
-var Dir = require('./classes/directory.js');
-/// #}}} @func Dir
-
-/// #}}} @group CONSTRUCTORS
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func main
@@ -264,6 +298,13 @@ function main(src, log) {
   /// #}}} @step return-root-dir
 }
 /// #}}} @func main
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = main;
 
