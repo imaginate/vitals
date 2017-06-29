@@ -29,14 +29,6 @@ var loadTaskHelper = require('./load-task-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const DIR_PATH
-/**
- * @private
- * @const {!RegExp}
- */
-var DIR_PATH = /^.*\//;
-/// #}}} @const DIR_PATH
-
 /// #{{{ @const IS
 /**
  * @private
@@ -89,6 +81,15 @@ var defineProperty = loadTaskHelper('define-property');
  */
 var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
+
+/// #{{{ @func getPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathName = loadTaskHelper('get-path-name');
+/// #}}} @func getPathName
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -248,17 +249,21 @@ function loadHelper(name) {
 
   if ( !isString(name) )
     throw setTypeError(new TypeError, 'name', 'string');
-
-  name = name.replace(DIR_PATH, '');
-  key = name.replace(JS_EXT, '');
-
-  if (!key)
+  if (!name)
     throw setEmptyError(new Error, 'name');
+
+  name = getPathName(name);
+  name = name.replace(JS_EXT, '');
+
+  if (!name)
+    throw setEmptyError(new Error, 'name');
+
+  key = name;
+  name += '.js';
 
   if ( hasOwnProperty(CACHE, key) )
     return CACHE[key];
 
-  name = key + '.js';
   path = resolvePath(DIR.JSPP, name);
 
   if ( !isFile(path) ) {
