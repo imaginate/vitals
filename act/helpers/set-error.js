@@ -157,6 +157,38 @@ function setError(err, msg) {
 }
 /// #}}} @func setError
 
+/// #{{{ @func setAliasError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {!Object} opts
+ * @param {string} alias
+ * @param {string} option
+ * @return {!Error}
+ */
+function setAliasError(err, opts, alias, option) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!Error');
+  if ( !isObject(opts) )
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  if ( !isString(alias) )
+    throw setTypeError(new TypeError, 'alias', 'string');
+  if ( !isString(option) )
+    throw setTypeError(new TypeError, 'option', 'string');
+
+  msg = 'conflicting values for option `' + option + '` ' +
+    'and alias `' + alias + '`\n' +
+    '    option-value: `' + opts[option] + '`\n' +
+    '    alias-value: `' + opts[alias] + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setAliasError
+
 /// #{{{ @func setDirError
 /**
  * @public
@@ -179,6 +211,7 @@ function setDirError(err, param, path) {
 
   msg = 'invalid readable directory path for `' + param + '`\n' +
     '    received-path: `' + path + '`';
+
   return setError(err, msg);
 }
 /// #}}} @func setDirError
@@ -441,6 +474,7 @@ function setWholeError(err, param, value) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
+setError.alias = setAliasError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.ext = setExtError;
