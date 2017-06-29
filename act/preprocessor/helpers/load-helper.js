@@ -29,6 +29,14 @@ var loadTaskHelper = require('./load-task-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const CACHE_KEY
+/**
+ * @private
+ * @const {string}
+ */
+var CACHE_KEY = '__VITALS_JSPP_LOAD_CACHE';
+/// #}}} @const CACHE_KEY
+
 /// #{{{ @const IS
 /**
  * @private
@@ -52,81 +60,7 @@ var JS_EXT = /\.js$/;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadTaskHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadTaskHelper('define-property');
-/// #}}} @func defineProperty
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadTaskHelper('freeze-object');
-/// #}}} @func freezeObject
-
-/// #{{{ @func getPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var getPathName = loadTaskHelper('get-path-name');
-/// #}}} @func getPathName
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadTaskHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
-/// #{{{ @func isFile
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isFile = IS.file;
-/// #}}} @func isFile
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -159,6 +93,16 @@ var setEmptyError = setError.empty;
 var setFileError = setError.file;
 /// #}}} @func setFileError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -169,6 +113,150 @@ var setFileError = setError.file;
  */
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isCacheLoaded
+/**
+ * @private
+ * @param {string} cacheKey
+ * @param {(...string)=} ignoreKey
+ *   If `global[cacheKey].__LOADED` is an `object` (i.e. not a `boolean`), the
+ *   #ignoreKey parameter allows you to set key names within the `"__LOADED"`
+ *   `object` that are not required to be `true` for this `function` to return
+ *   `true`.
+ * @return {boolean}
+ */
+var isCacheLoaded = require('./is-cache-loaded.js');
+/// #}}} @func isCacheLoaded
+
+/// #{{{ @func isFile
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isFile = IS.file;
+/// #}}} @func isFile
+
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
+/// #{{{ @func isObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObject = IS.object;
+/// #}}} @func isObject
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
+/// #}}} @group IS
+
+/// #{{{ @group PATH
+
+/// #{{{ @func getPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathName = loadTaskHelper('get-path-name');
+/// #}}} @func getPathName
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
+/// #}}} @group PATH
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = loadTaskHelper('create-object');
+/// #}}} @func createObject
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadTaskHelper('freeze-object');
+/// #}}} @func freezeObject
+
+/// #}}} @group OBJECT
+
+/// #{{{ @group SETUP
+
+/// #{{{ @func setupCache
+/**
+ * @private
+ * @return {!Object<string, (!Object|!Function)>}
+ */
+function setupCache() {
+
+  /** @type {!Object<string, (!Object|!Function)>} */
+  var cache;
+
+  cache = createObject(null);
+  setupOffProperty(cache, '__LOADED', true);
+  setupOffProperty(global, CACHE_KEY, cache, true);
+
+  return cache;
+}
+/// #}}} @func setupCache
+
+/// #{{{ @func setupOffProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
+ */
+var setupOffProperty = require('./setup-off-property.js');
+/// #}}} @func setupOffProperty
+
+/// #}}} @group SETUP
 
 /// #}}} @group HELPERS
 
@@ -196,36 +284,16 @@ var DIR = freezeObject({
 // CACHE
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const HAS_GLOBAL_CACHE
-/**
- * @private
- * @const {boolean}
- */
-var HAS_GLOBAL_CACHE = '__VITALS_JSPP_LOAD_CACHE' in global
-  && isObject(global.__VITALS_JSPP_LOAD_CACHE);
-/// #}}} @const HAS_GLOBAL_CACHE
-
 /// #{{{ @const CACHE
 /**
  * @public
  * @const {!Object<string, (!Object|!Function)>}
  * @dict
  */
-var CACHE = HAS_GLOBAL_CACHE
-  ? global.__VITALS_JSPP_LOAD_CACHE
-  : createObject(null);
+var CACHE = isCacheLoaded(CACHE_KEY)
+  ? global[CACHE_KEY]
+  : makeCache();
 /// #}}} @const CACHE
-
-/// #{{{ @const global.__VITALS_JSPP_LOAD_CACHE
-if (!HAS_GLOBAL_CACHE) {
-  defineProperty(global, '__VITALS_JSPP_LOAD_CACHE', {
-    'value': CACHE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-}
-/// #}}} @const global.__VITALS_JSPP_LOAD_CACHE
 
 /// #}}} @group CACHE
 
@@ -242,6 +310,8 @@ if (!HAS_GLOBAL_CACHE) {
  */
 function loadHelper(name) {
 
+  /** @type {(!Object|!Function)} */
+  var result;
   /** @type {string} */
   var path;
   /** @type {string} */
@@ -277,14 +347,9 @@ function loadHelper(name) {
         '    jspp-path: `' + resolvePath(DIR.JSPP, name) + '`');
   }
 
-  defineProperty(CACHE, key, {
-    'value': require(path),
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
-
-  return CACHE[key];
+  result = require(path);
+  setupOffProperty(CACHE, key, result, true);
+  return result;
 }
 /// #}}} @func loadHelper
 
