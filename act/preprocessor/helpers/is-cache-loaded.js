@@ -44,21 +44,6 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @group ARRAY
-
-/// #{{{ @func sliceArray
-/**
- * @private
- * @param {(!Array|!Arguments|!Object|!Function)} source
- * @param {number=} start = `0`
- * @param {number=} end = `source.length`
- * @return {!Array}
- */
-var sliceArray = loadTaskHelper('slice-array');
-/// #}}} @func sliceArray
-
-/// #}}} @group ARRAY
-
 /// #{{{ @group ERROR
 
 /// #{{{ @func setError
@@ -106,6 +91,37 @@ var setTypeError = setError.type;
 
 /// #{{{ @group HAS
 
+/// #{{{ @func hasLoadedState
+/**
+ * @private
+ * @param {!Object<string, *>} loaded
+ * @param {?Object<string, *>} state
+ * @return {boolean}
+ */
+function hasLoadedState(loaded, state) {
+
+  /** @type {string} */
+  var key;
+  /** @type {*} */
+  var val;
+
+  if (!state)
+    return true;
+
+  for (key in state) {
+    if ( hasOwnProperty(state, key) ) {
+      if ( !(key in loaded) )
+        return false;
+
+      val = state[key];
+      if ( !isUndefined(val) && loaded[key] !== val )
+        return false;
+    }
+  }
+  return true;
+}
+/// #}}} @func hasLoadedState
+
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -119,15 +135,6 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
 /// #}}} @group HAS
 
 /// #{{{ @group IS
-
-/// #{{{ @func isBoolean
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBoolean = IS.boolean;
-/// #}}} @func isBoolean
 
 /// #{{{ @func isNull
 /**
@@ -156,26 +163,6 @@ var isObject = IS.object;
 var isString = IS.string;
 /// #}}} @func isString
 
-/// #{{{ @func isStringList
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isStringList = IS.stringList;
-/// #}}} @func isStringList
-
-/// #{{{ @func isTrue
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-function isTrue(val) {
-  return val === true;
-}
-/// #}}} @func isTrue
-
 /// #{{{ @func isUndefined
 /**
  * @private
@@ -187,53 +174,6 @@ var isUndefined = IS.undefined;
 
 /// #}}} @group IS
 
-/// #{{{ @group MAKE
-
-/// #{{{ @func makeLoadedTest
-/**
- * @private
- * @param {?Array<string>} ignoreKeys
- * @param {(string|undefined)=} ignoreKey
- * @return {!function(string, *): boolean}
- */
-function makeLoadedTest(ignoreKeys, ignoreKey) {
-
-  if ( isNull(ignoreKeys) )
-    return isString(ignoreKey)
-      ? function isLoaded(key, value) {
-          return isTrue(value) || key === ignoreKey;
-        }
-      : function isLoaded(key, value) {
-          return isTrue(value);
-        };
-
-  /**
-   * @private
-   * @const {number}
-   */
-  var LEN = ignoreKeys.length;
-
-  return function isLoaded(key, value) {
-
-    /** @type {number} */
-    var i;
-
-    if ( isTrue(value) )
-      return true;
-
-    i = 0;
-    while (i < LEN) {
-      if (ignoreKeys[i++] === val) {
-        return true;
-      }
-    }
-    return false;
-  };
-}
-/// #}}} @func makeLoadedTest
-
-/// #}}} @group MAKE
-
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -244,80 +184,42 @@ function makeLoadedTest(ignoreKeys, ignoreKey) {
 /// #{{{ @func isCacheLoaded
 /**
  * @public
- * @param {string} cacheKey
- * @param {(...string)=} ignoreKey
- *   If `global[cacheKey].__LOADED` is an `object` (i.e. not a `boolean`), the
- *   #ignoreKey parameter allows you to set key names within the `"__LOADED"`
- *   `object` that are not required to be `true` for this `function` to return
- *   `true`.
+ * @param {string} key
+ * @param {?Object<string, *>=} state = `null`
+ *   This parameter allows you to define key names and values that must be
+ *   defined within the cache `object`, `global[key].__LOADED`.
  * @return {boolean}
  */
-function isCacheLoaded(cacheKey, ignoreKey) {
+function isCacheLoaded(key, state) {
 
-  /** @type {!function(string, *): boolean} */
-  var isLoaded;
-  /** @type {?Array<string>} */
-  var ignore;
-  /** @type {(boolean|!Object<string, boolean>)} */
-  var loaded;
   /** @type {!Object<string, (?Object|?Function)>} */
   var cache;
-  /** @type {string} */
-  var key;
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'cacheKey');
+      throw setNoArgError(new Error, 'key');
 
     case 1:
-      break;
-
-    case 2:
-      if ( isUndefined(ignoreKey) || isString(ignoreKey) )
-        isLoaded = makeLoadedTest(null, ignoreKey);
-      else
-        throw setTypeError(new TypeError, 'ignoreKey', '(...string)=');
-
+      state = null;
       break;
 
     default:
-      ignore = sliceArray(arguments, 1);
-
-      if ( isStringList(ignore) )
-        isLoaded = makeLoadedTest(ignore);
-      else
-        throw setTypeError(new TypeError, 'ignoreKey', '(...string)=');
+      if ( isUndefined(state) )
+        state = null;
+      else if ( !isNull(state) && !isObject(state) )
+        throw setTypeError(new TypeError, 'state', '?Object<string, *>=');
   }
 
-  if ( !isString(cacheKey) )
-    throw setTypeError(new TypeError, 'cacheKey', 'string');
-  if (!cacheKey)
-    throw setEmptyError(new Error, 'cacheKey');
+  if ( !isString(key) )
+    throw setTypeError(new TypeError, 'key', 'string');
+  if (!key)
+    throw setEmptyError(new Error, 'key');
 
-  if ( !hasOwnProperty(global, cacheKey) || !isObject(global[cacheKey]) )
+  if ( !hasOwnProperty(global, key) || !isObject(global[key]) )
      return false;
 
-  cache = global[cacheKey];
-
-  if (!cache.__LOADED)
-    return false;
-
-  loaded = cache.__LOADED;
-
-  if ( isBoolean(loaded) )
-    return true;
-
-  if ( !isObject(loaded) )
-    return false;
-
-  isLoaded = isLoaded || makeLoadedTest(null);
-
-  for (key in loaded) {
-    if ( !isLoaded(key, loaded[key]) ) {
-      return false;
-    }
-  }
-  return true;
+  cache = global[key];
+  return isObject(cache.__LOADED) && hasLoadedState(cache.__LOADED, state);
 }
 /// #}}} @func isCacheLoaded
 
