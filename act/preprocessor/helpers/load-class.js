@@ -110,12 +110,10 @@ var setTypeError = setError.type;
 /// #{{{ @func isCacheLoaded
 /**
  * @private
- * @param {string} cacheKey
- * @param {(...string)=} ignoreKey
- *   If `global[cacheKey].__LOADED` is an `object` (i.e. not a `boolean`), the
- *   #ignoreKey parameter allows you to set key names within the `"__LOADED"`
- *   `object` that are not required to be `true` for this `function` to return
- *   `true`.
+ * @param {string} key
+ * @param {?Object<string, *>=} state = `null`
+ *   This parameter allows you to define key names and values that must be
+ *   defined within the cache `object`, `global[key].__LOADED`.
  * @return {boolean}
  */
 var isCacheLoaded = require('./is-cache-loaded.js');
@@ -188,9 +186,9 @@ var getPathName = loadTaskHelper('get-path-name');
 // CACHE
 //////////////////////////////////////////////////////////////////////////////
 
-if ( !isCacheLoaded(CACHE_KEY) )
+if ( !isCacheLoaded(CACHE_KEY, { constructors: true }) )
   throw setError(new Error,
-    'called jspp `loadClass` before `setupClasses` completed');
+    'called jspp `loadClass` before `loadConstructors` completed');
 
 /// #{{{ @const CACHE
 /**
