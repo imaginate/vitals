@@ -118,19 +118,14 @@ var setTypeError = setError.type;
 
 /// #{{{ @group IS
 
-/// #{{{ @func isCacheLoaded
+/// #{{{ @func isCacheDefined
 /**
  * @private
- * @param {string} cacheKey
- * @param {(...string)=} ignoreKey
- *   If `global[cacheKey].__LOADED` is an `object` (i.e. not a `boolean`), the
- *   #ignoreKey parameter allows you to set key names within the `"__LOADED"`
- *   `object` that are not required to be `true` for this `function` to return
- *   `true`.
+ * @param {string} key
  * @return {boolean}
  */
-var isCacheLoaded = require('./is-cache-loaded.js');
-/// #}}} @func isCacheLoaded
+var isCacheDefined = require('./is-cache-defined.js');
+/// #}}} @func isCacheDefined
 
 /// #{{{ @func isFile
 /**
@@ -237,9 +232,7 @@ function setupCache() {
   var cache;
 
   cache = createObject(null);
-  setupOffProperty(cache, '__LOADED', true);
   setupOffProperty(global, CACHE_KEY, cache, true);
-
   return cache;
 }
 /// #}}} @func setupCache
@@ -290,7 +283,7 @@ var DIR = freezeObject({
  * @const {!Object<string, (!Object|!Function)>}
  * @dict
  */
-var CACHE = isCacheLoaded(CACHE_KEY)
+var CACHE = isCacheDefined(CACHE_KEY)
   ? global[CACHE_KEY]
   : makeCache();
 /// #}}} @const CACHE
