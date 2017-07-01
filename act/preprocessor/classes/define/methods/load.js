@@ -345,7 +345,14 @@ function load(textRows, i, len, file) {
   /// #{{{ @step set-member-refs
 
   lines = [];
+
+  /// #{{{ @member lines
+  /**
+   * @public
+   * @const {!Array<!Line>}
+   */
   setupOffProperty(this, 'lines', lines, true);
+  /// #}}} @member lines
 
   /// #}}} @step set-member-refs
 
