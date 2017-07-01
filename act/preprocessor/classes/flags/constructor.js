@@ -328,10 +328,10 @@ function makeApproxState(flags, name, state) {
         'conflicting processed key patterns for properties in `state`\n' +
         '    first-property:\n' +
         '        key-name: `' + member[key].name + '`\n' +
-        '        regex-source: `' + member[key].source '`\n' +
+        '        regex-source: `' + member[key].source + '`\n' +
         '    second-property:\n' +
         '        key-name: `' + name + '`\n' +
-        '        regex-source: `' + patt.source '`');
+        '        regex-source: `' + patt.source + '`');
 
     if (member[key].state !== state)
       throw setError(new RangeError,
