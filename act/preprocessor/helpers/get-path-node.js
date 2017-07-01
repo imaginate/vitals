@@ -44,24 +44,52 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadTaskHelper('clean-path');
-/// #}}} @func cleanPath
+/// #{{{ @group ERROR
 
-/// #{{{ @func hasOwnProperty
+/// #{{{ @func setError
 /**
  * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var hasOwnProperty = loadTaskHelper('has-own-property');
-/// #}}} @func hasOwnProperty
+var setError = require('./set-error-base.js');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
 
 /// #{{{ @func isDirectory
 /**
@@ -108,6 +136,19 @@ var isFileNode = require('./is-file-node.js');
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #}}} @group IS
+
+/// #{{{ @group PATH
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadTaskHelper('clean-path');
+/// #}}} @func cleanPath
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -116,6 +157,8 @@ var isString = IS.string;
  */
 var resolvePath = loadTaskHelper('resolve-path');
 /// #}}} @func resolvePath
+
+/// #}}} @group PATH
 
 /// #}}} @group HELPERS
 
@@ -138,20 +181,13 @@ function getNode(src, name) {
       ? src.parent
       : isFileNode(src)
         ? null
-        : hasOwnProperty(src.dirs, name)
+        : name in src.dirs
           ? src.dirs[name]
-          : hasOwnProperty(src.files, name)
+          : name in src.files
             ? src.files[name]
             : null;
 }
 /// #}}} @func getNode
-
-/// #}}} @group METHODS
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func getPathNode
 /**
@@ -173,18 +209,29 @@ function getPathNode(src, path) {
   /** @type {number} */
   var i;
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'path');
+  }
+
   if ( !isString(path) )
-    throw new TypeError('invalid `path` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'path', 'string');
 
   if ( isFileNode(src) )
     src = src.parent;
   else if ( !isDirNode(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `!Dir|!File`');
+    throw setTypeError(new TypeError, 'src', '(!Dir|!File)');
+
+  if (!path)
+    throw setEmptyError(new Error, 'path');
 
   path = cleanPath(path);
   resolved = resolvePath(src.path, path);
+
+  if (!path)
+    throw setEmptyError(new Error, 'path');
 
   if ( !isFile(resolved) && !isDirectory(resolved) )
     return null;
@@ -198,6 +245,13 @@ function getPathNode(src, path) {
   return node;
 }
 /// #}}} @func getPathNode
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = getPathNode;
 
