@@ -22,6 +22,15 @@
 var loadHelper = require('./.load-helper.js');
 /// #}}} @func loadHelper
 
+/// #{{{ @func loadClass
+/**
+ * @private
+ * @param {string} name
+ * @return {!Function}
+ */
+var loadClass = loadHelper('load-class');
+/// #}}} @func loadClass
+
 /// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
@@ -114,18 +123,6 @@ var setExtError = setError.ext;
 var setFileError = setError.file;
 /// #}}} @func setFileError
 
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
-
 /// #{{{ @func setLocError
 /**
  * @private
@@ -171,17 +168,6 @@ var setPathNodeError = setError.pathNode;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
 
 /// #{{{ @group GET
@@ -221,28 +207,9 @@ var hasDirectory = loadHelper('has-directory');
 var hasJsExt = loadHelper('has-file-ext').construct('.js');
 /// #}}} @func hasJsExt
 
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
 /// #}}} @group HAS
 
 /// #{{{ @group IS
-
-/// #{{{ @func isBoolean
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBoolean = IS.boolean;
-/// #}}} @func isBoolean
 
 /// #{{{ @func isFlagsNode
 /**
@@ -261,15 +228,6 @@ var isFlagsNode = loadHelper('is-flags-node');
  */
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
-
-/// #{{{ @func isDirNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isDirNode = loadHelper('is-directory-node');
-/// #}}} @func isDirNode
 
 /// #{{{ @func isFile
 /**
@@ -307,24 +265,6 @@ var isFunction = IS.func;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isNumber
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-/// #}}} @func isNumber
-
-/// #{{{ @func isObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isObject = IS.object;
-/// #}}} @func isObject
-
 /// #{{{ @func isStateObject
 /**
  * @private
@@ -352,89 +292,9 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
-
 /// #}}} @group IS
 
-/// #{{{ @group OBJECT
-
-/// #{{{ @func capObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var capObject = loadHelper('cap-object');
-/// #}}} @func capObject
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadHelper('freeze-object');
-/// #}}} @func freezeObject
-
-/// #}}} @group OBJECT
-
 /// #{{{ @group PATH
-
-/// #{{{ @func cleanDirectoryPath
-/**
- * @private
- * @param {string} dirpath
- * @return {string}
- */
-var cleanDirectoryPath = loadHelper('clean-dirpath');
-/// #}}} @func cleanDirectoryPath
-
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = loadHelper('clean-path');
-/// #}}} @func cleanPath
-
-/// #{{{ @func getPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var getPathName = loadHelper('get-path-name');
-/// #}}} @func getPathName
 
 /// #{{{ @func resolvePath
 /**
@@ -514,7 +374,7 @@ function run(src, dest, state, alter) {
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-parameter-data-types
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
@@ -539,14 +399,19 @@ function run(src, dest, state, alter) {
   if ( !isString(src) )
     throw setTypeError(new TypeError, 'src', 'string');
 
-  /// #}}} @step verify-parameter-data-types
-
-  /// #{{{ @step verify-src-path
-
+  if (!dest)
+    throw setEmptyError(new Error, 'dest');
   if (!src)
     throw setEmptyError(new Error, 'src');
+
+  if ( !hasJsExt(dest) )
+    throw setExtError(new RangeError, 'dest', dest, '.js');
   if ( !hasJsExt(src) )
     throw setExtError(new RangeError, 'src', src, '.js');
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step verify-src-path
 
   src = resolvePath(this.path, src);
 
@@ -571,11 +436,6 @@ function run(src, dest, state, alter) {
   /// #}}} @step verify-src-node
 
   /// #{{{ @step verify-dest-path
-
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !hasJsExt(dest) )
-    throw setExtError(new RangeError, 'dest', dest, '.js');
 
   dest = resolvePath(dest);
   path = trimPathName(dest);
