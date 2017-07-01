@@ -44,51 +44,90 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func capObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var capObject = loadTaskHelper('cap-object');
-/// #}}} @func capObject
+/// #{{{ @group ERROR
 
-/// #{{{ @func createObject
+/// #{{{ @func setError
 /**
  * @private
- * @param {?Object} proto
- * @return {!Object}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var createObject = loadTaskHelper('create-object');
-/// #}}} @func createObject
+var setError = require('./set-error-base.js');
+/// #}}} @func setError
 
-/// #{{{ @func defineProperty
+/// #{{{ @func setDirError
 /**
  * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
  */
-var defineProperty = loadTaskHelper('define-property');
-/// #}}} @func defineProperty
+var setDirError = setError.dir;
+/// #}}} @func setDirError
 
-/// #{{{ @func freezeObject
+/// #{{{ @func setEmptyError
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
  */
-var freezeObject = loadTaskHelper('freeze-object');
-/// #}}} @func freezeObject
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group FS
 
 /// #{{{ @func getFilePaths
 /**
  * @private
  * @param {string} dirpath
- * @param {?Object|boolean=} opts
+ * @param {(?Object|?boolean)=} opts
  *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
  * @param {?boolean=} opts.deep = `false`
  *   Make a recursive search for valid files.
@@ -146,14 +185,9 @@ var freezeObject = loadTaskHelper('freeze-object');
 var getFilePaths = loadTaskHelper('get-filepaths');
 /// #}}} @func getFilePaths
 
-/// #{{{ @func getPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var getPathName = loadTaskHelper('get-pathname');
-/// #}}} @func getPathName
+/// #}}} @group FS
+
+/// #{{{ @group HAS
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -164,6 +198,10 @@ var getPathName = loadTaskHelper('get-pathname');
  */
 var hasOwnProperty = loadTaskHelper('has-own-property');
 /// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isDirectory
 /**
@@ -229,6 +267,76 @@ var isString = IS.string;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #}}} @group IS
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func capObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var capObject = loadTaskHelper('cap-object');
+/// #}}} @func capObject
+
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = loadTaskHelper('create-object');
+/// #}}} @func createObject
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadTaskHelper('freeze-object');
+/// #}}} @func freezeObject
+
+/// #{{{ @func setupOffProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
+ */
+var setupOffProperty = require('./setup-off-property.js');
+/// #}}} @func setupOffProperty
+
+/// #{{{ @func setupOnProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setupOnProperty = require('./setup-on-property.js');
+/// #}}} @func setupOnProperty
+
+/// #}}} @group OBJECT
+
+/// #{{{ @group PATH
+
+/// #{{{ @func getPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathName = loadTaskHelper('get-pathname');
+/// #}}} @func getPathName
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -238,68 +346,18 @@ var isUndefined = IS.undefined;
 var resolvePath = loadTaskHelper('resolve-path');
 /// #}}} @func resolvePath
 
-/// #{{{ @func setError
+/// #{{{ @func trimJsExt
 /**
  * @private
- * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
- * @param {string} msg
- * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
- */
-var setError = loadTaskHelper('set-error');
-/// #}}} @func setError
-
-/// #{{{ @func setDirError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
  * @param {string} path
- * @return {!Error}
+ * @return {string}
  */
-var setDirError = setError.dir;
-/// #}}} @func setDirError
+var trimJsExt = loadTaskHelper('trim-file-ext').construct('.js');
+/// #}}} @func trimJsExt
 
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
+/// #}}} @group PATH
 
-/// #{{{ @func setFileError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setFileError = setError.file;
-/// #}}} @func setFileError
-
-/// #{{{ @func setNewError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {string} constructor
- * @return {!SyntaxError}
- */
-var setNewError = setError.new_;
-/// #}}} @func setNewError
-
-/// #{{{ @func setTypeError
-/**
- * @private
- * @param {!TypeError} err
- * @param {string} param
- * @param {string} types
- * @return {!TypeError}
- */
-var setTypeError = setError.type;
-/// #}}} @func setTypeError
+/// #{{{ @group STRING
 
 /// #{{{ @func toCamelCase
 /**
@@ -310,14 +368,7 @@ var setTypeError = setError.type;
 var toCamelCase = loadTaskHelper('to-camel-case');
 /// #}}} @func toCamelCase
 
-/// #{{{ @func trimJsExt
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var trimJsExt = loadTaskHelper('trim-file-ext').construct('.js');
-/// #}}} @func trimJsExt
+/// #}}} @group STRING
 
 /// #}}} @group HELPERS
 
@@ -346,6 +397,15 @@ function Method(proto, name, path) {
 
   /// #{{{ @step verify-parameters
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'proto');
+    case 1:
+      throw setNoArgError(new Error, 'name');
+    case 2:
+      throw setNoArgError(new Error, 'path');
+  }
+
   if ( !isObject(proto) )
     throw setTypeError(new TypeError, 'proto', '!Object');
   if ( !isString(name) )
@@ -372,12 +432,7 @@ function Method(proto, name, path) {
       'duplicate method assignment for ' +
       '`' + proto.__NAME + '.prototype.' + name + '`');
 
-  defineProperty(proto, name, {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
+  setupOnProperty(proto, name, null);
 
   /// #}}} @step setup-values
 
@@ -387,36 +442,21 @@ function Method(proto, name, path) {
   /**
    * @const {string}
    */
-  defineProperty(this, 'NAME', {
-    'value': name,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'NAME', name, true);
   /// #}}} @member NAME
 
   /// #{{{ @member PATH
   /**
    * @const {string}
    */
-  defineProperty(this, 'PATH', {
-    'value': resolvePath(path),
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'PATH', resolvePath(path), true);
   /// #}}} @member PATH
 
   /// #{{{ @member PROTO
   /**
    * @const {!Object}
    */
-  defineProperty(this, 'PROTO', {
-    'value': proto,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'PROTO', proto, true);
   /// #}}} @member PROTO
 
   /// #}}} @step set-members
@@ -430,13 +470,7 @@ function Method(proto, name, path) {
 /// #}}} @func Method
 
 Method.prototype = createObject(null);
-
-defineProperty(Method.prototype, 'constructor', {
-  'value': Method,
-  'writable': false,
-  'enumerable': false,
-  'configurable': false
-});
+setupOffProperty(Method.prototype, 'constructor', Method);
 
 /// #}}} @group CONSTRUCTORS
 
@@ -455,12 +489,7 @@ Method.prototype.load = function load() {
   if ( !isNull(this.PROTO[this.NAME]) )
     return this;
 
-  defineProperty(this.PROTO, this.NAME, {
-    'value': require(this.PATH),
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this.PROTO, this.NAME, require(this.PATH), true);
 
   return this;
 };
@@ -517,12 +546,7 @@ function setupMethod(methods, proto, path) {
 
   /// #{{{ @step define-method
 
-  defineProperty(methods, name, {
-    'value': method,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, name, method, true);
 
   /// #}}} @step define-method
 
