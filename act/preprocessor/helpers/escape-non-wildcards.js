@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -46,28 +53,67 @@ var IS = loadTaskHelper('is');
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error-base.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func escapeNonWildcards
 /**
  * @public
  * @param {string} src
- * @return {boolean}
+ * @return {string}
  */
 function escapeNonWildcards(src) {
 
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'src');
   if ( !isString(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `string`');
+    throw setTypeError(new TypeError, 'src', 'string');
 
   return src && src.replace(/[\\^$.+|(){}[\]]/g, '\\$&');
 }
 /// #}}} @func escapeNonWildcards
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = escapeNonWildcards;
 
