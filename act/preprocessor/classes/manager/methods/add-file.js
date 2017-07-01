@@ -100,6 +100,15 @@ var setTypeError = setError.type;
 var isInclNode = loadHelper('is-include-node');
 /// #}}} @func isInclNode
 
+/// #{{{ @func isObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isObject = IS.object;
+/// #}}} @func isObject
+
 /// #{{{ @func isString
 /**
  * @private
