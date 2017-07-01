@@ -64,16 +64,6 @@ var IS = loadHelper('is');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setCloseError = setError.close;
-/// #}}} @func setCloseError
-
 /// #{{{ @func setCmdError
 /**
  * @private
@@ -84,16 +74,6 @@ var setCloseError = setError.close;
 var setCmdError = setError.cmd;
 /// #}}} @func setCmdError
 
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
 /// #{{{ @func setIdError
 /**
  * @private
@@ -103,29 +83,6 @@ var setEmptyError = setError.empty;
  */
 var setIdError = setError.id;
 /// #}}} @func setIdError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
-
-/// #{{{ @func setMatchError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-var setMatchError = setError.match;
-/// #}}} @func setMatchError
 
 /// #{{{ @func setNewError
 /**
@@ -147,16 +104,6 @@ var setNewError = setError.new_;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
-/// #{{{ @func setNoCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setNoCloseError = setError.noClose;
-/// #}}} @func setNoCloseError
-
 /// #{{{ @func setOpenError
 /**
  * @private
@@ -166,18 +113,6 @@ var setNoCloseError = setError.noClose;
  */
 var setOpenError = setError.open;
 /// #}}} @func setOpenError
-
-/// #{{{ @func setOwnCmdError
-/**
- * @private
- * @param {!ReferenceError} err
- * @param {(!Line|!Blk|!Cond|!Incl)} node1
- * @param {(!Line|!Blk|!Cond|!Incl)} node2
- * @param {(?Blk|?Cond)=} scope = `null`
- * @return {!ReferenceError}
- */
-var setOwnCmdError = setError.ownCmd;
-/// #}}} @func setOwnCmdError
 
 /// #{{{ @func setTagError
 /**
@@ -199,17 +134,6 @@ var setTagError = setError.tag;
  */
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
-
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
 
 /// #}}} @group ERROR
 
@@ -233,16 +157,6 @@ var getCondAction = loadHelper('get-conditional-action');
 var getIdComponent = loadHelper('get-id-component');
 /// #}}} @func getIdComponent
 
-/// #{{{ @func getOwnedCommand
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {(?Blk|?Cond|?Incl)}
- */
-var getOwnedCommand = loadHelper('get-owned-command');
-/// #}}} @func getOwnedCommand
-
 /// #{{{ @func getTagComponent
 /**
  * @private
@@ -255,51 +169,6 @@ var getTagComponent = loadHelper('get-tag-component');
 /// #}}} @group GET
 
 /// #{{{ @group HAS
-
-/// #{{{ @func hasBlock
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasBlock = loadHelper('has-block-command');
-/// #}}} @func hasBlock
-
-/// #{{{ @func hasClose
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasClose = loadHelper('has-close-command');
-/// #}}} @func hasClose
-
-/// #{{{ @func hasCommand
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasCommand = loadHelper('has-command');
-/// #}}} @func hasCommand
-
-/// #{{{ @func hasConditional
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasConditional = loadHelper('has-conditional-command');
-/// #}}} @func hasConditional
-
-/// #{{{ @func hasInclude
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInclude = loadHelper('has-include-command');
-/// #}}} @func hasInclude
 
 /// #{{{ @func hasOpen
 /**
@@ -333,15 +202,6 @@ var hasValidConditional = loadHelper('has-valid-conditional');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isArray
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isArray = IS.array;
-/// #}}} @func isArray
-
 /// #{{{ @func isBlkNode
 /**
  * @private
@@ -360,15 +220,6 @@ var isBlkNode = loadHelper('is-block-node');
 var isCondNode = loadHelper('is-conditional-node');
 /// #}}} @func isCondNode
 
-/// #{{{ @func isFlagsNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFlagsNode = loadHelper('is-flags-node');
-/// #}}} @func isFlagsNode
-
 /// #{{{ @func isFileNode
 /**
  * @private
@@ -377,15 +228,6 @@ var isFlagsNode = loadHelper('is-flags-node');
  */
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
-
-/// #{{{ @func isInclNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isInclNode = loadHelper('is-include-node');
-/// #}}} @func isInclNode
 
 /// #{{{ @func isInstanceOf
 /**
@@ -415,15 +257,6 @@ var isLineNode = loadHelper('is-line-node');
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isNumber
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-/// #}}} @func isNumber
-
 /// #{{{ @func isUndefined
 /**
  * @private
@@ -432,15 +265,6 @@ var isNumber = IS.number;
  */
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
-
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
@@ -465,17 +289,6 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -486,25 +299,29 @@ var defineProperty = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func lockObject
+/// #{{{ @func setupOffProperty
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
  */
-var lockObject = loadHelper('lock-object');
-/// #}}} @func lockObject
+var setupOffProperty = loadHelper('setup-off-property');
+/// #}}} @func setupOffProperty
 
-/// #{{{ @func sealObject
+/// #{{{ @func setupOnProperty
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
  */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var setupOnProperty = loadHelper('setup-on-property');
+/// #}}} @func setupOnProperty
 
 /// #}}} @group OBJECT
 
@@ -521,7 +338,7 @@ var resolvePath = loadHelper('resolve-path');
 
 /// #}}} @group PATH
 
-/// #{{{ @group SETUP
+/// #{{{ @group PROTOTYPE
 
 /// #{{{ @func setupPrototype
 /**
@@ -537,7 +354,7 @@ var resolvePath = loadHelper('resolve-path');
 var setupPrototype = loadHelper('setup-prototype');
 /// #}}} @func setupPrototype
 
-/// #}}} @group SETUP
+/// #}}} @group PROTOTYPE
 
 /// #}}} @group HELPERS
 
@@ -549,7 +366,8 @@ var setupPrototype = loadHelper('setup-prototype');
 /// #{{{ @const DIR
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var DIR = freezeObject({
@@ -697,12 +515,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Object}
    */
-  defineProperty(this, 'type', {
-    'value': COND_TYPE_ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'type', COND_TYPE_ID, true);
   /// #}}} @member type
 
   /// #{{{ @member tag
@@ -710,12 +523,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'tag', {
-    'value': TAG,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'tag', TAG, true);
   /// #}}} @member tag
 
   /// #{{{ @member id
@@ -723,12 +531,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'id', {
-    'value': ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'id', ID, true);
   /// #}}} @member id
 
   /// #{{{ @member key
@@ -736,12 +539,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'key', {
-    'value': KEY,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'key', KEY, true);
   /// #}}} @member key
 
   /// #{{{ @member action
@@ -749,12 +547,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {boolean}
    */
-  defineProperty(this, 'action', {
-    'value': ACTION,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'action', ACTION, true);
   /// #}}} @member action
 
   /// #{{{ @member file
@@ -762,12 +555,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!File}
    */
-  defineProperty(this, 'file', {
-    'value': FILE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'file', FILE, true);
   /// #}}} @member file
 
   /// #{{{ @member open
@@ -775,12 +563,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Line}
    */
-  defineProperty(this, 'open', {
-    'value': OPEN,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'open', OPEN, true);
   /// #}}} @member open
 
   /// #{{{ @member close
@@ -788,12 +571,7 @@ function Cond(open, file, parent) {
    * @public
    * @type {?Line}
    */
-  defineProperty(this, 'close', {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
+  setupOnProperty(this, 'close', null);
   /// #}}} @member close
 
   /// #{{{ @member parent
@@ -801,12 +579,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {(?Blk|?Cond)}
    */
-  defineProperty(this, 'parent', {
-    'value': PARENT,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'parent', PARENT, true);
   /// #}}} @member parent
 
   /// #{{{ @member blks
@@ -814,12 +587,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Object<string, !Blk>}
    */
-  defineProperty(this, 'blks', {
-    'value': {},
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'blks', createObject(null), true);
   /// #}}} @member blks
 
   /// #{{{ @member conds
@@ -827,12 +595,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Object<string, !Cond>}
    */
-  defineProperty(this, 'conds', {
-    'value': {},
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'conds', createObject(null), true);
   /// #}}} @member conds
 
   /// #{{{ @member incls
@@ -840,12 +603,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Object<string, !Incl>}
    */
-  defineProperty(this, 'incls', {
-    'value': {},
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'incls', createObject(null), true);
   /// #}}} @member incls
 
   /// #{{{ @member content
@@ -853,12 +611,7 @@ function Cond(open, file, parent) {
    * @public
    * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
    */
-  defineProperty(this, 'content', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'content', [], true);
   /// #}}} @member content
 
   /// #}}} @step set-members
