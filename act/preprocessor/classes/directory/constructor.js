@@ -32,7 +32,7 @@ var loadHelper = require('./.load-helper.js');
 /// #{{{ @const DIR_TYPE_ID
 /**
  * @private
- * @const {!Object}
+ * @const {!TypeId}
  */
 var DIR_TYPE_ID = loadHelper('get-type-id')('directory');
 /// #}}} @const DIR_TYPE_ID

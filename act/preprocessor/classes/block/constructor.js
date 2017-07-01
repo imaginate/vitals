@@ -32,7 +32,7 @@ var loadHelper = require('./.load-helper.js');
 /// #{{{ @const BLK_TYPE_ID
 /**
  * @private
- * @const {!Object}
+ * @const {!TypeId}
  */
 var BLK_TYPE_ID = loadHelper('get-type-id')('block');
 /// #}}} @const BLK_TYPE_ID

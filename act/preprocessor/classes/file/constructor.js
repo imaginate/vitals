@@ -32,7 +32,7 @@ var loadHelper = require('./.load-helper.js');
 /// #{{{ @const FILE_TYPE_ID
 /**
  * @private
- * @const {!Object}
+ * @const {!TypeId}
  */
 var FILE_TYPE_ID = loadHelper('get-type-id')('file');
 /// #}}} @const FILE_TYPE_ID

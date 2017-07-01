@@ -32,7 +32,7 @@ var loadHelper = require('./.load-helper.js');
 /// #{{{ @const COND_TYPE_ID
 /**
  * @private
- * @const {!Object}
+ * @const {!TypeId}
  */
 var COND_TYPE_ID = loadHelper('get-type-id')('conditional');
 /// #}}} @const COND_TYPE_ID
