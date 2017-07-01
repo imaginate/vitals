@@ -24,7 +24,7 @@ var loadHelper = require('./.load-helper.js');
 
 /// #{{{ @step setupClasses
 
-loadHelper('setup-classes');
+loadHelper('setup-classes')();
 
 /// #}}} @step setupClasses
 
