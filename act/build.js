@@ -540,6 +540,15 @@ var isUndefined = IS.undefined;
 
 /// #{{{ @group OBJECT
 
+/// #{{{ @func deepMergeObject
+/**
+ * @private
+ * @param {...(?Object|?Function)} src
+ * @return {!Object}
+ */
+var deepMergeObject = loadHelper('deep-merge-object');
+/// #}}} @func deepMergeObject
+
 /// #{{{ @func cloneObject
 /**
  * @private
@@ -792,7 +801,7 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
 
-    state = mergeObject(state, branch.state);
+    state = deepMergeObject(state, branch.state);
   }
 
   /// #}}} @step update-state
@@ -995,7 +1004,7 @@ function buildFile(dir, key, file, src, dest, state, alter) {
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
 
-    state = mergeObject(state, file.state);
+    state = deepMergeObject(state, file.state);
   }
 
   /// #}}} @step update-state
