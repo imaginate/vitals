@@ -491,12 +491,12 @@ var sealObject = loadHelper('seal-object');
 /**
  * @public
  * @this {!Cond}
- * @param {!Flags} condFlags
+ * @param {!Flags} flags
  * @param {!Object<string, ?Incl>} inclFiles
  * @param {!Object<string, !Incl>} inclNodes
  * @return {string}
  */
-function run(condFlags, inclFiles, inclNodes) {
+function run(flags, inclFiles, inclNodes) {
 
   /// #{{{ @step declare-variables
 
@@ -517,8 +517,8 @@ function run(condFlags, inclFiles, inclNodes) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isFlagsNode(condFlags) )
-    throw setTypeError(new TypeError, 'condFlags', '!Flags');
+  if ( !isFlagsNode(flags) )
+    throw setTypeError(new TypeError, 'flags', '!Flags');
   if ( !isObject(inclFiles) )
     throw setTypeError(new TypeError, 'inclFiles', '!Object<string, ?Incl>');
   if ( !isObject(inclNodes) )
@@ -528,7 +528,7 @@ function run(condFlags, inclFiles, inclNodes) {
 
   /// #{{{ @step return-disabled-state
 
-  state = condFlags.getState(this);
+  state = flags.getState(this);
   if (!this.action)
     state = !state;
   if (!state)
@@ -560,7 +560,7 @@ function run(condFlags, inclFiles, inclNodes) {
     node = content[i];
     result += isLineNode(node)
       ? node.text + '\n'
-      : node.run(condFlags, inclFiles, inclNodes);
+      : node.run(flags, inclFiles, inclNodes);
   }
 
   /// #}}} @step process-content
