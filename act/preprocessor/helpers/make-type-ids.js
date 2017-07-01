@@ -125,6 +125,15 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
 
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
 /// #}}} @group IS
 
 /// #{{{ @group OBJECT
