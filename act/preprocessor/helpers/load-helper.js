@@ -285,7 +285,7 @@ var DIR = freezeObject({
  */
 var CACHE = isCacheDefined(CACHE_KEY)
   ? global[CACHE_KEY]
-  : makeCache();
+  : setupCache();
 /// #}}} @const CACHE
 
 /// #}}} @group CACHE
