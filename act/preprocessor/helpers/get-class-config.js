@@ -281,7 +281,7 @@ function getClassConfig(classname) {
   if ( !hasOwnProperty(config, classname) )
     throw setError(new RangeError,
       'invalid `classname` config requested\n' +
-      '    requested-classname: `' classname + '`\n' +
+      '    requested-classname: `' + classname + '`\n' +
       '    valid-classnames:\n' +
       '        `' + getKeys(config).join('`\n        ') + '`');
 
