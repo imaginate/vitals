@@ -1,42 +1,42 @@
 {
   "block": {
-    "class": "block",
-    "constructor": "Blk"
+    "classname": "block",
+    "typename": "Blk"
   },
   "conditional": {
-    "class": "conditional",
-    "constructor": "Cond"
+    "classname": "conditional",
+    "typename": "Cond"
   },
   "define": {
-    "class": "define",
-    "constructor": "Def"
+    "classname": "define",
+    "typename": "Def"
   },
   "directory": {
-    "class": "directory",
-    "constructor": "Dir"
+    "classname": "directory",
+    "typename": "Dir"
   },
   "file": {
-    "class": "file",
-    "constructor": "File"
+    "classname": "file",
+    "typename": "File"
   },
   "flags": {
-    "class": "flags",
-    "constructor": "Flags"
+    "classname": "flags",
+    "typename": "Flags"
   },
   "line": {
-    "class": "line",
-    "constructor": "Line"
+    "classname": "line",
+    "typename": "Line"
   },
   "location": {
-    "class": "location",
-    "constructor": "Loc"
+    "classname": "location",
+    "typename": "Loc"
   },
   "include": {
-    "class": "include",
-    "constructor": "Incl"
+    "classname": "include",
+    "typename": "Incl"
   },
   "insert": {
-    "class": "insert",
-    "constructor": "Ins"
+    "classname": "insert",
+    "typename": "Ins"
   }
 }
