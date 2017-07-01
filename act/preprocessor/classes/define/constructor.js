@@ -64,16 +64,6 @@ var IS = loadHelper('is');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setCloseError = setError.close;
-/// #}}} @func setCloseError
-
 /// #{{{ @func setCmdError
 /**
  * @private
@@ -84,27 +74,6 @@ var setCloseError = setError.close;
 var setCmdError = setError.cmd;
 /// #}}} @func setCmdError
 
-/// #{{{ @func setDefChildError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} child
- * @param {!Line} parent
- * @return {!SyntaxError}
- */
-var setDefChildError = setError.defChild;
-/// #}}} @func setDefChildError
-
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
 /// #{{{ @func setIdError
 /**
  * @private
@@ -114,29 +83,6 @@ var setEmptyError = setError.empty;
  */
 var setIdError = setError.id;
 /// #}}} @func setIdError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
-
-/// #{{{ @func setMatchError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-var setMatchError = setError.match;
-/// #}}} @func setMatchError
 
 /// #{{{ @func setNewError
 /**
@@ -157,16 +103,6 @@ var setNewError = setError.new_;
  */
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
-
-/// #{{{ @func setNoCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setNoCloseError = setError.noClose;
-/// #}}} @func setNoCloseError
 
 /// #{{{ @func setOpenError
 /**
@@ -199,17 +135,6 @@ var setTagError = setError.tag;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
 
 /// #{{{ @group GET
@@ -235,42 +160,6 @@ var getTagComponent = loadHelper('get-tag-component');
 /// #}}} @group GET
 
 /// #{{{ @group HAS
-
-/// #{{{ @func hasClose
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasClose = loadHelper('has-close-command');
-/// #}}} @func hasClose
-
-/// #{{{ @func hasCommand
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasCommand = loadHelper('has-command');
-/// #}}} @func hasCommand
-
-/// #{{{ @func hasDefine
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasDefine = loadHelper('has-define-command');
-/// #}}} @func hasDefine
-
-/// #{{{ @func hasInsert
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasInsert = loadHelper('has-insert-command');
-/// #}}} @func hasInsert
 
 /// #{{{ @func hasOpen
 /**
@@ -304,33 +193,6 @@ var hasValidDefine = loadHelper('has-valid-define');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isArray
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isArray = IS.array;
-/// #}}} @func isArray
-
-/// #{{{ @func isBlkNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBlkNode = loadHelper('is-block-node');
-/// #}}} @func isBlkNode
-
-/// #{{{ @func isCondNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isCondNode = loadHelper('is-conditional-node');
-/// #}}} @func isCondNode
-
 /// #{{{ @func isFileNode
 /**
  * @private
@@ -339,15 +201,6 @@ var isCondNode = loadHelper('is-conditional-node');
  */
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
-
-/// #{{{ @func isInclNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isInclNode = loadHelper('is-include-node');
-/// #}}} @func isInclNode
 
 /// #{{{ @func isInstanceOf
 /**
@@ -367,51 +220,6 @@ var isInstanceOf = IS.instanceOf;
  */
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
-
-/// #{{{ @func isLocNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isLocNode = loadHelper('is-location-node');
-/// #}}} @func isLocNode
-
-/// #{{{ @func isNull
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNull = IS.nil;
-/// #}}} @func isNull
-
-/// #{{{ @func isNumber
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-/// #}}} @func isNumber
-
-/// #{{{ @func isUndefined
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isUndefined = IS.undefined;
-/// #}}} @func isUndefined
-
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
@@ -436,17 +244,6 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -457,25 +254,29 @@ var defineProperty = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func lockObject
+/// #{{{ @func setupOffProperty
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
  */
-var lockObject = loadHelper('lock-object');
-/// #}}} @func lockObject
+var setupOffProperty = loadHelper('setup-off-property');
+/// #}}} @func setupOffProperty
 
-/// #{{{ @func sealObject
+/// #{{{ @func setupOnProperty
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
  */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var setupOnProperty = loadHelper('setup-on-property');
+/// #}}} @func setupOnProperty
 
 /// #}}} @group OBJECT
 
@@ -492,7 +293,7 @@ var resolvePath = loadHelper('resolve-path');
 
 /// #}}} @group PATH
 
-/// #{{{ @group SETUP
+/// #{{{ @group PROTOTYPE
 
 /// #{{{ @func setupPrototype
 /**
@@ -508,7 +309,7 @@ var resolvePath = loadHelper('resolve-path');
 var setupPrototype = loadHelper('setup-prototype');
 /// #}}} @func setupPrototype
 
-/// #}}} @group SETUP
+/// #}}} @group PROTOTYPE
 
 /// #}}} @group HELPERS
 
@@ -520,7 +321,8 @@ var setupPrototype = loadHelper('setup-prototype');
 /// #{{{ @const DIR
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var DIR = freezeObject({
@@ -641,12 +443,7 @@ function Def(open, file) {
    * @public
    * @const {!Object}
    */
-  defineProperty(this, 'type', {
-    'value': DEF_TYPE_ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'type', DEF_TYPE_ID, true);
   /// #}}} @member type
 
   /// #{{{ @member tag
@@ -654,12 +451,7 @@ function Def(open, file) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'tag', {
-    'value': TAG,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'tag', TAG, true);
   /// #}}} @member tag
 
   /// #{{{ @member id
@@ -667,12 +459,7 @@ function Def(open, file) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'id', {
-    'value': ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'id', ID, true);
   /// #}}} @member id
 
   /// #{{{ @member key
@@ -680,12 +467,7 @@ function Def(open, file) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'key', {
-    'value': KEY,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'key', KEY, true);
   /// #}}} @member key
 
   /// #{{{ @member file
@@ -693,12 +475,7 @@ function Def(open, file) {
    * @public
    * @const {!File}
    */
-  defineProperty(this, 'file', {
-    'value': FILE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'file', FILE, true);
   /// #}}} @member file
 
   /// #{{{ @member open
@@ -706,12 +483,7 @@ function Def(open, file) {
    * @public
    * @const {!Line}
    */
-  defineProperty(this, 'open', {
-    'value': OPEN,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'open', OPEN, true);
   /// #}}} @member open
 
   /// #{{{ @member close
@@ -719,12 +491,7 @@ function Def(open, file) {
    * @public
    * @type {?Line}
    */
-  defineProperty(this, 'close', {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
+  setupOnProperty(this, 'close', null);
   /// #}}} @member close
 
   /// #{{{ @member lines
@@ -732,12 +499,7 @@ function Def(open, file) {
    * @public
    * @const {!Array<!Line>}
    */
-  defineProperty(this, 'lines', {
-    'value': [],
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'lines', [], true);
   /// #}}} @member lines
 
   /// #}}} @step set-members
