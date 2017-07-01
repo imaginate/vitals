@@ -497,9 +497,9 @@ function Def(open, file) {
   /// #{{{ @member lines
   /**
    * @public
-   * @const {!Array<!Line>}
+   * @const {?Array<!Line>}
    */
-  setupOffProperty(this, 'lines', [], true);
+  setupOnProperty(this, 'lines', null);
   /// #}}} @member lines
 
   /// #}}} @step set-members

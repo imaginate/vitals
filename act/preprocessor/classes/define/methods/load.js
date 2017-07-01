@@ -196,6 +196,17 @@ var setNoCloseError = setError.noClose;
 var setOpenError = setError.open;
 /// #}}} @func setOpenError
 
+/// #{{{ @func setPhaseError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} func
+ * @param {(!Blk|!Cond|!Def|!Incl|!Ins)} node
+ * @return {!Error}
+ */
+var setPhaseError = setError.phase;
+/// #}}} @func setPhaseError
+
 /// #{{{ @func setTagError
 /**
  * @private
@@ -444,17 +455,6 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -465,25 +465,17 @@ var defineProperty = loadHelper('define-property');
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #{{{ @func lockObject
+/// #{{{ @func setupOffProperty
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
  */
-var lockObject = loadHelper('lock-object');
-/// #}}} @func lockObject
-
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var setupOffProperty = loadHelper('setup-off-property');
+/// #}}} @func setupOffProperty
 
 /// #}}} @group OBJECT
 
@@ -536,9 +528,17 @@ function load(textRows, i, len, file) {
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step verify-lines-member
+
+  if (this.lines)
+    throw setPhaseError(new Error, 'load', this);
+
+  /// #}}} @step verify-lines-member
+
   /// #{{{ @step set-member-refs
 
-  lines = this.lines;
+  lines = [];
+  setupOffProperty(this, 'lines', lines, true);
 
   /// #}}} @step set-member-refs
 
