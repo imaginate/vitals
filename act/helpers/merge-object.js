@@ -28,14 +28,42 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func cloneObject
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
 /**
  * @private
- * @param {(?Object|?Function)} src
- * @return {!Object}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var cloneObject = require('./clone-object.js');
-/// #}}} @func cloneObject
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -47,14 +75,18 @@ var cloneObject = require('./clone-object.js');
 var hasOwnProperty = require('./has-own-property.js');
 /// #}}} @func hasOwnProperty
 
-/// #{{{ @func isFunction
+/// #}}} @group HAS
+
+/// #{{{ @group IS
+
+/// #{{{ @func isBoolean
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isFunction = IS.func;
-/// #}}} @func isFunction
+var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
 
 /// #{{{ @func isNull
 /**
@@ -65,20 +97,45 @@ var isFunction = IS.func;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isObject
+/// #{{{ @func isHashMap
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
+/// #}}} @group IS
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func cloneObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {!Object}
+ */
+var cloneObject = require('./clone-object.js');
+/// #}}} @func cloneObject
+
+/// #}}} @group OBJECT
 
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func mergeObject
@@ -91,43 +148,78 @@ function mergeObject(src) {
 
   /** @type {!Object} */
   var result;
-  /** @type {string} */
-  var key;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  len = arguments.length;
-
-  if (len === 0)
-    throw new Error('missing a `src` parameter');
-  if ( !isNull(src) && !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `?Object|?Function`');
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      if ( isNull(src) )
+        return {};
+      else if ( isHashMap(src) )
+        return cloneObject(src);
+      else
+        throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+  }
 
   result = cloneObject(src);
-
+  len = arguments.length;
   i = 0;
   while (++i < len) {
     src = arguments[i];
-
     if ( isNull(src) )
       continue;
-
-    if ( !isObject(src) && !isFunction(src) )
-      throw new TypeError('invalid `src` data type\n' +
-        '    valid-types: `?Object|?Function`');
-
-    for (key in src) {
-      if ( hasOwnProperty(src, key) ) {
-        result[key] = src[key];
-      }
-    }
+    else if ( isHashMap(src) )
+      result = merge(result, src);
+    else
+      throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
   }
   return result;
 }
 /// #}}} @func mergeObject
+
+/// #{{{ @func merge
+/**
+ * @private
+ * @param {(!Object|!Function)} dest
+ * @param {(!Object|!Function)} src
+ * @return {!Object}
+ */
+function merge(dest, src) {
+
+  /** @type {string} */
+  var key;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'dest');
+    case 1:
+      throw setNoArgError(new Error, 'src');
+  }
+
+  if ( !isHashMap(dest) )
+    throw setTypeError(new TypeError, 'dest', '(!Object|!Function)');
+  if ( !isHashMap(src) )
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+
+  for (key in src) {
+    if ( hasOwnProperty(src, key) ) {
+      dest[key] = src[key];
+    }
+  }
+  return dest;
+}
+/// #}}} @func merge
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = mergeObject;
 
