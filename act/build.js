@@ -121,6 +121,24 @@ var STATE = CONFIG.state;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group JSPP
+
+/// #{{{ @func initPreprocessor
+/**
+ * @private
+ * @param {string} src
+ *   The file-system path to the root directory containing the source code you
+ *   want to preprocess.
+ * @param {(?function(string))=} log = `console.log || null`
+ *   The `function` to use when logging progress indicators. If it is `null`,
+ *   no progress messages are logged.
+ * @return {!Dir}
+ */
+var initPreprocessor = require('./preprocessor/main.js');
+/// #}}} @func initPreprocessor
+
+/// #}}} @group JSPP
+
 /// #{{{ @group DOCS
 
 /// #}}} @group DOCS
@@ -510,24 +528,6 @@ var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
 /// #}}} @group IS
-
-/// #{{{ @group JSPP
-
-/// #{{{ @func initPreprocessor
-/**
- * @private
- * @param {string} src
- *   The file-system path to the root directory containing the source code you
- *   want to preprocess.
- * @param {(?function(string))=} log = `console.log || null`
- *   The `function` to use when logging progress indicators. If it is `null`,
- *   no progress messages are logged.
- * @return {!Dir}
- */
-var initPreprocessor = require('./preprocessor/main.js');
-/// #}}} @func initPreprocessor
-
-/// #}}} @group JSPP
 
 /// #{{{ @group OBJECT
 
