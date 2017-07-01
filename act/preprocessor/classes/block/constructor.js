@@ -423,9 +423,7 @@ function Blk(open, file, parent) {
    * @private
    * @const {(?Blk|?Cond)}
    */
-  var PARENT = !!parent
-    ? parent
-    : null;
+  var PARENT = parent || null;
   /// #}}} @const PARENT
 
   /// #{{{ @const OPEN
