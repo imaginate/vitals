@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -16,6 +21,8 @@
  */
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
+
+/// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
@@ -37,15 +44,42 @@ var IS = loadTaskHelper('is');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwnProperty
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
 /**
  * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var hasOwnProperty = loadTaskHelper('has-own-property');
-/// #}}} @func hasOwnProperty
+var setError = require('./set-error-base.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
 
 /// #{{{ @func hasValidKey
 /**
@@ -55,6 +89,10 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
  */
 var hasValidKey = require('./has-valid-key.js');
 /// #}}} @func hasValidKey
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isBlkNode
 /**
@@ -101,6 +139,8 @@ var isInclNode = require('./is-include-node.js');
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group EXPORTS
@@ -112,38 +152,42 @@ var isString = IS.string;
 /**
  * @public
  * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {(?Blk|?Cond|?Incl)}
+ * @param {(string|!Blk|!Incl)} node
+ * @return {(?Blk|?Incl)}
  */
 function getOwnedCommand(src, node) {
 
   /** @type {string} */
   var key;
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'node');
+  }
+
   if ( !isFileNode(src) && !isBlkNode(src) && !isCondNode(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `(!File|!Blk|!Cond)`');
+    throw setTypeError(new TypeError, 'src', '(!File|!Blk|!Cond)');
 
   if ( isString(node) )
     key = node;
-  else if ( isBlkNode(node) || isCondNode(node) || isInclNode(node) )
+  else if ( isBlkNode(node) || isInclNode(node) )
     key = node.key;
   else
-    throw new TypeError('invalid `node` data type\n' +
-      '    valid-types: `(string|!Blk|!Cond|!Incl)`');
+    throw setTypeError(new TypeError, 'node', '(string|!Blk|!Incl)');
 
   if ( !hasValidKey(key) )
-    throw new Error('invalid `node` key `string`\n' +
+    throw setError(new Error,
+      'invalid node `key` member `string` for `node` parameter\n' +
       '    valid-key: `node.tag + ":" + node.id`\n' +
       '    actual-key: `"' + key + '"`');
 
-  return hasOwnProperty(src.blks, key)
+  return key in src.blks
     ? src.blks[key]
-    : hasOwnProperty(src.conds, key)
-      ? src.conds[key]
-      : hasOwnProperty(src.incls, key)
-        ? src.incls[key]
-        : null;
+    : key in src.incls
+      ? src.incls[key]
+      : null;
 }
 /// #}}} @func getOwnedCommand
 
