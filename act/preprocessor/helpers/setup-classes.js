@@ -315,7 +315,7 @@ function setupClasses() {
     cache = global[CACHE_KEY];
 
     if ( !isObject(cache)
-        || !isObject(cache.__TYPE_IDS
+        || !isObject(cache.__TYPE_IDS)
         || !isObject(cache.__LOADED) )
       throw setError(new Error,
         'invalid property value set for `global.' + CACHE_KEY + '`');
