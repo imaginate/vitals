@@ -272,7 +272,7 @@ function makeFiles() {
   len = paths.length;
   i = -1;
   while (++i < len) {
-    file = new File(paths[i], parent);
+    file = new File(paths[i], this);
     setupOffProperty(files, file.name, file, true);
   }
 
