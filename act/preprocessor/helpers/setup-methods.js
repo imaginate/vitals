@@ -546,7 +546,7 @@ function setupMethod(methods, proto, path) {
 
   /// #{{{ @step define-method
 
-  setupOffProperty(this, name, method, true);
+  setupOffProperty(methods, name, method, true);
 
   /// #}}} @step define-method
 
