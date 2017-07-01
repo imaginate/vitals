@@ -37,6 +37,16 @@ var loadTaskHelper = require('./load-task-helper.js');
 var CACHE_KEY = '__VITALS_JSPP_CLASS_CACHE';
 /// #}}} @const CACHE_KEY
 
+/// #{{{ @const CLASSES
+/**
+ * @private
+ * @enum {!Object}
+ * @const
+ * @dict
+ */
+var CLASSES = require('./get-class-config.js')();
+/// #}}} @const CLASSES
+
 /// #{{{ @const IS
 /**
  * @private
@@ -61,7 +71,7 @@ var IS = loadTaskHelper('is');
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadTaskHelper('set-error');
+var setError = require('./set-error-base.js');
 /// #}}} @func setError
 
 /// #{{{ @func setDirError
@@ -96,6 +106,16 @@ var setEmptyError = setError.empty;
 var setFileError = setError.file;
 /// #}}} @func setFileError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -108,48 +128,6 @@ var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
 /// #}}} @group ERROR
-
-/// #{{{ @group FS
-
-/// #{{{ @func getDirectoryPaths
-/**
- * @private
- * @param {string} dirpath
- * @param {(?Object|boolean)=} opts
- *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
- * @param {?boolean=} opts.deep = `false`
- *   Make a recursive search for valid directory paths.
- * @param {?boolean=} opts.full = `false`
- *   Return absolute directory paths instead of relative directory paths.
- * @param {?boolean=} opts.extend = `false`
- *   When supplying a valid or invalid pattern to check paths against, the
- *   #opts.extend option allows you to supplement instead of overwrite the
- *   default valid or invalid test. If the default value is `null`, this
- *   option does not have any side effects.
- * @param {?RegExp=} opts.valid
- *   An alias for `opts.validDirs`.
- * @param {?RegExp=} opts.invalid
- *   An alias for `opts.invalidDirs`.
- * @param {?RegExp=} opts.validDirs = `null`
- *   A pattern for matching valid directory paths. If #opts.validDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.validDirs pattern. Otherwise (i.e.
- *   if it does not have a forward slash), the path name is tested against the
- *   #opts.validDirs pattern.
- * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
- *   A pattern for matching invalid directory paths. If #opts.invalidDirs is
- *   `null`, no check is performed. If it is a `RegExp`, the source property
- *   is checked for a forward slash, `"/"`. If it has a forward slash, the
- *   path tree is tested against the #opts.invalidDirs pattern. Otherwise
- *   (i.e. if it does not have a forward slash), the path name is tested
- *   against the #opts.invalidDirs pattern.
- * @return {!Array<string>}
- */
-var getDirectoryPaths = loadTaskHelper('get-directory-paths');
-/// #}}} @func getDirectoryPaths
-
-/// #}}} @group FS
 
 /// #{{{ @group HAS
 
@@ -256,32 +234,6 @@ var isUndefined = IS.undefined;
 var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
 
-/// #}}} @group OBJECT
-
-/// #{{{ @group PATH
-
-/// #{{{ @func getPathName
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var getPathName = loadTaskHelper('get-path-name');
-/// #}}} @func getPathName
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
-
-/// #}}} @group PATH
-
-/// #{{{ @group SETUP
-
 /// #{{{ @func setupOffProperty
 /**
  * @private
@@ -294,7 +246,20 @@ var resolvePath = loadTaskHelper('resolve-path');
 var setupOffProperty = require('./setup-off-property.js');
 /// #}}} @func setupOffProperty
 
-/// #}}} @group SETUP
+/// #}}} @group OBJECT
+
+/// #{{{ @group PATH
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
+/// #}}} @group PATH
 
 /// #}}} @group HELPERS
 
@@ -306,7 +271,8 @@ var setupOffProperty = require('./setup-off-property.js');
 /// #{{{ @const DIR
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var DIR = freezeObject({
@@ -330,18 +296,14 @@ function loadConstructors() {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Object} */
+  var config;
   /** @type {!Object<string, !Function>} */
   var cache;
-  /** @type {!Array<string>} */
-  var paths;
   /** @type {string} */
   var path;
   /** @type {string} */
   var name;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
 
   /// #}}} @step declare-variables
 
@@ -373,42 +335,24 @@ function loadConstructors() {
 
   /// #}}} @step verify-classes-directory
 
-  /// #{{{ @step get-class-directories
-
-  paths = getDirectoryPaths(DIR.CLASSES, {
-    'deep': false,
-    'full': true,
-    'extend': true,
-    'validDirs': /^[a-z\-]+$/,
-    'invalidDirs': /^\./
-  });
-
-  /// #}}} @step get-class-directories
-
   /// #{{{ @step load-each-constructor
 
-  len = paths.length;
-  i = -1;
-  while (++i < len) {
-    path = paths[i];
-    name = getPathName(path);
+  for (name in CLASSES) {
+    if ( hasOwnProperty(CLASSES, name) ) {
+      config = CLASSES[name];
+      name = config.classname;
+      path = resolvePath(DIR.CLASSES, name, 'constructor.js');
 
-    if (!name)
-      throw setError(new RangeError,
-        'invalid empty `class` name for directory path\n' +
-        '    dir-path: `' + path + '`');
+      if ( !isFile(path) )
+        throw setFileError(new Error, 'path', path);
 
-    path = resolvePath(path, './constructor.js');
+      setupOffProperty(cache, name, require(path), true);
 
-    if ( !isFile(path) )
-      throw setFileError(new Error, 'path', path);
-
-    setupOffProperty(cache, name, require(path), true);
-
-    if ( !isFunction(cache[name]) )
-      throw setError(new TypeError,
-        'invalid data type exported for `' + name + '` class constructor\n' +
-        '    module-path: `' + path + '`');
+      if ( !isFunction(cache[name]) )
+        throw setError(new TypeError,
+          'invalid data type exported for `' + name + '` class constructor\n' +
+          '    module-path: `' + path + '`');
+    }
   }
 
   /// #}}} @step load-each-constructor
