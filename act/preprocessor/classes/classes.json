@@ -1,0 +1,42 @@
+{
+  "block": {
+    "class": "block",
+    "constructor": "Blk"
+  },
+  "conditional": {
+    "class": "conditional",
+    "constructor": "Cond"
+  },
+  "define": {
+    "class": "define",
+    "constructor": "Def"
+  },
+  "directory": {
+    "class": "directory",
+    "constructor": "Dir"
+  },
+  "file": {
+    "class": "file",
+    "constructor": "File"
+  },
+  "flags": {
+    "class": "flags",
+    "constructor": "Flags"
+  },
+  "line": {
+    "class": "line",
+    "constructor": "Line"
+  },
+  "location": {
+    "class": "location",
+    "constructor": "Loc"
+  },
+  "include": {
+    "class": "include",
+    "constructor": "Incl"
+  },
+  "insert": {
+    "class": "insert",
+    "constructor": "Ins"
+  }
+}
