@@ -24,33 +24,19 @@ var loadTaskHelper = require('./load-task-helper.js');
 
 /// #}}} @group LOADERS
 
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- */
-var IS = loadTaskHelper('is');
-/// #}}} @const IS
-
-/// #{{{ @const LOC_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var LOC_TYPE_ID = require('./type-ids.js').LOC;
-/// #}}} @const LOC_TYPE_ID
-
-/// #}}} @group CONSTANTS
-
 /// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func getTypeId
+/**
+ * @private
+ * @param {string} classname
+ * @return {!TypeId}
+ */
+var getTypeId = require('./get-type-id.js');
+/// #}}} @func getTypeId
 
 /// #{{{ @func isObject
 /**
@@ -58,10 +44,35 @@ var LOC_TYPE_ID = require('./type-ids.js').LOC;
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
+var isObject = loadTaskHelper('is').object;
 /// #}}} @func isObject
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = require('./set-error-base.js').noArg;
+/// #}}} @func setNoArgError
+
 /// #}}} @group HELPERS
+
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const ID
+/**
+ * @private
+ * @const {!TypeId}
+ */
+var ID = getTypeId('location');
+/// #}}} @const ID
+
+/// #}}} @group CONSTANTS
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +86,11 @@ var isObject = IS.object;
  * @return {boolean}
  */
 function isLocationNode(val) {
-  return isObject(val) && 'type' in val && val.type === LOC_TYPE_ID;
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'val');
+
+  return isObject(val) && 'type' in val && val.type === ID;
 }
 /// #}}} @func isLocationNode
 

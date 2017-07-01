@@ -8,6 +8,11 @@
 
 'use strict';
 
+/// #{{{ @group LOADERS
+//////////////////////////////////////////////////////////////////////////////
+// LOADERS
+//////////////////////////////////////////////////////////////////////////////
+
 /// #{{{ @func loadTaskHelper
 /**
  * @private
@@ -17,33 +22,21 @@
 var loadTaskHelper = require('./load-task-helper.js');
 /// #}}} @func loadTaskHelper
 
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DIR_TYPE_ID
-/**
- * @private
- * @const {!Object}
- */
-var DIR_TYPE_ID = require('./type-ids.js').directory;
-/// #}}} @const DIR_TYPE_ID
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- */
-var IS = loadTaskHelper('is');
-/// #}}} @const IS
-
-/// #}}} @group CONSTANTS
+/// #}}} @group LOADERS
 
 /// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func getTypeId
+/**
+ * @private
+ * @param {string} classname
+ * @return {!TypeId}
+ */
+var getTypeId = require('./get-type-id.js');
+/// #}}} @func getTypeId
 
 /// #{{{ @func isObject
 /**
@@ -51,10 +44,35 @@ var IS = loadTaskHelper('is');
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
+var isObject = loadTaskHelper('is').object;
 /// #}}} @func isObject
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = require('./set-error-base.js').noArg;
+/// #}}} @func setNoArgError
+
 /// #}}} @group HELPERS
+
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const ID
+/**
+ * @private
+ * @const {!TypeId}
+ */
+var ID = getTypeId('directory');
+/// #}}} @const ID
+
+/// #}}} @group CONSTANTS
 
 /// #{{{ @group EXPORTS
 //////////////////////////////////////////////////////////////////////////////
@@ -68,7 +86,11 @@ var isObject = IS.object;
  * @return {boolean}
  */
 function isDirectoryNode(val) {
-  return isObject(val) && 'type' in val && val.type === DIR_TYPE_ID;
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'val');
+
+  return isObject(val) && 'type' in val && val.type === ID;
 }
 /// #}}} @func isDirectoryNode
 
