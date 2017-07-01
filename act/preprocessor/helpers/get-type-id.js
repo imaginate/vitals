@@ -211,7 +211,7 @@ function getTypeId(classname) {
   if ( !(classname in IDS) )
     throw setError(new RangeError,
       'invalid `classname` requested\n' +
-      '    requested-classname: `' classname + '`\n' +
+      '    requested-classname: `' + classname + '`\n' +
       '    valid-classnames:\n' +
       '        `' + getKeys(IDS).join('`\n        ') + '`');
 
