@@ -315,7 +315,7 @@ function Mng(node) {
    */
   var FILE = !!MNG
     ? MNG.file
-    : file;
+    : node;
   /// #}}} @const FILE
 
   /// #{{{ @const FILES
