@@ -113,6 +113,20 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
 
 /// #}}} @group HAS
 
+/// #{{{ @group IS
+
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
+/// #}}} @group IS
+
 /// #{{{ @group OBJECT
 
 /// #{{{ @func capObject
