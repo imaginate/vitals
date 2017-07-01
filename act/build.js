@@ -446,6 +446,15 @@ var isDirNode = loadJsppHelper('is-directory-node');
 var isError = IS.error;
 /// #}}} @func isError
 
+/// #{{{ @func isFile
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isFile = IS.file;
+/// #}}} @func isFile
+
 /// #{{{ @func isFunction
 /**
  * @private
