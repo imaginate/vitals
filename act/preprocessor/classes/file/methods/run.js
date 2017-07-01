@@ -65,6 +65,16 @@ var IS = loadHelper('is');
 var Flags = loadClass('flags');
 /// #}}} @func Flags
 
+/// #{{{ @func Mng
+/**
+ * @private
+ * @param {!File} file
+ * @constructor
+ * @struct
+ */
+var Mng = loadClass('manager');
+/// #}}} @func Mng
+
 /// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group ERROR
@@ -372,10 +382,6 @@ function run(dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {!Object<string, ?Incl>} */
-  var inclFiles;
-  /** @type {!Object<string, !Incl>} */
-  var inclNodes;
   /** @type {!Array<(!Line|!Blk|!Cond|!Incl)>} */
   var content;
   /** @type {string} */
@@ -386,6 +392,8 @@ function run(dest, state, alter) {
   var node;
   /** @type {string} */
   var path;
+  /** @type {!Mng} */
+  var mng;
   /** @type {number} */
   var len;
   /** @type {number} */
@@ -448,15 +456,11 @@ function run(dest, state, alter) {
 
   /// #}}} @step make-flags
 
-  /// #{{{ @step setup-include-management
+  /// #{{{ @step make-manager
 
-  inclFiles = createObject(null);
-  setupOffProperty(inclFiles, this.tree, null, true);
-  freezeObject(inclFiles);
+  mng = new Mng(this);
 
-  inclNodes = createObject(null);
-
-  /// #}}} @step setup-include-management
+  /// #}}} @step make-manager
 
   /// #{{{ @step setup-results
 
@@ -472,7 +476,7 @@ function run(dest, state, alter) {
     node = content[i];
     result += isLineNode(node)
       ? node.text + '\n'
-      : node.run(flags, inclFiles, inclNodes);
+      : node.run(flags, mng);
   }
 
   /// #}}} @step process-content

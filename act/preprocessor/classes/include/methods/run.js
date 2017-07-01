@@ -112,98 +112,16 @@ var setTypeError = setError.type;
 var isFlagsNode = loadHelper('is-flags-node');
 /// #}}} @func isFlagsNode
 
-/// #{{{ @func isObject
+/// #{{{ @func isMngNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
+var isMngNode = loadHelper('is-manager-node');
+/// #}}} @func isMngNode
 
 /// #}}} @group IS
-
-/// #{{{ @group OBJECT
-
-/// #{{{ @func cloneInclFiles
-/**
- * @private
- * @param {!Object<string, ?Incl>} src
- * @return {!Object<string, ?Incl>}
- */
-function cloneInclFiles(src) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Object<string, ?Incl>} */
-  var inclFiles;
-  /** @type {string} */
-  var key;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length)
-    throw setNoArgError(new Error, 'src');
-  if ( !isObject(src) )
-    throw setTypeError(new TypeError, 'src', '!Object<string, ?Incl>');
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-empty-object
-
-  inclFiles = createObject(null);
-
-  /// #}}} @step make-empty-object
-
-  /// #{{{ @step copy-properties
-
-  for (key in src)
-    setupOffProperty(inclFiles, key, src[key], true);
-
-  /// #}}} @step copy-properties
-
-  /// #{{{ @step return-clone
-
-  return inclFiles;
-
-  /// #}}} @step return-clone
-}
-/// #}}} @func cloneInclFiles
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadHelper('freeze-object');
-/// #}}} @func freezeObject
-
-/// #{{{ @func setupOffProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {*} value
- * @param {boolean=} visible = `false`
- * @return {!Object}
- */
-var setupOffProperty = loadHelper('setup-off-property');
-/// #}}} @func setupOffProperty
-
-/// #}}} @group OBJECT
 
 /// #}}} @group HELPERS
 
@@ -217,11 +135,10 @@ var setupOffProperty = loadHelper('setup-off-property');
  * @public
  * @this {!Incl}
  * @param {!Flags} flags
- * @param {!Object<string, ?Incl>} inclFiles
- * @param {!Object<string, !Incl>} inclNodes
+ * @param {!Mng} mng
  * @return {string}
  */
-function run(flags, inclFiles, inclNodes) {
+function run(flags, mng) {
 
   /// #{{{ @step declare-variables
 
@@ -229,8 +146,6 @@ function run(flags, inclFiles, inclNodes) {
   var result;
   /** @type {string} */
   var tree;
-  /** @type {string} */
-  var key;
 
   /// #}}} @step declare-variables
 
@@ -240,17 +155,13 @@ function run(flags, inclFiles, inclNodes) {
     case 0:
       throw setNoArgError(new Error, 'flags');
     case 1:
-      throw setNoArgError(new Error, 'inclFiles');
-    case 2:
-      throw setNoArgError(new Error, 'inclNodes');
+      throw setNoArgError(new Error, 'mng');
   }
 
   if ( !isFlagsNode(flags) )
     throw setTypeError(new TypeError, 'flags', '!Flags');
-  if ( !isObject(inclFiles) )
-    throw setTypeError(new TypeError, 'inclFiles', '!Object<string, ?Incl>');
-  if ( !isObject(inclNodes) )
-    throw setTypeError(new TypeError, 'inclNodes', '!Object<string, !Incl>');
+  if ( !isMngNode(mng) )
+    throw setTypeError(new TypeError, 'mng', '!Mng');
 
   /// #}}} @step verify-parameters
 
@@ -264,37 +175,33 @@ function run(flags, inclFiles, inclNodes) {
   /// #{{{ @step set-member-refs
 
   tree = this.link.tree;
-  key = tree + '|' + this.key;
 
   /// #}}} @step set-member-refs
 
   /// #{{{ @step catch-include-loop
 
-  if (tree in inclFiles)
-    throw setTreeError(new ReferenceError, inclFiles[tree], this);
+  if ( mng.hasFile(tree) )
+    throw setTreeError(new ReferenceError, mng.getFile(tree), this);
 
   /// #}}} @step catch-include-loop
 
   /// #{{{ @step catch-include-duplicate
 
-  if (key in inclNodes)
-    throw setInclError(new ReferenceError, inclNodes[key], this);
+  if ( mng.hasNode(this) )
+    throw setInclError(new ReferenceError, mng.getNode(this), this);
 
   /// #}}} @step catch-include-duplicate
 
-  /// #{{{ @step update-include-management
+  /// #{{{ @step update-manager
 
-  inclFiles = cloneInclFiles(inclFiles);
-  setupOffProperty(inclFiles, tree, this, true);
-  freezeObject(inclFiles);
+  mng.addFile(tree, this);
+  mng.addNode(this);
 
-  setupOffProperty(inclNodes, key, this, true);
-
-  /// #}}} @step update-include-management
+  /// #}}} @step update-manager
 
   /// #{{{ @step get-results
 
-  result = this.cmd.run(flags, inclFiles, inclNodes);
+  result = this.cmd.run(flags, mng);
 
   /// #}}} @step get-results
 

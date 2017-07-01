@@ -99,14 +99,14 @@ var isFlagsNode = loadHelper('is-flags-node');
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
 
-/// #{{{ @func isObject
+/// #{{{ @func isMngNode
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
+var isMngNode = loadHelper('is-manager-node');
+/// #}}} @func isMngNode
 
 /// #}}} @group IS
 
@@ -122,11 +122,10 @@ var isObject = IS.object;
  * @public
  * @this {!Cond}
  * @param {!Flags} flags
- * @param {!Object<string, ?Incl>} inclFiles
- * @param {!Object<string, !Incl>} inclNodes
+ * @param {!Mng} mng
  * @return {string}
  */
-function run(flags, inclFiles, inclNodes) {
+function run(flags, mng) {
 
   /// #{{{ @step declare-variables
 
@@ -151,17 +150,13 @@ function run(flags, inclFiles, inclNodes) {
     case 0:
       throw setNoArgError(new Error, 'flags');
     case 1:
-      throw setNoArgError(new Error, 'inclFiles');
-    case 2:
-      throw setNoArgError(new Error, 'inclNodes');
+      throw setNoArgError(new Error, 'mng');
   }
 
   if ( !isFlagsNode(flags) )
     throw setTypeError(new TypeError, 'flags', '!Flags');
-  if ( !isObject(inclFiles) )
-    throw setTypeError(new TypeError, 'inclFiles', '!Object<string, ?Incl>');
-  if ( !isObject(inclNodes) )
-    throw setTypeError(new TypeError, 'inclNodes', '!Object<string, !Incl>');
+  if ( !isMngNode(mng) )
+    throw setTypeError(new TypeError, 'mng', '!Mng');
 
   /// #}}} @step verify-parameters
 
@@ -191,7 +186,7 @@ function run(flags, inclFiles, inclNodes) {
     node = content[i];
     result += isLineNode(node)
       ? node.text + '\n'
-      : node.run(flags, inclFiles, inclNodes);
+      : node.run(flags, mng);
   }
 
   /// #}}} @step process-content
