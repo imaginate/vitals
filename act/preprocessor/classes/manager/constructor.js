@@ -108,15 +108,6 @@ var setTypeError = setError.type;
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
 
-/// #{{{ @func isFlagsNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFlagsNode = loadHelper('is-flags-node');
-/// #}}} @func isFlagsNode
-
 /// #{{{ @func isInstanceOf
 /**
  * @private
@@ -131,74 +122,28 @@ var isInstanceOf = IS.instanceOf;
 
 /// #{{{ @group MAKE
 
-/// #{{{ @func makeIncls
+/// #{{{ @func makeFiles
 /**
  * @private
  * @param {!File} file
- * @return {!Object<string, !Object>}
+ * @return {!Object<string, ?Incl>}
  */
-function makeIncls(file) {
+function makeFiles(file) {
 
-  /// #{{{ @step declare-variables
-
-  /** @type {!Object<string, !Object>} */
-  var incls;
   /** @type {!Object<string, ?Incl>} */
   var files;
-  /** @type {!Object<string, !Incl>} */
-  var nodes;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
 
   if (!arguments.length)
     throw setNoArgError(new Error, 'file');
   if ( !isFileNode(file) )
     throw setTypeError(new TypeError, 'file', '!File');
 
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-incl-files
-
   files = createObject(null);
   setupOffProperty(files, file.tree, null, true);
   freezeObject(files);
-
-  /// #}}} @step make-incl-files
-
-  /// #{{{ @step make-incl-nodes
-
-  nodes = createObject(null);
-
-  /// #}}} @step make-incl-nodes
-
-  /// #{{{ @step make-incls
-
-  incls = createObject(null);
-  defineProperty(incls, 'files', {
-    'value': files,
-    'writable': true,
-    'enumerable': true,
-    'configurable': false
-  });
-  setupOffProperty(incls, 'nodes', nodes, true);
-
-  /// #}}} @step make-incls
-
-  /// #{{{ @step cap-incls
-
-  capObject(incls);
-
-  /// #}}} @step cap-incls
-
-  /// #{{{ @step return-incls
-
-  return incls;
-
-  /// #}}} @step return-incls
+  return files;
 }
-/// #}}} @func makeIncls
+/// #}}} @func makeFiles
 
 /// #}}} @group MAKE
 
@@ -319,12 +264,11 @@ var DIR = freezeObject({
 /// #{{{ @func Mng
 /**
  * @public
- * @param {!Flags} flags
  * @param {!File} file
  * @constructor
  * @struct
  */
-function Mng(flags, file) {
+function Mng(file) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -335,29 +279,14 @@ function Mng(flags, file) {
 
   /// #{{{ @step verify-parameters
 
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'flags');
-    case 1:
-      throw setNoArgError(new Error, 'file');
-  }
-
-  if ( !isFlagsNode(flags) )
-    throw setTypeError(new TypeError, 'flags', '!Flags');
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'file');
   if ( !isFileNode(file) )
     throw setTypeError(new TypeError, 'file', '!File');
 
   /// #}}} @step verify-parameters
 
   /// #{{{ @step set-constants
-
-  /// #{{{ @const FLAGS
-  /**
-   * @private
-   * @const {!Flags}
-   */
-  var FLAGS = flags;
-  /// #}}} @const FLAGS
 
   /// #{{{ @const FILE
   /**
@@ -366,14 +295,6 @@ function Mng(flags, file) {
    */
   var FILE = file;
   /// #}}} @const FILE
-
-  /// #{{{ @const INCLS
-  /**
-   * @private
-   * @const {!Object<string, !Object>}
-   */
-  var INCLS = makeIncls(file);
-  /// #}}} @const INCLS
 
   /// #}}} @step set-constants
 
@@ -387,14 +308,6 @@ function Mng(flags, file) {
   setupOffProperty(this, 'type', MNG_TYPE_ID, true);
   /// #}}} @member type
 
-  /// #{{{ @member flags
-  /**
-   * @public
-   * @const {!Flags}
-   */
-  setupOffProperty(this, 'flags', FLAGS, true);
-  /// #}}} @member flags
-
   /// #{{{ @member file
   /**
    * @public
@@ -403,40 +316,36 @@ function Mng(flags, file) {
   setupOffProperty(this, 'file', FILE, true);
   /// #}}} @member file
 
-  /// #{{{ @member incls
-  /**
-   * @public
-   * @const {!Object<string, !Object>}
-   * @struct
-   */
-  setupOffProperty(this, 'incls', INCLS, true);
-  /// #}}} @member incls
-
-  /// #{{{ @member incls.files
+  /// #{{{ @member files
   /**
    * @public
    * @const {!Object<string, ?Incl>}
    * @dict
    */
-  this.incls.files;
-  /// #}}} @member incls.files
+  defineProperty(this, 'files', {
+    'value': makeFiles(FILE),
+    'writable': true,
+    'enumerable': true,
+    'configurable': false
+  });
+  /// #}}} @member files
 
-  /// #{{{ @member incls.nodes
+  /// #{{{ @member nodes
   /**
    * @public
    * @const {!Object<string, !Incl>}
    * @dict
    */
-  this.incls.nodes;
-  /// #}}} @member incls.nodes
+  setupOffProperty(this, 'nodes', createObject(null), true);
+  /// #}}} @member nodes
 
   /// #}}} @step set-members
 
-  /// #{{{ @step freeze-instance
+  /// #{{{ @step cap-instance
 
-  freezeObject(this);
+  capObject(this);
 
-  /// #}}} @step freeze-instance
+  /// #}}} @step cap-instance
 }
 /// #}}} @func Mng
 
