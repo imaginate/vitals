@@ -34,7 +34,7 @@ var loadHelper = require('./.load-helper.js');
  * @private
  * @const {!Object}
  */
-var DIR_TYPE_ID = loadHelper('type-ids').DIR;
+var DIR_TYPE_ID = loadHelper('get-type-id')('directory');
 /// #}}} @const DIR_TYPE_ID
 
 /// #{{{ @const IS

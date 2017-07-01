@@ -34,7 +34,7 @@ var loadHelper = require('./.load-helper.js');
  * @private
  * @const {!Object}
  */
-var BLK_TYPE_ID = loadHelper('type-ids').BLK;
+var BLK_TYPE_ID = loadHelper('get-type-id')('block');
 /// #}}} @const BLK_TYPE_ID
 
 /// #{{{ @const IS

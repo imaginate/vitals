@@ -34,7 +34,7 @@ var loadHelper = require('./.load-helper.js');
  * @private
  * @const {!Object}
  */
-var FILE_TYPE_ID = loadHelper('type-ids').FILE;
+var FILE_TYPE_ID = loadHelper('get-type-id')('file');
 /// #}}} @const FILE_TYPE_ID
 
 /// #{{{ @const IS

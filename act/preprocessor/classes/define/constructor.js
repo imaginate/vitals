@@ -34,7 +34,7 @@ var loadHelper = require('./.load-helper.js');
  * @private
  * @const {!Object}
  */
-var DEF_TYPE_ID = loadHelper('type-ids').DEF;
+var DEF_TYPE_ID = loadHelper('get-type-id')('define');
 /// #}}} @const DEF_TYPE_ID
 
 /// #{{{ @const IS
