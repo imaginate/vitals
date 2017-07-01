@@ -584,9 +584,9 @@ function Blk(open, file, parent) {
   /// #{{{ @member content
   /**
    * @public
-   * @const {!Array<(!Line|!Blk|!Cond|!Incl)>}
+   * @type {?Array<(!Line|!Blk|!Cond|!Incl)>}
    */
-  setupOffProperty(this, 'content', [], true);
+  setupOnProperty(this, 'content', null);
   /// #}}} @member content
 
   /// #}}} @step set-members
