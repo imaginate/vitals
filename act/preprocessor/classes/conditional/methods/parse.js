@@ -164,7 +164,7 @@ var setOwnCmdError = setError.ownCmd;
  * @private
  * @param {!Error} err
  * @param {string} func
- * @param {(!Blk|!Cond|!Def|!Incl|!Ins)} node
+ * @param {(!File|!Blk|!Cond|!Def|!Incl|!Ins)} node
  * @return {!Error}
  */
 var setPhaseError = setError.phase;
