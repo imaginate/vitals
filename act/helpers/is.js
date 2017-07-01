@@ -847,6 +847,17 @@ function isNanHashMap(val) {
 }
 /// #}}} @func isNanHashMap
 
+/// #{{{ @func isObjectHashMap
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isObjectHashMap(val) {
+  return isObjectOrFunction(val) && isHashMapOf(val, isObject);
+}
+/// #}}} @func isObjectHashMap
+
 /// #}}} @group JS-HASH-MAP-OF-METHODS
 
 /// #{{{ @group SPECIAL-METHODS
@@ -1511,6 +1522,15 @@ var IS = {
   'nanhashmap': isNanHashMap,
   'nanMap':     isNanHashMap,
   'nanmap':     isNanHashMap,
+
+  'objectHashMap': isObjectHashMap,
+  'objecthashmap': isObjectHashMap,
+  'objHashMap':    isObjectHashMap,
+  'objhashmap':    isObjectHashMap,
+  'objectMap':     isObjectHashMap,
+  'objectmap':     isObjectHashMap,
+  'objMap':        isObjectHashMap,
+  'objmap':        isObjectHashMap,
 
   'empty': isEmpty,
 
