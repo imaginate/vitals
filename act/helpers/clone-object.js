@@ -27,24 +27,65 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
 /**
  * @private
- * @param {!Object} src
- * @param {string} prop
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
+/// #{{{ @func hasOwnProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-var hasOwnProp = require('./has-own-property.js');
-/// #}}} @func hasOwnProp
+var hasOwnProperty = require('./has-own-property.js');
+/// #}}} @func hasOwnProperty
 
-/// #{{{ @func isFunction
+/// #}}} @group HAS
+
+/// #{{{ @group IS
+
+/// #{{{ @func isBoolean
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isFunction = IS.func;
-/// #}}} @func isFunction
+var isBoolean = IS.boolean;
+/// #}}} @func isBoolean
 
 /// #{{{ @func isNull
 /**
@@ -55,48 +96,94 @@ var isFunction = IS.func;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isObject
+/// #{{{ @func isHashMap
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
+
+/// #{{{ @func isUndefined
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
+
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func deepCloneObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @return {!Object}
+ */
+var deepCloneObject = require('./deep-clone-object.js');
+/// #}}} @func deepCloneObject
 
 /// #{{{ @func cloneObject
 /**
  * @public
  * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
  * @return {!Object}
  */
-function cloneObject(src) {
+function cloneObject(src, deep) {
 
   /** @type {!Object} */
   var clone;
   /** @type {string} */
   var key;
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      deep = false;
+      break;
+    default:
+      if ( isUndefined(deep) )
+        deep = false;
+      else if ( !isBoolean(deep) )
+        throw setTypeError(new TypeError, 'deep', 'boolean=');
+  }
+
   if ( isNull(src) )
     return {};
 
-  if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` data type (must be `?Object|?Function`)');
+  if ( !isHashMap(src) )
+    throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+
+  if (deep)
+    return deepCloneObject(src);
 
   clone = {};
   for (key in src) {
-    if ( hasOwnProp(src, key) )
+    if ( hasOwnProperty(src, key) ) {
       clone[key] = src[key];
+    }
   }
   return clone;
 }
 /// #}}} @func cloneObject
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = cloneObject;
 
