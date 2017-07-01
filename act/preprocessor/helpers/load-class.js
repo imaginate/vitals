@@ -69,7 +69,7 @@ var JS_EXT = /\.js$/;
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadTaskHelper('set-error');
+var setError = require('./set-error-base.js');
 /// #}}} @func setError
 
 /// #{{{ @func setEmptyError
@@ -188,7 +188,7 @@ var getPathName = loadTaskHelper('get-path-name');
 
 if ( !isCacheLoaded(CACHE_KEY, { constructors: true }) )
   throw setError(new Error,
-    'called jspp `loadClass` before `loadConstructors` completed');
+    'required jspp `loadClass` before `loadConstructors` completed');
 
 /// #{{{ @const CACHE
 /**
