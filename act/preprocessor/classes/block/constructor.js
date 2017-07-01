@@ -566,9 +566,9 @@ function Blk(open, file, parent) {
   /// #{{{ @member conds
   /**
    * @public
-   * @const {!Object<string, !Cond>}
+   * @const {!Array<!Cond>}
    */
-  setupOffProperty(this, 'conds', createObject(null), true);
+  setupOffProperty(this, 'conds', [], true);
   /// #}}} @member conds
 
   /// #{{{ @member incls

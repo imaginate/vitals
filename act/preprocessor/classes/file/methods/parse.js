@@ -156,8 +156,8 @@ var setPhaseError = setError.phase;
 /**
  * @private
  * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {(?Blk|?Cond|?Incl)}
+ * @param {(string|!Blk|!Incl)} node
+ * @return {(?Blk|?Incl)}
  */
 var getOwnedCommand = loadHelper('get-owned-command');
 /// #}}} @func getOwnedCommand
@@ -271,7 +271,7 @@ function parse() {
   var lines;
   /** @type {!Object<string, !Incl>} */
   var incls;
-  /** @type {!Object<string, !Cond>} */
+  /** @type {!Array<!Cond>} */
   var conds;
   /** @type {!Object<string, !Blk>} */
   var blks;
@@ -348,12 +348,7 @@ function parse() {
         /// #{{{ @step parse-conditional-command
 
         cmd = new Cond(line, this);
-        own = getOwnedCommand(this, cmd.key);
-
-        if (!own)
-          setupOffProperty(conds, cmd.key, cmd, true);
-        else
-          throw setOwnCmdError(new ReferenceError, own, line);
+        conds.push(cmd);
 
         /// #}}} @step parse-conditional-command
       }

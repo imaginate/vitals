@@ -189,8 +189,8 @@ var setTypeError = setError.type;
 /**
  * @private
  * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {(?Blk|?Cond|?Incl)}
+ * @param {(string|!Blk|!Incl)} node
+ * @return {(?Blk|?Incl)}
  */
 var getOwnedCommand = loadHelper('get-owned-command');
 /// #}}} @func getOwnedCommand
@@ -354,7 +354,7 @@ function parse(lines, i, file) {
   var content;
   /** @type {!Object<string, !Incl>} */
   var incls;
-  /** @type {!Object<string, !Cond>} */
+  /** @type {!Array<!Cond>} */
   var conds;
   /** @type {!Object<string, !Blk>} */
   var blks;
@@ -364,7 +364,7 @@ function parse(lines, i, file) {
   var text;
   /** @type {(!Blk|!Cond|!Incl)} */
   var cmd;
-  /** @type {(?Line|?Blk|?Cond|?Incl)} */
+  /** @type {(?Line|?Blk|?Incl)} */
   var own;
   /** @type {number} */
   var len;
@@ -455,12 +455,7 @@ function parse(lines, i, file) {
         /// #{{{ @step parse-conditional-command
 
         cmd = new Cond(line, file, this);
-        own = getOwnedCommand(this, cmd.key);
-
-        if (!own)
-          setupOffProperty(conds, cmd.key, cmd, true);
-        else
-          throw setOwnCmdError(new ReferenceError, own, line, this);
+        conds.push(cmd);
 
         /// #}}} @step parse-conditional-command
       }
