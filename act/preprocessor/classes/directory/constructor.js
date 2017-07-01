@@ -85,54 +85,6 @@ var setDirError = setError.dir;
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
-/// #{{{ @func setExtError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {string} path
- * @param {(string|!Array<string>)} exts
- * @return {!RangeError}
- */
-var setExtError = setError.ext;
-/// #}}} @func setExtError
-
-/// #{{{ @func setFileError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setFileError = setError.file;
-/// #}}} @func setFileError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
-
-/// #{{{ @func setLocError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {string} path
- * @param {!Dir} parent
- * @param {boolean} contain
- * @return {!RangeError}
- */
-var setLocError = setError.loc;
-/// #}}} @func setLocError
-
 /// #{{{ @func setNewError
 /**
  * @private
@@ -153,17 +105,6 @@ var setNewError = setError.new_;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
-/// #{{{ @func setPathNodeError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setPathNodeError = setError.pathNode;
-/// #}}} @func setPathNodeError
-
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -175,73 +116,9 @@ var setPathNodeError = setError.pathNode;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
 
-/// #{{{ @group HAS
-
-/// #{{{ @func hasDirectory
-/**
- * @private
- * @param {string} src
- *   The file path to check in.
- * @param {string} path
- *   The directory path to check for.
- * @return {boolean}
- */
-var hasDirectory = loadHelper('has-directory');
-/// #}}} @func hasDirectory
-
-/// #{{{ @func hasJsExt
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var hasJsExt = loadHelper('has-file-ext').construct('.js');
-/// #}}} @func hasJsExt
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
-/// #}}} @group HAS
-
 /// #{{{ @group IS
-
-/// #{{{ @func isBoolean
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBoolean = IS.boolean;
-/// #}}} @func isBoolean
-
-/// #{{{ @func isFlagsNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFlagsNode = loadHelper('is-flags-node');
-/// #}}} @func isFlagsNode
 
 /// #{{{ @func isDirectory
 /**
@@ -260,33 +137,6 @@ var isDirectory = IS.directory;
  */
 var isDirNode = loadHelper('is-directory-node');
 /// #}}} @func isDirNode
-
-/// #{{{ @func isFile
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isFile = IS.file;
-/// #}}} @func isFile
-
-/// #{{{ @func isFileNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFileNode = loadHelper('is-file-node');
-/// #}}} @func isFileNode
-
-/// #{{{ @func isFunction
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFunction = IS.func;
-/// #}}} @func isFunction
 
 /// #{{{ @func isInstanceOf
 /**
@@ -307,33 +157,6 @@ var isInstanceOf = IS.instanceOf;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isNumber
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-/// #}}} @func isNumber
-
-/// #{{{ @func isObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isObject = IS.object;
-/// #}}} @func isObject
-
-/// #{{{ @func isStateObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isStateObject = loadHelper('is-state-object');
-/// #}}} @func isStateObject
-
 /// #{{{ @func isString
 /**
  * @private
@@ -351,15 +174,6 @@ var isString = IS.string;
  */
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
-
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
@@ -384,17 +198,6 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -404,6 +207,30 @@ var defineProperty = loadHelper('define-property');
  */
 var freezeObject = loadHelper('freeze-object');
 /// #}}} @func freezeObject
+
+/// #{{{ @func setupOffProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `false`
+ * @return {!Object}
+ */
+var setupOffProperty = loadHelper('setup-off-property');
+/// #}}} @func setupOffProperty
+
+/// #{{{ @func setupOnProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setupOnProperty = loadHelper('setup-on-property');
+/// #}}} @func setupOnProperty
 
 /// #}}} @group OBJECT
 
@@ -456,7 +283,7 @@ var trimPathName = loadHelper('trim-pathname');
 
 /// #}}} @group PATH
 
-/// #{{{ @group SETUP
+/// #{{{ @group PROTOTYPE
 
 /// #{{{ @func setupPrototype
 /**
@@ -472,7 +299,7 @@ var trimPathName = loadHelper('trim-pathname');
 var setupPrototype = loadHelper('setup-prototype');
 /// #}}} @func setupPrototype
 
-/// #}}} @group SETUP
+/// #}}} @group PROTOTYPE
 
 /// #}}} @group HELPERS
 
@@ -484,7 +311,8 @@ var setupPrototype = loadHelper('setup-prototype');
 /// #{{{ @const DIR
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var DIR = freezeObject({
@@ -583,12 +411,7 @@ function Dir(path, parent) {
    * @public
    * @const {!Object}
    */
-  defineProperty(this, 'type', {
-    'value': DIR_TYPE_ID,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'type', DIR_TYPE_ID, true);
   /// #}}} @member type
 
   /// #{{{ @member name
@@ -596,12 +419,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'name', {
-    'value': NAME,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'name', NAME, true);
   /// #}}} @member name
 
   /// #{{{ @member tree
@@ -609,12 +427,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'tree', {
-    'value': TREE,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'tree', TREE, true);
   /// #}}} @member tree
 
   /// #{{{ @member path
@@ -622,12 +435,7 @@ function Dir(path, parent) {
    * @public
    * @const {string}
    */
-  defineProperty(this, 'path', {
-    'value': PATH,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'path', PATH, true);
   /// #}}} @member path
 
   /// #{{{ @member parent
@@ -635,12 +443,7 @@ function Dir(path, parent) {
    * @public
    * @const {?Dir}
    */
-  defineProperty(this, 'parent', {
-    'value': PARENT,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'parent', PARENT, true);
   /// #}}} @member parent
 
   /// #{{{ @member dirs
@@ -648,12 +451,7 @@ function Dir(path, parent) {
    * @public
    * @type {?Object<string, !Dir>}
    */
-  defineProperty(this, 'dirs', {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
+  setupOnProperty(this, 'dirs', null);
   /// #}}} @member dirs
 
   /// #{{{ @member files
@@ -661,12 +459,7 @@ function Dir(path, parent) {
    * @public
    * @type {?Object<string, !File>}
    */
-  defineProperty(this, 'files', {
-    'value': null,
-    'writable': true,
-    'enumerable': true,
-    'configurable': true
-  });
+  setupOnProperty(this, 'files', null);
   /// #}}} @member files
 
   /// #}}} @step set-members
