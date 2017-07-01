@@ -444,7 +444,7 @@ function File(path, parent) {
    * @public
    * @type {?Array<!Ins>}
    */
-  setupOnProperty(this, 'incls', null);
+  setupOnProperty(this, 'inserts', null);
   /// #}}} @member inserts
 
   /// #{{{ @member content
