@@ -31,6 +31,10 @@
     "classname": "location",
     "typename": "Loc"
   },
+  "manager": {
+    "classname": "manager",
+    "typename": "Mng"
+  },
   "include": {
     "classname": "include",
     "typename": "Incl"
