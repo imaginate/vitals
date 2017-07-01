@@ -1002,7 +1002,7 @@ function setPathNodeError(err, param, path) {
  * @public
  * @param {!Error} err
  * @param {string} func
- * @param {(!Blk|!Cond|!Def|!Incl|!Ins)} node
+ * @param {(!File|!Blk|!Cond|!Def|!Incl|!Ins)} node
  * @return {!Error}
  */
 function setPhaseError(err, func, node) {
@@ -1018,28 +1018,38 @@ function setPhaseError(err, func, node) {
     throw setTypeError(new TypeError, 'err', '!Error');
   if ( !isString(func) )
     throw setTypeError(new TypeError, 'func', 'string');
-  if ( !isCommandNode(node) )
-    throw setTypeError(new TypeError, 'node', '(!Blk|!Cond|!Def|!Incl|!Ins)');
+  if ( !isFileNode(node) && !isCommandNode(node) )
+    throw setTypeError(new TypeError, 'node',
+      '(!File|!Blk|!Cond|!Def|!Incl|!Ins)');
 
   name = node.type.TYPENAME + '.prototype.' + func;
-  line = 'open' in node
-    ? node.open
-    : node.line;
   msg = 'multiple calls to `' + name + '`\n';
-  msg += 'open' in node
-    ? '    node-defined-at:'
-    : '    node-opened-at:';
-  msg += '\n' +
-    '        line-text: `' + line.text + '`\n' +
-    '        actual-line-location:\n' +
-    '            linenum: `' + line.before.linenum + '`\n' +
-    '            file: `' + line.before.file.path + '`';
 
-  if (line.after)
+  if ( isFileNode(node) ) {
+    msg += '    file-path: `' + node.path + '`';
+  }
+  else {
+    if ('open' in node) {
+      line = node.open;
+      msg += '    node-defined-at:';
+    }
+    else {
+      line = node.line;
+      msg += '    node-opened-at:';
+    }
     msg += '\n' +
-      '        preparsed-line-location:\n' +
-      '            linenum: `' + line.after.linenum + '`\n' +
-      '            file: `' + line.after.file.path + '`';
+      '        line-text: `' + line.text + '`\n' +
+      '        actual-line-location:\n' +
+      '            linenum: `' + line.before.linenum + '`\n' +
+      '            file: `' + line.before.file.path + '`';
+
+    if (line.after) {
+      msg += '\n' +
+        '        preparsed-line-location:\n' +
+        '            linenum: `' + line.after.linenum + '`\n' +
+        '            file: `' + line.after.file.path + '`';
+    }
+  }
 
   return setError(err, msg);
 }
