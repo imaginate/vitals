@@ -190,12 +190,12 @@ function preparse() {
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-inserts-member
+  /// #{{{ @step verify-phase
 
   if (this.inserts)
     throw setPhaseError(new Error, 'preparse', this);
 
-  /// #}}} @step verify-inserts-member
+  /// #}}} @step verify-phase
 
   /// #{{{ @step set-member-refs
 

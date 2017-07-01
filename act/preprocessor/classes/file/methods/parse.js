@@ -290,12 +290,12 @@ function parse() {
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-content-member
+  /// #{{{ @step verify-phase
 
   if (this.content.length !== 0)
     throw setPhaseError(new Error, 'parse', this);
 
-  /// #}}} @step verify-content-member
+  /// #}}} @step verify-phase
 
   /// #{{{ @step set-member-refs
 
@@ -350,10 +350,10 @@ function parse() {
         cmd = new Cond(line, this);
         own = getOwnedCommand(this, cmd.key);
 
-        if (own)
+        if (!own)
+          setupOffProperty(conds, cmd.key, cmd, true);
+        else
           throw setOwnCmdError(new ReferenceError, own, line);
-
-        setupOffProperty(conds, cmd.key, cmd, true);
 
         /// #}}} @step parse-conditional-command
       }
@@ -363,10 +363,10 @@ function parse() {
         cmd = new Blk(line, this);
         own = getOwnedCommand(this, cmd.key);
 
-        if (own)
+        if (!own)
+          setupOffProperty(blks, cmd.key, cmd, true);
+        else
           throw setOwnCmdError(new ReferenceError, own, line);
-
-        setupOffProperty(blks, cmd.key, cmd, true);
 
         /// #}}} @step parse-block-command
       }

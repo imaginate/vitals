@@ -335,12 +335,12 @@ function load(textRows, i, len, file) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step verify-lines-member
+  /// #{{{ @step verify-phase
 
-  if (this.lines)
+  if (this.lines || this.close)
     throw setPhaseError(new Error, 'load', this);
 
-  /// #}}} @step verify-lines-member
+  /// #}}} @step verify-phase
 
   /// #{{{ @step set-member-refs
 

@@ -258,12 +258,12 @@ function load() {
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-lines-member
+  /// #{{{ @step verify-phase
 
   if (this.lines.length !== 0)
     throw setPhaseError(new Error, 'load', this);
 
-  /// #}}} @step verify-lines-member
+  /// #}}} @step verify-phase
 
   /// #{{{ @step set-member-refs
 
