@@ -77,6 +77,16 @@ var setEmptyError = setError.empty;
 var setFileError = setError.file;
 /// #}}} @func setFileError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setTypeError
 /**
  * @private
