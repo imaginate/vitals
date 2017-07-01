@@ -774,6 +774,17 @@ function isNanList(val) {
 }
 /// #}}} @func isNanList
 
+/// #{{{ @func isObjectList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isObjectList(val) {
+  return isArrayLike(val) && isListOf(val, isObject);
+}
+/// #}}} @func isObjectList
+
 /// #}}} @group JS-LIST-OF-METHODS
 
 /// #{{{ @group JS-HASH-MAP-OF-METHODS
@@ -1472,6 +1483,13 @@ var IS = {
   'nanList': isNanList,
   'nanlist': isNanList,
   'nans':    isNanList,
+
+  'objectList': isObjectList,
+  'objectlist': isObjectList,
+  'objects':    isObjectList,
+  'objList':    isObjectList,
+  'objlist':    isObjectList,
+  'objs':       isObjectList,
 
   'nullHashMap': isNullHashMap,
   'nullhashmap': isNullHashMap,
