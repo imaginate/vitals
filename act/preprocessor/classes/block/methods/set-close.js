@@ -76,16 +76,6 @@ var setCloseError = setError.close;
 var setCmdError = setError.cmd;
 /// #}}} @func setCmdError
 
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
 /// #{{{ @func setIdError
 /**
  * @private
@@ -95,18 +85,6 @@ var setEmptyError = setError.empty;
  */
 var setIdError = setError.id;
 /// #}}} @func setIdError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
 
 /// #{{{ @func setMatchError
 /**
@@ -129,37 +107,16 @@ var setMatchError = setError.match;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
-/// #{{{ @func setNoCloseError
+/// #{{{ @func setPhaseError
 /**
  * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
+ * @param {!Error} err
+ * @param {string} func
+ * @param {(!File|!Blk|!Cond|!Def|!Incl|!Ins)} node
+ * @return {!Error}
  */
-var setNoCloseError = setError.noClose;
-/// #}}} @func setNoCloseError
-
-/// #{{{ @func setOpenError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setOpenError = setError.open;
-/// #}}} @func setOpenError
-
-/// #{{{ @func setOwnCmdError
-/**
- * @private
- * @param {!ReferenceError} err
- * @param {(!Line|!Blk|!Cond|!Incl)} node1
- * @param {(!Line|!Blk|!Cond|!Incl)} node2
- * @param {(?Blk|?Cond)=} scope = `null`
- * @return {!ReferenceError}
- */
-var setOwnCmdError = setError.ownCmd;
-/// #}}} @func setOwnCmdError
+var setPhaseError = setError.phase;
+/// #}}} @func setPhaseError
 
 /// #{{{ @func setTagError
 /**
@@ -182,17 +139,6 @@ var setTagError = setError.tag;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
 
 /// #{{{ @group GET
@@ -205,16 +151,6 @@ var setWholeError = setError.whole;
  */
 var getIdComponent = loadHelper('get-id-component');
 /// #}}} @func getIdComponent
-
-/// #{{{ @func getOwnedCommand
-/**
- * @private
- * @param {(!File|!Blk|!Cond)} src
- * @param {(string|!Blk|!Cond|!Incl)} node
- * @return {(?Blk|?Cond|?Incl)}
- */
-var getOwnedCommand = loadHelper('get-owned-command');
-/// #}}} @func getOwnedCommand
 
 /// #{{{ @func getTagComponent
 /**
@@ -247,52 +183,6 @@ var hasBlock = loadHelper('has-block-command');
 var hasClose = loadHelper('has-close-command');
 /// #}}} @func hasClose
 
-/// #{{{ @func hasCommand
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasCommand = loadHelper('has-command');
-/// #}}} @func hasCommand
-
-/// #{{{ @func hasConditional
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasConditional = loadHelper('has-conditional-command');
-/// #}}} @func hasConditional
-
-/// #{{{ @func hasInclude
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasInclude = loadHelper('has-include-command');
-/// #}}} @func hasInclude
-
-/// #{{{ @func hasOpen
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var hasOpen = loadHelper('has-open-command');
-/// #}}} @func hasOpen
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
 /// #{{{ @func hasValidBlock
 /**
  * @private
@@ -306,60 +196,6 @@ var hasValidBlock = loadHelper('has-valid-block');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isArray
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isArray = IS.array;
-/// #}}} @func isArray
-
-/// #{{{ @func isBlkNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBlkNode = loadHelper('is-block-node');
-/// #}}} @func isBlkNode
-
-/// #{{{ @func isCondNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isCondNode = loadHelper('is-conditional-node');
-/// #}}} @func isCondNode
-
-/// #{{{ @func isFlagsNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFlagsNode = loadHelper('is-flags-node');
-/// #}}} @func isFlagsNode
-
-/// #{{{ @func isFileNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isFileNode = loadHelper('is-file-node');
-/// #}}} @func isFileNode
-
-/// #{{{ @func isInclNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isInclNode = loadHelper('is-include-node');
-/// #}}} @func isInclNode
-
 /// #{{{ @func isLineNode
 /**
  * @private
@@ -369,114 +205,21 @@ var isInclNode = loadHelper('is-include-node');
 var isLineNode = loadHelper('is-line-node');
 /// #}}} @func isLineNode
 
-/// #{{{ @func isNull
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNull = IS.nil;
-/// #}}} @func isNull
-
-/// #{{{ @func isNumber
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNumber = IS.number;
-/// #}}} @func isNumber
-
-/// #{{{ @func isObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isObject = IS.object;
-/// #}}} @func isObject
-
-/// #{{{ @func isUndefined
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isUndefined = IS.undefined;
-/// #}}} @func isUndefined
-
-/// #{{{ @func isWholeNumber
-/**
- * @private
- * @param {number} val
- * @return {boolean}
- */
-var isWholeNumber = IS.wholeNumber;
-/// #}}} @func isWholeNumber
-
 /// #}}} @group IS
 
 /// #{{{ @group OBJECT
 
-/// #{{{ @func capObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var capObject = loadHelper('cap-object');
-/// #}}} @func capObject
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
-
-/// #{{{ @func defineProperty
+/// #{{{ @func setupOffProperty
 /**
  * @private
  * @param {!Object} src
  * @param {string} key
- * @param {!Object} descriptor
+ * @param {*} value
+ * @param {boolean=} visible = `false`
  * @return {!Object}
  */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadHelper('freeze-object');
-/// #}}} @func freezeObject
-
-/// #{{{ @func lockObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var lockObject = loadHelper('lock-object');
-/// #}}} @func lockObject
-
-/// #{{{ @func sealObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var sealObject = loadHelper('seal-object');
-/// #}}} @func sealObject
+var setupOffProperty = loadHelper('setup-off-property');
+/// #}}} @func setupOffProperty
 
 /// #}}} @group OBJECT
 
@@ -509,10 +252,19 @@ function setClose(close) {
 
   /// #{{{ @step verify-parameters
 
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'close');
   if ( !isLineNode(close) )
     throw setTypeError(new TypeError, 'close', '!Line');
 
   /// #}}} @step verify-parameters
+
+  /// #{{{ @step verify-phase
+
+  if (this.close)
+    throw setPhaseError(new Error, 'setClose', this);
+
+  /// #}}} @step verify-phase
 
   /// #{{{ @step verify-syntax
 
@@ -542,12 +294,7 @@ function setClose(close) {
    * @public
    * @const {!Line}
    */
-  defineProperty(this, 'close', {
-    'value': close,
-    'writable': false,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOffProperty(this, 'close', close, true);
   /// #}}} @member close
 
   /// #}}} @step set-members
