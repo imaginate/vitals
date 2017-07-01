@@ -61,7 +61,7 @@ var IS = loadTaskHelper('is');
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadTaskHelper('set-error');
+var setError = require('./set-error-base.js');
 /// #}}} @func setError
 
 /// #{{{ @func setEmptyError
@@ -169,6 +169,18 @@ var isUndefined = IS.undefined;
 
 /// #}}} @group IS
 
+/// #{{{ @group MAKE
+
+/// #{{{ @func makeTypeIds
+/**
+ * @private
+ * @return {!Object<string, !TypeId>}
+ */
+var makeTypeIds = require('./make-type-ids.js');
+/// #}}} @func makeTypeIds
+
+/// #}}} @group MAKE
+
 /// #{{{ @group OBJECT
 
 /// #{{{ @func capObject
@@ -190,17 +202,6 @@ var capObject = loadTaskHelper('cap-object');
 var createObject = loadTaskHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadTaskHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -210,23 +211,6 @@ var defineProperty = loadTaskHelper('define-property');
  */
 var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
-
-/// #}}} @group OBJECT
-
-/// #{{{ @group PATH
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = loadTaskHelper('resolve-path');
-/// #}}} @func resolvePath
-
-/// #}}} @group PATH
-
-/// #{{{ @group SETUP
 
 /// #{{{ @func setupOffProperty
 /**
@@ -252,7 +236,20 @@ var setupOffProperty = require('./setup-off-property.js');
 var setupOnProperty = require('./setup-on-property.js');
 /// #}}} @func setupOnProperty
 
-/// #}}} @group SETUP
+/// #}}} @group OBJECT
+
+/// #{{{ @group PATH
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
+/// #}}} @group PATH
 
 /// #}}} @group HELPERS
 
@@ -264,7 +261,8 @@ var setupOnProperty = require('./setup-on-property.js');
 /// #{{{ @const DIR
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var DIR = freezeObject({
@@ -275,12 +273,14 @@ var DIR = freezeObject({
 /// #{{{ @const FILE
 /**
  * @private
- * @const {!Object<string, string>}
+ * @enum {string}
+ * @const
  * @struct
  */
 var FILE = freezeObject({
   CONSTRUCTORS: resolvePath(DIR.HELPERS, './load-constructors.js'),
-  METHODS: resolvePath(DIR.HELPERS, './load-methods.js')
+  METHODS: resolvePath(DIR.HELPERS, './load-methods.js'),
+  IDS: resolvePath(DIR.HELPERS, './setup-type-ids.js')
 });
 /// #}}} @const FILE
 
@@ -304,6 +304,8 @@ function setupClasses() {
   var loaded;
   /** @type {!Object<string, !Function>} */
   var cache;
+  /** @type {!Object<string, !TypeId>} */
+  var ids;
 
   /// #}}} @step declare-variables
 
@@ -312,7 +314,9 @@ function setupClasses() {
   if (CACHE_KEY in global) {
     cache = global[CACHE_KEY];
 
-    if ( !isObject(cache) || !isObject(cache.__LOADED) )
+    if ( !isObject(cache)
+        || !isObject(cache.__TYPE_IDS
+        || !isObject(cache.__LOADED) )
       throw setError(new Error,
         'invalid property value set for `global.' + CACHE_KEY + '`');
 
@@ -337,19 +341,26 @@ function setupClasses() {
 
   /// #}}} @step make-loaded-object
 
+  /// #{{{ @step make-type-ids-object
+
+  ids = makeTypeIds();
+
+  /// #}}} @step make-type-ids-object
+
   /// #{{{ @step make-cache-object
 
   cache = createObject(null);
+  setupOffProperty(cache, '__TYPE_IDS', ids);
   setupOffProperty(cache, '__LOADED', loaded);
   setupOffProperty(global, CACHE_KEY, cache, true);
-  require(FILE.CONSTRUCTORS);
+  require(FILE.CONSTRUCTORS)();
   freezeObject(cache);
 
   /// #}}} @step make-cache-object
 
   /// #{{{ @step load-class-methods
 
-  require(FILE.METHODS);
+  require(FILE.METHODS)();
 
   /// #}}} @step load-class-methods
 
