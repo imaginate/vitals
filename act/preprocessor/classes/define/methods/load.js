@@ -92,26 +92,6 @@ var Loc = loadClass('location');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setCloseError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setCloseError = setError.close;
-/// #}}} @func setCloseError
-
-/// #{{{ @func setCmdError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setCmdError = setError.cmd;
-/// #}}} @func setCmdError
-
 /// #{{{ @func setDefChildError
 /**
  * @private
@@ -122,26 +102,6 @@ var setCmdError = setError.cmd;
  */
 var setDefChildError = setError.defChild;
 /// #}}} @func setDefChildError
-
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
-/// #{{{ @func setIdError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setIdError = setError.id;
-/// #}}} @func setIdError
 
 /// #{{{ @func setIndexError
 /**
@@ -154,17 +114,6 @@ var setIdError = setError.id;
  */
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
-
-/// #{{{ @func setMatchError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} open
- * @param {!Line} close
- * @return {!SyntaxError}
- */
-var setMatchError = setError.match;
-/// #}}} @func setMatchError
 
 /// #{{{ @func setNoArgError
 /**
@@ -186,16 +135,6 @@ var setNoArgError = setError.noArg;
 var setNoCloseError = setError.noClose;
 /// #}}} @func setNoCloseError
 
-/// #{{{ @func setOpenError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setOpenError = setError.open;
-/// #}}} @func setOpenError
-
 /// #{{{ @func setPhaseError
 /**
  * @private
@@ -206,16 +145,6 @@ var setOpenError = setError.open;
  */
 var setPhaseError = setError.phase;
 /// #}}} @func setPhaseError
-
-/// #{{{ @func setTagError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {!Line} line
- * @return {!SyntaxError}
- */
-var setTagError = setError.tag;
-/// #}}} @func setTagError
 
 /// #{{{ @func setTypeError
 /**
@@ -228,40 +157,7 @@ var setTagError = setError.tag;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
-
-/// #{{{ @group GET
-
-/// #{{{ @func getIdComponent
-/**
- * @private
- * @param {(string|!Line)} text
- * @return {string}
- */
-var getIdComponent = loadHelper('get-id-component');
-/// #}}} @func getIdComponent
-
-/// #{{{ @func getTagComponent
-/**
- * @private
- * @param {(string|!Line)} text
- * @return {string}
- */
-var getTagComponent = loadHelper('get-tag-component');
-/// #}}} @func getTagComponent
-
-/// #}}} @group GET
 
 /// #{{{ @group HAS
 
@@ -273,15 +169,6 @@ var getTagComponent = loadHelper('get-tag-component');
  */
 var hasClose = loadHelper('has-close-command');
 /// #}}} @func hasClose
-
-/// #{{{ @func hasCommand
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasCommand = loadHelper('has-command');
-/// #}}} @func hasCommand
 
 /// #{{{ @func hasDefine
 /**
@@ -301,34 +188,6 @@ var hasDefine = loadHelper('has-define-command');
 var hasInsert = loadHelper('has-insert-command');
 /// #}}} @func hasInsert
 
-/// #{{{ @func hasOpen
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasOpen = loadHelper('has-open-command');
-/// #}}} @func hasOpen
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
-/// #{{{ @func hasValidDefine
-/**
- * @private
- * @param {string} text
- * @return {boolean}
- */
-var hasValidDefine = loadHelper('has-valid-define');
-/// #}}} @func hasValidDefine
-
 /// #}}} @group HAS
 
 /// #{{{ @group IS
@@ -342,24 +201,6 @@ var hasValidDefine = loadHelper('has-valid-define');
 var isArray = IS.array;
 /// #}}} @func isArray
 
-/// #{{{ @func isBlkNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBlkNode = loadHelper('is-block-node');
-/// #}}} @func isBlkNode
-
-/// #{{{ @func isCondNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isCondNode = loadHelper('is-conditional-node');
-/// #}}} @func isCondNode
-
 /// #{{{ @func isFileNode
 /**
  * @private
@@ -368,33 +209,6 @@ var isCondNode = loadHelper('is-conditional-node');
  */
 var isFileNode = loadHelper('is-file-node');
 /// #}}} @func isFileNode
-
-/// #{{{ @func isInclNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isInclNode = loadHelper('is-include-node');
-/// #}}} @func isInclNode
-
-/// #{{{ @func isLineNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isLineNode = loadHelper('is-line-node');
-/// #}}} @func isLineNode
-
-/// #{{{ @func isLocNode
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isLocNode = loadHelper('is-location-node');
-/// #}}} @func isLocNode
 
 /// #{{{ @func isNull
 /**
@@ -435,25 +249,6 @@ var isWholeNumber = IS.wholeNumber;
 /// #}}} @group IS
 
 /// #{{{ @group OBJECT
-
-/// #{{{ @func capObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var capObject = loadHelper('cap-object');
-/// #}}} @func capObject
-
-/// #{{{ @func createObject
-/**
- * @private
- * @param {?Object} proto
- * @return {!Object}
- */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
 
 /// #{{{ @func freezeObject
 /**
@@ -513,18 +308,30 @@ function load(textRows, i, len, file) {
 
   /// #{{{ @step verify-parameters
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'textRows');
+    case 1:
+      throw setNoArgError(new Error, 'i');
+    case 2:
+      throw setNoArgError(new Error, 'len');
+    case 3:
+      throw setNoArgError(new Error, 'file');
+  }
+
   if ( !isArray(textRows) )
     throw setTypeError(new TypeError, 'textRows', '!Array<string>');
   if ( !isNumber(i) )
     throw setTypeError(new TypeError, 'i', 'number');
-  if ( !isWholeNumber(i) || i < 0 )
-    throw setIndexError(new RangeError, 'i', i);
   if ( !isNumber(len) )
     throw setTypeError(new TypeError, 'len', 'number');
-  if ( !isWholeNumber(len) || len < 0 )
-    throw setIndexError(new RangeError, 'len', len);
   if ( !isFileNode(file) )
     throw setTypeError(new TypeError, 'file', '!File');
+
+  if ( !isWholeNumber(i) || i < 0 )
+    throw setIndexError(new RangeError, 'i', i);
+  if ( !isWholeNumber(len) || len < 0 )
+    throw setIndexError(new RangeError, 'len', len);
 
   /// #}}} @step verify-parameters
 
