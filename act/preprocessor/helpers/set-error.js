@@ -259,40 +259,7 @@ var isUndefined = IS.undefined;
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-function setError(err, msg) {
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err',
-      '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)');
-  if ( !isString(msg) )
-    throw setTypeError(new TypeError, 'msg', 'string');
-
-  switch (err.name) {
-
-    case 'RangeError':
-      err.range = true;
-      break;
-
-    case 'ReferenceError':
-      err.reference = true;
-      break;
-
-    case 'SyntaxError':
-      err.syntax = true;
-      break;
-
-    case 'TypeError':
-      err.type = true;
-      break;
-  }
-
-  err.message = msg;
-  err.msg = msg;
-
-  err.jspp = true;
-
-  return err;
-}
+var setError = require('./set-error-base.js');
 /// #}}} @func setError
 
 /// #{{{ @func setCloseError
@@ -439,23 +406,7 @@ function setDefChildError(err, child, parent) {
  * @param {string} path
  * @return {!Error}
  */
-function setDirError(err, param, path) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
-
-  msg = 'invalid readable directory path for `' + param + '`\n' +
-    '    received-path: `' + path + '`';
-
-  return setError(err, msg);
-}
+var setDirError = setError.dir;
 /// #}}} @func setDirError
 
 /// #{{{ @func setEmptyError
@@ -465,20 +416,7 @@ function setDirError(err, param, path) {
  * @param {string} param
  * @return {!Error}
  */
-function setEmptyError(err, param) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-
-  msg = 'invalid empty `string` for `' + param + '`';
-
-  return setError(err, msg);
-}
+var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
 /// #{{{ @func setExtError
@@ -490,29 +428,7 @@ function setEmptyError(err, param) {
  * @param {(string|!Array<string>)} exts
  * @return {!RangeError}
  */
-function setExtError(err, param, path, exts) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
-
-  if ( isArray(exts) && isStringList(exts) )
-    exts = exts.join('", "');
-  else if ( !isString(exts) )
-    throw setTypeError(new TypeError, 'exts', '(string|!Array<string>)');
-
-  msg = 'invalid file extension for `' + param + '`\n' +
-    '    valid-extensions: `"' + exts + '"`\n' +
-    '    received-path: `' + path + '`';
-
-  return setError(err, msg);
-}
+var setExtError = setError.ext;
 /// #}}} @func setExtError
 
 /// #{{{ @func setFileError
@@ -523,23 +439,7 @@ function setExtError(err, param, path, exts) {
  * @param {string} path
  * @return {!Error}
  */
-function setFileError(err, param, path) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
-
-  msg = 'invalid readable file path for `' + param + '`\n' +
-    '    received-path: `' + path + '`';
-
-  return setError(err, msg);
-}
+var setFileError = setError.file;
 /// #}}} @func setFileError
 
 /// #{{{ @func setIdError
@@ -629,35 +529,7 @@ function setInclError(err, incl1, incl2) {
  * @param {number=} min = `0`
  * @return {!RangeError}
  */
-function setIndexError(err, param, index, min) {
-
-  /** @type {string} */
-  var valid;
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(index) )
-    throw setTypeError(new TypeError, 'index', 'number');
-
-  if ( isUndefined(min) )
-    min = 0;
-  else if ( !isNumber(min) )
-    throw setTypeError(new TypeError, 'min', 'number=');
-  else if ( !isWholeNumber(min) )
-    throw setWholeError(new RangeError, 'min', min);
-
-  valid = 'isWholeNumber(' + param + ') && ' + param + ' >= ' + min;
-
-  msg = 'invalid `number` for `' + param + '`\n' +
-    '    valid-range-test: `' + valid + '`\n' +
-    '    value-received: `' + index + '`';
-
-  return setError(err, msg);
-}
+var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
 /// #{{{ @func setLocError
@@ -754,20 +626,7 @@ function setMatchError(err, open, close) {
  * @param {string} constructor
  * @return {!SyntaxError}
  */
-function setNewError(err, constructor) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!SyntaxError');
-  if ( !isString(constructor) )
-    throw setTypeError(new TypeError, 'constructor', 'string');
-
-  msg = 'missing `new` keyword for `' + constructor + '` call';
-
-  return setError(err, msg);
-}
+var setNewError = setError.new_;
 /// #}}} @func setNewError
 
 /// #{{{ @func setNoArgError
@@ -777,20 +636,7 @@ function setNewError(err, constructor) {
  * @param {string} param
  * @return {!Error}
  */
-function setNoArgError(err, param) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-
-  msg = 'no required `' + param + '` parameter defined for `function` call';
-
-  return setError(err, msg);
-}
+var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
 /// #{{{ @func setNoCloseError
@@ -1207,23 +1053,7 @@ function setPhaseError(err, func, node) {
  * @param {string} types
  * @return {!TypeError}
  */
-function setRetError(err, method, types) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!TypeError');
-  if ( !isString(method) )
-    throw setTypeError(new TypeError, 'method', 'string');
-  if ( !isString(types) )
-    throw setTypeError(new TypeError, 'types', 'string');
-
-  msg = 'invalid data type returned by `' + method + '`\n' +
-    '    valid-types: `' + types + '`';
-
-  return setError(err, msg);
-}
+var setRetError = setError.ret;
 /// #}}} @func setRetError
 
 /// #{{{ @func setStateError
@@ -1398,23 +1228,7 @@ function setTreeError(err, incl1, incl2) {
  * @param {string} types
  * @return {!TypeError}
  */
-function setTypeError(err, param, types) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!TypeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(types) )
-    throw setTypeError(new TypeError, 'types', 'string');
-
-  msg = 'invalid `' + param + '` data type\n' +
-    '    valid-types: `' + types + '`';
-
-  return setError(err, msg);
-}
+var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
 /// #{{{ @func setWholeError
@@ -1425,24 +1239,7 @@ function setTypeError(err, param, types) {
  * @param {number} value
  * @return {!RangeError}
  */
-function setWholeError(err, param, value) {
-
-  /** @type {string} */
-  var msg;
-
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(value) )
-    throw setTypeError(new TypeError, 'value', 'number');
-
-  msg = 'invalid `number` for `' + param + '`\n' +
-    '    valid-range-test: `isWholeNumber(' + param + ')`\n' +
-    '    value-received: `' + value + '`';
-
-  return setError(err, msg);
-}
+var setWholeError = setError.whole;
 /// #}}} @func setWholeError
 
 /// #}}} @group METHODS
@@ -1456,17 +1253,10 @@ setError.close = setCloseError;
 setError.cmd = setCmdError;
 setError.def = setDefError;
 setError.defChild = setDefChildError;
-setError.dir = setDirError;
-setError.empty = setEmptyError;
-setError.ext = setExtError;
-setError.file = setFileError;
 setError.id = setIdError;
 setError.incl = setInclError;
-setError.index = setIndexError;
 setError.loc = setLocError;
 setError.match = setMatchError;
-setError.new_ = setNewError;
-setError.noArg = setNoArgError;
 setError.noClose = setNoCloseError;
 setError.noDef = setNoDefError;
 setError.noOpen = setNoOpenError;
@@ -1477,14 +1267,11 @@ setError.ownDef = setOwnDefError;
 setError.pathComp = setPathCompError;
 setError.pathNode = setPathNodeError;
 setError.phase = setPhaseError;
-setError.ret = setRetError;
 setError.state = setStateError;
 setError.stateId = setStateIdError;
 setError.stateTag = setStateTagError;
 setError.tag = setTagError;
 setError.tree = setTreeError;
-setError.type = setTypeError;
-setError.whole = setWholeError;
 module.exports = setError;
 
 /// #}}} @group EXPORTS
