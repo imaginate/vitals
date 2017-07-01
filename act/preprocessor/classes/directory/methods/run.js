@@ -305,6 +305,18 @@ var isUndefined = IS.undefined;
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
+/// #{{{ @func trimDirectory
+/**
+ * @private
+ * @param {string} src
+ *   The file path to trim from.
+ * @param {string} path
+ *   The directory path to trim.
+ * @return {string}
+ */
+var trimDirectory = loadHelper('trim-directory');
+/// #}}} @func trimDirectory
+
 /// #{{{ @func trimPathName
 /**
  * @private
@@ -424,6 +436,7 @@ function run(src, dest, state, alter) {
 
   /// #{{{ @step get-src-node
 
+  src = trimDirectory(src, this.path);
   node = getPathNode(this, src);
 
   /// #}}} @step get-src-node
