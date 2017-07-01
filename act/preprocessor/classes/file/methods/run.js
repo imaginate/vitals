@@ -68,7 +68,7 @@ var Flags = loadClass('flags');
 /// #{{{ @func Mng
 /**
  * @private
- * @param {!File} file
+ * @param {(!File|!Mng)} node
  * @constructor
  * @struct
  */

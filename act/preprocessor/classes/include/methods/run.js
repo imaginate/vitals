@@ -22,6 +22,15 @@
 var loadHelper = require('./.load-helper.js');
 /// #}}} @func loadHelper
 
+/// #{{{ @func loadClass
+/**
+ * @private
+ * @param {string} name
+ * @return {!Function}
+ */
+var loadClass = loadHelper('load-class');
+/// #}}} @func loadClass
+
 /// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
@@ -43,6 +52,20 @@ var IS = loadHelper('is');
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group CONSTRUCTORS
+
+/// #{{{ @func Mng
+/**
+ * @private
+ * @param {(!File|!Mng)} node
+ * @constructor
+ * @struct
+ */
+var Mng = loadClass('manager');
+/// #}}} @func Mng
+
+/// #}}} @group CONSTRUCTORS
 
 /// #{{{ @group ERROR
 
@@ -194,6 +217,7 @@ function run(flags, mng) {
 
   /// #{{{ @step update-manager
 
+  mng = new Mng(mng);
   mng.addFile(tree, this);
   mng.addNode(this);
 

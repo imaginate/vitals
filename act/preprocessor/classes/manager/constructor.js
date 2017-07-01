@@ -118,6 +118,15 @@ var isFileNode = loadHelper('is-file-node');
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
 
+/// #{{{ @func isMngNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isMngNode = loadHelper('is-manager-node');
+/// #}}} @func isMngNode
+
 /// #}}} @group IS
 
 /// #{{{ @group MAKE
@@ -168,17 +177,6 @@ var capObject = loadHelper('cap-object');
 var createObject = loadHelper('create-object');
 /// #}}} @func createObject
 
-/// #{{{ @func defineProperty
-/**
- * @private
- * @param {!Object} src
- * @param {string} key
- * @param {!Object} descriptor
- * @return {!Object}
- */
-var defineProperty = loadHelper('define-property');
-/// #}}} @func defineProperty
-
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -200,6 +198,18 @@ var freezeObject = loadHelper('freeze-object');
  */
 var setupOffProperty = loadHelper('setup-off-property');
 /// #}}} @func setupOffProperty
+
+/// #{{{ @func setupOnProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} value
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setupOnProperty = loadHelper('setup-on-property');
+/// #}}} @func setupOnProperty
 
 /// #}}} @group OBJECT
 
@@ -264,11 +274,11 @@ var DIR = freezeObject({
 /// #{{{ @func Mng
 /**
  * @public
- * @param {!File} file
+ * @param {(!File|!Mng)} node
  * @constructor
  * @struct
  */
-function Mng(file) {
+function Mng(node) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -280,21 +290,53 @@ function Mng(file) {
   /// #{{{ @step verify-parameters
 
   if (!arguments.length)
-    throw setNoArgError(new Error, 'file');
-  if ( !isFileNode(file) )
-    throw setTypeError(new TypeError, 'file', '!File');
+    throw setNoArgError(new Error, 'node');
+  if ( !isMngNode(node) && !isFileNode(node) )
+    throw setTypeError(new TypeError, 'node', '(!File|!Mng)');
 
   /// #}}} @step verify-parameters
 
   /// #{{{ @step set-constants
+
+  /// #{{{ @const MNG
+  /**
+   * @private
+   * @const {?Mng}
+   */
+  var MNG = isMngNode(node)
+    ? node
+    : null;
+  /// #}}} @const MNG
 
   /// #{{{ @const FILE
   /**
    * @private
    * @const {!File}
    */
-  var FILE = file;
+  var FILE = !!MNG
+    ? MNG.file
+    : file;
   /// #}}} @const FILE
+
+  /// #{{{ @const FILES
+  /**
+   * @private
+   * @const {!Object<string, ?Incl>}
+   */
+  var FILES = !!MNG
+    ? MNG.files
+    : makeFiles(FILE);
+  /// #}}} @const FILES
+
+  /// #{{{ @const NODES
+  /**
+   * @private
+   * @const {!Object<string, ?Incl>}
+   */
+  var NODES = !!MNG
+    ? MNG.nodes
+    : createObject(null);
+  /// #}}} @const NODES
 
   /// #}}} @step set-constants
 
@@ -319,15 +361,10 @@ function Mng(file) {
   /// #{{{ @member files
   /**
    * @public
-   * @const {!Object<string, ?Incl>}
+   * @type {!Object<string, ?Incl>}
    * @dict
    */
-  defineProperty(this, 'files', {
-    'value': makeFiles(FILE),
-    'writable': true,
-    'enumerable': true,
-    'configurable': false
-  });
+  setupOnProperty(this, 'files', FILES);
   /// #}}} @member files
 
   /// #{{{ @member nodes
@@ -336,7 +373,7 @@ function Mng(file) {
    * @const {!Object<string, !Incl>}
    * @dict
    */
-  setupOffProperty(this, 'nodes', createObject(null), true);
+  setupOffProperty(this, 'nodes', NODES, true);
   /// #}}} @member nodes
 
   /// #}}} @step set-members

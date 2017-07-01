@@ -249,10 +249,24 @@ function addFile(tree, incl) {
 
   files = cloneFiles(this.files);
   setupOffProperty(files, tree, incl, true);
-  freezeObject(files);
-  this.files = files;
+
+  /// #{{{ @member files
+  /**
+   * @public
+   * @const {!Object<string, ?Incl>}
+   * @dict
+   */
+  setupOffProperty(this, 'files', files, true);
+  /// #}}} @member files
 
   /// #}}} @step update-files
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(files);
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
 
   /// #{{{ @step return-instance
 
