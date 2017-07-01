@@ -409,7 +409,7 @@ function Dir(path, parent) {
   /// #{{{ @member type
   /**
    * @public
-   * @const {!Object}
+   * @const {!TypeId}
    */
   setupOffProperty(this, 'type', DIR_TYPE_ID, true);
   /// #}}} @member type

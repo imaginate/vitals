@@ -362,7 +362,7 @@ function File(path, parent) {
   /// #{{{ @member type
   /**
    * @public
-   * @const {!Object}
+   * @const {!TypeId}
    */
   setupOffProperty(this, 'type', FILE_TYPE_ID, true);
   /// #}}} @member type

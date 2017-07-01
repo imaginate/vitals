@@ -496,7 +496,7 @@ function Blk(open, file, parent) {
   /// #{{{ @member type
   /**
    * @public
-   * @const {!Object}
+   * @const {!TypeId}
    */
   setupOffProperty(this, 'type', BLK_TYPE_ID, true);
   /// #}}} @member type
