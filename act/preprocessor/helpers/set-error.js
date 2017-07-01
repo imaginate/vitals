@@ -117,6 +117,15 @@ var isBoolean = IS.boolean;
 var isDirNode = require('./is-directory-node.js');
 /// #}}} @func isDirNode
 
+/// #{{{ @func isCommandNode
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isCommandNode = require('./is-command-node.js');
+/// #}}} @func isCommandNode
+
 /// #{{{ @func isCondNode
 /**
  * @private
@@ -1142,6 +1151,54 @@ function setPathNodeError(err, param, path) {
 }
 /// #}}} @func setPathNodeError
 
+/// #{{{ @func setPhaseError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} func
+ * @param {(!Blk|!Cond|!Def|!Incl|!Ins)} node
+ * @return {!Error}
+ */
+function setPhaseError(err, func, node) {
+
+  /** @type {!Line} */
+  var line;
+  /** @type {string} */
+  var name;
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) )
+    throw setTypeError(new TypeError, 'err', '!Error');
+  if ( !isString(func) )
+    throw setTypeError(new TypeError, 'func', 'string');
+  if ( !isCommandNode(node) )
+    throw setTypeError(new TypeError, 'node', '(!Blk|!Cond|!Def|!Incl|!Ins)');
+
+  name = node.type.TYPENAME + '.prototype.' + func;
+  line = 'open' in node
+    ? node.open
+    : node.line;
+  msg = 'multiple calls to `' + name + '`\n';
+  msg += 'open' in node
+    ? '    node-defined-at:'
+    : '    node-opened-at:';
+  msg += '\n' +
+    '        line-text: `' + line.text + '`\n' +
+    '        actual-line-location:\n' +
+    '            linenum: `' + line.before.linenum + '`\n' +
+    '            file: `' + line.before.file.path + '`';
+
+  if (line.after)
+    msg += '\n' +
+      '        preparsed-line-location:\n' +
+      '            linenum: `' + line.after.linenum + '`\n' +
+      '            file: `' + line.after.file.path + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setPhaseError
+
 /// #{{{ @func setRetError
 /**
  * @public
@@ -1419,6 +1476,7 @@ setError.ownCmd = setOwnCmdError;
 setError.ownDef = setOwnDefError;
 setError.pathComp = setPathCompError;
 setError.pathNode = setPathNodeError;
+setError.phase = setPhaseError;
 setError.ret = setRetError;
 setError.state = setStateError;
 setError.stateId = setStateIdError;
