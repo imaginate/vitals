@@ -21,32 +21,5 @@
     "mocha": "3.x",
     "log-ocd": ">1.0.0-beta",
     "node-act": "1.x"
-  },
-  "keywords": [
-    "imaginate",
-    "javascript vitals",
-    "node vitals",
-    "js vitals",
-    "vitals js",
-    "vitalsjs",
-    "vitals",
-    "javascript",
-    "utilities",
-    "utility",
-    "dom utilities",
-    "dom utility",
-    "functional utilities",
-    "functional utility",
-    "javascript utilities",
-    "javascript utility",
-    "nodejs utilities",
-    "nodejs utility",
-    "node utilities",
-    "node utility",
-    "js utilities",
-    "js utility",
-    "js utility library",
-    "utility library",
-    "js library"
-  ]
+  }
 }
