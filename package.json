@@ -1,8 +1,8 @@
 {
   "name": "node-vitals",
   "version": "5.0.0",
-  "description": "Do more with less. A simple, high-performing, functional JavaScript library.",
-  "main": "node-vitals.js",
+  "description": "A fully functional JavaScript everything.",
+  "main": "dist/node/vitals.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/imaginate/vitals.git"
@@ -15,7 +15,7 @@
   "bugs": {
     "url": "https://github.com/imaginate/vitals/issues"
   },
-  "homepage": "http://www.algorithmiv.com/vitals",
+  "homepage": "https://github.com/imaginate/vitals",
   "devDependencies": {
     "chalk": "1.x",
     "mocha": "3.x",
