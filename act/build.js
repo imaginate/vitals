@@ -66,15 +66,6 @@ var loadHelper = require('./helpers/load-helper.js');
 var loadDocsHelper = require('./docs/helpers/load-helper.js');
 /// #}}} @func loadDocsHelper
 
-/// #{{{ @func loadJsppHelper
-/**
- * @private
- * @param {string} name
- * @return {(!Object|!Function)}
- */
-var loadJsppHelper = require('./preprocessor/helpers/load-helper.js');
-/// #}}} @func loadJsppHelper
-
 /// #}}} @group LOADERS
 
 /// #{{{ @group CONSTANTS
@@ -121,23 +112,39 @@ var STATE = CONFIG.state;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @group JSPP
+/// #{{{ @group MOLD
 
-/// #{{{ @func initPreprocessor
+/// #{{{ @func newMoldProgram
 /**
+ * @description
+ *   This is a shortcut to call the `Prg` constructor without the `new`
+ *   keyword. The following helpers are appended (as a property) to the public
+ *   `Prg` constructor, the `Prg` prototype, and the `newPrg` helper:
+ *   - **Constructors**
+ *     - `Log`
+ *     - `Prg` or `Program`
+ *   - **Functions**
+ *     - `isLog`
+ *     - `isPrg` or `isProgram`
+ *     - `newLog`
+ *     - `newPrg` or `newProgram`
+ *   - **Strings**
+ *     - `VERSION`
  * @private
  * @param {string} src
  *   The file-system path to the root directory containing the source code you
  *   want to preprocess.
- * @param {(?function(string))=} log = `console.log || null`
- *   The `function` to use when logging progress indicators. If it is `null`,
- *   no progress messages are logged.
- * @return {!Dir}
+ * @param {?Log=} log = `new Log()`
+ *   The #log parameter allows you to disable logging by setting it to `null`
+ *   or to provide your own `log` or `write` methods for *Mold* to use. The
+ *   defaults are `console.log` and `process.stdout.write`. Use the provided
+ *   `Log` constructor to wrap your customizations into a compatible format.
+ * @return {!Prg}
  */
-var initPreprocessor = require('./preprocessor/main.js');
-/// #}}} @func initPreprocessor
+var newMoldProgram = require('mold');
+/// #}}} @func newMoldProgram
 
-/// #}}} @group JSPP
+/// #}}} @group MOLD
 
 /// #{{{ @group DOCS
 
@@ -428,14 +435,14 @@ var isArray = IS.array;
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
-/// #{{{ @func isDirNode
+/// #{{{ @func isMoldProgram
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isDirNode = loadJsppHelper('is-directory-node');
-/// #}}} @func isDirNode
+var isMoldProgram = newMoldProgram.isProgram;
+/// #}}} @func isMoldProgram
 
 /// #{{{ @func isError
 /**
@@ -509,15 +516,6 @@ var isObjectHashMap = IS.objectHashMap;
 var isObjectList = IS.objectList;
 /// #}}} @func isObjectList
 
-/// #{{{ @func isStateObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isStateObject = loadJsppHelper('is-state-object');
-/// #}}} @func isStateObject
-
 /// #{{{ @func isString
 /**
  * @private
@@ -533,7 +531,7 @@ var isString = IS.string;
  * @param {*} val
  * @return {boolean}
  */
-var isUndefined = IS.undefined;
+var isUndefined = IS.void;
 /// #}}} @func isUndefined
 
 /// #}}} @group IS
@@ -574,7 +572,7 @@ var mergeObject = loadHelper('merge-object');
 /// #{{{ @func resolvePath
 /**
  * @private
- * @param {(!Array<string>|...string)=} path
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
  * @return {string}
  */
 var resolvePath = loadHelper('resolve-path');
@@ -623,7 +621,7 @@ var DEST = resolvePath(REPO, CONFIG.dest);
 /// #{{{ @func buildBranches
 /**
  * @private
- * @param {!Dir} dir
+ * @param {!Prg} prg
  * @param {string} key
  * @param {!Object<string, !Object>} branches
  * @param {string} src
@@ -632,7 +630,7 @@ var DEST = resolvePath(REPO, CONFIG.dest);
  * @param {(?function(string): string)=} alter
  * @return {void}
  */
-function buildBranches(dir, key, branches, src, dest, state, alter) {
+function buildBranches(prg, key, branches, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -643,8 +641,8 @@ function buildBranches(dir, key, branches, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isDirNode(dir) )
-    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isMoldProgram(prg) )
+    throw setTypeError(new TypeError, 'prg', '!Prg');
   if ( !isString(key) )
     throw setTypeError(new TypeError, 'key', 'string');
   if ( !isObject(branches) || !isObjectHashMap(branches) )
@@ -659,7 +657,7 @@ function buildBranches(dir, key, branches, src, dest, state, alter) {
     throw setTypeError(new TypeError, 'dest', 'string');
   if (!dest)
     throw setEmptyError(new Error, 'dest');
-  if ( !isStateObject(state) )
+  if ( !isObject(state) )
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
   if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
@@ -693,7 +691,7 @@ function buildBranches(dir, key, branches, src, dest, state, alter) {
       newkey = !!KEY
         ? KEY + '.' + key
         : key;
-      buildBranch(dir, newkey, branches[key], src, dest, state, alter);
+      buildBranch(prg, newkey, branches[key], src, dest, state, alter);
     }
   }
 
@@ -704,7 +702,7 @@ function buildBranches(dir, key, branches, src, dest, state, alter) {
 /// #{{{ @func buildBranch
 /**
  * @private
- * @param {!Dir} dir
+ * @param {!Prg} prg
  * @param {string} key
  * @param {!Object} branch
  * @param {string} src
@@ -713,12 +711,12 @@ function buildBranches(dir, key, branches, src, dest, state, alter) {
  * @param {(?function(string): string)=} alter
  * @return {void}
  */
-function buildBranch(dir, key, branch, src, dest, state, alter) {
+function buildBranch(prg, key, branch, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isDirNode(dir) )
-    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isMoldProgram(prg) )
+    throw setTypeError(new TypeError, 'prg', '!Prg');
   if ( !isString(key) )
     throw setTypeError(new TypeError, 'key', 'string');
   if ( !isObject(branch) )
@@ -733,7 +731,7 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
     throw setTypeError(new TypeError, 'dest', 'string');
   if (!dest)
     throw setEmptyError(new Error, 'dest');
-  if ( !isStateObject(state) )
+  if ( !isObject(state) )
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
   if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
@@ -797,7 +795,7 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
 
   if ( hasOwnProperty(branch, 'state') ) {
 
-    if ( !isStateObject(branch.state) )
+    if ( !isObject(branch.state) )
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
 
@@ -809,14 +807,14 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
   /// #{{{ @step build-files
 
   if ( hasOwnProperty(branch, 'files') )
-    buildFiles(dir, key, branch.files, src, dest, state, alter);
+    buildFiles(prg, key, branch.files, src, dest, state, alter);
 
   /// #}}} @step build-files
 
   /// #{{{ @step build-branches
 
   if ( hasOwnProperty(branch, 'branches') )
-    buildBranches(dir, key, branch.branches, src, dest, state, alter);
+    buildBranches(prg, key, branch.branches, src, dest, state, alter);
 
   /// #}}} @step build-branches
 }
@@ -825,7 +823,7 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
 /// #{{{ @func buildFiles
 /**
  * @private
- * @param {!Dir} dir
+ * @param {!Prg} prg
  * @param {string} key
  * @param {!Array<!Object>} files
  * @param {string} src
@@ -834,7 +832,7 @@ function buildBranch(dir, key, branch, src, dest, state, alter) {
  * @param {(?function(string): string)=} alter
  * @return {void}
  */
-function buildFiles(dir, key, files, src, dest, state, alter) {
+function buildFiles(prg, key, files, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -849,8 +847,8 @@ function buildFiles(dir, key, files, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isDirNode(dir) )
-    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isMoldProgram(prg) )
+    throw setTypeError(new TypeError, 'prg', '!Prg');
   if ( !isString(key) )
     throw setTypeError(new TypeError, 'key', 'string');
   if ( !isArray(files) || !isObjectList(files) )
@@ -865,7 +863,7 @@ function buildFiles(dir, key, files, src, dest, state, alter) {
     throw setTypeError(new TypeError, 'dest', 'string');
   if (!dest)
     throw setEmptyError(new Error, 'dest');
-  if ( !isStateObject(state) )
+  if ( !isObject(state) )
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
   if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
@@ -904,7 +902,7 @@ function buildFiles(dir, key, files, src, dest, state, alter) {
       throw setBuildTypeError(new TypeError, KEY, key, '!Object');
 
     key = KEY + '.' + key;
-    buildFile(dir, key, file, src, dest, state, alter);
+    buildFile(prg, key, file, src, dest, state, alter);
   }
 
   /// #}}} @step build-each-file
@@ -914,7 +912,7 @@ function buildFiles(dir, key, files, src, dest, state, alter) {
 /// #{{{ @func buildFile
 /**
  * @private
- * @param {!Dir} dir
+ * @param {!Prg} prg
  * @param {string} key
  * @param {!Object} file
  * @param {string} src
@@ -923,7 +921,7 @@ function buildFiles(dir, key, files, src, dest, state, alter) {
  * @param {(?function(string): string)=} alter
  * @return {string}
  */
-function buildFile(dir, key, file, src, dest, state, alter) {
+function buildFile(prg, key, file, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -934,8 +932,8 @@ function buildFile(dir, key, file, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isDirNode(dir) )
-    throw setTypeError(new TypeError, 'dir', '!Dir');
+  if ( !isMoldProgram(prg) )
+    throw setTypeError(new TypeError, 'prg', '!Prg');
   if ( !isString(key) )
     throw setTypeError(new TypeError, 'key', 'string');
   if ( !isObject(file) )
@@ -950,7 +948,7 @@ function buildFile(dir, key, file, src, dest, state, alter) {
     throw setTypeError(new TypeError, 'dest', 'string');
   if (!dest)
     throw setEmptyError(new Error, 'dest');
-  if ( !isStateObject(state) )
+  if ( !isObject(state) )
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
   if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
@@ -1000,7 +998,7 @@ function buildFile(dir, key, file, src, dest, state, alter) {
 
   if ( hasOwnProperty(file, 'state') ) {
 
-    if ( !isStateObject(file.state) )
+    if ( !isObject(file.state) )
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
 
@@ -1012,8 +1010,8 @@ function buildFile(dir, key, file, src, dest, state, alter) {
   /// #{{{ @step build-file
 
   result = alter
-    ? dir.run(src, dest, state, alter)
-    : dir.run(src, dest, state);
+    ? prg.process(src, dest, state, alter)
+    : prg.process(src, dest, state);
 
   /// #}}} @step build-file
 
@@ -1043,35 +1041,35 @@ function buildAll() {
 
   /** @type {!Object} */
   var branch;
-  /** @type {!Dir} */
-  var dir;
+  /** @type {!Prg} */
+  var prg;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step preprocess-source
 
-  dir = initPreprocessor(SRC);
+  prg = newMoldProgram(SRC);
 
   /// #}}} @step preprocess-source
 
   /// #{{{ @step build-browser-dist
 
   branch = CONFIG.branches.browser;
-  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-browser-dist
 
   /// #{{{ @step build-node-dist
 
   branch = CONFIG.branches.node;
-  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-node-dist
 
   /// #{{{ @step build-docs
 
   branch = CONFIG.branches.docs;
-  buildBranch(dir, 'docs', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'docs', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-docs
 }
@@ -1088,28 +1086,28 @@ function buildDist() {
 
   /** @type {!Object} */
   var branch;
-  /** @type {!Dir} */
-  var dir;
+  /** @type {!Prg} */
+  var prg;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step preprocess-source
 
-  dir = initPreprocessor(SRC);
+  prg = newMoldProgram(SRC);
 
   /// #}}} @step preprocess-source
 
   /// #{{{ @step build-browser-dist
 
   branch = CONFIG.branches.browser;
-  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-browser-dist
 
   /// #{{{ @step build-node-dist
 
   branch = CONFIG.branches.node;
-  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-node-dist
 }
@@ -1126,21 +1124,21 @@ function buildBrowser() {
 
   /** @type {!Object} */
   var branch;
-  /** @type {!Dir} */
-  var dir;
+  /** @type {!Prg} */
+  var prg;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step preprocess-source
 
-  dir = initPreprocessor(SRC);
+  prg = newMoldProgram(SRC);
 
   /// #}}} @step preprocess-source
 
   /// #{{{ @step build-browser-dist
 
   branch = CONFIG.branches.browser;
-  buildBranch(dir, 'browser', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-browser-dist
 }
@@ -1157,21 +1155,21 @@ function buildNode() {
 
   /** @type {!Object} */
   var branch;
-  /** @type {!Dir} */
-  var dir;
+  /** @type {!Prg} */
+  var prg;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step preprocess-source
 
-  dir = initPreprocessor(SRC);
+  prg = newMoldProgram(SRC);
 
   /// #}}} @step preprocess-source
 
   /// #{{{ @step build-node-dist
 
   branch = CONFIG.branches.node;
-  buildBranch(dir, 'node', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-node-dist
 }
@@ -1188,21 +1186,21 @@ function buildDocs() {
 
   /** @type {!Object} */
   var branch;
-  /** @type {!Dir} */
-  var dir;
+  /** @type {!Prg} */
+  var prg;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step preprocess-source
 
-  dir = initPreprocessor(SRC);
+  prg = newMoldProgram(SRC);
 
   /// #}}} @step preprocess-source
 
   /// #{{{ @step build-docs
 
   branch = CONFIG.branches.docs;
-  buildBranch(dir, 'docs', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'docs', branch, SRC, DEST, STATE);
 
   /// #}}} @step build-docs
 }
