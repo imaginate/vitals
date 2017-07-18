@@ -40,6 +40,7 @@ exports['methods'] = {
     'method': buildDocs
   }
 };
+exports['done'] = false;
 
 /// #}}} @group EXPORTS
 
