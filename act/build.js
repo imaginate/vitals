@@ -204,6 +204,7 @@ function makeCompile(srcFile) {
       throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
     }
 
+    srcCode = srcCode.replace(/\n\n\n+/g, '\n\n');
     srcCode = trimComments(srcFile, srcCode);
     flags = cloneObject(FLAGS);
     flags.jsCode = [
