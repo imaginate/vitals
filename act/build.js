@@ -82,6 +82,14 @@ var loadDocsHelper = require('./docs/helpers/load-helper.js');
 var CONFIG = require('./build.json');
 /// #}}} @const CONFIG
 
+/// #{{{ @const FLAGS
+/**
+ * @private
+ * @const {!Object}
+ */
+var FLAGS = CONFIG.flags;
+/// #}}} @const FLAGS
+
 /// #{{{ @const IS
 /**
  * @private
@@ -340,6 +348,16 @@ var setFileError = setError.file;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setRetError
 /**
  * @private
@@ -390,6 +408,41 @@ var makeDirectory = loadHelper('make-directory');
 /// #}}} @group MAKE
 
 /// #{{{ @group GOOG
+
+/// #{{{ @func googClosureCompiler
+/**
+ * @private
+ * @param {!Object} flags
+ * @return {!Object}
+ */
+var googClosureCompiler = require('google-closure-compiler-js').compile;
+/// #}}} @func googClosureCompiler
+
+/// #{{{ @func compileCode
+/**
+ * @private
+ * @param {string} srcCode
+ * @return {string}
+ */
+function compileCode(srcCode) {
+
+  /** @type {!Object} */
+  var flags;
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'srcCode');
+  }
+  if ( !isString(srcCode) ) {
+    throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
+  }
+
+  flags = cloneObject(FLAGS);
+  flags.jsCode = [
+    { src: srcCode }
+  ];
+  return googClosureCompiler(flags).compiledCode;
+}
+/// #}}} @func compileCode
 
 /// #}}} @group GOOG
 
