@@ -194,6 +194,8 @@ function makeCompile(srcFile) {
     var result;
     /** @type {!Object} */
     var flags;
+    /** @type {string} */
+    var code;
     /** @type {!Error} */
     var err;
 
@@ -217,7 +219,23 @@ function makeCompile(srcFile) {
       err.closure = true;
       throw setError(err, err.message);
     }
-    return result.compiledCode;
+
+    if ( !isObject(result) ) {
+      err = new TypeError;
+      err.closure = true;
+      throw setRetError(err, 'closureCompiler.compile', '!Object');
+    }
+
+    code = result.compiledCode;
+
+    if ( !isString(code) ) {
+      err = new TypeError;
+      err.closure = true;
+      throw setRetError(err, 'closureCompiler.compile',
+        '{ compiledCode: string }');
+    }
+
+    return code;
   }
   /// #}}} @func compile
 
@@ -225,35 +243,62 @@ function makeCompile(srcFile) {
 }
 /// #}}} @func makeCompile
 
-/// #{{{ @func newMoldProgram
+/// #{{{ @func moldSource
 /**
- * @description
- *   This is a shortcut to call the `Prg` constructor without the `new`
- *   keyword. The following helpers are appended (as a property) to the public
- *   `Prg` constructor, the `Prg` prototype, and the `newPrg` helper:
- *   - **Constructors**
- *     - `Log`
- *     - `Prg` or `Program`
- *   - **Functions**
- *     - `isLog`
- *     - `isPrg` or `isProgram`
- *     - `newLog`
- *     - `newPrg` or `newProgram`
- *   - **Strings**
- *     - `VERSION`
  * @private
  * @param {string} src
  *   The file-system path to the root directory containing the source code you
- *   want to preprocess.
- * @param {?Log=} log = `new Log()`
- *   The #log parameter allows you to disable logging by setting it to `null`
- *   or to provide your own `log` or `write` methods for *Mold* to use. The
- *   defaults are `console.log` and `process.stdout.write`. Use the provided
- *   `Log` constructor to wrap your customizations into a compatible format.
- * @return {!Prg}
+ *   want to process.
+ * @param {?Object=} opts
+ * @param {boolean=} opts.quiet = `false`
+ *   If #opts.quiet is `true`, logging will be disabled.
+ * @param {?Stream=} opts.stdout = `process.stdout`
+ *   The #opts.stdout option allows you to provide a different `Stream` for
+ *   *Mold* to log to. If a `Stream` is provided, it must be `Writable`.
+ * @param {boolean=} opts.verbose = `false`
+ *   If #opts.verbose is `true`, logging will be increased.
+ * @param {!function(!Function)} callback
+ *   This is where you complete preprocessing, save results, and anything else
+ *   you desire. The *process* parameter provided to the #callback is the
+ *   `process` method built by the `makeProcess` method defined below. It has
+ *   the following properties appended to it:
+ *   - **log** *`!Function`*!$
+ *     The `log` method used by the current instance. This `function` is built
+ *     by the `makeLog` method defined below.
+ *   - **quiet** *`boolean`*!$
+ *     Whether logging is disabled for the current instance. This value is set
+ *     by #opts.quiet.
+ *   - **src** *`string`*!$
+ *     The path to the source tree root for the current instance. This value
+ *     is set by #src.
+ *   - **stdout** *`?Stream`*!$
+ *     The `stdout` for the current instance's logging. This value is set by
+ *     #opts.stdout.
+ *   - **verbose** *`boolean`*!$
+ *     Whether logging is increased for the current instance. This value is
+ *     set by #opts.verbose.
+ *   Note that if an error occurs, an `Error` instance is thrown. To determine
+ *   if a thrown `Error` instance was created by *Mold*, you can check the
+ *   `Error` instance for an owned property with the key name of `"mold"` and
+ *   the value of `true`.
+ *   ```
+ *   // @example
+ *   //   Determine if a thrown `Error` instance was created by *Mold*.
+ *   try {
+ *     require("mold")("path/to/src/tree/", callback);
+ *   } catch (err) {
+ *     if (isError(err) && err.hasOwnProperty("mold") && err.mold === true) {
+ *       console.error("MoldError", err);
+ *     } else {
+ *       console.error(err);
+ *     }
+ *     process.exit(1);
+ *   }
+ *   ```
+ * @return {void}
  */
-var newMoldProgram = require('mold');
-/// #}}} @func newMoldProgram
+var moldSource = require('mold');
+/// #}}} @func moldSource
 
 /// #{{{ @func trimComments
 /**
@@ -767,15 +812,6 @@ var isArray = IS.array;
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
-/// #{{{ @func isMoldProgram
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isMoldProgram = newMoldProgram.isProgram;
-/// #}}} @func isMoldProgram
-
 /// #{{{ @func isError
 /**
  * @private
@@ -953,7 +989,7 @@ var DEST = resolvePath(REPO, CONFIG.dest);
 /// #{{{ @func buildBranches
 /**
  * @private
- * @param {!Prg} prg
+ * @param {!Function} process
  * @param {string} key
  * @param {!Object<string, !Object>} branches
  * @param {string} src
@@ -962,7 +998,7 @@ var DEST = resolvePath(REPO, CONFIG.dest);
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranches(prg, key, branches, src, dest, state, alter) {
+function buildBranches(process, key, branches, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -975,7 +1011,7 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'prg');
+      throw setNoArgError(new Error, 'process');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -996,8 +1032,8 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
       }
   }
 
-  if ( !isMoldProgram(prg) ) {
-    throw setTypeError(new TypeError, 'prg', '!Prg');
+  if ( !isFunction(process) ) {
+    throw setTypeError(new TypeError, 'process', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1056,7 +1092,7 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
       newkey = !!KEY
         ? KEY + '.' + key
         : key;
-      buildBranch(prg, newkey, branches[key], src, dest, state, alter);
+      buildBranch(process, newkey, branches[key], src, dest, state, alter);
     }
   }
 
@@ -1067,7 +1103,7 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
 /// #{{{ @func buildBranch
 /**
  * @private
- * @param {!Prg} prg
+ * @param {!Function} process
  * @param {string} key
  * @param {!Object} branch
  * @param {string} src
@@ -1076,13 +1112,13 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranch(prg, key, branch, src, dest, state, alter) {
+function buildBranch(process, key, branch, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'prg');
+      throw setNoArgError(new Error, 'process');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1103,8 +1139,8 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
       }
   }
 
-  if ( !isMoldProgram(prg) ) {
-    throw setTypeError(new TypeError, 'prg', '!Prg');
+  if ( !isFunction(process) ) {
+    throw setTypeError(new TypeError, 'process', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1200,7 +1236,7 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
   /// #{{{ @step build-files
 
   if ( hasOwnProperty(branch, 'files') ) {
-    buildFiles(prg, key, branch.files, src, dest, state, alter);
+    buildFiles(process, key, branch.files, src, dest, state, alter);
   }
 
   /// #}}} @step build-files
@@ -1208,7 +1244,7 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
   /// #{{{ @step build-branches
 
   if ( hasOwnProperty(branch, 'branches') ) {
-    buildBranches(prg, key, branch.branches, src, dest, state, alter);
+    buildBranches(process, key, branch.branches, src, dest, state, alter);
   }
 
   /// #}}} @step build-branches
@@ -1218,7 +1254,7 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
 /// #{{{ @func buildFiles
 /**
  * @private
- * @param {!Prg} prg
+ * @param {!Function} process
  * @param {string} key
  * @param {!Array<!Object>} files
  * @param {string} src
@@ -1227,7 +1263,7 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildFiles(prg, key, files, src, dest, state, alter) {
+function buildFiles(process, key, files, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1244,7 +1280,7 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'prg');
+      throw setNoArgError(new Error, 'process');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1265,8 +1301,8 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
       }
   }
 
-  if ( !isMoldProgram(prg) ) {
-    throw setTypeError(new TypeError, 'prg', '!Prg');
+  if ( !isFunction(process) ) {
+    throw setTypeError(new TypeError, 'process', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1331,7 +1367,7 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
     }
 
     key = KEY + '.' + key;
-    buildFile(prg, key, file, src, dest, state, alter);
+    buildFile(process, key, file, src, dest, state, alter);
   }
 
   /// #}}} @step build-each-file
@@ -1341,7 +1377,7 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
 /// #{{{ @func buildFile
 /**
  * @private
- * @param {!Prg} prg
+ * @param {!Function} process
  * @param {string} key
  * @param {!Object} file
  * @param {string} src
@@ -1350,7 +1386,7 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
  * @param {(null|(function(string): string)|undefined)=} alter = `makeCompile(dest)`
  * @return {string}
  */
-function buildFile(prg, key, file, src, dest, state, alter) {
+function buildFile(process, key, file, src, dest, state, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1363,7 +1399,7 @@ function buildFile(prg, key, file, src, dest, state, alter) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'prg');
+      throw setNoArgError(new Error, 'process');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1384,8 +1420,8 @@ function buildFile(prg, key, file, src, dest, state, alter) {
       }
   }
 
-  if ( !isMoldProgram(prg) ) {
-    throw setTypeError(new TypeError, 'prg', '!Prg');
+  if ( !isFunction(process) ) {
+    throw setTypeError(new TypeError, 'process', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1486,8 +1522,8 @@ function buildFile(prg, key, file, src, dest, state, alter) {
   /// #{{{ @step build-file
 
   result = alter
-    ? prg.process(src, dest, state, alter)
-    : prg.process(src, dest, state);
+    ? process(src, dest, state, alter)
+    : process(src, dest, state);
 
   /// #}}} @step build-file
 
@@ -1512,42 +1548,39 @@ function buildFile(prg, key, file, src, dest, state, alter) {
  * @return {void}
  */
 function buildAll() {
+  moldSource(SRC, {
+    'quiet': false,
+    'verbose': true
+  }, function buildVitals(process) {
 
-  /// #{{{ @step declare-variables
+    /// #{{{ @step declare-variables
 
-  /** @type {!Object} */
-  var branch;
-  /** @type {!Prg} */
-  var prg;
+    /** @type {!Object} */
+    var branch;
 
-  /// #}}} @step declare-variables
+    /// #}}} @step declare-variables
 
-  /// #{{{ @step preprocess-source
+    /// #{{{ @step build-browser
 
-  prg = newMoldProgram(SRC);
+    branch = CONFIG.branches.browser;
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
 
-  /// #}}} @step preprocess-source
+    /// #}}} @step build-browser
 
-  /// #{{{ @step build-browser-dist
+    /// #{{{ @step build-node
 
-  branch = CONFIG.branches.browser;
-  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
+    branch = CONFIG.branches.node;
+    buildBranch(process, 'node', branch, SRC, DEST, STATE);
 
-  /// #}}} @step build-browser-dist
+    /// #}}} @step build-node
 
-  /// #{{{ @step build-node-dist
+    /// #{{{ @step build-docs
 
-  branch = CONFIG.branches.node;
-  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
+    branch = CONFIG.branches.docs;
+    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null);
 
-  /// #}}} @step build-node-dist
-
-  /// #{{{ @step build-docs
-
-  branch = CONFIG.branches.docs;
-  buildBranch(prg, 'docs', branch, SRC, DEST, STATE, null);
-
-  /// #}}} @step build-docs
+    /// #}}} @step build-docs
+  });
 }
 /// #}}} @func buildAll
 
@@ -1557,35 +1590,32 @@ function buildAll() {
  * @return {void}
  */
 function buildDist() {
+  moldSource(SRC, {
+    'quiet': false,
+    'verbose': true
+  }, function buildVitals(process) {
 
-  /// #{{{ @step declare-variables
+    /// #{{{ @step declare-variables
 
-  /** @type {!Object} */
-  var branch;
-  /** @type {!Prg} */
-  var prg;
+    /** @type {!Object} */
+    var branch;
 
-  /// #}}} @step declare-variables
+    /// #}}} @step declare-variables
 
-  /// #{{{ @step preprocess-source
+    /// #{{{ @step build-browser
 
-  prg = newMoldProgram(SRC);
+    branch = CONFIG.branches.browser;
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
 
-  /// #}}} @step preprocess-source
+    /// #}}} @step build-browser
 
-  /// #{{{ @step build-browser-dist
+    /// #{{{ @step build-node
 
-  branch = CONFIG.branches.browser;
-  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
+    branch = CONFIG.branches.node;
+    buildBranch(process, 'node', branch, SRC, DEST, STATE);
 
-  /// #}}} @step build-browser-dist
-
-  /// #{{{ @step build-node-dist
-
-  branch = CONFIG.branches.node;
-  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
-
-  /// #}}} @step build-node-dist
+    /// #}}} @step build-node
+  });
 }
 /// #}}} @func buildDist
 
@@ -1595,28 +1625,25 @@ function buildDist() {
  * @return {void}
  */
 function buildBrowser() {
+  moldSource(SRC, {
+    'quiet': false,
+    'verbose': true
+  }, function buildVitals(process) {
 
-  /// #{{{ @step declare-variables
+    /// #{{{ @step declare-variables
 
-  /** @type {!Object} */
-  var branch;
-  /** @type {!Prg} */
-  var prg;
+    /** @type {!Object} */
+    var branch;
 
-  /// #}}} @step declare-variables
+    /// #}}} @step declare-variables
 
-  /// #{{{ @step preprocess-source
+    /// #{{{ @step build-browser
 
-  prg = newMoldProgram(SRC);
+    branch = CONFIG.branches.browser;
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
 
-  /// #}}} @step preprocess-source
-
-  /// #{{{ @step build-browser-dist
-
-  branch = CONFIG.branches.browser;
-  buildBranch(prg, 'browser', branch, SRC, DEST, STATE);
-
-  /// #}}} @step build-browser-dist
+    /// #}}} @step build-browser
+  });
 }
 /// #}}} @func buildBrowser
 
@@ -1626,28 +1653,25 @@ function buildBrowser() {
  * @return {void}
  */
 function buildNode() {
+  moldSource(SRC, {
+    'quiet': false,
+    'verbose': true
+  }, function buildVitals(process) {
 
-  /// #{{{ @step declare-variables
+    /// #{{{ @step declare-variables
 
-  /** @type {!Object} */
-  var branch;
-  /** @type {!Prg} */
-  var prg;
+    /** @type {!Object} */
+    var branch;
 
-  /// #}}} @step declare-variables
+    /// #}}} @step declare-variables
 
-  /// #{{{ @step preprocess-source
+    /// #{{{ @step build-node
 
-  prg = newMoldProgram(SRC);
+    branch = CONFIG.branches.node;
+    buildBranch(process, 'node', branch, SRC, DEST, STATE);
 
-  /// #}}} @step preprocess-source
-
-  /// #{{{ @step build-node-dist
-
-  branch = CONFIG.branches.node;
-  buildBranch(prg, 'node', branch, SRC, DEST, STATE);
-
-  /// #}}} @step build-node-dist
+    /// #}}} @step build-node
+  });
 }
 /// #}}} @func buildNode
 
@@ -1657,28 +1681,25 @@ function buildNode() {
  * @return {void}
  */
 function buildDocs() {
+  moldSource(SRC, {
+    'quiet': false,
+    'verbose': true
+  }, function buildVitals(process) {
 
-  /// #{{{ @step declare-variables
+    /// #{{{ @step declare-variables
 
-  /** @type {!Object} */
-  var branch;
-  /** @type {!Prg} */
-  var prg;
+    /** @type {!Object} */
+    var branch;
 
-  /// #}}} @step declare-variables
+    /// #}}} @step declare-variables
 
-  /// #{{{ @step preprocess-source
+    /// #{{{ @step build-docs
 
-  prg = newMoldProgram(SRC);
+    branch = CONFIG.branches.docs;
+    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null);
 
-  /// #}}} @step preprocess-source
-
-  /// #{{{ @step build-docs
-
-  branch = CONFIG.branches.docs;
-  buildBranch(prg, 'docs', branch, SRC, DEST, STATE, null);
-
-  /// #}}} @step build-docs
+    /// #}}} @step build-docs
+  });
 }
 /// #}}} @func buildDocs
 
