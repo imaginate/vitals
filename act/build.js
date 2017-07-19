@@ -82,6 +82,14 @@ var loadDocsHelper = require('./docs/helpers/load-helper.js');
 var CONFIG = require('./build.json');
 /// #}}} @const CONFIG
 
+/// #{{{ @const COMMENT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var COMMENT = /^[ \t]*\/\//;
+/// #}}} @const COMMENT
+
 /// #{{{ @const FLAGS
 /**
  * @private
@@ -106,6 +114,34 @@ var IS = loadHelper('is');
 var MODE = '0755';
 /// #}}} @const MODE
 
+/// #{{{ @const PARAM
+/**
+ * @private
+ * @const {!Object<string, !RegExp>}
+ * @struct
+ */
+var PARAM = {
+  DFLT: / = `[^`]+` *$/,
+  LINE: /^ *\* @param \{[^\}]+\} [a-zA-Z0-9_\$]+(?: = `[^`]+`)? *$/
+};
+/// #}}} @const PARAM
+
+/// #{{{ @const TAGS
+/**
+ * @private
+ * @const {!Object<string, !RegExp>}
+ * @struct
+ */
+var TAGS = {
+  OPEN: /^[ \t]*\/\*\*[ \t]*$/,
+  CLOSE: /^[ \t]*\*\//,
+  LINE: /^ *\*(?: +.*)?$/,
+  PARAM: /^ *\* @param/,
+  DESC: /^ *\* @desc(?:ription)?/,
+  TAG: /^ *\* @/
+};
+/// #}}} @const TAGS
+
 /// #{{{ @const STATE
 /**
  * @private
@@ -121,7 +157,72 @@ var STATE = CONFIG.state;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @group MOLD
+/// #{{{ @group COMPILE
+
+/// #{{{ @func closureCompile
+/**
+ * @private
+ * @param {!Object} flags
+ * @return {!Object}
+ */
+var closureCompile = require('google-closure-compiler-js').compile;
+/// #}}} @func closureCompile
+
+/// #{{{ @func makeCompile
+/**
+ * @private
+ * @param {string} srcFile
+ * @return {!function(string): string}
+ */
+function makeCompile(srcFile) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'srcFile');
+  }
+  if ( !isString(srcFile) ) {
+    throw setTypeError(new TypeError, 'srcFile', srcFile, 'string');
+  }
+
+  /// #{{{ @func compile
+  /**
+   * @param {string} srcCode
+   * @return {string}
+   */
+  function compile(srcCode) {
+
+    /** @type {!Object} */
+    var result;
+    /** @type {!Object} */
+    var flags;
+    /** @type {!Error} */
+    var err;
+
+    if (!arguments.length) {
+      throw setNoArgError(new Error, 'srcCode');
+    }
+    if ( !isString(srcCode) ) {
+      throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
+    }
+
+    srcCode = trimComments(srcFile, srcCode);
+    flags = cloneObject(FLAGS);
+    flags.jsCode = [
+      { src: srcCode }
+    ];
+    try {
+      result = closureCompile(flags);
+    }
+    catch (err) {
+      err.closure = true;
+      throw setError(err, err.message);
+    }
+    return result.compiledCode;
+  }
+  /// #}}} @func compile
+
+  return compile;
+}
+/// #}}} @func makeCompile
 
 /// #{{{ @func newMoldProgram
 /**
@@ -153,7 +254,79 @@ var STATE = CONFIG.state;
 var newMoldProgram = require('mold');
 /// #}}} @func newMoldProgram
 
-/// #}}} @group MOLD
+/// #{{{ @func trimComments
+/**
+ * @private
+ * @param {string} srcFile
+ * @param {string} srcCode
+ * @return {string}
+ */
+function trimComments(srcFile, srcCode) {
+
+  /** @type {string} */
+  var result;
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var line;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'srcFile');
+    case 1:
+      throw setNoArgError(new Error, 'srcCode');
+  }
+
+  if ( !isString(srcFile) ) {
+    throw setTypeError(new TypeError, 'srcFile', srcFile, 'string');
+  }
+  if ( !isString(srcCode) ) {
+    throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
+  }
+
+  result = '';
+  lines = srcCode.split('\n');
+  len = lines.length;
+  i = 0;
+  while (i < len) {
+    line = lines[i++] || '';
+    if ( TAGS.OPEN.test(line) ) {
+      result += line + '\n';
+      while (true) {
+        if (i >= len) {
+          throw setNoTagCloseError(new Error, srcFile);
+        }
+        line = lines[i++] || '';
+        if ( TAGS.CLOSE.test(line) ) {
+          break;
+        }
+        if ( !TAGS.LINE.test(line) ) {
+          throw setTagLineError(new SyntaxError, line, i, srcFile);
+        }
+        if ( TAGS.TAG.test(line) && !TAGS.DESC.test(line) ) {
+          if ( TAGS.PARAM.test(line) ) {
+            if ( !PARAM.LINE.test(line) ) {
+              throw setParamLineError(new SyntaxError, line, i, srcFile);
+            }
+            line = line.replace(PARAM.DFLT, '');
+          }
+          result += line + '\n';
+        }
+      }
+    }
+    else if ( !COMMENT.test(line) ) {
+      result += line + '\n';
+    }
+  }
+  return result;
+}
+/// #}}} @func trimComments
+
+/// #}}} @group COMPILE
 
 /// #{{{ @group DOCS
 
@@ -358,6 +531,95 @@ var setIndexError = setError.index;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setNoTagCloseError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} file
+ * @return {!Error}
+ */
+function setNoTagCloseError(err, file) {
+
+  /** @type {string} */
+  var msg;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'file');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+
+  msg = 'unclosed `closure-compiler` comment section`\n' +
+    '    file-path: `' + file + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setNoTagCloseError
+
+/// #{{{ @func setParamLineError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} text
+ * @param {number} linenum
+ * @param {string} file
+ * @return {!SyntaxError}
+ */
+function setParamLineError(err, text, linenum, file) {
+
+  /** @type {string} */
+  var valid;
+  /** @type {string} */
+  var msg;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'text');
+    case 2:
+      throw setNoArgError(new Error, 'linenum');
+    case 3:
+      throw setNoArgError(new Error, 'file');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(text) ) {
+    throw setTypeError(new TypeError, 'text', 'string');
+  }
+  if ( !isNumber(linenum) ) {
+    throw setTypeError(new TypeError, 'linenum', 'string');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+
+  valid = '/^ *\\* @param \\{[^}]+\\} [a-zA-Z0-9_$]+( = \\`[^\\`]+\\`)? *$/';
+  msg = 'invalid `line` format for a `closure-compiler` parameter tag`\n' +
+    '    valid-line-test: `' + valid + '`\n' +
+    '    invalid-line:\n' +
+    '        text: `' + text + '`\n' +
+    '        file: `' + file + '`\n' +
+    '        linenum: `' + linenum + '`';
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  return setError(err, msg);
+}
+/// #}}} @func setParamLineError
+
 /// #{{{ @func setRetError
 /**
  * @private
@@ -368,6 +630,59 @@ var setNoArgError = setError.noArg;
  */
 var setRetError = setError.ret;
 /// #}}} @func setRetError
+
+/// #{{{ @func setTagLineError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} text
+ * @param {number} linenum
+ * @param {string} file
+ * @return {!SyntaxError}
+ */
+function setTagLineError(err, text, linenum, file) {
+
+  /** @type {string} */
+  var msg;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'text');
+    case 2:
+      throw setNoArgError(new Error, 'linenum');
+    case 3:
+      throw setNoArgError(new Error, 'file');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(text) ) {
+    throw setTypeError(new TypeError, 'text', 'string');
+  }
+  if ( !isNumber(linenum) ) {
+    throw setTypeError(new TypeError, 'linenum', 'string');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+
+  msg = 'invalid `line` format in a `closure-compiler` section`\n' +
+    '    valid-line-test: `/^ *\\*( +.*)?$/`\n' +
+    '    invalid-line:\n' +
+    '        text: `' + text + '`\n' +
+    '        file: `' + file + '`\n' +
+    '        linenum: `' + linenum + '`';
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  return setError(err, msg);
+}
+/// #}}} @func setTagLineError
 
 /// #{{{ @func setTypeError
 /**
@@ -393,7 +708,7 @@ var setWholeError = setError.whole;
 
 /// #}}} @group ERROR
 
-/// #{{{ @group MAKE
+/// #{{{ @group FS
 
 /// #{{{ @func makeDirectory
 /**
@@ -405,46 +720,7 @@ var setWholeError = setError.whole;
 var makeDirectory = loadHelper('make-directory');
 /// #}}} @func makeDirectory
 
-/// #}}} @group MAKE
-
-/// #{{{ @group GOOG
-
-/// #{{{ @func googClosureCompiler
-/**
- * @private
- * @param {!Object} flags
- * @return {!Object}
- */
-var googClosureCompiler = require('google-closure-compiler-js').compile;
-/// #}}} @func googClosureCompiler
-
-/// #{{{ @func compileCode
-/**
- * @private
- * @param {string} srcCode
- * @return {string}
- */
-function compileCode(srcCode) {
-
-  /** @type {!Object} */
-  var flags;
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'srcCode');
-  }
-  if ( !isString(srcCode) ) {
-    throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
-  }
-
-  flags = cloneObject(FLAGS);
-  flags.jsCode = [
-    { src: srcCode }
-  ];
-  return googClosureCompiler(flags).compiledCode;
-}
-/// #}}} @func compileCode
-
-/// #}}} @group GOOG
+/// #}}} @group FS
 
 /// #{{{ @group HAS
 
@@ -681,7 +957,7 @@ var DEST = resolvePath(REPO, CONFIG.dest);
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
+ * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
 function buildBranches(prg, key, branches, src, dest, state, alter) {
@@ -695,27 +971,59 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isMoldProgram(prg) )
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'prg');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+    case 2:
+      throw setNoArgError(new Error, 'branches');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'state');
+    case 6:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
+  }
+
+  if ( !isMoldProgram(prg) ) {
     throw setTypeError(new TypeError, 'prg', '!Prg');
-  if ( !isString(key) )
+  }
+  if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
-  if ( !isObject(branches) || !isObjectHashMap(branches) )
+  }
+  if ( !isObject(branches) || !isObjectHashMap(branches) ) {
     throw setTypeError(new TypeError, 'branches', '!Object<string, !Object>');
-  if ( !isString(src) )
+  }
+  if ( !isString(src) ) {
     throw setTypeError(new TypeError, 'src', 'string');
-  if (!src)
-    throw setEmptyError(new Error, 'src');
-  if ( !isDirectory(src) )
-    throw setDirError(new Error, 'src', src);
-  if ( !isString(dest) )
+  }
+  if ( !isString(dest) ) {
     throw setTypeError(new TypeError, 'dest', 'string');
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !isObject(state) )
+  }
+  if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
-  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+  if (!dest) {
+    throw setEmptyError(new Error, 'dest');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -733,8 +1041,9 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
 
   /// #{{{ @step make-dest
 
-  if ( !isDirectory(dest) )
+  if ( !isDirectory(dest) ) {
     makeDirectory(dest, MODE);
+  }
 
   /// #}}} @step make-dest
 
@@ -762,34 +1071,66 @@ function buildBranches(prg, key, branches, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
+ * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
 function buildBranch(prg, key, branch, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isMoldProgram(prg) )
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'prg');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+    case 2:
+      throw setNoArgError(new Error, 'branch');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'state');
+    case 6:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
+  }
+
+  if ( !isMoldProgram(prg) ) {
     throw setTypeError(new TypeError, 'prg', '!Prg');
-  if ( !isString(key) )
+  }
+  if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
-  if ( !isObject(branch) )
+  }
+  if ( !isObject(branch) ) {
     throw setTypeError(new TypeError, 'branch', '!Object');
-  if ( !isString(src) )
+  }
+  if ( !isString(src) ) {
     throw setTypeError(new TypeError, 'src', 'string');
-  if (!src)
-    throw setEmptyError(new Error, 'src');
-  if ( !isDirectory(src) )
-    throw setDirError(new Error, 'src', src);
-  if ( !isString(dest) )
+  }
+  if ( !isString(dest) ) {
     throw setTypeError(new TypeError, 'dest', 'string');
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !isObject(state) )
+  }
+  if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
-  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+  if (!dest) {
+    throw setEmptyError(new Error, 'dest');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -802,23 +1143,22 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
 
   /// #{{{ @step make-dest
 
-  if ( !isDirectory(dest) )
+  if ( !isDirectory(dest) ) {
     makeDirectory(dest, MODE);
+  }
 
   /// #}}} @step make-dest
 
   /// #{{{ @step update-src
 
   if ( hasOwnProperty(branch, 'src') ) {
-
-    if ( !isString(branch.src) )
+    if ( !isString(branch.src) ) {
       throw setBuildTypeError(new TypeError, key, 'src', 'string');
-
+    }
     if (!!branch.src) {
-
-      if ( !hasEndSlash(branch.src) )
+      if ( !hasEndSlash(branch.src) ) {
         throw setBuildSlashError(new RangeError, key, 'src', branch.src);
-
+      }
       src = resolvePath(src, branch.src);
     }
   }
@@ -828,15 +1168,13 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
   /// #{{{ @step update-dest
 
   if ( hasOwnProperty(branch, 'dest') ) {
-
-    if ( !isString(branch.dest) )
+    if ( !isString(branch.dest) ) {
       throw setBuildTypeError(new TypeError, key, 'dest', 'string');
-
+    }
     if (!!branch.dest) {
-
-      if ( !hasEndSlash(branch.dest) )
+      if ( !hasEndSlash(branch.dest) ) {
         throw setBuildSlashError(new RangeError, key, 'dest', branch.dest);
-
+      }
       dest = resolvePath(dest, branch.dest);
     }
   }
@@ -848,11 +1186,10 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
   state = cloneObject(state);
 
   if ( hasOwnProperty(branch, 'state') ) {
-
-    if ( !isObject(branch.state) )
+    if ( !isObject(branch.state) ) {
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
-
+    }
     state = deepMergeObject(state, branch.state);
   }
 
@@ -860,15 +1197,17 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
 
   /// #{{{ @step build-files
 
-  if ( hasOwnProperty(branch, 'files') )
+  if ( hasOwnProperty(branch, 'files') ) {
     buildFiles(prg, key, branch.files, src, dest, state, alter);
+  }
 
   /// #}}} @step build-files
 
   /// #{{{ @step build-branches
 
-  if ( hasOwnProperty(branch, 'branches') )
+  if ( hasOwnProperty(branch, 'branches') ) {
     buildBranches(prg, key, branch.branches, src, dest, state, alter);
+  }
 
   /// #}}} @step build-branches
 }
@@ -883,7 +1222,7 @@ function buildBranch(prg, key, branch, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
+ * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
 function buildFiles(prg, key, files, src, dest, state, alter) {
@@ -901,27 +1240,59 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isMoldProgram(prg) )
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'prg');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+    case 2:
+      throw setNoArgError(new Error, 'files');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'state');
+    case 6:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
+  }
+
+  if ( !isMoldProgram(prg) ) {
     throw setTypeError(new TypeError, 'prg', '!Prg');
-  if ( !isString(key) )
+  }
+  if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
-  if ( !isArray(files) || !isObjectList(files) )
+  }
+  if ( !isArray(files) || !isObjectList(files) ) {
     throw setTypeError(new TypeError, 'files', '!Array<!Object>');
-  if ( !isString(src) )
+  }
+  if ( !isString(src) ) {
     throw setTypeError(new TypeError, 'src', 'string');
-  if (!src)
-    throw setEmptyError(new Error, 'src');
-  if ( !isDirectory(src) )
-    throw setDirError(new Error, 'src', src);
-  if ( !isString(dest) )
+  }
+  if ( !isString(dest) ) {
     throw setTypeError(new TypeError, 'dest', 'string');
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !isObject(state) )
+  }
+  if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
-  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+  if (!dest) {
+    throw setEmptyError(new Error, 'dest');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -939,8 +1310,9 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
 
   /// #{{{ @step make-dest
 
-  if ( !isDirectory(dest) )
+  if ( !isDirectory(dest) ) {
     makeDirectory(dest, MODE);
+  }
 
   /// #}}} @step make-dest
 
@@ -952,8 +1324,9 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
     file = files[i];
     key = 'files[' + i + ']';
 
-    if ( !isObject(file) )
+    if ( !isObject(file) ) {
       throw setBuildTypeError(new TypeError, KEY, key, '!Object');
+    }
 
     key = KEY + '.' + key;
     buildFile(prg, key, file, src, dest, state, alter);
@@ -972,7 +1345,7 @@ function buildFiles(prg, key, files, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {(?function(string): string)=} alter
+ * @param {(null|(function(string): string)|undefined)=} alter = `makeCompile(dest)`
  * @return {string}
  */
 function buildFile(prg, key, file, src, dest, state, alter) {
@@ -986,61 +1359,101 @@ function buildFile(prg, key, file, src, dest, state, alter) {
 
   /// #{{{ @step verify-parameters
 
-  if ( !isMoldProgram(prg) )
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'prg');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+    case 2:
+      throw setNoArgError(new Error, 'file');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'state');
+    case 6:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
+  }
+
+  if ( !isMoldProgram(prg) ) {
     throw setTypeError(new TypeError, 'prg', '!Prg');
-  if ( !isString(key) )
+  }
+  if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
-  if ( !isObject(file) )
+  }
+  if ( !isObject(file) ) {
     throw setTypeError(new TypeError, 'file', '!Object');
-  if ( !isString(src) )
+  }
+  if ( !isString(src) ) {
     throw setTypeError(new TypeError, 'src', 'string');
-  if (!src)
-    throw setEmptyError(new Error, 'src');
-  if ( !isDirectory(src) )
-    throw setDirError(new Error, 'src', src);
-  if ( !isString(dest) )
+  }
+  if ( !isString(dest) ) {
     throw setTypeError(new TypeError, 'dest', 'string');
-  if (!dest)
-    throw setEmptyError(new Error, 'dest');
-  if ( !isObject(state) )
+  }
+  if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
-  if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) )
-    throw setTypeError(new TypeError, 'alter', '(?function(string): string)=');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+  if (!dest) {
+    throw setEmptyError(new Error, 'dest');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
 
   /// #}}} @step verify-parameters
 
   /// #{{{ @step make-dest
 
-  if ( !isDirectory(dest) )
+  if ( !isDirectory(dest) ) {
     makeDirectory(dest, MODE);
+  }
 
   /// #}}} @step make-dest
 
   /// #{{{ @step setup-src
 
-  if ( !hasOwnProperty(file, 'src') )
+  if ( !hasOwnProperty(file, 'src') ) {
     throw setBuildOwnError(new ReferenceError, key, 'src');
-  if ( !isString(file.src) )
+  }
+  if ( !isString(file.src) ) {
     throw setBuildTypeError(new TypeError, key, 'src', 'string');
-  if (!file.src)
+  }
+  if (!file.src) {
     throw setBuildEmptyError(new Error, key, 'src');
+  }
 
   src = resolvePath(src, file.src);
 
-  if ( !isFile(src) )
+  if ( !isFile(src) ) {
     throw setFileError(new Error, key + '.src', src);
+  }
 
   /// #}}} @step setup-src
 
   /// #{{{ @step setup-dest
 
-  if ( !hasOwnProperty(file, 'dest') )
+  if ( !hasOwnProperty(file, 'dest') ) {
     throw setBuildOwnError(new ReferenceError, key, 'dest');
-  if ( !isString(file.dest) )
+  }
+  if ( !isString(file.dest) ) {
     throw setBuildTypeError(new TypeError, key, 'dest', 'string');
-  if (!file.dest)
+  }
+  if (!file.dest) {
     throw setBuildEmptyError(new Error, key, 'dest');
+  }
 
   dest = resolvePath(dest, file.dest);
 
@@ -1051,15 +1464,22 @@ function buildFile(prg, key, file, src, dest, state, alter) {
   state = cloneObject(state);
 
   if ( hasOwnProperty(file, 'state') ) {
-
-    if ( !isObject(file.state) )
+    if ( !isObject(file.state) ) {
       throw setBuildTypeError(new TypeError, key, 'state',
         '!Object<string, (boolean|!Object<string, boolean>)>');
-
+    }
     state = deepMergeObject(state, file.state);
   }
 
   /// #}}} @step update-state
+
+  /// #{{{ @step make-alter
+
+  if ( isUndefined(alter) ) {
+    alter = makeCompile(dest);
+  }
+
+  /// #}}} @step make-alter
 
   /// #{{{ @step build-file
 
@@ -1123,7 +1543,7 @@ function buildAll() {
   /// #{{{ @step build-docs
 
   branch = CONFIG.branches.docs;
-  buildBranch(prg, 'docs', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'docs', branch, SRC, DEST, STATE, null);
 
   /// #}}} @step build-docs
 }
@@ -1254,7 +1674,7 @@ function buildDocs() {
   /// #{{{ @step build-docs
 
   branch = CONFIG.branches.docs;
-  buildBranch(prg, 'docs', branch, SRC, DEST, STATE);
+  buildBranch(prg, 'docs', branch, SRC, DEST, STATE, null);
 
   /// #}}} @step build-docs
 }
