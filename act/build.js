@@ -303,6 +303,7 @@ function trimComments(srcFile, srcCode) {
         }
         line = lines[i++] || '';
         if ( TAGS.CLOSE.test(line) ) {
+          result += line + '\n';
           break;
         }
         if ( !TAGS.LINE.test(line) ) {
