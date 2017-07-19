@@ -113,7 +113,7 @@ function newVitals(method) {
           throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
         else if (!method)
-          throw $mkErr(new ERR, 'invalid empty #method `string`');
+          throw _mkErr(new ERR, 'invalid empty #method `string`');
 
         if ( _isSection(method) ) {
           sections = _getSections([ method ]);
@@ -132,7 +132,7 @@ function newVitals(method) {
           throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
         else if ( !_isFullStrArr(method) )
-          throw $mkErr(new ERR, 'invalid empty #method `string`');
+          throw _mkErr(new ERR, 'invalid empty #method `string`');
         else if ( !_isValidStrArr(method) )
           throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
 
@@ -145,7 +145,7 @@ function newVitals(method) {
     throw _mkTypeErr(new TYPE_ERR, 'method', method,
       '(!Array<string>|...string)=');
   else if (!method)
-    throw $mkErr(new ERR, 'invalid empty #method `string`');
+    throw _mkErr(new ERR, 'invalid empty #method `string`');
   else if ( _isSection(method) ) {
     sections = _getSections([ method ]);
     methods = [];
