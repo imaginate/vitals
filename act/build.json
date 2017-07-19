@@ -3,6 +3,13 @@
   "src": "src/",
   "dest": "dist/",
   "minify": false,
+  "flags": {
+    "compilationLevel": "ADVANCED",
+    "languageIn": "ES3",
+    "languageOut": "ES3",
+    "useTypesForOptimization": true,
+    "warningLevel": "VERBOSE"
+  },
   "state": {
     "code": false,
     "docrefs": false,
