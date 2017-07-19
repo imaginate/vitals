@@ -18,6 +18,7 @@
   "homepage": "https://github.com/imaginate/vitals",
   "devDependencies": {
     "chalk": "1.x",
+    "google-closure-compiler-js": "^20170626.0.0",
     "log-ocd": ">1.0.0-beta",
     "mocha": "3.x",
     "mold": "file:../mold-node",
