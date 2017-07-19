@@ -805,11 +805,11 @@ var $print = (function $printPrivateScope() {
    * @param {number=} depth
    * @return {string}
    */
-  function _toStr(val, depth) {
+  function $print(val, depth) {
     depth = depth || 0;
     return $is._obj(val)
       ? $is.regx(val)
-        ? val['toString']();
+        ? val['toString']()
         : _mapToStr(val, depth)
       : _primToStr(val);
   }
