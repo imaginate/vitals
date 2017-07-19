@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -213,11 +209,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -241,7 +234,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -306,8 +298,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -375,7 +365,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -408,8 +397,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -425,8 +412,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -445,29 +430,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -476,23 +438,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -541,8 +498,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -625,8 +580,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -650,8 +603,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -693,7 +644,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -732,7 +682,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -777,7 +726,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -795,8 +743,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -874,8 +820,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -902,8 +846,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1000,7 +942,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1010,11 +951,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1049,8 +987,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1066,7 +1002,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1085,8 +1020,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1173,7 +1106,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1252,8 +1184,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1289,11 +1219,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1520,8 +1447,6 @@ function $inObj(src, val) {
   return NO;
 }
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes`.
  * @private
  * @param {string} src
  * @param {*} val
@@ -1536,9 +1461,6 @@ function $inStr(src, val) {
       : $strIncl(src, val);
 }
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes` and
- *   `RegExp.prototype.test`.
  * @private
  * @param {string} src
  * @param {*} patt
@@ -1581,8 +1503,6 @@ function $merge(dest, src) {
  */
 var $ownEnum = (function $ownEnumPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-  /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
 
   /**
    * @private
@@ -1592,9 +1512,6 @@ var $ownEnum = (function $ownEnumPrivateScope() {
   var _hasEnum = OBJ_PROTO['propertyIsEnumerable'];
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own] and
-   *   [Object.prototype.propertyIsEnumerable][enum].
    * @param {(!Object|!Function)} src
    * @param {*} key
    * @return {boolean}
@@ -1608,8 +1525,8 @@ var $ownEnum = (function $ownEnumPrivateScope() {
 /**
  * @private
  * @param {(!Object|!Function)} src
- * @param {number=} start = `0`
- * @param {number=} end = `src.length`
+ * @param {number=} start
+ * @param {number=} end
  * @return {!Array}
  */
 function $sliceArr(src, start, end) {
@@ -1653,8 +1570,8 @@ function $sliceArr(src, start, end) {
 /**
  * @private
  * @param {string} src
- * @param {number=} start = `0`
- * @param {number=} end = `src.length`
+ * @param {number=} start
+ * @param {number=} end
  * @return {string}
  */
 function $sliceStr(src, start, end) {
@@ -1686,12 +1603,6 @@ function $sliceStr(src, start, end) {
 /**
  * @private
  * @param {string} keys
- *   The #keys are split using one of the values in the following list as the
- *   separator (values listed in order of rank):
- *   - `", "`
- *   - `","`
- *   - `"|"`
- *   - `" "`
  * @return {!Array<string>}
  */
 function $splitKeys(keys) {
@@ -1718,25 +1629,11 @@ function $splitKeys(keys) {
  */
 var is = (function isPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.is
   /**
-   * @description
-   *   Checks if a value or many values are a specific data type or types. See
-   *   @is-types for a complete list of the available data types. Note that
-   *   all `object` types are nullable by default (i.e. `is("object", null)`
-   *   will return  `true`).
    * @public
    * @param {string} types
-   *   The valid data types. See @is-types for a complete list of the
-   *   available data types.
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function is(types, val) {
 
@@ -1780,18 +1677,10 @@ var is = (function isPrivateScope() {
       : _checkVal(checks, val, nullable);
   }
 
-  /// @section base
-  /// @method vitals.is.null
-  /// @alias vitals.is.nil
   /**
-   * @description
-   *   Checks if a value or many values are [null][null].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNull(val) {
     switch (arguments['length']) {
@@ -1806,18 +1695,10 @@ var is = (function isPrivateScope() {
   is['null'] = isNull;
   is['nil'] = isNull;
 
-  /// @section base
-  /// @method vitals.is.undefined
-  /// @alias vitals.is.void
   /**
-   * @description
-   *   Checks if a value or many values are [undefined][void].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isUndefined(val) {
     switch (arguments['length']) {
@@ -1832,19 +1713,10 @@ var is = (function isPrivateScope() {
   is['undefined'] = isUndefined;
   is['void'] = isUndefined;
 
-  /// @section base
-  /// @method vitals.is.boolean
-  /// @alias vitals.is.bool
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive boolean][bool-desc]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isBoolean(val) {
     switch (arguments['length']) {
@@ -1859,19 +1731,10 @@ var is = (function isPrivateScope() {
   is['boolean'] = isBoolean;
   is['bool'] = isBoolean;
 
-  /// @section base
-  /// @method vitals.is.string
-  /// @alias vitals.is.str
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive string][str-prim]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isString(val) {
     switch (arguments['length']) {
@@ -1886,19 +1749,10 @@ var is = (function isPrivateScope() {
   is['string'] = isString;
   is['str'] = isString;
 
-  /// @section base
-  /// @method vitals.is._string
-  /// @alias vitals.is._str
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive string][str-prim]
-   *   data type and not empty (e.g. `""`).
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNonEmptyString(val) {
     switch (arguments['length']) {
@@ -1913,19 +1767,10 @@ var is = (function isPrivateScope() {
   is['_string'] = isNonEmptyString;
   is['_str'] = isNonEmptyString;
 
-  /// @section base
-  /// @method vitals.is.number
-  /// @alias vitals.is.num
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive][prim] [number][num]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNumber(val) {
     switch (arguments['length']) {
@@ -1940,19 +1785,10 @@ var is = (function isPrivateScope() {
   is['number'] = isNumber;
   is['num'] = isNumber;
 
-  /// @section base
-  /// @method vitals.is._number
-  /// @alias vitals.is._num
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive][prim] [number][num]
-   *   data type and not `0`.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNonZeroNumber(val) {
     switch (arguments['length']) {
@@ -1967,17 +1803,10 @@ var is = (function isPrivateScope() {
   is['_number'] = isNonZeroNumber;
   is['_num'] = isNonZeroNumber;
 
-  /// @section base
-  /// @method vitals.is.nan
   /**
-   * @description
-   *   Checks if a value or many values are [NaN][nan].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNan(val) {
     switch (arguments['length']) {
@@ -1991,18 +1820,10 @@ var is = (function isPrivateScope() {
   }
   is['nan'] = isNan;
 
-  /// @section base
-  /// @method vitals.is.object
-  /// @alias vitals.is.obj
   /**
-   * @description
-   *   Checks if a value or many values are an [object][obj] data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isObject(val) {
     switch (arguments['length']) {
@@ -2017,21 +1838,10 @@ var is = (function isPrivateScope() {
   is['object'] = isObject;
   is['obj'] = isObject;
 
-  /// @section base
-  /// @method vitals.is._object
-  /// @alias vitals.is._obj
   /**
-   * @description
-   *   Checks if a value or many values are an [object][obj] or
-   *   [function][func] data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
-   * Checks if a value(s) is an object or function.
-   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -2049,26 +1859,10 @@ var is = (function isPrivateScope() {
   is['_object'] = isObjectOrFunction;
   is['_obj'] = isObjectOrFunction;
 
-  /// @section base
-  /// @method vitals.is.func
-  /// @alias vitals.is.fn
-  /// @alias vitals.is.fun
-  /// @alias vitals.is.function
-  ///   Note that `vitals.is.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.is.func` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Checks if a value or many values are a [function][func] data type. Note
-   *   that `vitals.is.function` is not valid in [ES3][ecma3] and some
-   *   [ES5][ecma5] browser and other platform environments. Use
-   *   `vitals.is.func` for browser and platform safety.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isFunction(val) {
     switch (arguments['length']) {
@@ -2088,19 +1882,10 @@ var is = (function isPrivateScope() {
   }
   catch (e) {}
 
-  /// @section base
-  /// @method vitals.is.array
-  /// @alias vitals.is.arr
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [array][arr]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArray(val) {
     switch (arguments['length']) {
@@ -2115,19 +1900,10 @@ var is = (function isPrivateScope() {
   is['array'] = isArray;
   is['arr'] = isArray;
 
-  /// @section base
-  /// @method vitals.is._array
-  /// @alias vitals.is._arr
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [array][arr] or
-   *   [arguments][args] `object` types.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArrayOrArguments(val) {
     switch (arguments['length']) {
@@ -2142,21 +1918,10 @@ var is = (function isPrivateScope() {
   is['_array'] = isArrayOrArguments;
   is['_arr'] = isArrayOrArguments;
 
-  /// @section base
-  /// @method vitals.is.regexp
-  /// @alias vitals.is.regex
-  /// @alias vitals.is.regx
-  /// @alias vitals.is.re
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [RegExp][regex]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isRegExp(val) {
     switch (arguments['length']) {
@@ -2173,18 +1938,10 @@ var is = (function isPrivateScope() {
   is['regx'] = isRegExp;
   is['re'] = isRegExp;
 
-  /// @section base
-  /// @method vitals.is.date
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [Date][date]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isDate(val) {
     switch (arguments['length']) {
@@ -2198,19 +1955,10 @@ var is = (function isPrivateScope() {
   }
   is['date'] = isDate;
 
-  /// @section base
-  /// @method vitals.is.error
-  /// @alias vitals.is.err
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [Error][error]
-   *   `object` types.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isError(val) {
     switch (arguments['length']) {
@@ -2225,18 +1973,10 @@ var is = (function isPrivateScope() {
   is['error'] = isError;
   is['err'] = isError;
 
-  /// @section base
-  /// @method vitals.is.args
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [arguments][args] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArguments(val) {
     switch (arguments['length']) {
@@ -2250,19 +1990,10 @@ var is = (function isPrivateScope() {
   }
   is['args'] = isArguments;
 
-  /// @section base
-  /// @method vitals.is.document
-  /// @alias vitals.is.doc
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [DOM Document][doc] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isDocument(val) {
     switch (arguments['length']) {
@@ -2277,19 +2008,10 @@ var is = (function isPrivateScope() {
   is['document'] = isDocument;
   is['doc'] = isDocument;
 
-  /// @section base
-  /// @method vitals.is.element
-  /// @alias vitals.is.elem
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [DOM Element][elem] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isElement(val) {
     switch (arguments['length']) {
@@ -2304,38 +2026,10 @@ var is = (function isPrivateScope() {
   is['element'] = isElement;
   is['elem'] = isElement;
 
-  /// @section base
-  /// @method vitals.is.empty
   /**
-   * @description
-   *   Checks if a value or many values are considered empty. The definition
-   *   of empty is as follows in order of priority (per #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be empty to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isEmpty(val) {
     switch (arguments['length']) {
@@ -2349,17 +2043,10 @@ var is = (function isPrivateScope() {
   }
   is['empty'] = isEmpty;
 
-  /// @section base
-  /// @method vitals.is.frozen
   /**
-   * @description
-   *   Checks if an `object` or `function` is [frozen][frozen].
    * @public
    * @param {...(?Object|?Function)} source
-   *   If more than one #source is provided, every #source must be
-   *   [frozen][frozen] to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isFrozen(val) {
     switch (arguments['length']) {
@@ -2373,20 +2060,10 @@ var is = (function isPrivateScope() {
   }
   is['frozen'] = isFrozen;
 
-  /// @section base
-  /// @method vitals.is.wholeNumber
-  /// @alias vitals.is.whole
   /**
-   * @description
-   *   Checks if a [number][num] is whole (i.e. has no fractional portion).
-   *   All whole numbers less than one (e.g. `wholeNumber <= 0`) will return
-   *   `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be a valid whole `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isWholeNumber(val) {
     switch (arguments['length']) {
@@ -2401,19 +2078,10 @@ var is = (function isPrivateScope() {
   is['wholeNumber'] = isWholeNumber;
   is['whole'] = isWholeNumber;
 
-  /// @section base
-  /// @method vitals.is.oddNumber
-  /// @alias vitals.is.odd
   /**
-   * @description
-   *   Checks if a [number][num] is odd. All odd numbers less than zero (e.g.
-   *   `oddNumber < 0`) will return `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be an odd `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isOddNumber(val) {
     switch (arguments['length']) {
@@ -2428,19 +2096,10 @@ var is = (function isPrivateScope() {
   is['oddNumber'] = isOddNumber;
   is['odd'] = isOddNumber;
 
-  /// @section base
-  /// @method vitals.is.evenNumber
-  /// @alias vitals.is.even
   /**
-   * @description
-   *   Checks if a [number][num] is even. All even numbers less than one (e.g.
-   *   `evenNumber <= 0`) will return `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be an even `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isEvenNumber(val) {
     switch (arguments['length']) {
@@ -2454,9 +2113,6 @@ var is = (function isPrivateScope() {
   }
   is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
-
-
-
 
   /**
    * @private
@@ -2537,8 +2193,6 @@ var is = (function isPrivateScope() {
     return $is.even(val);
   }
 
-
-
   /**
    * @private
    * @param {!Array<!function>} checks
@@ -2579,8 +2233,6 @@ var is = (function isPrivateScope() {
     return YES;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function(*, boolean=): boolean>}
@@ -2595,18 +2247,10 @@ var is = (function isPrivateScope() {
     var $types = {};
 
     /**
-     * @description
-     *   Adds types to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes their type section's
-     *   method.
      * @private
      * @param {string} section
-     *   The category for the types.
      * @param {!Object<string, !function(*): boolean>} types
-     *   Each property should use a type's name for its key and method for its
-     *   value.
-     * @param {boolean=} nullableDefault = `true`
-     *   The default nullable value for each type in #types.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addTypes(section, types, nullableDefault) {
@@ -2621,18 +2265,11 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds a type to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes its type section's method.
      * @private
      * @param {string} section
-     *   The type's category.
      * @param {string} type
-     *   The type's name.
      * @param {!function(*): boolean} check
-     *   The type's check method.
-     * @param {boolean=} nullableDefault = `true`
-     *   The type's default nullable value.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addType(section, type, check, nullableDefault) {
@@ -2644,7 +2281,7 @@ var is = (function isPrivateScope() {
 
       /**
        * @param {*} val
-       * @param {boolean=} nullable = `nullableDefault`
+       * @param {boolean=} nullable
        * @return {boolean}
        */
       function typeCheck(val, nullable) {
@@ -2661,8 +2298,6 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds the type shortcuts to the *$types* hash map.
      * @private
      * @param {!Object<string, string>} shortcuts
      * @return {void}
@@ -2686,9 +2321,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an array's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `array` type.
      */
     function _addArrayType(eachCheck) {
 
@@ -2719,9 +2352,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an hash map's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `object` or `function` hash map type.
      */
     function _addMapType(eachCheck) {
 
@@ -2747,7 +2378,6 @@ var is = (function isPrivateScope() {
       return check;
     }
     _addType['maps'] = _addMapType;
-
 
     _addTypes('primitives', {
       'undefined': $is.void,
@@ -2808,7 +2438,6 @@ var is = (function isPrivateScope() {
       'elementmap':   $is.elem,
       'documentmap':  $is.doc
     });
-
 
     _addShortcuts({
 
@@ -2871,8 +2500,6 @@ var is = (function isPrivateScope() {
 
     return $types;
   })();
-
-
 
   /**
    * @private
@@ -3017,12 +2644,9 @@ var is = (function isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Method checks whether `"!"` or `"?"` exists in the #types `string`.
    * @private
    * @param {string} types
    * @return {(undefined|boolean)}
-   *   If `undefined` no override exists.
    */
   function _getNullable(types) {
 
@@ -3042,8 +2666,6 @@ var is = (function isPrivateScope() {
       ? !negate && ensure
       : VOID;
   }
-
-
 
   /**
    * @private
@@ -3077,14 +2699,10 @@ var is = (function isPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return is;
 })();
@@ -3096,21 +2714,10 @@ vitals['is'] = is;
  */
 var copy = (function copyPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.copy
   /**
-   * @description
-   *   Makes a [copy][clone] of any value. Note that for `array` values @slice 
-   *   only copies the indexed properties while @copy copies all of the
-   *   properties.
    * @public
    * @param {*} val
-   *   The value to copy.
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively copy property values for an `object` or
-   *   `function`.
+   * @param {boolean=} deep
    * @return {*}
    */
   function copy(val, deep) {
@@ -3136,20 +2743,11 @@ var copy = (function copyPrivateScope() {
             : _copyObj(val, deep);  
   }
 
-  /// @section base
-  /// @method vitals.copy.object
-  /// @alias vitals.copy.obj
   /**
-   * @description
-   *   Makes a [copy][clone] of an `object`. By default it shallowly copies
-   *   all [owned][own] properties of the #source with the option to deeply
-   *   [copy][clone] them as well.
    * @public
    * @param {!Object} source
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Object}
-   *   A new `object` [copied][clone] from the #source.
    */
   function copyObject(source, deep) {
 
@@ -3171,28 +2769,11 @@ var copy = (function copyPrivateScope() {
   copy['object'] = copyObject;
   copy['obj'] = copyObject;
 
-  /// @section base
-  /// @method vitals.copy.array
-  /// @alias vitals.copy.arr
-  /// @alias vitals.copy.args
   /**
-   * @description
-   *   Makes a [copy][clone] of an `array` or array-like `object`. Note that
-   *   @slice#array only copies the indexed properties while @copy#array
-   *   copies all of the indexed and [owned][own] properties. By default it
-   *   shallowly copies all of the #source properties with the option to
-   *   deeply [copy][clone] them as well.
    * @public
    * @param {(!Array|!Arguments|!Object)} source
-   *   Must be an `array` or array-like `object`. The #source is considered
-   *   array-like when it [owns][own] a property with the `"length"` key name
-   *   (e.g. `source.length` like the `array` [length property][arr-length])
-   *   whose value is a whole `number` that is greater than or equal to zero
-   *   (e.g. `isWholeNumber(source.length) && source.length >= 0`).
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Array}
-   *   A new `array` [copied][clone] from the #source.
    */
   function copyArray(source, deep) {
 
@@ -3219,29 +2800,11 @@ var copy = (function copyPrivateScope() {
   copy['arr'] = copyArray;
   copy['args'] = copyArray;
 
-  /// @section base
-  /// @method vitals.copy.regexp
-  /// @alias vitals.copy.regex
-  /// @alias vitals.copy.regx
-  /// @alias vitals.copy.re
   /**
-   * @description
-   *   Makes a [copy][clone] of a `RegExp`.
    * @public
    * @param {!RegExp} source
-   * @param {(string|undefined)=} flags = `undefined`
-   *   Override the #source `RegExp` flags when [copying][clone] it. If the
-   *   #flags is `undefined`, the original #source flags are used. If the
-   *   #flags `string` does **not** start with a plus, `"+"`, or minus, `"-"`,
-   *   sign, the #flags value is used for the [copied][clone] `RegExp`.
-   *   Otherwise, #flags `string` is parsed according to the following rules:
-   *   - Each series of flag characters following a plus sign, `"+"`, are
-   *     enabled for the [copied][clone] `RegExp`.
-   *   - Each series of flag characters following a minus sign, `"-"`, are
-   *     disabled for the [copied][clone] `RegExp`.
+   * @param {(string|undefined)=} flags
    * @return {!RegExp}
-   *   A new `RegExp` with the [RegExp.prototype.source][regex-source] value
-   *   and the `RegExp` flag settings of the provided #source `RegExp`.
    */
   function copyRegExp(source, flags) {
 
@@ -3271,31 +2834,11 @@ var copy = (function copyPrivateScope() {
   copy['regx'] = copyRegExp;
   copy['re'] = copyRegExp;
 
-  /// @section base
-  /// @method vitals.copy.func
-  /// @alias vitals.copy.fn
-  /// @alias vitals.copy.fun
-  /// @alias vitals.copy.function
-  ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.copy.func` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Makes a [copy][clone] of a `function`. By default it shallowly copies
-   *   all [owned][own] properties of the #source with the option to deeply
-   *   [copy][clone] them as well. Note that the
-   *   [length property][func-length] will be set to `0` and the
-   *   [name property][func-name] will be set to `"funcCopy"` for
-   *   [unminified][minify] `vitals` sources. Also note that
-   *   `vitals.copy.function` is not valid in [ES3][ecma3] and some
-   *   [ES5][ecma5] browser and other platform environments. Use
-   *   `vitals.copy.func` for browser and platform safety.
    * @public
    * @param {!Function} source
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Function}
-   *   A new `function` [copied][clone] from the #source.
    */
   function copyFunction(source, deep) {
 
@@ -3323,9 +2866,6 @@ var copy = (function copyPrivateScope() {
     copy['function'] = copyFunction;
   }
   catch (e) {}
-
-
-
 
   /**
    * @private
@@ -3388,9 +2928,6 @@ var copy = (function copyPrivateScope() {
       ? _mergeDeep(funcCopy, func)
       : $merge(funcCopy, func);
   }
-
-
-
 
   /**
    * @private
@@ -3501,8 +3038,6 @@ var copy = (function copyPrivateScope() {
     return src;
   }
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -3520,9 +3055,6 @@ var copy = (function copyPrivateScope() {
     }
     return dest;
   }
-
-
-
 
   /**
    * @private
@@ -3556,14 +3088,10 @@ var copy = (function copyPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return copy;
 })();
@@ -3575,87 +3103,12 @@ vitals['copy'] = copy;
  */
 var cut = (function cutPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.cut
   /**
-   * @description
-   *   Removes properties from an `object`, `array`, or `function` or
-   *   characters from a `string` and returns the amended #source.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. All other details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     - **The leading #val is a `RegExp`**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a key that matches (via a @has#pattern test) any
-   *       #val.
-   *     - **The leading #val is a `string`**!$
-   *       This method will [delete][delete] all properties with a key that
-   *       matches (via a [strict equality][equal] test) any #val.
-   *     - **The leading #val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the [owned][own] property is [deleted][delete]). It has the
-   *       following optional parameters:
-   *       - **value** *`*`*
-   *       - **key** *`string`*
-   *       - **source** *`!Object|!Function`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `object` within the filter make sure you define the
-   *       filter's third parameter so you can safely assume all references to
-   *       the #source are its original values).
-   *     - **All other situations**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a value that matches (via a
-   *       [strict equality][equal] test) any #val.
-   *   - *`!Array|!Arguments`*!$
-   *     - **Every #val is a whole `number`**!$
-   *       This method will [splice][splice] from the #source each property
-   *       with an index that matches (via a [strict equality][equal] test)
-   *       any #val. If a #val is a negative `number`, it is added to the
-   *       #source [length][arr-length] before checking for a matching
-   *       property.
-   *     - **The leading #val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the indexed property is [spliced][splice] from the
-   *       #source). It has the following optional parameters:
-   *       - **value** *`*`*
-   *       - **index** *`number`*
-   *       - **source** *`!Array`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `array` within the filter make sure you define the filter's
-   *       third parameter so you can safely assume all references to the
-   *       #source are its original values).
-   *     - **All other situations**!$
-   *       This method will [splice][splice] from the #source all indexed
-   *       properties with a value that matches (via a
-   *       [strict equality][equal] test) any #val.
-   *   - *`string`*!$
-   *     Each `substring` of characters that matches any #val is removed from
-   *     the #source. Each #val that is not a `RegExp` or `string` is
-   *     converted to a `string` before checking the #source for any matches.
    * @param {?Object=} thisArg
-   *   Only applicable when a filter `function` is defined for #val (i.e. the
-   *   #source must be an `object`, `function`, or `array`, and the leading
-   *   #val must be a `function`). If #thisArg is defined, the filter
-   *   `function` is bound to its value. Note that the native
-   *   [Function.prototype.bind][bind] is not used to bind the filter
-   *   `function`. Instead the filter `function` is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   filter `function` with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the filter `function`
-   *   (unless more than three parameters were defined for the filter
-   *   `function` as the wrapper has a max value of `3`) and the
-   *   [name property][func-name] value of `"filter"` (unless you are using a
-   *   [minified][minify] version of `vitals`).
    * @return {(!Object|!Function|!Array|string)}
-   *   The amended #source.
    */
   function cut(source, val, thisArg) {
 
@@ -3714,81 +3167,12 @@ var cut = (function cutPrivateScope() {
     }
   }
 
-  /// @section base
-  /// @method vitals.cut.property
-  /// @alias vitals.cut.prop
   /**
-   * @description
-   *   Removes a property from an `object`, `array`, or `function` and returns
-   *   the amended #source.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {*} val
-   *   All details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     - **#val is a `RegExp`**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a key that matches (via a @has#pattern test) the
-   *       #val.
-   *     - **#val is a `string`**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a key that matches (via a [strict equality][equal]
-   *       test) the #val.
-   *     - **#val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the [owned][own] property is [deleted][delete]). It has the
-   *       following optional parameters:
-   *       - **value** *`*`*
-   *       - **key** *`string`*
-   *       - **source** *`!Object|!Function`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `object` within the filter make sure you define the
-   *       filter's third parameter so you can safely assume all references to
-   *       the #source are its original values).
-   *     - **All other situations**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a value that matches (via a
-   *       [strict equality][equal] test) the #val.
-   *   - *`!Array|!Arguments`*!$
-   *     - **#val is a whole `number`**!$
-   *       This method will [splice][splice] from the #source the property
-   *       with an index that matches (via a [strict equality][equal] test)
-   *       the #val. If the #val is a negative `number`, it is added to the
-   *       #source [length][arr-length] before checking for a matching
-   *       property.
-   *     - **#val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the property is [spliced][splice] from the #source). It has
-   *       the following optional parameters:
-   *       - **value** *`*`*
-   *       - **index** *`number`*
-   *       - **source** *`!Array`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `array` within the filter make sure you define the filter's
-   *       third parameter so you can safely assume all references to the
-   *       #source are its original values).
-   *     - **All other situations**!$
-   *       This method will [splice][splice] from the #source all properties
-   *       with a value that matches (via a [strict equality][equal] test)
-   *       the #val.
    * @param {?Object=} thisArg
-   *   Only applicable when a filter `function` is defined for #val. If
-   *   #thisArg is defined, the filter `function` is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is not used to bind the
-   *   filter `function`. Instead the filter `function` is wrapped with a
-   *   regular new [Function][func] that uses [Function.prototype.call][call]
-   *   to call the filter `function` with #thisArg. The new wrapper `function`
-   *   has the same [length property][func-length] value as the filter
-   *   `function` (unless more than three parameters were defined for the
-   *   filter `function` as the wrapper has a max value of `3`) and the
-   *   [name property][func-name] value of `"filter"` (unless you are using a
-   *   [minified][minify] version of `vitals`).
    * @return {(!Object|!Function|!Array)}
-   *   The amended #source.
    */
   function cutProperty(source, val, thisArg) {
 
@@ -3837,19 +3221,11 @@ var cut = (function cutPrivateScope() {
   cut['property'] = cutProperty;
   cut['prop'] = cutProperty;
 
-  /// @section base
-  /// @method vitals.cut.key
   /**
-   * @description
-   *   Removes a property by key name from an `object` or `function` and
-   *   returns the amended #source.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} key
-   *   If a property with the #key value for its key name is [owned][own] by
-   *   the #source, it is [deleted][delete].
    * @return {(!Object|!Function)}
-   *   The amended #source.
    */
   function cutKey(source, key) {
 
@@ -3868,49 +3244,12 @@ var cut = (function cutPrivateScope() {
   }
   cut['key'] = cutKey;
 
-  /// @section base
-  /// @method vitals.cut.index
-  /// @alias vitals.cut.i
   /**
-   * @description
-   *   Removes properties by index from an `array` or array-like `object` and
-   *   returns the amended #source. If an array-like `object` is supplied, it
-   *   is copied via [slice][slice] (i.e. converted to an `array`) before
-   *   removing any properties.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function)} source
-   *   If the #source is **not** an `array`, it must be an array-like `object`
-   *   or `function`. The #source is considered array-like when it [owns][own]
-   *   a property with the `"length"` key name (e.g. `source.length` like the
-   *   `array` [length property][arr-length]) whose value is a whole `number`
-   *   that is greater than or equal to zero (e.g.
-   *   `isWholeNumber(source.length) && source.length >= 0`). If an array-like
-   *   #source is provided, it is [sliced][slice] into an `array` before any
-   *   values are removed.
    * @param {number} index
-   *   The #index must be a whole `number`. The following rules apply in order
-   *   of priority (per #toIndex data type):
-   *   - *`undefined`*!$
-   *     The #index value sets the one matching property (if a property with
-   *     an index value of the #index exists in the #source) to
-   *     [splice][splice] from the #source. If the #index is negative, it is
-   *     added to the #source [length][arr-length] before a matching property
-   *     is searched for.
-   *   - *`number`*!$
-   *     The #index value sets the start of a range of indexes that are
-   *     [spliced][splice] from the #source. If the #index is negative, it is
-   *     added to the #source [length][arr-length]. The property with a
-   *     matching index value of the #index is included (as well as starts the
-   *     range of indexes) in the [spliced][splice] properties if it exists.
-   * @param {(number|undefined)=} toIndex = `undefined`
-   *   If the #toIndex is defined, it must be a whole `number`. The #toIndex
-   *   `number` causes all property indexes from the #index to the #toIndex
-   *   (not including the #toIndex) to be [spliced][splice] from #source. If
-   *   the #toIndex is a negative `number`, it is added to the #source
-   *   [length][arr-length] before being used.
+   * @param {(number|undefined)=} toIndex
    * @return {!Array}
-   *   The amended #source or when an array-like `object` is defined for the
-   *   #source, an amended copy (via [slice][slice]) of #source.
    */
   function cutIndex(source, index, toIndex) {
 
@@ -3970,29 +3309,11 @@ var cut = (function cutPrivateScope() {
   cut['index'] = cutIndex;
   cut['i'] = cutIndex;
 
-  /// @section base
-  /// @method vitals.cut.type
   /**
-   * @description
-   *   Removes properties by their value's [data type][type] from an `object`,
-   *   `function`, or `array` and returns the amended #source. @is#main is
-   *   used to complete the type checks. See @is-types for all available data
-   *   type options.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {string} type
-   *   See @is-types for all valid #type options. The remaining details are as
-   *   follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will [delete][delete] from the #source all [owned][own]
-   *     properties with a value that matches (via a @is#main test) the #type.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will [splice][splice] from the #source all indexed
-   *     properties with a value that matches (via a @is#main test) the #type.
    * @return {(!Object|!Function|!Array)}
-   *   The amended #source.
    */
   function cutType(source, type) {
 
@@ -4021,29 +3342,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['type'] = cutType;
 
-  /// @section base
-  /// @method vitals.cut.value
-  /// @alias vitals.cut.val
   /**
-   * @description
-   *   Removes properties by value from an `object`, `function`, or `array`
-   *   and returns the amended #source.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {*} val
-   *   All details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will [delete][delete] from the #source all [owned][own]
-   *     properties with a value that matches (via a [strict equality][equal]
-   *     test) the #val.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will [splice][splice] from the #source all indexed
-   *     properties with a value that matches (via a [strict equality][equal]
-   *     test) the #val.
    * @return {(!Object|!Function|!Array)}
-   *   The amended #source.
    */
   function cutValue(source, val) {
 
@@ -4066,20 +3369,11 @@ var cut = (function cutPrivateScope() {
   cut['value'] = cutValue;
   cut['val'] = cutValue;
 
-  /// @section base
-  /// @method vitals.cut.pattern
-  /// @alias vitals.cut.patt
   /**
-   * @description
-   *   Removes a pattern from a `string` and returns the amended #source.
    * @public
    * @param {string} source
    * @param {*} pattern
-   *   Each `substring` of characters that matches #pattern is removed from
-   *   the #source. If the #pattern is not a `RegExp` or `string`, it is
-   *   converted into a `string` before checking the #source for any matches.
    * @return {string}
-   *   The amended #source.
    */
   function cutPattern(source, pattern) {
 
@@ -4098,46 +3392,11 @@ var cut = (function cutPrivateScope() {
   cut['pattern'] = cutPattern;
   cut['patt'] = cutPattern;
 
-  /// @section base
-  /// @method vitals.cut.properties
-  /// @alias vitals.cut.props
   /**
-   * @description
-   *   Removes properties from an `object`, `array`, or `function` and returns
-   *   the amended #source.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. All other details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     - **The leading #val is a `RegExp`**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a key that matches (via a @has#pattern test) any
-   *       #val.
-   *     - **The leading #val is a `string`**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a key that matches (via a [strict equality][equal]
-   *       test) any #val.
-   *     - **All other situations**!$
-   *       This method will [delete][delete] from the #source all [owned][own]
-   *       properties with a value that matches (via a
-   *       [strict equality][equal] test) any #val.
-   *   - *`!Array|!Arguments`*!$
-   *     - **Every #val is a whole `number`**!$
-   *       This method will [splice][splice] from the #source each property
-   *       with an index that matches (via a [strict equality][equal] test)
-   *       any #val. If a #val is a negative `number`, it is added to the
-   *       #source [length][arr-length] before checking for a matching
-   *       property.
-   *     - **All other situations**!$
-   *       This method will [splice][splice] from the #source all indexed
-   *       properties with a value that matches (via a
-   *       [strict equality][equal] test) any #val.
    * @return {(!Object|!Function|!Array)}
-   *   The amended #source.
    */
   function cutProperties(source, val) {
 
@@ -4167,20 +3426,11 @@ var cut = (function cutPrivateScope() {
   cut['properties'] = cutProperties;
   cut['props'] = cutProperties;
 
-  /// @section base
-  /// @method vitals.cut.keys
   /**
-   * @description
-   *   Removes properties by key name from an `object` or `function` and
-   *   returns the amended #source.
    * @public
    * @param {(!Object|!Function)} source
    * @param {...*} key
-   *   If only one `array` #key is provided, it is considered an `array` of
-   *   keys. For each #key value, if the #source [owns][own] a property with a
-   *   matching key name, it is [deleted][delete].
    * @return {(!Object|!Function)}
-   *   The amended #source.
    */
   function cutKeys(source, key) {
 
@@ -4206,35 +3456,11 @@ var cut = (function cutPrivateScope() {
   }
   cut['keys'] = cutKeys;
 
-  /// @section base
-  /// @method vitals.cut.indexes
-  /// @alias vitals.cut.ii
   /**
-   * @description
-   *   Removes properties by index from an `array` or array-like `object` and
-   *   returns the amended #source. If an array-like `object` is supplied, it
-   *   is copied via [slice][slice] (i.e. converted to an `array`) before
-   *   removing any properties.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function)} source
-   *   If the #source is **not** an `array`, it must be an array-like `object`
-   *   or `function`. The #source is considered array-like when it [owns][own]
-   *   a property with the `"length"` key name (e.g. `source.length` like the
-   *   `array` [length property][arr-length]) whose value is a whole `number`
-   *   that is greater than or equal to zero (e.g.
-   *   `isWholeNumber(source.length) && source.length >= 0`). If an array-like
-   *   #source is provided, it is [sliced][slice] into an `array` before any
-   *   values are removed.
    * @param {(!Array<number>|...number)} index
-   *   Each #index `number` must be a whole `number`. If only one `array`
-   *   #index is provided, it is considered an `array` of indexes. If a
-   *   property with any #index exists in #source, it is [spliced][splice]
-   *   from the #source. If an #index is a negative `number`, it is added to
-   *   the #source [length][arr-length] before checking for a matching
-   *   property.
    * @return {!Array}
-   *   The amended #source or when an array-like `object` is defined for the
-   *   #source, an amended copy (via [slice][slice]) of #source.
    */
   function cutIndexes(source, index) {
 
@@ -4283,30 +3509,11 @@ var cut = (function cutPrivateScope() {
   cut['indexes'] = cutIndexes;
   cut['ii'] = cutIndexes;
 
-  /// @section base
-  /// @method vitals.cut.values
-  /// @alias vitals.cut.vals
   /**
-   * @description
-   *   Removes properties by value from an `object`, `function`, or `array`
-   *   and returns the amended #source.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments)} source
-   *   If the #source is an `arguments` instance, it is [sliced][slice] into
-   *   an `array` before any values are removed.
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. All other details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will [delete][delete] from the #source all of the
-   *     [owned][own] properties with a value that matches (via a
-   *     [strict equality][equal] test) any #val.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will [splice][splice] from the #source all of the indexed
-   *     properties with a value that matches (via a [strict equality][equal]
-   *     test) any #val.
    * @return {(!Object|!Function|!Array)}
-   *   The amended #source.
    */
   function cutValues(source, val) {
 
@@ -4336,22 +3543,11 @@ var cut = (function cutPrivateScope() {
   cut['values'] = cutValues;
   cut['vals'] = cutValues;
 
-  /// @section base
-  /// @method vitals.cut.patterns
-  /// @alias vitals.cut.patts
   /**
-   * @description
-   *   Removes patterns from a `string` and returns the amended #source.
    * @public
    * @param {string} source
    * @param {...*} pattern
-   *   If only one `array` #pattern is provided, it is considered an `array`
-   *   of patterns. Each `substring` of characters that matches any #pattern
-   *   is removed from the #source. If a #pattern is not a `RegExp` or
-   *   `string`, it is converted into a `string` before checking the #source
-   *   for any matches.
    * @return {string}
-   *   The amended #source.
    */
   function cutPatterns(source, pattern) {
 
@@ -4376,8 +3572,6 @@ var cut = (function cutPrivateScope() {
   }
   cut['patterns'] = cutPatterns;
   cut['patts'] = cutPatterns;
-
-
 
   /**
    * @private
@@ -4568,8 +3762,6 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -4677,8 +3869,6 @@ var cut = (function cutPrivateScope() {
       source = _deleteVal(source, vals[i]);
     return source;
   }
-
-
 
   /**
    * @private
@@ -4809,8 +3999,6 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} source
@@ -4914,8 +4102,6 @@ var cut = (function cutPrivateScope() {
     return source;
   }
 
-
-
   /**
    * @private
    * @param {!Array<number>} indexes
@@ -4935,7 +4121,6 @@ var cut = (function cutPrivateScope() {
       return result();
     }
 
-
     /**
      * @type {!Array<number>}
      */
@@ -4945,8 +4130,6 @@ var cut = (function cutPrivateScope() {
      * @type {!Array<number>}
      */
     var $last;
-
-
 
     /**
      * @private
@@ -4975,13 +4158,11 @@ var cut = (function cutPrivateScope() {
       len = indexes['length'];
       i = 0;
 
-      // push 1st index
       index = parse(indexes[i], sourceLen);
       while (index === -1 && ++i < len)
         index = parse(indexes[i], sourceLen);
       push(index);
 
-      // push remaining indexes
       while (++i < len) {
         index = parse(indexes[i], sourceLen);
         if (index !== -1)
@@ -5012,7 +4193,6 @@ var cut = (function cutPrivateScope() {
      * @param {number} index
      * @param {number} len
      * @return {number}
-     *   If invalid #index is given `-1` is returned.
      */
     function parse(index, len) {
 
@@ -5176,11 +4356,8 @@ var cut = (function cutPrivateScope() {
         sort(index, next, right);
     }
 
-
     return sortIndexes;
   })();
-
-
 
   /**
    * @private
@@ -5207,8 +4384,6 @@ var cut = (function cutPrivateScope() {
       return func['call'](thisArg, val, key, obj);
     };
   }
-
-
 
   /**
    * @private
@@ -5279,8 +4454,6 @@ var cut = (function cutPrivateScope() {
     return YES;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -5313,14 +4486,10 @@ var cut = (function cutPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return cut;
 })();
@@ -5332,85 +4501,12 @@ vitals['cut'] = cut;
  */
 var each = (function eachPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.each
   /**
-   * @description
-   *   A shortcut for iterating over [owned][own] `object` properties, indexed
-   *   `array` properties, or a defined `number` of cycles.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     Iterates over all [owned][own] properties in random order.
-   *   - *`!Array|!Arguments`*!$
-   *     Iterates over all indexed properties from `0` to `source.length`.
-   *   - *`string`*!$
-   *     Converted to an `array` #source using one of the following list of
-   *     values for the separator (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
-   *   - *`number`*!$
-   *     Must be a whole `number`. Iterates over the `number` of cycles.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=)} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments|string`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments|string`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {(!Object|!Function|!Array|!Arguments|number)}
-   *   The original #source value (unless the #source is a `string` which will
-   *   result in an `array`).
    */
   function each(source, iteratee, thisArg) {
 
@@ -5450,37 +4546,12 @@ var each = (function eachPrivateScope() {
       : _eachObj(source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.each.object
-  /// @alias vitals.each.obj
   /**
-   * @description
-   *   A shortcut for iterating over [owned][own] `object` properties.
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=)} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **key** *`string`*
-   *   - **source** *`!Object|!Function`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#main based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {(!Object|!Function)}
-   *   The original #source value.
    */
   function eachObject(source, iteratee, thisArg) {
 
@@ -5510,46 +4581,12 @@ var each = (function eachPrivateScope() {
   each['object'] = eachObject;
   each['obj'] = eachObject;
 
-  /// @section base
-  /// @method vitals.each.array
-  /// @alias vitals.each.arr
   /**
-   * @description
-   *   A shortcut for iterating over all of the indexed properties of an
-   *   `array` or array-like `object` or `function`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If the #source is a `string`, it is converted into an `array` using one
-   *   of the following list of values for the separator (values listed in
-   *   order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {!function(*=, number=, !Array=)} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **index** *`number`*
-   *   - **source** *`!Array`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#array based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {(!Array|!Arguments|!Object|!Function)}
-   *   The original #source value (unless the #source is a `string` which will
-   *   result in an `array`).
    */
   function eachArray(source, iteratee, thisArg) {
 
@@ -5585,35 +4622,12 @@ var each = (function eachPrivateScope() {
   each['array'] = eachArray;
   each['arr'] = eachArray;
 
-  /// @section base
-  /// @method vitals.each.cycle
-  /// @alias vitals.each.time
   /**
-   * @description
-   *   A shortcut for iterating over a set `number` of cycles.
    * @public
    * @param {number} cycles
-   *   Must be a whole `number`.
    * @param {!function(number=, number=)} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **cycle** *`number`*!$
-   *     Note that this `number` is zero-based (i.e. the first *cycle* value
-   *     is `0`).
-   *   - **cycles** *`number`*!$
-   *     The unchanged #cycles value.
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than two parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `2`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {number}
-   *   The original #cycles value.
    */
   function eachCycle(cycles, iteratee, thisArg) {
 
@@ -5644,8 +4658,6 @@ var each = (function eachPrivateScope() {
   }
   each['cycle'] = eachCycle;
   each['time'] = eachCycle;
-
-
 
   /**
    * @private
@@ -5788,8 +4800,6 @@ var each = (function eachPrivateScope() {
     return cycles;
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -5840,8 +4850,6 @@ var each = (function eachPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -5874,14 +4882,10 @@ var each = (function eachPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return each;
 })();
@@ -5893,38 +4897,13 @@ vitals['each'] = each;
  */
 var fill = (function fillPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.fill
   /**
-   * @description
-   *   Fills an `array`, `object`, or `string` with specified values.
    * @public
    * @param {(?Array|?Object|?Function|?number)} source
-   *   If the #source is a `number`, @fill returns a new `string` filled with
-   *   the `string` conversion of #val the #source `number` of times.
    * @param {(!Array|string)=} keys
-   *   Only use with an `object` or `function` #source. If defined, #keys is
-   *   considered an `array` of keys that will limit the fill action. If a
-   *   `string` is defined for #keys, it is converted to an `array` using one
-   *   of the values in the following list for the separator (values listed in
-   *   order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {*} val
-   *   The value to fill the `array`, `object`, or `string` with.
-   * @param {number=} start = `0`
-   *   Only use with an `array` #source. It begins the range of indexes in the
-   *   #source that are filled with the #val. If negative, the #start value is
-   *   added to the #source [length][arr-length]. The #start index `number` is
-   *   included in the range of filled properties if it exists.
-   * @param {number=} end = `source.length`
-   *   Only use with an `array` #source. It ends the range of indexes in the
-   *   #source that are filled with the #val. If negative, the #end value is
-   *   added to the #source [length][arr-length]. The #end index `number` is
-   *   **not** included in the range of filled properties if it exists.
+   * @param {number=} start
+   * @param {number=} end
    * @return {(?Array|?Object|?Function|?string)}
    */
   function fill(source, keys, val, start, end) {
@@ -5981,26 +4960,11 @@ var fill = (function fillPrivateScope() {
     return _fillKeys(source, keys, val);
   }
 
-  /// @section base
-  /// @method vitals.fill.object
-  /// @alias vitals.fill.obj
   /**
-   * @description
-   *   Fills an existing `object` or `function` with specified keys and
-   *   values.
    * @public
    * @param {(!Object|!Function)} source
    * @param {(!Array|string)=} keys
-   *   If defined, #keys is considered an `array` of keys that will limit the
-   *   fill action. If a `string` is defined for #keys, it is converted to an
-   *   `array` using one of the values in the following list for the separator
-   *   (values listed in order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {*} val
-   *   The value to fill the `object` or `function` with.
    * @return {(!Object|!Function)}
    */
   function fillObject(source, keys, val) {
@@ -6036,28 +5000,12 @@ var fill = (function fillPrivateScope() {
   fill['object'] = fillObject;
   fill['obj'] = fillObject;
 
-  /// @section base
-  /// @method vitals.fill.array
-  /// @alias vitals.fill.arr
   /**
-   * @description
-   *   Fills an existing or new `array` with specified values.
    * @public
    * @param {(!Array|number)} source
-   *   If #source is a `number`, it makes a new `array` for #source using the
-   *   #source `number` for the [array's length][arr-length].
    * @param {*} val
-   *   The value to fill the #source `array` with.
-   * @param {number=} start = `0`
-   *   Begins the range of indexes in the #source that are filled with the
-   *   #val. If negative, the #start value is added to the #source
-   *   [length][arr-length]. The #start index `number` is included in the
-   *   range of filled properties if it exists.
-   * @param {number=} end = `arr.length`
-   *   Ends the range of indexes in the #source that are filled with the #val.
-   *   If negative, the #end value is added to the #source
-   *   [length][arr-length]. The #end index `number` is **not** included in
-   *   the range of filled properties if it exists.
+   * @param {number=} start
+   * @param {number=} end
    * @return {!Array}
    */
   function fillArray(source, val, start, end) {
@@ -6124,18 +5072,10 @@ var fill = (function fillPrivateScope() {
   fill['array'] = fillArray;
   fill['arr'] = fillArray;
 
-  /// @section base
-  /// @method vitals.fill.string
-  /// @alias vitals.fill.str
   /**
-   * @description
-   *   Fills a new `string` with specified values.
    * @public
    * @param {number} count
-   *   The [length][str-length] of the new `string`.
    * @param {*} val
-   *   The value to fill the new `string` with. Any #val that is not a
-   *   `string` is converted to a `string`.
    * @return {string}
    */
   function fillString(count, val) {
@@ -6157,8 +5097,6 @@ var fill = (function fillPrivateScope() {
   }
   fill['string'] = fillString;
   fill['str'] = fillString;
-
-
 
   /**
    * @private
@@ -6203,8 +5141,8 @@ var fill = (function fillPrivateScope() {
    * @private
    * @param {!Array} arr
    * @param {*} val
-   * @param {number=} start = `0`
-   * @param {number=} end = `arr.length`
+   * @param {number=} start
+   * @param {number=} end
    * @return {!Array}
    */
   function _fillArr(arr, val, start, end) {
@@ -6261,8 +5199,6 @@ var fill = (function fillPrivateScope() {
     return str;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -6295,14 +5231,10 @@ var fill = (function fillPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return fill;
 })();
@@ -6314,34 +5246,10 @@ vitals['fill'] = fill;
  */
 var fuse = (function fusePrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.fuse
   /**
-   * @description
-   *   Merges objects, [concatenates][concat] arrays, appends properties to
-   *   objects and arrays, and combines strings.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   All rules for #dest are shown in order of priority. The details are as
-   *   follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     If only one `array` #val is provided, it is considered an `array` of
-   *     values. Each `null` #val is skipped. Each `object` or `function` #val
-   *     is merged with the #dest. All other values are converted to a
-   *     `string` and appended as a new property key (if the key exists in the
-   *     #dest, the property's value is reset to `undefined`).
-   *   - *`!Array|!Arguments`*!$
-   *     Each `null` #val is skipped. Each `array` #val is
-   *     [concatenated][concat] to the #dest. All other values are
-   *     [pushed][push] to the #dest.
-   *   - *`string`*!$
-   *     If only one `array` #val is provided, it is considered an `array` of
-   *     values. Each #val is converted to a `string` and appended to the
-   *     #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuse(dest, val) {
@@ -6391,27 +5299,10 @@ var fuse = (function fusePrivateScope() {
     }
   }
 
-  /// @section base
-  /// @method vitals.fuse.value
-  /// @alias vitals.fuse.val
   /**
-   * @description
-   *   Appends properties to an `object`, `function`, or `array` or strings to
-   *   a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an `arguments` instance, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     Each #val is converted to a `string` and appended as a new property
-   *     key to the #dest (if the key exists in the #dest, the property's
-   *     value is reset to `undefined`).
-   *   - *`!Array|!Arguments`*!$
-   *     Each #val is [pushed][push] to the #dest.
-   *   - *`string`*!$
-   *     Each #val is converted to a `string` and appended to the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuseValue(dest, val) {
@@ -6459,30 +5350,10 @@ var fuse = (function fusePrivateScope() {
   fuse['value'] = fuseValue;
   fuse['val'] = fuseValue;
 
-  /// @section base
-  /// @method vitals.fuse.value.start
-  /// @alias vitals.fuse.value.top
-  /// @alias vitals.fuse.val.start
-  /// @alias vitals.fuse.val.top
   /**
-   * @description
-   *   Appends to the #dest beginning properties for an `object`, `function`,
-   *   or `array` or strings for a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     Each #val is converted to a `string` and appended as a new property
-   *     key to the #dest (if the key exists in the #dest, the property's
-   *     value remains unchanged).
-   *   - *`!Array|!Arguments`*!$
-   *     Each #val is [unshifted][unshift] to the #dest.
-   *   - *`string`*!$
-   *     Each #val is converted to a `string` and appended to the beginning of
-   *     the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuseValueStart(dest, val) {
@@ -6532,28 +5403,10 @@ var fuse = (function fusePrivateScope() {
   fuse['val']['start'] = fuseValueStart;
   fuse['val']['top'] = fuseValueStart;
 
-  /// @section base
-  /// @method vitals.fuse.object
-  /// @alias vitals.fuse.obj
   /**
-   * @description
-   *   Appends and merges properties to an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} dest
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. The remaining details are as follows in order of priority (per
-   *   #val type):
-   *   - *`null`*!$
-   *     The #val is skipped.
-   *   - *`!Object|!Function`*!$
-   *     The #val is merged with the #dest. If a key exists in the #val and
-   *     #dest the #dest property's value is with replaced with the #val
-   *     property's value.
-   *   - *`*`*!$
-   *     The #val is converted to a `string` and appended to the #dest as a
-   *     new property key (if the key exists in the #dest, the property's
-   *     value is reset to `undefined`).
    * @return {(!Object|!Function)}
    */
   function fuseObject(dest, val) {
@@ -6586,24 +5439,10 @@ var fuse = (function fusePrivateScope() {
   fuse['object'] = fuseObject;
   fuse['obj'] = fuseObject;
 
-  /// @section base
-  /// @method vitals.fuse.array
-  /// @alias vitals.fuse.arr
   /**
-   * @description
-   *   [Pushes][push] values and [concatenates][concat] arrays to an `array`.
    * @public
    * @param {(!Array|!Arguments)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows in order of priority (per #val type):
-   *   - *`null`*!$
-   *     The #val is skipped.
-   *   - *`!Array`*!$
-   *     The #val is [concatenated][concat] to the #dest.
-   *   - *`*`*!$
-   *     The #val is [pushed][push] to the #dest.
    * @return {!Array}
    */
   function fuseArray(dest, val) {
@@ -6638,17 +5477,10 @@ var fuse = (function fusePrivateScope() {
   fuse['array'] = fuseArray;
   fuse['arr'] = fuseArray;
 
-  /// @section base
-  /// @method vitals.fuse.string
-  /// @alias vitals.fuse.str
   /**
-   * @description
-   *   Appends strings to a `string`.
    * @public
    * @param {string} dest
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. Each #val is converted to a `string` and appended to the #dest.
    * @return {string}
    */
   function fuseString(dest, val) {
@@ -6678,8 +5510,6 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['string'] = fuseString;
   fuse['str'] = fuseString;
-
-
 
   /**
    * @private
@@ -6946,8 +5776,6 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -6980,14 +5808,10 @@ var fuse = (function fusePrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return fuse;
 })();
@@ -6999,45 +5823,10 @@ vitals['fuse'] = fuse;
  */
 var get = (function getPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.get
   /**
-   * @description
-   *   Retrieves keys and values from an `object` or `function`, indexes and
-   *   values from an `array` or `arguments` instance, or indexes and
-   *   substrings from a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
-   *   If no #val is defined, the following rules apply in order of priority
-   *   (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method returns an `array` of all of the [owned][own] property
-   *     key names in the #source.
-   *   - *`!Array|!Arguments`*!$
-   *     This method returns an `array` of all of the indexes in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     If the #val is a `RegExp` this method returns an `array` of the
-   *     [owned][own] property values in the #source where the key name
-   *     matches (via a @has#pattern test) the #val. Otherwise it returns an
-   *     `array` of the [owned][own] property key names in the #source where
-   *     the value matches (via a [strict equality][equal] test) the #val.
-   *   - *`!Array|!Arguments`*!$
-   *     This method returns an `array` of the indexes in the #source where
-   *     the property value matches (via a [strict equality][equal] test) the
-   *     #val.
-   *   - *`string`*!$
-   *     If the #val is a `RegExp` this method returns an `array` of every
-   *     substring in the #source that matches (via a @has#pattern test) the
-   *     #val. Otherwise the #val is converted into a `string` with
-   *     [String()][string], and this method returns an `array` of the
-   *     starting indexes in the #source where a substring matches (via a
-   *     [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   function get(source, val) {
@@ -7076,21 +5865,10 @@ var get = (function getPrivateScope() {
     }
   }
 
-  /// @section base
-  /// @method vitals.get.keys
   /**
-   * @description
-   *   Retrieves keys from an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} source
-   *   If no #val is defined, this method returns an `array` of all of the
-   *   [owned][own] property key names in the #source.
    * @param {*=} val
-   *   If the #val is a `RegExp` this method returns an `array` of the
-   *   [owned][own] property key names in the #source where the key name
-   *   matches (via a @has#pattern test) the #val. Otherwise it returns an
-   *   `array` of the [owned][own] property key names in the #source where
-   *   the value matches (via a [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   function getKeys(source, val) {
@@ -7118,19 +5896,10 @@ var get = (function getPrivateScope() {
   }
   get['keys'] = getKeys;
 
-  /// @section base
-  /// @method vitals.get.keys.byKey
   /**
-   * @description
-   *   Retrieves [owned][own] property key names from an `object` or
-   *   `function` that have a matching key name. Note that @has#pattern is
-   *   used to find key name matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} key
-   *   If the #key is not a `RegExp`, it is converted into a `string` with
-   *   [String()][string] before @has#pattern is called to check for any
-   *   property key name matches in the #source.
    * @return {!Array<string>}
    */
   function getKeysByKey(source, key) {
@@ -7152,14 +5921,7 @@ var get = (function getPrivateScope() {
   }
   get['keys']['byKey'] = getKeysByKey;
 
-  /// @section base
-  /// @method vitals.get.keys.byValue
-  /// @alias vitals.get.keys.byVal
   /**
-   * @description
-   *   Retrieves [owned][own] property key names from an `object` or
-   *   `function` that have a matching property value. Note that a
-   *   [strict equality][equal] test is used to find matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} val
@@ -7185,31 +5947,10 @@ var get = (function getPrivateScope() {
   get['keys']['byValue'] = getKeysByValue;
   get['keys']['byVal'] = getKeysByValue;
 
-  /// @section base
-  /// @method vitals.get.indexes
-  /// @alias vitals.get.ii
   /**
-   * @description
-   *   Retrieves property indexes from an `array`, array-like `object`, or
-   *   `string`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns an `array` of all of the indexes in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns an `array` of the indexes in the #source where
-   *     the property value matches (via a [strict equality][equal] test) the
-   *     #val.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     the starting indexes in the #source where a substring matches (via
-   *     a @has#pattern test) the #val.
    * @return {!Array}
    */
   function getIndexes(source, val) {
@@ -7252,33 +5993,10 @@ var get = (function getPrivateScope() {
   get['indexes'] = getIndexes;
   get['ii'] = getIndexes;
 
-  /// @section base
-  /// @method vitals.get.values
-  /// @alias vitals.get.vals
   /**
-   * @description
-   *   Retrieves property values from an `object` or `function` and substrings
-   *   from a `string`.
    * @public
    * @param {(!Object|!Function|string)} source
-   *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method returns an `array` of all of the [owned][own] property
-   *     values in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     the [owned][own] property values where the key name matches (via a
-   *     @has#pattern test) the #val.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     every substring in the #source that matches (via a @has#pattern
-   *     test) the #val.
    * @return {!Array}
    */
   function getValues(source, val) {
@@ -7309,9 +6027,6 @@ var get = (function getPrivateScope() {
   }
   get['values'] = getValues;
   get['vals'] = getValues;
-
-
-
 
   /**
    * @private
@@ -7422,8 +6137,6 @@ var get = (function getPrivateScope() {
     return vals;
   }
 
-
-
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} src
@@ -7470,8 +6183,6 @@ var get = (function getPrivateScope() {
     }
     return indexes;
   }
-
-
 
   /**
    * @private
@@ -7597,9 +6308,6 @@ var get = (function getPrivateScope() {
     return vals;
   }
 
-
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -7632,14 +6340,10 @@ var get = (function getPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return get;
 })();
@@ -7651,69 +6355,11 @@ vitals['get'] = get;
  */
 var has = (function hasPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.has
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] a property, if an
-   *   `array` or `arguments` instance contains a value, or a `string` matches
-   *   a pattern or contains a substring.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments|?string)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value (via a [strict equality][equal] test).
-   *   - *`string`*!$
-   *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
-   *     returns the result of a call to [String.prototype.includes][includes]
-   *     or, in the case of an older platform that does not support
-   *     [String.prototype.includes][includes], it returns a
-   *     [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexof] (i.e.
-   *     `return source.indexOf(val) !== -1;`).
    * @param {*} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #val does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     If the #val is a `RegExp`, each [owned][own] property is
-   *     [tested][test] for a matching property key. If a match is found, this
-   *     method immediately returns `true`. Otherwise, the #val is passed
-   *     without any conversions to [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each indexed property value.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     before [String.prototype.includes][includes] or, in the case of an
-   *     older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
-   *   - *`string`*!$
-   *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
-   *     returns the result of a call to [String.prototype.includes][includes]
-   *     or, in the case of an older platform that does not support
-   *     [String.prototype.includes][includes], it returns a
-   *     [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexof] (i.e.
-   *     `return source.indexOf(val) !== -1;`).
    */
   function has(source, val) {
 
@@ -7741,33 +6387,11 @@ var has = (function hasPrivateScope() {
         : $own(source, val);
   }
 
-  /// @section base
-  /// @method vitals.has.key
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] a property.
    * @public
    * @param {(?Object|?Function)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
    * @param {*} key
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #key does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #key is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own].
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
    */
   function hasKey(source, key) {
 
@@ -7789,44 +6413,11 @@ var has = (function hasPrivateScope() {
   }
   has['key'] = hasKey;
 
-  /// @section base
-  /// @method vitals.has.value
-  /// @alias vitals.has.val
   /**
-   * @description
-   *   Checks if an `object` or `function` [owned][own] property or an `array`
-   *   or `arguments` indexed property has a value.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method checks each [owned][own] property in the #source for one
-   *     matching value.
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
    * @param {*} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #val does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each [owned][own] property value.
-   *   - *`!Array|!Arguments`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each indexed property value.
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method checks each [owned][own] property in the #source for one
-   *     matching value.
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
    */
   function hasValue(source, val) {
 
@@ -7851,34 +6442,11 @@ var has = (function hasPrivateScope() {
   has['value'] = hasValue;
   has['val'] = hasValue;
 
-  /// @section base
-  /// @method vitals.has.pattern
   /**
-   * @description
-   *   Checks if a `string` matches a pattern or contains a substring.
    * @public
    * @param {string} source
-   *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
-   *   result of a call to [String.prototype.includes][includes] or, in the
-   *   case of an older platform that does not support
-   *   [String.prototype.includes][includes], it returns a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    * @param {*} pattern
-   *   If the #pattern is **not** a `RegExp`, it is converted into a `string`
-   *   before [String.prototype.includes][includes] or, in the case of an
-   *   older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
-   *   result of a call to [String.prototype.includes][includes] or, in the
-   *   case of an older platform that does not support
-   *   [String.prototype.includes][includes], it returns a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    */
   function hasPattern(source, pattern) {
 
@@ -7896,31 +6464,11 @@ var has = (function hasPrivateScope() {
   }
   has['pattern'] = hasPattern;
 
-  /// @section base
-  /// @method vitals.has.substring
-  /// @alias vitals.has.substr
   /**
-   * @description
-   *   Checks if a `string` contains a substring.
    * @public
    * @param {string} source
-   *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform that does not support [String.prototype.includes][includes],
-   *   it returns a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    * @param {*} val
-   *   The #val is converted into a `string` before
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform that does not support [String.prototype.includes][includes],
-   *   it returns a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    */
   function hasSubstring(source, val) {
 
@@ -7939,45 +6487,11 @@ var has = (function hasPrivateScope() {
   has['substring'] = hasSubstring;
   has['substr'] = hasSubstring;
 
-  /// @section base
-  /// @method vitals.has.enumerableKey
-  /// @alias vitals.has.enumerable
-  /// @alias vitals.has.enumKey
-  /// @alias vitals.has.enum
-  ///   Note that `vitals.has.enum` will fail in some ES3 and ES5 browser and
-  ///   other platform environments. Use `vitals.has.enumerable` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] an [enumerable][enum]
-   *   property. Also note that `vitals.has.enum` is not valid in some
-   *   [ES3][ecma3] and [ES5][ecma5] browser and other platform environments.
-   *   Use `vitals.has.enumerable` for browser and platform safety.
    * @public
    * @param {(?Object|?Function)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    * @param {*} key
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #key does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #key is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    */
   function hasEnumerableKey(source, key) {
 
@@ -8005,8 +6519,6 @@ var has = (function hasPrivateScope() {
   }
   catch (e) {}
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -8024,8 +6536,6 @@ var has = (function hasPrivateScope() {
     }
     return NO;
   }
-
-
 
   /**
    * @private
@@ -8059,14 +6569,10 @@ var has = (function hasPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return has;
 })();
@@ -8078,79 +6584,12 @@ vitals['has'] = has;
  */
 var remap = (function remapPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.remap
   /**
-   * @description
-   *   A shortcut for making a new `object`, `array`, or `string` by invoking
-   *   an action over each [owned][own] `object` or `function` property,
-   *   indexed `array` or `arguments` property, or matched `substring`
-   *   pattern.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
    * @param {*} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee must be a `function`. The value returned from each call
-   *     to the #iteratee is set as the property value for the new `object`.
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee must be a `function`. The value returned from each call
-   *     to the #iteratee is set as the property value for the new `array`.
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`string`*!$
-   *     The #iteratee must be a `substring` pattern to search for within the
-   *     #source. If the #iteratee is **not** a `RegExp`, it is converted into
-   *     a `string` before running a search on the #source for any matches.
    * @param {*=} replacement
-   *   Only allowed (and then required) when the #source is a `string`. If it
-   *   is **not** a `function` the #replacement is converted into a `string`.
-   *   If the #replacement is a `function`, it operates the same as any
-   *   `function` parameter specified for [String.prototype.replace][replace].
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`string`*!$
-   *     If #thisArg is defined and the #replacement is a `function`, the
-   *     #replacement is bound to its value. Note that the native
-   *     [Function.prototype.bind][bind] is **not** used to bind the
-   *     #replacement. Instead the #replacement is wrapped with a regular new
-   *     [Function][func] that uses [Function.prototype.call][call] or when
-   *     seven or more parameters are defined for the #replacement,
-   *     [Function.prototype.apply][apply] to call the #replacement with
-   *     #thisArg. The new wrapper `function` has the same
-   *     [length property][func-length] value as the #replacement (unless
-   *     more than seven parameters were defined for the #replacement as the
-   *     wrapper has a max length of `7`) and the [name property][func-name]
-   *     value of `"replacement"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {(!Object|!Array|string)}
    */
   function remap(source, iteratee, replacement, thisArg) {
@@ -8208,40 +6647,11 @@ var remap = (function remapPrivateScope() {
       : _remapObj(source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.remap.object
-  /// @alias vitals.remap.obj
   /**
-   * @description
-   *   A shortcut for making a new `object` with the same [owned][own]
-   *   property key names as an existing `object` or `function` and new values
-   *   set by invoking an action with an #iteratee `function` upon each
-   *   [owned][own] property of the existing `object`.
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
-   *   The #iteratee must be a `function`. The value returned from each call
-   *   to the #iteratee is set as the property value for the new `object`.
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **key** *`string`*
-   *   - **source** *`!Object|!Function`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#main based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {!Object} 
    */
   function remapObject(source, iteratee, thisArg) {
@@ -8280,48 +6690,11 @@ var remap = (function remapPrivateScope() {
   remap['object'] = remapObject;
   remap['obj'] = remapObject;
 
-  /// @section base
-  /// @method vitals.remap.array
-  /// @alias vitals.remap.arr
   /**
-   * @description
-   *   A shortcut for making a new `array` with the same [length][arr-length]
-   *   of indexed properties as an existing `array` or array-like `object` and
-   *   with new property values set by invoking an action with an #iteratee
-   *   `function` upon each indexed property of the existing `array` or
-   *   `object`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If the #source is a `string`, it is converted into an `array` using one
-   *   of the following values as the separator (values listed in order of
-   *   rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {!function(*=, number=, !Array=): *} iteratee
-   *   The #iteratee must be a `function`. The value returned from each call
-   *   to the #iteratee is set as the property value for the new `array`.
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **index** *`number`*
-   *   - **source** *`!Array`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#array based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {!Array}
    */
   function remapArray(source, iteratee, thisArg) {
@@ -8372,44 +6745,12 @@ var remap = (function remapPrivateScope() {
   remap['array'] = remapArray;
   remap['arr'] = remapArray;
 
-  /// @section base
-  /// @method vitals.remap.string
-  /// @alias vitals.remap.str
   /**
-   * @description
-   *   A shortcut for replacing each matching `substring` with a new
-   *   `substring` within a #source `string`.
    * @public
    * @param {string} source
    * @param {*} pattern
-   *   The #pattern must be a `substring` pattern to search for within the
-   *   #source. If the #pattern is **not** a `RegExp`, it is converted into
-   *   a `string` before running a search on the #source for any matches. Note
-   *   that a `string` #pattern will replace all of the `substring` matches in
-   *   the #source (i.e. not just the first). To replace only one match use a
-   *   `RegExp` #pattern that does not have the [global flag][global] set, a
-   *   `RegExp` #pattern with an altered [lastIndex property][lastIndex], or a
-   *   `function` #replacement that uses your own logic to decide whether to
-   *   replace each #pattern occurrence.
    * @param {*} replacement
-   *   If the #replacement is **not** a `function`, it is converted into a
-   *   `string`. If the #replacement is a `function`, it operates the same as
-   *   any `function` parameter specified for
-   *   [String.prototype.replace][replace].
    * @param {?Object=} thisArg
-   *   If #thisArg is defined and the #replacement is a `function`, the
-   *   #replacement is bound to its value. Note that the native
-   *   [Function.prototype.bind][bind] is **not** used to bind the
-   *   #replacement. Instead the #replacement is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] or when
-   *   seven or more parameters are defined for the #replacement,
-   *   [Function.prototype.apply][apply] to call the #replacement with
-   *   #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #replacement (unless
-   *   more than seven parameters were defined for the #replacement as the
-   *   wrapper has a max length of `7`) and the [name property][func-name]
-   *   value of `"replacement"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {string}
    */
   function remapString(source, pattern, replacement, thisArg) {
@@ -8444,8 +6785,6 @@ var remap = (function remapPrivateScope() {
   }
   remap['string'] = remapString;
   remap['str'] = remapString;
-
-
 
   /**
    * @private
@@ -8576,8 +6915,6 @@ var remap = (function remapPrivateScope() {
     return source['replace'](pattern, replacement);
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -8646,8 +6983,6 @@ var remap = (function remapPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -8680,14 +7015,10 @@ var remap = (function remapPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return remap;
 })();
@@ -8699,85 +7030,12 @@ vitals['remap'] = remap;
  */
 var roll = (function rollPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.roll
   /**
-   * @description
-   *   A shortcut for deriving a result by carrying a value over each
-   *   [owned][own] property of an `object` or `function`, each indexed
-   *   property of an `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial carried value. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over each [owned][own]
-   *     property in random order.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over each indexed
-   *     property starting with `0` and ending at `source.length`.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over each `number` of
-   *     cycles starting with `0` and ending at `source`.
    * @param {!function(*=, *=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all four parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all four parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than four parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `4`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function roll(base, source, iteratee, thisArg) {
@@ -8839,86 +7097,12 @@ var roll = (function rollPrivateScope() {
         : _rollObj(source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.roll.up
   /**
-   * @description
-   *   A shortcut for deriving a summed total by adding each value returned by
-   *   an #iteratee `function` call over each [owned][own] property of an
-   *   `object` or `function`, each indexed property of an `array` or
-   *   `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial total. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over every [owned][own]
-   *     property in random order the sum of the #base (if defined) and each
-   *     value returned by every #iteratee call.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over every indexed
-   *     property starting with `0` and ending at `source.length` the sum of
-   *     the #base (if defined) and each value returned by every #iteratee
-   *     call.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over every `number` of
-   *     cycles starting with `0` and ending at `source` the sum of the #base
-   *     and each value returned by every #iteratee call.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function rollUp(base, source, iteratee, thisArg) {
@@ -8981,86 +7165,12 @@ var roll = (function rollPrivateScope() {
   }
   roll['up'] = rollUp;
 
-  /// @section base
-  /// @method vitals.roll.down
   /**
-   * @description
-   *   A shortcut for deriving a reduced total by subtracting each value
-   *   returned by an #iteratee `function` call over each [owned][own]
-   *   property of an `object` or `function`, each indexed property of an
-   *   `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial total. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over every [owned][own]
-   *     property in random order the difference of the #base (if defined) and
-   *     each value returned by every #iteratee call.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over every indexed
-   *     property starting with `0` and ending at `source.length` the
-   *     difference of the #base (if defined) and each value returned by every
-   *     #iteratee call.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over every `number` of
-   *     cycles starting with `0` and ending at `source` the difference of the
-   *     #base and each value returned by every #iteratee call.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function rollDown(base, source, iteratee, thisArg) {
@@ -9122,8 +7232,6 @@ var roll = (function rollPrivateScope() {
         : _rollObjDown(source, iteratee, thisArg);
   }
   roll['down'] = rollDown;
-
-
 
   /**
    * @private
@@ -9517,8 +7625,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -9803,8 +7909,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {*} result
@@ -9932,8 +8036,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -10038,8 +8140,6 @@ var roll = (function rollPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -10072,14 +8172,10 @@ var roll = (function rollPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return roll;
 })();
@@ -10091,12 +8187,7 @@ vitals['roll'] = roll;
  */
 var same = (function samePrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.same
   /**
-   * @description
-   *   A functional representation of [strict equality][equal].
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -10114,12 +8205,7 @@ var same = (function samePrivateScope() {
     return val1 === val2;
   }
 
-  /// @section base
-  /// @method vitals.same.loose
-  /// @alias vitals.same.ish
   /**
-   * @description
-   *   A functional representation of [loose equality][equal].
    * @public
    * @param {*} val1
    * @param {*} val2
@@ -10138,8 +8224,6 @@ var same = (function samePrivateScope() {
   }
   same['loose'] = sameLoose;
   same['ish'] = sameLoose;
-
-
 
   /**
    * @private
@@ -10173,14 +8257,10 @@ var same = (function samePrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return same;
 })();
@@ -10192,63 +8272,12 @@ vitals['same'] = same;
  */
 var slice = (function slicePrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.slice
   /**
-   * @description
-   *   Makes a shallow [copy][clone] of specified indexed properties for an
-   *   `array` or array-like `object` or indexed characters for a `string`.
-   *   Note that @copy#array should be used to [copy][clone] all (not only
-   *   indexed) properties or to deep [copy][clone] an `array` or array-like
-   *   `object`. This method operates like a cross-platform safe shortcut for
-   *   [Array.prototype.slice][arr-slice] and
-   *   [String.prototype.slice][str-slice].
    * @public
    * @param {(?Array|?Arguments|?Object|?Function|?string)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method [slices][arr-slice] the #source.
-   *   - *`string`*!$
-   *     This method [slices][str-slice] the #source.
-   *   - *`null`*!$
-   *     This method returns `null`.
-   * @param {number=} start = `0`
-   *   The #start details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     Begins the range of indexes in the #source that are [copied][clone].
-   *     If the #start `number` is negative, it is added to the #source
-   *     [length][arr-length]. The #start index `number` is included in the
-   *     [copied][clone] properties if it exists.
-   *   - *`string`*!$
-   *     Begins the range of indexes in the #source that are [copied][clone].
-   *     If the #start `number` is negative, it is added to the #source
-   *     [length][str-length]. The #start index `number` is included in the
-   *     [copied][clone] characters if it exists.
-   *   - *`null`*!$
-   *     The #start value is not used.
-   * @param {number=} end = `source.length`
-   *   The #end details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     Ends the range of indexes in the #source that are [copied][clone]. If
-   *     the #end `number` is negative, it is added to the #source
-   *     [length][arr-length]. The #end index `number` is **not** included in
-   *     the [copied][clone] properties if it exists.
-   *   - *`string`*!$
-   *     Ends the range of indexes in the #source that are [copied][clone]. If
-   *     the #end `number` is negative, it is added to the #source
-   *     [length][str-length]. The #end index `number` is **not** included in
-   *     the [copied][clone] characters if it exists.
-   *   - *`null`*!$
-   *     The #end value is not used.
+   * @param {number=} start
+   * @param {number=} end
    * @return {(?Array|?string)}
-   *   The return details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns the new [copied][clone] `array`.
-   *   - *`string`*!$
-   *     This method returns the new [copied][clone] `string`.
-   *   - *`null`*!$
-   *     This method returns `null`.
    */
   function slice(source, start, end) {
 
@@ -10300,47 +8329,12 @@ var slice = (function slicePrivateScope() {
     return $sliceArr(source, start, end);
   }
 
-  /// @section base
-  /// @method vitals.slice.array
-  /// @alias vitals.slice.arr
   /**
-   * @description
-   *   Makes a shallow [copy][clone] of specified indexed properties for an
-   *   `array` or array-like `object`. Note that @copy#array should be used to
-   *   [copy][clone] all (not only indexed) properties or to deep
-   *   [copy][clone] the #source. This method operates like a cross-platform
-   *   safe shortcut for [Array.prototype.slice][arr-slice].
    * @public
    * @param {(?Array|?Arguments|?Object|?Function)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method [slices][arr-slice] the #source.
-   *   - *`null`*!$
-   *     This method returns `null`.
-   * @param {number=} start = `0`
-   *   The #start details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     Begins the range of indexes in the #source that are [copied][clone].
-   *     If the #start `number` is negative, it is added to the #source
-   *     [length][arr-length]. The #start index `number` is included in the
-   *     [copied][clone] properties if it exists.
-   *   - *`null`*!$
-   *     The #start value is not used.
-   * @param {number=} end = `source.length`
-   *   The #end details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     Ends the range of indexes in the #source that are [copied][clone]. If
-   *     the #end `number` is negative, it is added to the #source
-   *     [length][arr-length]. The #end index `number` is **not** included in
-   *     the [copied][clone] properties if it exists.
-   *   - *`null`*!$
-   *     The #end value is not used.
+   * @param {number=} start
+   * @param {number=} end
    * @return {?Array}
-   *   The return details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns the new [copied][clone] `array`.
-   *   - *`null`*!$
-   *     This method returns `null`.
    */
   function sliceArray(source, start, end) {
 
@@ -10393,29 +8387,12 @@ var slice = (function slicePrivateScope() {
   slice['array'] = sliceArray;
   slice['arr'] = sliceArray;
 
-  /// @section base
-  /// @method vitals.slice.string
-  /// @alias vitals.slice.str
   /**
-   * @description
-   *   Makes a [copy][clone] of a specified range of indexed characters in a
-   *   `string`. This method operates like a cross-platform safe shortcut for
-   *   [String.prototype.slice][str-slice].
    * @public
    * @param {string} source
-   *   This method [slices][str-slice] the #source.
-   * @param {number=} start = `0`
-   *   Begins the range of indexes in the #source that are [copied][clone].
-   *   If the #start `number` is negative, it is added to the #source
-   *   [length][str-length]. The #start index `number` is included in the
-   *   [copied][clone] characters if it exists.
-   * @param {number=} end = `source.length`
-   *   Ends the range of indexes in the #source that are [copied][clone]. If
-   *   the #end `number` is negative, it is added to the #source
-   *   [length][str-length]. The #end index `number` is **not** included in
-   *   the [copied][clone] characters if it exists.
+   * @param {number=} start
+   * @param {number=} end
    * @return {string}
-   *   This method returns the new [copied][clone] `string`.
    */
   function sliceString(source, start, end) {
 
@@ -10461,8 +8438,6 @@ var slice = (function slicePrivateScope() {
   slice['string'] = sliceString;
   slice['str'] = sliceString;
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -10495,14 +8470,10 @@ var slice = (function slicePrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return slice;
 })();
@@ -10514,7 +8485,6 @@ vitals['slice'] = slice;
  */
 var to = (function toPrivateScope() {
 
-
   /**
    * @public
    * @type {!Object<string, !Function>}
@@ -10522,20 +8492,10 @@ var to = (function toPrivateScope() {
    */
   var to = {};
 
-  /// @section base
-  /// @method vitals.to.string
-  /// @alias vitals.to.str
   /**
-   * @description
-   *   Converts any value to a `string` with [String][string], the value's (if
-   *   it is a `RegExp`) `toString` property, or optionally (if it is an
-   *   `array`) [Array.prototype.join][join].
    * @public
    * @param {*} val
-   * @param {(string|undefined)=} separator = `undefined`
-   *   Only allowed for use if the #val is an `array`. If the #separator is
-   *   defined, [Array.prototype.join][join] is called on the #val using the
-   *   #separator value to join each indexed property.
+   * @param {(string|undefined)=} separator
    * @return {string}
    */
   function toString(val, separator) {
@@ -10564,27 +8524,10 @@ var to = (function toPrivateScope() {
   to['string'] = toString;
   to['str'] = toString;
 
-  /// @section base
-  /// @method vitals.to.number
-  /// @alias vitals.to.num
   /**
-   * @description
-   *   Converts most [primitive][prim] values to a `number`.
    * @public
    * @param {(?string|?number|?boolean)} val
-   *   If the #val is a `string`, [Number][number] is used to convert it to a
-   *   `number`. Only [valid strings][str2num] are allowed.
    * @return {number}
-   *   The return details are as follows (per #val data type):
-   *   - *`boolean`*!$
-   *     This method will return `1` for `true` or `0` for `false`.
-   *   - *`number`*!$
-   *     This method will return the value of #val.
-   *   - *`string`*!$
-   *     This method will return the result from [Number][number] unless it is
-   *     `NaN`. If the result is `NaN`, an [Error][error] will be thrown.
-   *   - *`null`*!$
-   *     This method will return `0`.
    */
   function toNumber(val) {
 
@@ -10615,12 +8558,7 @@ var to = (function toPrivateScope() {
   to['number'] = toNumber;
   to['num'] = toNumber;
 
-  /// @section base
-  /// @method vitals.to.boolean
-  /// @alias vitals.to.bool
   /**
-   * @description
-   *   Converts any value into a `boolean`.
    * @public
    * @param {*} val
    * @return {boolean}
@@ -10635,30 +8573,10 @@ var to = (function toPrivateScope() {
   to['boolean'] = toBoolean;
   to['bool'] = toBoolean;
 
-  /// @section base
-  /// @method vitals.to.array
-  /// @alias vitals.to.arr
   /**
-   * @description
-   *   Converts a `string` or `number` into an `array`.
    * @public
    * @param {(string|number)} val
-   *   The #val details are as follows (per #val type):
-   *   - *`string`*!$
-   *     [String.prototype.split][split] is called on the #val.
-   *   - *`number`*!$
-   *     A new `array` with #val [length][arr-length] is created.
    * @param {*=} separator
-   *   Only allowed for use if the #val is a `string`. The #separator is used
-   *   to [split][split] the `string` into `array` properties. If the
-   *   #separator is defined and is not a `RegExp`, it is converted into a
-   *   `string`. If the #separator is **not** defined, one of the following
-   *   values is used to [split][split] the `string` (values listed in order
-   *   of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @return {!Array}
    */
   function toArray(val, separator) {
@@ -10699,19 +8617,10 @@ var to = (function toPrivateScope() {
   to['array'] = toArray;
   to['arr'] = toArray;
 
-  /// @section base
-  /// @method vitals.to.regexp
-  /// @alias vitals.to.regex
-  /// @alias vitals.to.re
   /**
-   * @description
-   *   Converts a `string` into a `RegExp`.
    * @public
    * @param {string} source
-   *   The [RegExp.prototype.source][regx-src] pattern for the new `RegExp`.
    * @param {(string|undefined)=} flags
-   *   If #flags is defined, it is the [RegExp flags][regexp] to assign to the
-   *   new `RegExp`.
    * @return {!RegExp}
    */
   function toRegExp(source, flags) {
@@ -10745,12 +8654,7 @@ var to = (function toPrivateScope() {
   to['regex'] = toRegExp;
   to['re'] = toRegExp;
 
-  /// @section base
-  /// @method vitals.to.upperCase
-  /// @alias vitals.to.upper
   /**
-   * @description
-   *   Converts all characters in a `string` to upper case.
    * @public
    * @param {string} source
    * @return {string}
@@ -10767,12 +8671,7 @@ var to = (function toPrivateScope() {
   to['upperCase'] = toUpperCase;
   to['upper'] = toUpperCase;
 
-  /// @section base
-  /// @method vitals.to.lowerCase
-  /// @alias vitals.to.lower
   /**
-   * @description
-   *   Converts all characters in a `string` to lower case.
    * @public
    * @param {string} source
    * @return {string}
@@ -10788,10 +8687,6 @@ var to = (function toPrivateScope() {
   }
   to['lowerCase'] = toLowerCase;
   to['lower'] = toLowerCase;
-
-
-
-
 
   /**
    * @private
@@ -10825,14 +8720,10 @@ var to = (function toPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return to;
 })();
@@ -10844,115 +8735,13 @@ vitals['to'] = to;
  */
 var until = (function untilPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.until
   /**
-   * @description
-   *   A shortcut for iterating over [owned][own] `object` properties, indexed
-   *   `array` properties, a defined `number` of cycles, or an unlimited
-   *   `number` of cycles until a defined #end value is returned or all
-   *   properties or cycles are visited.
    * @public
    * @param {*} end
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, the iteration is halted,
-   *   and this method will return `true`.
    * @param {(!Object|!Function|!Array|!Arguments|string|number|undefined)=} source
-   *   If the #source is **not** defined, this method will call the #iteratee
-   *   until an #end match is found. It is recommended to define a maximum
-   *   `number` of cycles for the #source instead of leaving it `undefined` to
-   *   avoid an [infinite loop][endless] situation. If the #source is defined,
-   *   the details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     Iterates over all [owned][own] properties in random order until an
-   *     #end match is found or all properties are visited.
-   *   - *`!Array|!Arguments`*!$
-   *     Iterates over all indexed properties from `0` to `source.length`
-   *     until an #end match is found or all properties are visited.
-   *   - *`string`*!$
-   *     Converted to an `array` #source using one of the following list of
-   *     values for the separator (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
-   *   - *`number`*!$
-   *     Must be a whole `number`. Iterates over the `number` of cycles until
-   *     an #end match is found or all cycles are completed.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments|string`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
-   *   - *`undefined`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments|string`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`undefined`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than one parameter was defined for the #iteratee as the wrapper
-   *     has a max length of `1`) and the [name property][func-name] value of
-   *     `"iteratee"` (unless you are using a [minified][minify] version of
-   *     `vitals`).
    * @return {boolean}
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, this method will return
-   *   `true`. Otherwise, it will return `false`.
    */
   function until(end, source, iteratee, thisArg) {
 
@@ -11012,46 +8801,13 @@ var until = (function untilPrivateScope() {
       : _untilObj(end, source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.until.object
-  /// @alias vitals.until.obj
   /**
-   * @description
-   *   A shortcut for iterating over [owned][own] `object` properties until a
-   *   defined #end value is returned or all properties are visited.
    * @public
    * @param {*} end
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, the iteration is halted,
-   *   and this method will return `true`.
    * @param {(!Object|!Function)} source
-   *   Iterates over the [owned][own] #source properties in random order until
-   *   an #end match is found or all properties are visited.
    * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **key** *`string`*
-   *   - **source** *`!Object|!Function`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#main based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {boolean}
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, this method will return
-   *   `true`. Otherwise, it will return `false`.
    */
   function untilObject(end, source, iteratee, thisArg) {
 
@@ -11083,56 +8839,13 @@ var until = (function untilPrivateScope() {
   until['object'] = untilObject;
   until['obj'] = untilObject;
 
-  /// @section base
-  /// @method vitals.until.array
-  /// @alias vitals.until.arr
   /**
-   * @description
-   *   A shortcut for iterating over indexed `array` or array-like `object` or
-   *   `function` properties until a defined #end value is returned or all
-   *   indexed properties are visited.
    * @public
    * @param {*} end
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, the iteration is halted,
-   *   and this method will return `true`.
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   The #source details are as follows (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     Iterates over all indexed properties from `0` to `source.length`
-   *     until an #end match is found or all indexed properties are visited.
-   *   - *`string`*!$
-   *     Converted to an `array` #source using one of the following list of
-   *     values for the separator (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
    * @param {!function(*=, number=, !Array=): *} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **index** *`number`*
-   *   - **source** *`!Array`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#array based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {boolean}
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, this method will return
-   *   `true`. Otherwise, it will return `false`.
    */
   function untilArray(end, source, iteratee, thisArg) {
 
@@ -11170,43 +8883,13 @@ var until = (function untilPrivateScope() {
   until['array'] = untilArray;
   until['arr'] = untilArray;
 
-  /// @section base
-  /// @method vitals.until.cycle
-  /// @alias vitals.until.time
   /**
-   * @description
-   *   A shortcut for iterating over a set `number` of cycles until a defined
-   *   #end value is returned or all cycles are completed.
    * @public
    * @param {*} end
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, the iteration is halted,
-   *   and this method will return `true`.
    * @param {number} cycles
-   *   Must be a whole `number`. Iterates over the `number` of cycles until
-   *   an #end match is found or all cycles are completed.
    * @param {!function(number=, number=): *} iteratee
-   *   The #iteratee can have the following optional parameters:
-   *   - **cycle** *`number`*!$
-   *     Note that this `number` is zero-based (i.e. the first *cycle* value
-   *     is `0`).
-   *   - **cycles** *`number`*!$
-   *     The unchanged #cycles value.
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than two parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `2`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {boolean}
-   *   If a value returned by the #iteratee matches (via a
-   *   [strict equality][equal] test) the #end value, this method will return
-   *   `true`. Otherwise, it will return `false`.
    */
   function untilCycle(end, cycles, iteratee, thisArg) {
 
@@ -11239,8 +8922,6 @@ var until = (function untilPrivateScope() {
   }
   until['cycle'] = untilCycle;
   until['time'] = untilCycle;
-
-
 
   /**
    * @private
@@ -11425,8 +9106,6 @@ var until = (function untilPrivateScope() {
     return NO;
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -11494,8 +9173,6 @@ var until = (function untilPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -11528,14 +9205,10 @@ var until = (function untilPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return until;
 })();
@@ -11544,5 +9217,5 @@ vitals['until'] = until;
   module.exports = vitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

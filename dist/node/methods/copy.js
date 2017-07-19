@@ -1,12 +1,8 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.COPY
- * ---------------------------------------------------------------------------
  * @section base
  * @section fs
  * @version 5.0.0
  * @see [vitals.copy](https://github.com/imaginate/vitals/wiki/vitals.copy)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -207,11 +203,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -235,7 +228,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -300,8 +292,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -369,7 +359,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -402,8 +391,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -419,8 +406,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -439,29 +424,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -470,23 +432,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -535,8 +492,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -619,8 +574,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -644,8 +597,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -687,7 +638,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -726,7 +676,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -771,7 +720,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -789,8 +737,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -868,8 +814,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -896,8 +840,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -994,7 +936,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1004,11 +945,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1043,8 +981,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1060,7 +996,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1079,8 +1014,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1167,7 +1100,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1246,8 +1178,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1283,11 +1213,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1320,8 +1247,6 @@ function $merge(dest, src) {
   return dest;
 }
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes`.
  * @private
  * @param {string} src
  * @param {*} val
@@ -1450,21 +1375,10 @@ var $cloneRegx = (function $cloneRegxPrivateScope() {
  */
 var copy = (function copyPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.copy
   /**
-   * @description
-   *   Makes a [copy][clone] of any value. Note that for `array` values @slice 
-   *   only copies the indexed properties while @copy copies all of the
-   *   properties.
    * @public
    * @param {*} val
-   *   The value to copy.
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively copy property values for an `object` or
-   *   `function`.
+   * @param {boolean=} deep
    * @return {*}
    */
   function copy(val, deep) {
@@ -1490,20 +1404,11 @@ var copy = (function copyPrivateScope() {
             : _copyObj(val, deep);  
   }
 
-  /// @section base
-  /// @method vitals.copy.object
-  /// @alias vitals.copy.obj
   /**
-   * @description
-   *   Makes a [copy][clone] of an `object`. By default it shallowly copies
-   *   all [owned][own] properties of the #source with the option to deeply
-   *   [copy][clone] them as well.
    * @public
    * @param {!Object} source
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Object}
-   *   A new `object` [copied][clone] from the #source.
    */
   function copyObject(source, deep) {
 
@@ -1525,28 +1430,11 @@ var copy = (function copyPrivateScope() {
   copy['object'] = copyObject;
   copy['obj'] = copyObject;
 
-  /// @section base
-  /// @method vitals.copy.array
-  /// @alias vitals.copy.arr
-  /// @alias vitals.copy.args
   /**
-   * @description
-   *   Makes a [copy][clone] of an `array` or array-like `object`. Note that
-   *   @slice#array only copies the indexed properties while @copy#array
-   *   copies all of the indexed and [owned][own] properties. By default it
-   *   shallowly copies all of the #source properties with the option to
-   *   deeply [copy][clone] them as well.
    * @public
    * @param {(!Array|!Arguments|!Object)} source
-   *   Must be an `array` or array-like `object`. The #source is considered
-   *   array-like when it [owns][own] a property with the `"length"` key name
-   *   (e.g. `source.length` like the `array` [length property][arr-length])
-   *   whose value is a whole `number` that is greater than or equal to zero
-   *   (e.g. `isWholeNumber(source.length) && source.length >= 0`).
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Array}
-   *   A new `array` [copied][clone] from the #source.
    */
   function copyArray(source, deep) {
 
@@ -1573,29 +1461,11 @@ var copy = (function copyPrivateScope() {
   copy['arr'] = copyArray;
   copy['args'] = copyArray;
 
-  /// @section base
-  /// @method vitals.copy.regexp
-  /// @alias vitals.copy.regex
-  /// @alias vitals.copy.regx
-  /// @alias vitals.copy.re
   /**
-   * @description
-   *   Makes a [copy][clone] of a `RegExp`.
    * @public
    * @param {!RegExp} source
-   * @param {(string|undefined)=} flags = `undefined`
-   *   Override the #source `RegExp` flags when [copying][clone] it. If the
-   *   #flags is `undefined`, the original #source flags are used. If the
-   *   #flags `string` does **not** start with a plus, `"+"`, or minus, `"-"`,
-   *   sign, the #flags value is used for the [copied][clone] `RegExp`.
-   *   Otherwise, #flags `string` is parsed according to the following rules:
-   *   - Each series of flag characters following a plus sign, `"+"`, are
-   *     enabled for the [copied][clone] `RegExp`.
-   *   - Each series of flag characters following a minus sign, `"-"`, are
-   *     disabled for the [copied][clone] `RegExp`.
+   * @param {(string|undefined)=} flags
    * @return {!RegExp}
-   *   A new `RegExp` with the [RegExp.prototype.source][regex-source] value
-   *   and the `RegExp` flag settings of the provided #source `RegExp`.
    */
   function copyRegExp(source, flags) {
 
@@ -1625,31 +1495,11 @@ var copy = (function copyPrivateScope() {
   copy['regx'] = copyRegExp;
   copy['re'] = copyRegExp;
 
-  /// @section base
-  /// @method vitals.copy.func
-  /// @alias vitals.copy.fn
-  /// @alias vitals.copy.fun
-  /// @alias vitals.copy.function
-  ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.copy.func` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Makes a [copy][clone] of a `function`. By default it shallowly copies
-   *   all [owned][own] properties of the #source with the option to deeply
-   *   [copy][clone] them as well. Note that the
-   *   [length property][func-length] will be set to `0` and the
-   *   [name property][func-name] will be set to `"funcCopy"` for
-   *   [unminified][minify] `vitals` sources. Also note that
-   *   `vitals.copy.function` is not valid in [ES3][ecma3] and some
-   *   [ES5][ecma5] browser and other platform environments. Use
-   *   `vitals.copy.func` for browser and platform safety.
    * @public
    * @param {!Function} source
-   * @param {boolean=} deep = `false`
-   *   Whether to recursively [copy][clone] the #source property values.
+   * @param {boolean=} deep
    * @return {!Function}
-   *   A new `function` [copied][clone] from the #source.
    */
   function copyFunction(source, deep) {
 
@@ -1677,9 +1527,6 @@ var copy = (function copyPrivateScope() {
     copy['function'] = copyFunction;
   }
   catch (e) {}
-
-
-
 
   /**
    * @private
@@ -1742,9 +1589,6 @@ var copy = (function copyPrivateScope() {
       ? _mergeDeep(funcCopy, func)
       : $merge(funcCopy, func);
   }
-
-
-
 
   /**
    * @private
@@ -1855,8 +1699,6 @@ var copy = (function copyPrivateScope() {
     return src;
   }
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} dest
@@ -1874,9 +1716,6 @@ var copy = (function copyPrivateScope() {
     }
     return dest;
   }
-
-
-
 
   /**
    * @private
@@ -1910,14 +1749,10 @@ var copy = (function copyPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return copy;
 })();
@@ -1928,5 +1763,5 @@ vitals['copy'] = copy;
   module.exports = vitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

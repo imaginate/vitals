@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.CREATE
- * ---------------------------------------------------------------------------
  * @section strict
  * @version 5.0.0
  * @see [vitals.create](https://github.com/imaginate/vitals/wiki/vitals.create)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -23,7 +19,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -65,7 +60,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -79,7 +73,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -130,7 +123,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -297,11 +289,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -325,7 +314,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -390,8 +378,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -467,8 +453,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -476,9 +460,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -546,10 +527,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -565,8 +542,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -585,29 +560,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -616,23 +568,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -681,8 +628,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -765,8 +710,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -790,8 +733,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -830,7 +771,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -873,7 +813,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -891,8 +830,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -970,8 +907,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -998,8 +933,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1096,7 +1029,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1106,11 +1038,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1145,8 +1074,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1162,7 +1089,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1181,8 +1107,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1269,7 +1193,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1348,8 +1271,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1385,11 +1306,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1443,8 +1361,8 @@ function $cloneObj(obj) {
 /**
  * @private
  * @param {(!Object|!Function)} src
- * @param {number=} start = `0`
- * @param {number=} end = `src.length`
+ * @param {number=} start
+ * @param {number=} end
  * @return {!Array}
  */
 function $sliceArr(src, start, end) {
@@ -1488,12 +1406,6 @@ function $sliceArr(src, start, end) {
 /**
  * @private
  * @param {string} keys
- *   The #keys are split using one of the values in the following list as the
- *   separator (values listed in order of rank):
- *   - `", "`
- *   - `","`
- *   - `"|"`
- *   - `" "`
  * @return {!Array<string>}
  */
 function $splitKeys(keys) {
@@ -1520,25 +1432,11 @@ function $splitKeys(keys) {
  */
 var is = (function isPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.is
   /**
-   * @description
-   *   Checks if a value or many values are a specific data type or types. See
-   *   @is-types for a complete list of the available data types. Note that
-   *   all `object` types are nullable by default (i.e. `is("object", null)`
-   *   will return  `true`).
    * @public
    * @param {string} types
-   *   The valid data types. See @is-types for a complete list of the
-   *   available data types.
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function is(types, val) {
 
@@ -1582,11 +1480,6 @@ var is = (function isPrivateScope() {
       : _checkVal(checks, val, nullable);
   }
 
-
-
-
-
-
   /**
    * @private
    * @param {!Array<!function>} checks
@@ -1627,8 +1520,6 @@ var is = (function isPrivateScope() {
     return YES;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function(*, boolean=): boolean>}
@@ -1643,18 +1534,10 @@ var is = (function isPrivateScope() {
     var $types = {};
 
     /**
-     * @description
-     *   Adds types to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes their type section's
-     *   method.
      * @private
      * @param {string} section
-     *   The category for the types.
      * @param {!Object<string, !function(*): boolean>} types
-     *   Each property should use a type's name for its key and method for its
-     *   value.
-     * @param {boolean=} nullableDefault = `true`
-     *   The default nullable value for each type in #types.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addTypes(section, types, nullableDefault) {
@@ -1669,18 +1552,11 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds a type to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes its type section's method.
      * @private
      * @param {string} section
-     *   The type's category.
      * @param {string} type
-     *   The type's name.
      * @param {!function(*): boolean} check
-     *   The type's check method.
-     * @param {boolean=} nullableDefault = `true`
-     *   The type's default nullable value.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addType(section, type, check, nullableDefault) {
@@ -1692,7 +1568,7 @@ var is = (function isPrivateScope() {
 
       /**
        * @param {*} val
-       * @param {boolean=} nullable = `nullableDefault`
+       * @param {boolean=} nullable
        * @return {boolean}
        */
       function typeCheck(val, nullable) {
@@ -1709,8 +1585,6 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds the type shortcuts to the *$types* hash map.
      * @private
      * @param {!Object<string, string>} shortcuts
      * @return {void}
@@ -1734,9 +1608,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an array's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `array` type.
      */
     function _addArrayType(eachCheck) {
 
@@ -1767,9 +1639,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an hash map's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `object` or `function` hash map type.
      */
     function _addMapType(eachCheck) {
 
@@ -1795,7 +1665,6 @@ var is = (function isPrivateScope() {
       return check;
     }
     _addType['maps'] = _addMapType;
-
 
     _addTypes('primitives', {
       'undefined': $is.void,
@@ -1856,7 +1725,6 @@ var is = (function isPrivateScope() {
       'elementmap':   $is.elem,
       'documentmap':  $is.doc
     });
-
 
     _addShortcuts({
 
@@ -1919,8 +1787,6 @@ var is = (function isPrivateScope() {
 
     return $types;
   })();
-
-
 
   /**
    * @private
@@ -2065,12 +1931,9 @@ var is = (function isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Method checks whether `"!"` or `"?"` exists in the #types `string`.
    * @private
    * @param {string} types
    * @return {(undefined|boolean)}
-   *   If `undefined` no override exists.
    */
   function _getNullable(types) {
 
@@ -2090,8 +1953,6 @@ var is = (function isPrivateScope() {
       ? !negate && ensure
       : VOID;
   }
-
-
 
   /**
    * @private
@@ -2125,14 +1986,10 @@ var is = (function isPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return is;
 })();
@@ -2143,70 +2000,15 @@ var is = (function isPrivateScope() {
  */
 var amend = (function amendPrivateScope() {
 
-
-  /// @section strict
-  /// @method vitals.amend
   /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that includes
-   *   easier property value assignment, strong type declarations, and
-   *   flexible default [descriptor][descriptor] options.
    * @public
    * @param {!Object} source
    * @param {(!Object<string, *>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, *>`*!$
-   *     For each `key => value` pair use the property's name for the `key`,
-   *     and the property's [descriptor][descriptor] or new value for its
-   *     `value`.
-   *   - *`!Array<string>`*!$
-   *     For each element of the `array` define a property name.
-   *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array`
-   *     of property names using one of the following values as the separator
-   *     (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
    * @param {*=} val
-   *   Only define #val (and then required) if an `array` or `string` of
-   *   property names is given for #props. #val sets the value of each
-   *   property in #props regardless of #descriptor settings.
-   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   The new [descriptor][descriptor] for each property in #props unless a
-   *   [descriptor][descriptor] is used for a #props `value`.
+   * @param {!Object=} descriptor
    * @param {string=} strongType
-   *   If defined all new properties are assigned an
-   *   [accessor descriptor][descriptor] (unless overridden in a #props
-   *   `value`) that includes a `set` function (unless overridden in a #props
-   *   `value`) that throws an error if @is#main returns `false` for a new
-   *   property `value`. See the below snippet for an example #strongType
-   *   `set` function.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = newVal;
-   *   };
-   *   ```
    * @param {(!function(*, *): *)=} setter
-   *   If defined all new properties are assigned an
-   *   [accessor descriptor][descriptor] (unless overridden in a #props
-   *   `value`) that includes a `set` function (unless overridden in a #props
-   *   `value`) that sets the property to the value returned by #setter. The
-   *   #setter function will receive two params, the new value and the current
-   *   value. If #strongType is defined #setter will not get called until the
-   *   new value passes the @is#main test.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = setter(newVal, value);
-   *   };
-   *   ```
    * @return {!Object}
-   *   The amended #source.
    */
   function amend(source, props, val, descriptor, strongType, setter) {
 
@@ -2378,34 +2180,12 @@ var amend = (function amendPrivateScope() {
       : _amendProps(source, props, descriptor, strongType, setter);
   }
 
-  /// @section strict
-  /// @method vitals.amend.config
   /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that only
-   *   updates the descriptors of existing properties.
    * @public
    * @param {!Object} source
    * @param {(!Object<string, !Object>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, !Object>`*!$
-   *     For each `key => value` pair use the property's name for the `key`,
-   *     and the property's [descriptor][descriptor] for its `value`.
-   *   - *`!Array<string>`*!$
-   *     For each element of the `array` define a property name.
-   *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array`
-   *     of property names using one of the following values as the separator
-   *     (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
    * @param {!Object=} descriptor
-   *   Only define #descriptor (and then required) if an `array` or `string`
-   *   of property names is given for #props.
    * @return {!Object}
-   *   The amended #source.
    */
   function amendConfig(source, props, descriptor) {
 
@@ -2467,46 +2247,15 @@ var amend = (function amendPrivateScope() {
   }
   amend['config'] = amendConfig;
 
-  /// @section strict
-  /// @method vitals.amend.property
-  /// @alias vitals.amend.prop
   /**
-   * @description
-   *   A shortcut for [Object.defineProperty][define-prop].
    * @public
    * @param {!Object} source
    * @param {string} key
    * @param {*=} val
-   *   The #val is required if the #descriptor is not defined.
-   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
+   * @param {!Object=} descriptor
    * @param {string=} strongType
-   *   If the #strongType is defined, the new property is assigned an
-   *   [accessor descriptor][descriptor] that includes a `set` function that
-   *   throws an error if @is#main returns `false` for a new property `value`.
-   *   See the below snippet for an example #strongType `set` function.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = newVal;
-   *   };
-   *   ```
    * @param {(!function(*, *): *)=} setter
-   *   If defined the new property is assigned an
-   *   [accessor descriptor][descriptor] that includes a `set` function that
-   *   sets the property to the value returned by #setter. The #setter
-   *   function will receive two params, the new value and the current value.
-   *   If #strongType is defined #setter will not get called until the new
-   *   value passes the @is#main test.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = setter(newVal, value);
-   *   };
-   *   ```
    * @return {!Object}
-   *   The amended #source.
    */
   function amendProperty(source, key, val, descriptor, strongType, setter) {
 
@@ -2590,19 +2339,12 @@ var amend = (function amendPrivateScope() {
   amend['property'] = amendProperty;
   amend['prop'] = amendProperty;
 
-  /// @section strict
-  /// @method vitals.amend.property.config
-  /// @alias vitals.amend.prop.config
   /**
-   * @description
-   *   A shortcut for [Object.defineProperty][define-prop] that only updates
-   *   the [descriptor][descriptor] of an existing property.
    * @public
    * @param {!Object} source
    * @param {string} key
    * @param {!Object} descriptor
    * @return {!Object}
-   *   The amended #source.
    */
   function amendPropertyConfig(source, key, descriptor) {
 
@@ -2632,70 +2374,15 @@ var amend = (function amendPrivateScope() {
   amend['property']['config'] = amendPropertyConfig;
   amend['prop']['config'] = amendPropertyConfig;
 
-  /// @section strict
-  /// @method vitals.amend.properties
-  /// @alias vitals.amend.props
   /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that includes
-   *   easier property value assignment, strong type declarations, and
-   *   flexible default [descriptor][descriptor] options.
    * @public
    * @param {!Object} source
    * @param {(!Object<string, *>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, *>`*!$
-   *     For each `key => value` pair use the property's name for the `key`,
-   *     and the property's [descriptor][descriptor] or new value for its
-   *     `value`.
-   *   - *`!Array<string>`*!$
-   *     For each element of the `array` define a property name.
-   *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array`
-   *     of property names using one of the following values as the separator
-   *     (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
    * @param {*=} val
-   *   Only define #val (and then required) if an `array` or `string` of
-   *   property names is given for #props. #val sets the value of each
-   *   property in #props regardless of #descriptor settings.
-   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   The new [descriptor][descriptor] for each property in #props unless a
-   *   [descriptor][descriptor] is used for a #props `value`.
+   * @param {!Object=} descriptor
    * @param {string=} strongType
-   *   If defined all new properties are assigned an
-   *   [accessor descriptor][descriptor] (unless overridden in a #props
-   *   `value`) that includes a `set` function (unless overridden in a #props
-   *   `value`) that throws an error if @is#main returns `false` for a new
-   *   property `value`. See the below snippet for an example #strongType
-   *   `set` function.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = newVal;
-   *   };
-   *   ```
    * @param {(!function(*, *): *)=} setter
-   *   If defined all new properties are assigned an
-   *   [accessor descriptor][descriptor] (unless overridden in a #props
-   *   `value`) that includes a `set` function (unless overridden in a #props
-   *   `value`) that sets the property to the value returned by #setter. The
-   *   #setter function will receive two params, the new value and the current
-   *   value. If #strongType is defined #setter will not get called until the
-   *   new value passes the @is#main test.
-   *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
-   *       throw new TypeError("...");
-   *     value = setter(newVal, value);
-   *   };
-   *   ```
    * @return {!Object}
-   *   The amended #source.
    */
   function amendProperties(
     source, props, val, descriptor, strongType, setter) {
@@ -2878,35 +2565,12 @@ var amend = (function amendPrivateScope() {
   amend['properties'] = amendProperties;
   amend['props'] = amendProperties;
 
-  /// @section strict
-  /// @method vitals.amend.properties.config
-  /// @alias vitals.amend.props.config
   /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that only
-   *   updates the [descriptors][descriptor] of existing properties.
    * @public
    * @param {!Object} source
    * @param {(!Object<string, !Object>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, !Object>`*!$
-   *     For each `key => value` pair use the property's name for the `key`,
-   *     and the property's [descriptor][descriptor] for its `value`.
-   *   - *`!Array<string>`*!$
-   *     For each element of the `array` define a property name.
-   *   - *`string`*!$
-   *     Should be a list of property names. It gets converted to an `array`
-   *     of property names using one of the following values as the separator
-   *     (values listed in order of rank):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
    * @param {!Object=} descriptor
-   *   Only define #descriptor (and then required) if an `array` or `string`
-   *   of property names is given for #props.
    * @return {!Object}
-   *   The amended #source.
    */
   function amendPropertiesConfig(source, props, descriptor) {
 
@@ -2971,8 +2635,6 @@ var amend = (function amendPrivateScope() {
   }
   amend['properties']['config'] = amendPropertiesConfig;
   amend['props']['config'] = amendPropertiesConfig;
-
-
 
   /**
    * @private
@@ -3054,9 +2716,6 @@ var amend = (function amendPrivateScope() {
     return _ObjDefineProps(obj, props);
   }
 
-
-
-
   /**
    * @private
    * @const {!Object<string, boolean>}
@@ -3091,8 +2750,6 @@ var amend = (function amendPrivateScope() {
     'enumerable': YES,
     'configurable': YES
   };
-
-
 
   /**
    * @private
@@ -3206,8 +2863,6 @@ var amend = (function amendPrivateScope() {
     return descriptor;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -3246,8 +2901,6 @@ var amend = (function amendPrivateScope() {
     return $is.obj(obj) && ( $own(obj, 'get') || $own(obj, 'set') );
   }
 
-
-
   /**
    * @private
    * @param {!Object} descriptor
@@ -3267,8 +2920,6 @@ var amend = (function amendPrivateScope() {
     }
     return accessor;
   }
-
-
 
   /**
    * @private
@@ -3307,10 +2958,6 @@ var amend = (function amendPrivateScope() {
       return is(strongType, newVal);
     };
   }
-
-
-
-
 
   /**
    * @private
@@ -3408,8 +3055,6 @@ var amend = (function amendPrivateScope() {
       return obj;
     };
   })();
-
-
 
   /**
    * @private
@@ -3541,8 +3186,6 @@ var amend = (function amendPrivateScope() {
     return props;
   }
 
-
-
   /**
    * @private
    * @param {!Object} source
@@ -3589,9 +3232,6 @@ var amend = (function amendPrivateScope() {
     }
     return YES;
   }
-
-
-
 
   /**
    * @private
@@ -3642,14 +3282,10 @@ var amend = (function amendPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return amend;
 })();
@@ -3661,16 +3297,7 @@ var amend = (function amendPrivateScope() {
  */
 var create = (function createPrivateScope() {
 
-
-  /// @section strict
-  /// @method vitals.create
   /**
-   * @description
-   *   A shortcut for [Object.create][create] that includes easier property
-   *   value assignment, strong type declarations, and flexible default
-   *   [descriptor][descriptor] options. Note that this method uses
-   *   @amend#main for assigning properties to the new `object`. See
-   *   @amend#main for detailed documentation on all of the available options.
    * @public
    * @param {?Object} proto
    * @param {(!Object<string, *>|!Array<string>|string)} props
@@ -3705,16 +3332,7 @@ var create = (function createPrivateScope() {
     }
   }
 
-  /// @section strict
-  /// @method vitals.create.object
-  /// @alias vitals.create.obj
   /**
-   * @description
-   *   A shortcut for [Object.create][create] that includes easier property
-   *   value assignment, strong type declarations, and flexible default
-   *   [descriptor][descriptor] options. Note that this method uses
-   *   @amend#main for assigning properties to the new `object`. See
-   *   @amend#main for detailed documentation on all of the available options.
    * @public
    * @param {?Object} proto
    * @param {(!Object<string, *>|!Array<string>|string)} props
@@ -3751,8 +3369,6 @@ var create = (function createPrivateScope() {
   create['object'] = createObject;
   create['obj'] = createObject;
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -3785,14 +3401,10 @@ var create = (function createPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return create;
 })();
@@ -3834,5 +3446,5 @@ vitals['create'] = create;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

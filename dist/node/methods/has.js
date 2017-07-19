@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.HAS
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals.has](https://github.com/imaginate/vitals/wiki/vitals.has)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -206,11 +202,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -234,7 +227,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -299,8 +291,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -368,7 +358,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -401,8 +390,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -418,8 +405,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -438,29 +423,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -469,23 +431,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -534,8 +491,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -618,8 +573,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -643,8 +596,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -686,7 +637,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -725,7 +675,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -770,7 +719,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -788,8 +736,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -867,8 +813,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -895,8 +839,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -993,7 +935,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1003,11 +944,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1042,8 +980,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1059,7 +995,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1078,8 +1013,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1166,7 +1099,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1245,8 +1177,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1282,11 +1212,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1302,9 +1229,6 @@ var $strIncl = (function $strInclPrivateScope() {
   return $strIncl;
 })();
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes` and
- *   `RegExp.prototype.test`.
  * @private
  * @param {string} src
  * @param {*} patt
@@ -1361,8 +1285,6 @@ function $inObj(src, val) {
   return NO;
 }
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes`.
  * @private
  * @param {string} src
  * @param {*} val
@@ -1384,8 +1306,6 @@ function $inStr(src, val) {
  */
 var $ownEnum = (function $ownEnumPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-  /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
 
   /**
    * @private
@@ -1395,9 +1315,6 @@ var $ownEnum = (function $ownEnumPrivateScope() {
   var _hasEnum = OBJ_PROTO['propertyIsEnumerable'];
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own] and
-   *   [Object.prototype.propertyIsEnumerable][enum].
    * @param {(!Object|!Function)} src
    * @param {*} key
    * @return {boolean}
@@ -1416,69 +1333,11 @@ var $ownEnum = (function $ownEnumPrivateScope() {
  */
 var has = (function hasPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.has
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] a property, if an
-   *   `array` or `arguments` instance contains a value, or a `string` matches
-   *   a pattern or contains a substring.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments|?string)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value (via a [strict equality][equal] test).
-   *   - *`string`*!$
-   *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
-   *     returns the result of a call to [String.prototype.includes][includes]
-   *     or, in the case of an older platform that does not support
-   *     [String.prototype.includes][includes], it returns a
-   *     [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexof] (i.e.
-   *     `return source.indexOf(val) !== -1;`).
    * @param {*} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #val does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     If the #val is a `RegExp`, each [owned][own] property is
-   *     [tested][test] for a matching property key. If a match is found, this
-   *     method immediately returns `true`. Otherwise, the #val is passed
-   *     without any conversions to [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each indexed property value.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     before [String.prototype.includes][includes] or, in the case of an
-   *     older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
-   *   - *`string`*!$
-   *     If the #val is a `RegExp`, this method returns the result of a call
-   *     to [RegExp.prototype.test][test] on the #source. Otherwise, it
-   *     returns the result of a call to [String.prototype.includes][includes]
-   *     or, in the case of an older platform that does not support
-   *     [String.prototype.includes][includes], it returns a
-   *     [strict equality][equal] test for a non-negative
-   *     index result from [String.prototype.indexOf][indexof] (i.e.
-   *     `return source.indexOf(val) !== -1;`).
    */
   function has(source, val) {
 
@@ -1506,33 +1365,11 @@ var has = (function hasPrivateScope() {
         : $own(source, val);
   }
 
-  /// @section base
-  /// @method vitals.has.key
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] a property.
    * @public
    * @param {(?Object|?Function)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
    * @param {*} key
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #key does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #key is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own].
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own].
    */
   function hasKey(source, key) {
 
@@ -1554,44 +1391,11 @@ var has = (function hasPrivateScope() {
   }
   has['key'] = hasKey;
 
-  /// @section base
-  /// @method vitals.has.value
-  /// @alias vitals.has.val
   /**
-   * @description
-   *   Checks if an `object` or `function` [owned][own] property or an `array`
-   *   or `arguments` indexed property has a value.
    * @public
    * @param {(?Object|?Function|?Array|?Arguments)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method checks each [owned][own] property in the #source for one
-   *     matching value.
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
    * @param {*} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #val does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each [owned][own] property value.
-   *   - *`!Array|!Arguments`*!$
-   *     The #val is **not** altered. A [strict equality][equal] test against
-   *     the #val is used to evaluate each indexed property value.
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method checks each [owned][own] property in the #source for one
-   *     matching value.
-   *   - *`!Array|!Arguments`*!$
-   *     This method checks each indexed property in the #source for one
-   *     matching value.
    */
   function hasValue(source, val) {
 
@@ -1616,34 +1420,11 @@ var has = (function hasPrivateScope() {
   has['value'] = hasValue;
   has['val'] = hasValue;
 
-  /// @section base
-  /// @method vitals.has.pattern
   /**
-   * @description
-   *   Checks if a `string` matches a pattern or contains a substring.
    * @public
    * @param {string} source
-   *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
-   *   result of a call to [String.prototype.includes][includes] or, in the
-   *   case of an older platform that does not support
-   *   [String.prototype.includes][includes], it returns a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    * @param {*} pattern
-   *   If the #pattern is **not** a `RegExp`, it is converted into a `string`
-   *   before [String.prototype.includes][includes] or, in the case of an
-   *   older platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   If the #val is a `RegExp`, this method returns the result of a call to
-   *   [RegExp.prototype.test][test] on the #source. Otherwise, it returns the
-   *   result of a call to [String.prototype.includes][includes] or, in the
-   *   case of an older platform that does not support
-   *   [String.prototype.includes][includes], it returns a
-   *   [strict equality][equal] test for a non-negative index result from
-   *   [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    */
   function hasPattern(source, pattern) {
 
@@ -1661,31 +1442,11 @@ var has = (function hasPrivateScope() {
   }
   has['pattern'] = hasPattern;
 
-  /// @section base
-  /// @method vitals.has.substring
-  /// @alias vitals.has.substr
   /**
-   * @description
-   *   Checks if a `string` contains a substring.
    * @public
    * @param {string} source
-   *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform that does not support [String.prototype.includes][includes],
-   *   it returns a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    * @param {*} val
-   *   The #val is converted into a `string` before
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform, [String.prototype.indexOf][indexof] is called.
    * @return {boolean}
-   *   This method returns the result of a call to
-   *   [String.prototype.includes][includes] or, in the case of an older
-   *   platform that does not support [String.prototype.includes][includes],
-   *   it returns a [strict equality][equal] test for a non-negative index
-   *   result from [String.prototype.indexOf][indexof] (i.e.
-   *   `return source.indexOf(val) !== -1;`).
    */
   function hasSubstring(source, val) {
 
@@ -1704,45 +1465,11 @@ var has = (function hasPrivateScope() {
   has['substring'] = hasSubstring;
   has['substr'] = hasSubstring;
 
-  /// @section base
-  /// @method vitals.has.enumerableKey
-  /// @alias vitals.has.enumerable
-  /// @alias vitals.has.enumKey
-  /// @alias vitals.has.enum
-  ///   Note that `vitals.has.enum` will fail in some ES3 and ES5 browser and
-  ///   other platform environments. Use `vitals.has.enumerable` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Checks if an `object` or `function` [owns][own] an [enumerable][enum]
-   *   property. Also note that `vitals.has.enum` is not valid in some
-   *   [ES3][ecma3] and [ES5][ecma5] browser and other platform environments.
-   *   Use `vitals.has.enumerable` for browser and platform safety.
    * @public
    * @param {(?Object|?Function)} source
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method automatically returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    * @param {*} key
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     The value of #key does not matter and is not used.
-   *   - *`!Object|!Function`*!$
-   *     The #key is passed **without** any conversions to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    * @return {boolean}
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`null`*!$
-   *     This method returns `false`.
-   *   - *`!Object|!Function`*!$
-   *     This method returns the result of a safe call to
-   *     [Object.prototype.hasOwnProperty][own] and
-   *     [Object.prototype.propertyIsEnumerable][enum].
    */
   function hasEnumerableKey(source, key) {
 
@@ -1770,8 +1497,6 @@ var has = (function hasPrivateScope() {
   }
   catch (e) {}
 
-
-
   /**
    * @private
    * @param {(!Object|!Function)} src
@@ -1789,8 +1514,6 @@ var has = (function hasPrivateScope() {
     }
     return NO;
   }
-
-
 
   /**
    * @private
@@ -1824,14 +1547,10 @@ var has = (function hasPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return has;
 })();
@@ -1842,5 +1561,5 @@ vitals['has'] = has;
   module.exports = vitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

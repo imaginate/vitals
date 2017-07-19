@@ -1,10 +1,6 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS
- * ---------------------------------------------------------------------------
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -205,11 +201,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -233,7 +226,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -298,8 +290,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -367,7 +357,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -400,8 +389,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -417,8 +404,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -437,29 +422,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -468,23 +430,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -533,8 +490,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -617,8 +572,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -642,8 +595,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -685,7 +636,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -724,7 +674,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -769,7 +718,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -787,8 +735,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -866,8 +812,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -894,8 +838,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -992,7 +934,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1001,7 +942,6 @@ var $print = (function $printPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1020,8 +960,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1108,7 +1046,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1187,8 +1124,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1257,8 +1192,8 @@ function $merge(dest, src) {
 /**
  * @private
  * @param {(!Object|!Function)} src
- * @param {number=} start = `0`
- * @param {number=} end = `src.length`
+ * @param {number=} start
+ * @param {number=} end
  * @return {!Array}
  */
 function $sliceArr(src, start, end) {
@@ -1302,13 +1237,8 @@ function $sliceArr(src, start, end) {
 
 /**
  * @public
- * @param {(!Array<string>|...string)=} method = `"all"`
- *   The @vitals super methods to include in the output. The methods may be
- *   included by section or individually.
+ * @param {(!Array<string>|...string)=} method
  * @return {(!Object|!Function)}
- *   If only one #method is defined and it is a super method (i.e. not a
- *   section), only the one #method is returned. Otherwise, an `object` with
- *   each defined #method set for its property keys and values is returned.
  */
 function newVitals(method) {
 
@@ -1398,9 +1328,6 @@ function newVitals(method) {
   vitals['newVitals'] = newVitals;
   return vitals;
 }
-
-
-
 
 /**
  * @private
@@ -1533,8 +1460,6 @@ var _VALID_RANGE = [
   'until'
 ];
 
-
-
 /**
  * @private
  * @param {(!Object|!Function)} VITALS
@@ -1567,9 +1492,6 @@ function _newMkGlobal(VITALS, SECTIONS, METHODS) {
   }
 
   /**
-   * @description
-   *   This method appends the `vitals` instance and each of its super methods
-   *   to the `global` `object`.
    * @public
    * @return {void}
    */
@@ -1801,9 +1723,6 @@ function _requireSection(section) {
   return require('./sections/' + section + '.js');
 }
 
-
-
-
 /**
  * @private
  * @param {string} method
@@ -1837,8 +1756,6 @@ function _inSections(sections, method) {
   }
   return NO;
 }
-
-
 
 /**
  * @private
@@ -1932,8 +1849,6 @@ function _isValidStrArr(methods) {
   return YES;
 }
 
-
-
 /**
  * @private
  * @const {!Object<string, !function>}
@@ -1966,14 +1881,10 @@ var _MK_ERR = $mkErrs();
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
 newVitals['VERSION'] = VERSION;
 newVitals['construct'] = newVitals;
@@ -1981,5 +1892,5 @@ newVitals['newVitals'] = newVitals;
 module.exports = newVitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

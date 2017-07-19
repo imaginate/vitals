@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.FILL
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals.fill](https://github.com/imaginate/vitals/wiki/vitals.fill)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -23,7 +19,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -65,7 +60,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -79,7 +73,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -130,7 +123,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -297,11 +289,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -325,7 +314,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -390,8 +378,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -467,8 +453,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -476,9 +460,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -546,10 +527,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -565,8 +542,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -585,29 +560,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -616,23 +568,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -681,8 +628,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -765,8 +710,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -790,8 +733,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -830,7 +771,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -873,7 +813,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -891,8 +830,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -970,8 +907,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -998,8 +933,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1096,7 +1029,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1106,11 +1038,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1145,8 +1074,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1162,7 +1089,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1181,8 +1107,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1269,7 +1193,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1348,8 +1271,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1385,11 +1306,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1407,12 +1325,6 @@ var $strIncl = (function $strInclPrivateScope() {
 /**
  * @private
  * @param {string} keys
- *   The #keys are split using one of the values in the following list as the
- *   separator (values listed in order of rank):
- *   - `", "`
- *   - `","`
- *   - `"|"`
- *   - `" "`
  * @return {!Array<string>}
  */
 function $splitKeys(keys) {
@@ -1440,38 +1352,13 @@ function $splitKeys(keys) {
  */
 var fill = (function fillPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.fill
   /**
-   * @description
-   *   Fills an `array`, `object`, or `string` with specified values.
    * @public
    * @param {(?Array|?Object|?Function|?number)} source
-   *   If the #source is a `number`, @fill returns a new `string` filled with
-   *   the `string` conversion of #val the #source `number` of times.
    * @param {(!Array|string)=} keys
-   *   Only use with an `object` or `function` #source. If defined, #keys is
-   *   considered an `array` of keys that will limit the fill action. If a
-   *   `string` is defined for #keys, it is converted to an `array` using one
-   *   of the values in the following list for the separator (values listed in
-   *   order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {*} val
-   *   The value to fill the `array`, `object`, or `string` with.
-   * @param {number=} start = `0`
-   *   Only use with an `array` #source. It begins the range of indexes in the
-   *   #source that are filled with the #val. If negative, the #start value is
-   *   added to the #source [length][arr-length]. The #start index `number` is
-   *   included in the range of filled properties if it exists.
-   * @param {number=} end = `source.length`
-   *   Only use with an `array` #source. It ends the range of indexes in the
-   *   #source that are filled with the #val. If negative, the #end value is
-   *   added to the #source [length][arr-length]. The #end index `number` is
-   *   **not** included in the range of filled properties if it exists.
+   * @param {number=} start
+   * @param {number=} end
    * @return {(?Array|?Object|?Function|?string)}
    */
   function fill(source, keys, val, start, end) {
@@ -1528,26 +1415,11 @@ var fill = (function fillPrivateScope() {
     return _fillKeys(source, keys, val);
   }
 
-  /// @section base
-  /// @method vitals.fill.object
-  /// @alias vitals.fill.obj
   /**
-   * @description
-   *   Fills an existing `object` or `function` with specified keys and
-   *   values.
    * @public
    * @param {(!Object|!Function)} source
    * @param {(!Array|string)=} keys
-   *   If defined, #keys is considered an `array` of keys that will limit the
-   *   fill action. If a `string` is defined for #keys, it is converted to an
-   *   `array` using one of the values in the following list for the separator
-   *   (values listed in order of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {*} val
-   *   The value to fill the `object` or `function` with.
    * @return {(!Object|!Function)}
    */
   function fillObject(source, keys, val) {
@@ -1583,28 +1455,12 @@ var fill = (function fillPrivateScope() {
   fill['object'] = fillObject;
   fill['obj'] = fillObject;
 
-  /// @section base
-  /// @method vitals.fill.array
-  /// @alias vitals.fill.arr
   /**
-   * @description
-   *   Fills an existing or new `array` with specified values.
    * @public
    * @param {(!Array|number)} source
-   *   If #source is a `number`, it makes a new `array` for #source using the
-   *   #source `number` for the [array's length][arr-length].
    * @param {*} val
-   *   The value to fill the #source `array` with.
-   * @param {number=} start = `0`
-   *   Begins the range of indexes in the #source that are filled with the
-   *   #val. If negative, the #start value is added to the #source
-   *   [length][arr-length]. The #start index `number` is included in the
-   *   range of filled properties if it exists.
-   * @param {number=} end = `arr.length`
-   *   Ends the range of indexes in the #source that are filled with the #val.
-   *   If negative, the #end value is added to the #source
-   *   [length][arr-length]. The #end index `number` is **not** included in
-   *   the range of filled properties if it exists.
+   * @param {number=} start
+   * @param {number=} end
    * @return {!Array}
    */
   function fillArray(source, val, start, end) {
@@ -1671,18 +1527,10 @@ var fill = (function fillPrivateScope() {
   fill['array'] = fillArray;
   fill['arr'] = fillArray;
 
-  /// @section base
-  /// @method vitals.fill.string
-  /// @alias vitals.fill.str
   /**
-   * @description
-   *   Fills a new `string` with specified values.
    * @public
    * @param {number} count
-   *   The [length][str-length] of the new `string`.
    * @param {*} val
-   *   The value to fill the new `string` with. Any #val that is not a
-   *   `string` is converted to a `string`.
    * @return {string}
    */
   function fillString(count, val) {
@@ -1704,8 +1552,6 @@ var fill = (function fillPrivateScope() {
   }
   fill['string'] = fillString;
   fill['str'] = fillString;
-
-
 
   /**
    * @private
@@ -1750,8 +1596,8 @@ var fill = (function fillPrivateScope() {
    * @private
    * @param {!Array} arr
    * @param {*} val
-   * @param {number=} start = `0`
-   * @param {number=} end = `arr.length`
+   * @param {number=} start
+   * @param {number=} end
    * @return {!Array}
    */
   function _fillArr(arr, val, start, end) {
@@ -1808,8 +1654,6 @@ var fill = (function fillPrivateScope() {
     return str;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -1842,14 +1686,10 @@ var fill = (function fillPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return fill;
 })();
@@ -1891,5 +1731,5 @@ vitals['fill'] = fill;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

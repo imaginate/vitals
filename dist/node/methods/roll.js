@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.ROLL
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals.roll](https://github.com/imaginate/vitals/wiki/vitals.roll)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -206,11 +202,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -234,7 +227,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -299,8 +291,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -368,7 +358,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -401,8 +390,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -418,8 +405,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -438,29 +423,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -469,23 +431,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -534,8 +491,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -618,8 +573,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -643,8 +596,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -686,7 +637,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -725,7 +675,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -770,7 +719,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -788,8 +736,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -867,8 +813,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -895,8 +839,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -993,7 +935,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1003,11 +944,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1042,8 +980,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1059,7 +995,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1078,8 +1013,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1166,7 +1099,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1245,8 +1177,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1282,11 +1212,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1367,85 +1294,12 @@ function $cloneObj(obj) {
  */
 var roll = (function rollPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.roll
   /**
-   * @description
-   *   A shortcut for deriving a result by carrying a value over each
-   *   [owned][own] property of an `object` or `function`, each indexed
-   *   property of an `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial carried value. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over each [owned][own]
-   *     property in random order.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over each indexed
-   *     property starting with `0` and ending at `source.length`.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over each `number` of
-   *     cycles starting with `0` and ending at `source`.
    * @param {!function(*=, *=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all four parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all four parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **prevValue** *`*`*
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than four parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `4`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function roll(base, source, iteratee, thisArg) {
@@ -1507,86 +1361,12 @@ var roll = (function rollPrivateScope() {
         : _rollObj(source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.roll.up
   /**
-   * @description
-   *   A shortcut for deriving a summed total by adding each value returned by
-   *   an #iteratee `function` call over each [owned][own] property of an
-   *   `object` or `function`, each indexed property of an `array` or
-   *   `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial total. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over every [owned][own]
-   *     property in random order the sum of the #base (if defined) and each
-   *     value returned by every #iteratee call.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over every indexed
-   *     property starting with `0` and ending at `source.length` the sum of
-   *     the #base (if defined) and each value returned by every #iteratee
-   *     call.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over every `number` of
-   *     cycles starting with `0` and ending at `source` the sum of the #base
-   *     and each value returned by every #iteratee call.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function rollUp(base, source, iteratee, thisArg) {
@@ -1649,86 +1429,12 @@ var roll = (function rollPrivateScope() {
   }
   roll['up'] = rollUp;
 
-  /// @section base
-  /// @method vitals.roll.down
   /**
-   * @description
-   *   A shortcut for deriving a reduced total by subtracting each value
-   *   returned by an #iteratee `function` call over each [owned][own]
-   *   property of an `object` or `function`, each indexed property of an
-   *   `array` or `arguments`, or each `number` of cycles.
    * @public
    * @param {*=} base
-   *   If a #base is defined, it is the initial total. Note that for a
-   *   `number` #source (i.e. cycles) a #base is required.
    * @param {(!Object|!Function|!Array|!Arguments|number)} source
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method will carry (i.e. iterate or roll) over every [owned][own]
-   *     property in random order the difference of the #base (if defined) and
-   *     each value returned by every #iteratee call.
-   *   - *`!Array|!Arguments`*!$
-   *     This method will carry (i.e. iterate or roll) over every indexed
-   *     property starting with `0` and ending at `source.length` the
-   *     difference of the #base (if defined) and each value returned by every
-   *     #iteratee call.
-   *   - *`number`*!$
-   *     This method will carry (i.e. iterate or roll) over every `number` of
-   *     cycles starting with `0` and ending at `source` the difference of the
-   *     #base and each value returned by every #iteratee call.
    * @param {!function(*=, (string|number)=, (!Object|!Function|!Array)=): *} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **propValue** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`number`*!$
-   *     The #iteratee can have the following optional parameters:
-   *     - **cycle** *`number`*!$
-   *       Note that this `number` is zero-based (i.e. the first *cycle* value
-   *       is `0`).
-   *     - **cycles** *`number`*!$
-   *       The unchanged #source value.
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`number`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than two parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `2`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {*}
    */
   function rollDown(base, source, iteratee, thisArg) {
@@ -1790,8 +1496,6 @@ var roll = (function rollPrivateScope() {
         : _rollObjDown(source, iteratee, thisArg);
   }
   roll['down'] = rollDown;
-
-
 
   /**
    * @private
@@ -2185,8 +1889,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} source
@@ -2471,8 +2173,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {*} result
@@ -2600,8 +2300,6 @@ var roll = (function rollPrivateScope() {
     return result;
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -2706,8 +2404,6 @@ var roll = (function rollPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -2740,14 +2436,10 @@ var roll = (function rollPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return roll;
 })();
@@ -2758,5 +2450,5 @@ vitals['roll'] = roll;
   module.exports = vitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

@@ -1,12 +1,8 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.GET
- * ---------------------------------------------------------------------------
  * @section base
  * @section fs
  * @version 5.0.0
  * @see [vitals.get](https://github.com/imaginate/vitals/wiki/vitals.get)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -24,7 +20,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -66,7 +61,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -80,7 +74,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -131,7 +124,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -298,11 +290,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -326,7 +315,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -391,8 +379,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -468,8 +454,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -477,9 +461,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -547,10 +528,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -566,8 +543,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -586,29 +561,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -617,23 +569,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -682,8 +629,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -766,8 +711,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -791,8 +734,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -831,7 +772,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -874,7 +814,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -892,8 +831,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -971,8 +908,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -999,8 +934,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1097,7 +1030,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1107,11 +1039,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1146,8 +1075,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1163,7 +1090,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1182,8 +1108,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1270,7 +1194,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1349,8 +1272,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1386,11 +1307,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1406,9 +1324,6 @@ var $strIncl = (function $strInclPrivateScope() {
   return $strIncl;
 })();
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes` and
- *   `RegExp.prototype.test`.
  * @private
  * @param {string} src
  * @param {*} patt
@@ -1541,45 +1456,10 @@ var $cloneRegx = (function $cloneRegxPrivateScope() {
  */
 var get = (function getPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.get
   /**
-   * @description
-   *   Retrieves keys and values from an `object` or `function`, indexes and
-   *   values from an `array` or `arguments` instance, or indexes and
-   *   substrings from a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
-   *   If no #val is defined, the following rules apply in order of priority
-   *   (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method returns an `array` of all of the [owned][own] property
-   *     key names in the #source.
-   *   - *`!Array|!Arguments`*!$
-   *     This method returns an `array` of all of the indexes in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     If the #val is a `RegExp` this method returns an `array` of the
-   *     [owned][own] property values in the #source where the key name
-   *     matches (via a @has#pattern test) the #val. Otherwise it returns an
-   *     `array` of the [owned][own] property key names in the #source where
-   *     the value matches (via a [strict equality][equal] test) the #val.
-   *   - *`!Array|!Arguments`*!$
-   *     This method returns an `array` of the indexes in the #source where
-   *     the property value matches (via a [strict equality][equal] test) the
-   *     #val.
-   *   - *`string`*!$
-   *     If the #val is a `RegExp` this method returns an `array` of every
-   *     substring in the #source that matches (via a @has#pattern test) the
-   *     #val. Otherwise the #val is converted into a `string` with
-   *     [String()][string], and this method returns an `array` of the
-   *     starting indexes in the #source where a substring matches (via a
-   *     [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   function get(source, val) {
@@ -1618,21 +1498,10 @@ var get = (function getPrivateScope() {
     }
   }
 
-  /// @section base
-  /// @method vitals.get.keys
   /**
-   * @description
-   *   Retrieves keys from an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} source
-   *   If no #val is defined, this method returns an `array` of all of the
-   *   [owned][own] property key names in the #source.
    * @param {*=} val
-   *   If the #val is a `RegExp` this method returns an `array` of the
-   *   [owned][own] property key names in the #source where the key name
-   *   matches (via a @has#pattern test) the #val. Otherwise it returns an
-   *   `array` of the [owned][own] property key names in the #source where
-   *   the value matches (via a [strict equality][equal] test) the #val.
    * @return {!Array}
    */
   function getKeys(source, val) {
@@ -1660,19 +1529,10 @@ var get = (function getPrivateScope() {
   }
   get['keys'] = getKeys;
 
-  /// @section base
-  /// @method vitals.get.keys.byKey
   /**
-   * @description
-   *   Retrieves [owned][own] property key names from an `object` or
-   *   `function` that have a matching key name. Note that @has#pattern is
-   *   used to find key name matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} key
-   *   If the #key is not a `RegExp`, it is converted into a `string` with
-   *   [String()][string] before @has#pattern is called to check for any
-   *   property key name matches in the #source.
    * @return {!Array<string>}
    */
   function getKeysByKey(source, key) {
@@ -1694,14 +1554,7 @@ var get = (function getPrivateScope() {
   }
   get['keys']['byKey'] = getKeysByKey;
 
-  /// @section base
-  /// @method vitals.get.keys.byValue
-  /// @alias vitals.get.keys.byVal
   /**
-   * @description
-   *   Retrieves [owned][own] property key names from an `object` or
-   *   `function` that have a matching property value. Note that a
-   *   [strict equality][equal] test is used to find matches.
    * @public
    * @param {(!Object|!Function)} source
    * @param {*} val
@@ -1727,31 +1580,10 @@ var get = (function getPrivateScope() {
   get['keys']['byValue'] = getKeysByValue;
   get['keys']['byVal'] = getKeysByValue;
 
-  /// @section base
-  /// @method vitals.get.indexes
-  /// @alias vitals.get.ii
   /**
-   * @description
-   *   Retrieves property indexes from an `array`, array-like `object`, or
-   *   `string`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns an `array` of all of the indexes in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Array|!Arguments|!Object|!Function`*!$
-   *     This method returns an `array` of the indexes in the #source where
-   *     the property value matches (via a [strict equality][equal] test) the
-   *     #val.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     the starting indexes in the #source where a substring matches (via
-   *     a @has#pattern test) the #val.
    * @return {!Array}
    */
   function getIndexes(source, val) {
@@ -1794,33 +1626,10 @@ var get = (function getPrivateScope() {
   get['indexes'] = getIndexes;
   get['ii'] = getIndexes;
 
-  /// @section base
-  /// @method vitals.get.values
-  /// @alias vitals.get.vals
   /**
-   * @description
-   *   Retrieves property values from an `object` or `function` and substrings
-   *   from a `string`.
    * @public
    * @param {(!Object|!Function|string)} source
-   *   If no #val is defined, the following rules apply (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     This method returns an `array` of all of the [owned][own] property
-   *     values in the #source.
-   *   - *`string`*!$
-   *     This method throws an [Error][error] because a #val must be defined.
    * @param {*=} val
-   *   The following rules apply in order of priority (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     the [owned][own] property values where the key name matches (via a
-   *     @has#pattern test) the #val.
-   *   - *`string`*!$
-   *     If the #val is **not** a `RegExp`, it is converted into a `string`
-   *     with [String()][string]. This method will then return an `array` of
-   *     every substring in the #source that matches (via a @has#pattern
-   *     test) the #val.
    * @return {!Array}
    */
   function getValues(source, val) {
@@ -1851,9 +1660,6 @@ var get = (function getPrivateScope() {
   }
   get['values'] = getValues;
   get['vals'] = getValues;
-
-
-
 
   /**
    * @private
@@ -1964,8 +1770,6 @@ var get = (function getPrivateScope() {
     return vals;
   }
 
-
-
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} src
@@ -2012,8 +1816,6 @@ var get = (function getPrivateScope() {
     }
     return indexes;
   }
-
-
 
   /**
    * @private
@@ -2139,9 +1941,6 @@ var get = (function getPrivateScope() {
     return vals;
   }
 
-
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -2174,14 +1973,10 @@ var get = (function getPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return get;
 })();
@@ -2223,5 +2018,5 @@ vitals['get'] = get;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

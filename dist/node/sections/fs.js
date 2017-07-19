@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS
- * ---------------------------------------------------------------------------
  * @section fs
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -213,11 +209,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -241,7 +234,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -306,8 +298,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -375,7 +365,6 @@ var $is = (function $isPrivateScope() {
     return isObject(val) && $objStr(val) === '[object Error]';
   }
 
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -408,8 +397,6 @@ var $is = (function $isPrivateScope() {
    */
   var isBuffer = BUFF['isBuffer'];
 
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -425,8 +412,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -445,29 +430,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -476,23 +438,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -541,8 +498,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -625,8 +580,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -650,8 +603,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @param {string} path
@@ -693,7 +644,6 @@ var $is = (function $isPrivateScope() {
     }
   }
 
-
   /**
    * @const {!Object<string, !function>}
    * @struct
@@ -732,7 +682,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber,
@@ -777,7 +726,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -795,8 +743,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -874,8 +820,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -902,8 +846,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1000,7 +942,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1010,11 +951,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1049,8 +987,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1066,7 +1002,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1085,8 +1020,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1173,7 +1106,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1252,8 +1184,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1289,11 +1219,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1324,9 +1251,6 @@ function $cleanpath(path) {
  */
 var $resolve = (function $resolvePrivateScope() {
 
-  /// @docref [node]:(https://nodejs.org/)
-  /// @docref [v0-10]:(https://nodejs.org/docs/v0.10.0/api/path.html#path_path_resolve_from_to)
-  /// @docref [v7-9]:(https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
 
   /**
    * @private
@@ -1357,11 +1281,6 @@ var $resolve = (function $resolvePrivateScope() {
   }
 
   /**
-   * @description
-   *   Resolves path segments into an absolute path. Note that older
-   *   [node.js][node] versions of `path.resolve` such as [v0.10][v0-10]
-   *   required a #path parameter (newer versions such as [v7.9][v7-9] do not
-   *   require a #path parameter).
    * @private
    * @param {...string} path
    * @return {string}
@@ -1382,9 +1301,6 @@ var $resolve = (function $resolvePrivateScope() {
   }
 
   /**
-   * @description
-   *   Resolves path segments into an absolute path or returns the current
-   *   working directory.
    * @param {(!Array<string|undefined>|!Arguments<string|undefined>|...string)=} path
    * @return {string}
    */
@@ -1514,9 +1430,6 @@ function $hasOpt(opts, opt) {
   return $own(opts, opt) && !$is.void(opts[opt]);
 }
 /**
- * @description
- *   A cross-platform shortcut for `String.prototype.includes` and
- *   `RegExp.prototype.test`.
  * @private
  * @param {string} src
  * @param {*} patt
@@ -1617,7 +1530,6 @@ var $writeFile = FS['writeFileSync'];
  */
 var copy = (function copyPrivateScope() {
 
-
   /**
    * @public
    * @type {!Object<string, !Function>}
@@ -1625,45 +1537,16 @@ var copy = (function copyPrivateScope() {
    */
   var copy = {};
 
-
-  /// @section fs
-  /// @method vitals.copy.file
   /**
-   * @description
-   *   Copy the contents of a file to a new or existing file.
    * @public
    * @param {string} source
-   *   Must be a valid filepath to an existing file.
    * @param {string} dest
-   *   Must be a valid filepath to a new or existing file, a valid dirpath to
-   *   an existing directory, or a valid dirpath to a new directory noted by
-   *   ending the #dest `string` with `"/"`.
    * @param {(?Object|?boolean)=} opts
-   *   If the #opts is a `boolean` value, it sets the #opts.buffer option to
-   *   its value.
-   * @param {boolean=} opts.buffer = `true`
-   *   If set to `true`, the #opts.buffer option directs @copy#file to not
-   *   convert the `buffer` of the #source file's contents into a `string`
-   *   before saving it to the #dest file (i.e. do not apply any normalization
-   *   to the #source contents while copying). This also determines whether a
-   *   `buffer` or `string` of the #source contents is returned.
-   * @param {?string=} opts.encoding = `null`
-   *   The #opts.encoding option sets the character encoding for the #source
-   *   contents saved to the #dest file. If it is `null`, no character
-   *   encoding is applied.
+   * @param {boolean=} opts.buffer
+   * @param {?string=} opts.encoding
    * @param {?string=} opts.encode
-   *   An alias for the #opts.encoding option.
-   * @param {?string=} opts.eol = `null`
-   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
-   *   the end of line character to use when normalizing the #source contents
-   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
-   *   end of line character normalization is completed. The optional `string`
-   *   values are as follows (values are **not** case-sensitive):
-   *   - `"LF"`
-   *   - `"CR"`
-   *   - `"CRLF"`
+   * @param {?string=} opts.eol
    * @return {(!Buffer|string)}
-   *   The #source file's contents.
    */
   function copyFile(source, dest, opts) {
 
@@ -1774,49 +1657,18 @@ var copy = (function copyPrivateScope() {
   }
   copy['file'] = copyFile;
 
-  /// @section fs
-  /// @method vitals.copy.directory
-  /// @alias vitals.copy.dir
   /**
-   * @description
-   *   Copy all of the files in a directory to another directory.
    * @public
    * @param {string} source
-   *   Must be a valid directory path to an existing directory.
    * @param {string} dest
-   *   Must be a valid directory path to an existing directory or a valid
-   *   directory path to a new directory noted by ending the #dest `string`
-   *   with `"/"`.
    * @param {(?Object|?boolean)=} opts
-   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
-   *   value.
-   * @param {boolean=} opts.deep = `false`
-   *   The #opts.deep option tells @copy#directory whether it should
-   *   recursively copy all of the sub-directory trees within the #source.
+   * @param {boolean=} opts.deep
    * @param {boolean=} opts.recursive
-   *   An alias for the #opts.deep option.
-   * @param {boolean=} opts.buffer = `true`
-   *   If set to `true`, the #opts.buffer option directs @copy#directory to
-   *   not convert the `buffer` of each #source file's contents into a
-   *   `string` before saving it into the #dest directory (i.e. do not apply
-   *   any normalization to the #source contents while copying).
-   * @param {?string=} opts.encoding = `null`
-   *   The #opts.encoding option sets the character encoding for each #source
-   *   contents saved to each #dest file. If it is `null`, no character
-   *   encoding is applied.
+   * @param {boolean=} opts.buffer
+   * @param {?string=} opts.encoding
    * @param {?string=} opts.encode
-   *   An alias for the #opts.encoding option.
-   * @param {?string=} opts.eol = `null`
-   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
-   *   the end of line character to use when normalizing the #source contents
-   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
-   *   end of line character normalization is completed. The optional `string`
-   *   values are as follows (values are **not** case-sensitive):
-   *   - `"LF"`
-   *   - `"CR"`
-   *   - `"CRLF"`
+   * @param {?string=} opts.eol
    * @return {!Array<string>}
-   *   An `array` of each file name copied from the #source to the #dest.
    */
   function copyDirectory(source, dest, opts) {
 
@@ -1942,9 +1794,6 @@ var copy = (function copyPrivateScope() {
   }
   copy['directory'] = copyDirectory;
   copy['dir'] = copyDirectory;
-
-
-
 
   /**
    * @private
@@ -2260,9 +2109,6 @@ var copy = (function copyPrivateScope() {
     return paths;
   }
 
-
-
-
   /**
    * @private
    * @const {!Object<string, *>}
@@ -2285,8 +2131,6 @@ var copy = (function copyPrivateScope() {
     'buffer': YES,
     'encoding': NIL
   };
-
-
 
   /**
    * @private
@@ -2506,8 +2350,6 @@ var copy = (function copyPrivateScope() {
     }
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -2540,14 +2382,10 @@ var copy = (function copyPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return copy;
 })();
@@ -2559,7 +2397,6 @@ vitals['copy'] = copy;
  */
 var get = (function getPrivateScope() {
 
-
   /**
    * @public
    * @type {!Object<string, !Function>}
@@ -2567,38 +2404,14 @@ var get = (function getPrivateScope() {
    */
   var get = {};
 
-
-  /// @section fs
-  /// @method vitals.get.file
   /**
-   * @description
-   *   Gets the contents of a file.
    * @public
    * @param {string} path
    * @param {(?Object|?boolean)=} opts
-   *   If the #opts is a `boolean` value, it sets the #opts.buffer option to
-   *   its value.
-   * @param {boolean=} opts.buffer = `false`
-   *   If set to `true`, the #opts.buffer option directs @get#file to not set
-   *   an encoding when retrieving the #path file's contents and to not
-   *   convert the `buffer` of the #path file's contents into a `string`
-   *   before returning it (i.e. do not apply any normalization to the #path
-   *   contents).
-   * @param {?string=} opts.encoding = `"utf8"`
-   *   The #opts.encoding option only applies if #opts.buffer is `false`. It
-   *   sets the character encoding for the #path contents returned. If it is
-   *   `null`, no character encoding is applied.
+   * @param {boolean=} opts.buffer
+   * @param {?string=} opts.encoding
    * @param {?string=} opts.encode
-   *   An alias for the #opts.encoding option.
-   * @param {?string=} opts.eol = `null`
-   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
-   *   the end of line character to use when normalizing the #path contents
-   *   before they are returned. If #opts.eol is set to `null`, no end of line
-   *   character normalization is completed. The optional `string` values are
-   *   as follows (values are **not** case-sensitive):
-   *   - `"LF"`
-   *   - `"CR"`
-   *   - `"CRLF"`
+   * @param {?string=} opts.eol
    * @return {(!Buffer|string)}
    */
   function getFile(path, opts) {
@@ -2696,140 +2509,26 @@ var get = (function getPrivateScope() {
   }
   get['file'] = getFile;
 
-  /// @section fs
-  /// @method vitals.get.directoryPaths
-  /// @alias vitals.get.directorypaths
-  /// @alias vitals.get.directories
-  /// @alias vitals.get.dirPaths
-  /// @alias vitals.get.dirpaths
-  /// @alias vitals.get.dirs
   /**
-   * @description
-   *   Gets all of the directory paths within a directory tree.
    * @public
    * @param {string} source
-   *   Must be a valid directory path.
    * @param {(?Object|?boolean)=} opts
-   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
-   *   value.
-   * @param {boolean=} opts.deep = `false`
-   *   The #opts.deep option tells @get#dirpaths whether it should recursively
-   *   retrieve all of the sub-directory paths within the #source.
+   * @param {boolean=} opts.deep
    * @param {boolean=} opts.recursive
-   *   An alias for the #opts.deep option.
-   * @param {boolean=} opts.base = `false`
-   *   The #opts.base option tells @get#dirpaths whether it should append the
-   *   #source directory path to the base of each of the resulting directory
-   *   paths found.
+   * @param {boolean=} opts.base
    * @param {boolean=} opts.basepath
-   *   An alias for the #opts.base option.
-   * @param {boolean=} opts.abs = `false`
-   *   The #opts.abs option only applies if #opts.base is `true`. It appends
-   *   the absolute path of the #source to each of the resulting directory
-   *   paths found.
+   * @param {boolean=} opts.abs
    * @param {boolean=} opts.absolute
-   *   An alias for the #opts.abs option.
-   * @param {boolean=} opts.glob = `true`
-   *   The #opts.glob option defines whether a `string` value provided for
-   *   #opts.validDirs or #opts.invalidDirs is allowed to contain the
-   *   following wildcard values:
-   *   - `"*"`!$
-   *     This wildcard states that any `number` (`0` or more) of characters
-   *     except for the directory separator, `"/"`, is allowed in its place.
-   *     Use the backslash, `"\\"`, to escape a literal asterisk.
+   * @param {boolean=} opts.glob
    * @param {boolean=} opts.wildcard
-   *   An alias for the #opts.glob option.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs = `null`
-   *   The #opts.validDirs option limits the returned directory paths. The
-   *   remaining details are as follows (per #opts.validDirs data type):
-   *   - *`null`*!$
-   *     All directory names and paths are considered valid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.validDirs contains
-   *     a directory separator, `"/"`, each directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each directory
-   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
-   *     returns `false`, the directory and its sub-directories (if #opts.deep
-   *     is enabled) are **not** added to the results.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.validDirs `array`. Second, each `string` within the
-   *     `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.validDirs is considered a filter `function` (i.e. if it
-   *       returns `false`, the directory and its sub-directories are **not**
-   *       added to the results). If the value returned by the filter is not a
-   *       `boolean`, it is converted into a `boolean`. It has the following
-   *       optional parameters:
-   *       - **dirname** *`string`*
-   *       - **dirpath** *`string`*
-   *       - **source** *`string`*
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs
    * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.valid
-   *   An alias for the #opts.validDirs option.
-   * @param {boolean=} opts.extendValidDirs = `false`
-   *   The #opts.extendValidDirs option only applies if the #opts.validDirs
-   *   default value is not `null` and #opts.validDirs is defined. If the
-   *   #opts.extendValidDirs option is set to `true`, any value supplied to
-   *   #opts.validDirs supplements as opposed to overwrites its default value.
+   * @param {boolean=} opts.extendValidDirs
    * @param {boolean=} opts.extendValid
-   *   An alias for the #opts.extendValidDirs option.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs = `/^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/`
-   *   The #opts.invalidDirs option limits the returned directory paths. The
-   *   remaining details are as follows (per #opts.invalidDirs data type):
-   *   - *`null`*!$
-   *     All directory names and paths are **not** considered invalid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.invalidDirs
-   *     contains a directory separator, `"/"`, each directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each directory
-   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
-   *     returns `true`, the directory and its sub-directories (if #opts.deep
-   *     is enabled) are **not** added to the results.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.invalidDirs `array`. Second, each `string` within
-   *     the `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.invalidDirs is considered a filter `function` (i.e. if it
-   *       returns `true`, the directory and its sub-directories are **not**
-   *       added to the results). If the value returned by the filter is not a
-   *       `boolean`, it is converted into a `boolean`. It has the following
-   *       optional parameters:
-   *       - **dirname** *`string`*
-   *       - **dirpath** *`string`*
-   *       - **source** *`string`*
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs
    * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalid
-   *   An alias for the #opts.invalidDirs option.
-   * @param {boolean=} opts.extendInvalidDirs = `false`
-   *   The #opts.extendInvalidDirs option only applies if the
-   *   #opts.invalidDirs default value is not `null` and #opts.invalidDirs is
-   *   defined. If the #opts.extendInvalidDirs option is set to `true`, any
-   *   value supplied to #opts.invalidDirs supplements as opposed to
-   *   overwrites its default value.
+   * @param {boolean=} opts.extendInvalidDirs
    * @param {boolean=} opts.extendInvalid
-   *   An alias for the #opts.extendInvalidDirs option.
    * @return {!Array<string>}
    */
   function getDirectoryPaths(source, opts) {
@@ -3015,362 +2714,34 @@ var get = (function getPrivateScope() {
   get['dirpaths'] = getDirectoryPaths;
   get['dirs'] = getDirectoryPaths;
 
-  /// @section fs
-  /// @method vitals.get.filePaths
-  /// @alias vitals.get.filepaths
-  /// @alias vitals.get.files
   /**
-   * @description
-   *   Gets all of the file paths within a directory tree.
    * @public
    * @param {string} source
-   *   Must be a valid directory path.
    * @param {(?Object|?boolean)=} opts
-   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
-   *   value.
-   * @param {boolean=} opts.deep = `false`
-   *   The #opts.deep option tells @get#filepaths whether it should
-   *   recursively retrieve all of the sub-directory file paths within the
-   *   #source.
+   * @param {boolean=} opts.deep
    * @param {boolean=} opts.recursive
-   *   An alias for the #opts.deep option.
-   * @param {boolean=} opts.base = `false`
-   *   The #opts.base option tells @get#filepaths whether it should append the
-   *   #source directory path to the base of each of the resulting directory
-   *   paths found.
+   * @param {boolean=} opts.base
    * @param {boolean=} opts.basepath
-   *   An alias for the #opts.base option.
-   * @param {boolean=} opts.abs = `false`
-   *   The #opts.abs option only applies if #opts.base is `true`. It appends
-   *   the absolute path of the #source to each of the resulting directory
-   *   paths found.
+   * @param {boolean=} opts.abs
    * @param {boolean=} opts.absolute
-   *   An alias for the #opts.abs option.
-   * @param {boolean=} opts.glob = `true`
-   *   The #opts.glob option defines whether a `string` pattern provided for
-   *   any valid or invalid #opts test option is allowed to contain the
-   *   following wildcard values:
-   *   - `"*"`!$
-   *     This wildcard states that any `number` (`0` or more) of characters
-   *     except for the directory separator, `"/"`, is allowed in its place.
-   *     Use the backslash, `"\\"`, to escape a literal asterisk.
+   * @param {boolean=} opts.glob
    * @param {boolean=} opts.wildcard
-   *   An alias for the #opts.glob option.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.valid = `null`
-   *   The #opts.valid option limits the returned file paths and the checked
-   *   directory paths. The remaining details are as follows (per #opts.valid
-   *   data type):
-   *   - *`null`*!$
-   *     All file and directory paths are considered valid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.valid contains a
-   *     directory separator, `"/"`, each file and directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each file and
-   *     directory **name** is [tested][test] against the `RegExp`. If a
-   *     [test][test] returns `false`, the file is **not** added to the
-   *     results or the directory's children (if #opts.deep is enabled) are
-   *     **not** checked.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.valid `array`. Second, each `string` within the
-   *     `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.valid is considered a filter `function` (i.e. if it
-   *       returns `false`, the file is **not** added to the results or the
-   *       directory's children are **not** checked). If the value returned by
-   *       the filter is not a `boolean`, it is converted into a `boolean`. It
-   *       has the following optional parameters:
-   *       - **filename** *`string`*
-   *       - **filepath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendValid = `false`
-   *   The #opts.extendValid option only applies if the #opts.valid default
-   *   value is not `null` and #opts.valid is defined. If the
-   *   #opts.extendValid option is set to `true`, any value supplied to
-   *   #opts.valid supplements as opposed to overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalid = `null`
-   *   The #opts.invalid option limits the returned file paths and the checked
-   *   directory paths. The remaining details are as follows (per
-   *   #opts.invalid data type):
-   *   - *`null`*!$
-   *     All file and directory paths are **not** considered invalid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.invalid contains a
-   *     directory separator, `"/"`, each file and directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each file and
-   *     directory **name** is [tested][test] against the `RegExp`. If a
-   *     [test][test] returns `true`, the file is **not** added to the results
-   *     or the directory's children (if #opts.deep is enabled) are **not**
-   *     checked.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.invalid `array`. Second, each `string` within the
-   *     `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.invalid is considered a filter `function` (i.e. if it
-   *       returns `true`, the file is **not** added to the results or the
-   *       directory's children are **not** checked). If the value returned by
-   *       the filter is not a `boolean`, it is converted into a `boolean`. It
-   *       has the following optional parameters:
-   *       - **filename** *`string`*
-   *       - **filepath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendInvalid = `false`
-   *   The #opts.extendValid option only applies if the #opts.valid default
-   *   value is not `null` and #opts.valid is defined. If the
-   *   #opts.extendValid option is set to `true`, any value supplied to
-   *   #opts.valid supplements as opposed to overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs = `null`
-   *   The #opts.validDirs option limits the checked directory paths. The
-   *   remaining details are as follows (per #opts.validDirs data type):
-   *   - *`null`*!$
-   *     All directory names and paths are considered valid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.validDirs contains
-   *     a directory separator, `"/"`, each directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each directory
-   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
-   *     returns `false`, the directory and its sub-directories (if #opts.deep
-   *     is enabled) are **not** checked.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.validDirs `array`. Second, each `string` within the
-   *     `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.validDirs is considered a filter `function` (i.e. if it
-   *       returns `false`, the directory and its sub-directories are **not**
-   *       checked). If the value returned by the filter is not a `boolean`,
-   *       it is converted into a `boolean`. It has the following optional
-   *       parameters:
-   *       - **dirname** *`string`*
-   *       - **dirpath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendValidDirs = `false`
-   *   The #opts.extendValidDirs option only applies if the #opts.validDirs
-   *   default value is not `null` and #opts.validDirs is defined. If the
-   *   #opts.extendValidDirs option is set to `true`, any value supplied to
-   *   #opts.validDirs supplements as opposed to overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs = `/^(?:\.git|\.bak|\.backup|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/`
-   *   The #opts.invalidDirs option limits the checked directory paths. The
-   *   remaining details are as follows (per #opts.invalidDirs data type):
-   *   - *`null`*!$
-   *     All directory names and paths are **not** considered invalid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.invalidDirs
-   *     contains a directory separator, `"/"`, each directory **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each directory
-   *     **name** is [tested][test] against the `RegExp`. If a [test][test]
-   *     returns `true`, the directory and its sub-directories (if #opts.deep
-   *     is enabled) are **not** checked.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.invalidDirs `array`. Second, each `string` within
-   *     the `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.invalidDirs is considered a filter `function` (i.e. if it
-   *       returns `true`, the directory and its sub-directories are **not**
-   *       checked). If the value returned by the filter is not a `boolean`,
-   *       it is converted into a `boolean`. It has the following optional
-   *       parameters:
-   *       - **dirname** *`string`*
-   *       - **dirpath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendInvalidDirs = `false`
-   *   The #opts.extendInvalidDirs option only applies if the
-   *   #opts.invalidDirs default value is not `null` and #opts.invalidDirs is
-   *   defined. If the #opts.extendInvalidDirs option is set to `true`, any
-   *   value supplied to #opts.invalidDirs supplements as opposed to
-   *   overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string)=} opts.validExts = `null`
-   *   The #opts.validExts option limits the returned file paths by checking
-   *   their file extension. Note that a file extension is defined as the
-   *   first period, `"."`, in a file name that is only followed by
-   *   alpha-numerics (i.e. `/\.[a-zA-Z0-9]+(?:\.[a-zA-Z0-9)*$/`). The
-   *   remaining details are as follows (per #opts.validExts data type):
-   *   - *`null`*!$
-   *     All file extensions are considered valid.
-   *   - *`!RegExp`*!$
-   *     Each file's extension is [tested][test] against #opts.validExts. If
-   *     a [test][test] returns `false`, the file is **not** added to the
-   *     results.
-   *   - *`!Array<string>`*!$
-   *     Each string must consist of only alpha-numerics, periods, and (if
-   *     #opts.glob is enabled) any valid wildcard characters. All periods
-   *     are escaped and a leading period is appended if it is missing for
-   *     each `string`. After being cleaned each `string` is [joined][join]
-   *     together with a [pipe character][pipe], `"|"`. Finally, the
-   *     [joined][join] `string` is converted into a `RegExp` and all of the
-   *     `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     Each string must consist of only alpha-numerics, periods, pipes, and
-   *     (if #opts.glob is enabled) any valid wildcard characters. All periods
-   *     and pipes are escaped and a leading period is appended to each file
-   *     extension if it is missing for the `string`. Finally, the cleaned
-   *     `string` is converted into a `RegExp` and all of the `RegExp` rules
-   *     stated above apply.
-   * @param {boolean=} opts.extendValidExts = `false`
-   *   The #opts.extendValidExts option only applies if the #opts.validExts
-   *   default value is not `null` and #opts.validExts is defined. If the
-   *   #opts.extendValidExts option is set to `true`, any value supplied to
-   *   #opts.validExts supplements as opposed to overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string)=} opts.invalidExts = `null`
-   *   The #opts.invalidExts option limits the returned file paths by checking
-   *   their file extension. Note that a file extension is defined as the
-   *   first period, `"."`, in a file name that is only followed by
-   *   alpha-numerics (i.e. `/\.[a-zA-Z0-9]+(?:\.[a-zA-Z0-9)*$/`). The
-   *   remaining details are as follows (per #opts.invalidExts data type):
-   *   - *`null`*!$
-   *     All file extensions are **not** considered invalid.
-   *   - *`!RegExp`*!$
-   *     Each file's extension is [tested][test] against #opts.invalidExts. If
-   *     a [test][test] returns `true`, the file is **not** added to the
-   *     results.
-   *   - *`!Array<string>`*!$
-   *     Each string must consist of only alpha-numerics, periods, and (if
-   *     #opts.glob is enabled) any valid wildcard characters. All periods
-   *     are escaped and a leading period is appended if it is missing for
-   *     each `string`. After being cleaned each `string` is [joined][join]
-   *     together with a [pipe character][pipe], `"|"`. Finally, the
-   *     [joined][join] `string` is converted into a `RegExp` and all of the
-   *     `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     Each string must consist of only alpha-numerics, periods, pipes, and
-   *     (if #opts.glob is enabled) any valid wildcard characters. All periods
-   *     and pipes are escaped and a leading period is appended to each file
-   *     extension if it is missing for the `string`. Finally, the cleaned
-   *     `string` is converted into a `RegExp` and all of the `RegExp` rules
-   *     stated above apply.
-   * @param {boolean=} opts.extendInvalidExts = `false`
-   *   The #opts.extendInvalidExts option only applies if the
-   *   #opts.invalidExts default value is not `null` and #opts.invalidExts is
-   *   defined. If the #opts.extendInvalidExts option is set to `true`, any
-   *   value supplied to #opts.invalidExts supplements as opposed to
-   *   overwrites its default value.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validFiles = `null`
-   *   The #opts.validFiles option limits the returned file paths. The
-   *   remaining details are as follows (per #opts.validFiles data type):
-   *   - *`null`*!$
-   *     All file paths are considered valid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.validFiles contains
-   *     a directory separator, `"/"`, each file **path** is [tested][test]
-   *     against the `RegExp`. Otherwise, each file **name** is [tested][test]
-   *     against the `RegExp`. If a [test][test] returns `false`, the file is
-   *     **not** added to the results.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.validFiles `array`. Second, each `string` within the
-   *     `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.validFiles is considered a filter `function` (i.e. if it
-   *       returns `false`, the file is **not** added to the results). If the
-   *       value returned by the filter is not a `boolean`, it is converted
-   *       into a `boolean`. It has the following optional parameters:
-   *       - **filename** *`string`*
-   *       - **filepath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendValidFiles = `false`
-   *   The #opts.extendValidFiles option only applies if the #opts.validFiles
-   *   default value is not `null` and #opts.validFiles is defined. If the
-   *   #opts.extendValidFiles option is set to `true`, any value supplied to
-   *   #opts.validFiles supplements as opposed to overwrites its default
-   *   value.
-   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidFiles = `null`
-   *   The #opts.invalidFiles option limits the returned file paths. The
-   *   remaining details are as follows (per #opts.invalidFiles data type):
-   *   - *`null`*!$
-   *     All file paths are **not** considered invalid.
-   *   - *`!RegExp`*!$
-   *     If the [RegExp.prototype.source][source] of #opts.invalidFiles
-   *     contains a directory separator, `"/"`, each file **path** is
-   *     [tested][test] against the `RegExp`. Otherwise, each file **name** is
-   *     [tested][test] against the `RegExp`. If a [test][test] returns
-   *     `true`, the file is **not** added to the results.
-   *   - *`!Array<string>`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) are escaped for each `string`
-   *     within the #opts.invalidFiles `array`. Second, each `string` within
-   *     the `array` is [joined][join] together with a [pipe character][pipe],
-   *     `"|"`. Third, the [joined][join] `string` is converted into a
-   *     `RegExp` using its new value for the [RegExp source][source].
-   *     Finally, all the `RegExp` rules stated above apply.
-   *   - *`string`*!$
-   *     First, all of the [special characters][special] (unless #opts.glob is
-   *     enabled then its wildcard rules apply) expect for the
-   *     [pipe character][pipe], `"|"`, are escaped. Second, the escaped
-   *     `string` is converted into a `RegExp` using its value for the
-   *     [RegExp source][source]. Finally, all the `RegExp` rules stated above
-   *     apply.
-   *   - *`function(string=, string=, string=): *`*!$
-   *       The #opts.invalidFiles is considered a filter `function` (i.e. if
-   *       it returns `true`, the file is **not** added to the results). If
-   *       the value returned by the filter is not a `boolean`, it is
-   *       converted into a `boolean`. It has the following optional
-   *       parameters:
-   *       - **filename** *`string`*
-   *       - **filepath** *`string`*
-   *       - **source** *`string`*
-   * @param {boolean=} opts.extendInvalidFiles = `false`
-   *   The #opts.extendInvalidFiles option only applies if the
-   *   #opts.invalidFiles default value is not `null` and #opts.invalidFiles
-   *   is defined. If the #opts.extendInvalidFiles option is set to `true`,
-   *   any value supplied to #opts.invalidFiles supplements as opposed to
-   *   overwrites its default value.
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.valid
+   * @param {boolean=} opts.extendValid
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalid
+   * @param {boolean=} opts.extendInvalid
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validDirs
+   * @param {boolean=} opts.extendValidDirs
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidDirs
+   * @param {boolean=} opts.extendInvalidDirs
+   * @param {(?RegExp|?Array<string>|?string)=} opts.validExts
+   * @param {boolean=} opts.extendValidExts
+   * @param {(?RegExp|?Array<string>|?string)=} opts.invalidExts
+   * @param {boolean=} opts.extendInvalidExts
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.validFiles
+   * @param {boolean=} opts.extendValidFiles
+   * @param {(?RegExp|?Array<string>|?string|?function(string=, string=, string=): *)=} opts.invalidFiles
+   * @param {boolean=} opts.extendInvalidFiles
    * @return {!Array<string>}
    */
   function getFilePaths(source, opts) {
@@ -3602,10 +2973,6 @@ var get = (function getPrivateScope() {
   get['filepaths'] = getFilePaths;
   get['files'] = getFilePaths;
 
-
-
-
-
   /**
    * @private
    * @param {string} src
@@ -3659,8 +3026,6 @@ var get = (function getPrivateScope() {
     files = new _Files(src, opts);
     return files.main();
   }
-
-
 
   /**
    * @private
@@ -3716,8 +3081,6 @@ var get = (function getPrivateScope() {
     'extendValidFiles': NO,
     'extendInvalidFiles': NO
   };
-
-
 
   /**
    * @private
@@ -3824,8 +3187,6 @@ var get = (function getPrivateScope() {
  
     return isPattOpt;
   })();
-
-
 
   /**
    * @private
@@ -4008,8 +3369,6 @@ var get = (function getPrivateScope() {
       this.getDirs(src, tree);
     }
   }
-
-
 
   /**
    * @private
@@ -4238,8 +3597,6 @@ var get = (function getPrivateScope() {
       this.getFiles(src, tree);
     }
   }
-
-
 
   /**
    * @private
@@ -4845,9 +4202,6 @@ var get = (function getPrivateScope() {
           };
   }
 
-
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -4880,14 +4234,10 @@ var get = (function getPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return get;
 })();
@@ -4899,7 +4249,6 @@ vitals['get'] = get;
  */
 var is = (function isPrivateScope() {
 
-
   /**
    * @public
    * @type {!Object<string, !Function>}
@@ -4907,20 +4256,10 @@ var is = (function isPrivateScope() {
    */
   var is = {};
 
-
-  /// @section fs
-  /// @method vitals.is.buffer
-  /// @alias vitals.is.buff
-  /// @alias vitals.is.buf
   /**
-   * @description
-   *   Checks if a value or many values are a `Buffer` instance.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isBuffer(val) {
     switch (arguments['length']) {
@@ -4936,18 +4275,10 @@ var is = (function isPrivateScope() {
   is['buff'] = isBuffer;
   is['buf'] = isBuffer;
 
-  /// @section fs
-  /// @method vitals.is.directory
-  /// @alias vitals.is.dir
   /**
-   * @description
-   *   Checks if a value or many values are a valid directory path.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isDirectory(val) {
     switch (arguments['length']) {
@@ -4962,17 +4293,10 @@ var is = (function isPrivateScope() {
   is['directory'] = isDirectory;
   is['dir'] = isDirectory;
 
-  /// @section fs
-  /// @method vitals.is.file
   /**
-   * @description
-   *   Checks if a value or many values are a valid file path.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isFile(val) {
     switch (arguments['length']) {
@@ -4985,8 +4309,6 @@ var is = (function isPrivateScope() {
     }
   }
   is['file'] = isFile;
-
-
 
   /**
    * @private
@@ -5006,10 +4328,6 @@ var is = (function isPrivateScope() {
     }
     return YES;
   }
-
-
-
-
 
   /**
    * @private
@@ -5043,14 +4361,10 @@ var is = (function isPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return is;
 })();
@@ -5062,7 +4376,6 @@ vitals['is'] = is;
  */
 var to = (function toPrivateScope() {
 
-
   /**
    * @public
    * @type {!Object<string, !Function>}
@@ -5070,35 +4383,15 @@ var to = (function toPrivateScope() {
    */
   var to = {};
 
-
-  /// @section fs
-  /// @method vitals.to.file
   /**
-   * @description
-   *   Write the contents of a file to a new or existing file.
    * @public
    * @param {(!Buffer|string)} contents
    * @param {string} dest
-   *   Must be a valid filepath to a new or existing file.
    * @param {(?Object|?string|undefined)=} opts
-   *   If the #opts is `null` or a `string` value, it sets the #opts.encoding
-   *   option to its value.
-   * @param {?string=} opts.encoding = `"utf8"`
-   *   The #opts.encoding option sets the character encoding for the
-   *   #contents. If it is `null`, no character encoding is set.
+   * @param {?string=} opts.encoding
    * @param {?string=} opts.encode
-   *   An alias for the #opts.encoding option.
-   * @param {?string=} opts.eol = `null`
-   *   The #opts.eol option sets the end of line character to use when
-   *   normalizing the #contents before they are saved to the #dest. If
-   *   it is set to `null`, no end of line character normalization is
-   *   completed. The optional `string` values are as follows (values are
-   *   **not** case-sensitive):
-   *   - `"LF"`
-   *   - `"CR"`
-   *   - `"CRLF"`
+   * @param {?string=} opts.eol
    * @return {(!Buffer|string)}
-   *   The original #contents (without any normalization applied).
    */
   function toFile(contents, dest, opts) {
 
@@ -5203,8 +4496,6 @@ var to = (function toPrivateScope() {
   }
   to['file'] = toFile;
 
-
-
   /**
    * @private
    * @param {!Buffer} contents
@@ -5257,8 +4548,6 @@ var to = (function toPrivateScope() {
     return contents;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, *>}
@@ -5268,8 +4557,6 @@ var to = (function toPrivateScope() {
     'eol': NIL,
     'encoding': 'utf8'
   };
-
-
 
   /**
    * @private
@@ -5303,14 +4590,10 @@ var to = (function toPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return to;
 })();
@@ -5319,5 +4602,5 @@ vitals['to'] = to;
   module.exports = vitals;
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

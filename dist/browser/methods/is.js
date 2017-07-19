@@ -1,12 +1,8 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.IS
- * ---------------------------------------------------------------------------
  * @section base
  * @section fs
  * @version 5.0.0
  * @see [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -24,7 +20,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -66,7 +61,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -80,7 +74,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -131,7 +124,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -298,11 +290,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -326,7 +315,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -391,8 +379,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -468,8 +454,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -477,9 +461,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -547,10 +528,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -566,8 +543,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -586,29 +561,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -617,23 +569,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -682,8 +629,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -766,8 +711,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -791,8 +734,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -831,7 +772,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -874,7 +814,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -892,8 +831,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -971,8 +908,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -999,8 +934,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1097,7 +1030,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1107,11 +1039,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1146,8 +1075,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1163,7 +1090,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1182,8 +1108,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1270,7 +1194,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1349,8 +1272,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1386,11 +1307,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1413,25 +1331,11 @@ var $strIncl = (function $strInclPrivateScope() {
  */
 var is = (function isPrivateScope() {
 
-
-
-  /// @section base
-  /// @method vitals.is
   /**
-   * @description
-   *   Checks if a value or many values are a specific data type or types. See
-   *   @is-types for a complete list of the available data types. Note that
-   *   all `object` types are nullable by default (i.e. `is("object", null)`
-   *   will return  `true`).
    * @public
    * @param {string} types
-   *   The valid data types. See @is-types for a complete list of the
-   *   available data types.
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function is(types, val) {
 
@@ -1475,18 +1379,10 @@ var is = (function isPrivateScope() {
       : _checkVal(checks, val, nullable);
   }
 
-  /// @section base
-  /// @method vitals.is.null
-  /// @alias vitals.is.nil
   /**
-   * @description
-   *   Checks if a value or many values are [null][null].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNull(val) {
     switch (arguments['length']) {
@@ -1501,18 +1397,10 @@ var is = (function isPrivateScope() {
   is['null'] = isNull;
   is['nil'] = isNull;
 
-  /// @section base
-  /// @method vitals.is.undefined
-  /// @alias vitals.is.void
   /**
-   * @description
-   *   Checks if a value or many values are [undefined][void].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isUndefined(val) {
     switch (arguments['length']) {
@@ -1527,19 +1415,10 @@ var is = (function isPrivateScope() {
   is['undefined'] = isUndefined;
   is['void'] = isUndefined;
 
-  /// @section base
-  /// @method vitals.is.boolean
-  /// @alias vitals.is.bool
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive boolean][bool-desc]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isBoolean(val) {
     switch (arguments['length']) {
@@ -1554,19 +1433,10 @@ var is = (function isPrivateScope() {
   is['boolean'] = isBoolean;
   is['bool'] = isBoolean;
 
-  /// @section base
-  /// @method vitals.is.string
-  /// @alias vitals.is.str
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive string][str-prim]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isString(val) {
     switch (arguments['length']) {
@@ -1581,19 +1451,10 @@ var is = (function isPrivateScope() {
   is['string'] = isString;
   is['str'] = isString;
 
-  /// @section base
-  /// @method vitals.is._string
-  /// @alias vitals.is._str
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive string][str-prim]
-   *   data type and not empty (e.g. `""`).
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNonEmptyString(val) {
     switch (arguments['length']) {
@@ -1608,19 +1469,10 @@ var is = (function isPrivateScope() {
   is['_string'] = isNonEmptyString;
   is['_str'] = isNonEmptyString;
 
-  /// @section base
-  /// @method vitals.is.number
-  /// @alias vitals.is.num
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive][prim] [number][num]
-   *   data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNumber(val) {
     switch (arguments['length']) {
@@ -1635,19 +1487,10 @@ var is = (function isPrivateScope() {
   is['number'] = isNumber;
   is['num'] = isNumber;
 
-  /// @section base
-  /// @method vitals.is._number
-  /// @alias vitals.is._num
   /**
-   * @description
-   *   Checks if a value or many values are a [primitive][prim] [number][num]
-   *   data type and not `0`.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNonZeroNumber(val) {
     switch (arguments['length']) {
@@ -1662,17 +1505,10 @@ var is = (function isPrivateScope() {
   is['_number'] = isNonZeroNumber;
   is['_num'] = isNonZeroNumber;
 
-  /// @section base
-  /// @method vitals.is.nan
   /**
-   * @description
-   *   Checks if a value or many values are [NaN][nan].
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isNan(val) {
     switch (arguments['length']) {
@@ -1686,18 +1522,10 @@ var is = (function isPrivateScope() {
   }
   is['nan'] = isNan;
 
-  /// @section base
-  /// @method vitals.is.object
-  /// @alias vitals.is.obj
   /**
-   * @description
-   *   Checks if a value or many values are an [object][obj] data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isObject(val) {
     switch (arguments['length']) {
@@ -1712,21 +1540,10 @@ var is = (function isPrivateScope() {
   is['object'] = isObject;
   is['obj'] = isObject;
 
-  /// @section base
-  /// @method vitals.is._object
-  /// @alias vitals.is._obj
   /**
-   * @description
-   *   Checks if a value or many values are an [object][obj] or
-   *   [function][func] data type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
-   * Checks if a value(s) is an object or function.
-   *
    * @public
    * @param {...*} val
    * @return {boolean}
@@ -1744,26 +1561,10 @@ var is = (function isPrivateScope() {
   is['_object'] = isObjectOrFunction;
   is['_obj'] = isObjectOrFunction;
 
-  /// @section base
-  /// @method vitals.is.func
-  /// @alias vitals.is.fn
-  /// @alias vitals.is.fun
-  /// @alias vitals.is.function
-  ///   Note that `vitals.is.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.is.func` for
-  ///   compatibility with older environments.
   /**
-   * @description
-   *   Checks if a value or many values are a [function][func] data type. Note
-   *   that `vitals.is.function` is not valid in [ES3][ecma3] and some
-   *   [ES5][ecma5] browser and other platform environments. Use
-   *   `vitals.is.func` for browser and platform safety.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isFunction(val) {
     switch (arguments['length']) {
@@ -1783,19 +1584,10 @@ var is = (function isPrivateScope() {
   }
   catch (e) {}
 
-  /// @section base
-  /// @method vitals.is.array
-  /// @alias vitals.is.arr
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [array][arr]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArray(val) {
     switch (arguments['length']) {
@@ -1810,19 +1602,10 @@ var is = (function isPrivateScope() {
   is['array'] = isArray;
   is['arr'] = isArray;
 
-  /// @section base
-  /// @method vitals.is._array
-  /// @alias vitals.is._arr
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [array][arr] or
-   *   [arguments][args] `object` types.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArrayOrArguments(val) {
     switch (arguments['length']) {
@@ -1837,21 +1620,10 @@ var is = (function isPrivateScope() {
   is['_array'] = isArrayOrArguments;
   is['_arr'] = isArrayOrArguments;
 
-  /// @section base
-  /// @method vitals.is.regexp
-  /// @alias vitals.is.regex
-  /// @alias vitals.is.regx
-  /// @alias vitals.is.re
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [RegExp][regex]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isRegExp(val) {
     switch (arguments['length']) {
@@ -1868,18 +1640,10 @@ var is = (function isPrivateScope() {
   is['regx'] = isRegExp;
   is['re'] = isRegExp;
 
-  /// @section base
-  /// @method vitals.is.date
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [Date][date]
-   *   `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isDate(val) {
     switch (arguments['length']) {
@@ -1893,19 +1657,10 @@ var is = (function isPrivateScope() {
   }
   is['date'] = isDate;
 
-  /// @section base
-  /// @method vitals.is.error
-  /// @alias vitals.is.err
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the [Error][error]
-   *   `object` types.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isError(val) {
     switch (arguments['length']) {
@@ -1920,18 +1675,10 @@ var is = (function isPrivateScope() {
   is['error'] = isError;
   is['err'] = isError;
 
-  /// @section base
-  /// @method vitals.is.args
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [arguments][args] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isArguments(val) {
     switch (arguments['length']) {
@@ -1945,19 +1692,10 @@ var is = (function isPrivateScope() {
   }
   is['args'] = isArguments;
 
-  /// @section base
-  /// @method vitals.is.document
-  /// @alias vitals.is.doc
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [DOM Document][doc] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isDocument(val) {
     switch (arguments['length']) {
@@ -1972,19 +1710,10 @@ var is = (function isPrivateScope() {
   is['document'] = isDocument;
   is['doc'] = isDocument;
 
-  /// @section base
-  /// @method vitals.is.element
-  /// @alias vitals.is.elem
   /**
-   * @description
-   *   Checks if a value or many values are an instance of the
-   *   [DOM Element][elem] `object` type.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isElement(val) {
     switch (arguments['length']) {
@@ -1999,38 +1728,10 @@ var is = (function isPrivateScope() {
   is['element'] = isElement;
   is['elem'] = isElement;
 
-  /// @section base
-  /// @method vitals.is.empty
   /**
-   * @description
-   *   Checks if a value or many values are considered empty. The definition
-   *   of empty is as follows in order of priority (per #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @public
    * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be empty to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isEmpty(val) {
     switch (arguments['length']) {
@@ -2044,17 +1745,10 @@ var is = (function isPrivateScope() {
   }
   is['empty'] = isEmpty;
 
-  /// @section base
-  /// @method vitals.is.frozen
   /**
-   * @description
-   *   Checks if an `object` or `function` is [frozen][frozen].
    * @public
    * @param {...(?Object|?Function)} source
-   *   If more than one #source is provided, every #source must be
-   *   [frozen][frozen] to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isFrozen(val) {
     switch (arguments['length']) {
@@ -2068,20 +1762,10 @@ var is = (function isPrivateScope() {
   }
   is['frozen'] = isFrozen;
 
-  /// @section base
-  /// @method vitals.is.wholeNumber
-  /// @alias vitals.is.whole
   /**
-   * @description
-   *   Checks if a [number][num] is whole (i.e. has no fractional portion).
-   *   All whole numbers less than one (e.g. `wholeNumber <= 0`) will return
-   *   `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be a valid whole `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isWholeNumber(val) {
     switch (arguments['length']) {
@@ -2096,19 +1780,10 @@ var is = (function isPrivateScope() {
   is['wholeNumber'] = isWholeNumber;
   is['whole'] = isWholeNumber;
 
-  /// @section base
-  /// @method vitals.is.oddNumber
-  /// @alias vitals.is.odd
   /**
-   * @description
-   *   Checks if a [number][num] is odd. All odd numbers less than zero (e.g.
-   *   `oddNumber < 0`) will return `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be an odd `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isOddNumber(val) {
     switch (arguments['length']) {
@@ -2123,19 +1798,10 @@ var is = (function isPrivateScope() {
   is['oddNumber'] = isOddNumber;
   is['odd'] = isOddNumber;
 
-  /// @section base
-  /// @method vitals.is.evenNumber
-  /// @alias vitals.is.even
   /**
-   * @description
-   *   Checks if a [number][num] is even. All even numbers less than one (e.g.
-   *   `evenNumber <= 0`) will return `true`.
    * @public
    * @param {...number} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must be an even `number` to return `true`.
    * @return {boolean}
-   *   The evaluation result.
    */
   function isEvenNumber(val) {
     switch (arguments['length']) {
@@ -2149,9 +1815,6 @@ var is = (function isPrivateScope() {
   }
   is['evenNumber'] = isEvenNumber;
   is['even'] = isEvenNumber;
-
-
-
 
   /**
    * @private
@@ -2232,8 +1895,6 @@ var is = (function isPrivateScope() {
     return $is.even(val);
   }
 
-
-
   /**
    * @private
    * @param {!Array<!function>} checks
@@ -2274,8 +1935,6 @@ var is = (function isPrivateScope() {
     return YES;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function(*, boolean=): boolean>}
@@ -2290,18 +1949,10 @@ var is = (function isPrivateScope() {
     var $types = {};
 
     /**
-     * @description
-     *   Adds types to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes their type section's
-     *   method.
      * @private
      * @param {string} section
-     *   The category for the types.
      * @param {!Object<string, !function(*): boolean>} types
-     *   Each property should use a type's name for its key and method for its
-     *   value.
-     * @param {boolean=} nullableDefault = `true`
-     *   The default nullable value for each type in #types.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addTypes(section, types, nullableDefault) {
@@ -2316,18 +1967,11 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds a type to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes its type section's method.
      * @private
      * @param {string} section
-     *   The type's category.
      * @param {string} type
-     *   The type's name.
      * @param {!function(*): boolean} check
-     *   The type's check method.
-     * @param {boolean=} nullableDefault = `true`
-     *   The type's default nullable value.
+     * @param {boolean=} nullableDefault
      * @return {void}
      */
     function _addType(section, type, check, nullableDefault) {
@@ -2339,7 +1983,7 @@ var is = (function isPrivateScope() {
 
       /**
        * @param {*} val
-       * @param {boolean=} nullable = `nullableDefault`
+       * @param {boolean=} nullable
        * @return {boolean}
        */
       function typeCheck(val, nullable) {
@@ -2356,8 +2000,6 @@ var is = (function isPrivateScope() {
     }
 
     /**
-     * @description
-     *   Adds the type shortcuts to the *$types* hash map.
      * @private
      * @param {!Object<string, string>} shortcuts
      * @return {void}
@@ -2381,9 +2023,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an array's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `array` type.
      */
     function _addArrayType(eachCheck) {
 
@@ -2414,9 +2054,7 @@ var is = (function isPrivateScope() {
     /**
      * @private
      * @param {!function(*): boolean} eachCheck
-     *   The check method for each of an hash map's property values.
      * @return {!function(*): boolean}
-     *   The check method for the `object` or `function` hash map type.
      */
     function _addMapType(eachCheck) {
 
@@ -2442,7 +2080,6 @@ var is = (function isPrivateScope() {
       return check;
     }
     _addType['maps'] = _addMapType;
-
 
     _addTypes('primitives', {
       'undefined': $is.void,
@@ -2503,7 +2140,6 @@ var is = (function isPrivateScope() {
       'elementmap':   $is.elem,
       'documentmap':  $is.doc
     });
-
 
     _addShortcuts({
 
@@ -2566,8 +2202,6 @@ var is = (function isPrivateScope() {
 
     return $types;
   })();
-
-
 
   /**
    * @private
@@ -2712,12 +2346,9 @@ var is = (function isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Method checks whether `"!"` or `"?"` exists in the #types `string`.
    * @private
    * @param {string} types
    * @return {(undefined|boolean)}
-   *   If `undefined` no override exists.
    */
   function _getNullable(types) {
 
@@ -2737,8 +2368,6 @@ var is = (function isPrivateScope() {
       ? !negate && ensure
       : VOID;
   }
-
-
 
   /**
    * @private
@@ -2772,14 +2401,10 @@ var is = (function isPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return is;
 })();
@@ -2821,5 +2446,5 @@ vitals['is'] = is;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

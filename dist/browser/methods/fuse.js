@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.FUSE
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals.fuse](https://github.com/imaginate/vitals/wiki/vitals.fuse)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -23,7 +19,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -65,7 +60,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -79,7 +73,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -130,7 +123,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -297,11 +289,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -325,7 +314,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -390,8 +378,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -467,8 +453,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -476,9 +460,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -546,10 +527,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -565,8 +542,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -585,29 +560,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -616,23 +568,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -681,8 +628,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -765,8 +710,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -790,8 +733,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -830,7 +771,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -873,7 +813,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -891,8 +830,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -970,8 +907,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -998,8 +933,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1096,7 +1029,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1106,11 +1038,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1145,8 +1074,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1162,7 +1089,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1181,8 +1107,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1269,7 +1193,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1348,8 +1271,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1385,11 +1306,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1424,8 +1342,8 @@ function $merge(dest, src) {
 /**
  * @private
  * @param {(!Object|!Function)} src
- * @param {number=} start = `0`
- * @param {number=} end = `src.length`
+ * @param {number=} start
+ * @param {number=} end
  * @return {!Array}
  */
 function $sliceArr(src, start, end) {
@@ -1474,34 +1392,10 @@ function $sliceArr(src, start, end) {
  */
 var fuse = (function fusePrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.fuse
   /**
-   * @description
-   *   Merges objects, [concatenates][concat] arrays, appends properties to
-   *   objects and arrays, and combines strings.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   All rules for #dest are shown in order of priority. The details are as
-   *   follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     If only one `array` #val is provided, it is considered an `array` of
-   *     values. Each `null` #val is skipped. Each `object` or `function` #val
-   *     is merged with the #dest. All other values are converted to a
-   *     `string` and appended as a new property key (if the key exists in the
-   *     #dest, the property's value is reset to `undefined`).
-   *   - *`!Array|!Arguments`*!$
-   *     Each `null` #val is skipped. Each `array` #val is
-   *     [concatenated][concat] to the #dest. All other values are
-   *     [pushed][push] to the #dest.
-   *   - *`string`*!$
-   *     If only one `array` #val is provided, it is considered an `array` of
-   *     values. Each #val is converted to a `string` and appended to the
-   *     #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuse(dest, val) {
@@ -1551,27 +1445,10 @@ var fuse = (function fusePrivateScope() {
     }
   }
 
-  /// @section base
-  /// @method vitals.fuse.value
-  /// @alias vitals.fuse.val
   /**
-   * @description
-   *   Appends properties to an `object`, `function`, or `array` or strings to
-   *   a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an `arguments` instance, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     Each #val is converted to a `string` and appended as a new property
-   *     key to the #dest (if the key exists in the #dest, the property's
-   *     value is reset to `undefined`).
-   *   - *`!Array|!Arguments`*!$
-   *     Each #val is [pushed][push] to the #dest.
-   *   - *`string`*!$
-   *     Each #val is converted to a `string` and appended to the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuseValue(dest, val) {
@@ -1619,30 +1496,10 @@ var fuse = (function fusePrivateScope() {
   fuse['value'] = fuseValue;
   fuse['val'] = fuseValue;
 
-  /// @section base
-  /// @method vitals.fuse.value.start
-  /// @alias vitals.fuse.value.top
-  /// @alias vitals.fuse.val.start
-  /// @alias vitals.fuse.val.top
   /**
-   * @description
-   *   Appends to the #dest beginning properties for an `object`, `function`,
-   *   or `array` or strings for a `string`.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows (per #dest type):
-   *   - *`!Object|!Function`*!$
-   *     Each #val is converted to a `string` and appended as a new property
-   *     key to the #dest (if the key exists in the #dest, the property's
-   *     value remains unchanged).
-   *   - *`!Array|!Arguments`*!$
-   *     Each #val is [unshifted][unshift] to the #dest.
-   *   - *`string`*!$
-   *     Each #val is converted to a `string` and appended to the beginning of
-   *     the #dest.
    * @return {(!Object|!Function|!Array|string)}
    */
   function fuseValueStart(dest, val) {
@@ -1692,28 +1549,10 @@ var fuse = (function fusePrivateScope() {
   fuse['val']['start'] = fuseValueStart;
   fuse['val']['top'] = fuseValueStart;
 
-  /// @section base
-  /// @method vitals.fuse.object
-  /// @alias vitals.fuse.obj
   /**
-   * @description
-   *   Appends and merges properties to an `object` or `function`.
    * @public
    * @param {(!Object|!Function)} dest
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. The remaining details are as follows in order of priority (per
-   *   #val type):
-   *   - *`null`*!$
-   *     The #val is skipped.
-   *   - *`!Object|!Function`*!$
-   *     The #val is merged with the #dest. If a key exists in the #val and
-   *     #dest the #dest property's value is with replaced with the #val
-   *     property's value.
-   *   - *`*`*!$
-   *     The #val is converted to a `string` and appended to the #dest as a
-   *     new property key (if the key exists in the #dest, the property's
-   *     value is reset to `undefined`).
    * @return {(!Object|!Function)}
    */
   function fuseObject(dest, val) {
@@ -1746,24 +1585,10 @@ var fuse = (function fusePrivateScope() {
   fuse['object'] = fuseObject;
   fuse['obj'] = fuseObject;
 
-  /// @section base
-  /// @method vitals.fuse.array
-  /// @alias vitals.fuse.arr
   /**
-   * @description
-   *   [Pushes][push] values and [concatenates][concat] arrays to an `array`.
    * @public
    * @param {(!Array|!Arguments)} dest
-   *   If #dest is an instance of `arguments`, it is [sliced][slice] into an
-   *   `array` before any values are appended.
    * @param {...*} val
-   *   The details are as follows in order of priority (per #val type):
-   *   - *`null`*!$
-   *     The #val is skipped.
-   *   - *`!Array`*!$
-   *     The #val is [concatenated][concat] to the #dest.
-   *   - *`*`*!$
-   *     The #val is [pushed][push] to the #dest.
    * @return {!Array}
    */
   function fuseArray(dest, val) {
@@ -1798,17 +1623,10 @@ var fuse = (function fusePrivateScope() {
   fuse['array'] = fuseArray;
   fuse['arr'] = fuseArray;
 
-  /// @section base
-  /// @method vitals.fuse.string
-  /// @alias vitals.fuse.str
   /**
-   * @description
-   *   Appends strings to a `string`.
    * @public
    * @param {string} dest
    * @param {...*} val
-   *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. Each #val is converted to a `string` and appended to the #dest.
    * @return {string}
    */
   function fuseString(dest, val) {
@@ -1838,8 +1656,6 @@ var fuse = (function fusePrivateScope() {
   }
   fuse['string'] = fuseString;
   fuse['str'] = fuseString;
-
-
 
   /**
    * @private
@@ -2106,8 +1922,6 @@ var fuse = (function fusePrivateScope() {
     return dest;
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -2140,14 +1954,10 @@ var fuse = (function fusePrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return fuse;
 })();
@@ -2189,5 +1999,5 @@ vitals['fuse'] = fuse;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 

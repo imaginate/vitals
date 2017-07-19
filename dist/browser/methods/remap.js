@@ -1,11 +1,7 @@
 /**
- * ---------------------------------------------------------------------------
- * VITALS.REMAP
- * ---------------------------------------------------------------------------
  * @section base
  * @version 5.0.0
  * @see [vitals.remap](https://github.com/imaginate/vitals/wiki/vitals.remap)
- *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
@@ -23,7 +19,6 @@ var VERSION = '5.0.0';
  * @struct
  */
 var ENV = (function ENV_PrivateScope() {
-
 
   /**
    * @const {boolean}
@@ -65,7 +60,6 @@ var ENV = (function ENV_PrivateScope() {
    */
   var HAS_THIS = _isObjFun(typeof __THIS) && _isValidRoot(__THIS);
 
-
   /**
    * @const {(!Object|!Function)}
    * @dict
@@ -79,7 +73,6 @@ var ENV = (function ENV_PrivateScope() {
         : HAS_THIS
           ? __THIS
           : Function('return this')();
-
 
   /**
    * @private
@@ -130,7 +123,6 @@ var ENV = (function ENV_PrivateScope() {
   function _isValidNode(node) {
     return !!node && (!('nodeType' in node) || !node['nodeType']);
   }
-
 
   /**
    * @const {!Object}
@@ -297,11 +289,8 @@ var $objStr = (function $objStrPrivateScope() {
  */
 var $own = (function $ownPrivateScope() {
 
-  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
 
   /**
-   * @description
-   *   A safe way to call [Object.prototype.hasOwnProperty][own].
    * @param {(!Object|!Function)} source
    * @param {*} key
    * @return {boolean}
@@ -325,7 +314,6 @@ var $own = (function $ownPrivateScope() {
  * @struct
  */
 var $is = (function $isPrivateScope() {
-
 
   /**
    * @param {*} val
@@ -390,8 +378,6 @@ var $is = (function $isPrivateScope() {
   function isNan(val) {
     return val !== val;
   }
-
-
 
   /**
    * @param {*} val
@@ -467,8 +453,6 @@ var $is = (function $isPrivateScope() {
   var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
 
     /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
      * @const {boolean}
      */
     var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
@@ -476,9 +460,6 @@ var $is = (function $isPrivateScope() {
     })();
 
     /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
      * @const {boolean}
      */
     var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
@@ -546,10 +527,6 @@ var $is = (function $isPrivateScope() {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
 
-
-
-
-
   /**
    * @param {*} val
    * @return {boolean}
@@ -565,8 +542,6 @@ var $is = (function $isPrivateScope() {
   function isDomElement(val) {
     return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
-
-
 
   /**
    * @param {(!Array|!Arguments|!Object|!Function)} val
@@ -585,29 +560,6 @@ var $is = (function $isPrivateScope() {
   }
 
   /**
-   * @description
-   *   Checks if a value is considered empty. The definition of empty is
-   *   defined as follows in order of priority (per the #val data type):
-   *   - *`null`*!$
-   *     `null` is considered empty.
-   *   - *`undefined`*!$
-   *     `undefined` is considered empty.
-   *   - *`number`*!$
-   *     Only `0` and `NaN` are considered empty.
-   *   - *`string`*!$
-   *     Only `""` is considered empty.
-   *   - *`boolean`*!$
-   *     Only `false` is considered empty.
-   *   - *`function`*!$
-   *     The [length property][func-length] must be `0` to be considered
-   *     empty.
-   *   - *`!Array`*!$
-   *     The [length property][arr-length] must be `0` to be considered empty.
-   *   - *`!Object`*!$
-   *     The `object` must **not** [own][own] any properties to be considered
-   *     empty.
-   *   - *`*`*!$
-   *     All other data types are **not** considered empty.
    * @param {*} val
    * @return {boolean}
    */
@@ -616,23 +568,18 @@ var $is = (function $isPrivateScope() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
     if (!val)
       return YES;
 
-    // functions
     if (typeof val === 'function')
       return val['length'] === 0;
 
-    // remaining primitives
     if (typeof val !== 'object')
       return NO;
 
-    // arrays
     if ($objStr(val) === '[object Array]')
       return val['length'] === 0;
 
-    // remaining objects
     for (key in val) {
       if ( $own(val, key) )
         return NO;
@@ -681,8 +628,6 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
-
-
 
   /**
    * @param {(!Object|!Function)} src
@@ -765,8 +710,6 @@ var $is = (function $isPrivateScope() {
     }
   })();
 
-
-
   /**
    * @param {number} val
    * @return {boolean}
@@ -790,8 +733,6 @@ var $is = (function $isPrivateScope() {
   function isEvenNumber(val) {
     return !(val % 2);
   }
-
-
 
   /**
    * @const {!Object<string, !function>}
@@ -830,7 +771,6 @@ var $is = (function $isPrivateScope() {
     frozen: isFrozen,
     sealed: isSealed,
 
-    // number states
     whole: isWholeNumber,
     odd:   isOddNumber,
     even:  isEvenNumber
@@ -873,7 +813,6 @@ var $print = (function $printPrivateScope() {
       : _primToStr(val);
   }
 
-
   /**
    * @private
    * @const {string}
@@ -891,8 +830,6 @@ var $print = (function $printPrivateScope() {
    * @const {!RegExp}
    */
   var _LAST_SEP = /,\n$/;
-
-
 
   /**
    * @private
@@ -970,8 +907,6 @@ var $print = (function $printPrivateScope() {
     return indent;
   }
 
-
-
   /**
    * @private
    * @param {*} val
@@ -998,8 +933,6 @@ var $print = (function $printPrivateScope() {
 
     return $mkStr(val);
   }
-
-
 
   /**
    * @private
@@ -1096,7 +1029,6 @@ var $print = (function $printPrivateScope() {
     return result + '}';
   }
 
-
   return $print;
 })();
 /**
@@ -1106,11 +1038,8 @@ var $print = (function $printPrivateScope() {
  */
 var $mkObj = (function $mkObjPrivateScope() {
 
-  /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
 
   /**
-   * @description
-   *   Polyfills [Object.create][create] if it does not exist.
    * @private
    * @param {?Object} proto
    * @return {!Object}
@@ -1145,8 +1074,6 @@ var $mkObj = (function $mkObjPrivateScope() {
   })();
 
   /**
-   * @description
-   *   Cross browser [Object.create][create] implementation.
    * @param {?Object} proto
    * @return {!Object}
    */
@@ -1162,7 +1089,6 @@ var $mkObj = (function $mkObjPrivateScope() {
  * @return {!Object<string, !function>}
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
-
 
   /**
    * @private
@@ -1181,8 +1107,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @const {!RegExp}
    */
   var _STRICT = /^\!/;
-
-
 
   /**
    * @private
@@ -1269,7 +1193,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
     return err;
   }
 
-
   /**
    * @param {string=} superMethod
    * @return {!Object<string, !function>}
@@ -1348,8 +1271,6 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @param {!RangeError} err
      * @param {string} paramName
      * @param {(!Array<*>|string|undefined)=} validRange
-     *   An `array` of actual valid options or a `string` stating the valid
-     *   range. If `undefined` this option is skipped.
      * @param {string=} methodName
      * @return {!RangeError} 
      */
@@ -1385,11 +1306,8 @@ var $mkErrs = (function $mkErrsPrivateScope() {
  */
 var $strIncl = (function $strInclPrivateScope() {
 
-  /// @docref [includes]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes)
 
   /**
-   * @description
-   *   Polyfills [String.prototype.includes][includes] if it does not exist.
    * @param {string} src
    * @param {string} val
    * @return {boolean}
@@ -1473,12 +1391,6 @@ function $escRegx(source) {
 /**
  * @private
  * @param {string} keys
- *   The #keys are split using one of the values in the following list as the
- *   separator (values listed in order of rank):
- *   - `", "`
- *   - `","`
- *   - `"|"`
- *   - `" "`
  * @return {!Array<string>}
  */
 function $splitKeys(keys) {
@@ -1506,79 +1418,12 @@ function $splitKeys(keys) {
  */
 var remap = (function remapPrivateScope() {
 
-
-  /// @section base
-  /// @method vitals.remap
   /**
-   * @description
-   *   A shortcut for making a new `object`, `array`, or `string` by invoking
-   *   an action over each [owned][own] `object` or `function` property,
-   *   indexed `array` or `arguments` property, or matched `substring`
-   *   pattern.
    * @public
    * @param {(!Object|!Function|!Array|!Arguments|string)} source
    * @param {*} iteratee
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function`*!$
-   *     The #iteratee must be a `function`. The value returned from each call
-   *     to the #iteratee is set as the property value for the new `object`.
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **key** *`string`*
-   *     - **source** *`!Object|!Function`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#main based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`!Array|!Arguments`*!$
-   *     The #iteratee must be a `function`. The value returned from each call
-   *     to the #iteratee is set as the property value for the new `array`.
-   *     The #iteratee can have the following optional parameters:
-   *     - **value** *`*`*
-   *     - **index** *`number`*
-   *     - **source** *`!Array`*
-   *     Note that this method lazily [clones][clone] the #source with
-   *     @copy#array based on the #iteratee [length property][func-length]
-   *     (i.e. if you alter any #source property within the #iteratee, make
-   *     sure you define all three parameters for the #iteratee so you can
-   *     safely assume all references to the #source are its original values).
-   *   - *`string`*!$
-   *     The #iteratee must be a `substring` pattern to search for within the
-   *     #source. If the #iteratee is **not** a `RegExp`, it is converted into
-   *     a `string` before running a search on the #source for any matches.
    * @param {*=} replacement
-   *   Only allowed (and then required) when the #source is a `string`. If it
-   *   is **not** a `function` the #replacement is converted into a `string`.
-   *   If the #replacement is a `function`, it operates the same as any
-   *   `function` parameter specified for [String.prototype.replace][replace].
    * @param {?Object=} thisArg
-   *   The details are as follows (per #source type):
-   *   - *`!Object|!Function|!Array|!Arguments`*!$
-   *     If #thisArg is defined, the #iteratee is bound to its value. Note
-   *     that the native [Function.prototype.bind][bind] is **not** used to
-   *     bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *     new [Function][func] that uses [Function.prototype.call][call] to
-   *     call the #iteratee with #thisArg. The new wrapper `function` has the
-   *     same [length property][func-length] value as the #iteratee (unless
-   *     more than three parameters were defined for the #iteratee as the
-   *     wrapper has a max length of `3`) and the [name property][func-name]
-   *     value of `"iteratee"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
-   *   - *`string`*!$
-   *     If #thisArg is defined and the #replacement is a `function`, the
-   *     #replacement is bound to its value. Note that the native
-   *     [Function.prototype.bind][bind] is **not** used to bind the
-   *     #replacement. Instead the #replacement is wrapped with a regular new
-   *     [Function][func] that uses [Function.prototype.call][call] or when
-   *     seven or more parameters are defined for the #replacement,
-   *     [Function.prototype.apply][apply] to call the #replacement with
-   *     #thisArg. The new wrapper `function` has the same
-   *     [length property][func-length] value as the #replacement (unless
-   *     more than seven parameters were defined for the #replacement as the
-   *     wrapper has a max length of `7`) and the [name property][func-name]
-   *     value of `"replacement"` (unless you are using a [minified][minify]
-   *     version of `vitals`).
    * @return {(!Object|!Array|string)}
    */
   function remap(source, iteratee, replacement, thisArg) {
@@ -1636,40 +1481,11 @@ var remap = (function remapPrivateScope() {
       : _remapObj(source, iteratee, thisArg);
   }
 
-  /// @section base
-  /// @method vitals.remap.object
-  /// @alias vitals.remap.obj
   /**
-   * @description
-   *   A shortcut for making a new `object` with the same [owned][own]
-   *   property key names as an existing `object` or `function` and new values
-   *   set by invoking an action with an #iteratee `function` upon each
-   *   [owned][own] property of the existing `object`.
    * @public
    * @param {(!Object|!Function)} source
    * @param {!function(*=, string=, (!Object|!Function)=): *} iteratee
-   *   The #iteratee must be a `function`. The value returned from each call
-   *   to the #iteratee is set as the property value for the new `object`.
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **key** *`string`*
-   *   - **source** *`!Object|!Function`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#main based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {!Object} 
    */
   function remapObject(source, iteratee, thisArg) {
@@ -1708,48 +1524,11 @@ var remap = (function remapPrivateScope() {
   remap['object'] = remapObject;
   remap['obj'] = remapObject;
 
-  /// @section base
-  /// @method vitals.remap.array
-  /// @alias vitals.remap.arr
   /**
-   * @description
-   *   A shortcut for making a new `array` with the same [length][arr-length]
-   *   of indexed properties as an existing `array` or array-like `object` and
-   *   with new property values set by invoking an action with an #iteratee
-   *   `function` upon each indexed property of the existing `array` or
-   *   `object`.
    * @public
    * @param {(!Array|!Arguments|!Object|!Function|string)} source
-   *   If the #source is a `string`, it is converted into an `array` using one
-   *   of the following values as the separator (values listed in order of
-   *   rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
    * @param {!function(*=, number=, !Array=): *} iteratee
-   *   The #iteratee must be a `function`. The value returned from each call
-   *   to the #iteratee is set as the property value for the new `array`.
-   *   The #iteratee can have the following optional parameters:
-   *   - **value** *`*`*
-   *   - **index** *`number`*
-   *   - **source** *`!Array`*
-   *   Note that this method lazily [clones][clone] the #source with
-   *   @copy#array based on the #iteratee [length property][func-length]
-   *   (i.e. if you alter any #source property within the #iteratee, make
-   *   sure you define all three parameters for the #iteratee so you can
-   *   safely assume all references to the #source are its original values).
    * @param {?Object=} thisArg
-   *   If #thisArg is defined, the #iteratee is bound to its value. Note
-   *   that the native [Function.prototype.bind][bind] is **not** used to
-   *   bind the #iteratee. Instead the #iteratee is wrapped with a regular
-   *   new [Function][func] that uses [Function.prototype.call][call] to
-   *   call the #iteratee with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the #iteratee (unless
-   *   more than three parameters were defined for the #iteratee as the
-   *   wrapper has a max length of `3`) and the [name property][func-name]
-   *   value of `"iteratee"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {!Array}
    */
   function remapArray(source, iteratee, thisArg) {
@@ -1800,44 +1579,12 @@ var remap = (function remapPrivateScope() {
   remap['array'] = remapArray;
   remap['arr'] = remapArray;
 
-  /// @section base
-  /// @method vitals.remap.string
-  /// @alias vitals.remap.str
   /**
-   * @description
-   *   A shortcut for replacing each matching `substring` with a new
-   *   `substring` within a #source `string`.
    * @public
    * @param {string} source
    * @param {*} pattern
-   *   The #pattern must be a `substring` pattern to search for within the
-   *   #source. If the #pattern is **not** a `RegExp`, it is converted into
-   *   a `string` before running a search on the #source for any matches. Note
-   *   that a `string` #pattern will replace all of the `substring` matches in
-   *   the #source (i.e. not just the first). To replace only one match use a
-   *   `RegExp` #pattern that does not have the [global flag][global] set, a
-   *   `RegExp` #pattern with an altered [lastIndex property][lastIndex], or a
-   *   `function` #replacement that uses your own logic to decide whether to
-   *   replace each #pattern occurrence.
    * @param {*} replacement
-   *   If the #replacement is **not** a `function`, it is converted into a
-   *   `string`. If the #replacement is a `function`, it operates the same as
-   *   any `function` parameter specified for
-   *   [String.prototype.replace][replace].
    * @param {?Object=} thisArg
-   *   If #thisArg is defined and the #replacement is a `function`, the
-   *   #replacement is bound to its value. Note that the native
-   *   [Function.prototype.bind][bind] is **not** used to bind the
-   *   #replacement. Instead the #replacement is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] or when
-   *   seven or more parameters are defined for the #replacement,
-   *   [Function.prototype.apply][apply] to call the #replacement with
-   *   #thisArg. The new wrapper `function` has the same
-   *   [length property][func-length] value as the #replacement (unless
-   *   more than seven parameters were defined for the #replacement as the
-   *   wrapper has a max length of `7`) and the [name property][func-name]
-   *   value of `"replacement"` (unless you are using a [minified][minify]
-   *   version of `vitals`).
    * @return {string}
    */
   function remapString(source, pattern, replacement, thisArg) {
@@ -1872,8 +1619,6 @@ var remap = (function remapPrivateScope() {
   }
   remap['string'] = remapString;
   remap['str'] = remapString;
-
-
 
   /**
    * @private
@@ -2004,8 +1749,6 @@ var remap = (function remapPrivateScope() {
     return source['replace'](pattern, replacement);
   }
 
-
-
   /**
    * @private
    * @param {!function} func
@@ -2074,8 +1817,6 @@ var remap = (function remapPrivateScope() {
     };
   }
 
-
-
   /**
    * @private
    * @const {!Object<string, !function>}
@@ -2108,14 +1849,10 @@ var remap = (function remapPrivateScope() {
    * @param {!RangeError} err
    * @param {string} paramName
    * @param {(!Array<*>|string|undefined)=} validRange
-   *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
    * @param {string=} methodName
    * @return {!RangeError} 
    */
   var _mkRangeErr = _MK_ERR.rangeError;
-
-
 
   return remap;
 })();
@@ -2157,5 +1894,5 @@ vitals['remap'] = remap;
   })();
 })(this);
 
-// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
+
 
