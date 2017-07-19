@@ -110,7 +110,7 @@ function newVitals(method) {
         method = method[0];
 
         if ( !$is.str(method) )
-          throw $mkTypeErr(new TYPE_ERR, 'method', method,
+          throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
         else if (!method)
           throw $mkErr(new ERR, 'invalid empty #method `string`');
@@ -120,7 +120,7 @@ function newVitals(method) {
           methods = [];
         }
         else if ( !_isMethod(method) )
-          throw $mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+          throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
         else {
           sections = [];
           methods = [ method ];
@@ -129,12 +129,12 @@ function newVitals(method) {
 
       default:
         if ( !_isStrArr(method) )
-          throw $mkTypeErr(new TYPE_ERR, 'method', method,
+          throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
         else if ( !_isFullStrArr(method) )
           throw $mkErr(new ERR, 'invalid empty #method `string`');
         else if ( !_isValidStrArr(method) )
-          throw $mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+          throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
 
         sections = _getSections(method);
         methods = _getMethods(method, sections);
@@ -142,7 +142,7 @@ function newVitals(method) {
     }
   }
   else if ( !$is.str(method) )
-    throw $mkTypeErr(new TYPE_ERR, 'method', method,
+    throw _mkTypeErr(new TYPE_ERR, 'method', method,
       '(!Array<string>|...string)=');
   else if (!method)
     throw $mkErr(new ERR, 'invalid empty #method `string`');
@@ -151,7 +151,7 @@ function newVitals(method) {
     methods = [];
   }
   else if ( !_isMethod(method) )
-    throw $mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+    throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
   else {
     sections = [];
     methods = [ method ];
