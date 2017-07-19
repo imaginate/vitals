@@ -122,7 +122,7 @@ var MODE = '0755';
  */
 var PARAM = {
   DFLT: / = `[^`]+` *$/,
-  LINE: /^ *\* @param \{[^\}]+\} [a-zA-Z0-9_\$]+(?: = `[^`]+`)? *$/
+  LINE: /^ *\* @param \{[^\}]+\} [a-zA-Z0-9_\.\$]+(?: = `[^`]+`)? *$/
 };
 /// #}}} @const PARAM
 
@@ -605,7 +605,7 @@ function setParamLineError(err, text, linenum, file) {
     throw setTypeError(new TypeError, 'file', 'string');
   }
 
-  valid = '/^ *\\* @param \\{[^}]+\\} [a-zA-Z0-9_$]+( = \\`[^\\`]+\\`)? *$/';
+  valid = '/^ *\\* @param \\{[^}]+\\} [a-zA-Z0-9_.$]+( = \\`[^\\`]+\\`)? *$/';
   msg = 'invalid `line` format for a `closure-compiler` parameter tag`\n' +
     '    valid-line-test: `' + valid + '`\n' +
     '    invalid-line:\n' +
