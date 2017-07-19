@@ -376,7 +376,7 @@ function _newMkGlobal(VITALS, SECTIONS, METHODS) {
     len = SECTIONS['length'];
     i = -1;
     while (++i < len) {
-      section = sections[i];
+      section = SECTIONS[i];
       _setMethods(_SECTION_METHODS[section]);
     }
   }
