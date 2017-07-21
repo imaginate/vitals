@@ -34,6 +34,14 @@ var global;
 var module;
 /// #}}} @extern module
 
+/// #{{{ @extern process
+/**
+ * @public
+ * @type {(!Object|!Function)}
+ */
+var process;
+/// #}}} @extern process
+
 /// #{{{ @extern require
 /**
  * @public
