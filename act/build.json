@@ -2,13 +2,12 @@
   "created": "2014",
   "src": "src/",
   "dest": "dist/",
-  "minify": false,
+  "compile": false,
+  "externs": "src/externs/",
   "flags": {
     "compilationLevel": "ADVANCED",
-    "languageIn": "ES3",
-    "languageOut": "ES3",
     "useTypesForOptimization": true,
-    "warningLevel": "VERBOSE"
+    "warningLevel": "QUIET"
   },
   "state": {
     "code": false,
@@ -31,7 +30,11 @@
   "branches": {
     "browser": {
       "dest": "browser/",
-      "minify": true,
+      "compile": true,
+      "flags": {
+        "languageIn": "ES5",
+        "languageOut": "ES3"
+      },
       "state": {
         "code": true,
         "env": {
@@ -171,6 +174,12 @@
     },
     "node": {
       "dest": "node/",
+      "compile": true,
+      "flags": {
+        "checksOnly": true,
+        "languageIn": "ES5_STRICT",
+        "languageOut": "ES5_STRICT"
+      },
       "state": {
         "code": true,
         "env": {
