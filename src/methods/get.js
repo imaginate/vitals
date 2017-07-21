@@ -2593,7 +2593,7 @@ var get = (function getPrivateScope() {
      * @private
      * @const {!RegExp}
      */
-    var _END_ESC = /^(?:.*[^\\])?(?:\\\\)*\\$/;
+    var _END_ESC_PATT = /^(?:.*[^\\])?(?:\\\\)*\\$/;
     /// #}}} @const _END_ESC_PATT
  
     /// #{{{ @const _GLOB
