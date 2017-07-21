@@ -17,7 +17,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 exports['desc'] = 'builds distributable versions of vitals';
-exports['default'] = '-dist';
+exports['default'] = '-node';
 exports['methods'] = {
   'all': {
     'desc': 'builds all vitals distributables & documentation',
