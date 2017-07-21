@@ -1,5 +1,6 @@
 {
   "created": "2014",
+  "website": "http://vitalsjs.com",
   "src": "src/",
   "dest": "dist/",
   "compile": false,
