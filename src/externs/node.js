@@ -10,6 +10,14 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
  */
 
+/// #{{{ @extern exports
+/**
+ * @public
+ * @type {(!Object|!Function)}
+ */
+var exports;
+/// #}}} @extern exports
+
 /// #{{{ @extern global
 /**
  * @public
@@ -21,7 +29,7 @@ var global;
 /// #{{{ @extern module
 /**
  * @public
- * @const {!Object}
+ * @const {(!Object|!Function)}
  */
 var module;
 /// #}}} @extern module
