@@ -90,6 +90,54 @@ var CONFIG = require('./build.json');
 var COMMENT = /^[ \t]*\/\//;
 /// #}}} @const COMMENT
 
+/// #{{{ @const COPYRIGHT
+/**
+ * @private
+ * @const {string}
+ */
+var COPYRIGHT = (function COPYRIGHT_PrivateScope() {
+
+  /// #{{{ @const _PRESENT
+  /**
+   * @private
+   * @const {string}
+   */
+  var _PRESENT = loadHelper('get-present-year').asString();
+  /// #}}} @const _PRESENT
+
+  /// #{{{ @const _CREATED
+  /**
+   * @private
+   * @const {string}
+   */
+  var _CREATED = loadHelper('has-own-property')(CONFIG, 'created')
+    ? CONFIG.created
+    : _PRESENT;
+  /// #}}} @const _CREATED
+
+  /// #{{{ @const _YEAR
+  /**
+   * @private
+   * @const {string}
+   */
+  var _YEAR = _CREATED === _PRESENT
+    ? _PRESENT
+    : _CREATED + '-' + _PRESENT;
+  /// #}}} @const _YEAR
+
+  /// #{{{ @const COPYRIGHT
+  /**
+   * @const {string}
+   */
+  var COPYRIGHT = 'Copyright (c) '
+    + _YEAR
+    + ' Adam A Smith <adam@imaginate.life>';
+  /// #}}} @const COPYRIGHT
+
+  return COPYRIGHT;
+})();
+/// #}}} @const COPYRIGHT
+
 /// #{{{ @const FLAGS
 /**
  * @private
@@ -105,6 +153,14 @@ var FLAGS = CONFIG.flags;
  */
 var IS = loadHelper('is');
 /// #}}} @const IS
+
+/// #{{{ @const LICENSE
+/**
+ * @private
+ * @const {string}
+ */
+var LICENSE = 'The Apache License (' + CONFIG.website + '/license)';
+/// #}}} @const LICENSE
 
 /// #{{{ @const MODE
 /**
@@ -149,6 +205,22 @@ var TAGS = {
  */
 var STATE = CONFIG.state;
 /// #}}} @const STATE
+
+/// #{{{ @const VERSION
+/**
+ * @private
+ * @const {string}
+ */
+var VERSION = loadHelper('get-version')();
+/// #}}} @const VERSION
+
+/// #{{{ @const WEBSITE
+/**
+ * @private
+ * @const {string}
+ */
+var WEBSITE = CONFIG.website;
+/// #}}} @const WEBSITE
 
 /// #}}} @group CONSTANTS
 
@@ -468,6 +540,8 @@ function makeCompile(srcFile, flags) {
 
     /** @type {!Object} */
     var result;
+    /** @type {string} */
+    var code;
     /** @type {!Object} */
     var src;
     /** @type {!Error} */
@@ -490,6 +564,7 @@ function makeCompile(srcFile, flags) {
 
     srcCode = srcCode.replace(/\n\n\n+/g, '\n\n');
     srcCode = trimComments(srcFile, srcCode);
+    srcCode = srcCode.replace(/\n[ \t\*]*@copyright [^\n]+/g, '');
 
     /// #}}} @step trim-src-code
 
@@ -540,9 +615,19 @@ function makeCompile(srcFile, flags) {
 
     /// #}}} @step verify-closure-compiler-results
 
+    /// #{{{ @step make-compiled-code
+
+    code = ''
+      + '/* vitals v' + VERSION + ' (' + WEBSITE + ')\n'
+      + ' * ' + COPYRIGHT + '\n'
+      + ' * ' + LICENSE + ' */\n'
+      + result.compiledCode;
+
+    /// #}}} @step make-compiled-code
+
     /// #{{{ @step return-compiled-code
 
-    return result.compiledCode;
+    return code;
 
     /// #}}} @step return-compiled-code
   }
