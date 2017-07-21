@@ -771,6 +771,17 @@ function trimComments(srcFile, srcCode) {
 
 /// #{{{ @group DOCS
 
+/// #{{{ @func trimDocs
+/**
+ * @private
+ * @param {string} srcCode
+ * @return {string}
+ */
+function trimDocs(srcCode) {
+  return srcCode.replace(/\n\n\n+/g, '\n\n');
+}
+/// #}}} @func trimDocs
+
 /// #}}} @group DOCS
 
 /// #{{{ @group ERROR
@@ -2221,7 +2232,7 @@ function buildAll() {
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, null);
+    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, trimDocs);
 
     /// #}}} @step build-docs
   });
@@ -2404,7 +2415,7 @@ function buildDocs() {
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, null);
+    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, trimDocs);
 
     /// #}}} @step build-docs
   });
