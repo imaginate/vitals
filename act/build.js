@@ -642,19 +642,19 @@ function makeCompile(srcFile, flags) {
  * @private
  * @param {string} src
  *   The file-system path to the root directory containing the source code you
- *   want to process.
+ *   want to proc.
  * @param {?Object=} opts
  * @param {boolean=} opts.quiet = `false`
  *   If #opts.quiet is `true`, logging will be disabled.
- * @param {?Stream=} opts.stdout = `process.stdout`
+ * @param {?Stream=} opts.stdout = `proc.stdout`
  *   The #opts.stdout option allows you to provide a different `Stream` for
  *   *Mold* to log to. If a `Stream` is provided, it must be `Writable`.
  * @param {boolean=} opts.verbose = `false`
  *   If #opts.verbose is `true`, logging will be increased.
  * @param {!function(!Function)} callback
- *   This is where you complete preprocessing, save results, and anything else
- *   you desire. The *process* parameter provided to the #callback is the
- *   `process` method built by the `makeProcess` method defined below. It has
+ *   This is where you complete preprocing, save results, and anything else
+ *   you desire. The *proc* parameter provided to the #callback is the
+ *   `proc` method built by the `makeProcess` method defined below. It has
  *   the following properties appended to it:
  *   - **log** *`!Function`*!$
  *     The `log` method used by the current instance. This `function` is built
@@ -686,7 +686,7 @@ function makeCompile(srcFile, flags) {
  *     } else {
  *       console.error(err);
  *     }
- *     process.exit(1);
+ *     proc.exit(1);
  *   }
  *   ```
  * @return {void}
@@ -1565,7 +1565,7 @@ var EXTERNS = resolvePath(REPO, CONFIG.externs);
 /// #{{{ @func buildBranches
 /**
  * @private
- * @param {!Function} process
+ * @param {!Function} run
  * @param {string} key
  * @param {!Object<string, !Object>} branches
  * @param {string} src
@@ -1575,8 +1575,7 @@ var EXTERNS = resolvePath(REPO, CONFIG.externs);
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranches(
-          process, key, branches, src, dest, state, flags, alter) {
+function buildBranches(run, key, branches, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1589,7 +1588,7 @@ function buildBranches(
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'process');
+      throw setNoArgError(new Error, 'run');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1612,8 +1611,8 @@ function buildBranches(
       }
   }
 
-  if ( !isFunction(process) ) {
-    throw setTypeError(new TypeError, 'process', '!Function');
+  if ( !isFunction(run) ) {
+    throw setTypeError(new TypeError, 'run', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1675,8 +1674,7 @@ function buildBranches(
       newkey = !!KEY
         ? KEY + '.' + key
         : key;
-      buildBranch(
-        process, newkey, branches[key], src, dest, state, flags, alter);
+      buildBranch(run, newkey, branches[key], src, dest, state, flags, alter);
     }
   }
 
@@ -1687,7 +1685,7 @@ function buildBranches(
 /// #{{{ @func buildBranch
 /**
  * @private
- * @param {!Function} process
+ * @param {!Function} run
  * @param {string} key
  * @param {!Object} branch
  * @param {string} src
@@ -1697,13 +1695,13 @@ function buildBranches(
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranch(process, key, branch, src, dest, state, flags, alter) {
+function buildBranch(run, key, branch, src, dest, state, flags, alter) {
 
   /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'process');
+      throw setNoArgError(new Error, 'run');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1726,8 +1724,8 @@ function buildBranch(process, key, branch, src, dest, state, flags, alter) {
       }
   }
 
-  if ( !isFunction(process) ) {
-    throw setTypeError(new TypeError, 'process', '!Function');
+  if ( !isFunction(run) ) {
+    throw setTypeError(new TypeError, 'run', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1839,7 +1837,7 @@ function buildBranch(process, key, branch, src, dest, state, flags, alter) {
   /// #{{{ @step build-files
 
   if ( hasOwnProperty(branch, 'files') ) {
-    buildFiles(process, key, branch.files, src, dest, state, flags, alter);
+    buildFiles(run, key, branch.files, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-files
@@ -1847,8 +1845,7 @@ function buildBranch(process, key, branch, src, dest, state, flags, alter) {
   /// #{{{ @step build-branches
 
   if ( hasOwnProperty(branch, 'branches') ) {
-    buildBranches(
-      process, key, branch.branches, src, dest, state, flags, alter);
+    buildBranches(run, key, branch.branches, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-branches
@@ -1858,7 +1855,7 @@ function buildBranch(process, key, branch, src, dest, state, flags, alter) {
 /// #{{{ @func buildFiles
 /**
  * @private
- * @param {!Function} process
+ * @param {!Function} run
  * @param {string} key
  * @param {!Array<!Object>} files
  * @param {string} src
@@ -1868,7 +1865,7 @@ function buildBranch(process, key, branch, src, dest, state, flags, alter) {
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildFiles(process, key, files, src, dest, state, flags, alter) {
+function buildFiles(run, key, files, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1885,7 +1882,7 @@ function buildFiles(process, key, files, src, dest, state, flags, alter) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'process');
+      throw setNoArgError(new Error, 'run');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -1908,8 +1905,8 @@ function buildFiles(process, key, files, src, dest, state, flags, alter) {
       }
   }
 
-  if ( !isFunction(process) ) {
-    throw setTypeError(new TypeError, 'process', '!Function');
+  if ( !isFunction(run) ) {
+    throw setTypeError(new TypeError, 'run', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -1977,7 +1974,7 @@ function buildFiles(process, key, files, src, dest, state, flags, alter) {
     }
 
     key = KEY + '.' + key;
-    buildFile(process, key, file, src, dest, state, flags, alter);
+    buildFile(run, key, file, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-each-file
@@ -1987,7 +1984,7 @@ function buildFiles(process, key, files, src, dest, state, flags, alter) {
 /// #{{{ @func buildFile
 /**
  * @private
- * @param {!Function} process
+ * @param {!Function} run
  * @param {string} key
  * @param {!Object} file
  * @param {string} src
@@ -1997,7 +1994,7 @@ function buildFiles(process, key, files, src, dest, state, flags, alter) {
  * @param {(null|(function(string): string)|undefined)=} alter = `makeCompile(dest)`
  * @return {string}
  */
-function buildFile(process, key, file, src, dest, state, flags, alter) {
+function buildFile(run, key, file, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -2010,7 +2007,7 @@ function buildFile(process, key, file, src, dest, state, flags, alter) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'process');
+      throw setNoArgError(new Error, 'run');
     case 1:
       throw setNoArgError(new Error, 'key');
     case 2:
@@ -2033,8 +2030,8 @@ function buildFile(process, key, file, src, dest, state, flags, alter) {
       }
   }
 
-  if ( !isFunction(process) ) {
-    throw setTypeError(new TypeError, 'process', '!Function');
+  if ( !isFunction(run) ) {
+    throw setTypeError(new TypeError, 'run', '!Function');
   }
   if ( !isString(key) ) {
     throw setTypeError(new TypeError, 'key', 'string');
@@ -2151,8 +2148,8 @@ function buildFile(process, key, file, src, dest, state, flags, alter) {
   /// #{{{ @step build-file
 
   result = alter
-    ? process(src, dest, state, alter)
-    : process(src, dest, state);
+    ? run(src, dest, state, alter)
+    : run(src, dest, state);
 
   /// #}}} @step build-file
 
@@ -2198,7 +2195,7 @@ function buildAll() {
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
-  }, function buildVitals(process) {
+  }, function buildVitals(run) {
 
     /// #{{{ @step declare-variables
 
@@ -2210,21 +2207,21 @@ function buildAll() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
 
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
 
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null, null);
+    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, null);
 
     /// #}}} @step build-docs
   });
@@ -2260,7 +2257,7 @@ function buildDist() {
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
-  }, function buildVitals(process) {
+  }, function buildVitals(run) {
 
     /// #{{{ @step declare-variables
 
@@ -2272,14 +2269,14 @@ function buildDist() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
 
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
   });
@@ -2315,7 +2312,7 @@ function buildBrowser() {
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
-  }, function buildVitals(process) {
+  }, function buildVitals(run) {
 
     /// #{{{ @step declare-variables
 
@@ -2327,7 +2324,7 @@ function buildBrowser() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
   });
@@ -2363,7 +2360,7 @@ function buildNode() {
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
-  }, function buildVitals(process) {
+  }, function buildVitals(run) {
 
     /// #{{{ @step declare-variables
 
@@ -2375,7 +2372,7 @@ function buildNode() {
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
+    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
   });
@@ -2395,7 +2392,7 @@ function buildDocs() {
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
-  }, function buildVitals(process) {
+  }, function buildVitals(run) {
 
     /// #{{{ @step declare-variables
 
@@ -2407,7 +2404,7 @@ function buildDocs() {
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null, null);
+    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, null);
 
     /// #}}} @step build-docs
   });
