@@ -168,20 +168,294 @@ var STATE = CONFIG.state;
 var closureCompile = require('google-closure-compiler-js').compile;
 /// #}}} @func closureCompile
 
+/// #{{{ @func makeClosureExterns
+/**
+ * @private
+ * @param {string} path
+ * @return {!Array<!Object>}
+ */
+function makeClosureExterns(path) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<!Object>} */
+  var externs;
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {!Object} */
+  var file;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if (!path) {
+    throw setEmptyError(new Error, 'path');
+  }
+  if ( !isDirectory(path) ) {
+    throw setDirError(new Error, 'path', path);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-externs-array
+
+  externs = [];
+
+  /// #}}} @step make-externs-array
+
+  /// #{{{ @step make-extern-objects
+
+  paths = getFilePaths(path, {
+    'deep': false,
+    'full': true,
+    'extend': true,
+    'validFiles': /\.js$/
+  });
+  len = paths.length;
+  i = -1;
+  while (++i < len) {
+    path = paths[i];
+    file = makeClosureFile(path);
+    externs.push(file);
+  }
+
+  /// #}}} @step make-extern-objects
+
+  /// #{{{ @step freeze-externs-object
+
+  freezeObject(externs);
+
+  /// #}}} @step freeze-externs-object
+
+  /// #{{{ @step return-externs-object
+
+  return externs;
+
+  /// #}}} @step return-externs-object
+}
+/// #}}} @func makeClosureExterns
+
+/// #{{{ @func makeClosureFile
+/**
+ * @private
+ * @param {string} srcFile
+ * @param {string=} srcCode
+ * @return {!Object}
+ */
+function makeClosureFile(srcFile, srcCode) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var file;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'srcFile');
+    case 1:
+      srcCode = undefined;
+      break;
+    default:
+      if ( !isUndefined(srcCode) && !isString(srcCode) ) {
+        throw setTypeError(new TypeError, 'srcCode', 'string=');
+      }
+  }
+
+  if ( !isString(srcFile) ) {
+    throw setTypeError(new TypeError, 'srcFile', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-src-code
+
+  if ( isUndefined(srcCode) ) {
+    srcCode = getFileContent(srcFile);
+  }
+
+  /// #}}} @step get-src-code
+
+  /// #{{{ @step make-file-object
+
+  file = {
+    path: srcFile,
+    src: srcCode
+  };
+
+  /// #}}} @step make-file-object
+
+  /// #{{{ @step freeze-file-object
+
+  freezeObject(file);
+
+  /// #}}} @step freeze-file-object
+
+  /// #{{{ @step return-file-object
+
+  return file;
+
+  /// #}}} @step return-file-object
+}
+/// #}}} @func makeClosureFile
+
+/// #{{{ @func makeClosureFiles
+/**
+ * @private
+ * @param {...(string|!Object|undefined)=} file
+ * @return {!Array<!Object>}
+ */
+function makeClosureFiles(file) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<!Object>} */
+  var files;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-files-array
+
+  files = [];
+
+  /// #}}} @step make-files-array
+
+  /// #{{{ @step make-file-objects
+
+  len = arguments.length;
+  i = -1;
+  while (++i < len) {
+    file = arguments[i];
+    if ( isUndefined(file) ) {
+      continue;
+    }
+    else if ( isString(file) ) {
+      file = makeClosureFile(file);
+    }
+    else if ( !isObject(file) ) {
+      throw setTypeError(new TypeError, 'file', '(string|!Object|undefined)');
+    }
+    files.push(file);
+  }
+
+  /// #}}} @step make-file-objects
+
+  /// #{{{ @step freeze-files-array
+
+  freezeObject(files);
+
+  /// #}}} @step freeze-files-array
+
+  /// #{{{ @step return-files-array
+
+  return files;
+
+  /// #}}} @step return-files-array
+}
+/// #}}} @func makeClosureFiles
+
+/// #{{{ @func makeClosureFlags
+/**
+ * @private
+ * @param {?Object} flags
+ * @param {(!Object|!Array<!Object>)} src
+ * @return {!Object}
+ */
+function makeClosureFlags(flags, src, externs) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var file;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'flags');
+    case 1:
+      throw setNoArgError(new Error, 'src');
+  }
+
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
+  }
+  if ( !isArray(src) && isObject(src) ) {
+    src = makeClosureFiles(src);
+  }
+  if ( !isArray(src) || !isObjectList(src) ) {
+    throw setTypeError(new TypeError, 'src', '!Array<!Object>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-flags-object
+
+  flags = cloneObject(flags);
+  flags.jsCode = src;
+
+  /// #}}} @step make-flags-object
+
+  /// #{{{ @step freeze-flags-object
+
+  freezeObject(flags);
+
+  /// #}}} @step freeze-flags-object
+
+  /// #{{{ @step return-flags-object
+
+  return flags;
+
+  /// #}}} @step return-flags-object
+}
+/// #}}} @func makeClosureFlags
+
 /// #{{{ @func makeCompile
 /**
  * @private
  * @param {string} srcFile
+ * @param {?Object} flags
  * @return {!function(string): string}
  */
-function makeCompile(srcFile) {
+function makeCompile(srcFile, flags) {
 
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'srcFile');
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'srcFile');
+    case 1:
+      throw setNoArgError(new Error, 'flags');
   }
+
   if ( !isString(srcFile) ) {
-    throw setTypeError(new TypeError, 'srcFile', srcFile, 'string');
+    throw setTypeError(new TypeError, 'srcFile', 'string');
   }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
+  }
+
+  /// #}}} @step verify-parameters
 
   /// #{{{ @func compile
   /**
@@ -190,28 +464,49 @@ function makeCompile(srcFile) {
    */
   function compile(srcCode) {
 
+    /// #{{{ @step declare-variables
+
     /** @type {!Object} */
     var result;
     /** @type {!Object} */
-    var flags;
-    /** @type {string} */
-    var code;
+    var src;
     /** @type {!Error} */
     var err;
+
+    /// #}}} @step declare-variables
+
+    /// #{{{ @step verify-parameters
 
     if (!arguments.length) {
       throw setNoArgError(new Error, 'srcCode');
     }
     if ( !isString(srcCode) ) {
-      throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
+      throw setTypeError(new TypeError, 'srcCode', 'string');
     }
+
+    /// #}}} @step verify-parameters
+
+    /// #{{{ @step trim-src-code
 
     srcCode = srcCode.replace(/\n\n\n+/g, '\n\n');
     srcCode = trimComments(srcFile, srcCode);
-    flags = cloneObject(FLAGS);
-    flags.jsCode = [
-      { src: srcCode }
-    ];
+
+    /// #}}} @step trim-src-code
+
+    /// #{{{ @step make-closure-compiler-src
+
+    src = makeClosureFile(srcFile, srcCode);
+
+    /// #}}} @step make-closure-compiler-src
+
+    /// #{{{ @step make-closure-compiler-flags
+
+    flags = makeClosureFlags(flags, src);
+
+    /// #}}} @step make-closure-compiler-flags
+
+    /// #{{{ @step run-closure-compiler
+
     try {
       result = closureCompile(flags);
     }
@@ -220,22 +515,36 @@ function makeCompile(srcFile) {
       throw setError(err, err.message);
     }
 
+    /// #}}} @step run-closure-compiler
+
+    /// #{{{ @step verify-closure-compiler-results
+
     if ( !isObject(result) ) {
-      err = new TypeError;
-      err.closure = true;
-      throw setRetError(err, 'closureCompiler.compile', '!Object');
+      throw setClosureRetError(new TypeError, '!Object');
     }
 
-    code = result.compiledCode;
-
-    if ( !isString(code) ) {
-      err = new TypeError;
-      err.closure = true;
-      throw setRetError(err, 'closureCompiler.compile',
-        '{ compiledCode: string }');
+    if (!hasOwnProperty(result, 'compiledCode')
+          || !isString(result.compiledCode) ) {
+      throw setClosureRetError(new TypeError, '{ compiledCode: string }');
     }
 
-    return code;
+    if (!hasOwnProperty(result, 'errors')
+          || !isArray(result.errors)
+          || !isObjectList(result.errors) ) {
+      throw setClosureRetError(new TypeError, '{ errors: !Array<!Object> }');
+    }
+
+    if (result.errors.length) {
+      throw setClosureError(new Error, srcCode.split('\n'), result.errors[0]);
+    }
+
+    /// #}}} @step verify-closure-compiler-results
+
+    /// #{{{ @step return-compiled-code
+
+    return result.compiledCode;
+
+    /// #}}} @step return-compiled-code
   }
   /// #}}} @func compile
 
@@ -328,10 +637,10 @@ function trimComments(srcFile, srcCode) {
   }
 
   if ( !isString(srcFile) ) {
-    throw setTypeError(new TypeError, 'srcFile', srcFile, 'string');
+    throw setTypeError(new TypeError, 'srcFile', 'string');
   }
   if ( !isString(srcCode) ) {
-    throw setTypeError(new TypeError, 'srcCode', srcCode, 'string');
+    throw setTypeError(new TypeError, 'srcCode', 'string');
   }
 
   result = '';
@@ -511,6 +820,87 @@ function setBuildTypeError(err, key, prop, types) {
   return setError(err, msg);
 }
 /// #}}} @func setBuildTypeError
+
+/// #{{{ @func setClosureError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {!Array<string>} lines
+ * @param {!Object} result
+ * @return {!Error}
+ */
+function setClosureError(err, lines, result) {
+
+  /** @type {number} */
+  var linenum;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var msg;
+  /** @type {number} */
+  var end;
+  /** @type {number} */
+  var i;
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isArray(lines) || !isStringList(lines) ) {
+    throw setTypeError(new TypeError, 'lines', '!Array<string>');
+  }
+  if ( !isObject(result) ) {
+    throw setTypeError(new TypeError, 'result', '!Object');
+  }
+
+  msg = result.description + '\n'
+    + '    dest-path: `' + result.file + '`\n'
+    + '    line-number: `' + result.lineNo + '`\n'
+    + '    char-number: `' + result.charNo + '`\n'
+    + '    code-snippet:';
+
+  end = result.lineNo + 5;
+  i = result.lineNo - 6;
+  if (end > lines.length) {
+    end = lines.length;
+  }
+  if (i < 0) {
+    i = 0;
+  }
+  while (i < end) {
+    line = lines[i];
+    linenum = ++i;
+    msg += '\n    ';
+    msg += result.lineNo === linenum
+      ? '--> '
+      : '    ';
+    msg += i + ' `' + line + '`';
+  }
+
+  err.closure = true;
+  return setError(err, msg);
+}
+/// #}}} @func setClosureError
+
+/// #{{{ @func setClosureRetError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} types
+ * @return {!TypeError}
+ */
+function setClosureRetError(err, types) {
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  }
+  if ( !isString(types) ) {
+    throw setTypeError(new TypeError, 'types', 'string');
+  }
+
+  err.closure = true;
+  return setRetError(err, 'closureCompiler.compile', types);
+}
+/// #}}} @func setClosureRetError
 
 /// #{{{ @func setDirError
 /**
@@ -757,6 +1147,78 @@ var setWholeError = setError.whole;
 
 /// #{{{ @group FS
 
+/// #{{{ @func getFileContent
+/**
+ * @private
+ * @param {string} filepath
+ * @param {boolean=} buffer = `false`
+ * @return {(!Buffer|string)}
+ */
+var getFileContent = loadHelper('get-file-content');
+/// #}}} @func getFileContent
+
+/// #{{{ @func getFilePaths
+/**
+ * @private
+ * @param {string} dirpath
+ * @param {?Object|boolean=} opts
+ *   If the #opts is a `boolean`, the #opts.deep option is set to its value.
+ * @param {?boolean=} opts.deep = `false`
+ *   Make a recursive search for valid files.
+ * @param {?boolean=} opts.full = `false`
+ *   Return absolute file paths instead of relative file paths.
+ * @param {?boolean=} opts.extend = `false`
+ *   When supplying a valid or invalid pattern to check paths against, the
+ *   #opts.extend option allows you to supplement instead of overwrite the
+ *   default valid or invalid test. If the default value is `null`, this
+ *   option does not have any side effects.
+ * @param {?RegExp=} opts.valid = `null`
+ *   A pattern for matching valid file or directory paths. If #opts.valid is
+ *   `null`, no check is performed. If it is a `RegExp`, the source property
+ *   is checked for a forward slash, `"/"`. If it has a forward slash, the
+ *   path tree is tested against the #opts.valid pattern. Otherwise (i.e. if
+ *   it does not have a forward slash), the path name is tested against the
+ *   #opts.valid pattern.
+ * @param {?RegExp=} opts.invalid = `null`
+ *   A pattern for matching invalid file or directory paths. If #opts.invalid
+ *   is `null`, no check is performed. If it is a `RegExp`, the source
+ *   property is checked for a forward slash, `"/"`. If it has a forward
+ *   slash, the path tree is tested against the #opts.invalid pattern.
+ *   Otherwise (i.e. if it does not have a forward slash), the path name is
+ *   tested against the #opts.invalid pattern.
+ * @param {?RegExp=} opts.validDirs = `null`
+ *   Only used when #opts.deep is `true`. A pattern for matching valid
+ *   directory paths. If #opts.validDirs is `null`, no check is performed. If
+ *   it is a `RegExp`, the source property is checked for a forward slash,
+ *   `"/"`. If it has a forward slash, the path tree is tested against the
+ *   #opts.validDirs pattern. Otherwise (i.e. if it does not have a forward
+ *   slash), the path name is tested against the #opts.validDirs pattern.
+ * @param {?RegExp=} opts.invalidDirs = `/^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i`
+ *   Only used when #opts.deep is `true`. A pattern for matching invalid
+ *   directory paths. If #opts.invalidDirs is `null`, no check is performed.
+ *   If it is a `RegExp`, the source property is checked for a forward slash,
+ *   `"/"`. If it has a forward slash, the path tree is tested against the
+ *   #opts.invalidDirs pattern. Otherwise (i.e. if it does not have a forward
+ *   slash), the path name is tested against the #opts.invalidDirs pattern.
+ * @param {?RegExp=} opts.validFiles = `null`
+ *   A pattern for matching valid file paths. If #opts.validFiles is `null`,
+ *   no check is performed. If it is a `RegExp`, the source property is
+ *   checked for a forward slash, `"/"`. If it has a forward slash, the path
+ *   tree is tested against the #opts.validFiles pattern. Otherwise (i.e. if
+ *   it does not have a forward slash), the path name is tested against the
+ *   #opts.validFiles pattern.
+ * @param {?RegExp=} opts.invalidFiles = `null`
+ *   A pattern for matching invalid file paths. If #opts.invalidFiles is
+ *   `null`, no check is performed. If it is a `RegExp`, the source property
+ *   is checked for a forward slash, `"/"`. If it has a forward slash, the
+ *   path tree is tested against the #opts.invalidFiles pattern. Otherwise
+ *   (i.e. if it does not have a forward slash), the path name is tested
+ *   against the #opts.invalidFiles pattern.
+ * @return {!Array<string>}
+ */
+var getFilePaths = loadHelper('get-filepaths');
+/// #}}} @func getFilePaths
+
 /// #{{{ @func makeDirectory
 /**
  * @private
@@ -893,6 +1355,15 @@ var isObjectList = IS.objectList;
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #{{{ @func isStringList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isStringList = IS.stringList;
+/// #}}} @func isStringList
+
 /// #{{{ @func isUndefined
 /**
  * @private
@@ -919,10 +1390,21 @@ var deepMergeObject = loadHelper('deep-merge-object');
 /**
  * @private
  * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
  * @return {!Object}
  */
 var cloneObject = loadHelper('clone-object');
 /// #}}} @func cloneObject
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {?Object}
+ */
+var freezeObject = loadHelper('freeze-object');
+/// #}}} @func freezeObject
 
 /// #{{{ @func mergeObject
 /**
@@ -979,6 +1461,14 @@ var SRC = resolvePath(REPO, CONFIG.src);
 var DEST = resolvePath(REPO, CONFIG.dest);
 /// #}}} @const DEST
 
+/// #{{{ @const EXTERNS
+/**
+ * @private
+ * @const {string}
+ */
+var EXTERNS = resolvePath(REPO, CONFIG.externs);
+/// #}}} @const EXTERNS
+
 /// #}}} @group PATHS
 
 /// #{{{ @group BUILDERS
@@ -995,10 +1485,12 @@ var DEST = resolvePath(REPO, CONFIG.dest);
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranches(process, key, branches, src, dest, state, alter) {
+function buildBranches(
+          process, key, branches, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1023,6 +1515,8 @@ function buildBranches(process, key, branches, src, dest, state, alter) {
     case 5:
       throw setNoArgError(new Error, 'state');
     case 6:
+      throw setNoArgError(new Error, 'flags');
+    case 7:
       alter = undefined;
       break;
     default:
@@ -1050,6 +1544,9 @@ function buildBranches(process, key, branches, src, dest, state, alter) {
   if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
   }
 
   if (!src) {
@@ -1092,7 +1589,8 @@ function buildBranches(process, key, branches, src, dest, state, alter) {
       newkey = !!KEY
         ? KEY + '.' + key
         : key;
-      buildBranch(process, newkey, branches[key], src, dest, state, alter);
+      buildBranch(
+        process, newkey, branches[key], src, dest, state, flags, alter);
     }
   }
 
@@ -1109,10 +1607,11 @@ function buildBranches(process, key, branches, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildBranch(process, key, branch, src, dest, state, alter) {
+function buildBranch(process, key, branch, src, dest, state, flags, alter) {
 
   /// #{{{ @step verify-parameters
 
@@ -1130,6 +1629,8 @@ function buildBranch(process, key, branch, src, dest, state, alter) {
     case 5:
       throw setNoArgError(new Error, 'state');
     case 6:
+      throw setNoArgError(new Error, 'flags');
+    case 7:
       alter = undefined;
       break;
     default:
@@ -1157,6 +1658,9 @@ function buildBranch(process, key, branch, src, dest, state, alter) {
   if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
   }
 
   if (!src) {
@@ -1233,10 +1737,23 @@ function buildBranch(process, key, branch, src, dest, state, alter) {
 
   /// #}}} @step update-state
 
+  /// #{{{ @step update-flags
+
+  flags = cloneObject(flags);
+
+  if ( hasOwnProperty(branch, 'flags') && !isNull(branch.flags) ) {
+    if ( !isObject(branch.flags) ) {
+      throw setBuildTypeError(new TypeError, key, 'flags', '?Object');
+    }
+    flags = mergeObject(flags, branch.flags);
+  }
+
+  /// #}}} @step update-flags
+
   /// #{{{ @step build-files
 
   if ( hasOwnProperty(branch, 'files') ) {
-    buildFiles(process, key, branch.files, src, dest, state, alter);
+    buildFiles(process, key, branch.files, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-files
@@ -1244,7 +1761,8 @@ function buildBranch(process, key, branch, src, dest, state, alter) {
   /// #{{{ @step build-branches
 
   if ( hasOwnProperty(branch, 'branches') ) {
-    buildBranches(process, key, branch.branches, src, dest, state, alter);
+    buildBranches(
+      process, key, branch.branches, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-branches
@@ -1260,10 +1778,11 @@ function buildBranch(process, key, branch, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
  * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {void}
  */
-function buildFiles(process, key, files, src, dest, state, alter) {
+function buildFiles(process, key, files, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1292,6 +1811,8 @@ function buildFiles(process, key, files, src, dest, state, alter) {
     case 5:
       throw setNoArgError(new Error, 'state');
     case 6:
+      throw setNoArgError(new Error, 'flags');
+    case 7:
       alter = undefined;
       break;
     default:
@@ -1319,6 +1840,9 @@ function buildFiles(process, key, files, src, dest, state, alter) {
   if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
   }
 
   if (!src) {
@@ -1367,7 +1891,7 @@ function buildFiles(process, key, files, src, dest, state, alter) {
     }
 
     key = KEY + '.' + key;
-    buildFile(process, key, file, src, dest, state, alter);
+    buildFile(process, key, file, src, dest, state, flags, alter);
   }
 
   /// #}}} @step build-each-file
@@ -1383,10 +1907,11 @@ function buildFiles(process, key, files, src, dest, state, alter) {
  * @param {string} src
  * @param {string} dest
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
  * @param {(null|(function(string): string)|undefined)=} alter = `makeCompile(dest)`
  * @return {string}
  */
-function buildFile(process, key, file, src, dest, state, alter) {
+function buildFile(process, key, file, src, dest, state, flags, alter) {
 
   /// #{{{ @step declare-variables
 
@@ -1411,6 +1936,8 @@ function buildFile(process, key, file, src, dest, state, alter) {
     case 5:
       throw setNoArgError(new Error, 'state');
     case 6:
+      throw setNoArgError(new Error, 'flags');
+    case 7:
       alter = undefined;
       break;
     default:
@@ -1438,6 +1965,9 @@ function buildFile(process, key, file, src, dest, state, alter) {
   if ( !isObject(state) ) {
     throw setTypeError(new TypeError, 'state',
       '!Object<string, (boolean|!Object<string, boolean>)>');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
   }
 
   if (!src) {
@@ -1511,10 +2041,23 @@ function buildFile(process, key, file, src, dest, state, alter) {
 
   /// #}}} @step update-state
 
+  /// #{{{ @step update-flags
+
+  flags = cloneObject(flags);
+
+  if ( hasOwnProperty(file, 'flags') && !isNull(file.flags) ) {
+    if ( !isObject(file.flags) ) {
+      throw setBuildTypeError(new TypeError, key, 'flags', '?Object');
+    }
+    flags = mergeObject(flags, file.flags);
+  }
+
+  /// #}}} @step update-flags
+
   /// #{{{ @step make-alter
 
   if ( isUndefined(alter) ) {
-    alter = makeCompile(dest);
+    alter = makeCompile(dest, flags);
   }
 
   /// #}}} @step make-alter
@@ -1548,6 +2091,24 @@ function buildFile(process, key, file, src, dest, state, alter) {
  * @return {void}
  */
 function buildAll() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var flags;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-flags
+
+  flags = cloneObject(FLAGS);
+  flags.externs = makeClosureExterns(EXTERNS);
+  freezeObject(flags);
+
+  /// #}}} @step make-flags
+
+  /// #{{{ @step build-vitals
+
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
@@ -1563,24 +2124,26 @@ function buildAll() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
 
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE);
+    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
 
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null);
+    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null, null);
 
     /// #}}} @step build-docs
   });
+
+  /// #}}} @step build-vitals
 }
 /// #}}} @func buildAll
 
@@ -1590,6 +2153,24 @@ function buildAll() {
  * @return {void}
  */
 function buildDist() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var flags;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-flags
+
+  flags = cloneObject(FLAGS);
+  flags.externs = makeClosureExterns(EXTERNS);
+  freezeObject(flags);
+
+  /// #}}} @step make-flags
+
+  /// #{{{ @step build-vitals
+
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
@@ -1605,17 +2186,19 @@ function buildDist() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
 
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE);
+    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
   });
+
+  /// #}}} @step build-vitals
 }
 /// #}}} @func buildDist
 
@@ -1625,6 +2208,24 @@ function buildDist() {
  * @return {void}
  */
 function buildBrowser() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var flags;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-flags
+
+  flags = cloneObject(FLAGS);
+  flags.externs = makeClosureExterns(EXTERNS);
+  freezeObject(flags);
+
+  /// #}}} @step make-flags
+
+  /// #{{{ @step build-vitals
+
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
@@ -1640,10 +2241,12 @@ function buildBrowser() {
     /// #{{{ @step build-browser
 
     branch = CONFIG.branches.browser;
-    buildBranch(process, 'browser', branch, SRC, DEST, STATE);
+    buildBranch(process, 'browser', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-browser
   });
+
+  /// #}}} @step build-vitals
 }
 /// #}}} @func buildBrowser
 
@@ -1653,6 +2256,24 @@ function buildBrowser() {
  * @return {void}
  */
 function buildNode() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var flags;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-flags
+
+  flags = cloneObject(FLAGS);
+  flags.externs = makeClosureExterns(EXTERNS);
+  freezeObject(flags);
+
+  /// #}}} @step make-flags
+
+  /// #{{{ @step build-vitals
+
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
@@ -1668,10 +2289,12 @@ function buildNode() {
     /// #{{{ @step build-node
 
     branch = CONFIG.branches.node;
-    buildBranch(process, 'node', branch, SRC, DEST, STATE);
+    buildBranch(process, 'node', branch, SRC, DEST, STATE, flags);
 
     /// #}}} @step build-node
   });
+
+  /// #}}} @step build-vitals
 }
 /// #}}} @func buildNode
 
@@ -1681,6 +2304,8 @@ function buildNode() {
  * @return {void}
  */
 function buildDocs() {
+  /// #{{{ @step build-vitals
+
   moldSource(SRC, {
     'quiet': false,
     'verbose': true
@@ -1696,10 +2321,12 @@ function buildDocs() {
     /// #{{{ @step build-docs
 
     branch = CONFIG.branches.docs;
-    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null);
+    buildBranch(process, 'docs', branch, SRC, DEST, STATE, null, null);
 
     /// #}}} @step build-docs
   });
+
+  /// #}}} @step build-vitals
 }
 /// #}}} @func buildDocs
 
