@@ -952,7 +952,8 @@ function setClosureError(err, lines, result) {
     i = 0;
   }
   while (i < end) {
-    line = lines[i];
+    line = lines[i] || ' ';
+    line.replace(/`/g, '\\`');
     linenum = ++i;
     msg += '\n    ';
     msg += result.lineNo === linenum
