@@ -3105,6 +3105,10 @@ var copy = (function copyPrivateScope() {
     var flags;
     /** @type {string} */
     var flag;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     mod = mod['replace'](_ADD_FLAG, '');
     flags = mod['split']('');
@@ -3169,6 +3173,10 @@ var copy = (function copyPrivateScope() {
     var flag;
     /** @type {!RegExp} */
     var patt;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
 
     mod = mod['replace'](_RM_FLAG, '');
     flags = mod['split']('');
