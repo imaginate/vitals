@@ -1492,6 +1492,15 @@ var hasOwnEnumProperty = loadHelper('has-own-enum-property');
 var hasOwnProperty = loadHelper('has-own-property');
 /// #}}} @func hasOwnProperty
 
+/// #{{{ @func hasSlash
+/**
+ * @private
+ * @param {string} src
+ * @return {boolean}
+ */
+var hasSlash = loadHelper('has-slash');
+/// #}}} @func hasSlash
+
 /// #}}} @group HAS
 
 /// #{{{ @group IS
