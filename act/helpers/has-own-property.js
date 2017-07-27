@@ -3,7 +3,7 @@
  * HAS-OWN-PROPERTY HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,6 +17,7 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -28,14 +29,65 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func hasOwnProp
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
+/// #{{{ @func _hasOwnProperty
 /**
  * @private
  * @param {*} key
  * @return {boolean}
  */
-var hasOwnProp = Object.prototype.hasOwnProperty;
-/// #}}} @func hasOwnProp
+var _hasOwnProperty = Object.prototype.hasOwnProperty;
+/// #}}} @func _hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isHashMap
 /**
@@ -64,11 +116,13 @@ var isNumber = IS.number;
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func hasOwnProperty
@@ -80,21 +134,33 @@ var isString = IS.string;
  */
 function hasOwnProperty(src, key) {
 
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+  }
+
   if ( !isHashMap(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `(!Object|!Function)`');
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
 
   if ( isString(key) ) {
     if (!key)
-      throw new Error('invalid empty `string` for `key`');
+      throw setEmptyError(new Error, 'key');
   }
   else if ( !isNumber(key) )
-    throw new TypeError('invalid `key` data type\n' +
-      '    valid-types: `(string|number)`');
+    throw setTypeError(new TypeError, 'key', '(string|number)');
 
-  return hasOwnProp.call(src, key);
+  return _hasOwnProperty.call(src, key);
 }
 /// #}}} @func hasOwnProperty
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = hasOwnProperty;
 
