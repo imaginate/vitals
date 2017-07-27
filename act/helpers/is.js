@@ -3,7 +3,7 @@
  * IS HELPERS
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -29,6 +29,22 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const ABS_PATH
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var ABS_PATH = /^(?:\/|[A-Z]:)/;
+/// #}}} @const ABS_PATH
+
+/// #{{{ @const FILE_EXT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var FILE_EXT = /^\.?[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/;
+/// #}}} @const FILE_EXT
+
 /// #{{{ @const FS
 /**
  * @private
@@ -37,6 +53,14 @@
 var FS = require('fs');
 /// #}}} @const FS
 
+/// #{{{ @const LEN_PATT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var LEN_PATT = /(?:\.length|\['length'\]|\["length"\])$/;
+/// #}}} @const LEN_PATT
+
 /// #{{{ @const MODE
 /**
  * @private
@@ -44,6 +68,31 @@ var FS = require('fs');
  */
 var MODE = /^0?[0-7]{1,3}$/;
 /// #}}} @const MODE
+
+/// #{{{ @const PATH
+/**
+ * @private
+ * @const {!Object}
+ * @struct
+ */
+var PATH = require('path');
+/// #}}} @const PATH
+
+/// #{{{ @const REL_DIR
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var REL_DIR = /^\.\.?\/?$/;
+/// #}}} @const REL_DIR
+
+/// #{{{ @const ROOT_DIR
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var ROOT_DIR = /^(?:[A-Z]:\/?|\/)$/;
+/// #}}} @const ROOT_DIR
 
 /// #{{{ @const SEMANTIC
 /**
@@ -122,6 +171,27 @@ var _isBuffer = Buffer.isBuffer;
 var _objectToString = Object.prototype.toString;
 /// #}}} @func _objectToString
 
+/// #{{{ @func _propertyIsEnumerable
+/**
+ * @private
+ * @param {string} prop
+ * @return {boolean}
+ */
+var _propertyIsEnumerable = Object.prototype.propertyIsEnumerable;
+/// #}}} @func _propertyIsEnumerable
+
+/// #{{{ @func cleanPath
+/** 
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+function cleanPath(path) {
+  path = path.replace(/\\/g, '/');
+  return path.replace(/\/\/+/g, '/');
+}
+/// #}}} @func cleanPath
+
 /// #{{{ @func getFileStats
 /**
  * @private
@@ -152,12 +222,12 @@ function getFullYear(date) {
 /// #{{{ @func hasOwnProperty
 /**
  * @private
- * @param {!Object} obj
- * @param {string} prop
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {boolean}
  */
-function hasOwnProperty(obj, prop) {
-  return _hasOwnProperty.call(obj, prop);
+function hasOwnProperty(src, key) {
+  return _hasOwnProperty.call(src, key);
 }
 /// #}}} @func hasOwnProperty
 
@@ -243,6 +313,30 @@ function objectToString(obj) {
 }
 /// #}}} @func objectToString
 
+/// #{{{ @func propertyIsEnumerable
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+function propertyIsEnumerable(src, key) {
+  return _propertyIsEnumerable.call(src, key);
+}
+/// #}}} @func propertyIsEnumerable
+
+/// #{{{ @func resolvePath
+/**
+ * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/path.html#path_path_resolve_from_to)
+ * @see [node.js v7.9](https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
+ * @private
+ * @param {...string} path
+ *   In older node.js versions (e.g. `v0.10`) a #path parameter was required.
+ * @return {string}
+ */
+var resolvePath = PATH.resolve;
+/// #}}} @func resolvePath
+
 /// #{{{ @func setError
 /**
  * @private
@@ -252,26 +346,24 @@ function objectToString(obj) {
  */
 function setError(err, msg) {
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err',
       '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)');
-  if ( !isString(msg) )
+  }
+  if ( !isString(msg) ) {
     throw setTypeError(new TypeError, 'msg', 'string');
+  }
 
   switch (err.name) {
-
     case 'RangeError':
       err.range = true;
       break;
-
     case 'ReferenceError':
       err.reference = true;
       break;
-
     case 'SyntaxError':
       err.syntax = true;
       break;
-
     case 'TypeError':
       err.type = true;
       break;
@@ -296,10 +388,12 @@ function setArgsError(err, len) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isNumber(len) )
+  }
+  if ( !isNumber(len) ) {
     throw setTypeError(new TypeError, 'len', 'number');
+  }
 
   msg = 'over limit of `2` parameters defined\n' +
     '    arguments.length: `' + len + '`';
@@ -307,6 +401,50 @@ function setArgsError(err, len) {
   return setError(err, msg);
 }
 /// #}}} @func setArgsError
+
+/// #{{{ @func setArrLikeError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {!Object} val
+ * @return {!Error}
+ */
+function setArrLikeError(err, param, val) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isObject(val) ) {
+    throw setTypeError(new TypeError, 'val', '!Object');
+  }
+
+  if ( !('length' in val) ) {
+    err.name = 'ReferenceError';
+    param = param.replace(LEN_PATT, '');
+    msg = 'no `length` property defined in `' + param + '`';
+    return setError(err, msg);
+  }
+
+  if ( !LEN_PATT.test(param) ) {
+    param += '.length';
+  }
+
+  if ( isNumber(val.length) ) {
+    err.name = 'RangeError';
+    return setIndexError(err, param, val.length);
+  }
+
+  err.name = 'TypeError';
+  return setTypeError(err, param, 'number');
+}
+/// #}}} @func setArrLikeError
 
 /// #{{{ @func setCompareError
 /**
@@ -324,18 +462,24 @@ function setCompareError(err, param1, shouldBe, param2, value1, value2) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param1) )
+  }
+  if ( !isString(param1) ) {
     throw setTypeError(new TypeError, 'param1', 'string');
-  if ( !isString(shouldBe) )
+  }
+  if ( !isString(shouldBe) ) {
     throw setTypeError(new TypeError, 'shouldBe', 'string');
-  if ( !isString(param2) )
+  }
+  if ( !isString(param2) ) {
     throw setTypeError(new TypeError, 'param2', 'string');
-  if ( !isNumber(value1) )
+  }
+  if ( !isNumber(value1) ) {
     throw setTypeError(new TypeError, 'value1', 'number');
-  if ( !isNumber(value2) )
+  }
+  if ( !isNumber(value2) ) {
     throw setTypeError(new TypeError, 'value2', 'number');
+  }
 
   switch (shouldBe) {
     case '===':
@@ -365,9 +509,88 @@ function setCompareError(err, param1, shouldBe, param2, value1, value2) {
     '    ' + param1 + '-value: `' + value1 + '`\n' +
     '    ' + param2 + '-value: `' + value2 + '`';
 
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
   return setError(err, msg);
 }
 /// #}}} @func setCompareError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+function setEmptyError(err, param) {
+
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+
+  msg = 'invalid empty `string` for `' + param + '`';
+
+  return setError(err, msg);
+}
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setIndexError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} index
+ * @param {number=} min = `0`
+ * @return {!RangeError}
+ */
+function setIndexError(err, param, index, min) {
+
+  /** @type {string} */
+  var valid;
+  /** @type {string} */
+  var msg;
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+
+  if ( isUndefined(min) ) {
+    min = 0;
+  }
+  else if ( !isNumber(min) ) {
+    throw setTypeError(new TypeError, 'min', 'number=');
+  }
+  else if ( !isWholeNumber(min) ) {
+    throw setWholeError(new RangeError, 'min', min);
+  }
+
+  valid = 'isWholeNumber(' + param + ') && ' + param + ' >= ' + min;
+
+  msg = 'invalid `number` for `' + param + '`\n' +
+    '    valid-range-test: `' + valid + '`\n' +
+    '    value-received: `' + index + '`';
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  return setError(err, msg);
+}
+/// #}}} @func setIndexError
 
 /// #{{{ @func setNoArgError
 /**
@@ -381,12 +604,14 @@ function setNoArgError(err, param) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
+  }
 
-  msg = 'no `' + param + '` parameter passed on `function` call';
+  msg = 'no required `' + param + '` parameter passed on `function` call';
 
   return setError(err, msg);
 }
@@ -407,20 +632,29 @@ function setRangeError(err, param, value, min, max) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(value) )
+  }
+  if ( !isNumber(value) ) {
     throw setTypeError(new TypeError, 'value', 'number');
-  if ( !isNumber(min) )
+  }
+  if ( !isNumber(min) ) {
     throw setTypeError(new TypeError, 'min', 'number');
-  if ( !isNumber(max) )
+  }
+  if ( !isNumber(max) ) {
     throw setTypeError(new TypeError, 'max', 'number');
+  }
 
   msg = 'invalid `number` for `' + param + '`\n' +
     '    valid-range-test: `' + min + ' <= ' + param + ' <= ' + max + '`\n' +
     '    value-received: `' + value + '`';
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
 
   return setError(err, msg);
 }
@@ -439,15 +673,22 @@ function setTypeError(err, param, types) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!TypeError');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(types) )
+  }
+  if ( !isString(types) ) {
     throw setTypeError(new TypeError, 'types', 'string');
+  }
 
   msg = 'invalid `' + param + '` data type\n' +
     '    valid-types: `' + types + '`';
+
+  if (err.name !== 'TypeError') {
+    err.name = 'TypeError';
+  }
 
   return setError(err, msg);
 }
@@ -458,7 +699,7 @@ function setTypeError(err, param, types) {
  * @private
  * @param {!RangeError} err
  * @param {string} param
- * @param {number} value
+  if ( !isNumber(value) )
  * @return {!RangeError}
  */
 function setWholeError(err, param, value) {
@@ -466,16 +707,23 @@ function setWholeError(err, param, value) {
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(value) )
+  }
+  if ( !isNumber(value) ) {
     throw setTypeError(new TypeError, 'value', 'number');
+  }
 
   msg = 'invalid `number` for `' + param + '`\n' +
     '    valid-range-test: `isWholeNumber(' + param + ')`\n' +
     '    value-received: `' + value + '`';
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
 
   return setError(err, msg);
 }
@@ -648,7 +896,7 @@ function isArrayLike(val) {
   /** @type {*} */
   var len;
 
-  if ( !isObject(val) )
+  if ( !isObject(val) || !('length' in val) )
     return false;
 
   len = val.length;
@@ -702,6 +950,69 @@ function isError(val) {
 /// #}}} @group ENV-ARGUMENTS-TEST
 
 /// #}}} @group JS-OBJECT-METHODS
+
+/// #{{{ @group NODE-OBJECT-METHODS
+//////////////////////////////////////////////////////////////////////////////
+// NODE-OBJECT-METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func isBuffer
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isBuffer(val) {
+  return isObject(val) && _isBuffer(val);
+}
+/// #}}} @func isBuffer
+
+/// #{{{ @func isStream
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isStream(val) {
+  return isObject(val) && 'pipe' in val && isFunction(val.pipe);
+}
+/// #}}} @func isStream
+
+/// #{{{ @func isReadableStream
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isReadableStream(val) {
+  return isStream(val)
+    && 'readable' in val
+    && val.readable !== false
+    && '_read' in val
+    && isFunction(val._read)
+    && '_readableState' in val
+    && isObject(val._readableState);
+}
+/// #}}} @func isReadableStream
+
+/// #{{{ @func isWritableStream
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isWritableStream(val) {
+  return isStream(val)
+    && 'writable' in val
+    && val.writable !== false
+    && '_write' in val
+    && isFunction(val._write)
+    && '_writableState' in val
+    && isObject(val._writableState);
+}
+/// #}}} @func isWritableStream
+
+/// #}}} @group NODE-OBJECT-METHODS
 
 /// #{{{ @group JS-LIST-OF-METHODS
 //////////////////////////////////////////////////////////////////////////////
@@ -930,6 +1241,48 @@ function isEmpty(val) {
   return true;
 }
 /// #}}} @func isEmpty
+
+/// #{{{ @func isInList
+/**
+ * @public
+ * @param {(!Array|!Arguments|!Object)} src
+ *   The #src must be `array-like`.
+ * @param {*} val
+ * @return {boolean}
+ */
+function isInList(src, val) {
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'val');
+  }
+
+  if ( !isArray(src) && !isArguments(src) ) {
+    if ( !isObject(src) ) {
+      throw setTypeError(new TypeError, 'src', '(!Array|!Arguments|!Object)');
+    }
+    if ( !isArrayLike(src) ) {
+      throw setArrLikeError(new Error, 'src', src);
+    }
+  }
+
+  len = src.length;
+  i = -1;
+  while (++i < len) {
+    if (src[i] === val) {
+      return true;
+    }
+  }
+  return false;
+}
+/// #}}} @func isInList
 
 /// #{{{ @func isInstanceOf
 /**
@@ -1241,14 +1594,14 @@ function isGreaterThan(val1, val2) {
 }
 /// #}}} @func isGreaterThan
 
-/// #{{{ @func isGreaterOrEqual
+/// #{{{ @func isGreaterThanOrEqualTo
 /**
  * @public
  * @param {number} val1
  * @param {number} val2
  * @return {boolean}
  */
-function isGreaterOrEqual(val1, val2) {
+function isGreaterThanOrEqualTo(val1, val2) {
 
   if ( !isNumber(val1) )
     throw setTypeError(new TypeError, 'val1', 'number');
@@ -1259,7 +1612,7 @@ function isGreaterOrEqual(val1, val2) {
 
   return val1 >= val2;
 }
-/// #}}} @func isGreaterOrEqual
+/// #}}} @func isGreaterThanOrEqualTo
 
 /// #{{{ @func isLessThan
 /**
@@ -1281,14 +1634,14 @@ function isLessThan(val1, val2) {
 }
 /// #}}} @func isLessThan
 
-/// #{{{ @func isLessOrEqual
+/// #{{{ @func isLessThanOrEqualTo
 /**
  * @public
  * @param {number} val1
  * @param {number} val2
  * @return {boolean}
  */
-function isLessOrEqual(val1, val2) {
+function isLessThanOrEqualTo(val1, val2) {
 
   if ( !isNumber(val1) )
     throw setTypeError(new TypeError, 'val1', 'number');
@@ -1299,7 +1652,7 @@ function isLessOrEqual(val1, val2) {
 
   return val1 <= val2;
 }
-/// #}}} @func isLessOrEqual
+/// #}}} @func isLessThanOrEqualTo
 
 /// #{{{ @func isNotEqualTo
 /**
@@ -1328,16 +1681,25 @@ function isNotEqualTo(val1, val2) {
 // FILE-SYSTEM-METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isBuffer
+/// #{{{ @func isAbsolutePath
 /**
  * @public
- * @param {*} val
+ * @param {string} path
  * @return {boolean}
  */
-function isBuffer(val) {
-  return isObject(val) && _isBuffer(val);
+function isAbsolutePath(path) {
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'path');
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+
+  path = cleanPath(path);
+  return ABS_PATH.test(path);
 }
-/// #}}} @func isBuffer
+/// #}}} @func isAbsolutePath
 
 /// #{{{ @func isDirectory
 /**
@@ -1347,12 +1709,37 @@ function isBuffer(val) {
  */
 function isDirectory(path) {
 
-  if ( !isString(path) )
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
     throw setTypeError(new TypeError, 'path', 'string');
+  }
 
-  return !!path && getFileStats(path).isDirectory();
+  if (!path) {
+    return false;
+  }
+
+  path = cleanPath(path);
+  path = resolvePath(path);
+  return getFileStats(path).isDirectory();
 }
 /// #}}} @func isDirectory
+
+/// #{{{ @func isFileExtension
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isFileExtension(val) {
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'val');
+
+  return !!val && isString(val) && FILE_EXT.test(val);
+}
+/// #}}} @func isFileExtension
 
 /// #{{{ @func isFileMode
 /**
@@ -1373,12 +1760,82 @@ function isFileMode(val) {
  */
 function isFile(path) {
 
-  if ( !isString(path) )
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
     throw setTypeError(new TypeError, 'path', 'string');
+  }
 
-  return !!path && getFileStats(path).isFile();
+  if (!path) {
+    return false;
+  }
+
+  path = cleanPath(path);
+  path = resolvePath(path);
+  return getFileStats(path).isFile();
 }
 /// #}}} @func isFile
+
+/// #{{{ @func isRelativeDirectory
+/**
+ * @public
+ * @param {string} path
+ * @return {boolean}
+ */
+function isRelativeDirectory(path) {
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'path');
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+
+  path = cleanPath(path);
+  return REL_DIR.test(path);
+}
+/// #}}} @func isRelativeDirectory
+
+/// #{{{ @func isRelativePath
+/**
+ * @public
+ * @param {string} path
+ * @return {boolean}
+ */
+function isRelativePath(path) {
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'path');
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+
+  path = cleanPath(path);
+  return !ABS_PATH.test(path);
+}
+/// #}}} @func isRelativePath
+
+/// #{{{ @func isRootDirectory
+/**
+ * @public
+ * @param {string} path
+ * @return {boolean}
+ */
+function isRootDirectory(path) {
+
+  if (!arguments.length)
+    throw setNoArgError(new Error, 'path');
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+
+  path = cleanPath(path);
+  return ROOT_DIR.test(path);
+}
+/// #}}} @func isRootDirectory
 
 /// #}}} @group FILE-SYSTEM-METHODS
 
@@ -1390,7 +1847,8 @@ function isFile(path) {
 /// #{{{ @const IS
 /**
  * @public
- * @const {!Object<string, !function(*): boolean>}
+ * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = {
 
@@ -1444,6 +1902,18 @@ var IS = {
 
   'error': isError,
   'err':   isError,
+
+  'buffer': isBuffer,
+  'buff':   isBuffer,
+  'buf':    isBuffer,
+
+  'stream': isStream,
+
+  'readableStream': isReadableStream,
+  'readablestream': isReadableStream,
+
+  'writableStream': isWritableStream,
+  'writablestream': isWritableStream,
 
   'nullList': isNullList,
   'nulllist': isNullList,
@@ -1552,6 +2022,17 @@ var IS = {
 
   'empty': isEmpty,
 
+  'inArrayLike': isInList,
+  'inarraylike': isInList,
+  'inArrLike':   isInList,
+  'inarrlike':   isInList,
+  'inArray':     isInList,
+  'inarray':     isInList,
+  'inList':      isInList,
+  'inlist':      isInList,
+  'inArr':       isInList,
+  'inarr':       isInList,
+
   'instanceOf': isInstanceOf,
   'instOf':     isInstanceOf,
   'instof':     isInstanceOf,
@@ -1618,22 +2099,34 @@ var IS = {
   'greater':     isGreaterThan,
   'gt':          isGreaterThan,
 
-  'greaterOrEqual': isGreaterOrEqual,
-  'greaterorequal': isGreaterOrEqual,
-  'greaterEqual':   isGreaterOrEqual,
-  'greaterequal':   isGreaterOrEqual,
-  'ge':             isGreaterOrEqual,
+  'greaterThanOrEqualTo': isGreaterThanOrEqualTo,
+  'greaterthanorequalto': isGreaterThanOrEqualTo,
+  'greaterThanOrEqual':   isGreaterThanOrEqualTo,
+  'greaterthanorequal':   isGreaterThanOrEqualTo,
+  'greaterOrEqualTo':     isGreaterThanOrEqualTo,
+  'greaterorequalto':     isGreaterThanOrEqualTo,
+  'greaterOrEqual':       isGreaterThanOrEqualTo,
+  'greaterorequal':       isGreaterThanOrEqualTo,
+  'greaterEqual':         isGreaterThanOrEqualTo,
+  'greaterequal':         isGreaterThanOrEqualTo,
+  'ge':                   isGreaterThanOrEqualTo,
 
   'lessThan': isLessThan,
   'lessthan': isLessThan,
   'less':     isLessThan,
   'lt':       isLessThan,
 
-  'lessOrEqual': isLessOrEqual,
-  'lessorequal': isLessOrEqual,
-  'lessEqual':   isLessOrEqual,
-  'lessequal':   isLessOrEqual,
-  'le':          isLessOrEqual,
+  'lessThanOrEqualTo': isLessThanOrEqualTo,
+  'lessthanorequalto': isLessThanOrEqualTo,
+  'lessThanOrEqual':   isLessThanOrEqualTo,
+  'lessthanorequal':   isLessThanOrEqualTo,
+  'lessOrEqualTo':     isLessThanOrEqualTo,
+  'lessorequalto':     isLessThanOrEqualTo,
+  'lessOrEqual':       isLessThanOrEqualTo,
+  'lessorequal':       isLessThanOrEqualTo,
+  'lessEqual':         isLessThanOrEqualTo,
+  'lessequal':         isLessThanOrEqualTo,
+  'le':                isLessThanOrEqualTo,
 
   'notEqualTo': isNotEqualTo,
   'notequalto': isNotEqualTo,
@@ -1641,9 +2134,10 @@ var IS = {
   'notequal':   isNotEqualTo,
   'ne':         isNotEqualTo,
 
-  'buffer': isBuffer,
-  'buff':   isBuffer,
-  'buf':    isBuffer,
+  'absolutePath': isAbsolutePath,
+  'absolutepath': isAbsolutePath,
+  'absPath':      isAbsolutePath,
+  'abspath':      isAbsolutePath,
 
   'directoryPath': isDirectory,
   'directorypath': isDirectory,
@@ -1651,6 +2145,11 @@ var IS = {
   'dirPath':       isDirectory,
   'dirpath':       isDirectory,
   'dir':           isDirectory,
+
+  'fileExtension': isFileExtension,
+  'fileextension': isFileExtension,
+  'fileExt':       isFileExtension,
+  'fileext':       isFileExtension,
 
   'directoryMode': isFileMode,
   'directorymode': isFileMode,
@@ -1668,7 +2167,26 @@ var IS = {
 
   'filePath': isFile,
   'filepath': isFile,
-  'file':     isFile
+  'file':     isFile,
+
+  'relativeDirectory': isRelativeDirectory,
+  'relativedirectory': isRelativeDirectory,
+  'relDirectory':      isRelativeDirectory,
+  'reldirectory':      isRelativeDirectory,
+  'relativeDir':       isRelativeDirectory,
+  'relativedir':       isRelativeDirectory,
+  'relDir':            isRelativeDirectory,
+  'reldir':            isRelativeDirectory,
+
+  'relativePath': isRelativePath,
+  'relativepath': isRelativePath,
+  'relPath':      isRelativePath,
+  'relpath':      isRelativePath,
+
+  'rootDirectory': isRootDirectory,
+  'rootdirectory': isRootDirectory,
+  'rootDir':       isRootDirectory,
+  'rootdir':       isRootDirectory
 };
 /// #}}} @const IS
 

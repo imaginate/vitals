@@ -17,26 +17,32 @@
 //////////////////////////////////////////////////////////////////////////////
 
 exports['desc'] = 'builds distributable versions of vitals';
+exports['value'] = 'method=';
 exports['default'] = '-node';
 exports['methods'] = {
   'all': {
     'desc': 'builds all vitals distributables & documentation',
+    'value': 'method=',
     'method': buildAll
   },
   'dist': {
     'desc': 'builds browser & node versions of vitals',
+    'value': 'method=',
     'method': buildDist
   },
   'browser': {
     'desc': 'builds browser versions of vitals',
+    'value': 'method=',
     'method': buildBrowser
   },
   'node': {
     'desc': 'builds node versions of vitals',
+    'value': 'method=',
     'method': buildNode
   },
   'docs': {
     'desc': 'builds vitals documentation',
+    'value': 'method=',
     'method': buildDocs
   }
 };
@@ -1055,6 +1061,16 @@ var setFileError = setError.file;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoArgError
 /**
  * @private
@@ -1398,6 +1414,16 @@ var isFile = IS.file;
 var isFunction = IS.func;
 /// #}}} @func isFunction
 
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -1474,14 +1500,15 @@ var isUndefined = IS.void;
 
 /// #{{{ @group OBJECT
 
-/// #{{{ @func deepMergeObject
+/// #{{{ @func capObject
 /**
  * @private
- * @param {...(?Object|?Function)} src
- * @return {!Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var deepMergeObject = loadHelper('deep-merge-object');
-/// #}}} @func deepMergeObject
+var capObject = loadHelper('cap-object');
+/// #}}} @func capObject
 
 /// #{{{ @func cloneObject
 /**
@@ -1492,6 +1519,24 @@ var deepMergeObject = loadHelper('deep-merge-object');
  */
 var cloneObject = loadHelper('clone-object');
 /// #}}} @func cloneObject
+
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = loadHelper('create-object');
+/// #}}} @func createObject
+
+/// #{{{ @func deepMergeObject
+/**
+ * @private
+ * @param {...(?Object|?Function)} src
+ * @return {!Object}
+ */
+var deepMergeObject = loadHelper('deep-merge-object');
+/// #}}} @func deepMergeObject
 
 /// #{{{ @func freezeObject
 /**
@@ -1572,6 +1617,185 @@ var EXTERNS = resolvePath(REPO, CONFIG.externs);
 //////////////////////////////////////////////////////////////////////////////
 // BUILDERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func Branch
+/**
+ * @private
+ * @param {!Object} proto
+ * @param {string} name
+ * @param {string} path
+ * @constructor
+ * @struct
+ */
+function Branch(proto, name, path) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Branch) ) {
+    throw setNewError(new SyntaxError, 'Branch');
+  }
+
+  /// #}}} @step verify-new-keyword
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'proto');
+    case 1:
+      throw setNoArgError(new Error, 'name');
+    case 2:
+      throw setNoArgError(new Error, 'path');
+  }
+
+  if ( !isObject(proto) ) {
+    throw setTypeError(new TypeError, 'proto', '!Object');
+  }
+  if ( !isString(name) ) {
+    throw setTypeError(new TypeError, 'name', 'string');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+
+  if (!name) {
+    throw setEmptyError(new Error, 'name');
+  }
+  if (!path) {
+    throw setEmptyError(new Error, 'path');
+  }
+
+  if ( !isFile(path) ) {
+    throw setFileError(new Error, 'path', path);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PROTO
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var PROTO = proto;
+  /// #}}} @const PROTO
+
+  /// #{{{ @const NAME
+  /**
+   * @private
+   * @const {string}
+   */
+  var NAME = toCamelCase(name);
+  /// #}}} @const NAME
+
+  /// #{{{ @const PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATH = resolvePath(path);
+  /// #}}} @const PATH
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step catch-duplicate-assign
+
+  if (NAME in PROTO) {
+    name = PROTO.__TYPENAME + '.prototype.' + NAME;
+    throw setError(new ReferenceError,
+      'duplicate method assignment for `' + name + '`');
+  }
+
+  /// #}}} @step catch-duplicate-assign
+
+  /// #{{{ @step set-prototype
+
+  setupOnProperty(PROTO, NAME, null);
+
+  /// #}}} @step set-prototype
+
+  /// #{{{ @step set-members
+
+  /// #{{{ @member FUNC
+  /**
+   * @type {?function}
+   */
+  setupOnProperty(this, 'FUNC', null);
+  /// #}}} @member FUNC
+
+  /// #{{{ @member NAME
+  /**
+   * @const {string}
+   */
+  setupOffProperty(this, 'NAME', NAME, true);
+  /// #}}} @member NAME
+
+  /// #{{{ @member PATH
+  /**
+   * @const {string}
+   */
+  setupOffProperty(this, 'PATH', PATH, true);
+  /// #}}} @member PATH
+
+  /// #{{{ @member PROTO
+  /**
+   * @const {!Object}
+   */
+  setupOffProperty(this, 'PROTO', PROTO, true);
+  /// #}}} @member PROTO
+
+  /// #}}} @step set-members
+
+  /// #{{{ @step cap-instance
+
+  capObject(this);
+
+  /// #}}} @step cap-instance
+}
+/// #}}} @func Branch
+
+/// #{{{ @func newBranch
+/**
+ * @private
+ * @param {!Object} proto
+ * @param {string} name
+ * @param {string} path
+ * @return {!Branch}
+ */
+function newBranch(proto, name, path) {
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'proto');
+    case 1:
+      throw setNoArgError(new Error, 'name');
+    case 2:
+      throw setNoArgError(new Error, 'path');
+  }
+
+  return new Branch(proto, name, path);
+}
+/// #}}} @func newBranch
+
+/// #{{{ @step setup-branch-constructor
+
+Branch.Branch = Branch;
+Branch.newBranch = newBranch;
+Branch.construct = newBranch;
+Branch.prototype = createObject(null);
+
+freezeObject(Branch);
+
+/// #}}} @step setup-branch-constructor
+
+/// #{{{ @step setup-branch-prototype
+
+setupOffProperty(Branch.prototype, 'constructor', Branch);
+
+freezeObject(Branch.prototype);
+
+/// #}}} @step setup-branch-prototype
 
 /// #{{{ @func buildBranches
 /**
@@ -2182,9 +2406,12 @@ function buildFile(run, key, file, src, dest, state, flags, alter) {
 /// #{{{ @func buildAll
 /**
  * @public
+ * @param {?string=} method
+ *   The #method must be the name of a *vitals* `@super` method. It must exist
+ *   in the `../src/methods` directory matching the file name `<method>.js`.
  * @return {void}
  */
-function buildAll() {
+function buildAll(method) {
 
   /// #{{{ @step declare-variables
 
@@ -2192,6 +2419,17 @@ function buildAll() {
   var flags;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( isUndefined(method) || isNull(method) ) {
+    method = '';
+  }
+  else if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', '?string=');
+  }
+
+  /// #}}} @step verify-parameters
 
   /// #{{{ @step make-flags
 
@@ -2244,9 +2482,12 @@ function buildAll() {
 /// #{{{ @func buildDist
 /**
  * @public
+ * @param {?string=} method
+ *   The #method must be the name of a *vitals* `@super` method. It must exist
+ *   in the `../src/methods` directory matching the file name `<method>.js`.
  * @return {void}
  */
-function buildDist() {
+function buildDist(method) {
 
   /// #{{{ @step declare-variables
 
@@ -2254,6 +2495,17 @@ function buildDist() {
   var flags;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( isUndefined(method) || isNull(method) ) {
+    method = '';
+  }
+  else if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', '?string=');
+  }
+
+  /// #}}} @step verify-parameters
 
   /// #{{{ @step make-flags
 
@@ -2299,9 +2551,12 @@ function buildDist() {
 /// #{{{ @func buildBrowser
 /**
  * @public
+ * @param {?string=} method
+ *   The #method must be the name of a *vitals* `@super` method. It must exist
+ *   in the `../src/methods` directory matching the file name `<method>.js`.
  * @return {void}
  */
-function buildBrowser() {
+function buildBrowser(method) {
 
   /// #{{{ @step declare-variables
 
@@ -2309,6 +2564,17 @@ function buildBrowser() {
   var flags;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( isUndefined(method) || isNull(method) ) {
+    method = '';
+  }
+  else if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', '?string=');
+  }
+
+  /// #}}} @step verify-parameters
 
   /// #{{{ @step make-flags
 
@@ -2347,9 +2613,12 @@ function buildBrowser() {
 /// #{{{ @func buildNode
 /**
  * @public
+ * @param {?string=} method
+ *   The #method must be the name of a *vitals* `@super` method. It must exist
+ *   in the `../src/methods` directory matching the file name `<method>.js`.
  * @return {void}
  */
-function buildNode() {
+function buildNode(method) {
 
   /// #{{{ @step declare-variables
 
@@ -2357,6 +2626,17 @@ function buildNode() {
   var flags;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( isUndefined(method) || isNull(method) ) {
+    method = '';
+  }
+  else if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', '?string=');
+  }
+
+  /// #}}} @step verify-parameters
 
   /// #{{{ @step make-flags
 
@@ -2395,9 +2675,24 @@ function buildNode() {
 /// #{{{ @func buildDocs
 /**
  * @public
+ * @param {?string=} method
+ *   The #method must be the name of a *vitals* `@super` method. It must exist
+ *   in the `../src/methods` directory matching the file name `<method>.js`.
  * @return {void}
  */
-function buildDocs() {
+function buildDocs(method) {
+
+  /// #{{{ @step verify-parameters
+
+  if ( isUndefined(method) || isNull(method) ) {
+    method = '';
+  }
+  else if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', '?string=');
+  }
+
+  /// #}}} @step verify-parameters
+
   /// #{{{ @step build-vitals
 
   moldSource(SRC, {
