@@ -155,9 +155,46 @@ function hasConflictingValues(opts, alias, option) {
  * @return {boolean}
  */
 function hasOption(opts, key) {
-  return hasOwnProperty(opts, key) && !isUndefined(opts[key]);
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'opts');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+  }
+
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+  if ( !isString(key) ) {
+    throw setTypeError(new TypeError, 'key', 'string');
+  }
+
+  if (!key) {
+    throw setEmptyError(new Error, 'key');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return hasOwnEnumProperty(opts, key) && !isUndefined(opts[key]);
+
+  /// #}}} @step return-result
 }
 /// #}}} @func hasOption
+
+/// #{{{ @func hasOwnEnumProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnEnumProperty = require('./has-own-enum-property.js');
+/// #}}} @func hasOwnEnumProperty
 
 /// #{{{ @func hasOwnProperty
 /**
