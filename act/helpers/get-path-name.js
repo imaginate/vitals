@@ -3,7 +3,7 @@
  * GET-PATH-NAME HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -12,22 +12,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const DIR_PATH
-/**
- * @private
- * @const {!RegExp}
- */
-var DIR_PATH = /^.*\//;
-/// #}}} @const DIR_PATH
-
-/// #{{{ @const END_SLASH
-/**
- * @private
- * @const {!RegExp}
- */
-var END_SLASH = /\/$/;
-/// #}}} @const END_SLASH
 
 /// #{{{ @const IS
 /**
@@ -38,21 +22,13 @@ var END_SLASH = /\/$/;
 var IS = require('./is.js');
 /// #}}} @const IS
 
-/// #{{{ @const REL_DIR
+/// #{{{ @const NOT_PATH_NAME
 /**
  * @private
  * @const {!RegExp}
  */
-var REL_DIR = /^\.\.?\/?$/;
-/// #}}} @const REL_DIR
-
-/// #{{{ @const ROOT_PATH
-/**
- * @private
- * @const {!RegExp}
- */
-var ROOT_PATH = /^(?:[A-Z]:\/?|\/)$/;
-/// #}}} @const ROOT_PATH
+var NOT_PATH_NAME = /^[\s\S]*\//;
+/// #}}} @const NOT_PATH_NAME
 
 /// #}}} @group CONSTANTS
 
@@ -61,23 +37,7 @@ var ROOT_PATH = /^(?:[A-Z]:\/?|\/)$/;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func cleanPath
-/**
- * @private
- * @param {string} path
- * @return {string}
- */
-var cleanPath = require('./clean-path.js');
-/// #}}} @func cleanPath
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -99,6 +59,16 @@ var setError = require('./set-error.js');
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -109,6 +79,61 @@ var setEmptyError = setError.empty;
  */
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isRelativeDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isRelativeDirectory = IS.relativeDirectory;
+/// #}}} @func isRelativeDirectory
+
+/// #{{{ @func isRootDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isRootDirectory = IS.rootDirectory;
+/// #}}} @func isRootDirectory
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #}}} @group IS
+
+/// #{{{ @group PATH
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = require('./clean-path.js');
+/// #}}} @func cleanPath
+
+/// #{{{ @func trimSlash
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimSlash = require('./trim-slash.js');
+/// #}}} @func trimSlash
+
+/// #}}} @group PATH
 
 /// #}}} @group HELPERS
 
@@ -125,24 +150,31 @@ var setTypeError = setError.type;
  */
 function getPathName(path) {
 
-  if ( !isString(path) )
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
     throw setTypeError(new TypeError, 'path', 'string');
-  if (!path)
+  }
+  if (!path) {
     throw setEmptyError(new Error, 'path');
+  }
 
   path = cleanPath(path);
 
-  if ( ROOT_PATH.test(path) )
+  if ( isRootDirectory(path) ) {
     throw setError(new Error,
       'invalid root directory path for `path` parameter\n' +
       '    path-value: `' + path + '`');
-  if ( REL_DIR.test(path) )
+  }
+  if ( isRelativeDirectory(path) ) {
     throw setError(new Error,
       'invalid relative directory path for `path` parameter\n' +
       '    path-value: `' + path + '`');
+  }
 
-  path = path.replace(END_SLASH, '');
-  return path.replace(DIR_PATH, '');
+  path = trimSlash(path);
+  return path.replace(NOT_PATH_NAME, '');
 }
 /// #}}} @func getPathName
 
