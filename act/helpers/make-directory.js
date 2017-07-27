@@ -231,6 +231,15 @@ var hasOwnProperty = require('./has-own-property.js');
 
 /// #{{{ @group IS
 
+/// #{{{ @func isArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArray = IS.array;
+/// #}}} @func isArray
+
 /// #{{{ @func isBoolean
 /**
  * @private
@@ -267,6 +276,15 @@ var isFile = IS.file;
 var isFileMode = IS.fileMode;
 /// #}}} @func isFileMode
 
+/// #{{{ @func isNull
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNull = IS.nil;
+/// #}}} @func isNull
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -275,6 +293,15 @@ var isFileMode = IS.fileMode;
  */
 var isObject = IS.object;
 /// #}}} @func isObject
+
+/// #{{{ @func isRegExp
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isRegExp = IS.regexp;
+/// #}}} @func isRegExp
 
 /// #{{{ @func isRootDirectory
 /**
