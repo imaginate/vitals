@@ -1,9 +1,9 @@
 /**
  * ---------------------------------------------------------------------------
- * SET-ERROR HELPER
+ * SET-ERROR HELPERS
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,9 +17,18 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
+
+/// #{{{ @const LEN_PATT
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var LEN_PATT = /(?:\.length|\['length'\]|\["length"\])$/;
+/// #}}} @const LEN_PATT
 
 /// #}}} @group CONSTANTS
 
@@ -27,6 +36,8 @@ var IS = require('./is.js');
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group IS
 
 /// #{{{ @func isArray
 /**
@@ -64,6 +75,15 @@ var isError = IS.error;
 var isFunction = IS.func;
 /// #}}} @func isFunction
 
+/// #{{{ @func isHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
+
 /// #{{{ @func isNull
 /**
  * @private
@@ -72,6 +92,15 @@ var isFunction = IS.func;
  */
 var isNull = IS.nil;
 /// #}}} @func isNull
+
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
 
 /// #{{{ @func isObject
 /**
@@ -91,6 +120,22 @@ var isObject = IS.object;
 var isString = IS.string;
 /// #}}} @func isString
 
+/// #{{{ @func isStringArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isStringArray(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isArray(val) && isStringList(val);
+}
+/// #}}} @func isStringArray
+
 /// #{{{ @func isStringList
 /**
  * @private
@@ -106,8 +151,121 @@ var isStringList = IS.stringList;
  * @param {*} val
  * @return {boolean}
  */
-var isUndefined = IS.undefined;
+var isUndefined = IS.void;
 /// #}}} @func isUndefined
+
+/// #{{{ @func isWholeNumber
+/**
+ * @private
+ * @param {number} val
+ * @return {boolean}
+ */
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
+
+/// #}}} @group IS
+
+/// #{{{ @group HAS
+
+/// #{{{ @func _hasOwnProperty
+/**
+ * @private
+ * @param {*} key
+ * @return {boolean}
+ */
+var _hasOwnProperty = Object.prototype.hasOwnProperty;
+/// #}}} @func _hasOwnProperty
+
+/// #{{{ @func hasOwnProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+function hasOwnProperty(src, key) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+  }
+
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  if ( isString(key) ) {
+    if (!key) {
+      throw setEmptyError(new Error, 'key');
+    }
+  }
+  else if ( !isNumber(key) ) {
+    throw setTypeError(new TypeError, 'key', '(string|number)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return _hasOwnProperty.call(src, key);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group GET
+
+/// #{{{ @func getKeys
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @return {!Array<string>}
+ */
+function getKeys(src) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var keys;
+  /** @type {string} */
+  var key;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-keys
+
+  keys = [];
+  for (key in src) {
+    if ( hasOwnProperty(src, key) ) {
+      keys.push(key);
+    }
+  }
+
+  /// #}}} @step make-keys
+
+  /// #{{{ @step return-keys
+
+  return keys;
+
+  /// #}}} @step return-keys
+}
+/// #}}} @func getKeys
+
+/// #}}} @group GET
 
 /// #}}} @group HELPERS
 
@@ -125,35 +283,49 @@ var isUndefined = IS.undefined;
  */
 function setError(err, msg) {
 
-  if ( !isError(err) )
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err',
       '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)');
-  if ( !isString(msg) )
+  }
+  if ( !isString(msg) ) {
     throw setTypeError(new TypeError, 'msg', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-type-property-indicators
 
   switch (err.name) {
-
     case 'RangeError':
       err.range = true;
       break;
-
     case 'ReferenceError':
       err.reference = true;
       break;
-
     case 'SyntaxError':
       err.syntax = true;
       break;
-
     case 'TypeError':
       err.type = true;
       break;
   }
 
+  /// #}}} @step set-type-property-indicators
+
+  /// #{{{ @step set-error-message-property
+
   err.message = msg;
   err.msg = msg;
 
+  /// #}}} @step set-error-message-property
+
+  /// #{{{ @step return-error
+
   return err;
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setError
 
@@ -168,26 +340,132 @@ function setError(err, msg) {
  */
 function setAliasError(err, opts, alias, option) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isObject(opts) )
-    throw setTypeError(new TypeError, 'opts', '!Object');
-  if ( !isString(alias) )
-    throw setTypeError(new TypeError, 'alias', 'string');
-  if ( !isString(option) )
-    throw setTypeError(new TypeError, 'option', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'conflicting values for option `' + option + '` ' +
-    'and alias `' + alias + '`\n' +
-    '    option-value: `' + opts[option] + '`\n' +
-    '    alias-value: `' + opts[alias] + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+  if ( !isString(alias) ) {
+    throw setTypeError(new TypeError, 'alias', 'string');
+  }
+  if ( !isString(option) ) {
+    throw setTypeError(new TypeError, 'option', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'conflicting option values for `' + option + '` and `' + alias + '`\n'
+    + '    main-option-value: `' + opts[option] + '`\n'
+    + '    option-alias-value: `' + opts[alias] + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setAliasError
+
+/// #{{{ @func setArrLikeError
+/**
+ * @public
+ * @param {(!RangeError|!ReferenceError|!TypeError)} err
+ * @param {string} param
+ * @param {!Object} val
+ * @return {(!RangeError|!ReferenceError|!TypeError)}
+ */
+function setArrLikeError(err, param, val) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err',
+      '(!RangeError|!ReferenceError|!TypeError)');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isObject(val) ) {
+    throw setTypeError(new TypeError, 'val', '!Object');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step check-length-property
+
+  if ( !('length' in val) ) {
+    /// #{{{ @step set-error-name-property
+
+    if (err.name !== 'ReferenceError') {
+      err.name = 'ReferenceError';
+    }
+
+    /// #}}} @step set-error-name-property
+    /// #{{{ @step trim-length-from-param
+
+    param = param.replace(LEN_PATT, '');
+
+    /// #}}} @step trim-length-from-param
+    /// #{{{ @step make-error-message
+
+    msg = 'no `length` property defined in `' + param + '`';
+
+    /// #}}} @step make-error-message
+    /// #{{{ @step return-error
+
+    return setError(err, msg);
+
+    /// #}}} @step return-error
+  }
+
+  /// #}}} @step check-length-property
+
+  /// #{{{ @step append-length-to-param
+
+  if ( !LEN_PATT.test(param) ) {
+    param += '.length';
+  }
+
+  /// #}}} @step append-length-to-param
+
+  /// #{{{ @step return-error
+
+  return isNumber(val.length)
+    ? setIndexError(err, param, val.length)
+    : setTypeError(err, param, 'number');
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setArrLikeError
 
 /// #{{{ @func setDirError
 /**
@@ -199,20 +477,47 @@ function setAliasError(err, opts, alias, option) {
  */
 function setDirError(err, param, path) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'invalid readable directory path for `' + param + '`\n' +
-    '    received-path: `' + path + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid readable directory path for `' + param + '`\n'
+    + '    invalid-path: `' + path + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setDirError
 
@@ -225,16 +530,43 @@ function setDirError(err, param, path) {
  */
 function setEmptyError(err, param) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
 
   msg = 'invalid empty `string` for `' + param + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setEmptyError
 
@@ -244,31 +576,70 @@ function setEmptyError(err, param) {
  * @param {!RangeError} err
  * @param {string} param
  * @param {string} path
- * @param {(string|!Array<string>)} exts
+ * @param {(string|!Array<string>)=} exts
  * @return {!RangeError}
  */
 function setExtError(err, param, path, exts) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
+  }
+  if ( !isString(param) ) {
     throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
+  }
+  if ( !isString(path) ) {
     throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if ( !isUndefined(exts) && !isString(exts) && !isStringArray(exts) ) {
+    throw setTypeError(new TypeError, 'exts', '(string|!Array<string>)=');
+  }
 
-  if ( isArray(exts) && isStringList(exts) )
-    exts = exts.join('", "');
-  else if ( !isString(exts) )
-    throw setTypeError(new TypeError, 'exts', '(string|!Array<string>)');
+  /// #}}} @step verify-parameters
 
-  msg = 'invalid file extension for `' + param + '`\n' +
-    '    valid-extensions: `"' + exts + '"`\n' +
-    '    received-path: `' + path + '`';
+  /// #{{{ @step parse-exts
+
+  if ( isUndefined(exts) ) {
+    exts = '/\\.[a-zA-Z0-9]+(\\.[a-zA-Z0-9]+)*$/';
+  }
+  else if ( isString(exts) ) {
+    exts = '"' + exts + '"';
+  }
+  else if ( isStringArray(exts) ) {
+    exts = '"' + exts.join('", "') + '"';
+  }
+
+  /// #}}} @step parse-exts
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid file extension for `' + param + '`\n'
+    + '    valid-extensions: `' + exts + '`\n'
+    + '    received-path: `' + path + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setExtError
 
@@ -282,20 +653,47 @@ function setExtError(err, param, path, exts) {
  */
 function setFileError(err, param, path) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'invalid readable file path for `' + param + '`\n' +
-    '    received-path: `' + path + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid readable file path for `' + param + '`\n'
+    + '    invalid-path: `' + path + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setFileError
 
@@ -310,32 +708,66 @@ function setFileError(err, param, path) {
  */
 function setIndexError(err, param, index, min) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var valid;
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(index) )
-    throw setTypeError(new TypeError, 'index', 'number');
+  /// #}}} @step declare-variables
 
-  if ( isUndefined(min) )
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+
+  if ( isUndefined(min) ) {
     min = 0;
-  else if ( !isNumber(min) )
+  }
+  else if ( !isNumber(min) ) {
     throw setTypeError(new TypeError, 'min', 'number=');
-  else if ( !isWholeNumber(min) )
+  }
+  else if ( !isWholeNumber(min) ) {
     throw setWholeError(new RangeError, 'min', min);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-valid-test
 
   valid = 'isWholeNumber(' + param + ') && ' + param + ' >= ' + min;
 
-  msg = 'invalid `number` for `' + param + '`\n' +
-    '    valid-range-test: `' + valid + '`\n' +
-    '    value-received: `' + index + '`';
+  /// #}}} @step make-valid-test
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid `number` for `' + param + '`\n'
+    + '    valid-range-test: `' + valid + '`\n'
+    + '    value-received: `' + index + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setIndexError
 
@@ -348,17 +780,43 @@ function setIndexError(err, param, index, min) {
  */
 function setNewError(err, constructor) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!SyntaxError');
-  if ( !isString(constructor) )
+  }
+  if ( !isString(constructor) ) {
     throw setTypeError(new TypeError, 'constructor', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
 
   msg = 'missing `new` keyword for `' + constructor + '` call';
 
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setNewError
 
@@ -371,17 +829,43 @@ function setNewError(err, constructor) {
  */
 function setNoArgError(err, param) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!Error');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'no required `' + param + '` parameter defined for `function` call';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing required `' + param + '` parameter';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setNoArgError
 
@@ -395,20 +879,47 @@ function setNoArgError(err, param) {
  */
 function setRetError(err, method, types) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!TypeError');
-  if ( !isString(method) )
-    throw setTypeError(new TypeError, 'method', 'string');
-  if ( !isString(types) )
-    throw setTypeError(new TypeError, 'types', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'invalid data type returned by `' + method + '`\n' +
-    '    valid-types: `' + types + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isString(types) ) {
+    throw setTypeError(new TypeError, 'types', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid data type returned by `' + method + '`\n'
+    + '    valid-types: `' + types + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'TypeError') {
+    err.name = 'TypeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setRetError
 
@@ -422,20 +933,47 @@ function setRetError(err, method, types) {
  */
 function setTypeError(err, param, types) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!TypeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isString(types) )
-    throw setTypeError(new TypeError, 'types', 'string');
+  /// #}}} @step declare-variables
 
-  msg = 'invalid `' + param + '` data type\n' +
-    '    valid-types: `' + types + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(types) ) {
+    throw setTypeError(new TypeError, 'types', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid data type for `' + param + '`\n'
+    + '    valid-types: `' + types + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'TypeError') {
+    err.name = 'TypeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setTypeError
 
@@ -449,21 +987,48 @@ function setTypeError(err, param, types) {
  */
 function setWholeError(err, param, value) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var msg;
 
-  if ( !isError(err) )
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  if ( !isString(param) )
-    throw setTypeError(new TypeError, 'param', 'string');
-  if ( !isNumber(value) )
-    throw setTypeError(new TypeError, 'value', 'number');
+  /// #}}} @step declare-variables
 
-  msg = 'invalid `number` for `' + param + '`\n' +
-    '    valid-range-test: `isWholeNumber(' + param + ')`\n' +
-    '    value-received: `' + value + '`';
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isNumber(value) ) {
+    throw setTypeError(new TypeError, 'value', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid `number` for `' + param + '`\n'
+    + '    valid-range-test: `isWholeNumber(' + param + ')`\n'
+    + '    value-received: `' + value + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
 
   return setError(err, msg);
+
+  /// #}}} @step return-error
 }
 /// #}}} @func setWholeError
 
@@ -474,7 +1039,10 @@ function setWholeError(err, param, value) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @step setup-set-error-properties
+
 setError.alias = setAliasError;
+setError.arrLike = setArrLikeError;
 setError.dir = setDirError;
 setError.empty = setEmptyError;
 setError.ext = setExtError;
@@ -485,6 +1053,9 @@ setError.noArg = setNoArgError;
 setError.ret = setRetError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
+
+/// #}}} @step setup-set-error-properties
+
 module.exports = setError;
 
 /// #}}} @group EXPORTS
