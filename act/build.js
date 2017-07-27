@@ -6,7 +6,7 @@
  *   This task preprocesses, compiles, and minifies the vitals source code
  *   into distributable versions and documentation. Use `act build` to run it.
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -144,6 +144,14 @@ var COPYRIGHT = (function COPYRIGHT_PrivateScope() {
 })();
 /// #}}} @const COPYRIGHT
 
+/// #{{{ @const DIR_MODE
+/**
+ * @private
+ * @const {string}
+ */
+var DIR_MODE = '0755';
+/// #}}} @const DIR_MODE
+
 /// #{{{ @const FLAGS
 /**
  * @private
@@ -156,6 +164,7 @@ var FLAGS = CONFIG.flags;
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = loadHelper('is');
 /// #}}} @const IS
@@ -167,14 +176,6 @@ var IS = loadHelper('is');
  */
 var LICENSE = 'The Apache License (' + CONFIG.website + '/license)';
 /// #}}} @const LICENSE
-
-/// #{{{ @const MODE
-/**
- * @private
- * @const {string}
- */
-var MODE = '0755';
-/// #}}} @const MODE
 
 /// #{{{ @const PARAM
 /**
@@ -1061,6 +1062,74 @@ var setFileError = setError.file;
 var setIndexError = setError.index;
 /// #}}} @func setIndexError
 
+/// #{{{ @func setMethodError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} method
+ * @return {!RangeError}
+ */
+function setMethodError(err, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var path;
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-method-name
+
+  path = method;
+  method = getPathName(method);
+  method = trimJsFileExtension(method);
+
+  /// #}}} @step get-method-name
+
+  /// #{{{ @step make-message
+
+  msg = 'invalid value for `method` argument (must exist in `src`)\n'
+    + '    method-name: `"' + method + '"`\n'
+    + '    src-path: `' + path + '`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setMethodError
+
 /// #{{{ @func setNewError
 /**
  * @private
@@ -1329,14 +1398,23 @@ var getFileContent = loadHelper('get-file-content');
  *   against the #opts.invalidFiles pattern.
  * @return {!Array<string>}
  */
-var getFilePaths = loadHelper('get-filepaths');
+var getFilePaths = loadHelper('get-file-paths');
 /// #}}} @func getFilePaths
 
 /// #{{{ @func makeDirectory
 /**
  * @private
  * @param {string} path
- * @param {string=} mode = `"0755"`
+ * @param {(?Object|?string)=} opts
+ *   If the #opts is a `string`, the #opts.mode option is set to its value.
+ * @param {string=} opts.mode = `"0755"`
+ *   The file mode for the new directory path. Note that if a directory
+ *   already exists at the #path, the file mode of the existing directory is
+ *   **not** set to #opts.mode.
+ * @param {boolean=} opts.parents = `false`
+ *   If the #opts.parents option is set to `true`, any non-existing parent
+ *   directories are created. Otherwise, an error is thrown if a parent
+ *   directory does not exist.
  * @return {string}
  */
 var makeDirectory = loadHelper('make-directory');
@@ -1354,6 +1432,55 @@ var makeDirectory = loadHelper('make-directory');
  */
 var hasEndSlash = loadHelper('has-end-slash');
 /// #}}} @func hasEndSlash
+
+/// #{{{ @func hasOption
+/**
+ * @private
+ * @param {!Object} opts
+ * @param {string} key
+ * @return {boolean}
+ */
+function hasOption(opts, key) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'opts');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+  }
+
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+  if ( !isString(key) ) {
+    throw setTypeError(new TypeError, 'key', 'string');
+  }
+
+  if (!key) {
+    throw setEmptyError(new Error, 'key');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return hasOwnEnumProperty(opts, key) && !isUndefined(opts[key]);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func hasOption
+
+/// #{{{ @func hasOwnEnumProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnEnumProperty = loadHelper('has-own-enum-property');
+/// #}}} @func hasOwnEnumProperty
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -1432,6 +1559,70 @@ var isInstanceOf = IS.instanceOf;
  */
 var isNull = IS.nil;
 /// #}}} @func isNull
+
+/// #{{{ @func isNullArray
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullArray(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isNull(val) || isArray(val);
+}
+/// #}}} @func isNullArray
+
+/// #{{{ @func isNullObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullObject(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isNull(val) || isObject(val);
+}
+/// #}}} @func isNullObject
+
+/// #{{{ @func isNullObjectHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullObjectHashMap(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isNull(val) || ( isObject(val) && isObjectHashMap(val) );
+}
+/// #}}} @func isNullObjectHashMap
+
+/// #{{{ @func isNullObjectList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullObjectList(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isNull(val) || ( isArray(val) && isObjectList(val) );
+}
+/// #}}} @func isNullObjectList
 
 /// #{{{ @func isNumber
 /**
@@ -1557,9 +1748,51 @@ var freezeObject = loadHelper('freeze-object');
 var mergeObject = loadHelper('merge-object');
 /// #}}} @func mergeObject
 
+/// #{{{ @func setConstantProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} val
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setConstantProperty = loadHelper('set-constant-property');
+/// #}}} @func setConstantProperty
+
+/// #{{{ @func setProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} val
+ * @param {boolean=} seal = `false`
+ * @return {!Object}
+ */
+var setProperty = loadHelper('set-property');
+/// #}}} @func setProperty
+
 /// #}}} @group OBJECT
 
 /// #{{{ @group PATH
+
+/// #{{{ @func cleanPath
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var cleanPath = loadHelper('clean-path');
+/// #}}} @func cleanPath
+
+/// #{{{ @func getPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathName = loadHelper('get-path-name');
+/// #}}} @func getPathName
 
 /// #{{{ @func resolvePath
 /**
@@ -1569,6 +1802,15 @@ var mergeObject = loadHelper('merge-object');
  */
 var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
+
+/// #{{{ @func trimJsFileExtension
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimJsFileExtension = loadHelper('trim-file-extension').construct('.js');
+/// #}}} @func trimJsFileExtension
 
 /// #}}} @group PATH
 
@@ -1603,6 +1845,14 @@ var SRC = resolvePath(REPO, CONFIG.src);
 var DEST = resolvePath(REPO, CONFIG.dest);
 /// #}}} @const DEST
 
+/// #{{{ @const METHODS
+/**
+ * @private
+ * @const {string}
+ */
+var METHODS = resolvePath(SRC, 'methods');
+/// #}}} @const METHODS
+
 /// #{{{ @const EXTERNS
 /**
  * @private
@@ -1613,21 +1863,30 @@ var EXTERNS = resolvePath(REPO, CONFIG.externs);
 
 /// #}}} @group PATHS
 
-/// #{{{ @group BUILDERS
+/// #{{{ @group CLASSES
 //////////////////////////////////////////////////////////////////////////////
-// BUILDERS
+// CLASSES
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group BRANCH
 
 /// #{{{ @func Branch
 /**
  * @private
- * @param {!Object} proto
+ * @param {?Branch} parent
  * @param {string} name
- * @param {string} path
+ * @param {!Object} config
+ * @param {string} src
+ * @param {string} dest
+ * @param {string} method
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
+ * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @constructor
  * @struct
  */
-function Branch(proto, name, path) {
+function Branch(
+          parent, name, config, src, dest, method, state, flags, alter) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -1641,142 +1900,597 @@ function Branch(proto, name, path) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'proto');
+      throw setNoArgError(new Error, 'parent');
     case 1:
       throw setNoArgError(new Error, 'name');
     case 2:
-      throw setNoArgError(new Error, 'path');
+      throw setNoArgError(new Error, 'config');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'method');
+    case 6:
+      throw setNoArgError(new Error, 'state');
+    case 7:
+      throw setNoArgError(new Error, 'flags');
+    case 8:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
   }
 
-  if ( !isObject(proto) ) {
-    throw setTypeError(new TypeError, 'proto', '!Object');
+  if ( !isNull(parent) && !isInstanceOf(parent, Branch) ) {
+    throw setTypeError(new TypeError, 'parent', '?Branch');
   }
   if ( !isString(name) ) {
     throw setTypeError(new TypeError, 'name', 'string');
   }
-  if ( !isString(path) ) {
-    throw setTypeError(new TypeError, 'path', 'string');
+  if ( !isObject(config) ) {
+    throw setTypeError(new TypeError, 'config', '!Object');
+  }
+  if ( !isString(src) ) {
+    throw setTypeError(new TypeError, 'src', 'string');
+  }
+  if ( !isString(dest) ) {
+    throw setTypeError(new TypeError, 'dest', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isObject(state) ) {
+    throw setTypeError(new TypeError, 'state',
+      '!Object<string, (boolean|!Object<string, boolean>)>');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
   }
 
   if (!name) {
     throw setEmptyError(new Error, 'name');
   }
-  if (!path) {
-    throw setEmptyError(new Error, 'path');
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+  if (!dest) {
+    throw setEmptyError(new Error, 'dest');
   }
 
-  if ( !isFile(path) ) {
-    throw setFileError(new Error, 'path', path);
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
   }
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step verify-config-properties
+
+  if ( hasOption(config, 'src') ) {
+    if ( !isString(config.src) ) {
+      throw setBuildTypeError(new TypeError, name, 'src', 'string');
+    }
+    if ( !!config.src && !hasEndSlash(config.src) ) {
+      throw setBuildSlashError(new RangeError, name, 'src', config.src);
+    }
+  }
+
+  if ( hasOption(config, 'dest') ) {
+    if ( !isString(config.dest) ) {
+      throw setBuildTypeError(new TypeError, name, 'dest', 'string');
+    }
+    if ( !!config.dest && !hasEndSlash(config.dest) ) {
+      throw setBuildSlashError(new RangeError, name, 'dest', config.dest);
+    }
+  }
+
+  if ( hasOption(config, 'state') && !isNullObject(config.state) ) {
+    throw setBuildTypeError(new TypeError, name, 'state',
+      '?Object<string, (boolean|!Object<string, boolean>)>');
+  }
+
+  if ( hasOption(config, 'flags') && !isNullObject(config.flags) ) {
+    throw setBuildTypeError(new TypeError, name, 'flags', '?Object');
+  }
+
+  if ( hasOption(config, 'files') && !isNullObjectList(config.files) ) {
+    throw setBuildTypeError(new TypeError, name, 'files', '?Array<!Object>');
+  }
+
+  if ( hasOption(config, 'branches')
+        && !isNullObjectHashMap(config.branches) ) {
+    throw setBuildTypeError(new TypeError, name, 'branches',
+      '?Object<!Object>');
+  }
+
+  /// #}}} @step verify-config-properties
+
   /// #{{{ @step set-constants
 
-  /// #{{{ @const PROTO
+  /// #{{{ @const PARENT
   /**
    * @private
-   * @const {!Object}
+   * @const {?Branch}
    */
-  var PROTO = proto;
-  /// #}}} @const PROTO
+  var PARENT = parent;
+  /// #}}} @const PARENT
 
   /// #{{{ @const NAME
   /**
    * @private
    * @const {string}
    */
-  var NAME = toCamelCase(name);
+  var NAME = name;
   /// #}}} @const NAME
 
-  /// #{{{ @const PATH
+  /// #{{{ @const CONFIG
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var CONFIG = freezeObject(config);
+  /// #}}} @const CONFIG
+
+  /// #{{{ @const SRC
   /**
    * @private
    * @const {string}
    */
-  var PATH = resolvePath(path);
-  /// #}}} @const PATH
+  var SRC = hasOption(CONFIG, 'src') && !!CONFIG.src
+    ? resolvePath(src, CONFIG.src)
+    : resolvePath(src);
+  /// #}}} @const SRC
+
+  /// #{{{ @const DEST
+  /**
+   * @private
+   * @const {string}
+   */
+  var DEST = hasOption(CONFIG, 'dest') && !!CONFIG.dest
+    ? resolvePath(dest, CONFIG.dest)
+    : resolvePath(dest);
+  /// #}}} @const DEST
+
+  /// #{{{ @const METHOD
+  /**
+   * @private
+   * @const {string}
+   */
+  var METHOD = method;
+  /// #}}} @const METHOD
+
+  /// #{{{ @const STATE
+  /**
+   * @private
+   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
+   */
+  var STATE = hasOption(CONFIG, 'state') && !!CONFIG.state
+    ? deepMergeObject(state, config.state);
+    : cloneObject(state);
+  /// #}}} @const STATE
+
+  /// #{{{ @const FLAGS
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var FLAGS = hasOption(CONFIG, 'flags') && !!CONFIG.flags
+    ? mergeObject(flags, config.flags);
+    : cloneObject(flags);
+  /// #}}} @const FLAGS
+
+  /// #{{{ @const ALTER
+  /**
+   * @private
+   * @const {(null|(function(string): string)|undefined)}
+   */
+  var ALTER = alter;
+  /// #}}} @const ALTER
+
+  /// #{{{ @const FILES
+  /**
+   * @private
+   * @const {!Array<!File>}
+   */
+  var FILES = [];
+  /// #}}} @const FILES
+
+  /// #{{{ @const BRANCHES
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var BRANCHES = createObject(null);
+  /// #}}} @const BRANCHES
 
   /// #}}} @step set-constants
 
-  /// #{{{ @step catch-duplicate-assign
+  /// #{{{ @step verify-method
 
-  if (NAME in PROTO) {
-    name = PROTO.__TYPENAME + '.prototype.' + NAME;
-    throw setError(new ReferenceError,
-      'duplicate method assignment for `' + name + '`');
+  if (METHOD) {
+    method = resolvePath(METHODS, METHOD);
+    if ( !isFile(method) ) {
+      throw setFileError(new Error, 'method', method);
+    }
   }
 
-  /// #}}} @step catch-duplicate-assign
+  /// #}}} @step verify-method
 
-  /// #{{{ @step set-prototype
+  /// #{{{ @step make-dest
 
-  setupOnProperty(PROTO, NAME, null);
+  makeDirectory(DEST, {
+    'mode': DIR_MODE,
+    'parents': true
+  });
 
-  /// #}}} @step set-prototype
+  /// #}}} @step make-dest
 
   /// #{{{ @step set-members
 
-  /// #{{{ @member FUNC
+  /// #{{{ @member parent
   /**
-   * @type {?function}
+   * @const {?Branch}
    */
-  setupOnProperty(this, 'FUNC', null);
-  /// #}}} @member FUNC
+  setConstantProperty(this, 'parent', PARENT);
+  /// #}}} @member parent
 
-  /// #{{{ @member NAME
-  /**
-   * @const {string}
-   */
-  setupOffProperty(this, 'NAME', NAME, true);
-  /// #}}} @member NAME
-
-  /// #{{{ @member PATH
+  /// #{{{ @member name
   /**
    * @const {string}
    */
-  setupOffProperty(this, 'PATH', PATH, true);
-  /// #}}} @member PATH
+  setConstantProperty(this, 'name', NAME);
+  /// #}}} @member name
 
-  /// #{{{ @member PROTO
+  /// #{{{ @member config
   /**
    * @const {!Object}
    */
-  setupOffProperty(this, 'PROTO', PROTO, true);
-  /// #}}} @member PROTO
+  setConstantProperty(this, 'config', CONFIG);
+  /// #}}} @member config
+
+  /// #{{{ @member src
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'src', SRC);
+  /// #}}} @member src
+
+  /// #{{{ @member dest
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'dest', DEST);
+  /// #}}} @member dest
+
+  /// #{{{ @member method
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'method', METHOD);
+  /// #}}} @member method
+
+  /// #{{{ @member state
+  /**
+   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
+   */
+  setConstantProperty(this, 'state', STATE);
+  /// #}}} @member state
+
+  /// #{{{ @member flags
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(this, 'flags', FLAGS);
+  /// #}}} @member flags
+
+  /// #{{{ @member alter
+  /**
+   * @const {(null|(function(string): string)|undefined)}
+   */
+  setConstantProperty(this, 'alter', ALTER);
+  /// #}}} @member alter
+
+  /// #{{{ @member files
+  /**
+   * @const {!Array<!File>}
+   */
+  setConstantProperty(this, 'files', FILES);
+  /// #}}} @member files
+
+  /// #{{{ @member branches
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(this, 'branches', BRANCHES);
+  /// #}}} @member branches
 
   /// #}}} @step set-members
 
-  /// #{{{ @step cap-instance
+  /// #{{{ @step freeze-instance
 
-  capObject(this);
+  freezeObject(this);
 
-  /// #}}} @step cap-instance
+  /// #}}} @step freeze-instance
+
+  /// #{{{ @step make-files
+
+  if ( hasOption(CONFIG, 'files') ) {
+    this.makeFiles(CONFIG.files);
+  }
+  else {
+    this.makeFiles(null);
+  }
+
+  /// #}}} @step make-files
+
+  /// #{{{ @step make-branches
+
+  if ( hasOption(CONFIG, 'branches') ) {
+    this.makeBranches(CONFIG.branches);
+  }
+  else {
+    this.makeBranches(null);
+  }
+
+  /// #}}} @step make-branches
 }
 /// #}}} @func Branch
 
 /// #{{{ @func newBranch
 /**
  * @private
- * @param {!Object} proto
+ * @param {?Branch} parent
  * @param {string} name
- * @param {string} path
+ * @param {!Object} config
+ * @param {string} src
+ * @param {string} dest
+ * @param {string} method
+ * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
+ * @param {?Object} flags
+ * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
  * @return {!Branch}
  */
-function newBranch(proto, name, path) {
+function newBranch(
+          parent, name, config, src, dest, method, state, flags, alter) {
+
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'proto');
+      throw setNoArgError(new Error, 'parent');
     case 1:
       throw setNoArgError(new Error, 'name');
     case 2:
-      throw setNoArgError(new Error, 'path');
+      throw setNoArgError(new Error, 'config');
+    case 3:
+      throw setNoArgError(new Error, 'src');
+    case 4:
+      throw setNoArgError(new Error, 'dest');
+    case 5:
+      throw setNoArgError(new Error, 'method');
+    case 6:
+      throw setNoArgError(new Error, 'state');
+    case 7:
+      throw setNoArgError(new Error, 'flags');
+    case 8:
+      alter = undefined;
+      break;
+    default:
+      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+        throw setTypeError(new TypeError, 'alter',
+          '(?function(string): string)=');
+      }
   }
 
-  return new Branch(proto, name, path);
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-new-branch
+
+  return new Branch(
+    parent, name, config, src, dest, method, state, flags, alter);
+
+  /// #}}} @step return-new-branch
 }
 /// #}}} @func newBranch
+
+/// #{{{ @func Branch.prototype.build
+/**
+ * @param {!Function} build
+ * @return {!Branch}
+ */
+function buildBranch(build) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'build');
+  }
+
+  if ( !isFunction(build) ) {
+    throw setTypeError(new TypeError, 'build', '!Function');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step build-each-file
+
+  len = this.files.length;
+  i = -1;
+  while (++i < len) {
+    this.files[i].build(build);
+  }
+
+  /// #}}} @step build-each-file
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Branch.prototype.build
+
+/// #{{{ @func Branch.prototype.isMethod
+/**
+ * @param {string} file
+ * @return {boolean}
+ */
+function isMethod(file) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'file');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+  if (!file) {
+    throw setEmptyError(new Error, 'file');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return !this.method || file === this.method;
+
+  /// #}}} @step return-result
+}
+/// #}}} @func Branch.prototype.isMethod
+
+/// #{{{ @func Branch.prototype.makeBranches
+/**
+ * @param {?Object<!Object>} branches
+ * @return {!Branch}
+ */
+function makeBranches(branches) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Branch} */
+  var branch;
+  /** @type {string} */
+  var name;
+  /** @type {string} */
+  var key;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'branches');
+  }
+
+  if ( !isNullObjectHashMap(branches) ) {
+    throw setTypeError(new TypeError, 'branches', '?Object<!Object>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-each-branch
+
+  if (branches) {
+    for (key in branches) {
+      if ( hasOwnProperty(branches, key) ) {
+        name = this.name + '.' + key;
+        branch = new Branch(this, name, branches[key], this.src, this.dest,
+          this.method, this.state, this.flags, this.alter);
+        setConstantProperty(this.branches, key, branch);
+      }
+    }
+  }
+
+  /// #}}} @step make-each-branch
+
+  /// #{{{ @step freeze-branches-member
+
+  freezeObject(this.branches);
+
+  /// #}}} @step freeze-branches-member
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Branch.prototype.makeBranches
+
+/// #{{{ @func Branch.prototype.makeFiles
+/**
+ * @param {?Array<!Object>} files
+ * @return {!Branch}
+ */
+function makeFiles(files) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!File} */
+  var file;
+  /** @type {string} */
+  var name;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'files');
+  }
+
+  if ( !isNullObjectList(files) ) {
+    throw setTypeError(new TypeError, 'files', '?Array<!Object>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-each-file
+
+  if (files) {
+    len = files.length;
+    i = -1;
+    while (++i < len) {
+      if ( this.isMethod(files[i]) ) {
+        name = this.name + '.files[' + i + ']';
+        file = new File(this, name, files[i]);
+        this.files.push(file);
+      }
+    }
+  }
+
+  /// #}}} @step make-each-file
+
+  /// #{{{ @step freeze-files-member
+
+  freezeObject(this.files);
+
+  /// #}}} @step freeze-files-member
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Branch.prototype.makeFiles
 
 /// #{{{ @step setup-branch-constructor
 
@@ -1791,445 +2505,303 @@ freezeObject(Branch);
 
 /// #{{{ @step setup-branch-prototype
 
-setupOffProperty(Branch.prototype, 'constructor', Branch);
+setConstantProperty(Branch.prototype, 'build', buildBranch);
+setConstantProperty(Branch.prototype, 'constructor', Branch, false);
+setConstantProperty(Branch.prototype, 'isMethod', isMethod);
+setConstantProperty(Branch.prototype, 'makeBranches', makeBranches);
+setConstantProperty(Branch.prototype, 'makeFiles', makeFiles);
 
 freezeObject(Branch.prototype);
 
 /// #}}} @step setup-branch-prototype
 
-/// #{{{ @func buildBranches
+/// #}}} @group BRANCH
+
+/// #{{{ @group FILE
+
+/// #{{{ @func File
 /**
  * @private
- * @param {!Function} run
- * @param {string} key
- * @param {!Object<string, !Object>} branches
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
- * @return {void}
+ * @param {!Branch} parent
+ * @param {string} name
+ * @param {!Object} config
+ * @constructor
+ * @struct
  */
-function buildBranches(run, key, branches, src, dest, state, flags, alter) {
+function File(parent, name, config) {
 
-  /// #{{{ @step declare-variables
+  /// #{{{ @step verify-new-keyword
 
-  /** @type {string} */
-  var newkey;
+  if ( !isInstanceOf(this, File) ) {
+    throw setNewError(new SyntaxError, 'File');
+  }
 
-  /// #}}} @step declare-variables
+  /// #}}} @step verify-new-keyword
 
   /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, 'run');
+      throw setNoArgError(new Error, 'parent');
     case 1:
-      throw setNoArgError(new Error, 'key');
+      throw setNoArgError(new Error, 'name');
     case 2:
-      throw setNoArgError(new Error, 'branches');
-    case 3:
-      throw setNoArgError(new Error, 'src');
-    case 4:
-      throw setNoArgError(new Error, 'dest');
-    case 5:
-      throw setNoArgError(new Error, 'state');
-    case 6:
-      throw setNoArgError(new Error, 'flags');
-    case 7:
-      alter = undefined;
-      break;
-    default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
-        throw setTypeError(new TypeError, 'alter',
-          '(?function(string): string)=');
-      }
+      throw setNoArgError(new Error, 'config');
   }
 
-  if ( !isFunction(run) ) {
-    throw setTypeError(new TypeError, 'run', '!Function');
+  if ( !isInstanceOf(parent, Branch) ) {
+    throw setTypeError(new TypeError, 'parent', '?Branch');
   }
-  if ( !isString(key) ) {
-    throw setTypeError(new TypeError, 'key', 'string');
+  if ( !isString(name) ) {
+    throw setTypeError(new TypeError, 'name', 'string');
   }
-  if ( !isObject(branches) || !isObjectHashMap(branches) ) {
-    throw setTypeError(new TypeError, 'branches', '!Object<string, !Object>');
-  }
-  if ( !isString(src) ) {
-    throw setTypeError(new TypeError, 'src', 'string');
-  }
-  if ( !isString(dest) ) {
-    throw setTypeError(new TypeError, 'dest', 'string');
-  }
-  if ( !isObject(state) ) {
-    throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
-  }
-  if ( !isNull(flags) && !isObject(flags) ) {
-    throw setTypeError(new TypeError, 'flags', '?Object');
+  if ( !isObject(config) ) {
+    throw setTypeError(new TypeError, 'config', '!Object');
   }
 
-  if (!src) {
-    throw setEmptyError(new Error, 'src');
-  }
-  if (!dest) {
-    throw setEmptyError(new Error, 'dest');
-  }
-
-  if ( !isDirectory(src) ) {
-    throw setDirError(new Error, 'src', src);
+  if (!name) {
+    throw setEmptyError(new Error, 'name');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-key-const
+  /// #{{{ @step verify-config-properties
 
-  /// #{{{ @const KEY
+  if ( !hasOption(config, 'src') ) {
+    throw setBuildOwnError(new ReferenceError, name, 'src');
+  }
+  if ( !isString(config.src) ) {
+    throw setBuildTypeError(new TypeError, name, 'src', 'string');
+  }
+  if (!config.src) {
+    throw setBuildEmptyError(new Error, name, 'src');
+  }
+
+  if ( !hasOption(config, 'dest') ) {
+    throw setBuildOwnError(new ReferenceError, name, 'dest');
+  }
+  if ( !isString(config.dest) ) {
+    throw setBuildTypeError(new TypeError, name, 'dest', 'string');
+  }
+  if (!config.dest) {
+    throw setBuildEmptyError(new Error, name, 'dest');
+  }
+
+  if ( hasOption(config, 'state') && !isNullObject(config.state) ) {
+    throw setBuildTypeError(new TypeError, name, 'state',
+      '?Object<string, (boolean|!Object<string, boolean>)>');
+  }
+
+  if ( hasOption(config, 'flags') && !isNullObject(config.flags) ) {
+    throw setBuildTypeError(new TypeError, name, 'flags', '?Object');
+  }
+
+  /// #}}} @step verify-config-properties
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {!Branch}
+   */
+  var PARENT = parent;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const NAME
   /**
    * @private
    * @const {string}
    */
-  var KEY = key;
-  /// #}}} @const KEY
+  var NAME = name;
+  /// #}}} @const NAME
 
-  /// #}}} @step set-key-const
+  /// #{{{ @const CONFIG
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var CONFIG = freezeObject(config);
+  /// #}}} @const CONFIG
 
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) ) {
-    makeDirectory(dest, MODE);
-  }
-
-  /// #}}} @step make-dest
-
-  /// #{{{ @step build-each-branch
-
-  for (key in branches) {
-    if ( hasOwnProperty(branches, key) ) {
-      newkey = !!KEY
-        ? KEY + '.' + key
-        : key;
-      buildBranch(run, newkey, branches[key], src, dest, state, flags, alter);
-    }
-  }
-
-  /// #}}} @step build-each-branch
-}
-/// #}}} @func buildBranches
-
-/// #{{{ @func buildBranch
-/**
- * @private
- * @param {!Function} run
- * @param {string} key
- * @param {!Object} branch
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
- * @return {void}
- */
-function buildBranch(run, key, branch, src, dest, state, flags, alter) {
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'run');
-    case 1:
-      throw setNoArgError(new Error, 'key');
-    case 2:
-      throw setNoArgError(new Error, 'branch');
-    case 3:
-      throw setNoArgError(new Error, 'src');
-    case 4:
-      throw setNoArgError(new Error, 'dest');
-    case 5:
-      throw setNoArgError(new Error, 'state');
-    case 6:
-      throw setNoArgError(new Error, 'flags');
-    case 7:
-      alter = undefined;
-      break;
-    default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
-        throw setTypeError(new TypeError, 'alter',
-          '(?function(string): string)=');
-      }
-  }
-
-  if ( !isFunction(run) ) {
-    throw setTypeError(new TypeError, 'run', '!Function');
-  }
-  if ( !isString(key) ) {
-    throw setTypeError(new TypeError, 'key', 'string');
-  }
-  if ( !isObject(branch) ) {
-    throw setTypeError(new TypeError, 'branch', '!Object');
-  }
-  if ( !isString(src) ) {
-    throw setTypeError(new TypeError, 'src', 'string');
-  }
-  if ( !isString(dest) ) {
-    throw setTypeError(new TypeError, 'dest', 'string');
-  }
-  if ( !isObject(state) ) {
-    throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
-  }
-  if ( !isNull(flags) && !isObject(flags) ) {
-    throw setTypeError(new TypeError, 'flags', '?Object');
-  }
-
-  if (!src) {
-    throw setEmptyError(new Error, 'src');
-  }
-  if (!dest) {
-    throw setEmptyError(new Error, 'dest');
-  }
-
-  if ( !isDirectory(src) ) {
-    throw setDirError(new Error, 'src', src);
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step resolve-paths
-
-  src = resolvePath(src);
-  dest = resolvePath(dest);
-
-  /// #}}} @step resolve-paths
-
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) ) {
-    makeDirectory(dest, MODE);
-  }
-
-  /// #}}} @step make-dest
-
-  /// #{{{ @step update-src
-
-  if ( hasOwnProperty(branch, 'src') ) {
-    if ( !isString(branch.src) ) {
-      throw setBuildTypeError(new TypeError, key, 'src', 'string');
-    }
-    if (!!branch.src) {
-      if ( !hasEndSlash(branch.src) ) {
-        throw setBuildSlashError(new RangeError, key, 'src', branch.src);
-      }
-      src = resolvePath(src, branch.src);
-    }
-  }
-
-  /// #}}} @step update-src
-
-  /// #{{{ @step update-dest
-
-  if ( hasOwnProperty(branch, 'dest') ) {
-    if ( !isString(branch.dest) ) {
-      throw setBuildTypeError(new TypeError, key, 'dest', 'string');
-    }
-    if (!!branch.dest) {
-      if ( !hasEndSlash(branch.dest) ) {
-        throw setBuildSlashError(new RangeError, key, 'dest', branch.dest);
-      }
-      dest = resolvePath(dest, branch.dest);
-    }
-  }
-
-  /// #}}} @step update-dest
-
-  /// #{{{ @step update-state
-
-  state = cloneObject(state);
-
-  if ( hasOwnProperty(branch, 'state') ) {
-    if ( !isObject(branch.state) ) {
-      throw setBuildTypeError(new TypeError, key, 'state',
-        '!Object<string, (boolean|!Object<string, boolean>)>');
-    }
-    state = deepMergeObject(state, branch.state);
-  }
-
-  /// #}}} @step update-state
-
-  /// #{{{ @step update-flags
-
-  flags = cloneObject(flags);
-
-  if ( hasOwnProperty(branch, 'flags') && !isNull(branch.flags) ) {
-    if ( !isObject(branch.flags) ) {
-      throw setBuildTypeError(new TypeError, key, 'flags', '?Object');
-    }
-    flags = mergeObject(flags, branch.flags);
-  }
-
-  /// #}}} @step update-flags
-
-  /// #{{{ @step build-files
-
-  if ( hasOwnProperty(branch, 'files') ) {
-    buildFiles(run, key, branch.files, src, dest, state, flags, alter);
-  }
-
-  /// #}}} @step build-files
-
-  /// #{{{ @step build-branches
-
-  if ( hasOwnProperty(branch, 'branches') ) {
-    buildBranches(run, key, branch.branches, src, dest, state, flags, alter);
-  }
-
-  /// #}}} @step build-branches
-}
-/// #}}} @func buildBranch
-
-/// #{{{ @func buildFiles
-/**
- * @private
- * @param {!Function} run
- * @param {string} key
- * @param {!Array<!Object>} files
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
- * @return {void}
- */
-function buildFiles(run, key, files, src, dest, state, flags, alter) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Object} */
-  var file;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'run');
-    case 1:
-      throw setNoArgError(new Error, 'key');
-    case 2:
-      throw setNoArgError(new Error, 'files');
-    case 3:
-      throw setNoArgError(new Error, 'src');
-    case 4:
-      throw setNoArgError(new Error, 'dest');
-    case 5:
-      throw setNoArgError(new Error, 'state');
-    case 6:
-      throw setNoArgError(new Error, 'flags');
-    case 7:
-      alter = undefined;
-      break;
-    default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
-        throw setTypeError(new TypeError, 'alter',
-          '(?function(string): string)=');
-      }
-  }
-
-  if ( !isFunction(run) ) {
-    throw setTypeError(new TypeError, 'run', '!Function');
-  }
-  if ( !isString(key) ) {
-    throw setTypeError(new TypeError, 'key', 'string');
-  }
-  if ( !isArray(files) || !isObjectList(files) ) {
-    throw setTypeError(new TypeError, 'files', '!Array<!Object>');
-  }
-  if ( !isString(src) ) {
-    throw setTypeError(new TypeError, 'src', 'string');
-  }
-  if ( !isString(dest) ) {
-    throw setTypeError(new TypeError, 'dest', 'string');
-  }
-  if ( !isObject(state) ) {
-    throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
-  }
-  if ( !isNull(flags) && !isObject(flags) ) {
-    throw setTypeError(new TypeError, 'flags', '?Object');
-  }
-
-  if (!src) {
-    throw setEmptyError(new Error, 'src');
-  }
-  if (!dest) {
-    throw setEmptyError(new Error, 'dest');
-  }
-
-  if ( !isDirectory(src) ) {
-    throw setDirError(new Error, 'src', src);
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step set-key-const
-
-  /// #{{{ @const KEY
+  /// #{{{ @const SRC
   /**
    * @private
    * @const {string}
    */
-  var KEY = key;
-  /// #}}} @const KEY
+  var SRC = resolvePath(src, CONFIG.src);
+  /// #}}} @const SRC
 
-  /// #}}} @step set-key-const
+  /// #{{{ @const DEST
+  /**
+   * @private
+   * @const {string}
+   */
+  var DEST = resolvePath(dest, CONFIG.dest);
+  /// #}}} @const DEST
 
-  /// #{{{ @step make-dest
+  /// #{{{ @const METHOD
+  /**
+   * @private
+   * @const {string}
+   */
+  var METHOD = parent.method;
+  /// #}}} @const METHOD
 
-  if ( !isDirectory(dest) ) {
-    makeDirectory(dest, MODE);
+  /// #{{{ @const STATE
+  /**
+   * @private
+   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
+   */
+  var STATE = hasOption(CONFIG, 'state') && !!CONFIG.state
+    ? deepMergeObject(parent.state, config.state);
+    : cloneObject(parent.state);
+  freezeObject(STATE);
+  /// #}}} @const STATE
+
+  /// #{{{ @const FLAGS
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var FLAGS = hasOption(CONFIG, 'flags') && !!CONFIG.flags
+    ? mergeObject(parent.flags, config.flags);
+    : cloneObject(parent.flags);
+  freezeObject(FLAGS);
+  /// #}}} @const FLAGS
+
+  /// #{{{ @const ALTER
+  /**
+   * @private
+   * @const {?function(string): string}
+   */
+  var ALTER = isUndefined(parent.alter)
+    ? makeCompile(DEST, FLAGS)
+    : parent.alter;
+  /// #}}} @const ALTER
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step verify-src
+
+  if ( !isFile(SRC) ) {
+    throw setFileError(new Error, NAME + '.src', SRC);
   }
 
-  /// #}}} @step make-dest
+  /// #}}} @step verify-src
 
-  /// #{{{ @step build-each-file
+  /// #{{{ @step set-members
 
-  len = files.length;
-  i = -1;
-  while (++i < len) {
-    file = files[i];
-    key = 'files[' + i + ']';
+  /// #{{{ @member parent
+  /**
+   * @const {!Branch}
+   */
+  setConstantProperty(this, 'parent', PARENT);
+  /// #}}} @member parent
 
-    if ( !isObject(file) ) {
-      throw setBuildTypeError(new TypeError, KEY, key, '!Object');
-    }
+  /// #{{{ @member name
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'name', NAME);
+  /// #}}} @member name
 
-    key = KEY + '.' + key;
-    buildFile(run, key, file, src, dest, state, flags, alter);
-  }
+  /// #{{{ @member config
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(this, 'config', CONFIG);
+  /// #}}} @member config
 
-  /// #}}} @step build-each-file
+  /// #{{{ @member src
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'src', SRC);
+  /// #}}} @member src
+
+  /// #{{{ @member dest
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'dest', DEST);
+  /// #}}} @member dest
+
+  /// #{{{ @member method
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'method', METHOD);
+  /// #}}} @member method
+
+  /// #{{{ @member state
+  /**
+   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
+   */
+  setConstantProperty(this, 'state', STATE);
+  /// #}}} @member state
+
+  /// #{{{ @member flags
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(this, 'flags', FLAGS);
+  /// #}}} @member flags
+
+  /// #{{{ @member alter
+  /**
+   * @const {?function(string): string}
+   */
+  setConstantProperty(this, 'alter', ALTER);
+  /// #}}} @member alter
+
+  /// #}}} @step set-members
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
 }
-/// #}}} @func buildFiles
+/// #}}} @func File
 
-/// #{{{ @func buildFile
+/// #{{{ @func newFile
 /**
  * @private
- * @param {!Function} run
- * @param {string} key
- * @param {!Object} file
- * @param {string} src
- * @param {string} dest
- * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
- * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `makeCompile(dest)`
+ * @param {!Branch} parent
+ * @param {string} name
+ * @param {!Object} config
+ * @return {!File}
+ */
+function newFile(parent, name, config) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'parent');
+    case 1:
+      throw setNoArgError(new Error, 'name');
+    case 2:
+      throw setNoArgError(new Error, 'config');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-new-file
+
+  return new File(parent, name, config);
+
+  /// #}}} @step return-new-file
+}
+/// #}}} @func newFile
+
+/// #{{{ @func File.prototype.build
+/**
+ * @param {!Function} build
  * @return {string}
  */
-function buildFile(run, key, file, src, dest, state, flags, alter) {
+function buildFile(build) {
 
   /// #{{{ @step declare-variables
 
@@ -2240,151 +2812,21 @@ function buildFile(run, key, file, src, dest, state, flags, alter) {
 
   /// #{{{ @step verify-parameters
 
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'run');
-    case 1:
-      throw setNoArgError(new Error, 'key');
-    case 2:
-      throw setNoArgError(new Error, 'file');
-    case 3:
-      throw setNoArgError(new Error, 'src');
-    case 4:
-      throw setNoArgError(new Error, 'dest');
-    case 5:
-      throw setNoArgError(new Error, 'state');
-    case 6:
-      throw setNoArgError(new Error, 'flags');
-    case 7:
-      alter = undefined;
-      break;
-    default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
-        throw setTypeError(new TypeError, 'alter',
-          '(?function(string): string)=');
-      }
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'build');
   }
 
-  if ( !isFunction(run) ) {
-    throw setTypeError(new TypeError, 'run', '!Function');
-  }
-  if ( !isString(key) ) {
-    throw setTypeError(new TypeError, 'key', 'string');
-  }
-  if ( !isObject(file) ) {
-    throw setTypeError(new TypeError, 'file', '!Object');
-  }
-  if ( !isString(src) ) {
-    throw setTypeError(new TypeError, 'src', 'string');
-  }
-  if ( !isString(dest) ) {
-    throw setTypeError(new TypeError, 'dest', 'string');
-  }
-  if ( !isObject(state) ) {
-    throw setTypeError(new TypeError, 'state',
-      '!Object<string, (boolean|!Object<string, boolean>)>');
-  }
-  if ( !isNull(flags) && !isObject(flags) ) {
-    throw setTypeError(new TypeError, 'flags', '?Object');
-  }
-
-  if (!src) {
-    throw setEmptyError(new Error, 'src');
-  }
-  if (!dest) {
-    throw setEmptyError(new Error, 'dest');
-  }
-
-  if ( !isDirectory(src) ) {
-    throw setDirError(new Error, 'src', src);
+  if ( !isFunction(build) ) {
+    throw setTypeError(new TypeError, 'build', '!Function');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step make-dest
-
-  if ( !isDirectory(dest) ) {
-    makeDirectory(dest, MODE);
-  }
-
-  /// #}}} @step make-dest
-
-  /// #{{{ @step setup-src
-
-  if ( !hasOwnProperty(file, 'src') ) {
-    throw setBuildOwnError(new ReferenceError, key, 'src');
-  }
-  if ( !isString(file.src) ) {
-    throw setBuildTypeError(new TypeError, key, 'src', 'string');
-  }
-  if (!file.src) {
-    throw setBuildEmptyError(new Error, key, 'src');
-  }
-
-  src = resolvePath(src, file.src);
-
-  if ( !isFile(src) ) {
-    throw setFileError(new Error, key + '.src', src);
-  }
-
-  /// #}}} @step setup-src
-
-  /// #{{{ @step setup-dest
-
-  if ( !hasOwnProperty(file, 'dest') ) {
-    throw setBuildOwnError(new ReferenceError, key, 'dest');
-  }
-  if ( !isString(file.dest) ) {
-    throw setBuildTypeError(new TypeError, key, 'dest', 'string');
-  }
-  if (!file.dest) {
-    throw setBuildEmptyError(new Error, key, 'dest');
-  }
-
-  dest = resolvePath(dest, file.dest);
-
-  /// #}}} @step setup-dest
-
-  /// #{{{ @step update-state
-
-  state = cloneObject(state);
-
-  if ( hasOwnProperty(file, 'state') ) {
-    if ( !isObject(file.state) ) {
-      throw setBuildTypeError(new TypeError, key, 'state',
-        '!Object<string, (boolean|!Object<string, boolean>)>');
-    }
-    state = deepMergeObject(state, file.state);
-  }
-
-  /// #}}} @step update-state
-
-  /// #{{{ @step update-flags
-
-  flags = cloneObject(flags);
-
-  if ( hasOwnProperty(file, 'flags') && !isNull(file.flags) ) {
-    if ( !isObject(file.flags) ) {
-      throw setBuildTypeError(new TypeError, key, 'flags', '?Object');
-    }
-    flags = mergeObject(flags, file.flags);
-  }
-
-  /// #}}} @step update-flags
-
-  /// #{{{ @step make-alter
-
-  if ( isUndefined(alter) ) {
-    alter = makeCompile(dest, flags);
-  }
-
-  /// #}}} @step make-alter
-
   /// #{{{ @step build-file
 
-  result = alter
-    ? run(src, dest, state, alter)
-    : run(src, dest, state);
+  result = this.alter
+    ? build(this.src, this.dest, this.state, this.alter)
+    : build(this.src, this.dest, this.state);
 
   /// #}}} @step build-file
 
@@ -2394,9 +2836,31 @@ function buildFile(run, key, file, src, dest, state, flags, alter) {
 
   /// #}}} @step return-results
 }
-/// #}}} @func buildFile
+/// #}}} @func File.prototype.build
 
-/// #}}} @group BUILDERS
+/// #{{{ @step setup-file-constructor
+
+File.File = File;
+File.newFile = newFile;
+File.construct = newFile;
+File.prototype = createObject(null);
+
+freezeObject(File);
+
+/// #}}} @step setup-file-constructor
+
+/// #{{{ @step setup-file-prototype
+
+setConstantProperty(File.prototype, 'build', buildFile);
+setConstantProperty(File.prototype, 'constructor', File, false);
+
+freezeObject(File.prototype);
+
+/// #}}} @step setup-file-prototype
+
+/// #}}} @group FILE
+
+/// #}}} @group CLASSES
 
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
@@ -2415,6 +2879,8 @@ function buildAll(method) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Object<string, !Branch>} */
+  var branch;
   /** @type {!Object} */
   var flags;
 
@@ -2428,6 +2894,15 @@ function buildAll(method) {
   else if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
+  else if (method) {
+    method = cleanPath(method);
+    method = trimJsFileExtension(method) + '.js';
+    method = resolvePath(METHODS, method);
+    if ( !isFile(method) ) {
+      throw setMethodError(new RangeError, method);
+    }
+    method = getPathName(method);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -2435,9 +2910,26 @@ function buildAll(method) {
 
   flags = cloneObject(FLAGS);
   flags.externs = makeClosureExterns(EXTERNS);
+
   freezeObject(flags);
 
   /// #}}} @step make-flags
+
+  /// #{{{ @step make-branches
+
+  /** @struct */
+  branch = {};
+
+  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser, SRC,
+    DEST, method, STATE, flags);
+  branch.node = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST,
+    method, STATE, flags);
+  branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, SRC, DEST,
+    method, STATE, null, trimDocs);
+
+  freezeObject(branch);
+
+  /// #}}} @step make-branches
 
   /// #{{{ @step build-vitals
 
@@ -2445,34 +2937,9 @@ function buildAll(method) {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
-
-    /// #{{{ @step declare-variables
-
-    /** @type {!Object} */
-    var branch;
-
-    /// #}}} @step declare-variables
-
-    /// #{{{ @step build-browser
-
-    branch = CONFIG.branches.browser;
-    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-browser
-
-    /// #{{{ @step build-node
-
-    branch = CONFIG.branches.node;
-    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-node
-
-    /// #{{{ @step build-docs
-
-    branch = CONFIG.branches.docs;
-    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, trimDocs);
-
-    /// #}}} @step build-docs
+    branch.browser.build(run);
+    branch.node.build(run);
+    branch.docs.build(run);
   });
 
   /// #}}} @step build-vitals
@@ -2491,6 +2958,8 @@ function buildDist(method) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Object<string, !Branch>} */
+  var branch;
   /** @type {!Object} */
   var flags;
 
@@ -2504,6 +2973,15 @@ function buildDist(method) {
   else if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
+  else if (method) {
+    method = cleanPath(method);
+    method = trimJsFileExtension(method) + '.js';
+    method = resolvePath(METHODS, method);
+    if ( !isFile(method) ) {
+      throw setMethodError(new RangeError, method);
+    }
+    method = getPathName(method);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -2511,9 +2989,24 @@ function buildDist(method) {
 
   flags = cloneObject(FLAGS);
   flags.externs = makeClosureExterns(EXTERNS);
+
   freezeObject(flags);
 
   /// #}}} @step make-flags
+
+  /// #{{{ @step make-branches
+
+  /** @struct */
+  branch = {};
+
+  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser, SRC,
+    DEST, method, STATE, flags);
+  branch.node = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST,
+    method, STATE, flags);
+
+  freezeObject(branch);
+
+  /// #}}} @step make-branches
 
   /// #{{{ @step build-vitals
 
@@ -2521,27 +3014,8 @@ function buildDist(method) {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
-
-    /// #{{{ @step declare-variables
-
-    /** @type {!Object} */
-    var branch;
-
-    /// #}}} @step declare-variables
-
-    /// #{{{ @step build-browser
-
-    branch = CONFIG.branches.browser;
-    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-browser
-
-    /// #{{{ @step build-node
-
-    branch = CONFIG.branches.node;
-    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-node
+    branch.browser.build(run);
+    branch.node.build(run);
   });
 
   /// #}}} @step build-vitals
@@ -2560,6 +3034,8 @@ function buildBrowser(method) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Branch} */
+  var branch;
   /** @type {!Object} */
   var flags;
 
@@ -2573,6 +3049,15 @@ function buildBrowser(method) {
   else if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
+  else if (method) {
+    method = cleanPath(method);
+    method = trimJsFileExtension(method) + '.js';
+    method = resolvePath(METHODS, method);
+    if ( !isFile(method) ) {
+      throw setMethodError(new RangeError, method);
+    }
+    method = getPathName(method);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -2580,9 +3065,17 @@ function buildBrowser(method) {
 
   flags = cloneObject(FLAGS);
   flags.externs = makeClosureExterns(EXTERNS);
+
   freezeObject(flags);
 
   /// #}}} @step make-flags
+
+  /// #{{{ @step make-branch
+
+  branch = new Branch(null, 'browser', CONFIG.branches.browser, SRC, DEST,
+    method, STATE, flags);
+
+  /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
@@ -2590,20 +3083,7 @@ function buildBrowser(method) {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
-
-    /// #{{{ @step declare-variables
-
-    /** @type {!Object} */
-    var branch;
-
-    /// #}}} @step declare-variables
-
-    /// #{{{ @step build-browser
-
-    branch = CONFIG.branches.browser;
-    buildBranch(run, 'browser', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-browser
+    branch.build(run);
   });
 
   /// #}}} @step build-vitals
@@ -2622,6 +3102,8 @@ function buildNode(method) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Branch} */
+  var branch;
   /** @type {!Object} */
   var flags;
 
@@ -2635,6 +3117,15 @@ function buildNode(method) {
   else if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
+  else if (method) {
+    method = cleanPath(method);
+    method = trimJsFileExtension(method) + '.js';
+    method = resolvePath(METHODS, method);
+    if ( !isFile(method) ) {
+      throw setMethodError(new RangeError, method);
+    }
+    method = getPathName(method);
+  }
 
   /// #}}} @step verify-parameters
 
@@ -2642,9 +3133,17 @@ function buildNode(method) {
 
   flags = cloneObject(FLAGS);
   flags.externs = makeClosureExterns(EXTERNS);
+
   freezeObject(flags);
 
   /// #}}} @step make-flags
+
+  /// #{{{ @step make-branch
+
+  branch = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST, method,
+    STATE, flags);
+
+  /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
@@ -2652,20 +3151,7 @@ function buildNode(method) {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
-
-    /// #{{{ @step declare-variables
-
-    /** @type {!Object} */
-    var branch;
-
-    /// #}}} @step declare-variables
-
-    /// #{{{ @step build-node
-
-    branch = CONFIG.branches.node;
-    buildBranch(run, 'node', branch, SRC, DEST, STATE, flags);
-
-    /// #}}} @step build-node
+    branch.build(run);
   });
 
   /// #}}} @step build-vitals
@@ -2682,6 +3168,13 @@ function buildNode(method) {
  */
 function buildDocs(method) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {!Branch} */
+  var branch;
+
+  /// #}}} @step declare-variables
+
   /// #{{{ @step verify-parameters
 
   if ( isUndefined(method) || isNull(method) ) {
@@ -2690,8 +3183,24 @@ function buildDocs(method) {
   else if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
+  else if (method) {
+    method = cleanPath(method);
+    method = trimJsFileExtension(method) + '.js';
+    method = resolvePath(METHODS, method);
+    if ( !isFile(method) ) {
+      throw setMethodError(new RangeError, method);
+    }
+    method = getPathName(method);
+  }
 
   /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-branch
+
+  branch = new Branch(null, 'docs', CONFIG.branches.docs, SRC, DEST, method,
+    STATE, null, trimDocs);
+
+  /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
@@ -2699,20 +3208,7 @@ function buildDocs(method) {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
-
-    /// #{{{ @step declare-variables
-
-    /** @type {!Object} */
-    var branch;
-
-    /// #}}} @step declare-variables
-
-    /// #{{{ @step build-docs
-
-    branch = CONFIG.branches.docs;
-    buildBranch(run, 'docs', branch, SRC, DEST, STATE, null, trimDocs);
-
-    /// #}}} @step build-docs
+    branch.build(run);
   });
 
   /// #}}} @step build-vitals
