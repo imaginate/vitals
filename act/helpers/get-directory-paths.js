@@ -3,7 +3,7 @@
  * GET-DIRECTORY-PATHS HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -13,25 +13,11 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const DFLT_OPTS
-/**
- * @private
- * @const {!Object<string, *>}
- * @dict
- */
-var DFLT_OPTS = {
-  'deep': false,
-  'full': false,
-  'extend': false,
-  'validDirs': null,
-  'invalidDirs': /^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i
-};
-/// #}}} @const DFLT_OPTS
-
 /// #{{{ @const FS
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var FS = require('fs');
 /// #}}} @const FS
@@ -40,6 +26,7 @@ var FS = require('fs');
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -95,6 +82,16 @@ var setDirError = setError.dir;
  */
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
+
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
 
 /// #{{{ @func setNoArgError
 /**
@@ -203,6 +200,25 @@ var isBoolean = IS.boolean;
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
+/// #{{{ @func isFunction
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isFunction = IS.func;
+/// #}}} @func isFunction
+
+/// #{{{ @func isInstanceOf
+/**
+ * @private
+ * @param {*} inst
+ * @param {!Function} constructor
+ * @return {boolean}
+ */
+var isInstanceOf = IS.instanceOf;
+/// #}}} @func isInstanceOf
+
 /// #{{{ @func isLT
 /**
  * @private
@@ -284,7 +300,7 @@ var isUndefined = IS.undefined;
 
 /// #{{{ @group MAKE
 
-/// #{{{ @func makeValidTest
+/// #{{{ @func makeValidPathTest
 /**
  * @private
  * @param {?RegExp} valid
@@ -301,10 +317,10 @@ var isUndefined = IS.undefined;
  *   a forward slash), the path name is tested against the #invalid pattern.
  * @return {!function(string, string): boolean}
  */
-var makeValidTest = require('./mk-valid-path-test.js');
-/// #}}} @func makeValidTest
+var makeValidPathTest = require('./make-valid-path-test.js');
+/// #}}} @func makeValidPathTest
 
-/// #{{{ @func makeValidTests
+/// #{{{ @func makeValidPathTests
 /**
  * @private
  * @param {?RegExp} dfltValid
@@ -333,8 +349,51 @@ var makeValidTest = require('./mk-valid-path-test.js');
  *   a forward slash), the path name is tested against the #invalid pattern.
  * @return {!function(string, string): boolean}
  */
-var makeValidTests = require('./mk-valid-path-tests.js');
-/// #}}} @func makeValidTests
+var makeValidPathTests = require('./make-valid-path-tests.js');
+/// #}}} @func makeValidPathTests
+
+/// #{{{ @func makeValidTest
+/**
+ * @private
+ * @param {!Object} opts
+ * @param {string} valid
+ * @param {string} invalid
+ * @return {!function(string, string): boolean}
+ */
+function makeValidTest(opts, valid, invalid) {
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'opts');
+    case 1:
+      throw setNoArgError(new Error, 'valid');
+    case 2:
+      throw setNoArgError(new Error, 'invalid');
+  }
+
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+  if ( !isString(valid) ) {
+    throw setTypeError(new TypeError, 'valid', 'string');
+  }
+  if ( !isString(invalid) ) {
+    throw setTypeError(new TypeError, 'invalid', 'string');
+  }
+
+  if (!valid) {
+    throw setEmptyError(new Error, 'valid');
+  }
+  if (!invalid) {
+    throw setEmptyError(new Error, 'invalid');
+  }
+
+  return opts['extend']
+    ? makeValidPathTests(
+        DFLT_OPTS[valid], DFLT_OPTS[invalid], opts[valid], opts[invalid])
+    : makeValidPathTest(opts[valid], opts[invalid]);
+}
+/// #}}} @func makeValidTest
 
 /// #}}} @group MAKE
 
@@ -349,18 +408,49 @@ var makeValidTests = require('./mk-valid-path-tests.js');
 var cloneObject = require('./clone-object.js');
 /// #}}} @func cloneObject
 
+/// #{{{ @func createObject
+/**
+ * @private
+ * @param {?Object} proto
+ * @return {!Object}
+ */
+var createObject = require('./create-object.js');
+/// #}}} @func createObject
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = require('./freeze-object.js');
+/// #}}} @func freezeObject
+
+/// #{{{ @func setConstantProperty
+/**
+ * @private
+ * @param {!Object} src
+ * @param {string} key
+ * @param {*} val
+ * @param {boolean=} visible = `true`
+ * @return {!Object}
+ */
+var setConstantProperty = require('./set-constant-property.js');
+/// #}}} @func setConstantProperty
+
 /// #}}} @group OBJECT
 
 /// #{{{ @group PATH
 
-/// #{{{ @func cleanDirectoryPath
+/// #{{{ @func appendSlash
 /**
  * @private
- * @param {string} dirpath
+ * @param {string} path
  * @return {string}
  */
-var cleanDirectoryPath = require('./clean-dirpath.js');
-/// #}}} @func cleanDirectoryPath
+var appendSlash = require('./append-slash.js');
+/// #}}} @func appendSlash
 
 /// #{{{ @func getPathName
 /**
@@ -374,7 +464,7 @@ var getPathName = require('./get-path-name.js');
 /// #{{{ @func resolvePath
 /**
  * @private
- * @param {(!Array<string>|...string)=} path
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
  * @return {string}
  */
 var resolvePath = require('./resolve-path.js');
@@ -384,12 +474,169 @@ var resolvePath = require('./resolve-path.js');
 
 /// #}}} @group HELPERS
 
+/// #{{{ @group DEFAULTS
+//////////////////////////////////////////////////////////////////////////////
+// DEFAULTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const DFLT_OPTS
+/**
+ * @private
+ * @const {!Object<string, *>}
+ * @dict
+ */
+var DFLT_OPTS = freezeObject({
+  'deep': false,
+  'full': false,
+  'extend': false,
+  'validDirs': null,
+  'invalidDirs': /^(?:\.git|\.bak|node_modules|vendor|\.?te?mp|\.?logs?|.*~)$/i
+});
+/// #}}} @const DFLT_OPTS
+
+/// #}}} @group DEFAULTS
+
+/// #{{{ @group CONSTRUCTORS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTRUCTORS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func DirectoryPaths
+/**
+ * @private
+ * @param {string} src
+ * @param {!Object} opts
+ * @constructor
+ * @struct
+ */
+function DirectoryPaths(src, opts) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, DirectoryPaths) ) {
+    throw setNewError(new SyntaxError, 'DirectoryPaths');
+  }
+
+  /// #}}} @step verify-new-keyword
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'opts');
+  }
+
+  if ( !isString(src) ) {
+    throw setTypeError(new TypeError, 'src', 'string');
+  }
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const SRC
+  /**
+   * @private
+   * @const {string}
+   */
+  var SRC = resolvePath(src);
+  /// #}}} @const SRC
+
+  /// #{{{ @const OPTS
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var OPTS = freezeObject(opts);
+  /// #}}} @const OPTS
+
+  /// #{{{ @func isValidDir
+  /**
+   * @private
+   * @param {string} name
+   * @param {string} tree
+   * @return {boolean}
+   */
+  var isValidDir = makeValidTest(OPTS, 'validDirs', 'invalidDirs');
+  /// #}}} @func isValidDir
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-members
+
+  /// #{{{ @member SRC
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'SRC', SRC);
+  /// #}}} @member SRC
+
+  /// #{{{ @member OPTS
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(this, 'OPTS', OPTS);
+  /// #}}} @member OPTS
+
+  /// #{{{ @member isValidDir
+  /**
+   * @param {string} name
+   * @param {string} tree
+   * @return {boolean}
+   */
+  setConstantProperty(this, 'isValidDir', isValidDir);
+  /// #}}} @member isValidDir
+
+  /// #{{{ @member trees
+  /**
+   * @const {!Array<string>}
+   */
+  setConstantProperty(this, 'trees', []);
+  /// #}}} @member trees
+
+  /// #{{{ @member paths
+  /**
+   * @const {!Array<string>}
+   */
+  setConstantProperty(this, 'paths', []);
+  /// #}}} @member paths
+
+  /// #}}} @step set-members
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
+}
+/// #}}} @func DirectoryPaths
+
+DirectoryPaths.prototype = createObject(null);
+setConstantProperty(
+  DirectoryPaths.prototype, 'constructor', DirectoryPaths, false);
+
+/// #}}} @group CONSTRUCTORS
+
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func getDirectoryPaths
+/// #{{{ @docs getDirectoryPaths
 /**
  * @public
  * @param {string} src
@@ -425,19 +672,25 @@ var resolvePath = require('./resolve-path.js');
  *   against the #opts.invalidDirs pattern.
  * @return {!Array<string>}
  */
+/// #}}} @docs getDirectoryPaths
+/// #{{{ @code getDirectoryPaths
 function getDirectoryPaths(src, opts) {
 
-  /** @type {!function(string, string): boolean} */
-  var isValidDir;
+  /// #{{{ @step declare-variables
+
+  /** @type {!DirectoryPaths} */
+  var dirpaths;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
       throw setNoArgError(new Error, 'src');
-
     case 1:
       opts = cloneObject(DFLT_OPTS);
       break;
-
     default:
       if ( isNull(opts) || isUndefined(opts) ) {
         opts = cloneObject(DFLT_OPTS);
@@ -513,37 +766,77 @@ function getDirectoryPaths(src, opts) {
         throw setTypeError(new TypeError, 'opts.invalidDirs', '?RegExp=');
       else if ( hasConflictingValues(opts, 'invalid', 'invalidDirs') )
         throw setAliasError(new Error, opts, 'invalid', 'invalidDirs');
-
-      break;
   }
 
   if ( !isString(src) )
     throw setTypeError(new TypeError, 'src', 'string');
+
   if (!src)
     throw setEmptyError(new Error, 'src');
+
   if ( !isDirectory(src) )
     throw setDirError(new Error, 'src', src);
 
-  src = resolvePath(src);
-  isValidDir = opts['extend']
-    ? makeValidTests(DFLT_OPTS['validDirs'], DFLT_OPTS['invalidDirs'],
-        opts['validDirs'], opts['invalidDirs'])
-    : makeValidTest(opts['validDirs'], opts['invalidDirs']);
-  return opts['deep']
-    ? getDirsDeep(src, '', opts['full'], [], [], isValidDir)
-    : getDirs(src, opts['full'], isValidDir);
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-directorypaths-instance
+
+  dirpaths = new DirectoryPaths(src, opts);
+
+  /// #}}} @step make-directorypaths-instance
+
+  /// #{{{ @step return-directory-paths
+
+  return dirpaths.getPaths();
+
+  /// #}}} @step return-directory-paths
 }
+/// #}}} @code getDirectoryPaths
 /// #}}} @func getDirectoryPaths
 
-/// #{{{ @func getDirs
+/// #{{{ @func DirectoryPaths.prototype.getPaths
 /**
  * @private
- * @param {string} pwd
- * @param {boolean} full
- * @param {!function(string, string): boolean} isValidDir
  * @return {!Array<string>}
  */
-function getDirs(pwd, full, isValidDir) {
+DirectoryPaths.prototype.getPaths = function getPaths() {
+
+  /// #{{{ @step get-directory-paths
+
+  this.getDirs(this.SRC, '');
+
+  if (this.OPTS['deep'])
+    this.getDirsDeep();
+
+  /// #}}} @step get-directory-paths
+
+  /// #{{{ @step freeze-member-arrays
+
+  freezeObject(this.trees);
+  freezeObject(this.paths);
+
+  /// #}}} @step freeze-member-arrays
+
+  /// #{{{ @step return-directory-paths
+
+  return this.OPTS['full']
+    ? this.paths
+    : this.trees;
+
+  /// #}}} @step return-directory-paths
+};
+/// #}}} @func DirectoryPaths.prototype.getPaths
+
+/// #{{{ @func DirectoryPaths.prototype.getDirs
+/**
+ * @private
+ * @param {string} path
+ * @param {string} tree
+ * @return {!DirectoryPaths}
+ */
+DirectoryPaths.prototype.getDirs = function getDirs(path, tree) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {!Array<string>} */
   var paths;
@@ -553,105 +846,155 @@ function getDirs(pwd, full, isValidDir) {
   var names;
   /** @type {string} */
   var name;
-  /** @type {string} */
-  var path;
   /** @type {number} */
   var len;
   /** @type {number} */
   var i;
 
-  /**
-   * @private
-   * @const {string}
-   */
-  var PWD = cleanDirectoryPath(pwd);
+  /// #}}} @step declare-variables
 
-  /**
-   * @private
-   * @const {boolean}
-   */
-  var FULL = full;
+  /// #{{{ @step verify-parameters
 
-  paths = [];
-  trees = [];
-
-  names = readPaths(PWD);
-  len = names.length;
-  i = -1;
-  while ( isLT(++i, len) ) {
-    name = getPathName(names[i]);
-    path = PWD + name;
-    if ( isDirectory(path) && isValidDir(name, name) ) {
-      paths.push(path);
-      trees.push(name);
-    }
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'path');
+    case 1:
+      throw setNoArgError(new Error, 'tree');
   }
-  return FULL
-    ? paths
-    : trees;
-}
-/// #}}} @func getDirs
 
-/// #{{{ @func getDirsDeep
-/**
- * @private
- * @param {string} pwd
- * @param {string} tree
- * @param {boolean} full
- * @param {!Array<string>} paths
- * @param {!Array<string>} trees
- * @param {!function(string, string): boolean} isValidDir
- * @return {!Array<string>}
- */
-function getDirsDeep(pwd, tree, full, paths, trees, isValidDir) {
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if ( !isString(tree) )
+    throw setTypeError(new TypeError, 'tree', 'string');
 
-  /** @type {!Array<string>} */
-  var names;
-  /** @type {string} */
-  var name;
-  /** @type {string} */
-  var path;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
+  if (!path)
+    throw setEmptyError(new Error, 'path');
 
+  if ( !isDirectory(path) )
+    throw setDirError(new Error, 'path', path);
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const TREE
   /**
    * @private
    * @const {string}
    */
-  var PWD = cleanDirectoryPath(pwd);
+  var TREE = tree && appendSlash(tree);
+  /// #}}} @const TREE
 
+  /// #{{{ @const PATH
   /**
    * @private
    * @const {string}
    */
-  var TREE = tree && cleanDirectoryPath(tree);
+  var PATH = appendSlash(path);
+  /// #}}} @const PATH
 
+  /// #{{{ @func isValidDir
   /**
    * @private
-   * @const {boolean}
+   * @param {string} name
+   * @param {string} tree
+   * @return {boolean}
    */
-  var FULL = full;
+  var isValidDir = this.isValidDir;
+  /// #}}} @func isValidDir
 
-  names = readPaths(PWD);
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-member-refs
+
+  trees = this.trees;
+  paths = this.paths;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step append-paths
+
+  names = readPaths(PATH);
   len = names.length;
   i = -1;
   while ( isLT(++i, len) ) {
     name = getPathName(names[i]);
     tree = TREE + name;
-    path = PWD + name;
-    if ( isDirectory(path) && isValidDir(name, tree) ) {
-      trees.push(tree);
-      paths.push(path);
-      getDirsDeep(path, tree, FULL, paths, trees, isValidDir);
+    path = PATH + name;
+    if ( isDirectory(path) ) {
+      if ( isValidDir(name, tree) ) {
+        trees.push(tree);
+        paths.push(path);
+      }
     }
   }
-  return FULL
-    ? paths
-    : trees;
-}
-/// #}}} @func getDirsDeep
+
+  /// #}}} @step append-paths
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+};
+/// #}}} @func DirectoryPaths.prototype.getDirs
+
+/// #{{{ @func DirectoryPaths.prototype.getDirsDeep
+/**
+ * @private
+ * @return {!DirectoryPaths}
+ */
+DirectoryPaths.prototype.getDirsDeep = function getDirsDeep() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var trees;
+  /** @type {string} */
+  var tree;
+  /** @type {string} */
+  var path;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATH = appendSlash(this.SRC);
+  /// #}}} @const PATH
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-member-refs
+
+  trees = this.trees;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step append-paths
+
+  i = -1;
+  while ( isLT(++i, trees.length) ) {
+    tree = trees[i];
+    path = PATH + tree;
+    this.getDirs(path, tree);
+  }
+
+  /// #}}} @step append-paths
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+};
+/// #}}} @func DirectoryPaths.prototype.getDirsDeep
 
 /// #}}} @group METHODS
 
