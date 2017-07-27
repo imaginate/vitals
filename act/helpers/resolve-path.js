@@ -1,61 +1,104 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: resolvePath
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * RESOLVE-PATH HELPER
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const IS
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
+/// #}}} @const IS
 
+/// #{{{ @const PATH
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object}
+ * @struct
  */
 var PATH = require('path');
+/// #}}} @const PATH
 
-////////////////////////////////////////////////////////////////////////////////
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
-/**
- * @note Older node.js versions such as v0.10 required a `path' parameter.
- *   Where newer node.js versions such as v7.9 did not require a parameter.
- * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/path.html#path_path_resolve_from_to)
- * @see [node.js v7.9](https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
- * @private
- * @param {...string} path
- * @return {string}
- */
-var _resolvePath = PATH.resolve;
+/// #{{{ @group ARRAY
 
+/// #{{{ @func sliceArray
 /**
  * @private
- * @param {string} path
- * @return {string}
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {number=} start = `0`
+ * @param {number=} end = `src.length`
+ * @return {!Array}
  */
-var cleanPath = require('./clean-path.js');
+var sliceArray = require('./slice-array.js');
+/// #}}} @func sliceArray
 
+/// #}}} @group ARRAY
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isArguments
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArguments = IS.args;
+/// #}}} @func isArguments
+
+/// #{{{ @func isArray
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isArray = IS.array;
+/// #}}} @func isArray
 
+/// #{{{ @func isGT
 /**
  * @private
  * @param {number} val1
@@ -63,67 +106,159 @@ var isArray = IS.array;
  * @return {boolean}
  */
 var isGT = IS.greaterThan;
+/// #}}} @func isGT
 
-/**
- * @private
- * @param {(!Object|function)} source
- * @param {number=} start - [default= 0]
- * @param {number=} end - [default= source.length]
- * @return {!Array}
- */
-var sliceArray = require('./slice-array.js');
-
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
 
+/// #{{{ @func isStringList
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isStrings = IS.strings;
+var isStringList = IS.stringList;
+/// #}}} @func isStringList
 
+/// #{{{ @func isUndefined
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isUndefined = IS.undefined;
+/// #}}} @func isUndefined
 
-////////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+/// #}}} @group IS
 
+/// #{{{ @group PATH
+
+/// #{{{ @func cleanPath
 /**
- * @public
- * @param {(!ArrayLike<string>|...string)=} path
+ * @private
+ * @param {string} path
  * @return {string}
  */
-module.exports = function resolvePath(path) {
+var cleanPath = require('./clean-path.js');
+/// #}}} @func cleanPath
+
+/// #}}} @group PATH
+
+/// #}}} @group HELPERS
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func _resolve
+/**
+ * @see [node.js v0.10](https://nodejs.org/docs/v0.10.0/api/path.html#path_path_resolve_from_to)
+ * @see [node.js v7.9](https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
+ * @private
+ * @param {...string} path
+ *   In older node.js versions (e.g. `v0.10`) a #path parameter was required.
+ * @return {string}
+ */
+var _resolve = PATH.resolve;
+/// #}}} @func _resolve
+
+/// #{{{ @func resolve
+/**
+ * @private
+ * @param {string} cwd
+ * @param {(!Array<string>|!Arguments<string>)} paths
+ * @return {string}
+ */
+function resolve(cwd, paths) {
+
+  switch (paths.length) {
+    case 0:
+      return cwd;
+    case 1:
+      return _resolve(cwd, paths[0]);
+    case 2:
+      return _resolve(cwd, paths[0], paths[1]);
+    case 3:
+      return _resolve(cwd, paths[0], paths[1], paths[2]);
+    case 4:
+      return _resolve(cwd, paths[0], paths[1], paths[2], paths[3]);
+    case 5:
+      return _resolve(cwd, paths[0], paths[1], paths[2], paths[3], paths[4]);
+  }
+
+  paths = sliceArray(paths);
+  paths.unshift(cwd);
+  return _resolve.apply(null, paths);
+}
+/// #}}} @func resolve
+
+/// #{{{ @func resolvePath
+/**
+ * @public
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
+ * @return {string}
+ */
+function resolvePath(path) {
 
   /** @type {string} */
   var cwd;
 
   cwd = process.cwd();
 
-  if ( isGT(arguments.length, 1) )
-    path = sliceArray(arguments);
+  switch (arguments.length) {
+    case 0:
+      path = cwd;
+      break;
 
-  if ( isUndefined(path) )
-    path = cwd;
-  else if ( isString(path) )
-    path = _resolvePath(cwd, path);
-  else if ( !isStrings(path) )
-    throw new TypeError('invalid `path` type (must be an array of strings or a string)');
-  else {
-    if ( !isArray(path) )
-      path = sliceArray(path);
-    path.unshift(cwd);
-    path = _resolvePath.apply(null, path);
+    case 1:
+      if ( isUndefined(path) ) {
+        path = cwd;
+        break;
+      }
+
+      if ( isString(path) ) {
+        path = _resolve(cwd, path);
+        break;
+      }
+
+      if ( ( !isArray(path) && !isArguments(path) ) || !isStringList(path) ) {
+        throw setTypeError(new TypeError, 'path',
+          '(!Array<string>|!Arguments<string>|...string)=');
+      }
+
+      path = resolve(cwd, path);
+      break;
+
+    default:
+      if ( !isStringList(arguments) ) {
+        throw setTypeError(new TypeError, 'path',
+          '(!Array<string>|!Arguments<string>|...string)=');
+      }
+
+      path = resolve(cwd, arguments);
+      break;
   }
+
   return cleanPath(path);
-};
+}
+/// #}}} @func resolvePath
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+
+module.exports = resolvePath;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
