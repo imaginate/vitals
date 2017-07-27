@@ -2068,7 +2068,7 @@ function Branch(
    * @const {!Object<string, (boolean|!Object<string, boolean>)>}
    */
   var STATE = hasOption(CONFIG, 'state') && !!CONFIG.state
-    ? deepMergeObject(state, config.state);
+    ? deepMergeObject(state, config.state)
     : cloneObject(state);
   /// #}}} @const STATE
 
@@ -2078,7 +2078,7 @@ function Branch(
    * @const {!Object}
    */
   var FLAGS = hasOption(CONFIG, 'flags') && !!CONFIG.flags
-    ? mergeObject(flags, config.flags);
+    ? mergeObject(flags, config.flags)
     : cloneObject(flags);
   /// #}}} @const FLAGS
 
@@ -2344,7 +2344,7 @@ function buildBranch(build) {
 
 /// #{{{ @func Branch.prototype.isMethod
 /**
- * @param {string} file
+ * @param {!Object} file
  * @return {boolean}
  */
 function isMethod(file) {
@@ -2354,8 +2354,8 @@ function isMethod(file) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'file');
   }
-  if ( !isString(file) ) {
-    throw setTypeError(new TypeError, 'file', 'string');
+  if ( !isObject(file) ) {
+    throw setTypeError(new TypeError, 'file', '!Object');
   }
   if (!file) {
     throw setEmptyError(new Error, 'file');
@@ -2365,7 +2365,8 @@ function isMethod(file) {
 
   /// #{{{ @step return-result
 
-  return !this.method || file === this.method;
+  return !this.method
+    || ( hasOption(file, 'src') && file.src === this.method );
 
   /// #}}} @step return-result
 }
@@ -2629,7 +2630,7 @@ function File(parent, name, config) {
    * @private
    * @const {string}
    */
-  var SRC = resolvePath(src, CONFIG.src);
+  var SRC = resolvePath(PARENT.src, CONFIG.src);
   /// #}}} @const SRC
 
   /// #{{{ @const DEST
@@ -2637,7 +2638,7 @@ function File(parent, name, config) {
    * @private
    * @const {string}
    */
-  var DEST = resolvePath(dest, CONFIG.dest);
+  var DEST = resolvePath(PARENT.dest, CONFIG.dest);
   /// #}}} @const DEST
 
   /// #{{{ @const METHOD
@@ -2645,7 +2646,7 @@ function File(parent, name, config) {
    * @private
    * @const {string}
    */
-  var METHOD = parent.method;
+  var METHOD = PARENT.method;
   /// #}}} @const METHOD
 
   /// #{{{ @const STATE
@@ -2654,8 +2655,8 @@ function File(parent, name, config) {
    * @const {!Object<string, (boolean|!Object<string, boolean>)>}
    */
   var STATE = hasOption(CONFIG, 'state') && !!CONFIG.state
-    ? deepMergeObject(parent.state, config.state);
-    : cloneObject(parent.state);
+    ? deepMergeObject(PARENT.state, CONFIG.state)
+    : cloneObject(PARENT.state);
   freezeObject(STATE);
   /// #}}} @const STATE
 
@@ -2665,8 +2666,8 @@ function File(parent, name, config) {
    * @const {!Object}
    */
   var FLAGS = hasOption(CONFIG, 'flags') && !!CONFIG.flags
-    ? mergeObject(parent.flags, config.flags);
-    : cloneObject(parent.flags);
+    ? mergeObject(PARENT.flags, CONFIG.flags)
+    : cloneObject(PARENT.flags);
   freezeObject(FLAGS);
   /// #}}} @const FLAGS
 
@@ -2675,9 +2676,9 @@ function File(parent, name, config) {
    * @private
    * @const {?function(string): string}
    */
-  var ALTER = isUndefined(parent.alter)
+  var ALTER = isUndefined(PARENT.alter)
     ? makeCompile(DEST, FLAGS)
-    : parent.alter;
+    : PARENT.alter;
   /// #}}} @const ALTER
 
   /// #}}} @step set-constants
