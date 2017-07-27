@@ -258,6 +258,15 @@ var isBoolean = IS.boolean;
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
+/// #{{{ @func isError
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isError = IS.error;
+/// #}}} @func isError
+
 /// #{{{ @func isFile
 /**
  * @private
