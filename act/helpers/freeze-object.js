@@ -3,7 +3,7 @@
  * FREEZE-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,6 +17,7 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -28,6 +29,43 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -37,6 +75,10 @@ var IS = require('./is.js');
  */
 var hasOwnProperty = require('./has-own-property.js');
 /// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isBoolean
 /**
@@ -55,6 +97,15 @@ var isBoolean = IS.boolean;
  */
 var isFunction = IS.func;
 /// #}}} @func isFunction
+
+/// #{{{ @func isHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
 
 /// #{{{ @func isNull
 /**
@@ -83,6 +134,8 @@ var isObject = IS.object;
 var isUndefined = IS.undefined;
 /// #}}} @func isUndefined
 
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -107,15 +160,17 @@ var freeze = (function freezePrivateScope() {
     : null;
 
   if ( !isFunction(freeze) )
-    throw new Error('missing JS engine support for `Object.freeze`');
+    throw setError(new Error,
+      'missing JS engine support for `Object.freeze`');
 
   try {
     freeze(function(){});
     return freeze;
   }
   catch (e) {
-    throw new Error('incomplete JS engine support for `Object.freeze`\n' +
-      '    `Object.freeze` failed with `function` as `src`');
+    throw setError(new Error,
+      'incomplete JS engine support for `Object.freeze`\n' +
+      '    failed: `Object.freeze(function(){})`');
   }
 })();
 /// #}}} @func freeze
@@ -136,7 +191,7 @@ function freezeDeep(src) {
   for (key in src) {
     if ( hasOwnProperty(src, key) ) {
       val = src[key];
-      if ( isObject(val) || isFunction(val) ) {
+      if ( isHashMap(val) ) {
         freezeDeep(val);
       }
     }
@@ -144,13 +199,6 @@ function freezeDeep(src) {
   return freeze(src);
 }
 /// #}}} @func freezeDeep
-
-/// #}}} @group METHODS
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func freezeObject
 /**
@@ -161,22 +209,41 @@ function freezeDeep(src) {
  */
 function freezeObject(src, deep) {
 
-  if ( !isUndefined(deep) && !isBoolean(deep) )
-    throw new TypeError('invalid `deep` data type\n' +
-      '    valid-types: `boolean=`');
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      deep = false;
+      break;
+    default:
+      if ( isUndefined(deep) ) {
+        deep = false;
+      }
+      else if ( !isBoolean(deep) ) {
+        throw setTypeError(new TypeError, 'deep', 'boolean=');
+      }
+  }
 
-  if ( isNull(src) )
+  if ( isNull(src) ) {
     return null;
+  }
 
-  if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `?Object|?Function`');
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+  }
 
   return deep
     ? freezeDeep(src)
     : freeze(src);
 }
 /// #}}} @func freezeObject
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = freezeObject;
 
