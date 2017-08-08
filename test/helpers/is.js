@@ -1514,6 +1514,40 @@ function isYear(val, min, max) {
 // VITALS-METHODS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func isSetterError
+/**
+ * @public
+ * @param {*} val
+ * @param {string=} name = `undefined`
+ * @return {boolean}
+ */
+function isSetterError(val, name) {
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'val');
+    case 1:
+      name = undefined;
+      break;
+    default:
+      if ( isUndefined(name) ) {
+        name = undefined;
+      }
+      else if ( !isString(name) ) {
+        throw setTypeError(new TypeError, 'name', 'string=');
+      }
+      else if ( !name || !END_ERR.test(name) ) {
+        name += 'Error';
+      }
+  }
+
+  return isError(val)
+    && hasOwnEnumProperty(err, 'setter')
+    && err.setter === true
+    && (!name || err.name === name);
+}
+/// #}}} @func isSetterError
+
 /// #{{{ @func isVitalsError
 /**
  * @public
@@ -2186,6 +2220,15 @@ var IS = {
   'time': isTime,
 
   'year': isYear,
+
+  'setterError': isSetterError,
+  'settererror': isSetterError,
+  'setterErr':   isSetterError,
+  'settererr':   isSetterError,
+  'setError':    isSetterError,
+  'seterror':    isSetterError,
+  'setErr':      isSetterError,
+  'seterr':      isSetterError,
 
   'vitalsError': isVitalsError,
   'vitalserror': isVitalsError,
