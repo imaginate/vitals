@@ -1,73 +1,131 @@
 /**
- * -----------------------------------------------------------------------------
- * ACT TASK HELPER: cleanPath
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * CLEAN-PATH HELPER
+ * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
- *
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
 
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const IS
 /**
  * @private
- * @const {!Object<string, function>}
+ * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
+/// #}}} @const IS
 
-////////////////////////////////////////////////////////////////////////////////
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
 // HELPERS
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isString
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
 var isString = IS.string;
+/// #}}} @func isString
 
-/**
- * @private
- * @param {number} val1
- * @param {number} val2
- * @return {boolean}
- */
-var isGT = IS.greaterThan;
+/// #}}} @group IS
 
-/**
- * @private
- * @param {number} val1
- * @param {number} val2
- * @return {boolean}
- */
-var isLT = IS.lessThan;
+/// #}}} @group HELPERS
 
-////////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-////////////////////////////////////////////////////////////////////////////////
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func cleanPath
 /**
  * @public
  * @param {string} path
  * @return {string}
  */
-module.exports = function cleanPath(path) {
+function cleanPath(path) {
 
-  if ( isLT(arguments.length, 1) )
-    throw new Error('invalid missing `path` string');
-  if ( isGT(arguments.length, 1) )
-    throw new Error('invalid param count (only 1 `path` allowed)');
-  if ( !isString(path) )
-    throw new TypeError('invalid `path` type (must be a string)');
-  if ( !path )
-    throw new RangeError('invalid empty `path` string');
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if (!path) {
+    throw setEmptyError(new Error, 'path');
+  }
 
   path = path.replace(/\\/g, '/');
   return path.replace(/\/\/+/g, '/');
-};
+}
+/// #}}} @func cleanPath
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+
+module.exports = cleanPath;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
