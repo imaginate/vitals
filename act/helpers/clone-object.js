@@ -3,7 +3,7 @@
  * CLONE-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,9 +17,11 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -153,20 +155,25 @@ function cloneObject(src, deep) {
       deep = false;
       break;
     default:
-      if ( isUndefined(deep) )
+      if ( isUndefined(deep) ) {
         deep = false;
-      else if ( !isBoolean(deep) )
+      }
+      else if ( !isBoolean(deep) ) {
         throw setTypeError(new TypeError, 'deep', 'boolean=');
+      }
   }
 
-  if ( isNull(src) )
+  if ( isNull(src) ) {
     return {};
+  }
 
-  if ( !isHashMap(src) )
+  if ( !isHashMap(src) ) {
     throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+  }
 
-  if (deep)
+  if (deep) {
     return deepCloneObject(src);
+  }
 
   clone = {};
   for (key in src) {
