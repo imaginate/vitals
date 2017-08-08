@@ -3,63 +3,24 @@
  * LOAD-HELPER HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
-
-/// #{{{ @group INIT-HELPERS
-//////////////////////////////////////////////////////////////////////////////
-// INIT-HELPERS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @func resolvePath
-/**
- * @private
- * @param {(!Array<string>|...string)=} path
- * @return {string}
- */
-var resolvePath = require('./resolve-path.js');
-/// #}}} @func resolvePath
-
-/// #}}} @group INIT-HELPERS
 
 /// #{{{ @group CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const DIR_PATH
-/**
- * @private
- * @const {!RegExp}
- */
-var DIR_PATH = /^.*\//;
-/// #}}} @const DIR_PATH
-
-/// #{{{ @const HELPER_DIR
-/**
- * @private
- * @const {string}
- */
-var HELPER_DIR = resolvePath(__dirname);
-/// #}}} @const HELPER_DIR
-
 /// #{{{ @const IS
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
-
-/// #{{{ @const JS_EXT
-/**
- * @private
- * @const {!RegExp}
- */
-var JS_EXT = /\.js$/;
-/// #}}} @const JS_EXT
 
 /// #}}} @group CONSTANTS
 
@@ -68,23 +29,7 @@ var JS_EXT = /\.js$/;
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func isFile
-/**
- * @private
- * @param {string} val
- * @return {boolean}
- */
-var isFile = IS.file;
-/// #}}} @func isFile
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
+/// #{{{ @group ERROR
 
 /// #{{{ @func setError
 /**
@@ -117,6 +62,16 @@ var setEmptyError = setError.empty;
 var setFileError = setError.file;
 /// #}}} @func setFileError
 
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -128,11 +83,98 @@ var setFileError = setError.file;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isFile
+/**
+ * @private
+ * @param {string} path
+ * @return {boolean}
+ */
+var isFile = IS.file;
+/// #}}} @func isFile
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #}}} @group IS
+
+/// #{{{ @group PATH
+
+/// #{{{ @func getPathName
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var getPathName = require('./get-path-name.js');
+/// #}}} @func getPathName
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = require('./resolve-path.js');
+/// #}}} @func resolvePath
+
+/// #{{{ @func trimJsFileExtension
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var trimJsFileExtension = require('./trim-file-extension.js').construct('.js');
+/// #}}} @func trimJsFileExtension
+
+/// #}}} @group PATH
+
+/// #{{{ @group OBJECT
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = require('./freeze-object.js');
+/// #}}} @func freezeObject
+
+/// #}}} @group OBJECT
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group PATHS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// PATHS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const DIR
+/**
+ * @private
+ * @const {!Object<string, string>}
+ * @struct
+ */
+var DIR = freezeObject({
+  HELPERS: resolvePath(__dirname)
+});
+/// #}}} @const DIR
+
+/// #}}} @group PATHS
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func loadHelper
@@ -146,23 +188,40 @@ function loadHelper(name) {
   /** @type {string} */
   var path;
 
-  if ( !isString(name) )
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'name');
+  }
+  if ( !isString(name) ) {
     throw setTypeError(new TypeError, 'name', 'string');
-
-  name = name.replace(DIR_PATH, '');
-  name = name.replace(JS_EXT, '');
-
-  if (!name)
+  }
+  if (!name) {
     throw setEmptyError(new Error, 'name');
+  }
 
-  path = resolvePath(HELPER_DIR, name + '.js');
+  name = getPathName(name);
+  name = trimJsFileExtension(name);
 
-  if ( !isFile(path) )
+  if (!name) {
+    throw setEmptyError(new Error, 'name');
+  }
+
+  name += '.js';
+  path = resolvePath(DIR.HELPERS, name);
+
+  if ( !isFile(path) ) {
     throw setFileError(new Error, 'name', path);
+  }
 
   return require(path);
 }
 /// #}}} @func loadHelper
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = loadHelper;
 
