@@ -1252,6 +1252,38 @@ function isEmpty(val) {
 }
 /// #}}} @func isEmpty
 
+/// #{{{ @func isInHashMap
+/**
+ * @public
+ * @param {(!Object|!Function)} src
+ * @param {*} val
+ * @return {boolean}
+ */
+function isInHashMap(src, val) {
+
+  /** @type {string} */
+  var key;
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'val');
+  }
+
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  for (key in src) {
+    if ( hasOwnProperty(src, key) && src[key] === val ) {
+      return true;
+    }
+  }
+  return false;
+}
+/// #}}} @func isInHashMap
+
 /// #{{{ @func isInList
 /**
  * @public
@@ -2057,6 +2089,15 @@ var IS = {
   'objmap':        isObjectHashMap,
 
   'empty': isEmpty,
+
+  'inHashMap': isInHashMap,
+  'inhashmap': isInHashMap,
+  'inObject':  isInHashMap,
+  'inobject':  isInHashMap,
+  'inMap':     isInHashMap,
+  'inmap':     isInHashMap,
+  'inObj':     isInHashMap,
+  'inobj':     isInHashMap,
 
   'inArrayLike': isInList,
   'inarraylike': isInList,
