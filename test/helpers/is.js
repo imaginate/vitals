@@ -37,6 +37,14 @@
 var ABS_PATH = /^(?:\/|[A-Z]:)/;
 /// #}}} @const ABS_PATH
 
+/// #{{{ @const END_ERR
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var END_ERR = /Error$/;
+/// #}}} @const END_ERR
+
 /// #{{{ @const FILE_EXT
 /**
  * @private
@@ -226,6 +234,18 @@ function getFullYear(date) {
   return _getFullYear.call(date);
 }
 /// #}}} @func getFullYear
+
+/// #{{{ @func hasOwnEnumProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+function hasOwnEnumProperty(src, key) {
+  return hasOwnProperty(src, key) && propertyIsEnumerable(src, key);
+}
+/// #}}} @func hasOwnEnumProperty
 
 /// #{{{ @func hasOwnProperty
 /**
@@ -1489,6 +1509,47 @@ function isYear(val, min, max) {
 
 /// #}}} @group SPECIAL-METHODS
 
+/// #{{{ @group VITALS-METHODS
+//////////////////////////////////////////////////////////////////////////////
+// VITALS-METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func isVitalsError
+/**
+ * @public
+ * @param {*} val
+ * @param {string=} name = `undefined`
+ * @return {boolean}
+ */
+function isVitalsError(val, name) {
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'val');
+    case 1:
+      name = undefined;
+      break;
+    default:
+      if ( isUndefined(name) ) {
+        name = undefined;
+      }
+      else if ( !isString(name) ) {
+        throw setTypeError(new TypeError, 'name', 'string=');
+      }
+      else if ( !name || !END_ERR.test(name) ) {
+        name += 'Error';
+      }
+  }
+
+  return isError(val)
+    && hasOwnEnumProperty(err, 'vitals')
+    && err.vitals === true
+    && (!name || err.name === name);
+}
+/// #}}} @func isVitalsError
+
+/// #}}} @group VITALS-METHODS
+
 /// #{{{ @group OBJECT-STATE-METHODS
 //////////////////////////////////////////////////////////////////////////////
 // OBJECT-STATE-METHODS
@@ -2125,6 +2186,11 @@ var IS = {
   'time': isTime,
 
   'year': isYear,
+
+  'vitalsError': isVitalsError,
+  'vitalserror': isVitalsError,
+  'vitalsErr':   isVitalsError,
+  'vitalserr':   isVitalsError,
 
   'cappedHashMap': isCapped,
   'cappedhashmap': isCapped,
