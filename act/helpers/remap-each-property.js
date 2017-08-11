@@ -368,10 +368,13 @@ function remapEachListSrc(src, func) {
  * @public
  * @param {(!Array|!Arguments|!Object|!Function)} src
  * @param {!function(*, (number|string)): *} func
- * @param {boolean=} changeSrc = `false`
+ * @param {boolean=} alterSrc = `false`
+ *   If #alterSrc is set to `false`, a new `array` or `object` is created. If
+ *   #alterSrc is set to `true`, the #src `array`, `arguments`, `object`, or
+ *   `function` is directly altered.
  * @return {(!Array|!Arguments|!Object|!Function)}
  */
-function remapEachProperty(src, func, changeSrc) {
+function remapEachProperty(src, func, alterSrc) {
 
   /// #{{{ @step declare-variables
 
@@ -388,14 +391,14 @@ function remapEachProperty(src, func, changeSrc) {
     case 1:
       throw setNoArgError(new Error, 'func');
     case 2:
-      changeSrc = false;
+      alterSrc = false;
       break;
     default:
-      if ( isUndefined(changeSrc) ) {
-        changeSrc = false;
+      if ( isUndefined(alterSrc) ) {
+        alterSrc = false;
       }
-      else if ( !isBoolean(changeSrc) ) {
-        throw setTypeError(new TypeError, 'changeSrc', 'boolean=');
+      else if ( !isBoolean(alterSrc) ) {
+        throw setTypeError(new TypeError, 'alterSrc', 'boolean=');
       }
   }
 
@@ -413,10 +416,10 @@ function remapEachProperty(src, func, changeSrc) {
   /// #{{{ @step make-result
 
   result = isArray(src) || isArguments(src)
-    ? changeSrc
+    ? alterSrc
       ? remapEachListSrc(src, func)
       : remapEachList(src, func)
-    : changeSrc
+    : alterSrc
       ? remapEachHashMapSrc(src, func)
       : remapEachHashMap(src, func);
 
