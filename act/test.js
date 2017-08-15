@@ -74,14 +74,6 @@ var CONFIG = require('./build.json');
 var IS = loadHelper('is');
 /// #}}} @const IS
 
-/// #{{{ @const METHOD
-/**
- * @private
- * @const {!RegExp}
- */
-var METHOD = /^[ \t]*\/\/\/[ \t]+@method[ \t]+([a-zA-Z0-9_\-\$\.]+)[ \t]*$/;
-/// #}}} @const METHOD
-
 /// #{{{ @const NOT_SUPER
 /**
  * @private
@@ -89,6 +81,14 @@ var METHOD = /^[ \t]*\/\/\/[ \t]+@method[ \t]+([a-zA-Z0-9_\-\$\.]+)[ \t]*$/;
  */
 var NOT_SUPER = /\..*$/;
 /// #}}} @const NOT_SUPER
+
+/// #{{{ @const SUPER
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var SUPER = /^[^\.]+\.?/;
+/// #}}} @const SUPER
 
 /// #{{{ @const VERSION
 /**
@@ -105,18 +105,6 @@ var VERSION = loadHelper('get-version')();
  */
 var VITALS = /^vitals\./i;
 /// #}}} @const VITALS
-
-/// #{{{ @const WHITESPACE
-/**
- * @private
- * @const {!Object<string, !RegExp>}
- * @struct
- */
-var WHITESPACE = {
-  OPEN: /^[ \t]+/,
-  CLOSE: /[ \t]+$/
-};
-/// #}}} @const WHITESPACE
 
 /// #}}} @group CONSTANTS
 
@@ -213,23 +201,35 @@ var setNewError = setError.new_;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
-/// #{{{ @func setOptionError
+/// #{{{ @func setRetError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} method
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setRetError = setError.ret;
+/// #}}} @func setRetError
+
+/// #{{{ @func setTestItemError
 /**
  * @private
  * @param {!RangeError} err
- * @param {string} opt
+ * @param {!Array<!Array<string>>} itemsList
+ * @param {string} itemsString
  * @return {!RangeError}
  */
-function setOptionError(err, opt) {
+function setTestItemError(err, itemsList, itemsString) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Object<string, boolean>} */
+  var flags;
+  /** @type {!Array<string>} */
+  var items;
   /** @type {string} */
-  var section;
-  /** @type {string} */
-  var method;
-  /** @type {string} */
-  var main;
+  var item;
   /** @type {string} */
   var msg;
 
@@ -241,53 +241,82 @@ function setOptionError(err, opt) {
     case 0:
       throw setNoArgError(new Error, 'err');
     case 1:
-      throw setNoArgError(new Error, 'opt');
+      throw setNoArgError(new Error, 'itemsList');
+    case 2:
+      throw setNoArgError(new Error, 'itemsString');
   }
 
   if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
   }
-  if ( !isString(opt) ) {
-    throw setTypeError(new TypeError, 'opt', 'string');
+  if ( !isArrayList(itemsList) ) {
+    throw setTypeError(new TypeError, 'itemsList', '!Array<!Array<string>>');
+  }
+  if ( !isString(itemsString) ) {
+    throw setTypeError(new TypeError, 'itemsString', 'string');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step get-option-name
+  /// #{{{ @step get-invalid-items
 
-  opt = trimVitals(opt);
-  opt = getPathName(opt);
-  opt = trimJsFileExtension(opt);
+  testEachProperty(itemsList, function getInvalidItems(_items) {
+    if ( isTestItems(_items) ) {
+      return true;
+    }
+    items = _items;
+    return false;
+  });
 
-  /// #}}} @step get-option-name
+  /// #}}} @step get-invalid-items
 
-  /// #{{{ @step get-method-name
+  /// #{{{ @step setup-flags
 
-  method = 'vitals.' + opt;
+  flags = {
+    'section': false,
+    'super': false,
+    'method': false,
+    'fs': false
+  };
 
-  /// #}}} @step get-method-name
+  /// #}}} @step setup-flags
 
-  /// #{{{ @step get-method-path
+  /// #{{{ @step get-invalid-item
 
-  main = getSuperMethod(opt) + '.js';
-  main = resolvePath(DIR.SRC.METHODS, main);
+  testEachProperty(items, function getInvalidItem(_item) {
+    if (_item === 'fs') {
+      flags['fs'] = true;
+      return true;
+    }
+    else if ( isSection(_item) ) {
+      if (!flags['section']) {
+        flags['section'] = true;
+        return true;
+      }
+    }
+    else if ( isSuperMethod(_item) ) {
+      if (!flags['super']) {
+        flags['super'] = true;
+        return true;
+      }
+    }
+    else if ( isMethod(_item) ) {
+      if (!flags['method']) {
+        flags['method'] = true;
+        return true;
+      }
+    }
+    item = _item;
+    return false;
+  });
 
-  /// #}}} @step get-method-path
-
-  /// #{{{ @step get-section-path
-
-  section = opt + '.js';
-  section = resolvePath(DIR.SRC.SECTIONS, section);
-
-  /// #}}} @step get-section-path
+  /// #}}} @step get-invalid-item
 
   /// #{{{ @step make-message
 
-  msg = 'invalid `method` or `section` for argument (must exist in `src`)\n'
-    + '    argument-name: `"' + opt + '"`\n'
-    + '    method-name: `"' + method + '"`\n'
-    + '    method-path: `' + main + '`\n'
-    + '    section-path: `' + section + '`';
+  msg = 'invalid `item` (i.e. `SECTION|SUPER|METHOD`) in `itemsString`\n'
+    + '    items-string: `"' + itemsString + '"`\n'
+    + '    invalid-item: `"' + item + '"`';
 
   /// #}}} @step make-message
 
@@ -305,18 +334,108 @@ function setOptionError(err, opt) {
 
   /// #}}} @step return-error
 }
-/// #}}} @func setOptionError
+/// #}}} @func setTestItemError
 
-/// #{{{ @func setRetError
+/// #{{{ @func setTestModError
 /**
  * @private
- * @param {!TypeError} err
- * @param {string} method
- * @param {string} types
- * @return {!TypeError}
+ * @param {!Error} err
+ * @param {!Test} test
+ * @param {?number} code
+ * @param {?string} signal
+ * @return {!Error}
  */
-var setRetError = setError.ret;
-/// #}}} @func setRetError
+function setTestModError(err, test, code, signal) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var section;
+  /** @type {string} */
+  var method;
+  /** @type {string} */
+  var super;
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'test');
+    case 2:
+      throw setNoArgError(new Error, 'code');
+    case 3:
+      throw setNoArgError(new Error, 'signal');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isInstanceOf(test, Test) ) {
+    throw setTypeError(new TypeError, 'test', '!Test');
+  }
+  if ( !isNullNumber(code) ) {
+    throw setTypeError(new TypeError, 'code', '?number');
+  }
+  if ( !isNullString(signal) ) {
+    throw setTypeError(new TypeError, 'signal', '?string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step prepare-values
+
+  signal = isNull(signal)
+    ? 'null'
+    : '"' + signal + '"';
+  section = isNull(test.section)
+    ? 'null'
+    : '"' + test.section + '"';
+  super = isNull(test.super)
+    ? 'null'
+    : '"' + test.super + '"';
+  method = isNull(test.method)
+    ? 'null'
+    : '"' + test.method + '"';
+
+  /// #}}} @step prepare-values
+
+  /// #{{{ @step make-message
+
+  msg = 'internal test module failure\n'
+    + '    exit-code: `' + code + '`\n'
+    + '    exit-signal: `' + signal + '`\n'
+    + '    test-options:\n'
+    + '        build: `"' + test.build + '"`\n'
+    + '        section: `' + section + '`\n'
+    + '        super: `' + super + '`\n'
+    + '        method: `' + method + '`\n'
+    + '        fs: `' + test.fs + '`\n'
+    + '        reporter: `"' + test.reporter + '"`\n'
+    + '        slow: `"' + test.slow + '"`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestModError
 
 /// #{{{ @func setTypeError
 /**
@@ -459,104 +578,6 @@ var getFilePaths = loadHelper('get-file-paths');
 
 /// #{{{ @group HAS
 
-/// #{{{ @func hasEndSlash
-/**
- * @private
- * @param {string} src
- * @return {boolean}
- */
-var hasEndSlash = loadHelper('has-end-slash');
-/// #}}} @func hasEndSlash
-
-/// #{{{ @func hasMethod
-/**
- * @private
- * @param {string} path
- * @param {string} method
- * @param {boolean=} noAlias = `false`
- * @return {boolean}
- */
-function hasMethod(path, method, noAlias) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var content;
-  /** @type {!RegExp} */
-  var patt;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'path');
-    case 1:
-      throw setNoArgError(new Error, 'method');
-    case 2:
-      noAlias = false;
-      break;
-    default:
-      if ( isUndefined(noAlias) ) {
-        noAlias = false;
-      }
-      else if ( !isBoolean(noAlias) ) {
-        throw setTypeError(new TypeError, 'noAlias', 'boolean=');
-      }
-  }
-
-  if ( !isString(path) ) {
-    throw setTypeError(new TypeError, 'path', 'string');
-  }
-  if ( !isString(method) ) {
-    throw setTypeError(new TypeError, 'method', 'string');
-  }
-
-  if (!path) {
-    throw setEmptyError(new Error, 'path');
-  }
-  if (!method) {
-    throw setEmptyError(new Error, 'method');
-  }
-
-  if ( !isFile(path) ) {
-    throw setFileError(new Error, 'path', path);
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step get-file-content
-
-  content = getFileContent(path);
-
-  /// #}}} @step get-file-content
-
-  /// #{{{ @step make-method
-
-  method = getMethod(method);
-
-  /// #}}} @step make-method
-
-  /// #{{{ @step make-method-pattern
-
-  patt = new RegExp(
-    '\\n[ \\t]*///[ \\t]+@'
-    + (noAlias
-        ? 'method'
-        : '(?:method|alias)')
-    + '[ \\t]+' + escapeSource(method) + '[ \\t]*\\n');
-
-  /// #}}} @step make-method-pattern
-
-  /// #{{{ @step return-result
-
-  return patt.test(content);
-
-  /// #}}} @step return-result
-}
-/// #}}} @func hasMethod
-
 /// #{{{ @func hasOption
 /**
  * @private
@@ -616,15 +637,6 @@ var hasOwnEnumProperty = loadHelper('has-own-enum-property');
 var hasOwnProperty = loadHelper('has-own-property');
 /// #}}} @func hasOwnProperty
 
-/// #{{{ @func hasSlash
-/**
- * @private
- * @param {string} src
- * @return {boolean}
- */
-var hasSlash = loadHelper('has-slash');
-/// #}}} @func hasSlash
-
 /// #}}} @group HAS
 
 /// #{{{ @group IS
@@ -637,6 +649,15 @@ var hasSlash = loadHelper('has-slash');
  */
 var isArray = IS.array;
 /// #}}} @func isArray
+
+/// #{{{ @func isArrayList
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isArrayList = IS.arrayList;
+/// #}}} @func isArrayList
 
 /// #{{{ @func isBoolean
 /**
@@ -794,7 +815,7 @@ function isMethod(item) {
 
   /// #{{{ @step get-sub-method
 
-  subMethod = getSubMethod(item);
+  subMethod = trimSuperMethod(item);
 
   /// #}}} @step get-sub-method
 
@@ -829,6 +850,28 @@ function isMethod(item) {
  */
 var isNull = IS.nil;
 /// #}}} @func isNull
+
+/// #{{{ @func isNullNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullNumber(val) {
+  return isNull(val) || isNumber(val);
+}
+/// #}}} @func isNullNumber
+
+/// #{{{ @func isNullString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullString(val) {
+  return isNull(val) || isString(val);
+}
+/// #}}} @func isNullString
 
 /// #{{{ @func isObject
 /**
@@ -1245,6 +1288,60 @@ function makeTestItemsList(itemsString) {
 }
 /// #}}} @func makeTestItemsList
 
+/// #{{{ @func makeTestOptions
+/**
+ * @private
+ * @param {!Array<string>} items
+ * @return {!Object}
+ */
+function makeTestOptions(items) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Object} */
+  var opts;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'items');
+  }
+  if ( !isArray(items) || !isStringList(items) ) {
+    throw setTypeError(new TypeError, 'items', '!Array<string>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-options
+
+  opts = {};
+  forEachProperty(items, function appendTestOption(item) {
+    if (item === 'fs') {
+      opts.fs = true;
+    }
+    else if ( isSection(item) ) {
+      opts.section = item;
+    }
+    else if ( isSuperMethod(item) ) {
+      opts.super = item;
+    }
+    else if ( isMethod(item) ) {
+      opts.method = item;
+    }
+  });
+
+  /// #}}} @step make-options
+
+  /// #{{{ @step return-options
+
+  return opts;
+
+  /// #}}} @step return-options
+}
+/// #}}} @func makeTestOptions
+
 /// #}}} @group MAKE
 
 /// #{{{ @group OBJECT
@@ -1405,6 +1502,21 @@ var trimJsFileExtension = loadHelper('trim-file-extension').construct('.js');
 
 /// #}}} @group PATH
 
+/// #{{{ @group PROCESS
+
+/// #{{{ @func forkProcess
+/**
+ * @private
+ * @param {string} path
+ * @param {!Array} args
+ * @param {!Object} opts
+ * @return {!ChildProcess}
+ */
+var forkProcess = require('child_process').fork;
+/// #}}} @func forkProcess
+
+/// #}}} @group PROCESS
+
 /// #{{{ @group REGEXP
 
 /// #{{{ @func escapeSource
@@ -1419,203 +1531,6 @@ var escapeSource = loadHelper('escape-source');
 /// #}}} @group REGEXP
 
 /// #{{{ @group STRING
-
-/// #{{{ @func getAliasMethod
-/**
- * @private
- * @param {string} path
- * @param {string} method
- * @return {string}
- */
-function getAliasMethod(path, method) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var content;
-  /** @type {!Array<string>} */
-  var lines;
-  /** @type {!RegExp} */
-  var patt;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'path');
-    case 1:
-      throw setNoArgError(new Error, 'method');
-  }
-
-  if ( !isString(path) ) {
-    throw setTypeError(new TypeError, 'path', 'string');
-  }
-  if ( !isString(method) ) {
-    throw setTypeError(new TypeError, 'method', 'string');
-  }
-
-  if (!path) {
-    throw setEmptyError(new Error, 'path');
-  }
-  if (!method) {
-    throw setEmptyError(new Error, 'method');
-  }
-
-  if ( !isFile(path) ) {
-    throw setFileError(new Error, 'path', path);
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-method
-
-  method = getMethod(method);
-
-  /// #}}} @step make-method
-
-  /// #{{{ @step check-method
-
-  if ( hasMethod(path, method, true) ) {
-    return method;
-  }
-
-  /// #}}} @step check-method
-
-  /// #{{{ @step get-file-content
-
-  content = getFileContent(path);
-
-  /// #}}} @step get-file-content
-
-  /// #{{{ @step make-lines
-
-  lines = content.split('\n');
-
-  /// #}}} @step make-lines
-
-  /// #{{{ @step make-alias-pattern
-
-  patt = new RegExp(
-    '^[ \\t]*///[ \\t]+@alias[ \\t]+'
-    + escapeSource(method) + '[ \\t]*$');
-
-  /// #}}} @step make-alias-pattern
-
-  /// #{{{ @step find-alias
-
-  len = lines.length;
-  i = 0;
-  while ( !patt.test(lines[i]) ) {
-    if (++i >= len) {
-      return '';
-    }
-  }
-
-  /// #}}} @step find-alias
-
-  /// #{{{ @step get-method
-
-  while ( !METHOD.test(lines[i]) ) {
-    if (--i < 0) {
-      return '';
-    }
-  }
-  method = lines[i].replace(METHOD, '$1');
-
-  /// #}}} @step get-method
-
-  /// #{{{ @step return-result
-
-  return method;
-
-  /// #}}} @step return-result
-}
-/// #}}} @func getAliasMethod
-
-/// #{{{ @func getMethod
-/**
- * @private
- * @param {string} opt
- * @return {string}
- */
-function getMethod(opt) {
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'opt');
-  }
-  if ( !isString(opt) ) {
-    throw setTypeError(new TypeError, 'opt', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step return-result
-
-  opt = trimVitals(opt);
-  return opt && ('vitals.' + opt);
-
-  /// #}}} @step return-result
-}
-/// #}}} @func getMethod
-
-/// #{{{ @func getSubmethod
-/**
- * @private
- * @param {string} opt
- * @return {string}
- */
-function getSubmethod(opt) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var main;
-  /** @type {string} */
-  var sub;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'opt');
-  }
-  if ( !isString(opt) ) {
-    throw setTypeError(new TypeError, 'opt', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-super-method
-
-  main = getSuperMethod(opt);
-
-  /// #}}} @step make-super-method
-
-  /// #{{{ @step make-submethod
-
-  sub = main && trimVitals(opt);
-  if (!!sub && sub === main) {
-    sub = 'main';
-  }
-
-  /// #}}} @step make-submethod
-
-  /// #{{{ @step return-result
-
-  return sub;
-
-  /// #}}} @step return-result
-}
-/// #}}} @func getSubmethod
 
 /// #{{{ @func getSuperMethod
 /**
@@ -1645,6 +1560,34 @@ function getSuperMethod(opt) {
 }
 /// #}}} @func getSuperMethod
 
+/// #{{{ @func trimSuperMethod
+/**
+ * @private
+ * @param {string} opt
+ * @return {string}
+ */
+function trimSuperMethod(opt) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'opt');
+  }
+  if ( !isString(opt) ) {
+    throw setTypeError(new TypeError, 'opt', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  opt = trimVitals(opt);
+  return opt && opt.replace(SUPER, '');
+
+  /// #}}} @step return-result
+}
+/// #}}} @func trimSuperMethod
+
 /// #{{{ @func trimVitals
 /**
  * @private
@@ -1666,40 +1609,11 @@ function trimVitals(opt) {
 
   /// #{{{ @step return-result
 
-  opt = trimWhitespace(opt);
   return opt && opt.replace(VITALS, '');
 
   /// #}}} @step return-result
 }
 /// #}}} @func trimVitals
-
-/// #{{{ @func trimWhitespace
-/**
- * @private
- * @param {string} opt
- * @return {string}
- */
-function trimWhitespace(opt) {
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'opt');
-  }
-  if ( !isString(opt) ) {
-    throw setTypeError(new TypeError, 'opt', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step return-result
-
-  opt = opt && opt.replace(WHITESPACE.OPEN, '');
-  return opt && opt.replace(WHITESPACE.CLOSE, '');
-
-  /// #}}} @step return-result
-}
-/// #}}} @func trimWhitespace
 
 /// #}}} @group STRING
 
@@ -1831,7 +1745,7 @@ function Test(build, opts, prev) {
       if ( isNull(prev) || isUndefined(prev) ) {
         prev = null;
       }
-      else if ( !isObject(prev) || !isInstanceOf(prev, Test) ) {
+      else if ( !isInstanceOf(prev, Test) ) {
         throw setTypeError(new TypeError, 'prev', '?Test=');
       }
   }
@@ -2391,7 +2305,7 @@ function testBrowser(itemsString) {
 
   /// #{{{ @step make-options
 
-  optsList = remapEachProperty(itemsList, makeTestOpts);
+  optsList = remapEachProperty(itemsList, makeTestOptions);
 
   /// #}}} @step make-options
 
@@ -2459,7 +2373,7 @@ function testNode(itemsString) {
 
   /// #{{{ @step make-options
 
-  optsList = remapEachProperty(itemsList, makeTestOpts);
+  optsList = remapEachProperty(itemsList, makeTestOptions);
 
   /// #}}} @step make-options
 
