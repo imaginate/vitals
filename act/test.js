@@ -354,7 +354,7 @@ function setTestModError(err, test, code, signal) {
   /** @type {string} */
   var method;
   /** @type {string} */
-  var super;
+  var superM;
   /** @type {string} */
   var msg;
 
@@ -396,7 +396,7 @@ function setTestModError(err, test, code, signal) {
   section = isNull(test.section)
     ? 'null'
     : '"' + test.section + '"';
-  super = isNull(test.super)
+  superM = isNull(test.super)
     ? 'null'
     : '"' + test.super + '"';
   method = isNull(test.method)
@@ -413,7 +413,7 @@ function setTestModError(err, test, code, signal) {
     + '    test-options:\n'
     + '        build: `"' + test.build + '"`\n'
     + '        section: `' + section + '`\n'
-    + '        super: `' + super + '`\n'
+    + '        super: `' + superM + '`\n'
     + '        method: `' + method + '`\n'
     + '        fs: `' + test.fs + '`\n'
     + '        reporter: `"' + test.reporter + '"`\n'
