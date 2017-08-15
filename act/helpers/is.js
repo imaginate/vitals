@@ -1096,6 +1096,17 @@ function isObjectList(val) {
 }
 /// #}}} @func isObjectList
 
+/// #{{{ @func isArrayList
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isArrayList(val) {
+  return isArrayLike(val) && isListOf(val, isArray);
+}
+/// #}}} @func isArrayList
+
 /// #}}} @group JS-LIST-OF-METHODS
 
 /// #{{{ @group JS-HASH-MAP-OF-METHODS
@@ -1956,10 +1967,17 @@ var IS = {
 
   'objectList': isObjectList,
   'objectlist': isObjectList,
-  'objects':    isObjectList,
   'objList':    isObjectList,
   'objlist':    isObjectList,
+  'objects':    isObjectList,
   'objs':       isObjectList,
+
+  'arrayList': isArrayList,
+  'arraylist': isArrayList,
+  'arrList':   isArrayList,
+  'arrlist':   isArrayList,
+  'arrays':    isArrayList,
+  'arrs':      isArrayList,
 
   'nullHashMap': isNullHashMap,
   'nullhashmap': isNullHashMap,
