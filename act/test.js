@@ -1578,6 +1578,17 @@ function getSuperMethod(opt) {
 }
 /// #}}} @func getSuperMethod
 
+/// #{{{ @func toJsonString
+/**
+ * @private
+ * @param {!Object} src
+ * @param {(?function(string, *): *)=} filter = `null`
+ * @param {(?number|?string)=} space = `null`
+ * @return {string}
+ */
+var toJsonString = loadHelper('to-json-string');
+/// #}}} @func toJsonString
+
 /// #{{{ @func trimSuperMethod
 /**
  * @private
@@ -2151,6 +2162,8 @@ function runTest() {
 
   /// #{{{ @step declare-variables
 
+  /** @type {string} */
+  var opts;
   /** @type {!ChildProcess} */
   var cp;
 
@@ -2165,15 +2178,16 @@ function runTest() {
 
   /// #{{{ @step fork-test-module
 
-  cp = forkProcess(FILE.TASK.TESTMOD, [
-    THIS.build,
-    THIS.section,
-    THIS.super,
-    THIS.method,
-    THIS.fs,
-    THIS.reporter,
-    THIS.slow
-  ], {
+  opts = toJsonString({
+    'build': THIS.build,
+    'section': THIS.section,
+    'super': THIS.super,
+    'method': THIS.method,
+    'fs': THIS.fs,
+    'reporter': THIS.reporter,
+    'slow': THIS.slow
+  });
+  cp = forkProcess(FILE.TASK.TESTMOD, [ opts ], {
     'stdio': 'inherit'
   });
 
