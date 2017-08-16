@@ -873,6 +873,15 @@ function isNullString(val) {
 }
 /// #}}} @func isNullString
 
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -1174,8 +1183,17 @@ function isTestItemsList(itemsList) {
  * @param {*} val
  * @return {boolean}
  */
-var isUndefined = IS.undefined;
+var isUndefined = IS.void;
 /// #}}} @func isUndefined
+
+/// #{{{ @func isWholeNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
