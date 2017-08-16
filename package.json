@@ -10,7 +10,7 @@
   "author": "Adam Smith <adam@imaginate.life> (https://github.com/imaginate)",
   "license": "Apache-2.0",
   "scripts": {
-    "test": "node ./node_modules/node-act/bin/act test -methods"
+    "test": "node ./node_modules/node-act/bin/act test -node= all"
   },
   "bugs": {
     "url": "https://github.com/imaginate/vitals/issues"
