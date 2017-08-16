@@ -28,7 +28,7 @@ var IS = require('./is.js');
  * @const {!Object}
  * @struct
  */
-var JSON3 = require('json3').noConflict();
+var JSON3 = require('json3');
 /// #}}} @const JSON3
 
 /// #}}} @group CONSTANTS
