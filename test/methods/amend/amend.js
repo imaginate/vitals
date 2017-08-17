@@ -1,18 +1,19 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: vitals.amend
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.AMEND UNIT TESTS
+ * ---------------------------------------------------------------------------
+ * @method vitals.amend
+ * @submethod main
+ * @super amend
  * @section strict
- * @see [vitals.amend docs](https://github.com/imaginate/vitals/wiki/vitals.amend)
- * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
- * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @section all
+ * @build browser
+ * @build node
  *
- * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @see [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
  *
- * Annotations:
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @author Adam Smith <adam@imaginate.life> (http://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 method('amend', function() {
