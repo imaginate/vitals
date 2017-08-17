@@ -61,6 +61,14 @@ var FILE_EXT = /^\.?[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*$/;
 var FS = require('fs');
 /// #}}} @const FS
 
+/// #{{{ @const FS_SECTION
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var FS_SECTION = /^(?:fs|file[_\-]?system)$/i;
+/// #}}} @const FS_SECTION
+
 /// #{{{ @const LEN_PATT
 /**
  * @private
@@ -1272,6 +1280,25 @@ function isEmpty(val) {
 }
 /// #}}} @func isEmpty
 
+/// #{{{ @func isFileSystemSection
+/**
+ * @public
+ * @param {string} section
+ * @return {boolean}
+ */
+function isFileSystemSection(section) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'section');
+  }
+  if ( !isString(section) ) {
+    throw setTypeError(new TypeError, 'section', 'string');
+  }
+
+  return !!section && FS_SECTION.test(section);
+}
+/// #}}} @func isFileSystemSection
+
 /// #{{{ @func isInHashMap
 /**
  * @public
@@ -2184,6 +2211,11 @@ var IS = {
   'objmap':        isObjectHashMap,
 
   'empty': isEmpty,
+
+  'fileSystemSection': isFileSystemSection,
+  'filesystemsection': isFileSystemSection,
+  'fsSection':         isFileSystemSection,
+  'fssection':         isFileSystemSection,
 
   'inHashMap': isInHashMap,
   'inhashmap': isInHashMap,
