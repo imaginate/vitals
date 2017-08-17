@@ -17,7 +17,7 @@
 
 exports['desc'] = 'runs vitals unit tests';
 exports['value'] = '[SECTION|SUPER|METHOD[-SECTION|SUPER|METHOD]...[:]]...';
-exports['default'] = '-node= all';
+exports['default'] = '-node= all-fs';
 exports['methods'] = {
   'browser': {
     'desc': 'runs browser specific unit tests for one or more sections, '
@@ -1292,7 +1292,7 @@ function makeTestItemsList(itemsString) {
   }
   else {
     itemsList = [
-      [ 'all' ]
+      [ 'all', 'fs' ]
     ];
   }
 
@@ -1956,7 +1956,10 @@ function Test(build, opts, prev) {
   /**
    * @const {?string}
    */
-  setConstantProperty(this, 'section', SECTION);
+  setConstantProperty(this, 'section',
+    !SECTION && !SUPER && !METHOD && FS
+      ? 'fs'
+      : null);
   /// #}}} @member section
 
   /// #{{{ @member super
@@ -2294,7 +2297,7 @@ freezeObject(Test.prototype);
 /// #{{{ @func testBrowser
 /**
  * @public
- * @param {(?string|?undefined)=} itemsString = `"all"`
+ * @param {(?string|?undefined)=} itemsString = `"all-fs"`
  * @return {void}
  */
 function testBrowser(itemsString) {
@@ -2362,7 +2365,7 @@ function testBrowser(itemsString) {
 /// #{{{ @func testNode
 /**
  * @public
- * @param {(?string|?undefined)=} itemsString = `"all"`
+ * @param {(?string|?undefined)=} itemsString = `"all-fs"`
  * @return {void}
  */
 function testNode(itemsString) {
