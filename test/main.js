@@ -437,36 +437,7 @@ var getFilePaths = loadHelper('get-file-paths');
  * @param {string} key
  * @return {boolean}
  */
-function hasOption(opts, key) {
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'opts');
-    case 1:
-      throw setNoArgError(new Error, 'key');
-  }
-
-  if ( !isObject(opts) ) {
-    throw setTypeError(new TypeError, 'opts', '!Object');
-  }
-  if ( !isString(key) ) {
-    throw setTypeError(new TypeError, 'key', 'string');
-  }
-
-  if (!key) {
-    throw setEmptyError(new Error, 'key');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step return-result
-
-  return hasOwnEnumProperty(opts, key) && !isUndefined(opts[key]);
-
-  /// #}}} @step return-result
-}
+var hasOption = loadHelper('has-option');
 /// #}}} @func hasOption
 
 /// #{{{ @func hasOwnEnumProperty
