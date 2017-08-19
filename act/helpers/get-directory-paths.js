@@ -418,6 +418,7 @@ function makeValidTest(opts, valid, invalid) {
 /**
  * @private
  * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
  * @return {!Object}
  */
 var cloneObject = require('./clone-object.js');
