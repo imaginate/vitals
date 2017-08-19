@@ -71,63 +71,15 @@ var setDirError = setError.dir;
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
-/// #{{{ @func setModeError
+/// #{{{ @func setFileModeError
 /**
  * @private
  * @param {!RangeError} err
  * @param {string} mode
  * @return {!RangeError}
  */
-function setModeError(err, mode) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var msg;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'err');
-    case 1:
-      throw setNoArgError(new Error, 'mode');
-  }
-
-  if ( !isError(err) ) {
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  }
-  if ( !isString(mode) ) {
-    throw setTypeError(new TypeError, 'mode', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-message
-
-  msg = 'invalid file mode for `mode` option\n'
-    + '    valid-mode-pattern: `/^0?[0-7]{1,3}$/`\n'
-    + '    invalid-mode-value: `"' + mode + '"`';
-
-  /// #}}} @step make-message
-
-  /// #{{{ @step set-error-name
-
-  if (err.name !== 'RangeError') {
-    err.name = 'RangeError';
-  }
-
-  /// #}}} @step set-error-name
-
-  /// #{{{ @step return-error
-
-  return setError(err, msg);
-
-  /// #}}} @step return-error
-}
-/// #}}} @func setModeError
+var setFileModeError = setError.fileMode;
+/// #}}} @func setFileModeError
 
 /// #{{{ @func setNoArgError
 /**
@@ -479,7 +431,7 @@ function makeDirectory(path, opts) {
           throw setEmptyError(new Error, 'opts.mode');
         }
         if ( !isFileMode(opts) ) {
-          throw setModeError(new RangeError, opts);
+          throw setFileModeError(new RangeError, opts);
         }
         opts = mergeObject(DFLTS, { 'mode': opts });
         freezeObject(opts);
@@ -502,7 +454,7 @@ function makeDirectory(path, opts) {
         throw setEmptyError(new Error, 'opts.mode');
       }
       else if ( !isFileMode(opts['mode']) ) {
-        throw setModeError(new RangeError, opts['mode']);
+        throw setFileModeError(new RangeError, opts['mode']);
       }
 
       if ( !hasOption(opts, 'parents') ) {
