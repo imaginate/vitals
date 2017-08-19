@@ -17,32 +17,32 @@
 //////////////////////////////////////////////////////////////////////////////
 
 exports['desc'] = 'updates semantic version for vitals repo';
-exports['value'] = 'x.x.x-pre.x';
+exports['value'] = '[SEMVER]';
 exports['default'] = '-all';
 exports['methods'] = {
   'all': {
     'desc': 'updates semantic version for entire repo',
-    'value': 'x.x.x-pre.x',
+    'value': '[SEMVER]',
     'method': updateAll
   },
   'src': {
     'desc': 'updates semantic version in the source code',
-    'value': 'x.x.x-pre.x',
+    'value': '[SEMVER]',
     'method': updateSrc
   },
   'dist': {
     'desc': 'updates semantic version in the compiled code',
-    'value': 'x.x.x-pre.x',
+    'value': '[SEMVER]',
     'method': updateDist
   },
   'npm': {
     'desc': 'updates semantic version for npm in package & readme',
-    'value': 'x.x.x-pre.x',
+    'value': '[SEMVER]',
     'method': updateNpm
   },
   'docs': {
     'desc': 'updates semantic version for vitals docs',
-    'value': 'x.x.x-pre.x',
+    'value': '[SEMVER]',
     'method': updateDocs
   }
 };

@@ -17,32 +17,32 @@
 //////////////////////////////////////////////////////////////////////////////
 
 exports['desc'] = 'builds distributable versions of vitals';
-exports['value'] = 'method=';
+exports['value'] = '[SUPER]';
 exports['default'] = '-node';
 exports['methods'] = {
   'all': {
     'desc': 'builds all vitals distributables & documentation',
-    'value': 'method=',
+    'value': '[SUPER]',
     'method': buildAll
   },
   'dist': {
     'desc': 'builds browser & node versions of vitals',
-    'value': 'method=',
+    'value': '[SUPER]',
     'method': buildDist
   },
   'browser': {
     'desc': 'builds browser versions of vitals',
-    'value': 'method=',
+    'value': '[SUPER]',
     'method': buildBrowser
   },
   'node': {
     'desc': 'builds node versions of vitals',
-    'value': 'method=',
+    'value': '[SUPER]',
     'method': buildNode
   },
   'docs': {
     'desc': 'builds vitals documentation',
-    'value': 'method=',
+    'value': '[SUPER]',
     'method': buildDocs
   }
 };
