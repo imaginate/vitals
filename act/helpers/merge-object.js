@@ -75,6 +75,22 @@ var setTypeError = setError.type;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
+/// #{{{ @func isNullOrHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+function isNullOrHashMap(val) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'val');
+  }
+
+  return isNull(val) || isHashMap(val);
+}
+/// #}}} @func isNullOrHashMap
+
 /// #{{{ @func isHashMap
 /**
  * @private
