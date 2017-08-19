@@ -211,16 +211,6 @@ var isFunction = IS.func;
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
 
-/// #{{{ @func isLT
-/**
- * @private
- * @param {number} val1
- * @param {number} val2
- * @return {boolean}
- */
-var isLT = IS.lessThan;
-/// #}}} @func isLT
-
 /// #{{{ @func isNull
 /**
  * @private
@@ -260,6 +250,15 @@ function isNullOrRegExp(val) {
  */
 var isObject = IS.object;
 /// #}}} @func isObject
+
+/// #{{{ @func isPlainObject
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isPlainObject = IS.plainObject;
+/// #}}} @func isPlainObject
 
 /// #{{{ @func isRegExp
 /**
@@ -355,10 +354,16 @@ var makeValidPathTests = require('./make-valid-path-tests.js');
  */
 function makeValidTest(opts, valid, invalid, isValid) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {?function(string, string): boolean} */
   var _isValidTest;
   /** @type {!function(string, string): boolean} */
   var isValidTest;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
@@ -400,15 +405,27 @@ function makeValidTest(opts, valid, invalid, isValid) {
     throw setEmptyError(new Error, 'valid');
   }
 
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-valid-path-test
+
   isValidTest = opts['extend']
-    ? makeValidPathTests(
-        DFLT_OPTS[valid], DFLT_OPTS[invalid], opts[valid], opts[invalid])
+    ? makeValidPathTests(DFLTS[valid], DFLTS[invalid],
+        opts[valid], opts[invalid])
     : makeValidPathTest(opts[valid], opts[invalid]);
-  return _isValidTest
+  isValid = _isValidTest
     ? function isValid(name, tree) {
         return _isValidTest(name, tree) && isValidTest(name, tree);
       }
     : isValidTest;
+
+  /// #}}} @step make-valid-path-test
+
+  /// #{{{ @step return-valid-path-test
+
+  return isValid;
+
+  /// #}}} @step return-valid-path-test
 }
 /// #}}} @func makeValidTest
 
@@ -420,6 +437,7 @@ function makeValidTest(opts, valid, invalid, isValid) {
 /**
  * @private
  * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
  * @return {!Object}
  */
 var cloneObject = require('./clone-object.js');
@@ -433,6 +451,16 @@ var cloneObject = require('./clone-object.js');
  */
 var createObject = require('./create-object.js');
 /// #}}} @func createObject
+
+/// #{{{ @func forEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string))} func
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var forEachProperty = require('./for-each-property.js');
+/// #}}} @func forEachProperty
 
 /// #{{{ @func freezeObject
 /**
@@ -496,13 +524,13 @@ var resolvePath = require('./resolve-path.js');
 // DEFAULTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const DFLT_OPTS
+/// #{{{ @const DFLTS
 /**
  * @private
  * @const {!Object<string, *>}
  * @dict
  */
-var DFLT_OPTS = freezeObject({
+var DFLTS = freezeObject({
   'deep': false,
   'full': false,
   'extend': false,
@@ -513,14 +541,16 @@ var DFLT_OPTS = freezeObject({
   'validFiles': null,
   'invalidFiles': null
 });
-/// #}}} @const DFLT_OPTS
+/// #}}} @const DFLTS
 
 /// #}}} @group DEFAULTS
 
-/// #{{{ @group CONSTRUCTORS
+/// #{{{ @group CLASSES
 //////////////////////////////////////////////////////////////////////////////
-// CONSTRUCTORS
+// CLASSES
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group FILE-PATHS
 
 /// #{{{ @func FilePaths
 /**
@@ -680,6 +710,16 @@ function FilePaths(src, opts) {
   setConstantProperty(this, 'paths', []);
   /// #}}} @member paths
 
+  /// #{{{ @member result
+  /**
+   * @const {!Array<string>}
+   */
+  setConstantProperty(this, 'result',
+    OPTS['full']
+      ? this.paths
+      : this.trees);
+  /// #}}} @member result
+
   /// #}}} @step set-members
 
   /// #{{{ @step freeze-instance
@@ -687,13 +727,275 @@ function FilePaths(src, opts) {
   freezeObject(this);
 
   /// #}}} @step freeze-instance
+
+  /// #{{{ @step load-paths
+
+  this.getPaths(SRC, '');
+
+  if (OPTS['deep']) {
+    this.getPathsDeep();
+  }
+
+  /// #}}} @step load-paths
+
+  /// #{{{ @step freeze-members
+
+  freezeObject(this.dirs);
+  freezeObject(this.trees);
+  freezeObject(this.paths);
+
+  /// #}}} @step freeze-members
 }
 /// #}}} @func FilePaths
 
+/// #{{{ @func newFilePaths
+/**
+ * @private
+ * @param {string} src
+ * @param {!Object} opts
+ * @return {!FilePaths}
+ */
+function newFilePaths(src, opts) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'opts');
+  }
+
+  if ( !isString(src) ) {
+    throw setTypeError(new TypeError, 'src', 'string');
+  }
+  if ( !isObject(opts) ) {
+    throw setTypeError(new TypeError, 'opts', '!Object');
+  }
+
+  if (!src) {
+    throw setEmptyError(new Error, 'src');
+  }
+
+  if ( !isDirectory(src) ) {
+    throw setDirError(new Error, 'src', src);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-new-file-paths-instance
+
+  return new FilePaths(src, opts);
+
+  /// #}}} @step return-new-file-paths-instance
+}
+/// #}}} @func newFilePaths
+
+/// #{{{ @func FilePaths.prototype.getPaths
+/**
+ * @private
+ * @this {!FilePaths}
+ * @param {string} path
+ * @param {string} tree
+ * @return {!FilePaths}
+ */
+function getPaths(path, tree) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var paths;
+  /** @type {!Array<string>} */
+  var trees;
+  /** @type {!Array<string>} */
+  var names;
+  /** @type {!Array<string>} */
+  var dirs;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'path');
+    case 1:
+      throw setNoArgError(new Error, 'tree');
+  }
+
+  if ( !isString(path) )
+    throw setTypeError(new TypeError, 'path', 'string');
+  if ( !isString(tree) )
+    throw setTypeError(new TypeError, 'tree', 'string');
+
+  if (!path)
+    throw setEmptyError(new Error, 'path');
+
+  if ( !isDirectory(path) )
+    throw setDirError(new Error, 'path', path);
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const TREE
+  /**
+   * @private
+   * @const {string}
+   */
+  var TREE = tree && appendSlash(tree);
+  /// #}}} @const TREE
+
+  /// #{{{ @const PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATH = appendSlash(path);
+  /// #}}} @const PATH
+
+  /// #{{{ @func isValidDir
+  /**
+   * @private
+   * @param {string} name
+   * @param {string} tree
+   * @return {boolean}
+   */
+  var isValidDir = this.isValidDir;
+  /// #}}} @func isValidDir
+
+  /// #{{{ @func isValidFile
+  /**
+   * @private
+   * @param {string} name
+   * @param {string} tree
+   * @return {boolean}
+   */
+  var isValidFile = this.isValidFile;
+  /// #}}} @func isValidFile
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-member-refs
+
+  dirs = this.dirs;
+  trees = this.trees;
+  paths = this.paths;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step append-paths
+
+  names = readPaths(PATH);
+  forEachProperty(names, function appendPath(name) {
+    name = getPathName(name);
+    tree = TREE + name;
+    path = PATH + name;
+    if ( isFile(path) ) {
+      if ( isValidFile(name, tree) ) {
+        trees.push(tree);
+        paths.push(path);
+      }
+    }
+    else if ( isDirectory(path) ) {
+      if ( isValidDir(name, tree) ) {
+        dirs.push(tree);
+      }
+    }
+  });
+
+  /// #}}} @step append-paths
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func FilePaths.prototype.getPaths
+
+/// #{{{ @func FilePaths.prototype.getPathsDeep
+/**
+ * @private
+ * @this {!FilePaths}
+ * @return {!FilePaths}
+ */
+function getPathsDeep() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var dirs;
+  /** @type {string} */
+  var path;
+  /** @type {string} */
+  var dir;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATH = appendSlash(this.SRC);
+  /// #}}} @const PATH
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-member-refs
+
+  dirs = this.dirs;
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step append-paths
+
+  i = -1;
+  while (++i < dirs.length) {
+    dir = dirs[i];
+    path = PATH + dir;
+    this.getPaths(path, dir);
+  }
+
+  /// #}}} @step append-paths
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func FilePaths.prototype.getPathsDeep
+
+/// #{{{ @step setup-file-paths-constructor
+
+FilePaths.FilePaths = FilePaths;
+FilePaths.newFilePaths = newFilePaths;
+FilePaths.construct = newFilePaths;
 FilePaths.prototype = createObject(null);
+
+freezeObject(FilePaths);
+
+/// #}}} @step setup-file-paths-constructor
+
+/// #{{{ @step setup-file-paths-prototype
+
+setConstantProperty(FilePaths.prototype, 'getPaths', getPaths);
+setConstantProperty(FilePaths.prototype, 'getPathsDeep', getPathsDeep);
 setConstantProperty(FilePaths.prototype, 'constructor', FilePaths, false);
 
-/// #}}} @group CONSTRUCTORS
+freezeObject(FilePaths.prototype);
+
+/// #}}} @step setup-file-paths-prototype
+
+/// #}}} @group FILE-PATHS
+
+/// #}}} @group CLASSES
 
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
@@ -779,22 +1081,22 @@ function getFilePaths(src, opts) {
       throw setNoArgError(new Error, 'src');
 
     case 1:
-      opts = cloneObject(DFLT_OPTS);
+      opts = cloneObject(DFLTS);
       break;
 
     default:
       if ( isNull(opts) || isUndefined(opts) ) {
-        opts = cloneObject(DFLT_OPTS);
+        opts = cloneObject(DFLTS);
         break;
       }
 
       if ( isBoolean(opts) ) {
         if (opts) {
-          opts = cloneObject(DFLT_OPTS);
+          opts = cloneObject(DFLTS);
           opts['deep'] = true;
         }
         else {
-          opts = cloneObject(DFLT_OPTS);
+          opts = cloneObject(DFLTS);
           opts['deep'] = false;
         }
         break;
@@ -806,21 +1108,21 @@ function getFilePaths(src, opts) {
       opts = cloneObject(opts);
 
       if ( !hasOption(opts, 'deep') )
-        opts['deep'] = DFLT_OPTS['deep'];
+        opts['deep'] = DFLTS['deep'];
       else if ( isNull(opts['deep']) )
         opts['deep'] = false;
       else if ( !isBoolean(opts['deep']) )
         throw setTypeError(new TypeError, 'opts.deep', '?boolean=');
 
       if ( !hasOption(opts, 'full') )
-        opts['full'] = DFLT_OPTS['full'];
+        opts['full'] = DFLTS['full'];
       else if ( isNull(opts['full']) )
         opts['full'] = false;
       else if ( !isBoolean(opts['full']) )
         throw setTypeError(new TypeError, 'opts.full', '?boolean=');
 
       if ( !hasOption(opts, 'extend') )
-        opts['extend'] = DFLT_OPTS['extend'];
+        opts['extend'] = DFLTS['extend'];
       else if ( isNull(opts['extend']) )
         opts['extend'] = false;
       else if ( !isBoolean(opts['extend']) )
@@ -829,42 +1131,42 @@ function getFilePaths(src, opts) {
       if ( !hasOption(opts, 'valid') )
         opts['valid'] = opts['extend']
           ? null
-          : DFLT_OPTS['valid'];
+          : DFLTS['valid'];
       else if ( !isNullOrRegExp(opts['valid']) )
         throw setTypeError(new TypeError, 'opts.valid', '?RegExp=');
 
       if ( !hasOption(opts, 'invalid') )
         opts['invalid'] = opts['extend']
           ? null
-          : DFLT_OPTS['invalid'];
+          : DFLTS['invalid'];
       else if ( !isNullOrRegExp(opts['invalid']) )
         throw setTypeError(new TypeError, 'opts.invalid', '?RegExp=');
 
       if ( !hasOption(opts, 'validDirs') )
         opts['validDirs'] = opts['extend']
           ? null
-          : DFLT_OPTS['validDirs'];
+          : DFLTS['validDirs'];
       else if ( !isNullOrRegExp(opts['validDirs']) )
         throw setTypeError(new TypeError, 'opts.validDirs', '?RegExp=');
 
       if ( !hasOption(opts, 'invalidDirs') )
         opts['invalidDirs'] = opts['extend']
           ? null
-          : DFLT_OPTS['invalidDirs'];
+          : DFLTS['invalidDirs'];
       else if ( !isNullOrRegExp(opts['invalidDirs']) )
         throw setTypeError(new TypeError, 'opts.invalidDirs', '?RegExp=');
 
       if ( !hasOption(opts, 'validFiles') )
         opts['validFiles'] = opts['extend']
           ? null
-          : DFLT_OPTS['validFiles'];
+          : DFLTS['validFiles'];
       else if ( !isNullOrRegExp(opts['validFiles']) )
         throw setTypeError(new TypeError, 'opts.validFiles', '?RegExp=');
 
       if ( !hasOption(opts, 'invalidFiles') )
         opts['invalidFiles'] = opts['extend']
           ? null
-          : DFLT_OPTS['invalidFiles'];
+          : DFLTS['invalidFiles'];
       else if ( !isNullOrRegExp(opts['invalidFiles']) )
         throw setTypeError(new TypeError, 'opts.invalidFiles', '?RegExp=');
 
@@ -880,241 +1182,20 @@ function getFilePaths(src, opts) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step make-filepaths-instance
+  /// #{{{ @step make-file-paths-instance
 
   filepaths = new FilePaths(src, opts);
 
-  /// #}}} @step make-filepaths-instance
+  /// #}}} @step make-file-paths-instance
 
   /// #{{{ @step return-file-paths
 
-  return filepaths.getPaths();
+  return filepaths.result;
 
   /// #}}} @step return-file-paths
 }
 /// #}}} @code getFilePaths
 /// #}}} @func getFilePaths
-
-/// #{{{ @func FilePaths.prototype.getPaths
-/**
- * @private
- * @return {!Array<string>}
- */
-FilePaths.prototype.getPaths = function getPaths() {
-
-  /// #{{{ @step get-file-paths
-
-  this.getFiles(this.SRC, '');
-
-  if (this.OPTS['deep'])
-    this.getFilesDeep();
-
-  /// #}}} @step get-file-paths
-
-  /// #{{{ @step freeze-member-arrays
-
-  freezeObject(this.dirs);
-  freezeObject(this.trees);
-  freezeObject(this.paths);
-
-  /// #}}} @step freeze-member-arrays
-
-  /// #{{{ @step return-file-paths
-
-  return this.OPTS['full']
-    ? this.paths
-    : this.trees;
-
-  /// #}}} @step return-file-paths
-};
-/// #}}} @func FilePaths.prototype.getPaths
-
-/// #{{{ @func FilePaths.prototype.getFiles
-/**
- * @private
- * @param {string} path
- * @param {string} tree
- * @return {!FilePaths}
- */
-FilePaths.prototype.getFiles = function getFiles(path, tree) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Array<string>} */
-  var paths;
-  /** @type {!Array<string>} */
-  var trees;
-  /** @type {!Array<string>} */
-  var names;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var name;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'path');
-    case 1:
-      throw setNoArgError(new Error, 'tree');
-  }
-
-  if ( !isString(path) )
-    throw setTypeError(new TypeError, 'path', 'string');
-  if ( !isString(tree) )
-    throw setTypeError(new TypeError, 'tree', 'string');
-
-  if (!path)
-    throw setEmptyError(new Error, 'path');
-
-  if ( !isDirectory(path) )
-    throw setDirError(new Error, 'path', path);
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step set-constants
-
-  /// #{{{ @const TREE
-  /**
-   * @private
-   * @const {string}
-   */
-  var TREE = tree && appendSlash(tree);
-  /// #}}} @const TREE
-
-  /// #{{{ @const PATH
-  /**
-   * @private
-   * @const {string}
-   */
-  var PATH = appendSlash(path);
-  /// #}}} @const PATH
-
-  /// #{{{ @func isValidDir
-  /**
-   * @private
-   * @param {string} name
-   * @param {string} tree
-   * @return {boolean}
-   */
-  var isValidDir = this.isValidDir;
-  /// #}}} @func isValidDir
-
-  /// #{{{ @func isValidFile
-  /**
-   * @private
-   * @param {string} name
-   * @param {string} tree
-   * @return {boolean}
-   */
-  var isValidFile = this.isValidFile;
-  /// #}}} @func isValidFile
-
-  /// #}}} @step set-constants
-
-  /// #{{{ @step set-member-refs
-
-  dirs = this.dirs;
-  trees = this.trees;
-  paths = this.paths;
-
-  /// #}}} @step set-member-refs
-
-  /// #{{{ @step append-paths
-
-  names = readPaths(PATH);
-  len = names.length;
-  i = -1;
-  while ( isLT(++i, len) ) {
-    name = getPathName(names[i]);
-    tree = TREE + name;
-    path = PATH + name;
-    if ( isFile(path) ) {
-      if ( isValidFile(name, tree) ) {
-        trees.push(tree);
-        paths.push(path);
-      }
-    }
-    else if ( isDirectory(path) ) {
-      if ( isValidDir(name, tree) ) {
-        dirs.push(tree);
-      }
-    }
-  }
-
-  /// #}}} @step append-paths
-
-  /// #{{{ @step return-instance
-
-  return this;
-
-  /// #}}} @step return-instance
-};
-/// #}}} @func FilePaths.prototype.getFiles
-
-/// #{{{ @func FilePaths.prototype.getFilesDeep
-/**
- * @private
- * @return {!FilePaths}
- */
-FilePaths.prototype.getFilesDeep = function getFilesDeep() {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var path;
-  /** @type {string} */
-  var dir;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step set-constants
-
-  /// #{{{ @const PATH
-  /**
-   * @private
-   * @const {string}
-   */
-  var PATH = appendSlash(this.SRC);
-  /// #}}} @const PATH
-
-  /// #}}} @step set-constants
-
-  /// #{{{ @step set-member-refs
-
-  dirs = this.dirs;
-
-  /// #}}} @step set-member-refs
-
-  /// #{{{ @step append-paths
-
-  i = -1;
-  while ( isLT(++i, dirs.length) ) {
-    dir = dirs[i];
-    path = PATH + dir;
-    this.getFiles(path, dir);
-  }
-
-  /// #}}} @step append-paths
-
-  /// #{{{ @step return-instance
-
-  return this;
-
-  /// #}}} @step return-instance
-};
-/// #}}} @func FilePaths.prototype.getFilesDeep
 
 /// #}}} @group METHODS
 
