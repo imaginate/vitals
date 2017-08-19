@@ -107,7 +107,7 @@ function hasSlash(path) {
     throw setTypeError(new TypeError, 'path', 'string');
   }
 
-  return !!path && SLASH.test(path);
+  return !path && SLASH.test(path);
 }
 /// #}}} @func hasSlash
 
