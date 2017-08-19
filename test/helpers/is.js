@@ -869,6 +869,17 @@ function isObject(val) {
 }
 /// #}}} @func isObject
 
+/// #{{{ @func isPlainObject
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+function isPlainObject(val) {
+  return isObject(val) && objectToString(val) === '[object Object]';
+}
+/// #}}} @func isPlainObject
+
 /// #{{{ @func isFunction
 /**
  * @public
@@ -2068,6 +2079,11 @@ var IS = {
   'func': isFunction,
   'fun':  isFunction,
   'fn':   isFunction,
+
+  'plainObject': isObject,
+  'plainobject': isObject,
+  'plainObj':    isObject,
+  'plainobj':    isObject,
 
   'hashMap': isObjectOrFunction,
   'hashmap': isObjectOrFunction,
