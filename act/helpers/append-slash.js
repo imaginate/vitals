@@ -13,13 +13,13 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const END_NOT_SLASH
+/// #{{{ @const END_SLASH
 /**
  * @private
  * @const {!RegExp}
  */
-var END_NOT_SLASH = /[^\/]$/;
-/// #}}} @const END_NOT_SLASH
+var END_SLASH = /\/$/;
+/// #}}} @const END_SLASH
 
 /// #{{{ @const IS
 /**
@@ -120,7 +120,9 @@ function appendSlash(path) {
     throw setEmptyError(new Error, 'path');
   }
 
-  return path.replace(END_NOT_SLASH, '$&/');
+  return END_SLASH.test(path)
+    ? path
+    : path + '/';
 }
 /// #}}} @func appendSlash
 
