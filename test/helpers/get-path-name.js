@@ -69,6 +69,17 @@ var setEmptyError = setError.empty;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setRootDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setRootDirError = setError.rootDir;
+/// #}}} @func setRootDirError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -150,6 +161,8 @@ var trimSlash = require('./trim-slash.js');
  */
 function getPathName(path) {
 
+  /// #{{{ @step verify-parameters
+
   if (!arguments.length) {
     throw setNoArgError(new Error, 'path');
   }
@@ -159,13 +172,8 @@ function getPathName(path) {
   if (!path) {
     throw setEmptyError(new Error, 'path');
   }
-
-  path = cleanPath(path);
-
   if ( isRootDirectory(path) ) {
-    throw setError(new Error,
-      'invalid root directory path for `path` parameter\n' +
-      '    path-value: `' + path + '`');
+    throw setRootDirError(new Error, 'path', path);
   }
   if ( isRelativeDirectory(path) ) {
     throw setError(new Error,
@@ -173,8 +181,21 @@ function getPathName(path) {
       '    path-value: `' + path + '`');
   }
 
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-path-name
+
+  path = cleanPath(path);
   path = trimSlash(path);
-  return path.replace(NOT_PATH_NAME, '');
+  path = path.replace(NOT_PATH_NAME, '');
+
+  /// #}}} @step get-path-name
+
+  /// #{{{ @step return-path-name
+
+  return path;
+
+  /// #}}} @step return-path-name
 }
 /// #}}} @func getPathName
 

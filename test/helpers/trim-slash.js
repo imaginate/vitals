@@ -18,7 +18,7 @@
  * @private
  * @const {!RegExp}
  */
-var END_SLASH = /\/+$/;
+var END_SLASH = /[\\\/]+$/;
 /// #}}} @const END_SLASH
 
 /// #{{{ @const IS
@@ -68,6 +68,17 @@ var setEmptyError = setError.empty;
  */
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
+
+/// #{{{ @func setRootDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setRootDirError = setError.rootDir;
+/// #}}} @func setRootDirError
 
 /// #{{{ @func setTypeError
 /**
@@ -119,6 +130,8 @@ var isString = IS.string;
  */
 function trimSlash(path) {
 
+  /// #{{{ @step verify-parameters
+
   if (!arguments.length) {
     throw setNoArgError(new Error, 'path');
   }
@@ -129,12 +142,22 @@ function trimSlash(path) {
     throw setEmptyError(new Error, 'path');
   }
   if ( isRootDirectory(path) ) {
-    throw setError(new Error,
-      'invalid root directory for `path` parameter\n' +
-      '    path-value: `' + path + '`');
+    throw setRootDirError(new Error, 'path', path);
   }
 
-  return path.replace(END_SLASH, '');
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step trim-slash
+
+  path = path.replace(END_SLASH, '');
+
+  /// #}}} @step trim-slash
+
+  /// #{{{ @step return-path
+
+  return path;
+
+  /// #}}} @step return-path
 }
 /// #}}} @func trimSlash
 
