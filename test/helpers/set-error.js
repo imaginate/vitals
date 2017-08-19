@@ -1095,6 +1095,64 @@ function setRootDirError(err, param, path) {
 }
 /// #}}} @func setRootDirError
 
+/// #{{{ @func setSemVerError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} version
+ * @return {!RangeError}
+ */
+function setSemVerError(err, param, version) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var patt;
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(version) ) {
+    throw setTypeError(new TypeError, 'version', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  patt = '/^[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z]+(\\.[0-9]+)?)?$/';
+  msg = 'invalid semantic version for `' + param + '`\n'
+    + '    valid-version-pattern: `' + patt + '`\n'
+    + '    invalid-version: `"' + version + '"`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setSemVerError
+
 /// #{{{ @func setTypeError
 /**
  * @public
@@ -1226,6 +1284,7 @@ setError.noArg = setNoArgError;
 setError.relDir = setRelDirError;
 setError.ret = setRetError;
 setError.rootDir = setRootDirError;
+setError.semVer = setSemVerError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 
