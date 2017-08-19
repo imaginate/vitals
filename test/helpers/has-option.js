@@ -106,7 +106,7 @@ var isObject = IS.object;
  * @return {boolean}
  */
 var isString = IS.string;
-/// #}}} @func isObject
+/// #}}} @func isString
 
 /// #{{{ @func isUndefined
 /**
@@ -115,7 +115,7 @@ var isString = IS.string;
  * @return {boolean}
  */
 var isUndefined = IS.void;
-/// #}}} @func isObject
+/// #}}} @func isUndefined
 
 /// #}}} @group IS
 
@@ -135,6 +135,8 @@ var isUndefined = IS.void;
  */
 function hasOption(opts, key) {
 
+  /// #{{{ @step verify-parameters
+
   switch (arguments.length) {
     case 0:
       throw setNoArgError(new Error, 'opts');
@@ -153,7 +155,13 @@ function hasOption(opts, key) {
     throw setEmptyError(new Error, 'key');
   }
 
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
   return hasOwnEnumProperty(opts, key) && !isUndefined(opts[key]);
+
+  /// #}}} @step return-result
 }
 /// #}}} @func hasOption
 
