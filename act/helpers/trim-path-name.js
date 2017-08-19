@@ -69,6 +69,17 @@ var setEmptyError = setError.empty;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setRootDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setRootDirError = setError.rootDir;
+/// #}}} @func setRootDirError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -153,9 +164,7 @@ function trimPathName(path) {
     throw setEmptyError(new Error, 'path');
   }
   if ( isRootDirectory(path) ) {
-    throw setError(new Error,
-      'invalid root directory for `path` parameter\n' +
-      '    path-value: `' + path + '`');
+    throw setRootDirError(new Error, 'path', path);
   }
 
   /// #}}} @step verify-parameters

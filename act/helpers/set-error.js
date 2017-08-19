@@ -981,6 +981,60 @@ function setRetError(err, method, types) {
 }
 /// #}}} @func setRetError
 
+/// #{{{ @func setRootDirError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+function setRootDirError(err, param, path) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid root directory for `' + param + '`\n'
+    + '    ' + param + '-value: `' + path + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setRootDirError
+
 /// #{{{ @func setTypeError
 /**
  * @public
@@ -1110,6 +1164,7 @@ setError.index = setIndexError;
 setError.new_ = setNewError;
 setError.noArg = setNoArgError;
 setError.ret = setRetError;
+setError.rootDir = setRootDirError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 
