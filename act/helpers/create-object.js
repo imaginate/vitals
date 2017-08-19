@@ -3,7 +3,7 @@
  * CREATE-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,15 +17,54 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
 
 /// #{{{ @func isFunction
 /**
@@ -53,6 +92,9 @@ var isNull = IS.nil;
  */
 var isObject = IS.object;
 /// #}}} @func isObject
+
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -70,8 +112,9 @@ var isObject = IS.object;
  */
 var create = (function createPrivateScope() {
 
-  if ( 'create' in Object && isFunction(Object['create']) )
-    return Object['create'];
+  if ( 'create' in Object && isFunction(Object.create) ) {
+    return Object.create;
+  }
 
   /// #{{{ @func _Object
   /**
@@ -101,29 +144,32 @@ var create = (function createPrivateScope() {
   return create;
 })();
 /// #}}} @func create
-/// #}}} @group METHODS
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func createObject
 /**
- * @description
- *   Cross-platform `Object.create` implementation.
  * @public
  * @param {?Object} proto
  * @return {!Object}
  */
 function createObject(proto) {
 
-  if ( !isNull(proto) && !isObject(proto) )
-    throw new TypeError('invalid `proto` data type (must be `?Object`)');
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'proto');
+  }
+  if ( !isNull(proto) && !isObject(proto) ) {
+    throw setTypeError(new TypeError, 'proto', '?Object');
+  }
 
   return create(proto);
 }
 /// #}}} @func createObject
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = createObject;
 
