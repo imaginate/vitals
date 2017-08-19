@@ -1708,10 +1708,10 @@ var DIR = freezeObject({
 var FILE = freezeObject({
   DIST: {
     BROWSER: {
-      MAIN: resolvePath(DIR.DIST.BROWSER, 'vitals.js')
+      MAIN: resolvePath(DIR.DIST.BROWSER.MAIN, 'vitals.js')
     },
     NODE: {
-      MAIN: resolvePath(DIR.DIST.NODE, 'vitals.js')
+      MAIN: resolvePath(DIR.DIST.NODE.MAIN, 'vitals.js')
     }
   },
   TASK: {
