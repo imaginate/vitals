@@ -130,26 +130,6 @@ var mkdir = FS.mkdirSync;
 var hasOption = require('./has-option.js');
 /// #}}} @func hasOption
 
-/// #{{{ @func hasOwnEnumProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnEnumProperty = require('./has-own-enum-property.js');
-/// #}}} @func hasOwnEnumProperty
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = require('./has-own-property.js');
-/// #}}} @func hasOwnProperty
-
 /// #}}} @group HAS
 
 /// #{{{ @group IS
@@ -415,14 +395,14 @@ function makeDirectory(path, opts) {
   switch (arguments.length) {
     case 0:
       throw setNoArgError(new Error, 'path');
+
     case 1:
       opts = cloneObject(DFLTS);
-      freezeObject(opts);
       break;
+
     default:
       if ( isUndefined(opts) || isNull(opts) ) {
         opts = cloneObject(DFLTS);
-        freezeObject(opts);
         break;
       }
 
@@ -434,7 +414,6 @@ function makeDirectory(path, opts) {
           throw setFileModeError(new RangeError, opts);
         }
         opts = mergeObject(DFLTS, { 'mode': opts });
-        freezeObject(opts);
         break;
       }
 
@@ -463,8 +442,6 @@ function makeDirectory(path, opts) {
       else if ( !isBoolean(opts['parents']) ) {
         throw setTypeError(new TypeError, 'opts.parents', 'boolean=');
       }
-
-      freezeObject(opts);
   }
 
   if ( !isString(path) ) {
@@ -475,27 +452,33 @@ function makeDirectory(path, opts) {
     throw setEmptyError(new Error, 'path');
   }
 
-  if ( isFile(path) ) {
-    throw setError(new Error,
-      'file exists (instead of directory) at path set by `path` parameter\n'
-      + '    path: `' + path + '`');
-  }
+  freezeObject(opts);
 
   /// #}}} @step verify-parameters
-
-  /// #{{{ @step check-existing-path
-
-  if ( isDirectory(path) ) {
-    return path;
-  }
-
-  /// #}}} @step check-existing-path
 
   /// #{{{ @step resolve-path
 
   path = resolvePath(path);
 
   /// #}}} @step resolve-path
+
+  /// #{{{ @step check-existing-directory
+
+  if ( isDirectory(path) ) {
+    return path;
+  }
+
+  /// #}}} @step check-existing-directory
+
+  /// #{{{ @step verify-no-existing-file
+
+  if ( isFile(path) ) {
+    throw setError(new Error,
+      'file exists (instead of directory) at path set by `path` parameter\n'
+      + '    path: `' + path + '`');
+  }
+
+  /// #}}} @step verify-no-existing-file
 
   /// #{{{ @step get-parent-path
 
