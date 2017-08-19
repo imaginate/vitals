@@ -40,6 +40,14 @@ var loadHelper = require('./helpers/load-helper.js');
 var IS = loadHelper('is');
 /// #}}} @const IS
 
+/// #{{{ @const LOG_OCD_INST
+/**
+ * @private
+ * @const {!Function}
+ */
+var LOG_OCD_INST = loadHelper('log');
+/// #}}} @const LOG_OCD_INST
+
 /// #{{{ @const VERSION
 /**
  * @private
@@ -1275,6 +1283,7 @@ function main(opts) {
   /// #{{{ @step make-global-object
 
   global.VITALS_TEST = capObject({
+    'LOG': LOG_OCD_INST,
     'DUMMY': DIR.TEST.DUMMY,
     'VITALS': vitals,
     'VERSION': VERSION,
