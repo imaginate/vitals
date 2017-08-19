@@ -69,6 +69,17 @@ var setEmptyError = setError.empty;
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setRelDirError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setRelDirError = setError.relDir;
+/// #}}} @func setRelDirError
+
 /// #{{{ @func setRootDirError
 /**
  * @private
@@ -176,9 +187,7 @@ function getPathName(path) {
     throw setRootDirError(new Error, 'path', path);
   }
   if ( isRelativeDirectory(path) ) {
-    throw setError(new Error,
-      'invalid relative directory path for `path` parameter\n' +
-      '    path-value: `' + path + '`');
+    throw setRelDirError(new Error, 'path', path);
   }
 
   /// #}}} @step verify-parameters
