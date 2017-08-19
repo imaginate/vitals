@@ -134,15 +134,6 @@ var hasOption = require('./has-option.js');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isArray
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isArray = IS.array;
-/// #}}} @func isArray
-
 /// #{{{ @func isBoolean
 /**
  * @private
@@ -160,15 +151,6 @@ var isBoolean = IS.boolean;
  */
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
-
-/// #{{{ @func isError
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isError = IS.error;
-/// #}}} @func isError
 
 /// #{{{ @func isFile
 /**
@@ -197,23 +179,14 @@ var isFileMode = IS.fileMode;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
-/// #{{{ @func isObject
+/// #{{{ @func isPlainObject
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isObject = IS.object;
-/// #}}} @func isObject
-
-/// #{{{ @func isRegExp
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isRegExp = IS.regexp;
-/// #}}} @func isRegExp
+var isPlainObject = IS.plainObject;
+/// #}}} @func isPlainObject
 
 /// #{{{ @func isRootDirectory
 /**
@@ -417,7 +390,7 @@ function makeDirectory(path, opts) {
         break;
       }
 
-      if ( !isObject(opts) || isRegExp(opts) || isArray(opts) ) {
+      if ( !isPlainObject(opts) ) {
         throw setTypeError(new TypeError, 'opts', '(?Object|?string)=');
       }
 
@@ -497,10 +470,7 @@ function makeDirectory(path, opts) {
   /// #{{{ @step make-parent-directories
 
   if (opts['parents']) {
-    while ( !!dir && !isDirectory(dir) ) {
-      makeDirectory(dir, opts);
-      dir = getParentPath(dir);
-    }
+    makeParentDirectory(dir, opts['mode']);
   }
 
   /// #}}} @step make-parent-directories
@@ -523,6 +493,102 @@ function makeDirectory(path, opts) {
   /// #}}} @step return-path
 }
 /// #}}} @func makeDirectory
+
+/// #{{{ @func makeParentDirectory
+/**
+ * @private
+ * @param {string} path
+ * @param {string} mode
+ * @return {string}
+ */
+function makeParentDirectory(path, mode) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var dir;
+  /** @type {!Error} */
+  var err;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'path');
+    case 1:
+      throw setNoArgError(new Error, 'mode');
+  }
+
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if ( !isString(mode) ) {
+    throw setTypeError(new TypeError, 'mode', 'string');
+  }
+
+  if (!mode) {
+    throw setEmptyError(new Error, 'mode');
+  }
+
+  if ( !isFileMode(mode) ) {
+    throw setFileModeError(new RangeError, mode);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step check-empty-directory
+
+  if (!path) {
+    return path;
+  }
+
+  /// #}}} @step check-empty-directory
+
+  /// #{{{ @step check-existing-directory
+
+  if ( isDirectory(path) ) {
+    return path;
+  }
+
+  /// #}}} @step check-existing-directory
+
+  /// #{{{ @step verify-no-existing-file
+
+  if ( isFile(path) ) {
+    throw setError(new Error,
+      'file exists (instead of directory) at path set by `path` parameter\n'
+      + '    path: `' + path + '`');
+  }
+
+  /// #}}} @step verify-no-existing-file
+
+  /// #{{{ @step make-parent-directory
+
+  dir = getParentPath(path);
+  makeParentDirectory(dir, mode);
+
+  /// #}}} @step make-parent-directory
+
+  /// #{{{ @step make-directory
+
+  try {
+    mkdir(path, mode);
+  }
+  catch (err) {
+    throw setError(err, err.message);
+  }
+
+  /// #}}} @step make-directory
+
+  /// #{{{ @step return-path
+
+  return path;
+
+  /// #}}} @step return-path
+}
+/// #}}} @func makeParentDirectory
 
 /// #}}} @group METHODS
 
