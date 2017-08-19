@@ -3,7 +3,7 @@
  * CAP-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,6 +17,7 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -28,6 +29,43 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -37,6 +75,10 @@ var IS = require('./is.js');
  */
 var hasOwnProperty = require('./has-own-property.js');
 /// #}}} @func hasOwnProperty
+
+/// #}}} @group HAS
+
+/// #{{{ @group IS
 
 /// #{{{ @func isBoolean
 /**
@@ -55,6 +97,15 @@ var isBoolean = IS.boolean;
  */
 var isFunction = IS.func;
 /// #}}} @func isFunction
+
+/// #{{{ @func isHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
 
 /// #{{{ @func isNull
 /**
@@ -80,8 +131,10 @@ var isObject = IS.object;
  * @param {*} val
  * @return {boolean}
  */
-var isUndefined = IS.undefined;
+var isUndefined = IS.void;
 /// #}}} @func isUndefined
+
+/// #}}} @group IS
 
 /// #}}} @group HELPERS
 
@@ -98,6 +151,7 @@ var isUndefined = IS.undefined;
  */
 var cap = (function capPrivateScope() {
 
+  /// #{{{ @const cap
   /**
    * @private
    * @const {?function}
@@ -105,18 +159,35 @@ var cap = (function capPrivateScope() {
   var cap = 'preventExtensions' in Object
     ? Object.preventExtensions
     : null;
+  /// #}}} @const cap
 
-  if ( !isFunction(cap) )
-    throw new Error('missing JS engine support for `Object.preventExtensions`');
+  /// #{{{ @step verify-prevent-extensions-exists
+
+  if ( !isFunction(cap) ) {
+    throw setError(new Error,
+      'missing JS engine support for `Object.preventExtensions`');
+  }
+
+  /// #}}} @step verify-prevent-extensions-exists
+
+  /// #{{{ @step verify-prevent-extensions-functionality
 
   try {
     cap(function(){});
-    return cap;
   }
   catch (e) {
-    throw new Error('incomplete JS engine support for `Object.preventExtensions`\n' +
-      '    `Object.preventExtensions` failed with `function` as `src`');
+    throw setError(new Error,
+      'incomplete JS engine support for `Object.preventExtensions`\n'
+      + '    failed: `Object.preventExtensions(function(){})`');
   }
+
+  /// #}}} @step verify-prevent-extensions-functionality
+
+  /// #{{{ @step return-prevent-extensions
+
+  return cap;
+
+  /// #}}} @step return-prevent-extensions
 })();
 /// #}}} @func cap
 
@@ -128,29 +199,52 @@ var cap = (function capPrivateScope() {
  */
 function capDeep(src) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var key;
   /** @type {*} */
   var val;
 
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'src');
+  }
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step cap-each-source-property
+
   for (key in src) {
     if ( hasOwnProperty(src, key) ) {
       val = src[key];
-      if ( isObject(val) || isFunction(val) ) {
+      if ( isHashMap(val) ) {
         capDeep(val);
       }
     }
   }
-  return cap(src);
+
+  /// #}}} @step cap-each-source-property
+
+  /// #{{{ @step cap-source
+
+  cap(src);
+
+  /// #}}} @step cap-source
+
+  /// #{{{ @step return-source
+
+  return src;
+
+  /// #}}} @step return-source
 }
 /// #}}} @func capDeep
-
-/// #}}} @group METHODS
-
-/// #{{{ @group EXPORTS
-//////////////////////////////////////////////////////////////////////////////
-// EXPORTS
-//////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func capObject
 /**
@@ -161,22 +255,67 @@ function capDeep(src) {
  */
 function capObject(src, deep) {
 
-  if ( !isUndefined(deep) && !isBoolean(deep) )
-    throw new TypeError('invalid `deep` data type\n' +
-      '    valid-types: `boolean=`');
+  /// #{{{ @step declare-variables
 
-  if ( isNull(src) )
+  /** @type {string} */
+  var key;
+  /** @type {*} */
+  var val;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      deep = false;
+      break;
+    default:
+      if ( isUndefined(deep) ) {
+        deep = false;
+      }
+      else if ( !isBoolean(deep) ) {
+        throw setTypeError(new TypeError, 'deep', 'boolean=');
+      }
+  }
+
+  if ( isNull(src) ) {
     return null;
+  }
 
-  if ( !isObject(src) && !isFunction(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `?Object|?Function`');
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+  }
 
-  return deep
-    ? capDeep(src)
-    : cap(src);
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step cap-source
+
+  if (deep) {
+    capDeep(src);
+  }
+  else {
+    cap(src);
+  }
+
+  /// #}}} @step cap-source
+
+  /// #{{{ @step return-source
+
+  return src;
+
+  /// #}}} @step return-source
 }
 /// #}}} @func capObject
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = capObject;
 
