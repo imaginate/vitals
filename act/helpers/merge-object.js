@@ -3,7 +3,7 @@
  * MERGE-OBJECT HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,6 +17,7 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -63,30 +64,7 @@ var setTypeError = setError.type;
 
 /// #}}} @group ERROR
 
-/// #{{{ @group HAS
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = require('./has-own-property.js');
-/// #}}} @func hasOwnProperty
-
-/// #}}} @group HAS
-
 /// #{{{ @group IS
-
-/// #{{{ @func isBoolean
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isBoolean = IS.boolean;
-/// #}}} @func isBoolean
 
 /// #{{{ @func isNull
 /**
@@ -106,14 +84,14 @@ var isNull = IS.nil;
 var isHashMap = IS.hashMap;
 /// #}}} @func isHashMap
 
-/// #{{{ @func isUndefined
+/// #{{{ @func isPlainObject
 /**
  * @private
  * @param {*} val
  * @return {boolean}
  */
-var isUndefined = IS.undefined;
-/// #}}} @func isUndefined
+var isPlainObject = IS.plainObject;
+/// #}}} @func isPlainObject
 
 /// #}}} @group IS
 
@@ -129,6 +107,26 @@ var isUndefined = IS.undefined;
 var cloneObject = require('./clone-object.js');
 /// #}}} @func cloneObject
 
+/// #{{{ @func forEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string))} func
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var forEachProperty = require('./for-each-property.js');
+/// #}}} @func forEachProperty
+
+/// #{{{ @func testEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string)): *} func
+ * @return {boolean}
+ */
+var testEachProperty = require('./test-each-property.js');
+/// #}}} @func testEachProperty
+
 /// #}}} @group OBJECT
 
 /// #}}} @group HELPERS
@@ -138,6 +136,49 @@ var cloneObject = require('./clone-object.js');
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @func merge
+/**
+ * @private
+ * @param {(!Object|!Function)} fromHashMap
+ * @param {!Object} toHashMap
+ * @return {!Object}
+ */
+function merge(fromHashMap, toHashMap) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'fromHashMap');
+    case 1:
+      throw setNoArgError(new Error, 'toHashMap');
+  }
+
+  if ( !isHashMap(fromHashMap) ) {
+    throw setTypeError(new TypeError, 'fromHashMap', '(!Object|!Function)');
+  }
+  if ( !isPlainObject(toHashMap) ) {
+    throw setTypeError(new TypeError, 'toHashMap', '!Object');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step merge-each-property
+
+  forEachProperty(fromHashMap, function mergeEachProperty(val, key) {
+    toHashMap[key] = val;
+  });
+
+  /// #}}} @step merge-each-property
+
+  /// #{{{ @step return-merged-object
+
+  return toHashMap;
+
+  /// #}}} @step return-merged-object
+}
+/// #}}} @func merge
+
 /// #{{{ @func mergeObject
 /**
  * @public
@@ -146,73 +187,54 @@ var cloneObject = require('./clone-object.js');
  */
 function mergeObject(src) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {!Object} */
   var result;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
       throw setNoArgError(new Error, 'src');
     case 1:
-      if ( isNull(src) )
+      if ( isNull(src) ) {
         return {};
-      else if ( isHashMap(src) )
+      }
+      else if ( isHashMap(src) ) {
         return cloneObject(src);
-      else
+      }
+      else {
         throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+      }
+    default:
+      if ( !testEachProperty(arguments, isNullOrHashMap) ) {
+        throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
+      }
   }
 
-  result = cloneObject(src);
-  len = arguments.length;
-  i = 0;
-  while (++i < len) {
-    src = arguments[i];
-    if ( isNull(src) )
-      continue;
-    else if ( isHashMap(src) )
-      result = merge(result, src);
-    else
-      throw setTypeError(new TypeError, 'src', '(?Object|?Function)');
-  }
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-merged-object
+
+  result = {};
+  forEachProperty(arguments, function mergeEachHashMap(src) {
+    if (src) {
+      result = merge(src, result);
+    }
+  });
+
+  /// #}}} @step make-merged-object
+
+  /// #{{{ @step return-merged-object
+
   return result;
+
+  /// #}}} @step return-merged-object
 }
 /// #}}} @func mergeObject
-
-/// #{{{ @func merge
-/**
- * @private
- * @param {(!Object|!Function)} dest
- * @param {(!Object|!Function)} src
- * @return {!Object}
- */
-function merge(dest, src) {
-
-  /** @type {string} */
-  var key;
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'dest');
-    case 1:
-      throw setNoArgError(new Error, 'src');
-  }
-
-  if ( !isHashMap(dest) )
-    throw setTypeError(new TypeError, 'dest', '(!Object|!Function)');
-  if ( !isHashMap(src) )
-    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
-
-  for (key in src) {
-    if ( hasOwnProperty(src, key) ) {
-      dest[key] = src[key];
-    }
-  }
-  return dest;
-}
-/// #}}} @func merge
 
 /// #}}} @group METHODS
 
