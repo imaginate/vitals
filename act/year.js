@@ -6,7 +6,7 @@
  *   This task updates the copyright year for the entire repo. Use `act year`
  *   to run it.
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -258,7 +258,7 @@ var setWholeError = setError.whole;
 
 /// #}}} @group ERROR
 
-/// #{{{ @group GET
+/// #{{{ @group FS
 
 /// #{{{ @func getFileContent
 /**
@@ -329,10 +329,20 @@ var getFileContent = loadHelper('get-file-content');
  *   against the #opts.invalidFiles pattern.
  * @return {!Array<string>}
  */
-var getFilePaths = loadHelper('get-filepaths');
+var getFilePaths = loadHelper('get-file-paths');
 /// #}}} @func getFilePaths
 
-/// #}}} @group GET
+/// #{{{ @func toFile
+/**
+ * @private
+ * @param {(!Buffer|string)} content
+ * @param {string} filepath
+ * @return {(!Buffer|string)}
+ */
+var toFile = loadHelper('to-file');
+/// #}}} @func toFile
+
+/// #}}} @group FS
 
 /// #{{{ @group HAS
 
@@ -496,20 +506,6 @@ var resolvePath = loadHelper('resolve-path');
 /// #}}} @func resolvePath
 
 /// #}}} @group PATH
-
-/// #{{{ @group TO
-
-/// #{{{ @func toFile
-/**
- * @private
- * @param {(!Buffer|string)} content
- * @param {string} filepath
- * @return {(!Buffer|string)}
- */
-var toFile = loadHelper('to-file');
-/// #}}} @func toFile
-
-/// #}}} @group TO
 
 /// #{{{ @group UPDATE
 
