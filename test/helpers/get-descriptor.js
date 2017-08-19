@@ -1,32 +1,177 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS HELPER: getDescriptor
- * -----------------------------------------------------------------------------
- * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
- *
- * Annotations:
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * ---------------------------------------------------------------------------
+ * GET-DESCRIPTOR HELPER
+ * ---------------------------------------------------------------------------
+ * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
 
-module.exports = getDescriptor;
+/// #{{{ @group CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
+// CONSTANTS
+//////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const IS
 /**
  * @private
- * @param {(!Object|function)} source
- * @param {*} key
- * @return {!Object}
+ * @const {!Object<string, !function>}
+ * @struct
  */
-var getDesc = Object.getOwnPropertyDescriptor;
+var IS = require('./is.js');
+/// #}}} @const IS
 
+/// #}}} @group CONSTANTS
+
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
 /**
- * @param {(!Object|function)} source
- * @param {*} key
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group IS
+
+/// #{{{ @func isHashMap
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isHashMap = IS.hashMap;
+/// #}}} @func isHashMap
+
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
+/// #}}} @group IS
+
+/// #}}} @group HELPERS
+
+/// #{{{ @group METHODS
+//////////////////////////////////////////////////////////////////////////////
+// METHODS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func _getDescriptor
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
  * @return {!Object}
  */
-function getDescriptor(source, key) {
-  return getDesc(source, key);
+var _getDescriptor = Object.getOwnPropertyDescriptor;
+/// #}}} @func _getDescriptor
+
+/// #{{{ @func getDescriptor
+/**
+ * @public
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {!Object}
+ */
+function getDescriptor(src, key) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'src');
+    case 1:
+      throw setNoArgError(new Error, 'key');
+  }
+
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  if ( isString(key) ) {
+    if (!key) {
+      throw setEmptyError(new Error, 'key');
+    }
+  }
+  else if ( !isNumber(key) ) {
+    throw setTypeError(new TypeError, 'key', '(string|number)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-descriptor
+
+  return _getDescriptor(src, key);
+
+  /// #}}} @step return-descriptor
 }
+/// #}}} @func getDescriptor
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+
+module.exports = getDescriptor;
+
+/// #}}} @group EXPORTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
