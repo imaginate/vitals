@@ -90,6 +90,16 @@ var SPEED = {
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoArgError
 /**
  * @private

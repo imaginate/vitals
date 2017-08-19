@@ -94,6 +94,16 @@ var OK = CHALK.green(loadHelper('reporter-base').symbols.ok);
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
+/// #{{{ @func setNewError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} constructor
+ * @return {!SyntaxError}
+ */
+var setNewError = setError.new_;
+/// #}}} @func setNewError
+
 /// #{{{ @func setNoArgError
 /**
  * @private
