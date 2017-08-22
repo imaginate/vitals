@@ -56,6 +56,16 @@ var IS = require('./is.js');
 var setError = require('./set-error.js');
 /// #}}} @func setError
 
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
 /// #{{{ @func setNoArgError
 /**
  * @private
@@ -210,17 +220,6 @@ var resolveDummyPath = require('./resolve-dummy-path.js');
  * @return {void}
  */
 function makeDummyPaths(paths) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {!Array<string>} */
-  var files;
-  /** @type {!Array<string>} */
-  var dirs;
-  /** @type {string} */
-  var path;
-
-  /// #}}} @step declare-variables
 
   /// #{{{ @step verify-parameters
 
