@@ -686,17 +686,18 @@ function Interface(suite) {
     };
     /// #}}} @func test.only
 
+    /// #{{{ @func suite
     /**
-     * Defines a suite of tests.
-     *
+     * @description
+     *   Defines a suite of tests.
      * @public
      * @param {string} msg
-     * @param {function} tests
-     * @return {Suite}
+     * @param {!function} tests
+     * @return {!Suite}
      */
-    context.suite = function(msg, tests) {
+    context.suite = function genericSuite(msg, tests) {
 
-      /** @type {Suite} */
+      /** @type {!Suite} */
       var suite;
 
       suite = Suite.create(suites[0], msg);
@@ -709,18 +710,20 @@ function Interface(suite) {
 
       return suite;
     };
+    /// #}}} @func suite
 
+    /// #{{{ @func suite.skip
     /**
-     * Defines a skipped suite of tests.
-     *
+     * @description
+     *   Defines a skipped suite of tests.
      * @public
      * @param {string} msg
-     * @param {function} tests
-     * @return {Suite}
+     * @param {!function} tests
+     * @return {!Suite}
      */
-    context.suite.skip = function(msg, tests) {
+    context.suite.skip = function skipGenericSuite(msg, tests) {
 
-      /** @type {Suite} */
+      /** @type {!Suite} */
       var suite;
 
       suite = Suite.create(suites[0], msg);
@@ -733,68 +736,83 @@ function Interface(suite) {
 
       return suite;
     };
+    /// #}}} @func suite.skip
 
+    /// #{{{ @func suite.only
     /**
-     * Defines the only not skipped suite of tests.
-     *
+     * @description
+     *   Defines the only not skipped suite of tests.
      * @public
      * @param {string} msg
-     * @param {function} tests
-     * @return {Suite}
+     * @param {!function} tests
+     * @return {!Suite}
      */
-    context.suite.only = function(msg, tests) {
+    context.suite.only = function onlyGenericSuite(msg, tests) {
 
-      /** @type {Suite} */
+      /** @type {!Suite} */
       var suite;
 
       suite = context.suite(msg, tests);
       mocha.grep( suite.fullTitle() );
       return suite;
     };
+    /// #}}} @func suite.only
 
+    /// #{{{ @func before
     /**
-     * Execute before running tests.
-     *
+     * @description
+     *   Execute before running any unit test within the same context.
      * @public
      * @param {string} name
-     * @param {function} fn
+     * @param {!function} fn
+     * @return {void}
      */
-    context.before = function(name, fn) {
+    context.before = function beforeUnitTests(name, fn) {
       suites[0].beforeAll(name, fn);
     };
+    /// #}}} @func before
 
+    /// #{{{ @func after
     /**
-     * Execute after running tests.
-     *
+     * @description
+     *   Execute after running all unit tests within the same context.
      * @public
      * @param {string} name
-     * @param {function} fn
+     * @param {!function} fn
+     * @return {void}
      */
-    context.after = function(name, fn) {
+    context.after = function afterUnitTests(name, fn) {
       suites[0].afterAll(name, fn);
     };
+    /// #}}} @func after
 
+    /// #{{{ @func beforeEach
     /**
-     * Execute before each test case.
-     *
+     * @description
+     *   Execute before running each unit test within the same context.
      * @public
      * @param {string} name
-     * @param {function} fn
+     * @param {!function} fn
+     * @return {void}
      */
-    context.beforeEach = function(name, fn) {
+    context.beforeEach = function beforeEachUnitTest(name, fn) {
       suites[0].beforeEach(name, fn);
     };
+    /// #}}} @func beforeEach
 
+    /// #{{{ @func afterEach
     /**
-     * Execute after each test case.
-     *
+     * @description
+     *   Execute after running each unit test within the same context.
      * @public
      * @param {string} name
-     * @param {function} fn
+     * @param {!function} fn
+     * @return {void}
      */
-    context.afterEach = function(name, fn) {
+    context.afterEach = function afterEachUnitTest(name, fn) {
       suites[0].afterEach(name, fn);
     };
+    /// #}}} @func afterEach
 
   });
 
