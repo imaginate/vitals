@@ -72,6 +72,17 @@ var setError = loadHelper('set-error');
 var setEmptyError = setError.empty;
 /// #}}} @func setEmptyError
 
+/// #{{{ @func setFileError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} path
+ * @return {!Error}
+ */
+var setFileError = setError.file;
+/// #}}} @func setFileError
+
 /// #{{{ @func setNewError
 /**
  * @private
@@ -125,24 +136,6 @@ var isArray = IS.array;
 var isBoolean = IS.boolean;
 /// #}}} @func isBoolean
 
-/// #{{{ @func isDirectory
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isDirectory = IS.directory;
-/// #}}} @func isDirectory
-
-/// #{{{ @func isError
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isError = IS.error;
-/// #}}} @func isError
-
 /// #{{{ @func isFile
 /**
  * @private
@@ -151,15 +144,6 @@ var isError = IS.error;
  */
 var isFile = IS.file;
 /// #}}} @func isFile
-
-/// #{{{ @func isFileSystem
-/**
- * @private
- * @param {string} section
- * @return {boolean}
- */
-var isFileSystem = IS.fileSystemSection;
-/// #}}} @func isFileSystem
 
 /// #{{{ @func isFunction
 /**
@@ -179,15 +163,6 @@ var isFunction = IS.func;
  */
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
-
-/// #{{{ @func isList
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isList = IS.list;
-/// #}}} @func isList
 
 /// #{{{ @func isNull
 /**
@@ -225,15 +200,6 @@ var isRegExp = IS.regexp;
 var isString = IS.string;
 /// #}}} @func isString
 
-/// #{{{ @func isStringList
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isStringList = IS.stringList;
-/// #}}} @func isStringList
-
 /// #{{{ @func isUndefined
 /**
  * @private
@@ -255,6 +221,14 @@ var isUndefined = IS.void;
  */
 var Mocha = require('mocha');
 /// #}}} @func Mocha
+
+/// #{{{ @func Context
+/**
+ * @private
+ * @constructor
+ */
+var Context = Mocha.Context;
+/// #}}} @func Context
 
 /// #{{{ @func Suite
 /**
@@ -279,16 +253,6 @@ var Test = Mocha.Test;
 /// #}}} @group MOCHA
 
 /// #{{{ @group OBJECT
-
-/// #{{{ @func forEachProperty
-/**
- * @private
- * @param {(!Array|!Arguments|!Object|!Function)} src
- * @param {!function(*, (number|string))} func
- * @return {(!Array|!Arguments|!Object|!Function)}
- */
-var forEachProperty = loadHelper('for-each-property');
-/// #}}} @func forEachProperty
 
 /// #{{{ @func sliceArray
 /**
@@ -344,13 +308,6 @@ var stringifyCall = loadHelper('stringify-call');
  */
 function Interface(suite) {
 
-  /// #{{{ @step declare-variables
-
-  /** @type {!Array<!Suite>} */
-  var suites;
-
-  /// #}}} @step declare-variables
-
   /// #{{{ @step verify-new-keyword
 
   if ( !isInstanceOf(this, Interface) ) {
@@ -364,21 +321,58 @@ function Interface(suite) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'suite');
   }
-  if ( !isObject(suite) ) {
+  if ( !isInstanceOf(suite, Suite) ) {
     throw setTypeError(new TypeError, 'suite', '!Suite');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step setup-suites-array
+  /// #{{{ @step set-constants
 
-  suites = [ suite ];
+  /// #{{{ @const SUITES
+  /**
+   * @private
+   * @const {!Array<!Suite>}
+   */
+  var SUITES = [ suite ];
+  /// #}}} @const SUITES
 
-  /// #}}} @step setup-suites-array
+  /// #}}} @step set-constants
 
   /// #{{{ @event pre-require
 
   suite.on('pre-require', function setupVitalsInterface(context, file, mocha) {
+
+    /// #{{{ @step verify-parameters
+
+    switch (arguments.length) {
+      case 0:
+        throw setNoArgError(new Error, 'context');
+      case 1:
+        throw setNoArgError(new Error, 'file');
+      case 2:
+        throw setNoArgError(new Error, 'mocha');
+    }
+
+    if ( !isInstanceOf(context, Context) ) {
+      throw setTypeError(new TypeError, 'context', '!Context');
+    }
+    if ( !isString(file) ) {
+      throw setTypeError(new TypeError, 'file', 'string');
+    }
+    if ( !isInstanceOf(mocha, Mocha) ) {
+      throw setTypeError(new TypeError, 'mocha', '!Mocha');
+    }
+
+    if (!file) {
+      throw setEmptyError(new Error, 'file');
+    }
+
+    if ( !isFile(file) ) {
+      throw setFileError(new Error, 'file', file);
+    }
+
+    /// #}}} @step verify-parameters
 
     /// #{{{ @func method
     /**
