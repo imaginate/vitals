@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * CLEAR-DUMMY HELPER
+ * CLEAR-DUMMY-TREE HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
@@ -37,6 +37,51 @@ var IS = require('./is.js');
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setEmptyError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setEmptyError = setError.empty;
+/// #}}} @func setEmptyError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
 
 /// #{{{ @group FS
 
@@ -141,6 +186,102 @@ var getDirectoryPaths = require('./get-directory-paths.js');
 var getFilePaths = require('./get-file-paths.js');
 /// #}}} @func getFilePaths
 
+/// #{{{ @func removeDirectory
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+function removeDirectory(path) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Error} */
+  var err;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if (!path) {
+    throw setEmptyError(new Error, 'path');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step remove-directory
+
+  try {
+    rmdir(path);
+  }
+  catch (err) {
+    throw setError(err, err.message);
+  }
+
+  /// #}}} @step remove-directory
+
+  /// #{{{ @step return-path
+
+  return path;
+
+  /// #}}} @step return-path
+}
+/// #}}} @func removeDirectory
+
+/// #{{{ @func removeFile
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+function removeFile(path) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Error} */
+  var err;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'path');
+  }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
+  if (!path) {
+    throw setEmptyError(new Error, 'path');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step remove-file
+
+  try {
+    rmfile(path);
+  }
+  catch (err) {
+    throw setError(err, err.message);
+  }
+
+  /// #}}} @step remove-file
+
+  /// #{{{ @step return-path
+
+  return path;
+
+  /// #}}} @step return-path
+}
+/// #}}} @func removeFile
+
 /// #{{{ @func rmdir
 /**
  * @private
@@ -172,6 +313,15 @@ var rmfile = FS.unlinkSync;
 var isDirectory = IS.directory;
 /// #}}} @func isDirectory
 
+/// #{{{ @func isString
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isString = IS.string;
+/// #}}} @func isString
+
 /// #}}} @group IS
 
 /// #{{{ @group OBJECT
@@ -195,43 +345,39 @@ var forEachProperty = require('./for-each-property.js');
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func clearDummy
+/// #{{{ @func clearDummyTree
 /**
  * @public
  * @return {void}
  */
-function clearDummy() {
+function clearDummyTree() {
 
   /// #{{{ @step declare-variables
 
   /** @type {!Array<string>} */
   var paths;
-  /** @type {!Array<string>} */
-  var files;
-  /** @type {!Array<string>} */
-  var dirs;
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @const DIR
+  /// #{{{ @const ROOT_DIR
   /**
    * @private
    * @const {string}
    */
-  var DIR = global.VITALS_TEST.DUMMY.DIR;
-  /// #}}} @const DIR
+  var ROOT_DIR = resolveDummyPath();
+  /// #}}} @const ROOT_DIR
 
-  /// #{{{ @step check-dummy-root
+  /// #{{{ @step check-dummy-root-directory
 
-  if ( !isDirectory(DIR) ) {
+  if ( !isDirectory(ROOT_DIR) ) {
     return;
   }
 
-  /// #}}} @step check-dummy-root
+  /// #}}} @step check-dummy-root-directory
 
   /// #{{{ @step get-dummy-files
 
-  files = getFilePaths(DIR, {
+  paths = getFilePaths(ROOT_DIR, {
     'deep': true,
     'full': true,
     'extend': false,
@@ -247,33 +393,29 @@ function clearDummy() {
 
   /// #{{{ @step remove-dummy-files
 
-  forEachProperty(files, rmfile);
+  forEachProperty(paths, removeFile);
 
   /// #}}} @step remove-dummy-files
 
   /// #{{{ @step get-dummy-directories
 
-  paths = getDirectoryPaths(DIR, {
+  paths = getDirectoryPaths(ROOT_DIR, {
     'deep': true,
     'full': true,
     'extend': false,
     'validDirs': null,
     'invalidDirs': null
-  });
-  dirs = [];
-  forEachProperty(paths, function appendDirectory(path) {
-    dirs.push(path);
-  });
+  }).reverse();
 
   /// #}}} @step get-dummy-directories
 
   /// #{{{ @step remove-dummy-directories
 
-  forEachProperty(dirs, rmdir);
+  forEachProperty(paths, removeDirectory);
 
   /// #}}} @step remove-dummy-directories
 }
-/// #}}} @func clearDummy
+/// #}}} @func clearDummyTree
 
 /// #}}} @group METHODS
 
@@ -282,7 +424,7 @@ function clearDummy() {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = clearDummy;
+module.exports = clearDummyTree;
 
 /// #}}} @group EXPORTS
 
