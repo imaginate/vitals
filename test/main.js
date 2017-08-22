@@ -31,6 +31,14 @@ var loadHelper = require('./helpers/load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const DUMMY_CONTENT
+/**
+ * @private
+ * @const {string}
+ */
+var DUMMY_CONTENT = '// test file\n';
+/// #}}} @const DUMMY_CONTENT
+
 /// #{{{ @const IS
 /**
  * @private
@@ -1284,12 +1292,20 @@ function main(opts) {
 
   global.VITALS_TEST = capObject({
     'LOG': LOG_OCD_INST,
-    'DUMMY': DIR.TEST.DUMMY,
+    'DUMMY': {
+      'CONTENT': DUMMY_CONTENT,
+      'DIR': DIR.TEST.DUMMY,
+      'make': loadHelper('make-dummy-paths'),
+      'clear': loadHelper('clear-dummy-tree'),
+      'setup': loadHelper('setup-dummy-tree'),
+      'remove': loadHelper('remove-dummy-paths'),
+      'resolve': loadHelper('resolve-dummy-path')
+    },
     'VITALS': vitals,
     'VERSION': VERSION,
     'failures': 0,
     'loadHelper': loadHelper
-  });
+  }, true);
 
   /// #}}} @step make-global-object
 
