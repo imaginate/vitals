@@ -780,7 +780,8 @@ function main(opts) {
       throw setTypeError(new TypeError, 'opts.build', 'string=');
     }
     else if ( !isInArray(OPTS['build'], opts['build']) ) {
-      throw setOptionError(new RangeError, 'opts.build', OPTS['build']);
+      throw setOptionError(new RangeError, 'opts.build', opts['build'],
+        OPTS['build']);
     }
 
     if ( !hasOption(opts, 'main') ) {
@@ -802,11 +803,12 @@ function main(opts) {
     else if ( isFileSystem(opts['section']) ) {
       opts['section'] = 'fs';
     }
-    else if ( !isInArray(OPTS['section'], opts['section'].toLowerCase()) ) {
-      throw setOptionError(new RangeError, 'opts.section', OPTS['section']);
-    }
     else {
       opts['section'] = opts['section'].toLowerCase();
+      if ( !isInArray(OPTS['section'], opts['section']) ) {
+        throw setOptionError(new RangeError, 'opts.section', opts['section'],
+          OPTS['section']);
+      }
     }
 
     if ( !hasOption(opts, 'super') ) {
@@ -822,7 +824,8 @@ function main(opts) {
       opts['super'] = opts['super'].toLowerCase();
       opts['super'] = trimVitals(opts['super']);
       if ( !isInArray(OPTS['super'], opts['super']) ) {
-        throw setOptionError(new RangeError, 'opts.super', OPTS['super']);
+        throw setOptionError(new RangeError, 'opts.super', opts['super'],
+          OPTS['super']);
       }
     }
 
@@ -847,7 +850,8 @@ function main(opts) {
       opts['method'] = opts['method'].toLowerCase();
       opts['method'] = trimVitals(opts['method']);
       if ( !isInArray(OPTS['method'], opts['method']) ) {
-        throw setOptionError(new RangeError, 'opts.method', OPTS['method']);
+        throw setOptionError(new RangeError, 'opts.method', opts['method'],
+          OPTS['method']);
       }
       if (!opts['super']) {
         opts['super'] = getSuperMethod(opts['method']) || null;
@@ -868,7 +872,8 @@ function main(opts) {
       throw setTypeError(new TypeError, 'opts.reporter', 'string=');
     }
     else if ( !isInArray(OPTS['reporter'], opts['reporter']) ) {
-      throw setOptionError(new RangeError, 'opts.reporter', OPTS['reporter']);
+      throw setOptionError(new RangeError, 'opts.reporter', opts['reporter'],
+        OPTS['reporter']);
     }
 
     if ( !hasOption(opts, 'slow') ) {
