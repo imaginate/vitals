@@ -632,7 +632,7 @@ var OPTS = freezeObject({
       'invalidDirs': /^[_\.]/
     }), function makeBuildValue(path) {
       return getPathName(path);
-    }, true),
+    }),
   'section': remapEachProperty(
     getFilePaths(DIR.SRC.SECTIONS, {
       'deep': false,
@@ -643,7 +643,7 @@ var OPTS = freezeObject({
     }), function makeSectionValue(path) {
       path = getPathName(path);
       return trimJsFileExtension(path);
-    }, true),
+    }),
   'super': remapEachProperty(
     getDirectoryPaths(DIR.TEST.METHODS, {
       'deep': false,
@@ -652,7 +652,7 @@ var OPTS = freezeObject({
       'invalidDirs': /^[_\.]/
     }), function makeSuperValue(path) {
       return getPathName(path);
-    }, true),
+    }),
   'method': remapEachProperty(
     getFilePaths(DIR.TEST.METHODS, {
       'deep': true,
@@ -664,7 +664,7 @@ var OPTS = freezeObject({
     }), function makeMethodValue(path) {
       path = getPathName(path);
       return trimJsFileExtension(path);
-    }, true),
+    }),
   'reporter': remapEachProperty(
     getFilePaths(DIR.TEST.REPORTERS, {
       'deep': false,
@@ -675,7 +675,7 @@ var OPTS = freezeObject({
     }), function makeReporterValue(path) {
       path = getPathName(path);
       return trimJsFileExtension(path);
-    }, true)
+    })
 }, true);
 /// #}}} @const OPTS
 
