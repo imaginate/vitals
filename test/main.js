@@ -588,6 +588,9 @@ var FILE = freezeObject({
     NODE: {
       MAIN: resolvePath(DIR.DIST.NODE.MAIN, 'vitals.js')
     }
+  },
+  TEST: {
+    INTERFACE: resolvePath(DIR.TEST.MAIN, 'interface.js')
   }
 }, true);
 /// #}}} @const FILE
@@ -749,6 +752,8 @@ function main(opts) {
 
   /** @type {(!Object|!Function)} */
   var vitals;
+  /** @type {!Mocha} */
+  var mocha;
   /** @type {!Array<string>} */
   var paths;
   /** @type {!Array<string>} */
@@ -1037,7 +1042,7 @@ function main(opts) {
 
   /// #{{{ @step setup-mocha-reporters
 
-  forEachProperty(OPTS['reporters'], function setupReporter(name) {
+  forEachProperty(OPTS['reporter'], function setupReporter(name) {
     path = resolvePath(DIR.TEST.REPORTERS, name + '.js');
     try {
       Mocha.reporters[name] = require(path);
