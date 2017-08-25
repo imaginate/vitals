@@ -13,14 +13,6 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const INTRO
-/**
- * @private
- * @const {!RegExp}
- */
-var INTRO = /^\/\*\*[ \t]*\n([\s\S]+?)\n[ \t]*\*\/[\s\S]*$/;
-/// #}}} @const INTRO
-
 /// #{{{ @const IS
 /**
  * @private
@@ -29,14 +21,6 @@ var INTRO = /^\/\*\*[ \t]*\n([\s\S]+?)\n[ \t]*\*\/[\s\S]*$/;
  */
 var IS = require('./is.js');
 /// #}}} @const IS
-
-/// #{{{ @const SECTION
-/**
- * @private
- * @const {!RegExp}
- */
-var SECTION = /^[ \t]*\*[ \t]+@section[ \t]+([a-zA-Z0-9_\-]+)[ \t]*$/;
-/// #}}} @const SECTION
 
 /// #}}} @group CONSTANTS
 
