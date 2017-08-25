@@ -83,83 +83,7 @@ var VERSION = loadHelper('get-version')();
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setDirError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setDirError = setError.dir;
-/// #}}} @func setDirError
-
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
-/// #{{{ @func setExtError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {string} path
- * @param {(string|!Array<string>)=} exts
- * @return {!RangeError}
- */
-var setExtError = setError.ext;
-/// #}}} @func setExtError
-
-/// #{{{ @func setFileError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @param {string} path
- * @return {!Error}
- */
-var setFileError = setError.file;
-/// #}}} @func setFileError
-
-/// #{{{ @func setIndexError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} index
- * @param {number=} min = `0`
- * @return {!RangeError}
- */
-var setIndexError = setError.index;
-/// #}}} @func setIndexError
-
-/// #{{{ @func setNewError
-/**
- * @private
- * @param {!SyntaxError} err
- * @param {string} constructor
- * @return {!SyntaxError}
- */
-var setNewError = setError.new_;
-/// #}}} @func setNewError
-
-/// #{{{ @func setNoArgError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setNoArgError = setError.noArg;
-/// #}}} @func setNoArgError
-
-/// #{{{ @func setRangeError
+/// #{{{ @func setOptionError
 /**
  * @private
  * @param {!RangeError} err
@@ -168,78 +92,8 @@ var setNoArgError = setError.noArg;
  * @param {!Array<string>} vals
  * @return {!RangeError}
  */
-function setRangeError(err, param, val, vals) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var msg;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'err');
-    case 1:
-      throw setNoArgError(new Error, 'param');
-    case 2:
-      throw setNoArgError(new Error, 'val');
-    case 3:
-      throw setNoArgError(new Error, 'vals');
-  }
-
-  if ( !isError(err) ) {
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  }
-  if ( !isString(param) ) {
-    throw setTypeError(new TypeError, 'param', 'string');
-  }
-  if ( !isString(val) ) {
-    throw setTypeError(new TypeError, 'val', 'string');
-  }
-  if ( !isArray(vals) || !isStringList(vals) ) {
-    throw setTypeError(new TypeError, 'vals', '!Array<string>');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-message
-
-  msg = 'invalid option value for `' + param + '`\n'
-    + '    invalid-value: `"' + val + '"`\n'
-    + '    valid-values:\n'
-    + '        `"' + vals.join('"`\n        `"') + '"`';
-
-  /// #}}} @step make-message
-
-  /// #{{{ @step set-error-name
-
-  if (err.name !== 'RangeError') {
-    err.name = 'RangeError';
-  }
-
-  /// #}}} @step set-error-name
-
-  /// #{{{ @step return-error
-
-  return setError(err, msg);
-
-  /// #}}} @step return-error
-}
-/// #}}} @func setRangeError
-
-/// #{{{ @func setRetError
-/**
- * @private
- * @param {!TypeError} err
- * @param {string} method
- * @param {string} types
- * @return {!TypeError}
- */
-var setRetError = setError.ret;
-/// #}}} @func setRetError
+var setOptionError = setError.option;
+/// #}}} @func setOptionError
 
 /// #{{{ @func setTimeError
 /**
@@ -249,60 +103,7 @@ var setRetError = setError.ret;
  * @param {string} val
  * @return {!RangeError}
  */
-function setTimeError(err, param, val) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var msg;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'err');
-    case 1:
-      throw setNoArgError(new Error, 'param');
-    case 2:
-      throw setNoArgError(new Error, 'val');
-  }
-
-  if ( !isError(err) ) {
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  }
-  if ( !isString(param) ) {
-    throw setTypeError(new TypeError, 'param', 'string');
-  }
-  if ( !isString(val) ) {
-    throw setTypeError(new TypeError, 'val', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-message
-
-  msg = 'invalid time for `' + param + '`\n'
-    + '    invalid-time: `"' + val + '"`\n'
-    + '    valid-time-test: `/^[0-9]*\\.?[0-9]+ *(ms|s|m|h|d|y)?$/i`';
-
-  /// #}}} @step make-message
-
-  /// #{{{ @step set-error-name
-
-  if (err.name !== 'RangeError') {
-    err.name = 'RangeError';
-  }
-
-  /// #}}} @step set-error-name
-
-  /// #{{{ @step return-error
-
-  return setError(err, msg);
-
-  /// #}}} @step return-error
-}
+var setTimeError = setError.time;
 /// #}}} @func setTimeError
 
 /// #{{{ @func setTypeError
@@ -315,17 +116,6 @@ function setTimeError(err, param, val) {
  */
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
-
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
 
 /// #}}} @group ERROR
 
@@ -446,26 +236,6 @@ var getFilePaths = loadHelper('get-file-paths');
 var hasOption = loadHelper('has-option');
 /// #}}} @func hasOption
 
-/// #{{{ @func hasOwnEnumProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnEnumProperty = loadHelper('has-own-enum-property');
-/// #}}} @func hasOwnEnumProperty
-
-/// #{{{ @func hasOwnProperty
-/**
- * @private
- * @param {(!Object|!Function)} src
- * @param {(string|number)} key
- * @return {boolean}
- */
-var hasOwnProperty = loadHelper('has-own-property');
-/// #}}} @func hasOwnProperty
-
 /// #{{{ @func hasSection
 /**
  * @private
@@ -480,15 +250,6 @@ var hasSection = loadHelper('has-section');
 
 /// #{{{ @group IS
 
-/// #{{{ @func isArray
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isArray = IS.array;
-/// #}}} @func isArray
-
 /// #{{{ @func isBoolean
 /**
  * @private
@@ -497,15 +258,6 @@ var isArray = IS.array;
  */
 var isBoolean = IS.boolean;
 /// #}}} @func isBoolean
-
-/// #{{{ @func isError
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isError = IS.error;
-/// #}}} @func isError
 
 /// #{{{ @func isFile
 /**
@@ -571,15 +323,6 @@ var isObject = IS.object;
  */
 var isString = IS.string;
 /// #}}} @func isString
-
-/// #{{{ @func isStringList
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isStringList = IS.stringList;
-/// #}}} @func isStringList
 
 /// #{{{ @func isTime
 /**
@@ -1026,7 +769,7 @@ function main(opts) {
       throw setTypeError(new TypeError, 'opts.build', 'string=');
     }
     else if ( !isInArray(OPTS['build'], opts['build']) ) {
-      throw setRangeError(new RangeError, 'opts.build', OPTS['build']);
+      throw setOptionError(new RangeError, 'opts.build', OPTS['build']);
     }
 
     if ( !hasOption(opts, 'main') ) {
@@ -1049,7 +792,7 @@ function main(opts) {
       opts['section'] = 'fs';
     }
     else if ( !isInArray(OPTS['section'], opts['section'].toLowerCase()) ) {
-      throw setRangeError(new RangeError, 'opts.section', OPTS['section']);
+      throw setOptionError(new RangeError, 'opts.section', OPTS['section']);
     }
     else {
       opts['section'] = opts['section'].toLowerCase();
@@ -1068,7 +811,7 @@ function main(opts) {
       opts['super'] = opts['super'].toLowerCase();
       opts['super'] = trimVitals(opts['super']);
       if ( !isInArray(OPTS['super'], opts['super']) ) {
-        throw setRangeError(new RangeError, 'opts.super', OPTS['super']);
+        throw setOptionError(new RangeError, 'opts.super', OPTS['super']);
       }
     }
 
@@ -1093,7 +836,7 @@ function main(opts) {
       opts['method'] = opts['method'].toLowerCase();
       opts['method'] = trimVitals(opts['method']);
       if ( !isInArray(OPTS['method'], opts['method']) ) {
-        throw setRangeError(new RangeError, 'opts.method', OPTS['method']);
+        throw setOptionError(new RangeError, 'opts.method', OPTS['method']);
       }
       if (!opts['super']) {
         opts['super'] = getSuperMethod(opts['method']) || null;
@@ -1114,7 +857,7 @@ function main(opts) {
       throw setTypeError(new TypeError, 'opts.reporter', 'string=');
     }
     else if ( !isInArray(OPTS['reporter'], opts['reporter']) ) {
-      throw setRangeError(new RangeError, 'opts.reporter', OPTS['reporter']);
+      throw setOptionError(new RangeError, 'opts.reporter', OPTS['reporter']);
     }
 
     if ( !hasOption(opts, 'slow') ) {
