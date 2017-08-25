@@ -933,6 +933,77 @@ function setNoArgError(err, param) {
 }
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setOptionError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} val
+ * @param {!Array<string>} vals
+ * @return {!RangeError}
+ */
+function setOptionError(err, param, val, vals) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'val');
+    case 3:
+      throw setNoArgError(new Error, 'vals');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(val) ) {
+    throw setTypeError(new TypeError, 'val', 'string');
+  }
+  if ( !isArray(vals) || !isStringList(vals) ) {
+    throw setTypeError(new TypeError, 'vals', '!Array<string>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-message
+
+  msg = 'invalid option value for `' + param + '`\n'
+    + '    invalid-value: `"' + val + '"`\n'
+    + '    valid-values:\n'
+    + '        `"' + vals.join('"`\n        `"') + '"`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setOptionError
+
 /// #{{{ @func setRelDirError
 /**
  * @public
@@ -1281,6 +1352,7 @@ setError.fileMode = setFileModeError;
 setError.index = setIndexError;
 setError.new_ = setNewError;
 setError.noArg = setNoArgError;
+setError.option = setOptionError;
 setError.relDir = setRelDirError;
 setError.ret = setRetError;
 setError.rootDir = setRootDirError;
