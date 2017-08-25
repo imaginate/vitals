@@ -1362,6 +1362,9 @@ function makeTestOptions(items) {
       opts.super = item;
     }
     else if ( isMethod(item) ) {
+      if (trimSuperMethod(item) === 'main') {
+        item = getSuperMethod(item);
+      }
       opts.method = item;
     }
   });
