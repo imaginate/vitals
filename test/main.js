@@ -620,33 +620,42 @@ var isUndefined = IS.void;
 
 /// #{{{ @group LOG
 
-/// #{{{ @func logEmpty
-/**
- * @private
- * @param {!Object} opts
- * @return {void}
- */
-var logEmpty = loadHelper('log-empty');
-/// #}}} @func logEmpty
-
-/// #{{{ @func logEnd
+/// #{{{ @func logMainEnd
 /**
  * @private
  * @param {number} failures
  * @param {!Object} opts
  * @return {void}
  */
-var logEnd = loadHelper('log-end');
-/// #}}} @func logEnd
+var logMainEnd = loadHelper('log-main-end');
+/// #}}} @func logMainEnd
 
-/// #{{{ @func logStart
+/// #{{{ @func logMainStart
 /**
  * @private
  * @param {!Object} opts
  * @return {void}
  */
-var logStart = loadHelper('log-start');
-/// #}}} @func logStart
+var logMainStart = loadHelper('log-main-start');
+/// #}}} @func logMainStart
+
+/// #{{{ @func logNoSource
+/**
+ * @private
+ * @param {!Object} opts
+ * @return {void}
+ */
+var logNoSource = loadHelper('log-no-source');
+/// #}}} @func logNoSource
+
+/// #{{{ @func logNoTests
+/**
+ * @private
+ * @param {!Object} opts
+ * @return {void}
+ */
+var logNoTests = loadHelper('log-no-tests');
+/// #}}} @func logNoTests
 
 /// #}}} @group LOG
 
@@ -1357,11 +1366,11 @@ function main(opts) {
 
   /// #{{{ @step run-mocha
 
-  logStart(opts);
+  logMainStart(opts);
 
   mocha.run(function callback(failures) {
     global.VITALS_TEST.failures = failures;
-    logEnd(failures, opts);
+    logMainEnd(failures, opts);
   });
 
   /// #}}} @step run-mocha
