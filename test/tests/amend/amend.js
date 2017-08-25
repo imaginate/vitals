@@ -27,7 +27,7 @@
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = global.VITALS_TESTS.loadHelper;
+var loadHelper = global.VITALS_TEST.loadHelper;
 /// #}}} @func loadHelper
 
 /// #{{{ @func assert
@@ -153,7 +153,7 @@ var throws = loadHelper('throws-error');
  * @private
  * @const {(!Object|!Function)}
  */
-var vitals = global.VITALS_TESTS.VITALS;
+var vitals = global.VITALS_TEST.VITALS;
 /// #}}} @const vitals
 
 /// #}}} @group HELPERS
