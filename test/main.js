@@ -904,8 +904,6 @@ function main(opts) {
     opts['fs'] = false;
   }
 
-  opts = freezeObject(opts);
-
   /// #}}} @step verify-options
 
   /// #{{{ @step get-vitals-source
