@@ -1415,9 +1415,11 @@ function isSemanticVersion(val) {
 /**
  * @public
  * @param {*} val
- *   If the *val* is not a `number` or `string`, this method will return
- *   `false`.
  * @return {boolean}
+ *   This method will return `true` **only** for the following situations:
+ *   - The #val is a `number`.
+ *   - The #val is a `string` that passes a `RegExp.prototype.test` for
+ *     `/^[0-9]*\.?[0-9]+ *(?:ms|s|m|h|d|y)?$/i`.
  */
 function isTime(val) {
 
