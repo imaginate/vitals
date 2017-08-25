@@ -121,6 +121,12 @@ LOG.setStyle({
       'bg': 'blue',
       'bold': true
     }
+  },
+  'ocdmap': {
+    'color': 'white',
+    'delimiter': {
+      'color': 'white'
+    }
   }
 });
 
