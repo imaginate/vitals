@@ -65,6 +65,22 @@ var loadHelper = require('./helpers/load-helper.js');
 var CONFIG = require('./build.json');
 /// #}}} @const CONFIG
 
+/// #{{{ @const DFLT_REPORTER
+/**
+ * @private
+ * @const {string}
+ */
+var DFLT_REPORTER = 'specky';
+/// #}}} @const DFLT_REPORTER
+
+/// #{{{ @const DFLT_SLOW
+/**
+ * @private
+ * @const {number}
+ */
+var DFLT_SLOW = 5;
+/// #}}} @const DFLT_SLOW
+
 /// #{{{ @const IS
 /**
  * @private
