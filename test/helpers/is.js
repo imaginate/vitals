@@ -1582,9 +1582,9 @@ function isSetterError(val, name) {
   }
 
   return isError(val)
-    && hasOwnEnumProperty(err, 'setter')
-    && err.setter === true
-    && (!name || err.name === name);
+    && hasOwnEnumProperty(val, 'setter')
+    && val.setter === true
+    && (!name || val.name === name);
 }
 /// #}}} @func isSetterError
 
@@ -1616,9 +1616,9 @@ function isVitalsError(val, name) {
   }
 
   return isError(val)
-    && hasOwnEnumProperty(err, 'vitals')
-    && err.vitals === true
-    && (!name || err.name === name);
+    && hasOwnEnumProperty(val, 'vitals')
+    && val.vitals === true
+    && (!name || val.name === name);
 }
 /// #}}} @func isVitalsError
 
