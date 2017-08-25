@@ -1692,8 +1692,7 @@ var DIR = freezeObject({
   },
   TEST: {
     MAIN: resolvePath(REPO, 'test'),
-    SETUP: resolvePath(REPO, 'test/setup'),
-    TESTS: resolvePath(REPO, 'test/methods'),
+    TESTS: resolvePath(REPO, 'test/tests'),
     REPORTERS: resolvePath(REPO, 'test/reporters')
   }
 }, true);

@@ -557,7 +557,8 @@ var DIR = freezeObject({
     MAIN: resolvePath(__dirname),
     DUMMY: resolvePath(__dirname, './.dummy'),
     HELPERS: resolvePath(__dirname, './helpers')
-    METHODS: resolvePath(__dirname, './methods'),
+    TESTS: resolvePath(__dirname, './tests'),
+    METHODS: resolvePath(__dirname, './tests'),
     REPORTERS: resolvePath(__dirname, './reporters')
   }
 }, true);
