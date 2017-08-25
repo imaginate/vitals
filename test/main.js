@@ -370,16 +370,6 @@ var setWholeError = setError.whole;
 var getDirectoryPaths = loadHelper('get-directory-paths');
 /// #}}} @func getDirectoryPaths
 
-/// #{{{ @func getFileContent
-/**
- * @private
- * @param {string} path
- * @param {boolean=} buffer
- * @return {(!Buffer|string)}
- */
-var getFileContent = loadHelper('get-file-content');
-/// #}}} @func getFileContent
-
 /// #{{{ @func getFilePaths
 /**
  * @private
@@ -475,6 +465,16 @@ var hasOwnEnumProperty = loadHelper('has-own-enum-property');
  */
 var hasOwnProperty = loadHelper('has-own-property');
 /// #}}} @func hasOwnProperty
+
+/// #{{{ @func hasSection
+/**
+ * @private
+ * @param {string} path
+ * @param {string} section
+ * @return {boolean}
+ */
+var hasSection = loadHelper('has-section');
+/// #}}} @func hasSection
 
 /// #}}} @group HAS
 
@@ -1002,11 +1002,11 @@ function main(opts) {
   /** @type {!Array<string>} */
   var paths;
   /** @type {!Array<string>} */
-  var files;
-  /** @type {!Array<string>} */
   var args;
   /** @type {string} */
   var path;
+  /** @type {!Error} */
+  var err;
 
   /// #}}} @step declare-variables
 
@@ -1153,7 +1153,7 @@ function main(opts) {
 
   /// #}}} @step verify-options
 
-  /// #{{{ @step load-vitals
+  /// #{{{ @step get-vitals-source
 
   if (opts['main']) {
     path = resolvePath(DIR.DIST.MAIN, opts['build'], 'vitals.js');
@@ -1186,12 +1186,23 @@ function main(opts) {
     path = resolvePath(DIR.DIST.MAIN, opts['build'], 'sections/all.js');
   }
 
+  opts['source'] = path;
+
   if ( !isFile(path) ) {
-    logEmpty(opts);
+    logNoSource(opts);
     return;
   }
 
-  vitals = require(path);
+  /// #}}} @step get-vitals-source
+
+  /// #{{{ @step load-vitals
+
+  try {
+    vitals = require(path);
+  }
+  catch (err) {
+    throw setError(err, err.message);
+  }
 
   if (opts['main'] && opts['build'] === 'node') {
     args = [];
@@ -1209,7 +1220,12 @@ function main(opts) {
         args.push('fs');
       }
     }
-    vitals = vitals(args);
+    try {
+      vitals = vitals(args);
+    }
+    catch (err) {
+      throw setError(err, err.message);
+    }
   }
 
   /// #}}} @step load-vitals
@@ -1246,15 +1262,15 @@ function main(opts) {
     });
   }
 
-  files = [];
+  opts['tests'] = [];
   forEachProperty(paths, function makeTestFile(path) {
     if (path) {
-      files.push(path);
+      opts['tests'].push(path);
     }
   });
 
-  if (!files.length) {
-    logEmpty(opts);
+  if (!opts['tests'].length) {
+    logNoTests(opts);
     return;
   }
 
@@ -1262,20 +1278,26 @@ function main(opts) {
 
   /// #{{{ @step setup-mocha-reporters
 
-  forEachProperty(OPTS['reporters'], function setupReporter(key) {
-
-    /** @type {string} */
-    var path;
-
-    path = resolvePath(DIR.TEST.REPORTERS, key + '.js');
-    Mocha.reporters[key] = require(path);
+  forEachProperty(OPTS['reporters'], function setupReporter(name) {
+    path = resolvePath(DIR.TEST.REPORTERS, name + '.js');
+    try {
+      Mocha.reporters[name] = require(path);
+    }
+    catch (err) {
+      throw setError(err, err.message);
+    }
   });
 
   /// #}}} @step setup-mocha-reporters
 
   /// #{{{ @step setup-mocha-interface
 
-  require(FILE.TEST.INTERFACE);
+  try {
+    require(FILE.TEST.INTERFACE);
+  }
+  catch (err) {
+    throw setError(err, err.message);
+  }
 
   /// #}}} @step setup-mocha-interface
 
@@ -1292,7 +1314,7 @@ function main(opts) {
 
   global.VITALS_TEST = capObject({
     'LOG': LOG_OCD_INST,
-    'DUMMY': {
+    'DUMMY': freezeObject({
       'CONTENT': DUMMY_CONTENT,
       'DIR': DIR.TEST.DUMMY,
       'make': loadHelper('make-dummy-paths'),
@@ -1300,12 +1322,14 @@ function main(opts) {
       'setup': loadHelper('setup-dummy-tree'),
       'remove': loadHelper('remove-dummy-paths'),
       'resolve': loadHelper('resolve-dummy-path')
-    },
+    }),
+    'TESTS': opts['tests'],
+    'SOURCE': opts['source'],
     'VITALS': vitals,
     'VERSION': VERSION,
     'failures': 0,
     'loadHelper': loadHelper
-  }, true);
+  });
 
   /// #}}} @step make-global-object
 
@@ -1325,7 +1349,7 @@ function main(opts) {
 
   /// #{{{ @step append-test-files-to-mocha
 
-  forEachProperty(files, function appendTestFile(path) {
+  forEachProperty(opts['tests'], function appendTestFile(path) {
     mocha.addFile(path);
   });
 
@@ -1345,5 +1369,14 @@ function main(opts) {
 /// #}}} @func main
 
 /// #}}} @group MAIN
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+
+module.exports = main;
+
+/// #}}} @group EXPORTS
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
