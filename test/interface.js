@@ -408,14 +408,14 @@ function Interface(suite) {
         alias = undefined;
       }
 
-      suite = Suite.create(suites[0], title);
+      suite = Suite.create(SUITES[0], title);
       suite.file = file;
       suite.main = true;
       suite.method = alias || method;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -447,14 +447,14 @@ function Interface(suite) {
         alias = undefined;
       }
 
-      suite = Suite.create(suites[0], title);
+      suite = Suite.create(SUITES[0], title);
       suite.pending = true;
       suite.method = alias || method;
       suite.main = true;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -507,14 +507,14 @@ function Interface(suite) {
 
       msg = 'should ' + msg.replace(/^(?: *should)? +/, '');
 
-      suite = Suite.create(suites[0], msg);
+      suite = Suite.create(SUITES[0], msg);
       suite.file = file;
       suite.should = true;
       suite.method = suite.parent.method;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -538,14 +538,14 @@ function Interface(suite) {
 
       msg = 'should ' + msg.replace(/^(?: *should)? +/, '');
 
-      suite = Suite.create(suites[0], msg);
+      suite = Suite.create(SUITES[0], msg);
       suite.pending = true;
       suite.should = true;
       suite.method = suite.parent.method;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -596,7 +596,7 @@ function Interface(suite) {
 
       args = sliceArray(arguments, 0, -1);
       tests = arguments[args.length];
-      suite = suites[0];
+      suite = SUITES[0];
 
       if (suite.pending) {
         tests = null;
@@ -635,7 +635,7 @@ function Interface(suite) {
 
       args = sliceArray(arguments, 0, -1);
       tests = null;
-      suite = suites[0];
+      suite = SUITES[0];
 
       msg = stringifyCall(suite.method, args);
       test = new Test(msg, tests);
@@ -670,7 +670,7 @@ function Interface(suite) {
 
       args = sliceArray(arguments, 0, -1);
       tests = arguments[args.length];
-      suite = suites[0];
+      suite = SUITES[0];
 
       if (suite.pending) {
         tests = null;
@@ -702,13 +702,13 @@ function Interface(suite) {
       /** @type {!Suite} */
       var suite;
 
-      suite = Suite.create(suites[0], msg);
+      suite = Suite.create(SUITES[0], msg);
       suite.file = file;
       suite.method = suite.parent.method;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -728,13 +728,13 @@ function Interface(suite) {
       /** @type {!Suite} */
       var suite;
 
-      suite = Suite.create(suites[0], msg);
+      suite = Suite.create(SUITES[0], msg);
       suite.pending = true;
       suite.method = suite.parent.method;
 
-      suites.unshift(suite);
+      SUITES.unshift(suite);
       tests.call(suite);
-      suites.shift();
+      SUITES.shift();
 
       return suite;
     };
@@ -770,7 +770,7 @@ function Interface(suite) {
      * @return {void}
      */
     context.before = function beforeUnitTests(name, fn) {
-      suites[0].beforeAll(name, fn);
+      SUITES[0].beforeAll(name, fn);
     };
     /// #}}} @func before
 
@@ -784,7 +784,7 @@ function Interface(suite) {
      * @return {void}
      */
     context.after = function afterUnitTests(name, fn) {
-      suites[0].afterAll(name, fn);
+      SUITES[0].afterAll(name, fn);
     };
     /// #}}} @func after
 
@@ -798,7 +798,7 @@ function Interface(suite) {
      * @return {void}
      */
     context.beforeEach = function beforeEachUnitTest(name, fn) {
-      suites[0].beforeEach(name, fn);
+      SUITES[0].beforeEach(name, fn);
     };
     /// #}}} @func beforeEach
 
@@ -812,7 +812,7 @@ function Interface(suite) {
      * @return {void}
      */
     context.afterEach = function afterEachUnitTest(name, fn) {
-      suites[0].afterEach(name, fn);
+      SUITES[0].afterEach(name, fn);
     };
     /// #}}} @func afterEach
 
