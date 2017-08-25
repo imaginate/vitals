@@ -226,6 +226,16 @@ var getFilePaths = loadHelper('get-file-paths');
 
 /// #{{{ @group HAS
 
+/// #{{{ @func hasBuild
+/**
+ * @private
+ * @param {string} path
+ * @param {string} build
+ * @return {boolean}
+ */
+var hasBuild = loadHelper('has-build');
+/// #}}} @func hasBuild
+
 /// #{{{ @func hasOption
 /**
  * @private
@@ -986,9 +996,15 @@ function main(opts) {
     'invalidFiles': /^[_\.]/
   });
 
+  paths = remapEachProperty(paths, function filterFileByBuild(path) {
+    return hasBuild(path, opts['build'])
+      ? path
+      : '';
+  });
+
   if (opts['section']) {
     paths = remapEachProperty(paths, function filterFileBySection(path) {
-      return hasSection(path, opts['section'])
+      return !!path && hasSection(path, opts['section'])
         ? path
         : '';
     });
