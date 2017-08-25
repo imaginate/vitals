@@ -498,15 +498,6 @@ var isArray = IS.array;
 var isBoolean = IS.boolean;
 /// #}}} @func isBoolean
 
-/// #{{{ @func isDirectory
-/**
- * @private
- * @param {string} path
- * @return {boolean}
- */
-var isDirectory = IS.directory;
-/// #}}} @func isDirectory
-
 /// #{{{ @func isError
 /**
  * @private
@@ -534,33 +525,16 @@ var isFile = IS.file;
 var isFileSystem = IS.fileSystemSection;
 /// #}}} @func isFileSystem
 
-/// #{{{ @func isFunction
+/// #{{{ @func isInArray
 /**
  * @private
+ * @param {(!Array|!Arguments|!Object)} src
+ *   The #src must be `array-like`.
  * @param {*} val
  * @return {boolean}
  */
-var isFunction = IS.func;
-/// #}}} @func isFunction
-
-/// #{{{ @func isInstanceOf
-/**
- * @private
- * @param {*} inst
- * @param {!Function} constructor
- * @return {boolean}
- */
-var isInstanceOf = IS.instanceOf;
-/// #}}} @func isInstanceOf
-
-/// #{{{ @func isList
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isList = IS.list;
-/// #}}} @func isList
+var isInArray = IS.inArray;
+/// #}}} @func isInArray
 
 /// #{{{ @func isNull
 /**
@@ -571,6 +545,15 @@ var isList = IS.list;
 var isNull = IS.nil;
 /// #}}} @func isNull
 
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
+
 /// #{{{ @func isObject
 /**
  * @private
@@ -579,15 +562,6 @@ var isNull = IS.nil;
  */
 var isObject = IS.object;
 /// #}}} @func isObject
-
-/// #{{{ @func isRegExp
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isRegExp = IS.regexp;
-/// #}}} @func isRegExp
 
 /// #{{{ @func isString
 /**
@@ -606,6 +580,19 @@ var isString = IS.string;
  */
 var isStringList = IS.stringList;
 /// #}}} @func isStringList
+
+/// #{{{ @func isTime
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ *   This method will return `true` **only** for the following situations:
+ *   - The #val is a `number`.
+ *   - The #val is a `string` that passes a `RegExp.prototype.test` for
+ *     `/^[0-9]*\.?[0-9]+ *(?:ms|s|m|h|d|y)?$/i`.
+ */
+var isTime = IS.time;
+/// #}}} @func isTime
 
 /// #{{{ @func isUndefined
 /**
