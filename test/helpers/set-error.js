@@ -935,7 +935,7 @@ function setNoArgError(err, param) {
 
 /// #{{{ @func setOptionError
 /**
- * @private
+ * @public
  * @param {!RangeError} err
  * @param {string} param
  * @param {string} val
@@ -1224,6 +1224,70 @@ function setSemVerError(err, param, version) {
 }
 /// #}}} @func setSemVerError
 
+/// #{{{ @func setTimeError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {string} val
+ * @return {!RangeError}
+ */
+function setTimeError(err, param, val) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'val');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(val) ) {
+    throw setTypeError(new TypeError, 'val', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-message
+
+  msg = 'invalid time for `' + param + '`\n'
+    + '    invalid-value: `"' + val + '"`\n'
+    + '    valid-pattern: `/^[0-9]*\\.?[0-9]+ *(ms|s|m|h|d|y)?$/i`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTimeError
+
 /// #{{{ @func setTypeError
 /**
  * @public
@@ -1357,6 +1421,7 @@ setError.relDir = setRelDirError;
 setError.ret = setRetError;
 setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
+setError.time = setTimeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
 
