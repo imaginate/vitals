@@ -2325,7 +2325,7 @@ function testBrowser(itemsString) {
 
   /// #{{{ @step make-items
 
-  itemsList = makeItemsList(itemsString);
+  itemsList = makeTestItemsList(itemsString);
 
   /// #}}} @step make-items
 
@@ -2393,7 +2393,7 @@ function testNode(itemsString) {
 
   /// #{{{ @step make-items
 
-  itemsList = makeItemsList(itemsString);
+  itemsList = makeTestItemsList(itemsString);
 
   /// #}}} @step make-items
 
