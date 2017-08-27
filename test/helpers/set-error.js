@@ -1360,71 +1360,6 @@ function setTestIdError(err, testId, testsId, method) {
 }
 /// #}}} @func setTestIdError
 
-/// #{{{ @func setTestsIdError
-/**
- * @public
- * @param {!RangeError} err
- * @param {string} testsId
- * @param {string} method
- * @return {!RangeError}
- */
-function setTestsIdError(err, testsId, method) {
-
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var msg;
-
-  /// #}}} @step declare-variables
-
-  /// #{{{ @step verify-parameters
-
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, 'err');
-    case 1:
-      throw setNoArgError(new Error, 'testsId');
-    case 2:
-      throw setNoArgError(new Error, 'method');
-  }
-
-  if ( !isError(err) ) {
-    throw setTypeError(new TypeError, 'err', '!RangeError');
-  }
-  if ( !isString(testsId) ) {
-    throw setTypeError(new TypeError, 'testsId', 'string');
-  }
-  if ( !isString(method) ) {
-    throw setTypeError(new TypeError, 'method', 'string');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step make-message
-
-  msg = 'invalid `tests id` for a suite of unit tests\n'
-    + '    current-method-suite: `' + method + '`\n'
-    + '    invalid-tests-suite-id: `"' + testsId + '"`\n'
-    + '    valid-tests-id-pattern: `/^[A-Z]+$/`';
-
-  /// #}}} @step make-message
-
-  /// #{{{ @step set-error-name
-
-  if (err.name !== 'RangeError') {
-    err.name = 'RangeError';
-  }
-
-  /// #}}} @step set-error-name
-
-  /// #{{{ @step return-error
-
-  return setError(err, msg);
-
-  /// #}}} @step return-error
-}
-/// #}}} @func setTestsIdError
-
 /// #{{{ @func setTestNoArgError
 /**
  * @public
@@ -1495,6 +1430,143 @@ function setTestNoArgError(err, param, testsId, method) {
   /// #}}} @step return-error
 }
 /// #}}} @func setTestNoArgError
+
+/// #{{{ @func setTestsIdError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!RangeError}
+ */
+function setTestsIdError(err, testsId, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'testsId');
+    case 2:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(testsId) ) {
+    throw setTypeError(new TypeError, 'testsId', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-message
+
+  msg = 'invalid `tests id` for a suite of unit tests\n'
+    + '    current-method-suite: `' + method + '`\n'
+    + '    invalid-tests-suite-id: `"' + testsId + '"`\n'
+    + '    valid-tests-id-pattern: `/^[A-Z]+$/`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestsIdError
+
+/// #{{{ @func setTestsNoArgError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @param {*} testsId
+ * @param {string} method
+ * @return {!Error}
+ */
+function setTestsNoArgError(err, param, testsId, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'testsId');
+    case 3:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing required parameter for a suite wrapper\n'
+    + '    current-method-suite: `' + method + '`\n';
+
+  if ( !!testsId && isString(testsId) ) {
+    msg += '    current-tests-suite: `' + testsId + '`\n';
+  }
+
+  msg += '    missing-parameter-name: `' + param + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestsNoArgError
 
 /// #{{{ @func setTimeError
 /**
@@ -1695,8 +1767,9 @@ setError.ret = setRetError;
 setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
 setError.testId = setTestIdError;
-setError.testsId = setTestsIdError;
 setError.testNoArg = setTestNoArgError;
+setError.testsId = setTestsIdError;
+setError.testsNoArg = setTestsNoArgError;
 setError.time = setTimeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
