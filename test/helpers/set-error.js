@@ -1507,7 +1507,7 @@ function setTestThrowsError(err, thrown) {
       + '        name: `"' + thrown.name + '"`\n'
       + '        message:\n'
       + '            ' + thrown.message.replace(
-        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+        /(?:\r\n|\r|\n)(.)/g, '\n                $1');
     err.stack = thrown.stack;
   }
 
@@ -1582,7 +1582,7 @@ function setTestThrowsRangeError(err, thrown) {
       + '        name: `"' + thrown.name + '"`\n'
       + '        message:\n'
       + '            ' + thrown.message.replace(
-        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+        /(?:\r\n|\r|\n)(.)/g, '\n                $1');
     err.stack = thrown.stack;
   }
 
@@ -1656,7 +1656,7 @@ function setTestThrowsSetterError(err, thrown) {
       + '        name: `"' + thrown.name + '"`\n'
       + '        message:\n'
       + '            ' + thrown.message.replace(
-        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+        /(?:\r\n|\r|\n)(.)/g, '\n                $1');
     err.stack = thrown.stack;
   }
 
@@ -1731,7 +1731,7 @@ function setTestThrowsTypeError(err, thrown) {
       + '        name: `"' + thrown.name + '"`\n'
       + '        message:\n'
       + '            ' + thrown.message.replace(
-        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+        /(?:\r\n|\r|\n)(.)/g, '\n                $1');
     err.stack = thrown.stack;
   }
 
