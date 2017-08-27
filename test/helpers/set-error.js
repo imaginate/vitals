@@ -145,6 +145,24 @@ function isStringArray(val) {
 var isStringList = IS.stringList;
 /// #}}} @func isStringList
 
+/// #{{{ @func isTestId
+/**
+ * @private
+ * @param {string} id
+ * @return {boolean}
+ */
+var isTestId = IS.testId;
+/// #}}} @func isTestId
+
+/// #{{{ @func isTestsId
+/**
+ * @private
+ * @param {string} id
+ * @return {boolean}
+ */
+var isTestsId = IS.testsId;
+/// #}}} @func isTestsId
+
 /// #{{{ @func isUndefined
 /**
  * @private
@@ -1431,6 +1449,92 @@ function setTestNoArgError(err, param, testsId, method) {
 }
 /// #}}} @func setTestNoArgError
 
+/// #{{{ @func setTestTypeError
+/**
+ * @public
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @param {string} id
+ * @param {string} method
+ * @return {!TypeError}
+ */
+function setTestTypeError(err, param, types, id, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'types');
+    case 3:
+      throw setNoArgError(new Error, 'id');
+    case 4:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(types) ) {
+    throw setTypeError(new TypeError, 'types', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid data type for a unit test parameter\n'
+    + '    current-method-suite: `' + method + '`';
+
+  if ( isTestId(id) ) {
+    msg += '\n    current-unit-test: `' + id + '`';
+  }
+  else if ( isTestsId(id) ) {
+    msg += '\n    current-tests-suite: `' + id + '`';
+  }
+
+  msg += '\n'
+    + '    invalid-parameter: `' + param + '`\n'
+    + '    valid-data-types: `' + types + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'TypeError') {
+    err.name = 'TypeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestTypeError
+
 /// #{{{ @func setTestsIdError
 /**
  * @public
@@ -1768,6 +1872,7 @@ setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
 setError.testId = setTestIdError;
 setError.testNoArg = setTestNoArgError;
+setError.testType = setTestTypeError;
 setError.testsId = setTestsIdError;
 setError.testsNoArg = setTestsNoArgError;
 setError.time = setTimeError;
