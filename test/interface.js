@@ -43,6 +43,14 @@ var loadHelper = require('./helpers/load-helper.js');
 var IS = loadHelper('is');
 /// #}}} @const IS
 
+/// #{{{ @const SHOULD
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var SHOULD = /^(?:[ \t]*should)?[ \t]+/i;
+/// #}}} @const SHOULD
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -102,6 +110,81 @@ var setNewError = setError.new_;
  */
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
+
+/// #{{{ @func setTestIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} testId
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!RangeError}
+ */
+var setTestIdError = setError.testId;
+/// #}}} @func setTestIdError
+
+/// #{{{ @func setTestNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {*} testId
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!Error}
+ */
+var setTestNoArgError = setError.testNoArg;
+/// #}}} @func setTestNoArgError
+
+/// #{{{ @func setTestTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @param {*} testId
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!TypeError}
+ */
+var setTestTypeError = setError.testType;
+/// #}}} @func setTestTypeError
+
+/// #{{{ @func setTestsIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!RangeError}
+ */
+var setTestsIdError = setError.testsId;
+/// #}}} @func setTestsIdError
+
+/// #{{{ @func setTestsNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {*} testsId
+ * @param {string} method
+ * @return {!Error}
+ */
+var setTestsNoArgError = setError.testsNoArg;
+/// #}}} @func setTestsNoArgError
+
+/// #{{{ @func setTestsTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @param {*} testsId
+ * @param {string} method
+ * @return {!TypeError}
+ */
+var setTestsTypeError = setError.testsType;
+/// #}}} @func setTestsTypeError
 
 /// #{{{ @func setTypeError
 /**
@@ -199,6 +282,24 @@ var isRegExp = IS.regexp;
  */
 var isString = IS.string;
 /// #}}} @func isString
+
+/// #{{{ @func isTestId
+/**
+ * @private
+ * @param {string} id
+ * @return {boolean}
+ */
+var isTestId = IS.testId;
+/// #}}} @func isTestId
+
+/// #{{{ @func isTestsId
+/**
+ * @private
+ * @param {string} id
+ * @return {boolean}
+ */
+var isTestsId = IS.testsId;
+/// #}}} @func isTestsId
 
 /// #{{{ @func isUndefined
 /**
@@ -411,6 +512,7 @@ function Interface(suite) {
       suite = Suite.create(SUITES[0], title);
       suite.file = file;
       suite.main = true;
+      suite.METHOD = method;
       suite.method = alias || method;
 
       SUITES.unshift(suite);
@@ -449,6 +551,7 @@ function Interface(suite) {
 
       suite = Suite.create(SUITES[0], title);
       suite.pending = true;
+      suite.METHOD = method;
       suite.method = alias || method;
       suite.main = true;
 
@@ -495,28 +598,88 @@ function Interface(suite) {
      *   Defines a suite of tests within a method suite that should do a
      *   specific action.
      * @public
+     * @param {string} id
      * @param {string} msg
      *   What this suite of tests should do.
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.should = function shouldSuite(msg, tests) {
+    context.should = function shouldSuite(id, msg, tests) {
 
-      /** @type {Suite} */
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
       var suite;
 
-      msg = 'should ' + msg.replace(/^(?: *should)? +/, '');
+      /// #}}} @step declare-variables
 
-      suite = Suite.create(SUITES[0], msg);
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step normalize-should-for-message
+
+      msg = 'should ' + msg.replace(SHOULD, '');
+
+      /// #}}} @step normalize-should-for-message
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
       suite.file = file;
       suite.should = true;
+      suite.METHOD = method;
       suite.method = suite.parent.method;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
 
       SUITES.unshift(suite);
       tests.call(suite);
       SUITES.shift();
 
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func should
 
@@ -526,28 +689,89 @@ function Interface(suite) {
      *   Defines a skipped suite of tests within a method suite that should do
      *   a specific action.
      * @public
+     * @param {string} id
      * @param {string} msg
      *   What this suite of tests should do.
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.should.skip = function skipShouldSuite(msg, tests) {
+    context.should.skip = function skipShouldSuite(id, msg, tests) {
 
-      /** @type {Suite} */
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
       var suite;
 
-      msg = 'should ' + msg.replace(/^(?: *should)? +/, '');
+      /// #}}} @step declare-variables
 
-      suite = Suite.create(SUITES[0], msg);
-      suite.pending = true;
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step normalize-should-for-message
+
+      msg = 'should ' + msg.replace(SHOULD, '');
+
+      /// #}}} @step normalize-should-for-message
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
+      suite.file = file;
       suite.should = true;
+      suite.METHOD = method;
       suite.method = suite.parent.method;
+      suite.pending = true;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
 
       SUITES.unshift(suite);
       tests.call(suite);
       SUITES.shift();
 
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func should.skip
 
@@ -557,19 +781,94 @@ function Interface(suite) {
      *   Defines the only not skipped suite of tests within a method suite
      *   that should do a specific action.
      * @public
+     * @param {string} id
      * @param {string} msg
      *   What this suite of tests should do.
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.should.only = function onlyShouldSuite(msg, tests) {
+    context.should.only = function onlyShouldSuite(id, msg, tests) {
 
-      /** @type {Suite} */
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
       var suite;
 
-      suite = context.should(msg, tests);
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step normalize-should-for-message
+
+      msg = 'should ' + msg.replace(SHOULD, '');
+
+      /// #}}} @step normalize-should-for-message
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
+      suite.file = file;
+      suite.should = true;
+      suite.METHOD = method;
+      suite.method = suite.parent.method;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
+
+      SUITES.unshift(suite);
+      tests.call(suite);
+      SUITES.shift();
+
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step run-mocha-grep
+
       mocha.grep( suite.fullTitle() );
+
+      /// #}}} @step run-mocha-grep
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func should.only
 
@@ -578,37 +877,97 @@ function Interface(suite) {
      * @description
      *   Defines a test.
      * @public
-     * @param {(...*)=} arg
+     * @param {string} id
+     * @param {!Array} args
      *   The arguments passed (in order) to the vitals method.
      * @param {!function} tests
      * @return {!Test}
      */
-    context.test = function unitTest(arg, tests) {
+    context.test = function unitTest(id, args, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {string} */
+      var group;
       /** @type {!Suite} */
       var suite;
-      /** @type {!Array} */
-      var args;
       /** @type {!Test} */
       var test;
       /** @type {string} */
       var msg;
 
-      args = sliceArray(arguments, 0, -1);
-      tests = arguments[args.length];
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
       suite = SUITES[0];
+      group = suite.TESTS_ID;
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestNoArgError(new Error, 'id', id, group, method);
+        case 1:
+          throw setTestNoArgError(new Error, 'args', id, group, method);
+        case 2:
+          throw setTestNoArgError(new Error, 'tests', id, group, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestTypeError(new TypeError, 'id', 'string', id, group,
+          method);
+      }
+      if ( !isArray(args) ) {
+        throw setTestTypeError(new TypeError, 'args', '!Array', id, group,
+          method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestTypeError(new TypeError, 'tests', '!function', id, group,
+          method);
+      }
+
+      if ( !isTestId(id) ) {
+        throw setTestIdError(new RangeError, id, group, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step handle-pending-suite
 
       if (suite.pending) {
         tests = null;
       }
 
+      /// #}}} @step handle-pending-suite
+
+      /// #{{{ @step make-test-instance
+
       msg = stringifyCall(suite.method, args);
       test = new Test(msg, tests);
       test.file = file;
+      test.METHOD = method;
+      test.TEST_ID = id;
+      test.TESTS_ID = group;
+
+      /// #}}} @step make-test-instance
+
+      /// #{{{ @step add-test-to-suite
 
       suite.addTest(test);
 
+      /// #}}} @step add-test-to-suite
+
+      /// #{{{ @step return-test-instance
+
       return test;
+
+      /// #}}} @step return-test-instance
     };
     /// #}}} @func test
 
@@ -617,33 +976,89 @@ function Interface(suite) {
      * @description
      *   Defines a skipped test.
      * @public
-     * @param {(...*)=} arg
+     * @param {string} id
+     * @param {!Array} args
      *   The arguments passed (in order) to the vitals method.
      * @param {!function} tests
      * @return {!Test}
      */
-    context.test.skip = function skipUnitTest(arg, tests) {
+    context.test.skip = function skipUnitTest(id, args, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {string} */
+      var group;
       /** @type {!Suite} */
       var suite;
-      /** @type {!Array} */
-      var args;
       /** @type {!Test} */
       var test;
       /** @type {string} */
       var msg;
 
-      args = sliceArray(arguments, 0, -1);
-      tests = null;
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
       suite = SUITES[0];
+      group = suite.TESTS_ID;
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestNoArgError(new Error, 'id', id, group, method);
+        case 1:
+          throw setTestNoArgError(new Error, 'args', id, group, method);
+        case 2:
+          throw setTestNoArgError(new Error, 'tests', id, group, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestTypeError(new TypeError, 'id', 'string', id, group,
+          method);
+      }
+      if ( !isArray(args) ) {
+        throw setTestTypeError(new TypeError, 'args', '!Array', id, group,
+          method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestTypeError(new TypeError, 'tests', '!function', id, group,
+          method);
+      }
+
+      if ( !isTestId(id) ) {
+        throw setTestIdError(new RangeError, id, group, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step make-test-instance
 
       msg = stringifyCall(suite.method, args);
-      test = new Test(msg, tests);
+      test = new Test(msg, null);
       test.file = file;
+      test.METHOD = method;
+      test.TEST_ID = id;
+      test.TESTS_ID = group;
+
+      /// #}}} @step make-test-instance
+
+      /// #{{{ @step add-test-to-suite
 
       suite.addTest(test);
 
+      /// #}}} @step add-test-to-suite
+
+      /// #{{{ @step return-test-instance
+
       return test;
+
+      /// #}}} @step return-test-instance
     };
     /// #}}} @func test.skip
 
@@ -652,39 +1067,103 @@ function Interface(suite) {
      * @description
      *   Defines the only not skipped test.
      * @public
-     * @param {(...*)=} arg
+     * @param {string} id
+     * @param {!Array} args
      *   The arguments passed (in order) to the vitals method.
      * @param {!function} tests
      * @return {!Test}
      */
-    context.test.only = function onlyUnitTest(arg, tests) {
+    context.test.only = function onlyUnitTest(id, args, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {string} */
+      var group;
       /** @type {!Suite} */
       var suite;
-      /** @type {!Array} */
-      var args;
       /** @type {!Test} */
       var test;
       /** @type {string} */
       var msg;
 
-      args = sliceArray(arguments, 0, -1);
-      tests = arguments[args.length];
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
       suite = SUITES[0];
+      group = suite.TESTS_ID;
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestNoArgError(new Error, 'id', id, group, method);
+        case 1:
+          throw setTestNoArgError(new Error, 'args', id, group, method);
+        case 2:
+          throw setTestNoArgError(new Error, 'tests', id, group, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestTypeError(new TypeError, 'id', 'string', id, group,
+          method);
+      }
+      if ( !isArray(args) ) {
+        throw setTestTypeError(new TypeError, 'args', '!Array', id, group,
+          method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestTypeError(new TypeError, 'tests', '!function', id, group,
+          method);
+      }
+
+      if ( !isTestId(id) ) {
+        throw setTestIdError(new RangeError, id, group, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step handle-pending-suite
 
       if (suite.pending) {
         tests = null;
       }
 
+      /// #}}} @step handle-pending-suite
+
+      /// #{{{ @step make-test-instance
+
       msg = stringifyCall(suite.method, args);
       test = new Test(msg, tests);
       test.file = file;
+      test.METHOD = method;
+      test.TEST_ID = id;
+      test.TESTS_ID = group;
+
+      /// #}}} @step make-test-instance
+
+      /// #{{{ @step add-test-to-suite
 
       suite.addTest(test);
 
+      /// #}}} @step add-test-to-suite
+
+      /// #{{{ @step run-mocha-grep
+
       mocha.grep( test.fullTitle() );
 
+      /// #}}} @step run-mocha-grep
+
+      /// #{{{ @step return-test-instance
+
       return test;
+
+      /// #}}} @step return-test-instance
     };
     /// #}}} @func test.only
 
@@ -693,24 +1172,80 @@ function Interface(suite) {
      * @description
      *   Defines a suite of tests.
      * @public
+     * @param {string} id
      * @param {string} msg
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.suite = function genericSuite(msg, tests) {
+    context.suite = function genericSuite(id, msg, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
       /** @type {!Suite} */
       var suite;
 
-      suite = Suite.create(SUITES[0], msg);
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
       suite.file = file;
+      suite.METHOD = method;
       suite.method = suite.parent.method;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
 
       SUITES.unshift(suite);
       tests.call(suite);
       SUITES.shift();
 
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func suite
 
@@ -719,24 +1254,81 @@ function Interface(suite) {
      * @description
      *   Defines a skipped suite of tests.
      * @public
+     * @param {string} id
      * @param {string} msg
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.suite.skip = function skipGenericSuite(msg, tests) {
+    context.suite.skip = function skipGenericSuite(id, msg, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
       /** @type {!Suite} */
       var suite;
 
-      suite = Suite.create(SUITES[0], msg);
-      suite.pending = true;
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
+      suite.file = file;
+      suite.METHOD = method;
       suite.method = suite.parent.method;
+      suite.pending = true;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
 
       SUITES.unshift(suite);
       tests.call(suite);
       SUITES.shift();
 
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func suite.skip
 
@@ -745,18 +1337,86 @@ function Interface(suite) {
      * @description
      *   Defines the only not skipped suite of tests.
      * @public
+     * @param {string} id
      * @param {string} msg
      * @param {!function} tests
      * @return {!Suite}
      */
-    context.suite.only = function onlyGenericSuite(msg, tests) {
+    context.suite.only = function onlyGenericSuite(id, msg, tests) {
 
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
       /** @type {!Suite} */
       var suite;
 
-      suite = context.suite(msg, tests);
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'tests', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(tests) ) {
+        throw setTestsTypeError(new TypeError, 'tests', '!function', id,
+          method);
+      }
+
+      if ( !isTestsId(id) ) {
+        throw setTestsIdError(new RangeError, id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step make-suite-instance
+
+      suite = Suite.create(suite, msg);
+      suite.file = file;
+      suite.METHOD = method;
+      suite.method = suite.parent.method;
+      suite.TESTS_ID = id;
+
+      /// #}}} @step make-suite-instance
+
+      /// #{{{ @step run-suite-tests
+
+      SUITES.unshift(suite);
+      tests.call(suite);
+      SUITES.shift();
+
+      /// #}}} @step run-suite-tests
+
+      /// #{{{ @step run-mocha-grep
+
       mocha.grep( suite.fullTitle() );
+
+      /// #}}} @step run-mocha-grep
+
+      /// #{{{ @step return-suite-instance
+
       return suite;
+
+      /// #}}} @step return-suite-instance
     };
     /// #}}} @func suite.only
 
