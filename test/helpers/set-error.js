@@ -1383,11 +1383,12 @@ function setTestIdError(err, testId, testsId, method) {
  * @public
  * @param {!Error} err
  * @param {string} param
+ * @param {*} testId
  * @param {string} testsId
  * @param {string} method
  * @return {!Error}
  */
-function setTestNoArgError(err, param, testsId, method) {
+function setTestNoArgError(err, param, testId, testsId, method) {
 
   /// #{{{ @step declare-variables
 
@@ -1404,8 +1405,10 @@ function setTestNoArgError(err, param, testsId, method) {
     case 1:
       throw setNoArgError(new Error, 'param');
     case 2:
-      throw setNoArgError(new Error, 'testsId');
+      throw setNoArgError(new Error, 'testId');
     case 3:
+      throw setNoArgError(new Error, 'testsId');
+    case 4:
       throw setNoArgError(new Error, 'method');
   }
 
@@ -1428,8 +1431,13 @@ function setTestNoArgError(err, param, testsId, method) {
 
   msg = 'missing required parameter for a unit test wrapper\n'
     + '    current-method-suite: `' + method + '`\n'
-    + '    current-tests-suite: `' + testsId + '`\n'
-    + '    missing-parameter-name: `' + param + '`';
+    + '    current-tests-suite: `' + testsId + '`\n';
+
+  if ( isString(testId) && isTestId(testId) ) {
+    msg += '    current-unit-test: `' + testId + '`\n';
+  }
+
+  msg += '    missing-parameter-name: `' + param + '`';
 
   /// #}}} @step make-error-message
 
@@ -1455,11 +1463,12 @@ function setTestNoArgError(err, param, testsId, method) {
  * @param {!TypeError} err
  * @param {string} param
  * @param {string} types
- * @param {string} id
+ * @param {*} testId
+ * @param {string} testsId
  * @param {string} method
  * @return {!TypeError}
  */
-function setTestTypeError(err, param, types, id, method) {
+function setTestTypeError(err, param, types, testId, testsId, method) {
 
   /// #{{{ @step declare-variables
 
@@ -1478,8 +1487,10 @@ function setTestTypeError(err, param, types, id, method) {
     case 2:
       throw setNoArgError(new Error, 'types');
     case 3:
-      throw setNoArgError(new Error, 'id');
+      throw setNoArgError(new Error, 'testId');
     case 4:
+      throw setNoArgError(new Error, 'testsId');
+    case 5:
       throw setNoArgError(new Error, 'method');
   }
 
@@ -1492,8 +1503,8 @@ function setTestTypeError(err, param, types, id, method) {
   if ( !isString(types) ) {
     throw setTypeError(new TypeError, 'types', 'string');
   }
-  if ( !isString(id) ) {
-    throw setTypeError(new TypeError, 'id', 'string');
+  if ( !isString(testsId) ) {
+    throw setTypeError(new TypeError, 'testsId', 'string');
   }
   if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', 'string');
@@ -1504,13 +1515,11 @@ function setTestTypeError(err, param, types, id, method) {
   /// #{{{ @step make-error-message
 
   msg = 'invalid data type for a unit test parameter\n'
-    + '    current-method-suite: `' + method + '`';
+    + '    current-method-suite: `' + method + '`\n'
+    + '    current-tests-suite: `' + testsId + '`';
 
-  if ( isTestId(id) ) {
-    msg += '\n    current-unit-test: `' + id + '`';
-  }
-  else if ( isTestsId(id) ) {
-    msg += '\n    current-tests-suite: `' + id + '`';
+  if ( isString(testId) && isTestId(testId) ) {
+    msg += '\n    current-unit-test: `' + testId + '`';
   }
 
   msg += '\n'
