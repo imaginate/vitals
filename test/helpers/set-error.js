@@ -1288,6 +1288,78 @@ function setSemVerError(err, param, version) {
 }
 /// #}}} @func setSemVerError
 
+/// #{{{ @func setTestIdError
+/**
+ * @public
+ * @param {!RangeError} err
+ * @param {string} testId
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!RangeError}
+ */
+function setTestIdError(err, testId, testsId, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'testId');
+    case 2:
+      throw setNoArgError(new Error, 'testsId');
+    case 3:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(testId) ) {
+    throw setTypeError(new TypeError, 'testId', 'string');
+  }
+  if ( !isString(testsId) ) {
+    throw setTypeError(new TypeError, 'testsId', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-message
+
+  msg = 'invalid `test id` for a unit test\n'
+    + '    current-method-suite: `' + method + '`\n'
+    + '    current-tests-suite: `' + testsId + '`\n'
+    + '    invalid-test-id: `' + testId + '`\n'
+    + '    valid-id-pattern: `/^[A-Z]+[1-9][0-9]*$/`';
+
+  /// #}}} @step make-message
+
+  /// #{{{ @step set-error-name
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestIdError
+
 /// #{{{ @func setTimeError
 /**
  * @public
@@ -1486,6 +1558,7 @@ setError.relDir = setRelDirError;
 setError.ret = setRetError;
 setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
+setError.testId = setTestIdError;
 setError.time = setTimeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
