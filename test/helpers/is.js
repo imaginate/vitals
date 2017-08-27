@@ -129,6 +129,14 @@ var STAT_DUMMY = {
 };
 /// #}}} @const STAT_DUMMY
 
+/// #{{{ @const TEST_ID
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var TEST_ID = /^[A-Z]+[1-9][0-9]*$/;
+/// #}}} @const TEST_ID
+
 /// #{{{ @const TIME
 /**
  * @private
@@ -1411,6 +1419,25 @@ function isSemanticVersion(val) {
 }
 /// #}}} @func isSemanticVersion
 
+/// #{{{ @func isTestId
+/**
+ * @public
+ * @param {string} id
+ * @return {boolean}
+ */
+function isTestId(id) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'id');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  return !!id && TEST_ID.test(id);
+}
+/// #}}} @func isTestId
+
 /// #{{{ @func isTime
 /**
  * @public
@@ -2266,6 +2293,10 @@ var IS = {
   'semversion':      isSemanticVersion,
   'semVer':          isSemanticVersion,
   'semver':          isSemanticVersion,
+
+  'testID': isTestId,
+  'testId': isTestId,
+  'testid': isTestId,
 
   'time': isTime,
 
