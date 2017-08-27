@@ -192,6 +192,8 @@ Base.list = function list(failures) {
   var title;
   /** @type {number} */
   var last;
+  /** @type {string} */
+  var msg;
   /** @type {!Error} */
   var err;
   /** @type {!Function} */
@@ -227,8 +229,9 @@ Base.list = function list(failures) {
   last = failures.length - 1;
   forEachProperty(failures, function (test, i) {
 
-    title = '  ' + (i + 1) + ') ' + test.fullTitle();
-    log.fail(title);
+    title = '  ' + (i + 1) + ') ' + test.METHOD + ':' + test.TEST_ID;
+    msg = test.fullTitle();
+    log.fail(title, msg);
 
     err = test.err;
 

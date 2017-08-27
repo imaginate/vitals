@@ -143,18 +143,35 @@ LOG_OCD_INST.error.setFormat({
   'linesAfter': 2
 });
 
+LOG_OCD_INST.fail.setConfig({
+  'header': true,
+  'throw': false,
+  'exit': false,
+  'msg': true
+});
+
 LOG_OCD_INST.fail.setFormat({
+  'linesBefore': 1,
   'linesAfter': 0,
   'header': {
     'spaceBefore': 0,
     'spaceAfter':  0,
     'accentMark': ''
+  },
+  'msg': {
+    'accentMark': '',
+    'bullet': '',
+    'indent': 4
   }
 });
 
 LOG_OCD_INST.fail.setStyle({
   'header': {
     'color': 'red',
+    'bg':    ''
+  },
+  'msg': {
+    'color': 'white',
     'bg':    ''
   }
 });
