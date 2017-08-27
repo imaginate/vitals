@@ -1872,37 +1872,20 @@ var trimJsFileExtension = loadHelper('trim-file-extension').construct('.js');
 var REPO = loadHelper('get-repo-root')();
 /// #}}} @const REPO
 
-/// #{{{ @const SRC
+/// #{{{ @const DIR
 /**
  * @private
- * @const {string}
+ * @const {!Object<string, string>}
+ * @struct
  */
-var SRC = resolvePath(REPO, CONFIG.src);
-/// #}}} @const SRC
-
-/// #{{{ @const DEST
-/**
- * @private
- * @const {string}
- */
-var DEST = resolvePath(REPO, CONFIG.dest);
-/// #}}} @const DEST
-
-/// #{{{ @const METHODS
-/**
- * @private
- * @const {string}
- */
-var METHODS = resolvePath(SRC, 'methods');
-/// #}}} @const METHODS
-
-/// #{{{ @const EXTERNS
-/**
- * @private
- * @const {string}
- */
-var EXTERNS = resolvePath(REPO, CONFIG.externs);
-/// #}}} @const EXTERNS
+var DIR = freezeObject({
+  REPO: REPO,
+  SRC: resolvePath(REPO, CONFIG.src),
+  DIST: resolvePath(REPO, CONFIG.dest),
+  EXTERNS: resolvePath(REPO, CONFIG.externs),
+  METHODS: resolvePath(REPO, CONFIG.src, 'methods')
+});
+/// #}}} @const DIR
 
 /// #}}} @group PATHS
 
@@ -2154,7 +2137,7 @@ function Branch(
   /// #{{{ @step verify-method
 
   if (METHOD) {
-    method = resolvePath(METHODS, METHOD);
+    method = resolvePath(DIR.METHODS, METHOD);
     if ( !isFile(method) ) {
       throw setFileError(new Error, 'method', method);
     }
@@ -3025,7 +3008,7 @@ function buildAll(method) {
   else if (method) {
     method = cleanPath(method);
     method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(METHODS, method);
+    method = resolvePath(DIR.METHODS, method);
     if ( !isFile(method) ) {
       throw setMethodError(new RangeError, method);
     }
@@ -3037,7 +3020,7 @@ function buildAll(method) {
   /// #{{{ @step make-flags
 
   flags = cloneObject(FLAGS);
-  flags.externs = makeClosureExterns(EXTERNS);
+  flags.externs = makeClosureExterns(DIR.EXTERNS);
 
   freezeObject(flags);
 
@@ -3048,12 +3031,12 @@ function buildAll(method) {
   /** @struct */
   branch = {};
 
-  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser, SRC,
-    DEST, method, STATE, flags);
-  branch.node = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST,
-    method, STATE, flags);
-  branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, SRC, DEST,
-    method, STATE, null, trimDocs);
+  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
+    DIR.SRC, DIR.DEST, method, STATE, flags);
+  branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
+    DIR.DEST, method, STATE, flags);
+  branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC,
+    DIR.DEST, method, STATE, null, trimDocs);
 
   freezeObject(branch);
 
@@ -3061,7 +3044,7 @@ function buildAll(method) {
 
   /// #{{{ @step build-vitals
 
-  moldSource(SRC, {
+  moldSource(DIR.SRC, {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
@@ -3104,7 +3087,7 @@ function buildDist(method) {
   else if (method) {
     method = cleanPath(method);
     method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(METHODS, method);
+    method = resolvePath(DIR.METHODS, method);
     if ( !isFile(method) ) {
       throw setMethodError(new RangeError, method);
     }
@@ -3116,7 +3099,7 @@ function buildDist(method) {
   /// #{{{ @step make-flags
 
   flags = cloneObject(FLAGS);
-  flags.externs = makeClosureExterns(EXTERNS);
+  flags.externs = makeClosureExterns(DIR.EXTERNS);
 
   freezeObject(flags);
 
@@ -3127,10 +3110,10 @@ function buildDist(method) {
   /** @struct */
   branch = {};
 
-  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser, SRC,
-    DEST, method, STATE, flags);
-  branch.node = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST,
-    method, STATE, flags);
+  branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
+    DIR.SRC, DIR.DEST, method, STATE, flags);
+  branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
+    DIR.DEST, method, STATE, flags);
 
   freezeObject(branch);
 
@@ -3138,7 +3121,7 @@ function buildDist(method) {
 
   /// #{{{ @step build-vitals
 
-  moldSource(SRC, {
+  moldSource(DIR.SRC, {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
@@ -3180,7 +3163,7 @@ function buildBrowser(method) {
   else if (method) {
     method = cleanPath(method);
     method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(METHODS, method);
+    method = resolvePath(DIR.METHODS, method);
     if ( !isFile(method) ) {
       throw setMethodError(new RangeError, method);
     }
@@ -3192,7 +3175,7 @@ function buildBrowser(method) {
   /// #{{{ @step make-flags
 
   flags = cloneObject(FLAGS);
-  flags.externs = makeClosureExterns(EXTERNS);
+  flags.externs = makeClosureExterns(DIR.EXTERNS);
 
   freezeObject(flags);
 
@@ -3200,14 +3183,14 @@ function buildBrowser(method) {
 
   /// #{{{ @step make-branch
 
-  branch = new Branch(null, 'browser', CONFIG.branches.browser, SRC, DEST,
-    method, STATE, flags);
+  branch = new Branch(null, 'browser', CONFIG.branches.browser, DIR.SRC,
+    DIR.DEST, method, STATE, flags);
 
   /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
-  moldSource(SRC, {
+  moldSource(DIR.SRC, {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
@@ -3248,7 +3231,7 @@ function buildNode(method) {
   else if (method) {
     method = cleanPath(method);
     method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(METHODS, method);
+    method = resolvePath(DIR.METHODS, method);
     if ( !isFile(method) ) {
       throw setMethodError(new RangeError, method);
     }
@@ -3260,7 +3243,7 @@ function buildNode(method) {
   /// #{{{ @step make-flags
 
   flags = cloneObject(FLAGS);
-  flags.externs = makeClosureExterns(EXTERNS);
+  flags.externs = makeClosureExterns(DIR.EXTERNS);
 
   freezeObject(flags);
 
@@ -3268,14 +3251,14 @@ function buildNode(method) {
 
   /// #{{{ @step make-branch
 
-  branch = new Branch(null, 'node', CONFIG.branches.node, SRC, DEST, method,
-    STATE, flags);
+  branch = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC, DIR.DEST,
+    method, STATE, flags);
 
   /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
-  moldSource(SRC, {
+  moldSource(DIR.SRC, {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
@@ -3314,7 +3297,7 @@ function buildDocs(method) {
   else if (method) {
     method = cleanPath(method);
     method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(METHODS, method);
+    method = resolvePath(DIR.METHODS, method);
     if ( !isFile(method) ) {
       throw setMethodError(new RangeError, method);
     }
@@ -3325,14 +3308,14 @@ function buildDocs(method) {
 
   /// #{{{ @step make-branch
 
-  branch = new Branch(null, 'docs', CONFIG.branches.docs, SRC, DEST, method,
-    STATE, null, trimDocs);
+  branch = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC, DIR.DEST,
+    method, STATE, null, trimDocs);
 
   /// #}}} @step make-branch
 
   /// #{{{ @step build-vitals
 
-  moldSource(SRC, {
+  moldSource(DIR.SRC, {
     'quiet': false,
     'verbose': true
   }, function buildVitals(run) {
