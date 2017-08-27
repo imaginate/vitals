@@ -1738,6 +1738,16 @@ var createObject = loadHelper('create-object');
 var deepMergeObject = loadHelper('deep-merge-object');
 /// #}}} @func deepMergeObject
 
+/// #{{{ @func forEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string))} func
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var forEachProperty = loadHelper('for-each-property');
+/// #}}} @func forEachProperty
+
 /// #{{{ @func freezeObject
 /**
  * @private
@@ -1756,6 +1766,20 @@ var freezeObject = loadHelper('freeze-object');
  */
 var mergeObject = loadHelper('merge-object');
 /// #}}} @func mergeObject
+
+/// #{{{ @func remapEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string)): *} func
+ * @param {boolean=} alterSrc = `false`
+ *   If #alterSrc is set to `false`, a new `array` or `object` is created. If
+ *   #alterSrc is set to `true`, the #src `array`, `arguments`, `object`, or
+ *   `function` is directly altered.
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var remapEachProperty = loadHelper('remap-each-property');
+/// #}}} @func remapEachProperty
 
 /// #{{{ @func setConstantProperty
 /**
@@ -1780,6 +1804,16 @@ var setConstantProperty = loadHelper('set-constant-property');
  */
 var setProperty = loadHelper('set-property');
 /// #}}} @func setProperty
+
+/// #{{{ @func testEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string)): *} func
+ * @return {boolean}
+ */
+var testEachProperty = loadHelper('test-each-property');
+/// #}}} @func testEachProperty
 
 /// #}}} @group OBJECT
 
@@ -2312,21 +2346,11 @@ function newBranch(
  */
 function buildBranch(build) {
 
-  /// #{{{ @step declare-variables
-
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
-
-  /// #}}} @step declare-variables
-
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
     throw setNoArgError(new Error, 'build');
   }
-
   if ( !isFunction(build) ) {
     throw setTypeError(new TypeError, 'build', '!Function');
   }
@@ -2335,11 +2359,9 @@ function buildBranch(build) {
 
   /// #{{{ @step build-each-file
 
-  len = this.files.length;
-  i = -1;
-  while (++i < len) {
-    this.files[i].build(build);
-  }
+  forEachProperty(this.files, function buildEachFile(/** !File */ file) {
+    file.build(build);
+  });
 
   /// #}}} @step build-each-file
 
@@ -2394,8 +2416,6 @@ function makeBranches(branches) {
   var branch;
   /** @type {string} */
   var name;
-  /** @type {string} */
-  var key;
 
   /// #}}} @step declare-variables
 
@@ -2404,31 +2424,106 @@ function makeBranches(branches) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'branches');
   }
-
   if ( !isNullObjectHashMap(branches) ) {
     throw setTypeError(new TypeError, 'branches', '?Object<!Object>');
   }
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const THIS
+  /**
+   * @private
+   * @const {!Branch}
+   */
+  var THIS = this;
+  /// #}}} @const THIS
+
+  /// #{{{ @const NAME
+  /**
+   * @private
+   * @const {string}
+   */
+  var NAME = this.name;
+  /// #}}} @const NAME
+
+  /// #{{{ @const SRC
+  /**
+   * @private
+   * @const {string}
+   */
+  var SRC = this.src;
+  /// #}}} @const SRC
+
+  /// #{{{ @const DEST
+  /**
+   * @private
+   * @const {string}
+   */
+  var DEST = this.dest;
+  /// #}}} @const DEST
+
+  /// #{{{ @const METHOD
+  /**
+   * @private
+   * @const {string}
+   */
+  var METHOD = this.method;
+  /// #}}} @const METHOD
+
+  /// #{{{ @const STATE
+  /**
+   * @private
+   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
+   */
+  var STATE = this.state;
+  /// #}}} @const STATE
+
+  /// #{{{ @const FLAGS
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var FLAGS = this.flags;
+  /// #}}} @const FLAGS
+
+  /// #{{{ @const ALTER
+  /**
+   * @private
+   * @const {(null|(function(string): string)|undefined)}
+   */
+  var ALTER = this.alter;
+  /// #}}} @const ALTER
+
+  /// #{{{ @const BRANCHES
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var BRANCHES = this.branches;
+  /// #}}} @const BRANCHES
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step make-each-branch
 
   if (branches) {
-    for (key in branches) {
-      if ( hasOwnProperty(branches, key) ) {
-        name = this.name + '.' + key;
-        branch = new Branch(this, name, branches[key], this.src, this.dest,
-          this.method, this.state, this.flags, this.alter);
-        setConstantProperty(this.branches, key, branch);
-      }
-    }
+    forEachProperty(branches, function makeEachBranch(
+        /** !Object */ config,
+        /** string */ key) {
+      name = NAME + '.' + key;
+      branch = new Branch(THIS, name, config, SRC, DEST, METHOD, STATE, FLAGS,
+        ALTER);
+      setConstantProperty(BRANCHES, key, branch);
+    });
   }
 
   /// #}}} @step make-each-branch
 
   /// #{{{ @step freeze-branches-member
 
-  freezeObject(this.branches);
+  freezeObject(BRANCHES);
 
   /// #}}} @step freeze-branches-member
 
@@ -2453,10 +2548,6 @@ function makeFiles(files) {
   var file;
   /** @type {string} */
   var name;
-  /** @type {number} */
-  var len;
-  /** @type {number} */
-  var i;
 
   /// #}}} @step declare-variables
 
@@ -2465,32 +2556,59 @@ function makeFiles(files) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'files');
   }
-
   if ( !isNullObjectList(files) ) {
     throw setTypeError(new TypeError, 'files', '?Array<!Object>');
   }
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const THIS
+  /**
+   * @private
+   * @const {!Branch}
+   */
+  var THIS = this;
+  /// #}}} @const THIS
+
+  /// #{{{ @const NAME
+  /**
+   * @private
+   * @const {string}
+   */
+  var NAME = this.name;
+  /// #}}} @const NAME
+
+  /// #{{{ @const FILES
+  /**
+   * @private
+   * @const {!Array<!File>}
+   */
+  var FILES = this.files;
+  /// #}}} @const FILES
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step make-each-file
 
   if (files) {
-    len = files.length;
-    i = -1;
-    while (++i < len) {
-      if ( this.isMethod(files[i]) ) {
-        name = this.name + '.files[' + i + ']';
-        file = new File(this, name, files[i]);
-        this.files.push(file);
+    forEachProperty(files, function makeEachFile(
+        /** !Object */ config,
+        /** number */ i) {
+      if ( THIS.isMethod(config) ) {
+        name = NAME + '.files[' + i + ']';
+        file = new File(THIS, name, config);
+        FILES.push(file);
       }
-    }
+    });
   }
 
   /// #}}} @step make-each-file
 
   /// #{{{ @step freeze-files-member
 
-  freezeObject(this.files);
+  freezeObject(FILES);
 
   /// #}}} @step freeze-files-member
 
