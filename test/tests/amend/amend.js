@@ -167,10 +167,13 @@ var vitals = global.VITALS_TEST.VITALS;
 method('amend', function amendTests() {
 
   /// #{{{ @tests A
-  should('add props to obj', function amendTestsA() {
+  should('A', 'should add new properties to an object', function amendTestsA() {
 
     /// #{{{ @test A1
-    test({}, { a: 1, b: 2, c: 3 }, function amendTestA1() {
+    test('A1', [
+      {},
+      { 'a': 1, 'b': 2, 'c': 3 }
+    ], function amendTestA1() {
 
       /** @type {!Object} */
       var result;
@@ -207,7 +210,11 @@ method('amend', function amendTests() {
     /// #}}} @test A1
 
     /// #{{{ @test A2
-    test({}, [ 'a', 'b', 'c' ], 5, function amendTestA2() {
+    test('A2', [
+      {},
+      [ 'a', 'b', 'c' ],
+      5
+    ], function amendTestA2() {
 
       /** @type {!Object} */
       var result;
@@ -244,7 +251,11 @@ method('amend', function amendTests() {
     /// #}}} @test A2
 
     /// #{{{ @test A3
-    test({}, 'a,b,c', 5, function amendTestA3() {
+    test('A3', [
+      {},
+      'a,b,c',
+      5
+    ], function amendTestA3() {
 
       /** @type {!Object} */
       var result;
@@ -274,7 +285,10 @@ method('amend', function amendTests() {
     /// #}}} @test A3
 
     /// #{{{ @test A4
-    test({}, '<descriptors>', function amendTestA4() {
+    test('A4', [
+      {},
+      '<descriptors>'
+    ], function amendTestA4() {
 
       /** @type {!Object} */
       var result;
@@ -316,10 +330,14 @@ method('amend', function amendTests() {
   /// #}}} @tests A
 
   /// #{{{ @tests B
-  should('add props to obj with valid descriptor', function amendTestsB() {
+  should('B', 'add new properties to an object with valid descriptors', function amendTestsB() {
 
     /// #{{{ @test B1
-    test({}, { a: 1, b: 2, c: 3 }, '<descriptor>', function amendTestB1() {
+    test('B1', [
+      {},
+      { 'a': 1, 'b': 2, 'c': 3 },
+      '<descriptor>'
+    ], function amendTestB1() {
 
       /** @type {!Object} */
       var result;
@@ -361,7 +379,12 @@ method('amend', function amendTests() {
     /// #}}} @test B1
 
     /// #{{{ @test B2
-    test({}, [ 'a', 'b' ], 5, '<descriptor>', function amendTestB2() {
+    test('B2', [
+      {},
+      [ 'a', 'b' ],
+      5,
+      '<descriptor>'
+    ], function amendTestB2() {
 
       /** @type {!Object} */
       var result;
@@ -399,7 +422,12 @@ method('amend', function amendTests() {
     /// #}}} @test B2
 
     /// #{{{ @test B3
-    test({}, 'a,b', 5, '<descriptor>', function amendTestB3() {
+    test('B3', [
+      {},
+      'a,b',
+      5,
+      '<descriptor>'
+    ], function amendTestB3() {
 
       /** @type {!Object} */
       var result;
@@ -431,7 +459,11 @@ method('amend', function amendTests() {
     /// #}}} @test B3
 
     /// #{{{ @test B4
-    test({}, '<varied props>', '<descriptor>', function amendTestB4() {
+    test('B4', [
+      {},
+      '<varied props>',
+      '<descriptor>'
+    ], function amendTestB4() {
 
       /** @type {!Object} */
       var result;
@@ -475,10 +507,14 @@ method('amend', function amendTests() {
   /// #}}} @tests B
 
   /// #{{{ @tests C
-  should('add props to obj with strong type check', function amendTestsC() {
+  should('C', 'add new properties to an object with a strong type check', function amendTestsC() {
 
     /// #{{{ @test C1
-    test({}, { a: 1, b: 2 }, 'number', function amendTestC1() {
+    test('C1', [
+      {},
+      { 'a': 1, 'b': 2 },
+      'number'
+    ], function amendTestC1() {
 
       /** @type {!Object} */
       var result;
@@ -521,7 +557,12 @@ method('amend', function amendTests() {
     /// #}}} @test C1
 
     /// #{{{ @test C2
-    test({}, [ 'a', 'b' ], 5, 'number', function amendTestC2() {
+    test('C2', [
+      {},
+      [ 'a', 'b' ],
+      5,
+      'number'
+    ], function amendTestC2() {
 
       /** @type {!Object} */
       var result;
@@ -564,7 +605,12 @@ method('amend', function amendTests() {
     /// #}}} @test C2
 
     /// #{{{ @test C3
-    test({}, 'a,b', 5, 'number', function amendTestC3() {
+    test('C3', [
+      {},
+      'a,b',
+      5,
+      'number'
+    ], function amendTestC3() {
 
       /** @type {!Object} */
       var result;
@@ -601,7 +647,11 @@ method('amend', function amendTests() {
     /// #}}} @test C3
 
     /// #{{{ @test C4
-    test({}, '<descriptors>', 'number', function amendTestC4() {
+    test('C4', [
+      {},
+      '<descriptors>',
+      'number'
+    ], function amendTestC4() {
 
       /** @type {!Object} */
       var result;
@@ -650,7 +700,12 @@ method('amend', function amendTests() {
     /// #}}} @test C4
 
     /// #{{{ @test C5
-    test({}, '<descriptors>', '<descriptor>', 'number', function amendTestC5() {
+    test('C5', [
+      {},
+      '<descriptors>',
+      '<descriptor>',
+      'number'
+    ], function amendTestC5() {
 
       /** @type {!Object} */
       var result;
@@ -706,10 +761,14 @@ method('amend', function amendTests() {
   /// #}}} @tests C
 
   /// #{{{ @tests D
-  should('add props to obj with valid setter', function amendTestsD() {
+  should('D', 'add new properties to an object with a valid setter', function amendTestsD() {
 
     /// #{{{ @test D1
-    test({}, { a: 1, b: 2 }, '<setter>', function amendTestD1() {
+    test('D1', [
+      {},
+      { 'a': 1, 'b': 2 },
+      '<setter>'
+    ], function amendTestD1() {
 
       /** @type {!Object} */
       var result;
@@ -742,7 +801,12 @@ method('amend', function amendTests() {
     /// #}}} @test D1
 
     /// #{{{ @test D2
-    test({}, [ 'a', 'b' ], 5, '<setter>', function amendTestD2() {
+    test('D2', [
+      {},
+      [ 'a', 'b' ],
+      5,
+      '<setter>'
+    ], function amendTestD2() {
 
       /** @type {!Object} */
       var result;
@@ -775,7 +839,12 @@ method('amend', function amendTests() {
     /// #}}} @test D2
 
     /// #{{{ @test D3
-    test({}, 'a,b', 5, '<setter>', function amendTestD3() {
+    test('D3', [
+      {},
+      'a,b',
+      5,
+      '<setter>'
+    ], function amendTestD3() {
 
       /** @type {!Object} */
       var result;
@@ -802,7 +871,11 @@ method('amend', function amendTests() {
     /// #}}} @test D3
 
     /// #{{{ @test D4
-    test({}, '<descriptors>', '<setter>', function amendTestD4() {
+    test('D4', [
+      {},
+      '<descriptors>',
+      '<setter>'
+    ], function amendTestD4() {
 
       /** @type {!Object} */
       var result;
@@ -841,7 +914,9 @@ method('amend', function amendTests() {
     /// #}}} @test D4
 
     /// #{{{ @test D5
-    test({}, '<descriptors>', '<descriptor>', '<setter>', function amendTestD5() {
+    test('D5', [
+      {}, '<descriptors>', '<descriptor>', '<setter>'
+    ], function amendTestD5() {
 
       /** @type {!Object} */
       var result;
@@ -885,7 +960,13 @@ method('amend', function amendTests() {
     /// #}}} @test D5
 
     /// #{{{ @test D6
-    test({}, '<descriptors>', '<descriptor>', 'number', '<setter>', function amendTestD6() {
+    test('D6', [
+      {},
+      '<descriptors>',
+      '<descriptor>',
+      'number',
+      '<setter>'
+    ], function amendTestD6() {
 
       /** @type {!Object} */
       var result;
@@ -942,53 +1023,87 @@ method('amend', function amendTests() {
   /// #}}} @tests D
 
   /// #{{{ @tests E
-  should('throw an error', function amendTestsE() {
+  should('E', 'should throw a vitals error', function amendTestsE() {
 
     /// #{{{ @test E1
-    test(function amendTestE1() {
+    test('E1', [], function amendTestE1() {
+
       throws(function() {
         vitals.amend();
       });
+
     });
     /// #}}} @test E1
 
     /// #{{{ @test E2
-    test('string', 'a,b,c', 5, function amendTestE2() {
+    test('E2', [
+      'string',
+      'a,b,c',
+      5
+    ], function amendTestE2() {
+
       throws.type(function() {
         vitals.amend('string', 'a,b,c', 5);
       });
+
     });
     /// #}}} @test E2
 
     /// #{{{ @test E3
-    test({}, 5, 5, function amendTestE3() {
+    test('E3', [
+      {},
+      5,
+      5
+    ], function amendTestE3() {
+
       throws.type(function() {
         vitals.amend({}, 5, 5);
       });
+
     });
     /// #}}} @test E3
 
     /// #{{{ @test E4
-    test({}, 'a,b,c', function amendTestE4() {
+    test('E4', [
+      {},
+      'a,b,c'
+    ], function amendTestE4() {
+
       throws(function() {
         vitals.amend({}, 'a,b,c');
       });
+
     });
     /// #}}} @test E4
 
     /// #{{{ @test E5
-    test({}, 'a,b,c', 5, 'string', function amendTestE5() {
+    test('E5', [
+      {},
+      'a,b,c',
+      5,
+      'string'
+    ], function amendTestE5() {
+
       throws(function() {
         vitals.amend({}, 'a,b,c', 5, 'string');
       });
+
     });
     /// #}}} @test E5
 
     /// #{{{ @test E6
-    test({}, 'a,b,c', 5, 'number', {}, function amendTestE6() {
+    test('E6', [
+      {},
+      'a,b,c',
+      5,
+      'number',
+      {}
+    ], function amendTestE6() {
+
       throws.type(function() {
         vitals.amend({}, 'a,b,c', 5, 'number', {});
       });
+
     });
     /// #}}} @test E6
 
