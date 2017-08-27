@@ -1464,7 +1464,7 @@ function setTestNoArgError(err, param, testId, testsId, method) {
  * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
  * @return {!Error}
  */
-function setTestThrowsError(err) {
+function setTestThrowsError(err, thrown) {
 
   /// #{{{ @step declare-variables
 
@@ -1539,7 +1539,7 @@ function setTestThrowsError(err) {
  * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
  * @return {!Error}
  */
-function setTestThrowsRangeError(err) {
+function setTestThrowsRangeError(err, thrown) {
 
   /// #{{{ @step declare-variables
 
@@ -1614,7 +1614,7 @@ function setTestThrowsRangeError(err) {
  * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
  * @return {!Error}
  */
-function setTestThrowsSetterError(err) {
+function setTestThrowsSetterError(err, thrown) {
 
   /// #{{{ @step declare-variables
 
@@ -1688,7 +1688,7 @@ function setTestThrowsSetterError(err) {
  * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
  * @return {!Error}
  */
-function setTestThrowsTypeError(err) {
+function setTestThrowsTypeError(err, thrown) {
 
   /// #{{{ @step declare-variables
 
