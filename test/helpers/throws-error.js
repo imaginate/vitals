@@ -13,14 +13,6 @@
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const ASSERT
-/**
- * @private
- * @const {!Function}
- */
-var ASSERT = require('assert');
-/// #}}} @const ASSERT
-
 /// #{{{ @const IS
 /**
  * @private
@@ -58,6 +50,47 @@ var setError = require('./set-error.js');
  */
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
+
+/// #{{{ @func setTestThrowsError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+var setTestThrowsError = setError.testThrows;
+/// #}}} @func setTestThrowsError
+
+/// #{{{ @func setTestThrowsRangeError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+var setTestThrowsRangeError = setError.testThrowsRange;
+/// #}}} @func setTestThrowsRangeError
+
+/// #{{{ @func setTestThrowsSetterError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+var setTestThrowsSetterError = setError.testThrowsSetter;
+
+/// #}}} @func setTestThrowsSetterError
+
+/// #{{{ @func setTestThrowsTypeError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+var setTestThrowsTypeError = setError.testThrowsType;
+/// #}}} @func setTestThrowsTypeError
 
 /// #{{{ @func setTypeError
 /**
@@ -129,6 +162,13 @@ var isVitalsError = IS.vitalsError;
  */
 function throwsError(action) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} */
+  var err;
+
+  /// #}}} @step declare-variables
+
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
@@ -142,9 +182,17 @@ function throwsError(action) {
 
   /// #{{{ @step run-assert
 
-  ASSERT.throws(action, function isValidError(err) {
-    return isVitalsError(err, 'Error');
-  });
+  try {
+    action();
+  }
+  catch (err) {
+    if ( isVitalsError(err, 'Error') ) {
+      return;
+    }
+    throw setTestThrowsError(new Error, err);
+  }
+
+  throw setTestThrowsError(new Error);
 
   /// #}}} @step run-assert
 }
@@ -158,6 +206,13 @@ function throwsError(action) {
  */
 function throwsRangeError(action) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} */
+  var err;
+
+  /// #}}} @step declare-variables
+
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
@@ -171,9 +226,17 @@ function throwsRangeError(action) {
 
   /// #{{{ @step run-assert
 
-  ASSERT.throws(action, function isValidError(err) {
-    return isVitalsError(err, 'RangeError');
-  });
+  try {
+    action();
+  }
+  catch (err) {
+    if ( isVitalsError(err, 'RangeError') ) {
+      return;
+    }
+    throw setTestThrowsRangeError(new Error, err);
+  }
+
+  throw setTestThrowsRangeError(new Error);
 
   /// #}}} @step run-assert
 }
@@ -187,6 +250,13 @@ function throwsRangeError(action) {
  */
 function throwsSetterError(action) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} */
+  var err;
+
+  /// #}}} @step declare-variables
+
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
@@ -200,9 +270,17 @@ function throwsSetterError(action) {
 
   /// #{{{ @step run-assert
 
-  ASSERT.throws(action, function isValidError(err) {
-    return isSetterError(err);
-  });
+  try {
+    action();
+  }
+  catch (err) {
+    if ( isSetterError(err) ) {
+      return;
+    }
+    throw setTestThrowsSetterError(new Error, err);
+  }
+
+  throw setTestThrowsSetterError(new Error);
 
   /// #}}} @step run-assert
 }
@@ -216,6 +294,13 @@ function throwsSetterError(action) {
  */
 function throwsTypeError(action) {
 
+  /// #{{{ @step declare-variables
+
+  /** @type {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} */
+  var err;
+
+  /// #}}} @step declare-variables
+
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
@@ -229,9 +314,17 @@ function throwsTypeError(action) {
 
   /// #{{{ @step run-assert
 
-  ASSERT.throws(action, function isValidError(err) {
-    return isVitalsError(err, 'TypeError');
-  });
+  try {
+    action();
+  }
+  catch (err) {
+    if ( isVitalsError(err, 'TypeError') ) {
+      return;
+    }
+    throw setTestThrowsTypeError(new Error, err);
+  }
+
+  throw setTestThrowsTypeError(new Error);
 
   /// #}}} @step run-assert
 }
