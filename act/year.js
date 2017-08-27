@@ -66,7 +66,7 @@ var IS = loadHelper('is');
  */
 var PATT = {
   ANY: /(copyright[ \t]*)2[0-9]{3}(?:-2[0-9]{3})?/i,
-  DOCTAG: /(@copyright[ \t]+)2[0-9]{3}(?:-2[0-9]{3})?\b/
+  DOCTAG: /(@copyright[ \t]+)2[0-9]{3}(?:-2[0-9]{3})?\b(?!TJ)/
 };
 /// #}}} @const PATT
 
@@ -264,7 +264,7 @@ var setWholeError = setError.whole;
 /**
  * @private
  * @param {string} path
- * @param {boolean=} buffer
+ * @param {boolean=} buffer = `false`
  * @return {(!Buffer|string)}
  */
 var getFileContent = loadHelper('get-file-content');
@@ -483,6 +483,26 @@ var isYear = IS.year;
 var cloneObject = loadHelper('clone-object');
 /// #}}} @func cloneObject
 
+/// #{{{ @func forEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string))} func
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var forEachProperty = loadHelper('for-each-property');
+/// #}}} @func forEachProperty
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {?Object}
+ */
+var freezeObject = loadHelper('freeze-object');
+/// #}}} @func freezeObject
+
 /// #{{{ @func mergeObject
 /**
  * @private
@@ -491,6 +511,17 @@ var cloneObject = loadHelper('clone-object');
  */
 var mergeObject = loadHelper('merge-object');
 /// #}}} @func mergeObject
+
+/// #{{{ @func sliceArray
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {number=} start = `0`
+ * @param {number=} end = `src.length`
+ * @return {!Array}
+ */
+var sliceArray = loadHelper('slice-array');
+/// #}}} @func sliceArray
 
 /// #}}} @group OBJECT
 
@@ -512,7 +543,7 @@ var resolvePath = loadHelper('resolve-path');
 /// #{{{ @func update
 /**
  * @private
- * @param {(!Array<string>|string)} path
+ * @param {(!Array<string>|!Arguments<string>|string)} path
  * @param {!RegExp} pattern
  * @param {string} year
  * @return {void}
@@ -521,7 +552,7 @@ var update = (function updatePrivateScope() {
 
   /// #{{{ @func update
   /**
-   * @param {(!Array<string>|string)} path
+   * @param {(!Array<string>|!Arguments<string>|string)} path
    * @param {!RegExp} pattern
    * @param {string} year
    * @return {void}
@@ -532,17 +563,30 @@ var update = (function updatePrivateScope() {
 
     /** @type {string} */
     var replacement;
+    /** @type {!Array<string>} */
+    var paths;
 
     /// #}}} @step declare-variables
 
     /// #{{{ @step verify-parameters
 
-    if ( !isString(path) && !isStringList(path) )
-      throw setTypeError(new TypeError, 'path', '(!Array<string>|string)');
-    if ( !isRegExp(pattern) )
+    if ( isString(path) ) {
+      paths = [ path ];
+    }
+    else if ( isStringList(path) ) {
+      paths = sliceArray(path);
+    }
+    else {
+      throw setTypeError(new TypeError, 'path',
+        '(!Array<string>|!Arguments<string>|string)');
+    }
+
+    if ( !isRegExp(pattern) ) {
       throw setTypeError(new TypeError, 'pattern', '!RegExp');
-    if ( !isString(year) )
+    }
+    if ( !isString(year) ) {
       throw setTypeError(new TypeError, 'year', 'string');
+    }
 
     /// #}}} @step verify-parameters
 
@@ -554,16 +598,16 @@ var update = (function updatePrivateScope() {
 
     /// #{{{ @step update-paths
 
-    if ( isString(path) ) {
-      if (pattern.global)
+    if (pattern.global) {
+      forEachProperty(paths, function _globalUpdateEach(/** string */ path) {
         _globalUpdate(path, pattern, replacement);
-      else
-        _update(path, pattern, replacement);
+      });
     }
-    else if (pattern.global)
-      _globalUpdateEach(path, pattern, replacement);
-    else
-      _updateEach(path, pattern, replacement);
+    else {
+      forEachProperty(paths, function _updateEach(/** string */ path) {
+        _update(path, pattern, replacement);
+      });
+    }
 
     /// #}}} @step update-paths
   }
@@ -589,28 +633,6 @@ var update = (function updatePrivateScope() {
   }
   /// #}}} @func _globalUpdate
 
-  /// #{{{ @func _globalUpdateEach
-  /**
-   * @private
-   * @param {!Array<string>} paths
-   * @param {!RegExp} pattern
-   * @param {string} replacement
-   * @return {void}
-   */
-  function _globalUpdateEach(paths, pattern, replacement) {
-
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = paths.length;
-    i = -1;
-    while (++i < len)
-      _globalUpdate(paths[i], pattern, replacement);
-  }
-  /// #}}} @func _globalUpdateEach
-
   /// #{{{ @func _update
   /**
    * @private
@@ -629,28 +651,6 @@ var update = (function updatePrivateScope() {
     toFile(content, path);
   }
   /// #}}} @func _update
-
-  /// #{{{ @func _updateEach
-  /**
-   * @private
-   * @param {!Array<string>} paths
-   * @param {!RegExp} pattern
-   * @param {string} replacement
-   * @return {void}
-   */
-  function _updateEach(paths, pattern, replacement) {
-
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    len = paths.length;
-    i = -1;
-    while (++i < len)
-      _update(paths[i], pattern, replacement);
-  }
-  /// #}}} @func _updateEach
 
   return update;
 })();
@@ -679,13 +679,13 @@ var REPO = loadHelper('get-repo-root')();
  * @const {!Object<string, string>}
  * @struct
  */
-var DIR = {
+var DIR = freezeObject({
   REPO: REPO,
   SRC: resolvePath(REPO, CONFIG.src),
   DIST: resolvePath(REPO, CONFIG.dest),
   TASK: resolvePath(__dirname),
   TEST: resolvePath(REPO, './test')
-};
+});
 /// #}}} @const DIR
 
 /// #{{{ @const FILE
@@ -694,10 +694,10 @@ var DIR = {
  * @const {!Object<string, string>}
  * @struct
  */
-var FILE = {
+var FILE = freezeObject({
   COPYRIGHT: resolvePath(REPO, './COPYRIGHT.md'),
   LICENSE: resolvePath(REPO, './LICENSE.md')
-};
+});
 /// #}}} @const FILE
 
 /// #}}} @group PATHS
@@ -723,25 +723,33 @@ function updateAll() {
 
   /// #{{{ @step verify-years
 
-  if ( !isYear(PRESENT, 2010) )
+  if ( !isYear(PRESENT, 2010) ) {
     throw setPresentError(new RangeError, PRESENT);
-  if ( !isYear(CREATED, 2010, PRESENT) )
+  }
+  if ( !isYear(CREATED, 2010, PRESENT) ) {
     throw setCreatedError(new RangeError, CREATED);
+  }
 
   /// #}}} @step verify-years
 
   /// #{{{ @step verify-paths
 
-  if ( !isDirectory(DIR.SRC) )
+  if ( !isDirectory(DIR.SRC) ) {
     throw setDirError(new Error, 'DIR.SRC', DIR.SRC);
-  if ( !isDirectory(DIR.TASK) )
+  }
+  if ( !isDirectory(DIR.TASK) ) {
     throw setDirError(new Error, 'DIR.TASK', DIR.TASK);
-  if ( !isDirectory(DIR.TEST) )
+  }
+  if ( !isDirectory(DIR.TEST) ) {
     throw setDirError(new Error, 'DIR.TEST', DIR.TEST);
-  if ( !isFile(FILE.LICENSE) )
+  }
+
+  if ( !isFile(FILE.LICENSE) ) {
     throw setFileError(new Error, 'FILE.LICENSE', FILE.LICENSE);
-  if ( !isFile(FILE.COPYRIGHT) )
+  }
+  if ( !isFile(FILE.COPYRIGHT) ) {
     throw setFileError(new Error, 'FILE.COPYRIGHT', FILE.COPYRIGHT);
+  }
 
   /// #}}} @step verify-paths
 
@@ -750,6 +758,7 @@ function updateAll() {
   files = getFilePaths(DIR.SRC, {
     'deep': true,
     'full': true,
+    'extend': false,
     'validFiles': /\.js$/
   });
   update(files, PATT.DOCTAG, YEAR);
@@ -762,6 +771,7 @@ function updateAll() {
     files = getFilePaths(DIR.DIST, {
       'deep': true,
       'full': true,
+      'extend': false,
       'validFiles': /\.js$/
     });
     update(files, PATT.DOCTAG, YEAR);
@@ -774,6 +784,7 @@ function updateAll() {
   files = getFilePaths(DIR.TASK, {
     'deep': true,
     'full': true,
+    'extend': false,
     'validFiles': /\.js$/
   });
   update(files, PATT.DOCTAG, YEAR);
@@ -785,6 +796,7 @@ function updateAll() {
   files = getFilePaths(DIR.TEST, {
     'deep': true,
     'full': true,
+    'extend': false,
     'validFiles': /\.js$/
   });
   update(files, PATT.DOCTAG, YEAR);
