@@ -16,183 +16,687 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-method('amend.property', 'amend.prop', function() {
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
+//////////////////////////////////////////////////////////////////////////////
 
-  should('add prop to obj', function() {
-
-    test({}, 'a', 1, function() {
-      var obj = vitals.amend.prop({}, 'a', 1);
-      assert( hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-    });
-  });
-
-  should('add prop to obj with valid descriptor', function() {
-
-    test({}, 'a', '<descriptor>', function() {
-      var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-    });
-
-    test({}, 'a', 1, '<descriptor>', function() {
-      var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-    });
-  });
-
-  should('add prop to obj with strong type check', function() {
-
-    test({}, 'a', 1, 'number', function() {
-      var obj = vitals.amend.prop({}, 'a', 1, 'number');
-      assert( hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 2 );
-    });
-
-    test({}, 'a', 1, '<descriptor>', 'number', function() {
-      var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number');
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 2 );
-    });
-
-    test({}, 'a', '<descriptor>', 'number', function() {
-      var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc, 'number');
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 2 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 2 );
-    });
-  });
-
-  should('add prop to obj with valid setter', function() {
-
-    test({}, 'a', 1, '<setter>', function() {
-      var obj = vitals.amend.prop({}, 'a', 1, setter);
-      assert( hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-    });
-
-    test({}, 'a', 1, '<descriptor>', '<setter>', function() {
-      var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc, setter);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-    });
-
-    test({}, 'a', '<descriptor>', '<setter>', function() {
-      var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc, setter);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-    });
-
-    test({}, 'a', 1, 'number', '<setter>', function() {
-      var obj = vitals.amend.prop({}, 'a', 1, 'number', setter);
-      assert( hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 3 );
-    });
-
-    test({}, 'a', 1, '<descriptor>', 'number', '<setter>', function() {
-      var desc = freeze({ enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', 1, desc, 'number', setter);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 3 );
-    });
-
-    test({}, 'a', '<descriptor>', 'number', '<setter>', function() {
-      var desc = freeze({ value: 1, enumerable: false });
-      var obj = vitals.amend.prop({}, 'a', desc, 'number', setter);
-      assert( !hasEnum(obj, 'a') );
-      assert( obj.a === 1 );
-      obj.a = 2;
-      assert( obj.a === 3 );
-      assert.throws(function() { obj.a = 'string'; }, validSetErr);
-      assert( obj.a === 3 );
-    });
-  });
-
-  should('throw an error', function() {
-
-    test({}, function() {
-      assert.throws(function() {
-        vitals.amend({});
-      }, validTypeErr);
-    });
-
-    test({}, 'a', function() {
-      assert.throws(function() {
-        vitals.amend({}, 'a');
-      }, validErr);
-    });
-
-    test('string', 'a', 5, function() {
-      assert.throws(function() {
-        vitals.amend('string', 'a', 5);
-      }, validTypeErr);
-    });
-
-    test({}, 5, 5, function() {
-      assert.throws(function() {
-        vitals.amend({}, 5, 5);
-      }, validTypeErr);
-    });
-
-    test({}, 'a', 5, 'string', function() {
-      assert.throws(function() {
-        vitals.amend({}, 'a', 5, 'string');
-      }, validErr);
-    });
-
-    test({}, 'a', 5, 'number', {}, function() {
-      assert.throws(function() {
-        vitals.amend({}, 'a', 5, 'number', {});
-      }, validTypeErr);
-    });
-  });
-});
-
+/// #{{{ @func loadHelper
 /**
  * @private
- * @param {number} newVal
- * @param {number=} oldVal
- * @return {number}
+ * @param {string} name
+ * @return {(!Object|!Function)}
  */
-function setter(newVal, oldVal) {
-  oldVal = oldVal || 1;
-  return newVal + oldVal;
+var loadHelper = global.VITALS_TEST.loadHelper;
+/// #}}} @func loadHelper
+
+/// #{{{ @func assert
+/**
+ * @private
+ * @param {boolean} result
+ * @return {void}
+ */
+var assert = require('assert');
+/// #}}} @func assert
+
+/// #{{{ @func freeze
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {?Object}
+ */
+var freeze = loadHelper('freeze-object');
+/// #}}} @func freeze
+
+/// #{{{ @func hasEnum
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasEnum = loadHelper('has-enum-property');
+/// #}}} @func hasEnum
+
+/// #{{{ @func hasOwn
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwn = loadHelper('has-own-property');
+/// #}}} @func hasOwn
+
+/// #{{{ @func hasOwnEnum
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnEnum = loadHelper('has-own-enum-property');
+/// #}}} @func hasOwnEnum
+
+/// #{{{ @func hasOwnNoEnum
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+function hasOwnNoEnum(src, key) {
+  return hasOwn(src, key) && !hasEnum(src, key);
 }
+/// #}}} @func hasOwnNoEnum
+
+/// #{{{ @const is
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var is = loadHelper('is');
+/// #}}} @const is
+
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = is.number;
+/// #}}} @func isNumber
+
+/// #{{{ @func throws
+/**
+ * @private
+ * @param {!function} action
+ * @return {void}
+ */
+var throws = loadHelper('throws-error');
+/// #}}} @func throws
+
+/// #{{{ @const vitals
+/**
+ * @private
+ * @const {(!Object|!Function)}
+ */
+var vitals = global.VITALS_TEST.VITALS;
+/// #}}} @const vitals
+
+/// #}}} @group HELPERS
+
+/// #{{{ @group TESTS
+//////////////////////////////////////////////////////////////////////////////
+// TESTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @suite amend.property
+method('amend.property', 'amend.prop', function amendPropertyTests() {
+
+  /// #{{{ @func setter
+  /**
+   * @private
+   * @param {number} newVal
+   * @param {number=} oldVal = `1`
+   * @return {number}
+   */
+  function setter(newVal, oldVal) {
+    newVal += isNumber(oldVal)
+      ? oldVal
+      : 1;
+    return newVal;
+  }
+  /// #}}} @func setter
+
+  /// #{{{ @tests A
+  should('A', 'add a new property to an object', function amendPropertyTestsA() {
+
+    /// #{{{ @test A1
+    test('A1', [
+      {},
+      'a',
+      1
+    ], function amendPropertyTestA1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+
+      result = vitals.amend.property(obj, 'a', 1);
+
+      assert(result === obj);
+
+      assert( hasOwnEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test A1
+
+  });
+  /// #}}} @tests A
+
+  /// #{{{ @tests B
+  should('B', 'add a new property to an object with a valid descriptor', function amendPropertyTestsB() {
+
+    /// #{{{ @test B1
+    test('B1', [
+      {},
+      'a',
+      '<descriptor>'
+    ], function amendPropertyTestB1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'value': 1,
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', desc);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test B1
+
+    /// #{{{ @test B2
+    test('B2', [
+      {},
+      'a',
+      1,
+      '<descriptor>'
+    ], function amendPropertyTestB2() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', 1, desc);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test B2
+
+  });
+  /// #}}} @tests B
+
+  /// #{{{ @tests C
+  should('C', 'add a new property to an object with a strong type check', function amendPropertyTestsC() {
+
+    /// #{{{ @test C1
+    test('C1', [
+      {},
+      'a',
+      1,
+      'number'
+    ], function amendPropertyTestC1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+
+      result = vitals.amend.property(obj, 'a', 1, 'number');
+
+      assert(result === obj);
+
+      assert( hasOwnEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test C1
+
+    /// #{{{ @test C2
+    test('C2', [
+      {},
+      'a',
+      1,
+      '<descriptor>',
+      'number'
+    ], function amendPropertyTestC2() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', 1, desc, 'number');
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test C2
+
+    /// #{{{ @test C3
+    test('C3', [
+      {},
+      'a',
+      '<descriptor>',
+      'number'
+    ], function amendPropertyTestC3() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'value': 1,
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', desc, 'number');
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 2);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 2);
+    });
+    /// #}}} @test C3
+
+  });
+  /// #}}} @tests C
+
+  /// #{{{ @tests D
+  should('D', 'add a new property to an object with a valid setter', function amendPropertyTestsD() {
+
+    /// #{{{ @test D1
+    test('D1', [
+      {},
+      'a',
+      1,
+      '<setter>'
+    ], function amendPropertyTestD1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+
+      result = vitals.amend.property(obj, 'a', 1, setter);
+
+      assert(result === obj);
+
+      assert( hasOwnEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D1
+
+    /// #{{{ @test D2
+    test('D2', [
+      {},
+      'a',
+      1,
+      '<descriptor>',
+      '<setter>'
+    ], function amendPropertyTestD2() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', 1, desc, setter);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D2
+
+    /// #{{{ @test D3
+    test('D3', [
+      {},
+      'a',
+      '<descriptor>',
+      '<setter>'
+    ], function amendPropertyTestD3() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'value': 1,
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', desc, setter);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D3
+
+    /// #{{{ @test D4
+    test('D4', [
+      {},
+      'a',
+      1,
+      'number',
+      '<setter>'
+    ], function amendPropertyTestD4() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+
+      result = vitals.amend.property(obj, 'a', 1, 'number', setter);
+
+      assert(result === obj);
+
+      assert( hasOwnEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D4
+
+    /// #{{{ @test D5
+    test('D5', [
+      {},
+      'a',
+      1,
+      '<descriptor>',
+      'number',
+      '<setter>'
+    ], function amendPropertyTestD5() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', 1, desc, 'number', setter);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D5
+
+    /// #{{{ @test D6
+    test('D6', [
+      {},
+      'a',
+      '<descriptor>',
+      'number',
+      '<setter>'
+    ], function amendPropertyTestD6() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {};
+      desc = freeze({
+        'value': 1,
+        'enumerable': false
+      });
+
+      result = vitals.amend.property(obj, 'a', desc, 'number', setter);
+
+      assert(result === obj);
+
+      assert( hasOwnNoEnum(result, 'a') );
+
+      assert(result.a === 1);
+
+      result.a = 2;
+
+      assert(result.a === 3);
+
+      throws.setter(function() {
+        result.a = 'string';
+      });
+
+      assert(result.a === 3);
+    });
+    /// #}}} @test D6
+
+  });
+  /// #}}} @tests D
+
+  /// #{{{ @tests E
+  should('E', 'should throw a vitals error', function amendPropertyTestsE() {
+
+    /// #{{{ @test E1
+    test('E1', [], function amendPropertyTestE1() {
+
+      throws(function() {
+        vitals.amend.property();
+      });
+
+    });
+    /// #}}} @test E1
+
+    /// #{{{ @test E2
+    test('E2', [
+      {},
+      'a'
+    ], function amendPropertyTestE2() {
+
+      throws(function() {
+        vitals.amend.property({}, 'a');
+      });
+
+    });
+    /// #}}} @test E2
+
+    /// #{{{ @test E3
+    test('E3', [
+      'fail',
+      'a',
+      5
+    ], function amendPropertyTestE3() {
+
+      throws.type(function() {
+        vitals.amend.property('fail', 'a', 5);
+      });
+
+    });
+    /// #}}} @test E3
+
+    /// #{{{ @test E4
+    test('E4', [
+      {},
+      5,
+      5
+    ], function amendPropertyTestE4() {
+
+      throws.type(function() {
+        vitals.amend.property({}, 5, 5);
+      });
+
+    });
+    /// #}}} @test E4
+
+    /// #{{{ @test E5
+    test('E5', [
+      {},
+      'a',
+      5,
+      'string'
+    ], function amendPropertyTestE5() {
+
+      throws.type(function() {
+        vitals.amend.property({}, 'a', 5, 'string');
+      });
+
+    });
+    /// #}}} @test E5
+
+    /// #{{{ @test E6
+    test('E6', [
+      {},
+      'a',
+      5,
+      'number',
+      {}
+    ], function amendPropertyTestE6() {
+
+      throws.type(function() {
+        vitals.amend.property({}, 'a', 5, 'number', {});
+      });
+
+    });
+    /// #}}} @test E6
+
+  });
+  /// #}}} @tests E
+
+});
+/// #}}} @suite amend.property
+
+/// #}}} @group TESTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
