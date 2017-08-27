@@ -1339,7 +1339,7 @@ function setTestIdError(err, testId, testsId, method) {
   msg = 'invalid `test id` for a unit test\n'
     + '    current-method-suite: `' + method + '`\n'
     + '    current-tests-suite: `' + testsId + '`\n'
-    + '    invalid-test-id: `' + testId + '`\n'
+    + '    invalid-test-id: `"' + testId + '"`\n'
     + '    valid-id-pattern: `/^[A-Z]+[1-9][0-9]*$/`';
 
   /// #}}} @step make-message
@@ -1404,7 +1404,7 @@ function setTestsIdError(err, testsId, method) {
 
   msg = 'invalid `tests id` for a suite of unit tests\n'
     + '    current-method-suite: `' + method + '`\n'
-    + '    invalid-tests-suite-id: `' + testsId + '`\n'
+    + '    invalid-tests-suite-id: `"' + testsId + '"`\n'
     + '    valid-tests-id-pattern: `/^[A-Z]+$/`';
 
   /// #}}} @step make-message
@@ -1424,6 +1424,77 @@ function setTestsIdError(err, testsId, method) {
   /// #}}} @step return-error
 }
 /// #}}} @func setTestsIdError
+
+/// #{{{ @func setTestNoArgError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} testsId
+ * @param {string} method
+ * @return {!Error}
+ */
+function setTestNoArgError(err, param, testsId, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'testsId');
+    case 3:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(testsId) ) {
+    throw setTypeError(new TypeError, 'testsId', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing required parameter for a unit test wrapper\n'
+    + '    current-method-suite: `' + method + '`\n'
+    + '    current-tests-suite: `' + testsId + '`\n'
+    + '    missing-parameter-name: `' + param + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestNoArgError
 
 /// #{{{ @func setTimeError
 /**
@@ -1625,6 +1696,7 @@ setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
 setError.testId = setTestIdError;
 setError.testsId = setTestsIdError;
+setError.testNoArg = setTestNoArgError;
 setError.time = setTimeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
