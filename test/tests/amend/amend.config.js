@@ -87,7 +87,7 @@ var vitals = global.VITALS_TEST.VITALS;
 method('amend.config', function amendConfigTests() {
 
   /// #{{{ @tests A
-  should('A', "update each properties's descriptor", function amendConfigTestsA() {
+  should('A', "update each property's descriptor", function amendConfigTestsA() {
 
     /// #{{{ @test A1
     test('A1', [
