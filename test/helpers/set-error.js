@@ -1648,7 +1648,7 @@ function setTestsNoArgError(err, param, testsId, method) {
   msg = 'missing required parameter for a suite wrapper\n'
     + '    current-method-suite: `' + method + '`\n';
 
-  if ( !!testsId && isString(testsId) ) {
+  if ( isString(testsId) && isTestsId(testsId) ) {
     msg += '    current-tests-suite: `' + testsId + '`\n';
   }
 
@@ -1671,6 +1671,86 @@ function setTestsNoArgError(err, param, testsId, method) {
   /// #}}} @step return-error
 }
 /// #}}} @func setTestsNoArgError
+
+/// #{{{ @func setTestsTypeError
+/**
+ * @public
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @param {*} testsId
+ * @param {string} method
+ * @return {!TypeError}
+ */
+function setTestsTypeError(err, param, types, testsId, method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'types');
+    case 3:
+      throw setNoArgError(new Error, 'testsId');
+    case 4:
+      throw setNoArgError(new Error, 'method');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!TypeError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(types) ) {
+    throw setTypeError(new TypeError, 'types', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid data type for a suite parameter\n'
+    + '    current-method-suite: `' + method + '`';
+
+  if ( isString(testsId) && isTestsId(testsId) ) {
+    msg += '\n    current-tests-suite: `' + testsId + '`';
+  }
+
+  msg += '\n'
+    + '    invalid-parameter: `' + param + '`\n'
+    + '    valid-data-types: `' + types + '`';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'TypeError') {
+    err.name = 'TypeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestsTypeError
 
 /// #{{{ @func setTimeError
 /**
@@ -1875,6 +1955,7 @@ setError.testNoArg = setTestNoArgError;
 setError.testType = setTestTypeError;
 setError.testsId = setTestsIdError;
 setError.testsNoArg = setTestsNoArgError;
+setError.testsType = setTestsTypeError;
 setError.time = setTimeError;
 setError.type = setTypeError;
 setError.whole = setWholeError;
