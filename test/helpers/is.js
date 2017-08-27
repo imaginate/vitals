@@ -137,6 +137,14 @@ var STAT_DUMMY = {
 var TEST_ID = /^[A-Z]+[1-9][0-9]*$/;
 /// #}}} @const TEST_ID
 
+/// #{{{ @const TESTS_ID
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var TESTS_ID = /^[A-Z]+$/;
+/// #}}} @const TESTS_ID
+
 /// #{{{ @const TIME
 /**
  * @private
@@ -1438,6 +1446,25 @@ function isTestId(id) {
 }
 /// #}}} @func isTestId
 
+/// #{{{ @func isTestsId
+/**
+ * @public
+ * @param {string} id
+ * @return {boolean}
+ */
+function isTestsId(id) {
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'id');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  return !!id && TESTS_ID.test(id);
+}
+/// #}}} @func isTestsId
+
 /// #{{{ @func isTime
 /**
  * @public
@@ -2297,6 +2324,10 @@ var IS = {
   'testID': isTestId,
   'testId': isTestId,
   'testid': isTestId,
+
+  'testsID': isTestsId,
+  'testsId': isTestsId,
+  'testsid': isTestsId,
 
   'time': isTime,
 
