@@ -122,22 +122,14 @@ function incrementProps(src, amount) {
 var is = loadHelper('is');
 /// #}}} @const is
 
-/// #{{{ @func setter
+/// #{{{ @func isNumber
 /**
  * @private
- * @param {number} newVal
- * @param {number=} oldVal = `1`
- * @return {number}
+ * @param {*} val
+ * @return {boolean}
  */
-function setter(newVal, oldVal) {
-
-  if ( is.void(oldVal) ) {
-    oldVal = 1;
-  }
-
-  return newVal + oldVal;
-}
-/// #}}} @func setter
+var isNumber = is.number;
+/// #}}} @func isNumber
 
 /// #{{{ @func throws
 /**
@@ -165,6 +157,21 @@ var vitals = global.VITALS_TEST.VITALS;
 
 /// #{{{ @suite amend
 method('amend', function amendTests() {
+
+  /// #{{{ @func setter
+  /**
+   * @private
+   * @param {number} newVal
+   * @param {number=} oldVal = `1`
+   * @return {number}
+   */
+  function setter(newVal, oldVal) {
+    newVal += isNumber(oldVal)
+      ? oldVal
+      : 1;
+    return newVal;
+  }
+  /// #}}} @func setter
 
   /// #{{{ @tests A
   should('A', 'should add new properties to an object', function amendTestsA() {
