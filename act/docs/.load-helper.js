@@ -3,14 +3,14 @@
  * LOAD-HELPER HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group LOADERS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// LOADERS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func loadHelper
@@ -19,8 +19,15 @@
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('../helper/load-helper.js');
+var loadHelper = require('./helpers/load-helper.js');
 /// #}}} @func loadHelper
+
+/// #}}} @group LOADERS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = loadHelper;
 
