@@ -1457,6 +1457,305 @@ function setTestNoArgError(err, param, testId, testsId, method) {
 }
 /// #}}} @func setTestNoArgError
 
+/// #{{{ @func setTestThrowsError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+function setTestThrowsError(err) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      thrown = undefined;
+      break;
+    default:
+      if ( !isUndefined(thrown) && !isError(thrown) ) {
+        throw setTypeError(new TypeError, 'thrown',
+          '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=');
+      }
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'no valid `error` thrown within `assert`\n'
+    + '    required-error-properties:\n'
+    + '        name: `"Error"`\n'
+    + '        vitals: `true`';
+
+  if ( isError(thrown) ) {
+    msg += '\n'
+      + '    actual-error-properties:\n'
+      + '        name: `"' + thrown.name + '"`\n'
+      + '        message:\n'
+      + '            ' + thrown.message.replace(
+        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+    err.stack = thrown.stack;
+  }
+
+  err.message = msg;
+  err.msg = msg;
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return err;
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestThrowsError
+
+/// #{{{ @func setTestThrowsRangeError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+function setTestThrowsRangeError(err) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      thrown = undefined;
+      break;
+    default:
+      if ( !isUndefined(thrown) && !isError(thrown) ) {
+        throw setTypeError(new TypeError, 'thrown',
+          '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=');
+      }
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'no valid `error` thrown within `assert`\n'
+    + '    required-error-properties:\n'
+    + '        name: `"RangeError"`\n'
+    + '        vitals: `true`';
+
+  if ( isError(thrown) ) {
+    msg += '\n'
+      + '    actual-error-properties:\n'
+      + '        name: `"' + thrown.name + '"`\n'
+      + '        message:\n'
+      + '            ' + thrown.message.replace(
+        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+    err.stack = thrown.stack;
+  }
+
+  err.message = msg;
+  err.msg = msg;
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return err;
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestThrowsRangeError
+
+/// #{{{ @func setTestThrowsSetterError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+function setTestThrowsSetterError(err) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      thrown = undefined;
+      break;
+    default:
+      if ( !isUndefined(thrown) && !isError(thrown) ) {
+        throw setTypeError(new TypeError, 'thrown',
+          '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=');
+      }
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'no valid `error` thrown within `assert`\n'
+    + '    required-error-properties:\n'
+    + '        setter: `true`';
+
+  if ( isError(thrown) ) {
+    msg += '\n'
+      + '    actual-error-properties:\n'
+      + '        name: `"' + thrown.name + '"`\n'
+      + '        message:\n'
+      + '            ' + thrown.message.replace(
+        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+    err.stack = thrown.stack;
+  }
+
+  err.message = msg;
+  err.msg = msg;
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return err;
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestThrowsSetterError
+
+/// #{{{ @func setTestThrowsTypeError
+/**
+ * @public
+ * @param {!Error} err
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=} thrown
+ * @return {!Error}
+ */
+function setTestThrowsTypeError(err) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      thrown = undefined;
+      break;
+    default:
+      if ( !isUndefined(thrown) && !isError(thrown) ) {
+        throw setTypeError(new TypeError, 'thrown',
+          '(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)=');
+      }
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'no valid `error` thrown within `assert`\n'
+    + '    required-error-properties:\n'
+    + '        name: `"TypeError"`\n'
+    + '        vitals: `true`';
+
+  if ( isError(thrown) ) {
+    msg += '\n'
+      + '    actual-error-properties:\n'
+      + '        name: `"' + thrown.name + '"`\n'
+      + '        message:\n'
+      + '            ' + thrown.message.replace(
+        /(?:\r\n|\r|\n)(\S| |\t)/g, '\n        $1');
+    err.stack = thrown.stack;
+  }
+
+  err.message = msg;
+  err.msg = msg;
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return err;
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTestThrowsTypeError
+
 /// #{{{ @func setTestTypeError
 /**
  * @public
@@ -1961,6 +2260,10 @@ setError.rootDir = setRootDirError;
 setError.semVer = setSemVerError;
 setError.testId = setTestIdError;
 setError.testNoArg = setTestNoArgError;
+setError.testThrows = setTestThrowsError;
+setError.testThrowsRange = setTestThrowsRangeError;
+setError.testThrowsSetter = setTestThrowsSetterError;
+setError.testThrowsType = setTestThrowsTypeError;
 setError.testType = setTestTypeError;
 setError.testsId = setTestsIdError;
 setError.testsNoArg = setTestsNoArgError;
