@@ -513,10 +513,11 @@ function makeClosureFlags(flags, src, externs) {
 /**
  * @private
  * @param {string} srcFile
+ * @param {string} destFile
  * @param {?Object} flags
  * @return {!function(string): string}
  */
-function makeCompile(srcFile, flags) {
+function makeCompile(srcFile, destFile, flags) {
 
   /// #{{{ @step verify-parameters
 
@@ -524,11 +525,16 @@ function makeCompile(srcFile, flags) {
     case 0:
       throw setNoArgError(new Error, 'srcFile');
     case 1:
+      throw setNoArgError(new Error, 'destFile');
+    case 2:
       throw setNoArgError(new Error, 'flags');
   }
 
   if ( !isString(srcFile) ) {
     throw setTypeError(new TypeError, 'srcFile', 'string');
+  }
+  if ( !isString(destFile) ) {
+    throw setTypeError(new TypeError, 'destFile', 'string');
   }
   if ( !isNull(flags) && !isObject(flags) ) {
     throw setTypeError(new TypeError, 'flags', '?Object');
@@ -567,17 +573,17 @@ function makeCompile(srcFile, flags) {
 
     /// #}}} @step verify-parameters
 
-    /// #{{{ @step trim-src-code
+    /// #{{{ @step trim-source-code
 
     srcCode = srcCode.replace(/\n\n\n+/g, '\n\n');
-    srcCode = trimComments(srcFile, srcCode);
+    srcCode = trimComments(destFile, srcCode);
     srcCode = srcCode.replace(/\n[ \t\*]*@copyright [^\n]+/g, '');
 
-    /// #}}} @step trim-src-code
+    /// #}}} @step trim-source-code
 
     /// #{{{ @step make-closure-compiler-src
 
-    src = makeClosureFile(srcFile, srcCode);
+    src = makeClosureFile(destFile, srcCode);
 
     /// #}}} @step make-closure-compiler-src
 
@@ -606,13 +612,13 @@ function makeCompile(srcFile, flags) {
     }
 
     if (!hasOwnProperty(result, 'compiledCode')
-          || !isString(result.compiledCode) ) {
+        || !isString(result.compiledCode) ) {
       throw setClosureRetError(new TypeError, '{ compiledCode: string }');
     }
 
     if (!hasOwnProperty(result, 'errors')
-          || !isArray(result.errors)
-          || !isObjectList(result.errors) ) {
+        || !isArray(result.errors)
+        || !isObjectList(result.errors) ) {
       throw setClosureRetError(new TypeError, '{ errors: !Array<!Object> }');
     }
 
@@ -640,9 +646,24 @@ function makeCompile(srcFile, flags) {
   }
   /// #}}} @func compile
 
+  /// #{{{ @step return-compiler
+
   return compile;
+
+  /// #}}} @step return-compiler
 }
 /// #}}} @func makeCompile
+
+/// #{{{ @func makeCompile.create
+/**
+ * @private
+ * @param {string} srcFile
+ * @param {string} destFile
+ * @param {?Object} flags
+ * @return {!function(string): string}
+ */
+makeCompile.create = makeCompile;
+/// #}}} @func makeCompile.create
 
 /// #{{{ @func moldSource
 /**
@@ -710,6 +731,8 @@ var moldSource = require('mold');
  */
 function trimComments(srcFile, srcCode) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {string} */
   var result;
   /** @type {!Array<string>} */
@@ -720,6 +743,10 @@ function trimComments(srcFile, srcCode) {
   var len;
   /** @type {number} */
   var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
     case 0:
@@ -734,6 +761,10 @@ function trimComments(srcFile, srcCode) {
   if ( !isString(srcCode) ) {
     throw setTypeError(new TypeError, 'srcCode', 'string');
   }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step trim-comments-from-code
 
   result = '';
   lines = srcCode.split('\n');
@@ -770,7 +801,14 @@ function trimComments(srcFile, srcCode) {
       result += line + '\n';
     }
   }
+
+  /// #}}} @step trim-comments-from-code
+
+  /// #{{{ @step return-trimmed-code
+
   return result;
+
+  /// #}}} @step return-trimmed-code
 }
 /// #}}} @func trimComments
 
@@ -1907,7 +1945,8 @@ var DIR = freezeObject({
  * @param {string} method
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
  * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
+ * @param {(?function(string): string)=} alter = `null`
+ * @param {(?function(string, string, ?Object): (?function(string): string))=} alter.create = `null`
  * @constructor
  * @struct
  */
@@ -1942,10 +1981,13 @@ function Branch(
     case 7:
       throw setNoArgError(new Error, 'flags');
     case 8:
-      alter = undefined;
+      alter = null;
       break;
     default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+      if ( isNull(alter) || isUndefined(alter) ) {
+        alter = null;
+      }
+      else if ( !isFunction(alter) ) {
         throw setTypeError(new TypeError, 'alter',
           '(?function(string): string)=');
       }
@@ -2111,7 +2153,7 @@ function Branch(
   /// #{{{ @const ALTER
   /**
    * @private
-   * @const {(null|(function(string): string)|undefined)}
+   * @const {?function(string): string}
    */
   var ALTER = alter;
   /// #}}} @const ALTER
@@ -2214,7 +2256,7 @@ function Branch(
 
   /// #{{{ @member alter
   /**
-   * @const {(null|(function(string): string)|undefined)}
+   * @const {?function(string): string}
    */
   setConstantProperty(this, 'alter', ALTER);
   /// #}}} @member alter
@@ -2276,7 +2318,8 @@ function Branch(
  * @param {string} method
  * @param {!Object<string, (boolean|!Object<string, boolean>)>} state
  * @param {?Object} flags
- * @param {(null|(function(string): string)|undefined)=} alter = `undefined`
+ * @param {(?function(string): string)=} alter = `null`
+ * @param {(?function(string, string, ?Object): (?function(string): string))=} alter.create = `null`
  * @return {!Branch}
  */
 function newBranch(
@@ -2302,10 +2345,13 @@ function newBranch(
     case 7:
       throw setNoArgError(new Error, 'flags');
     case 8:
-      alter = undefined;
+      alter = null;
       break;
     default:
-      if ( !isNull(alter) && !isUndefined(alter) && !isFunction(alter) ) {
+      if ( isNull(alter) || isUndefined(alter) ) {
+        alter = null;
+      }
+      else if ( !isFunction(alter) ) {
         throw setTypeError(new TypeError, 'alter',
           '(?function(string): string)=');
       }
@@ -2474,7 +2520,7 @@ function makeBranches(branches) {
   /// #{{{ @const ALTER
   /**
    * @private
-   * @const {(null|(function(string): string)|undefined)}
+   * @const {?function(string): string}
    */
   var ALTER = this.alter;
   /// #}}} @const ALTER
@@ -2786,9 +2832,12 @@ function File(parent, name, config) {
    * @private
    * @const {?function(string): string}
    */
-  var ALTER = isUndefined(PARENT.alter)
-    ? makeCompile(DEST, FLAGS)
-    : PARENT.alter;
+  var ALTER = isFunction(PARENT.alter)
+    ? hasOwnEnumProperty(PARENT.alter, 'create')
+      && isFunction(PARENT.alter.create)
+      ? PARENT.alter.create(SRC, DEST, FLAGS)
+      : PARENT.alter
+    : null;
   /// #}}} @const ALTER
 
   /// #}}} @step set-constants
@@ -3032,9 +3081,9 @@ function buildAll(method) {
   branch = {};
 
   branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
-    DIR.SRC, DIR.DEST, method, STATE, flags);
+    DIR.SRC, DIR.DEST, method, STATE, flags, makeCompile);
   branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
-    DIR.DEST, method, STATE, flags);
+    DIR.DEST, method, STATE, flags, makeCompile);
   branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC,
     DIR.DEST, method, STATE, null, trimDocs);
 
@@ -3111,9 +3160,9 @@ function buildDist(method) {
   branch = {};
 
   branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
-    DIR.SRC, DIR.DEST, method, STATE, flags);
+    DIR.SRC, DIR.DEST, method, STATE, flags, makeCompile);
   branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
-    DIR.DEST, method, STATE, flags);
+    DIR.DEST, method, STATE, flags, makeCompile);
 
   freezeObject(branch);
 
@@ -3184,7 +3233,7 @@ function buildBrowser(method) {
   /// #{{{ @step make-branch
 
   branch = new Branch(null, 'browser', CONFIG.branches.browser, DIR.SRC,
-    DIR.DEST, method, STATE, flags);
+    DIR.DEST, method, STATE, flags, makeCompile);
 
   /// #}}} @step make-branch
 
@@ -3252,7 +3301,7 @@ function buildNode(method) {
   /// #{{{ @step make-branch
 
   branch = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC, DIR.DEST,
-    method, STATE, flags);
+    method, STATE, flags, makeCompile);
 
   /// #}}} @step make-branch
 
