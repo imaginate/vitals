@@ -816,16 +816,129 @@ function trimComments(srcFile, srcCode) {
 
 /// #{{{ @group DOCS
 
-/// #{{{ @func trimDocs
+/// #{{{ @func makeDocsBuilder
 /**
  * @private
+ * @param {string} srcFile
+ * @param {string} destFile
+ * @param {?Object} flags
+ * @return {!function(string): string}
+ */
+function makeDocsBuilder(srcFile, destFile, flags) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'srcFile');
+    case 1:
+      throw setNoArgError(new Error, 'destFile');
+    case 2:
+      throw setNoArgError(new Error, 'flags');
+  }
+
+  if ( !isString(srcFile) ) {
+    throw setTypeError(new TypeError, 'srcFile', 'string');
+  }
+  if ( !isString(destFile) ) {
+    throw setTypeError(new TypeError, 'destFile', 'string');
+  }
+  if ( !isNull(flags) && !isObject(flags) ) {
+    throw setTypeError(new TypeError, 'flags', '?Object');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @func builder
+  /**
+   * @param {string} srcCode
+   * @return {string}
+   */
+  function builder(srcCode) {
+
+    /// #{{{ @step declare-variables
+
+    /** @type {string} */
+    var md;
+
+    /// #}}} @step declare-variables
+
+    /// #{{{ @step verify-parameters
+
+    if (!arguments.length) {
+      throw setNoArgError(new Error, 'srcCode');
+    }
+    if ( !isString(srcCode) ) {
+      throw setTypeError(new TypeError, 'srcCode', 'string');
+    }
+
+    /// #}}} @step verify-parameters
+
+    /// #{{{ @step check-source-file-extension
+
+    if ( hasMdFileExtension(srcFile) ) {
+      return srcCode;
+    }
+
+    /// #}}} @step check-source-file-extension
+
+    /// #{{{ @step trim-source-code
+
+    srcCode = srcCode.replace(/\n\n\n+/g, '\n\n');
+
+    /// #}}} @step trim-source-code
+
+    /// #{{{ @step check-destination-file-extension
+
+    if ( hasJsFileExtension(destFile) ) {
+      return srcCode;
+    }
+
+    /// #}}} @step check-destination-file-extension
+
+    /// #{{{ @step compile-source-to-markdown
+
+    md = makeDocsMarkdown(srcFile, destFile, srcCode);
+
+    /// #}}} @step compile-source-to-markdown
+
+    /// #{{{ @step return-compiled-code
+
+    return md;
+
+    /// #}}} @step return-compiled-code
+  }
+  /// #}}} @func builder
+
+  /// #{{{ @step return-builder
+
+  return builder;
+
+  /// #}}} @step return-builder
+}
+/// #}}} @func makeDocsBuilder
+
+/// #{{{ @func makeDocsBuilder.create
+/**
+ * @private
+ * @param {string} srcFile
+ * @param {string} destFile
+ * @param {?Object} flags
+ * @return {!function(string): string}
+ */
+makeDocsBuilder.create = makeDocsBuilder;
+/// #}}} @func makeDocsBuilder.create
+
+/// #{{{ @func makeDocsMarkdown
+/**
+ * @private
+ * @param {string} srcFile
+ * @param {string} destFile
  * @param {string} srcCode
  * @return {string}
  */
-function trimDocs(srcCode) {
-  return srcCode.replace(/\n\n\n+/g, '\n\n');
-}
-/// #}}} @func trimDocs
+var makeDocsMarkdown = require('./docs/make-method-docs.js');
+/// #}}} @func makeDocsMarkdown
 
 /// #}}} @group DOCS
 
@@ -3085,7 +3198,7 @@ function buildAll(method) {
   branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
     DIR.DEST, method, STATE, flags, makeCompile);
   branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC,
-    DIR.DEST, method, STATE, null, trimDocs);
+    DIR.DEST, method, STATE, null, makeDocsBuilder);
 
   freezeObject(branch);
 
@@ -3358,7 +3471,7 @@ function buildDocs(method) {
   /// #{{{ @step make-branch
 
   branch = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC, DIR.DEST,
-    method, STATE, null, trimDocs);
+    method, STATE, null, makeDocsBuilder);
 
   /// #}}} @step make-branch
 
