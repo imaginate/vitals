@@ -525,28 +525,57 @@ function Specky(runner) {
     /** @type {string} */
     var title;
     /** @type {string} */
+    var perf;
+    /** @type {string} */
     var msg;
+    /** @type {string} */
+    var id;
 
     /// #}}} @step declare-variables
 
-    /// #{{{ @step log-test-result
+    /// #{{{ @step make-title
 
-    title = indentString(test.title, indents + 2);
+    id = test.TEST_ID;
+    title = id + test.title;
+    title = indentString(title, indents + 2);
+    title = title.slice(id.length);
     title = CHALK.white(title);
 
+    /// #}}} @step make-title
+
+    /// #{{{ @step make-id
+
+    id = test.TEST_ID;
+    id = CHALK.green(id);
+
+    /// #}}} @step make-id
+
+    /// #{{{ @step make-performance-report
+
     if (test.speed !== 'fast') {
-      msg = ' (' + test.duration + 'ms)';
-      msg = test.speed === 'slow'
-        ? CHALK.red(msg)
-        : CHALK.yellow(msg);
+      perf = ' (' + test.duration + 'ms)';
+      perf = test.speed === 'slow'
+        ? CHALK.red(perf)
+        : CHALK.yellow(perf);
+    }
+    else {
+      perf = '';
     }
 
-    msg = OK + ' ' + title + (msg || '');
+    /// #}}} @step make-performance-report
+
+    /// #{{{ @step make-message
+
+    msg = id + ' ' + title + perf;
     msg = makeIndent(indents + 1) + msg;
+
+    /// #}}} @step make-message
+
+    /// #{{{ @step log-message
 
     console.log(msg);
 
-    /// #}}} @step log-test-result
+    /// #}}} @step log-message
   });
 
   /// #}}} @event pass
@@ -558,7 +587,11 @@ function Specky(runner) {
     /// #{{{ @step declare-variables
 
     /** @type {string} */
+    var title;
+    /** @type {string} */
     var msg;
+    /** @type {string} */
+    var id;
 
     /// #}}} @step declare-variables
 
@@ -568,16 +601,35 @@ function Specky(runner) {
 
     /// #}}} @step increase-failure-count
 
-    /// #{{{ @step log-test-result
+    /// #{{{ @step make-title
 
-    msg = fails + ' ' + test.title;
-    msg = indentString(msg, indents + 2);
-    msg = CHALK.red(msg);
+    id = test.TEST_ID;
+    title = id + test.title;
+    title = indentString(title, indents + 2);
+    title = title.slice(id.length);
+    title = CHALK.white(title);
+
+    /// #}}} @step make-title
+
+    /// #{{{ @step make-id
+
+    id = test.TEST_ID;
+    id = CHALK.red(id);
+
+    /// #}}} @step make-id
+
+    /// #{{{ @step make-message
+
+    msg = id + ' ' + title;
     msg = makeIndent(indents + 1) + msg;
+
+    /// #}}} @step make-message
+
+    /// #{{{ @step log-message
 
     console.log(msg);
 
-    /// #}}} @step log-test-result
+    /// #}}} @step log-message
   });
 
   /// #}}} @event fail
