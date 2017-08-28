@@ -70,7 +70,7 @@ var loadHelper = require('./helpers/load-helper.js');
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadDocsHelper = require('./docs/helpers/load-helper.js');
+var loadDocsHelper = require('./make-docs/helpers/load-helper.js');
 /// #}}} @func loadDocsHelper
 
 /// #}}} @group LOADERS
@@ -898,7 +898,7 @@ function makeDocsBuilder(srcFile, destFile, flags) {
 
     /// #{{{ @step compile-source-to-markdown
 
-    md = makeDocsMarkdown(srcFile, destFile, srcCode);
+    md = makeMethodDocs(srcFile, destFile, srcCode);
 
     /// #}}} @step compile-source-to-markdown
 
@@ -929,7 +929,7 @@ function makeDocsBuilder(srcFile, destFile, flags) {
 makeDocsBuilder.create = makeDocsBuilder;
 /// #}}} @func makeDocsBuilder.create
 
-/// #{{{ @func makeDocsMarkdown
+/// #{{{ @func makeMethodDocs
 /**
  * @private
  * @param {string} srcFile
@@ -937,8 +937,8 @@ makeDocsBuilder.create = makeDocsBuilder;
  * @param {string} srcCode
  * @return {string}
  */
-var makeDocsMarkdown = require('./docs/make-method-docs.js');
-/// #}}} @func makeDocsMarkdown
+var makeMethodDocs = require('./make-docs/make-method-docs.js');
+/// #}}} @func makeMethodDocs
 
 /// #}}} @group DOCS
 
