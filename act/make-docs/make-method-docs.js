@@ -714,17 +714,17 @@ var insertTag = loadHelper('insert-tag');
  */
 var TMPL = freezeObject({
   BODY: {
-    MAIN: getTemplate('body'),
-    PARAM: getTemplate('body/param'),
-    RETURNS: getTemplate('body/returns')
+    MAIN: getTemplate('method/body'),
+    PARAM: getTemplate('method/body/param'),
+    RETURNS: getTemplate('method/body/returns')
   },
   FOOTER: {
     MAIN: getTemplate('footer')
   },
   HEADER: {
-    MAIN: getTemplate('header'),
-    ROW: getTemplate('header/row'),
-    ALIAS: getTemplate('header/alias').replace(/\n/g, '')
+    MAIN: getTemplate('method/header'),
+    ROW: getTemplate('method/header/row'),
+    ALIAS: getTemplate('method/header/alias').replace(/\n/g, '')
   }
 }, true);
 /// #}}} @const TMPL
