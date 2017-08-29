@@ -326,6 +326,19 @@ var setProperty = loadTaskHelper('set-property');
 
 /// #}}} @group OBJECT
 
+/// #{{{ @group SPECIAL
+
+/// #{{{ @func newMakeIndent
+/**
+ * @private
+ * @param {number=} count
+ * @return {!function(number): string}
+ */
+var newMakeIndent = require('./make-indent.js').construct;
+/// #}}} @func newMakeIndent
+
+/// #}}} @group SPECIAL
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group DEFAULTS
@@ -414,6 +427,14 @@ function Html(lines, opts) {
 
   /// #{{{ @step set-constants
 
+  /// #{{{ @const ELEMS
+  /**
+   * @private
+   * @const {!Array<(!Block|!Inline)>}
+   */
+  var ELEMS = [];
+  /// #}}} @const ELEMS
+
   /// #{{{ @const LINES
   /**
    * @private
@@ -421,6 +442,14 @@ function Html(lines, opts) {
    */
   var LINES = freezeObject(lines);
   /// #}}} @const LINES
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = LINES.length;
+  /// #}}} @const LEN
 
   /// #{{{ @const OPTS
   /**
@@ -430,9 +459,76 @@ function Html(lines, opts) {
   var OPTS = freezeObject(opts);
   /// #}}} @const OPTS
 
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = OPTS['depth'];
+  /// #}}} @const DEPTH
+
+  /// #{{{ @const GITHUB
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var GITHUB = OPTS['github'];
+  /// #}}} @const GITHUB
+
+  /// #{{{ @const INDENT
+  /**
+   * @private
+   * @const {number}
+   */
+  var INDENT = OPTS['indent'];
+  /// #}}} @const INDENT
+
+  /// #{{{ @const makeIndent
+  /**
+   * @private
+   * @const {!function(number): string}
+   */
+  var makeIndent = newMakeIndent(INDENT);
+  /// #}}} @const makeIndent
+
   /// #}}} @step set-constants
 
   /// #{{{ @step set-members
+
+  /// #{{{ @member DEPTH
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'DEPTH', DEPTH);
+  /// #}}} @member DEPTH
+
+  /// #{{{ @member ELEMS
+  /**
+   * @const {!Array<(!Block|!Inline)>}
+   */
+  setConstantProperty(this, 'ELEMS', ELEMS);
+  /// #}}} @member ELEMS
+
+  /// #{{{ @member GITHUB
+  /**
+   * @const {boolean}
+   */
+  setConstantProperty(this, 'GITHUB', GITHUB);
+  /// #}}} @member GITHUB
+
+  /// #{{{ @member INDENT
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'INDENT', INDENT);
+  /// #}}} @member INDENT
+
+  /// #{{{ @member LEN
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'LEN', LEN);
+  /// #}}} @member LEN
 
   /// #{{{ @member LINES
   /**
@@ -448,18 +544,73 @@ function Html(lines, opts) {
   setConstantProperty(this, 'OPTS', OPTS);
   /// #}}} @member OPTS
 
+  /// #{{{ @member RESULT
+  /**
+   * @description
+   *   This parameter is only defined after `Html.prototype.parse` has
+   *   completed. Note that for this member only defined means that its value
+   *   is changed from `null` to a `string`. The `result` member maintains
+   *   the incomplete states.
+   * @type {?string}
+   */
+  setProperty(this, 'RESULT', null);
+  /// #}}} @member RESULT
+
+  /// #{{{ @member ROOT
+  /**
+   * @const {!Html}
+   */
+  setConstantProperty(this, 'ROOT', this);
+  /// #}}} @member ROOT
+
+  /// #{{{ @member depth
+  /**
+   * @type {number}
+   */
+  setProperty(this, 'depth', DEPTH, true);
+  /// #}}} @member depth
+
+  /// #{{{ @member i
+  /**
+   * @type {number}
+   */
+  setProperty(this, 'i', 0, true);
+  /// #}}} @member i
+
   /// #{{{ @member result
   /**
    * @type {string}
    */
-  setProperty(this, 'result', '');
+  setProperty(this, 'result', '', true);
   /// #}}} @member result
 
+  /// #{{{ @member makeIndent
+  /**
+   * @private
+   * @param {number} depth
+   * @return {string}
+   */
+  setConstantProperty(this, 'makeIndent', makeIndent);
+  /// #}}} @member makeIndent
+
   /// #}}} @step set-members
+
+  /// #{{{ @step cap-instance
+
+  capObject(this);
+
+  /// #}}} @step cap-instance
+
+  /// #{{{ @step parse-lines
+
+  this.parse();
+
+  /// #}}} @step parse-lines
 
   /// #{{{ @step freeze-instance
 
   freezeObject(this);
+  freezeObject(this.ELEMS);
 
   /// #}}} @step freeze-instance
 }
@@ -574,6 +725,306 @@ freezeObject(Html.prototype);
 
 /// #}}} @group HTML
 
+/// #{{{ @group BLOCK
+
+/// #{{{ @func Block
+/**
+ * @private
+ * @param {(!Html|!Block)} parent
+ * @constructor
+ * @struct
+ */
+function Block(parent) {
+
+  /// #{{{ @step verify-new-keyword
+
+  if ( !isInstanceOf(this, Block) ) {
+    throw setNewError(new SyntaxError, 'Block');
+  }
+
+  /// #}}} @step verify-new-keyword
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'parent');
+  }
+
+  if ( !isInstanceOf(parent, Block) && !isInstanceOf(parent, Html) ) {
+    throw setTypeError(new TypeError, 'parent', '(!Html|!Block)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = parent;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const ELEMS
+  /**
+   * @private
+   * @const {!Array<(!Block|!Inline)>}
+   */
+  var ELEMS = [];
+  /// #}}} @const ELEMS
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = [];
+  /// #}}} @const LINES
+
+  /// #{{{ @const RANK
+  /**
+   * @description
+   *   The `RANK` is the *index* of the new `Block` instance's place within
+   *   the `ELEMS` of its `PARENT`.
+   * @private
+   * @const {number}
+   */
+  var RANK = PARENT.ELEMS.length;
+  /// #}}} @const RANK
+
+  /// #{{{ @const ROOT
+  /**
+   * @private
+   * @const {!Html}
+   */
+  var ROOT = PARENT.ROOT;
+  /// #}}} @const ROOT
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = ROOT.depth;
+  /// #}}} @const DEPTH
+
+  /// #{{{ @const INDEX
+  /**
+   * @private
+   * @const {number}
+   */
+  var INDEX = ROOT.i;
+  /// #}}} @const INDEX
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-members
+
+  /// #{{{ @member DEPTH
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'DEPTH', DEPTH);
+  /// #}}} @member DEPTH
+
+  /// #{{{ @member ELEMS
+  /**
+   * @const {!Array<(!Block|!Inline)>}
+   */
+  setConstantProperty(this, 'ELEMS', ELEMS);
+  /// #}}} @member ELEMS
+
+  /// #{{{ @member INDEX
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'INDEX', INDEX);
+  /// #}}} @member INDEX
+
+  /// #{{{ @member LAST
+  /**
+   * @description
+   *   This parameter is only defined after `Block.prototype.getLastIndex` has
+   *   completed. Note that for this member only defined means that its value
+   *   is changed from `null` to a positive whole `number`.
+   * @type {?number}
+   */
+  setProperty(this, 'LAST', null);
+  /// #}}} @member LAST
+
+  /// #{{{ @member LINES
+  /**
+   * @const {!Array<string>}
+   */
+  setConstantProperty(this, 'LINES', LINES);
+  /// #}}} @member LINES
+
+  /// #{{{ @member PARENT
+  /**
+   * @const {(!Html|!Block)}
+   */
+  setConstantProperty(this, 'PARENT', PARENT);
+  /// #}}} @member PARENT
+
+  /// #{{{ @member RANK
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'RANK', RANK);
+  /// #}}} @member RANK
+
+  /// #{{{ @member RESULT
+  /**
+   * @description
+   *   This parameter is only defined after `Html.prototype.parse` has
+   *   completed. Note that for this member only defined means that its value
+   *   is changed from `null` to a `string`. The `result` member maintains
+   *   the incomplete states.
+   * @type {?string}
+   */
+  setProperty(this, 'RESULT', null);
+  /// #}}} @member RESULT
+
+  /// #{{{ @member ROOT
+  /**
+   * @const {!Html}
+   */
+  setConstantProperty(this, 'ROOT', ROOT);
+  /// #}}} @member ROOT
+
+  /// #}}} @step set-members
+
+  /// #{{{ @step cap-instance
+
+  capObject(this);
+
+  /// #}}} @step cap-instance
+
+  /// #{{{ @step parse-lines
+
+  this.parse();
+
+  /// #}}} @step parse-lines
+
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
+}
+/// #}}} @func Block
+
+/// #{{{ @func newBlock
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {!Object} opts
+ * @return {!Block}
+ */
+function newBlock(lines, opts) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'lines');
+    case 1:
+      throw setNoArgError(new Error, 'opts');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-new-html-instance
+
+  return new Block(lines, opts);
+
+  /// #}}} @step return-new-html-instance
+}
+/// #}}} @func newBlock
+
+/// #{{{ @func Block.prototype.__
+/**
+ * @private
+ * @this {!Block}
+ * @return {!Block}
+ */
+function __() {
+
+  /// #{{{ @step declare-variables
+
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '');
+    case 1:
+      throw setNoArgError(new Error, '');
+  }
+
+  if ( !isString() ) {
+    throw setTypeError(new TypeError, '', 'string');
+  }
+  if ( !isString() ) {
+    throw setTypeError(new TypeError, '', 'string');
+  }
+
+  if (!) {
+    throw setEmptyError(new Error, '');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const 
+  /**
+   * @private
+   * @const {string}
+   */
+  /// #}}} @const 
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-member-refs
+
+
+  /// #}}} @step set-member-refs
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Block.prototype.__
+
+/// #{{{ @step setup-html-constructor
+
+Block.Block = Block;
+Block.newBlock = newBlock;
+Block.construct = newBlock;
+Block.prototype = createObject(null);
+
+freezeObject(Block);
+
+/// #}}} @step setup-html-constructor
+
+/// #{{{ @step setup-html-prototype
+
+setConstantProperty(Block.prototype, '__', __);
+setConstantProperty(Block.prototype, 'constructor', Block, false);
+
+freezeObject(Block.prototype);
+
+/// #}}} @step setup-html-prototype
+
+/// #}}} @group BLOCK
+
 /// #}}} @group CLASSES
 
 /// #{{{ @group METHODS
@@ -672,7 +1123,7 @@ function parseToHtml(lines, opts) {
 
   /// #{{{ @step return-parsed-result
 
-  return html.parse();
+  return html.RESULT;
 
   /// #}}} @step return-parsed-result
 }
