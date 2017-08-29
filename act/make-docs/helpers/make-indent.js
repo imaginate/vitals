@@ -182,9 +182,9 @@ function makeIndentMacro(count) {
 /**
  * @public
  * @param {number=} count
- * @return {string}
+ * @return {!function(number): string}
  */
-function newMkIndent(count) {
+function newMakeIndent(count) {
 
   /// #{{{ @step verify-parameters
 
@@ -265,7 +265,7 @@ function newMkIndent(count) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = newMkIndent();
+module.exports = newMakeIndent();
 
 /// #}}} @group EXPORTS
 
