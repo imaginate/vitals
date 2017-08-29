@@ -57,6 +57,7 @@ var PATT = {
     PARAM_DFLT: /^@param(?:eter)?[ \t]+\{.+?\}[ \t]+[a-zA-Z_\.\$]+[ \t]*=[ \t]*`(.+?)`[ \t]*$/,
     PARAM_LINE: /^[ \t]+\*[ \t]/,
     PARAM_TAG: /^[ \t]+\*[ \t]@param(?:eter)?[ \t]/,
+    RETURN: /^@returns?[ \t]+\{(.+?)\}[ \t]*$/,
     RETURN_LINE: /^[ \t]+\*[ \t]/,
     RETURN_TAG: /^[ \t]+\*[ \t]@returns?[ \t]/,
     SECTION: /^[ \t]*\/\/\/[ \t]+@section[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/
@@ -685,6 +686,99 @@ function setParamError(err, method, lines) {
 }
 /// #}}} @func setParamError
 
+/// #{{{ @func setReturnError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} method
+ * @param {!Array<string>} lines
+ * @return {!RangeError}
+ */
+function setReturnError(err, method, lines) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'method');
+    case 2:
+      throw setNoArgError(new Error, 'lines');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(lines) || !isStringList(lines) ) {
+    throw setTypeError(new TypeError, 'lines', '!Array<string>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @const PRE
+  /**
+   * @private
+   * @const {string}
+   */
+  var PRE = '^[ \\t]+\\*[ \\t]';
+  /// #}}} @const PRE
+
+  /// #{{{ @const PATT
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '@returns?[ \\t]+\\{.+?\\}[ \\t]*$';
+  /// #}}} @const PATT
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid returns documentation for `' + method + '`\n'
+    + '    full-valid-line-pattern: `/' + PRE + PATT + '/`\n'
+    + '    trimmed-valid-pattern: `/' + PATT + '/`\n'
+    + '    trimmed-invalid-line: `"' + (lines[0] || '') + '"`\n'
+    + '    trimmed-code-snippet:';
+
+  forEachProperty(lines, function appendLineToMsg(line, i) {
+    line = !!line
+      ? line.replace(/`/g, '\\`')
+      : ' ';
+    msg += '\n    ';
+    msg += i === 0
+      ? '-->'
+      : '   ';
+    msg += ' `' + line + '`';
+  });
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setReturnError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -889,6 +983,18 @@ var insertMentions = loadHelper('insert-mentions');
  */
 var insertTag = loadHelper('insert-tag');
 /// #}}} @func insertTag
+
+/// #{{{ @func parseToHtml
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {?Object=} opts
+ * @param {number=} opts.depth = `0`
+ * @param {boolean=} opts.github = `false`
+ * @return {string}
+ */
+var parseToHtml = loadHelper('parse-to-html');
+/// #}}} @func parseToHtml
 
 /// #}}} @group SPECIAL
 
@@ -1135,6 +1241,7 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
   /// #{{{ @step build-body-detail
 
   result = TMPL.BODY.MAIN;
+
   len = details.length;
   i = 0;
 
@@ -1177,17 +1284,16 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
     ++i;
   }
 
-  part = '';
+  lines = [];
   if ( i < len && PATT.BODY.RETURN_TAG.test(details[i]) ) {
-    lines = [];
     line = details[i].replace(PATT.BODY.RETURN_LINE, '');
     lines.push(line);
     while ( ++i < len && PATT.BODY.DESC_LINE.test(details[i]) ) {
       line = details[i].replace(PATT.BODY.DESC_LINE, '');
       lines.push(line);
     }
-    part = makeMethodBodyDetailReturn(section, superMethod, method, lines);
   }
+  part = makeMethodBodyDetailReturn(section, superMethod, method, lines);
   result = insertTag(result, 'returns', part);
 
   while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
@@ -1328,6 +1434,102 @@ function makeMethodBodyDetailParam(section, superMethod, method, lines, index) {
   /// #}}} @step return-body-detail-parameter
 }
 /// #}}} @func makeMethodBodyDetailParam
+
+/// #{{{ @func makeMethodBodyDetailReturn
+/**
+ * @private
+ * @param {string} section
+ * @param {string} superMethod
+ * @param {string} method
+ * @param {!Array<string>} lines
+ * @return {string}
+ */
+function makeMethodBodyDetailReturn(section, superMethod, method, lines) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var result;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var part;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'section');
+    case 1:
+      throw setNoArgError(new Error, 'superMethod');
+    case 2:
+      throw setNoArgError(new Error, 'method');
+    case 3:
+      throw setNoArgError(new Error, 'lines');
+  }
+
+  if ( !isString(section) ) {
+    throw setTypeError(new TypeError, 'section', 'string');
+  }
+  if ( !isString(superMethod) ) {
+    throw setTypeError(new TypeError, 'superMethod', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(lines) || !isStringList(lines) ) {
+    throw setTypeError(new TypeError, 'lines', '!Array<string>');
+  }
+
+  if (!section) {
+    throw setEmptyError(new Error, 'section');
+  }
+  if (!superMethod) {
+    throw setEmptyError(new Error, 'superMethod');
+  }
+  if (!method) {
+    throw setEmptyError(new Error, 'method');
+  }
+
+  if ( lines.length && !PATT.BODY.RETURN.test(lines[0]) ) {
+    throw setReturnError(new RangeError, method, lines);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step build-body-detail-returns
+
+  result = TMPL.BODY.RETURNS;
+
+  line = lines.length
+    ? lines[0]
+    : '';
+
+  part = line && line.replace(PATT.BODY.RETURN, '$1');
+  if (part === 'void') {
+    part = 'undefined';
+  }
+  result = insertTag(result, 'type', part);
+
+  if (line) {
+    lines.shift();
+  }
+  part = parseToHtml(lines, {
+    'github': true
+  });
+  result = insertTag(result, 'description', part);
+
+  /// #}}} @step build-body-detail-returns
+
+  /// #{{{ @step return-body-detail-returns
+
+  return result;
+
+  /// #}}} @step return-body-detail-returns
+}
+/// #}}} @func makeMethodBodyDetailReturn
 
 /// #{{{ @func makeMethodDocs
 /**
