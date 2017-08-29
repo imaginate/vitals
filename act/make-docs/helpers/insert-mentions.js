@@ -110,15 +110,18 @@ var setNoArgError = setError.noArg;
 /// #{{{ @func setNoRefError
 /**
  * @private
- * @param {!RangeError} err
+ * @param {!ReferenceError} err
+ * @param {string} file
  * @param {string} id
  * @param {!Object} data
- * @return {!RangeError}
+ * @return {!ReferenceError}
  */
-function setNoRefError(err, id, data) {
+function setNoRefError(err, file, id, data) {
 
   /// #{{{ @step declare-variables
 
+  /** @type {!Array<string>} */
+  var ids;
   /** @type {string} */
   var msg;
 
@@ -130,13 +133,18 @@ function setNoRefError(err, id, data) {
     case 0:
       throw setNoArgError(new Error, 'err');
     case 1:
-      throw setNoArgError(new Error, 'id');
+      throw setNoArgError(new Error, 'file');
     case 2:
+      throw setNoArgError(new Error, 'id');
+    case 3:
       throw setNoArgError(new Error, 'data');
   }
 
   if ( !isError(err) ) {
-    throw setTypeError(new TypeError, 'err', '!RangeError');
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
   }
   if ( !isString(id) ) {
     throw setTypeError(new TypeError, 'id', 'string');
@@ -149,17 +157,22 @@ function setNoRefError(err, id, data) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'undefined reference id in documentation\n'
-    + '    invalid-ref-id: `"' + id + '"`\n'
-    + '    valid-ref-ids:\n'
-    + '        `"' + getKeys(data).join('"`\n        `"') + '"`';
+  msg = 'undefined mentions id set in documentation\n'
+    + '    source-file-path: `' + file + '`\n'
+    + '    invalid-mentions-id: `"' + id + '"`\n'
+    + '    valid-mentions-ids:';
+
+  ids = getKeys(data);
+  msg += ids.length > 0
+    ? '\n        `"' + ids.join('"`\n        `"') + '"`'
+    : ' <no-defined-ids>';
 
   /// #}}} @step make-error-message
 
   /// #{{{ @step set-error-name-property
 
-  if (err.name !== 'RangeError') {
-    err.name = 'RangeError';
+  if (err.name !== 'ReferenceError') {
+    err.name = 'ReferenceError';
   }
 
   /// #}}} @step set-error-name-property
@@ -176,10 +189,11 @@ function setNoRefError(err, id, data) {
 /**
  * @private
  * @param {!RangeError} err
+ * @param {string} file
  * @param {string} id
  * @return {!RangeError}
  */
-function setRefError(err, id) {
+function setRefError(err, file, id) {
 
   /// #{{{ @step declare-variables
 
@@ -194,11 +208,16 @@ function setRefError(err, id) {
     case 0:
       throw setNoArgError(new Error, 'err');
     case 1:
+      throw setNoArgError(new Error, 'file');
+    case 2:
       throw setNoArgError(new Error, 'id');
   }
 
   if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
   }
   if ( !isString(id) ) {
     throw setTypeError(new TypeError, 'id', 'string');
@@ -208,9 +227,10 @@ function setRefError(err, id) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'invalid reference id in documentation\n'
-    + '    invalid-ref-id: `"' + id + '"`\n'
-    + '    valid-pattern: `/^[a-zA-Z0-9_$][a-zA-Z0-9_-$]*$/`';
+  msg = 'invalid mentions id set in documentation\n'
+    + '    source-file-path: `' + file + '`\n'
+    + '    invalid-id-value: `"' + id + '"`\n'
+    + '    valid-id-pattern: `/^[a-zA-Z0-9_$][a-zA-Z0-9_-$]*$/`';
 
   /// #}}} @step make-error-message
 
@@ -311,36 +331,71 @@ var isString = IS.string;
 /// #{{{ @func insertMentions
 /**
  * @public
+ * @param {string} srcFile
  * @param {string} content
  * @return {string}
  */
-function insertMentions(content) {
+function insertMentions(srcFile, content) {
 
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'content');
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'srcFile');
+    case 1:
+      throw setNoArgError(new Error, 'content');
+  }
+
+  if ( !isString(srcFile) ) {
+    throw setTypeError(new TypeError, 'srcFile', 'string');
   }
   if ( !isString(content) ) {
     throw setTypeError(new TypeError, 'content', 'string');
   }
 
+  if (!srcFile) {
+    throw setEmptyError(new Error, 'srcFile');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step reset-last-index
+
   PATT.AT_NAME.lastIndex = 0;
   PATT.AT_URL.lastIndex = 0;
 
-  content = content.replace(PATT.AT_NAME, insertName);
-  content = content.replace(PATT.AT_URL, insertUrl);
+  /// #}}} @step reset-last-index
+
+  /// #{{{ @step insert-each-mention
+
+  content = content.replace(PATT.AT_NAME, function _insertName(tag, ref) {
+    return insertName(srcFile, tag, ref);
+  });
+  content = content.replace(PATT.AT_URL, function _insertUrl(tag, ref) {
+    return insertUrl(srcFile, tag, ref);
+  });
+
+  /// #}}} @step insert-each-mention
+
+  /// #{{{ @step return-result
 
   return content;
+
+  /// #}}} @step return-result
 }
 /// #}}} @func insertMentions
 
 /// #{{{ @func insertName
 /**
  * @private
+ * @param {string} file
  * @param {string} tag
  * @param {string} ref
  * @return {string}
  */
-function insertName(tag, ref) {
+function insertName(file, tag, ref) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {string} */
   var method;
@@ -349,7 +404,36 @@ function insertName(tag, ref) {
   /** @type {string} */
   var id;
 
-  id = '';
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'file');
+    case 1:
+      throw setNoArgError(new Error, 'tag');
+    case 2:
+      throw setNoArgError(new Error, 'ref');
+  }
+
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+  if ( !isString(tag) ) {
+    throw setTypeError(new TypeError, 'tag', 'string');
+  }
+  if ( !isString(ref) ) {
+    throw setTypeError(new TypeError, 'ref', 'string');
+  }
+
+  if (!file) {
+    throw setEmptyError(new Error, 'file');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step parse-ref-id
 
   if ( PATT.HASH.test(ref) ) {
     id = ref.replace(PATT.REF, '');
@@ -357,16 +441,27 @@ function insertName(tag, ref) {
     ref = ref.replace(PATT.ID, '');
 
     if ( !PATT.VALID.test(ref) || !PATT.VALID.test(id) ) {
-      throw setRefError(new RangeError, ref + '#' + id);
+      throw setRefError(new RangeError, file, ref + '#' + id);
     }
   }
   else if ( !PATT.VALID.test(ref) ) {
-    throw setRefError(new RangeError, ref);
+    throw setRefError(new RangeError, file, ref);
+  }
+  else {
+    id = '';
   }
 
+  /// #}}} @step parse-ref-id
+
+  /// #{{{ @step verify-ref-id
+
   if ( !hasOwnEnumProperty(DATA.NAME, ref) ) {
-    throw setNoRefError(new RangeError, ref, DATA.NAME);
+    throw setNoRefError(new ReferenceError, file, ref, DATA.NAME);
   }
+
+  /// #}}} @step verify-ref-id
+
+  /// #{{{ @step make-ref-name
 
   name = DATA.NAME[ref];
 
@@ -399,25 +494,63 @@ function insertName(tag, ref) {
       ? ' return value'
       : ' ' + id.replace(/-/g, ' ');
 
+  /// #}}} @step make-ref-name
+
+  /// #{{{ @step return-ref-name
+
   return name;
+
+  /// #}}} @step return-ref-name
 }
 /// #}}} @func insertName
 
 /// #{{{ @func insertUrl
 /**
  * @private
+ * @param {string} file
  * @param {string} tag
  * @param {string} ref
  * @return {string}
  */
-function insertUrl(tag, ref) {
+function insertUrl(file, tag, ref) {
+
+  /// #{{{ @step declare-variables
 
   /** @type {string} */
   var url;
   /** @type {string} */
   var id;
 
-  id = '';
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'file');
+    case 1:
+      throw setNoArgError(new Error, 'tag');
+    case 2:
+      throw setNoArgError(new Error, 'ref');
+  }
+
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+  if ( !isString(tag) ) {
+    throw setTypeError(new TypeError, 'tag', 'string');
+  }
+  if ( !isString(ref) ) {
+    throw setTypeError(new TypeError, 'ref', 'string');
+  }
+
+  if (!file) {
+    throw setEmptyError(new Error, 'file');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step parse-ref-id
 
   if ( PATT.HASH.test(ref) ) {
     id = ref.replace(PATT.REF, '');
@@ -425,16 +558,27 @@ function insertUrl(tag, ref) {
     ref = ref.replace(PATT.ID, '');
 
     if ( !PATT.VALID.test(ref) || !PATT.VALID.test(id) ) {
-      throw setRefError(new RangeError, ref + '#' + id);
+      throw setRefError(new RangeError, file, ref + '#' + id);
     }
   }
   else if ( !PATT.VALID.test(ref) ) {
-    throw setRefError(new RangeError, ref);
+    throw setRefError(new RangeError, file, ref);
+  }
+  else {
+    id = '';
   }
 
+  /// #}}} @step parse-ref-id
+
+  /// #{{{ @step verify-ref-id
+
   if ( !hasOwnEnumProperty(DATA.URL, ref) ) {
-    throw setNoRefError(new RangeError, ref, DATA.URL);
+    throw setNoRefError(new ReferenceError, file, ref, DATA.URL);
   }
+
+  /// #}}} @step verify-ref-id
+
+  /// #{{{ @step make-ref-url
 
   url = DATA.URL[ref];
 
@@ -442,7 +586,13 @@ function insertUrl(tag, ref) {
     url += '#user-content-' + id;
   }
 
+  /// #}}} @step make-ref-url
+
+  /// #{{{ @step return-ref-url
+
   return url;
+
+  /// #}}} @step return-ref-url
 }
 /// #}}} @func insertUrl
 

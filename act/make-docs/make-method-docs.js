@@ -680,6 +680,7 @@ var insertDocRefs = loadHelper('insert-doc-refs');
 /// #{{{ @func insertMentions
 /**
  * @private
+ * @param {string} srcFile
  * @param {string} content
  * @return {string}
  */
@@ -954,7 +955,7 @@ function makeMethodDocs(srcFile, destFile, content) {
 
   /// #{{{ @step insert-mentions
 
-  result = insertMentions(result);
+  result = insertMentions(srcFile, result);
 
   /// #}}} @step insert-mentions
 
