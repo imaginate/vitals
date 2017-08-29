@@ -53,6 +53,8 @@ var PATT = {
     DETAILS_OPEN: /^[ \t]*\*\/[ \t]*$/,
     EMPTY: /^[ \t]+\*[ \t]{0,2}$/,
     METHOD: /^[ \t]*\/\/\/[ \t]+@method[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
+    PARAM: /^@param(?:eter)?[ \t]+\{(.+?)\}[ \t]+([a-zA-Z_\.\$]+)(?:[ \t]*=[ \t]*`.+?`)?[ \t]*$/,
+    PARAM_DFLT: /^@param(?:eter)?[ \t]+\{.+?\}[ \t]+[a-zA-Z_\.\$]+[ \t]*=[ \t]*`(.+?)`[ \t]*$/,
     PARAM_LINE: /^[ \t]+\*[ \t]/,
     PARAM_TAG: /^[ \t]+\*[ \t]@param(?:eter)?[ \t]/,
     RETURN_LINE: /^[ \t]+\*[ \t]/,
@@ -88,6 +90,86 @@ var PATT = {
  */
 var setError = loadHelper('set-error');
 /// #}}} @func setError
+
+/// #{{{ @func setDetailsError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} method
+ * @param {!Array<string>} details
+ * @param {number} index
+ * @return {!Error}
+ */
+function setDetailsError(err, method, details, index) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'method');
+    case 2:
+      throw setNoArgError(new Error, 'details');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(details) || !isStringList(details) ) {
+    throw setTypeError(new TypeError, 'details', '!Array<string>');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid documentation line for `' + method + '`\n'
+    + '    code-snippet:';
+
+  forEachProperty(details, function appendDetailToMsg(line, i) {
+    line = !!line
+      ? line.replace(/`/g, '\\`')
+      : ' ';
+    msg += '\n    ';
+    msg += i === index
+      ? '-->'
+      : '   ';
+    msg += ' `' + line + '`';
+  });
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setDetailsError
 
 /// #{{{ @func setDirError
 /**
@@ -235,7 +317,7 @@ function setNoCloseError(err, file, content, linenum) {
   }
   while (i < end) {
     line = lines[i] || ' ';
-    line.replace(/`/g, '\\`');
+    line = line.replace(/`/g, '\\`');
     linenum = ++i;
     msg += '\n    ';
     msg += LINENUM === linenum
@@ -375,7 +457,7 @@ function setNoDetailsError(err, file, content, method, open, close) {
   }
   while (i < end) {
     line = lines[i] || ' ';
-    line.replace(/`/g, '\\`');
+    line = line.replace(/`/g, '\\`');
     linenum = ++i;
     msg += '\n    ';
     msg += OPEN === linenum || CLOSE === linenum
@@ -482,7 +564,7 @@ function setNoMethodError(err, file, content, linenum) {
   }
   while (i < end) {
     line = lines[i] || ' ';
-    line.replace(/`/g, '\\`');
+    line = line.replace(/`/g, '\\`');
     linenum = ++i;
     msg += '\n    ';
     msg += LINENUM === linenum
@@ -508,6 +590,100 @@ function setNoMethodError(err, file, content, linenum) {
   /// #}}} @step return-error
 }
 /// #}}} @func setNoMethodError
+
+/// #{{{ @func setParamError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} method
+ * @param {!Array<string>} lines
+ * @return {!RangeError}
+ */
+function setParamError(err, method, lines) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'method');
+    case 2:
+      throw setNoArgError(new Error, 'lines');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(lines) || !isStringList(lines) ) {
+    throw setTypeError(new TypeError, 'lines', '!Array<string>');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @const PRE
+  /**
+   * @private
+   * @const {string}
+   */
+  var PRE = '^[ \\t]+\\*[ \\t]';
+  /// #}}} @const PRE
+
+  /// #{{{ @const PATT
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '@param(eter)?[ \\t]+\\{.+?\\}[ \\t]+'
+    + '[a-zA-Z_\\.\\$]+([ \\t]*=[ \\t]*`.+?`)?[ \\t]*$';
+  /// #}}} @const PATT
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid parameter documentation for `' + method + '`\n'
+    + '    full-valid-line-pattern: `/' + PRE + PATT + '/`\n'
+    + '    trimmed-valid-pattern: `/' + PATT + '/`\n'
+    + '    trimmed-invalid-line: `"' + (lines[0] || '') + '"`\n'
+    + '    trimmed-code-snippet:';
+
+  forEachProperty(lines, function appendLineToMsg(line, i) {
+    line = !!line
+      ? line.replace(/`/g, '\\`')
+      : ' ';
+    msg += '\n    ';
+    msg += i === 0
+      ? '-->'
+      : '   ';
+    msg += ' `' + line + '`';
+  });
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setParamError
 
 /// #{{{ @func setTypeError
 /**
@@ -604,6 +780,15 @@ var isStringList = IS.stringList;
  */
 var isUndefined = IS.void;
 /// #}}} @func isUndefined
+
+/// #{{{ @func isWholeNumber
+/**
+ * @private
+ * @param {number} val
+ * @return {boolean}
+ */
+var isWholeNumber = IS.wholeNumber;
+/// #}}} @func isWholeNumber
 
 /// #}}} @group IS
 
@@ -960,7 +1145,9 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
       line = details[i].replace(PATT.BODY.DESC_LINE, '');
       lines.push(line);
     }
-    part = parseToGithubMarkdown(lines);
+    part = parseToHtml(lines, {
+      'github': true
+    });
   }
   result = insertTag(result, 'intro', part);
 
@@ -1007,6 +1194,10 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
     ++i;
   }
 
+  if (i < len) {
+    throw setDetailsError(new Error, method, details, i);
+  }
+
   result = insertTag(result, 'method', method);
   result = insertTag(result, 'super', superMethod);
 
@@ -1015,14 +1206,6 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
 
   /// #}}} @step build-body-detail
 
-  /// #{{{ @step verify-lines-visited
-
-  if (i < len) {
-    throw setBodyDetailsError(new Error, 'method');
-  }
-
-  /// #}}} @step verify-lines-visited
-
   /// #{{{ @step return-body-detail
 
   return result;
@@ -1030,6 +1213,121 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
   /// #}}} @step return-body-detail
 }
 /// #}}} @func makeMethodBodyDetail
+
+/// #{{{ @func makeMethodBodyDetailParam
+/**
+ * @private
+ * @param {string} section
+ * @param {string} superMethod
+ * @param {string} method
+ * @param {!Array<string>} lines
+ * @param {number} index
+ * @return {string}
+ */
+function makeMethodBodyDetailParam(section, superMethod, method, lines, index) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var result;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var part;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'section');
+    case 1:
+      throw setNoArgError(new Error, 'superMethod');
+    case 2:
+      throw setNoArgError(new Error, 'method');
+    case 3:
+      throw setNoArgError(new Error, 'lines');
+    case 4:
+      throw setNoArgError(new Error, 'index');
+  }
+
+  if ( !isString(section) ) {
+    throw setTypeError(new TypeError, 'section', 'string');
+  }
+  if ( !isString(superMethod) ) {
+    throw setTypeError(new TypeError, 'superMethod', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(lines) || !isStringList(lines) ) {
+    throw setTypeError(new TypeError, 'lines', '!Array<string>');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+
+  if (!section) {
+    throw setEmptyError(new Error, 'section');
+  }
+  if (!superMethod) {
+    throw setEmptyError(new Error, 'superMethod');
+  }
+  if (!method) {
+    throw setEmptyError(new Error, 'method');
+  }
+
+  if ( !lines.length || !PATT.BODY.PARAM.test(lines[0]) ) {
+    throw setParamError(new RangeError, method, lines);
+  }
+
+  if ( !isWholeNumber(index) || index < 0 ) {
+    throw setIndexError(new RangeError, 'index', index, 0);
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step build-body-detail-parameter
+
+  result = TMPL.BODY.PARAM;
+
+  part = index > 0
+    ? String(index)
+    : '';
+  result = insertTag(result, 'index', part);
+
+  line = lines[0];
+
+  part = line.replace(PATT.BODY.PARAM, '$1');
+  result = insertTag(result, 'type', part);
+
+  part = line.replace(PATT.BODY.PARAM, '$2');
+  result = insertTag(result, 'param', part);
+
+  part = part.replace(/\./g, '-');
+  result = insertTag(result, 'param-id', part);
+
+  part = PATT.BODY.PARAM_DFLT.test(line)
+    ? line.replace(PATT.BODY.PARAM_DFLT, '$1')
+    : '';
+  result = insertTag(result, 'dflt', part);
+
+  lines.shift();
+  part = parseToHtml(lines, {
+    'github': true
+  });
+  result = insertTag(result, 'desc', part);
+
+  /// #}}} @step build-body-detail-parameter
+
+  /// #{{{ @step return-body-detail-parameter
+
+  return result;
+
+  /// #}}} @step return-body-detail-parameter
+}
+/// #}}} @func makeMethodBodyDetailParam
 
 /// #{{{ @func makeMethodDocs
 /**
