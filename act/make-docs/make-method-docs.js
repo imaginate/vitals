@@ -646,7 +646,7 @@ var trimPathName = loadHelper('trim-path-name');
 
 /// #}}} @group PATH
 
-/// #{{{ @group TEMPLATE
+/// #{{{ @group SPECIAL
 
 /// #{{{ @func getMethodId
 /**
@@ -697,7 +697,7 @@ var insertMentions = loadHelper('insert-mentions');
 var insertTag = loadHelper('insert-tag');
 /// #}}} @func insertTag
 
-/// #}}} @group TEMPLATE
+/// #}}} @group SPECIAL
 
 /// #}}} @group HELPERS
 
