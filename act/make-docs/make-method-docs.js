@@ -660,6 +660,8 @@ var getMethodId = loadHelper('get-method-id');
 /// #{{{ @func getTemplate
 /**
  * @private
+ * @param {string} template
+ * @return {string}
  */
 var getTemplate = loadHelper('get-template');
 /// #}}} @func getTemplate
