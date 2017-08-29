@@ -37,7 +37,7 @@ Temporary Items/
 build/
 coverage/
 devel/
-./docs/
+docs/
 lib-cov/
 log/
 logs/
@@ -46,6 +46,8 @@ pids/
 temp/
 tmp/
 www/
+
+!docs/src/
 
 Desktop.ini
 
