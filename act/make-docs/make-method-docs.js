@@ -47,9 +47,16 @@ var IS = loadHelper('is');
 var PATT = {
   BODY: {
     ALIAS: /^[ \t]*\/\/\/[ \t]+@alias[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
+    DESC_LINE: /^[ \t]+\*[ \t]{3}/,
+    DESC_TAG: /^[ \t]+\*[ \t]@desc(?:ription)?[ \t]*$/,
     DETAILS_CLOSE: /^[ \t]*\/\*\*[ \t]*$/,
     DETAILS_OPEN: /^[ \t]*\*\/[ \t]*$/,
+    EMPTY: /^[ \t]+\*[ \t]{0,2}$/,
     METHOD: /^[ \t]*\/\/\/[ \t]+@method[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
+    PARAM_LINE: /^[ \t]+\*[ \t]/,
+    PARAM_TAG: /^[ \t]+\*[ \t]@param(?:eter)?[ \t]/,
+    RETURN_LINE: /^[ \t]+\*[ \t]/,
+    RETURN_TAG: /^[ \t]+\*[ \t]@returns?[ \t]/,
     SECTION: /^[ \t]*\/\/\/[ \t]+@section[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/
   },
   DOCS: {
@@ -865,6 +872,164 @@ function makeMethodBody(srcFile, content, superMethod) {
   /// #}}} @step return-body
 }
 /// #}}} @func makeMethodBody
+
+/// #{{{ @func makeMethodBodyDetail
+/**
+ * @private
+ * @param {string} section
+ * @param {string} superMethod
+ * @param {string} method
+ * @param {!Array<string>} aliases
+ * @param {!Array<string>} details
+ * @return {string}
+ */
+function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var result;
+  /** @type {number} */
+  var param;
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var part;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'section');
+    case 1:
+      throw setNoArgError(new Error, 'superMethod');
+    case 2:
+      throw setNoArgError(new Error, 'method');
+    case 3:
+      throw setNoArgError(new Error, 'aliases');
+    case 4:
+      throw setNoArgError(new Error, 'details');
+  }
+
+  if ( !isString(section) ) {
+    throw setTypeError(new TypeError, 'section', 'string');
+  }
+  if ( !isString(superMethod) ) {
+    throw setTypeError(new TypeError, 'superMethod', 'string');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if ( !isArray(aliases) || !isStringList(aliases) ) {
+    throw setTypeError(new TypeError, 'aliases', '!Array<string>');
+  }
+  if ( !isArray(details) || !isStringList(details) ) {
+    throw setTypeError(new TypeError, 'details', '!Array<string>');
+  }
+
+  if (!section) {
+    throw setEmptyError(new Error, 'section');
+  }
+  if (!superMethod) {
+    throw setEmptyError(new Error, 'superMethod');
+  }
+  if (!method) {
+    throw setEmptyError(new Error, 'method');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step build-body-detail
+
+  result = TMPL.BODY.MAIN;
+  len = details.length;
+  i = 0;
+
+  part = '';
+  if ( PATT.BODY.DESC_TAG.test(details[i]) ) {
+    lines = [];
+    while ( ++i < len && PATT.BODY.DESC_LINE.test(details[i]) ) {
+      line = details[i].replace(PATT.BODY.DESC_LINE, '');
+      lines.push(line);
+    }
+    part = parseToGithubMarkdown(lines);
+  }
+  result = insertTag(result, 'intro', part);
+
+  while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
+    ++i;
+  }
+
+  part = '';
+  param = 0;
+  while ( i < len && PATT.BODY.PARAM_TAG.test(details[i]) ) {
+    lines = [];
+    line = details[i].replace(PATT.BODY.PARAM_LINE, '');
+    lines.push(line);
+    while ( ++i < len && PATT.BODY.DESC_LINE.test(details[i]) ) {
+      line = details[i].replace(PATT.BODY.DESC_LINE, '');
+      lines.push(line);
+    }
+    while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
+      ++i;
+    }
+    part += makeMethodBodyDetailParam(section, superMethod, method, lines,
+      ++param);
+  }
+  result = insertTag(result, 'params', part);
+
+  while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
+    ++i;
+  }
+
+  part = '';
+  if ( i < len && PATT.BODY.RETURN_TAG.test(details[i]) ) {
+    lines = [];
+    line = details[i].replace(PATT.BODY.RETURN_LINE, '');
+    lines.push(line);
+    while ( ++i < len && PATT.BODY.DESC_LINE.test(details[i]) ) {
+      line = details[i].replace(PATT.BODY.DESC_LINE, '');
+      lines.push(line);
+    }
+    part = makeMethodBodyDetailReturn(section, superMethod, method, lines);
+  }
+  result = insertTag(result, 'returns', part);
+
+  while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
+    ++i;
+  }
+
+  result = insertTag(result, 'method', method);
+  result = insertTag(result, 'super', superMethod);
+
+  part = getMethodId(method);
+  result = insertTag(result, 'id', part);
+
+  /// #}}} @step build-body-detail
+
+  /// #{{{ @step verify-lines-visited
+
+  if (i < len) {
+    throw setBodyDetailsError(new Error, 'method');
+  }
+
+  /// #}}} @step verify-lines-visited
+
+  /// #{{{ @step return-body-detail
+
+  return result;
+
+  /// #}}} @step return-body-detail
+}
+/// #}}} @func makeMethodBodyDetail
 
 /// #{{{ @func makeMethodDocs
 /**
