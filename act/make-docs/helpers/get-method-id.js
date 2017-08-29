@@ -38,13 +38,21 @@ var loadTaskHelper = require('./load-task-helper.js');
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
-/// #{{{ @const MAIN
+/// #{{{ @const SUPER
 /**
  * @private
  * @const {!RegExp}
  */
-var MAIN = /^[a-zA-Z0-9_]+\./;
-/// #}}} @const MAIN
+var SUPER = /^[a-zA-Z0-9_]+\./;
+/// #}}} @const SUPER
+
+/// #{{{ @const VITALS
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var VITALS = /^vitals\./i;
+/// #}}} @const VITALS
 
 /// #}}} @group CONSTANTS
 
@@ -132,18 +140,22 @@ function getMethodId(method) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'method');
   }
+
   if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', 'string');
   }
+
+  method = method.replace(VITALS, '');
+
   if (!method) {
     throw setEmptyError(new Error, 'method');
   }
 
-  if ( !MAIN.test(method) ) {
+  if ( !SUPER.test(method) ) {
     return 'main';
   }
 
-  id = method.replace(MAIN, '');
+  id = method.replace(SUPER, '');
   return id.replace(/\./g, '-');
 }
 /// #}}} @func getMethodID
