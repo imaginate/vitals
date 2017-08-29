@@ -149,7 +149,7 @@ function setNoRefError(err, id, data) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'undefined reference id in documentation`\n'
+  msg = 'undefined reference id in documentation\n'
     + '    invalid-ref-id: `"' + id + '"`\n'
     + '    valid-ref-ids:\n'
     + '        `"' + getKeys(data).join('"`\n        `"') + '"`';
@@ -208,7 +208,7 @@ function setRefError(err, id) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'invalid reference id in documentation`\n'
+  msg = 'invalid reference id in documentation\n'
     + '    invalid-ref-id: `"' + id + '"`\n'
     + '    valid-pattern: `/^[a-zA-Z0-9_$][a-zA-Z0-9_-$]*$/`';
 
