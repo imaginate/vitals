@@ -479,13 +479,22 @@ function getBlockId(line) {
 }
 /// #}}} @func getBlockId
 
+/// #{{{ @func newIsIndented
+/**
+ * @private
+ * @param {number=} count = `2`
+ * @return {!function(string, number=): boolean}
+ */
+var newIsIndented = require('./is-indented.js').create;
+/// #}}} @func newIsIndented
+
 /// #{{{ @func newMakeIndent
 /**
  * @private
- * @param {number=} count
+ * @param {number=} count = `2`
  * @return {!function(number): string}
  */
-var newMakeIndent = require('./make-indent.js').construct;
+var newMakeIndent = require('./make-indent.js').create;
 /// #}}} @func newMakeIndent
 
 /// #}}} @group SPECIAL
@@ -650,6 +659,14 @@ function Html(lines, opts) {
   var INDENT = OPTS['indent'];
   /// #}}} @const INDENT
 
+  /// #{{{ @const isIndented
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isIndented = newIsIndented(INDENT);
+  /// #}}} @const isIndented
+
   /// #{{{ @const makeIndent
   /**
    * @private
@@ -771,6 +788,16 @@ function Html(lines, opts) {
    */
   setProperty(this, 'index', 0, true);
   /// #}}} @member index
+
+  /// #{{{ @member isIndented
+  /**
+   * @private
+   * @param {string} line
+   * @param {number=} depth = `0`
+   * @return {boolean}
+   */
+  setConstantProperty(this, 'isIndented', isIndented);
+  /// #}}} @member isIndented
 
   /// #{{{ @member makeIndent
   /**
@@ -1019,6 +1046,14 @@ function Block(parent) {
   var ID = getBlockId(ROOT.LINES[INDEX]);
   /// #}}} @const ID
 
+  /// #{{{ @const isIndented
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isIndented = ROOT.isIndented;
+  /// #}}} @const isIndented
+
   /// #{{{ @const makeIndent
   /**
    * @private
@@ -1131,6 +1166,16 @@ function Block(parent) {
    */
   setConstantProperty(this, 'ROOT', ROOT);
   /// #}}} @member ROOT
+
+  /// #{{{ @member isIndented
+  /**
+   * @private
+   * @param {string} line
+   * @param {number=} depth = `0`
+   * @return {boolean}
+   */
+  setConstantProperty(this, 'isIndented', isIndented);
+  /// #}}} @member isIndented
 
   /// #{{{ @member makeIndent
   /**
@@ -1796,6 +1841,14 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
     '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '[0-9]+\\) ');
   /// #}}} @const PATTERN
 
+  /// #{{{ @const isIndented
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isIndented = $ROOT.isIndented;
+  /// #}}} @const isIndented
+
   /// #}}} @step set-constants
 
   /// #{{{ @step set-lines-in-scope
@@ -2206,6 +2259,14 @@ function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
   var PATTERN = new RegExp(
     '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '- ');
   /// #}}} @const PATTERN
+
+  /// #{{{ @const isIndented
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isIndented = $ROOT.isIndented;
+  /// #}}} @const isIndented
 
   /// #}}} @step set-constants
 
