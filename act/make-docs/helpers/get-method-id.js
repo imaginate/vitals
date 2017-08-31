@@ -158,7 +158,7 @@ function getMethodId(method) {
   id = method.replace(SUPER, '');
   return id.replace(/\./g, '-');
 }
-/// #}}} @func getMethodID
+/// #}}} @func getMethodId
 
 /// #}}} @group METHODS
 
