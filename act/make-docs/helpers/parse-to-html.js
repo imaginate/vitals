@@ -45,7 +45,6 @@ var IS = loadTaskHelper('is');
  * @struct
  */
 var PATT = {
-  EMPTY: /^ *$/,
   INDENT: {
     GET: /^( *).*$/,
     HAS: /^ +/
@@ -253,6 +252,15 @@ var hasOwnProperty = loadTaskHelper('has-own-property');
  */
 var isArray = IS.array;
 /// #}}} @func isArray
+
+/// #{{{ @func isBlankLine
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+var isBlankLine = require('./is-blank-line.js');
+/// #}}} @func isBlankLine
 
 /// #{{{ @func isBoolean
 /**
@@ -860,7 +868,7 @@ function parseHtml() {
     i = elem.END;
     elems.push(elem);
     result += elem.RESULT;
-    while ( i < len && PATT.EMPTY.test(lines[i]) ) {
+    while ( i < len && isBlankLine(lines[i]) ) {
       ++i;
     }
     this.index = i;
@@ -1212,7 +1220,7 @@ function parseBlock() {
   /// #{{{ @step update-root-index
 
   i = this.END;
-  while ( i < LEN && PATT.EMPTY.test(LINES[i]) ) {
+  while ( i < LEN && isBlankLine(LINES[i]) ) {
     ++i;
   }
   ROOT.index = i;
