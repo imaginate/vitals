@@ -142,6 +142,20 @@ var isWholeNumber = IS.wholeNumber;
 
 /// #}}} @group IS
 
+/// #{{{ @group OBJECT
+
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadTaskHelper('freeze-object');
+/// #}}} @func freezeObject
+
+/// #}}} @group OBJECT
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -181,7 +195,7 @@ function makeIndentMacro(count) {
 /// #{{{ @func newMakeIndent
 /**
  * @public
- * @param {number=} count
+ * @param {number=} count = `2`
  * @return {!function(number): string}
  */
 function newMakeIndent(count) {
@@ -246,9 +260,17 @@ function newMakeIndent(count) {
   /// #{{{ @step append-make-indent-properties
 
   makeIndent.construct = newMakeIndent;
+  makeIndent.create = newMakeIndent;
+  makeIndent.INDENT_COUNT = count;
   makeIndent.COUNT = count;
 
   /// #}}} @step append-make-indent-properties
+
+  /// #{{{ @step freeze-make-indent
+
+  freezeObject(makeIndent);
+
+  /// #}}} @step freeze-make-indent
 
   /// #{{{ @step return-make-indent
 
