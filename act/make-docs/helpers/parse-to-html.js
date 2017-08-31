@@ -63,12 +63,12 @@ var PATT = {
 };
 /// #}}} @const PATT
 
-/// #{{{ @const ELEM
+/// #{{{ @const BLK_ELEMS
 /**
  * @private
  * @const {!Object<string, !Object<string, (string|!function)>>}
  */
-var ELEM = {
+var BLK_ELEMS = {
   'h': {
     ID: 'h',
     parse: parseHBlock,
@@ -112,27 +112,23 @@ var ELEM = {
     test: testUlBlock
   }
 };
-/// #}}} @const ELEM
+/// #}}} @const BLK_ELEMS
 
-/// #{{{ @const ELEM_TESTS
+/// #{{{ @const BLK_ELEM_TESTS
 /**
  * @private
- * @const {!Object<string, !Array<!Object<string, (string|!function)>>>}
+ * @const {!Array<!Object<string, (string|!function)>>}
  */
-var ELEM_TESTS = {
-  BLOCK: [
-    ELEM.h,
-    ELEM.ul,
-    ELEM.ol,
-    ELEM.hr,
-    ELEM.pre,
-    ELEM.quote,
-    ELEM.p
-  ],
-  INLINE: [
-  ]
-};
-/// #}}} @const ELEM_TESTS
+var BLK_ELEM_TESTS = [
+  BLK_ELEMS.h,
+  BLK_ELEMS.ul,
+  BLK_ELEMS.ol,
+  BLK_ELEMS.hr,
+  BLK_ELEMS.pre,
+  BLK_ELEMS.quote,
+  BLK_ELEMS.p
+];
+/// #}}} @const BLK_ELEM_TESTS
 
 /// #}}} @group CONSTANTS
 
@@ -472,7 +468,7 @@ function getBlockId(line) {
 
   /// #{{{ @step get-block-element-id
 
-  testEachProperty(ELEM_TESTS.BLOCK, function _getBlockId(elem) {
+  testEachProperty(BLK_ELEM_TESTS, function _getBlockId(elem) {
     if ( elem.test(line) ) {
       id = elem.ID;
       return true;
@@ -534,7 +530,8 @@ var newMakeIndent = require('./make-indent.js').create;
  */
 var DFLTS = freezeObject({
   'depth': 0,
-  'github': false
+  'github': false,
+  'indent': 2
 });
 /// #}}} @const DFLTS
 
@@ -552,6 +549,9 @@ var DFLTS = freezeObject({
  * @private
  * @param {!Array<string>} lines
  * @param {!Object} opts
+ * @param {number} opts.indent
+ * @param {number} opts.depth
+ * @param {boolean} opts.github
  * @constructor
  * @struct
  */
@@ -858,6 +858,9 @@ function Html(lines, opts) {
  * @private
  * @param {!Array<string>} lines
  * @param {!Object} opts
+ * @param {number} opts.indent
+ * @param {number} opts.depth
+ * @param {boolean} opts.github
  * @return {!Html}
  */
 function newHtml(lines, opts) {
@@ -983,6 +986,7 @@ function parseHtml() {
 /// #{{{ @step setup-html-constructor
 
 Html.Html = Html;
+Html.create = newHtml;
 Html.newHtml = newHtml;
 Html.construct = newHtml;
 Html.prototype = createObject(null);
@@ -1353,7 +1357,7 @@ function parseBlock() {
 
   /// #{{{ @step run-correct-parse
 
-  result = ELEM[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
+  result = BLK_ELEMS[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
     this.LEN, this.DEPTH);
 
   /// #}}} @step run-correct-parse
@@ -1386,66 +1390,39 @@ function parseBlock() {
  */
 function scopeBlock() {
 
-  /// #{{{ @step set-constants
+  /// #{{{ @step setup-element-scope
 
-  /// #{{{ @const ROOT
-  /**
-   * @private
-   * @const {!Html}
-   */
-  var ROOT = this.ROOT;
-  /// #}}} @const ROOT
+  BLK_ELEMS[this.ID].scope(this.ROOT, this, this.INDEX, this.DEPTH);
 
-  /// #{{{ @const LEN
-  /**
-   * @private
-   * @const {number}
-   */
-  var LEN = ROOT.LEN;
-  /// #}}} @const LEN
+  /// #}}} @step setup-element-scope
 
-  /// #{{{ @const LINES
-  /**
-   * @private
-   * @const {!Array<string>}
-   */
-  var LINES = ROOT.LINES;
-  /// #}}} @const LINES
-
-  /// #}}} @step set-constants
-
-  /// #{{{ @step run-correct-scope
-
-  ELEM[this.ID].scope(ROOT, LINES, LEN, this.INDEX, this.DEPTH, this,
-    this.LINES);
-
-  /// #}}} @step run-correct-scope
-
-  /// #{{{ @step freeze-lines
+  /// #{{{ @step freeze-scoped-lines
 
   freezeObject(this.LINES);
 
-  /// #}}} @step freeze-lines
+  /// #}}} @step freeze-scoped-lines
 
-  /// #{{{ @step save-end
+  /// #{{{ @step save-index-end-values
 
   setConstantProperty(this, 'LEN', this.LINES.length);
   setConstantProperty(this, 'END', this.INDEX + this.LEN);
   setConstantProperty(this, 'LAST', this.END - 1);
 
-  /// #}}} @step save-end
+  /// #}}} @step save-index-end-values
 
-  /// #{{{ @step return-instance
+  /// #{{{ @step return-block-instance
 
   return this;
 
-  /// #}}} @step return-instance
+  /// #}}} @step return-block-instance
 }
 /// #}}} @func Block.prototype.scope
 
 /// #{{{ @step setup-block-constructor
 
 Block.Block = Block;
+Block.ELEMS = BLK_ELEMS;
+Block.create = newBlock;
 Block.newBlock = newBlock;
 Block.construct = newBlock;
 Block.prototype = createObject(null);
@@ -1478,8 +1455,8 @@ freezeObject(Block.prototype);
  * @public
  * @param {!Array<string>} lines
  * @param {?Object=} opts
- * @param {number=} opts.depth = `0`
  * @param {number=} opts.indent = `2`
+ * @param {number=} opts.depth = `0`
  * @param {boolean=} opts.github = `false`
  * @return {string}
  */
@@ -1584,8 +1561,6 @@ function parseToHtml(lines, opts) {
  */
 function parse__Block(BLK, ELEMS, ROOT, LINES, LEN, INDEX, DEPTH) {
 
-  result = ELEM[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
-    this.LEN, this.DEPTH);
   /// #{{{ @step declare-variables
 
   /** @type {string} */
@@ -1677,16 +1652,13 @@ function parse__Block(BLK, ELEMS, ROOT, LINES, LEN, INDEX, DEPTH) {
 /// #{{{ @func scopeHBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopeHBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopeHBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -1699,55 +1671,36 @@ function scopeHBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  ++index;
-
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -1760,16 +1713,13 @@ function scopeHBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopeHrBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopeHrBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopeHrBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -1782,55 +1732,36 @@ function scopeHrBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  ++index;
-
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -1843,16 +1774,13 @@ function scopeHrBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopeOlBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopeOlBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -1865,42 +1793,25 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
@@ -1913,7 +1824,7 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @private
    * @const {number}
    */
-  var DEPTH = ++depth;
+  var DEPTH = depth + 1;
   /// #}}} @const DEPTH
 
   /// #{{{ @const PATTERN
@@ -1922,7 +1833,7 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @const {!RegExp}
    */
   var PATTERN = new RegExp(
-    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '[0-9]+\\) ');
+    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '[0-9]+\\) ');
   /// #}}} @const PATTERN
 
   /// #{{{ @const isIndented
@@ -1930,27 +1841,27 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isIndented = $ROOT.isIndented;
+  var isIndented = ROOT.isIndented;
   /// #}}} @const isIndented
 
   /// #}}} @step set-constants
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  while (++index < $LEN) {
-    line = $LINES[index];
+  while (++index < ROOT.LEN) {
+    line = ROOT.LINES[index];
     if ( isIndented(line, DEPTH) || PATTERN.test(line) ) {
-      LINES.push(line);
+      BLK.LINES.push(line);
     }
     else {
       break;
     }
   }
 
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -1963,16 +1874,13 @@ function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopePBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopePBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopePBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -1985,63 +1893,46 @@ function scopePBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  while (++index < $LEN) {
-    line = $LINES[index];
+  while (++index < ROOT.LEN) {
+    line = ROOT.LINES[index];
     if ( isEmptyLine(line, depth) || getBlockId(line) !== 'p' ) {
       break;
     }
     else {
-      LINES.push(line);
+      BLK.LINES.push(line);
     }
   }
 
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -2054,16 +1945,13 @@ function scopePBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopePreBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopePreBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopePreBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -2076,42 +1964,25 @@ function scopePreBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
@@ -2125,27 +1996,27 @@ function scopePreBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @const {!RegExp}
    */
   var PATTERN = new RegExp(
-    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '```');
+    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '```');
   /// #}}} @const PATTERN
 
   /// #}}} @step set-constants
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  while (++index < $LEN) {
-    line = $LINES[index];
+  while (++index < ROOT.LEN) {
+    line = ROOT.LINES[index];
     if ( PATTERN.test(line) ) {
       break;
     }
     else {
-      LINES.push(line);
+      BLK.LINES.push(line);
     }
   }
 
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -2158,16 +2029,13 @@ function scopePreBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopeQuoteBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopeQuoteBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopeQuoteBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -2180,42 +2048,25 @@ function scopeQuoteBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
@@ -2229,27 +2080,27 @@ function scopeQuoteBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @const {!RegExp}
    */
   var PATTERN = new RegExp(
-    '^' + $LINES[index].replace(PATT.SCOPE.QUOTE, '$1'));
+    '^' + ROOT.LINES[index].replace(PATT.SCOPE.QUOTE, '$1'));
   /// #}}} @const PATTERN
 
   /// #}}} @step set-constants
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  while (++index < $LEN) {
-    line = $LINES[index];
+  while (++index < ROOT.LEN) {
+    line = ROOT.LINES[index];
     if ( PATTERN.test(line) ) {
-      LINES.push(line);
+      BLK.LINES.push(line);
     }
     else {
       break;
     }
   }
 
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
@@ -2262,16 +2113,13 @@ function scopeQuoteBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 /// #{{{ @func scopeUlBlock
 /**
  * @private
- * @param {!Html} $ROOT
- * @param {!Array<string>} $LINES
- * @param {number} $LEN
+ * @param {!Html} ROOT
+ * @param {!Block} BLK
  * @param {number} index
  * @param {number} depth
- * @param {!Block} BLK
- * @param {!Array<string>} LINES
  * @return {!Block}
  */
-function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+function scopeUlBlock(ROOT, BLK, index, depth) {
 
   /// #{{{ @step declare-variables
 
@@ -2284,42 +2132,25 @@ function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
 
   switch (arguments.length) {
     case 0:
-      throw setNoArgError(new Error, '$ROOT');
+      throw setNoArgError(new Error, 'ROOT');
     case 1:
-      throw setNoArgError(new Error, '$LINES');
-    case 2:
-      throw setNoArgError(new Error, '$LEN');
-    case 3:
-      throw setNoArgError(new Error, 'index');
-    case 4:
-      throw setNoArgError(new Error, 'depth');
-    case 5:
       throw setNoArgError(new Error, 'BLK');
-    case 6:
-      throw setNoArgError(new Error, 'LINES');
+    case 2:
+      throw setNoArgError(new Error, 'index');
+    case 3:
+      throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isInstanceOf($ROOT, Html) ) {
-    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
   if ( !isInstanceOf(BLK, Block) ) {
     throw setTypeError(new TypeError, 'BLK', '!Block');
   }
-
-  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
-    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
-  }
-  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
-    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
-  }
-
-  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
-    throw setTypeError(new TypeError, '$LEN', 'number');
-  }
-  if ( !isNumber(index) || BLK.INDEX !== index ) {
+  if ( !isNumber(index) ) {
     throw setTypeError(new TypeError, 'index', 'number');
   }
-  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+  if ( !isNumber(depth) ) {
     throw setTypeError(new TypeError, 'depth', 'number');
   }
 
@@ -2332,7 +2163,7 @@ function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @private
    * @const {number}
    */
-  var DEPTH = ++depth;
+  var DEPTH = depth + 1;
   /// #}}} @const DEPTH
 
   /// #{{{ @const PATTERN
@@ -2341,7 +2172,7 @@ function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @const {!RegExp}
    */
   var PATTERN = new RegExp(
-    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '- ');
+    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '- ');
   /// #}}} @const PATTERN
 
   /// #{{{ @const isIndented
@@ -2349,27 +2180,27 @@ function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isIndented = $ROOT.isIndented;
+  var isIndented = ROOT.isIndented;
   /// #}}} @const isIndented
 
   /// #}}} @step set-constants
 
-  /// #{{{ @step set-lines-in-scope
+  /// #{{{ @step save-lines-in-scope
 
-  line = $LINES[index];
-  LINES.push(line);
+  line = ROOT.LINES[index];
+  BLK.LINES.push(line);
 
-  while (++index < $LEN) {
-    line = $LINES[index];
+  while (++index < ROOT.LEN) {
+    line = ROOT.LINES[index];
     if ( isIndented(line, DEPTH) || PATTERN.test(line) ) {
-      LINES.push(line);
+      BLK.LINES.push(line);
     }
     else {
       break;
     }
   }
 
-  /// #}}} @step set-lines-in-scope
+  /// #}}} @step save-lines-in-scope
 
   /// #{{{ @step return-block-instance
 
