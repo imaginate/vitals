@@ -38,6 +38,103 @@ var loadTaskHelper = require('./load-task-helper.js');
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
+/// #{{{ @const PATT
+/**
+ * @private
+ * @const {!Object<string, (!RegExp|!Object<string, !RegExp>)>}
+ * @struct
+ */
+var PATT = {
+  EMPTY: /^ *$/,
+  INDENT: {
+    GET: /^( *).*$/,
+    HAS: /^ +/
+  },
+  SCOPE: {
+    QUOTE: /^( *>+).*$/
+  },
+  TEST: {
+    H: /^ *#{1,6} /,
+    HR: /^ *---+/,
+    OL: /^ *[0-9]+\) /,
+    PRE: /^ *```/,
+    QUOTE: /^ *>+/,
+    UL: /^ *- /
+  }
+};
+/// #}}} @const PATT
+
+/// #{{{ @const ELEM
+/**
+ * @private
+ * @const {!Object<string, !Object<string, (string|!function)>>}
+ */
+var ELEM = {
+  'h': {
+    ID: 'h',
+    parse: parseHBlock,
+    scope: scopeHBlock,
+    test: testHBlock
+  },
+  'hr': {
+    ID: 'hr',
+    parse: parseHrBlock,
+    scope: scopeHrBlock,
+    test: testHrBlock
+  },
+  'ol': {
+    ID: 'ol',
+    parse: parseOlBlock,
+    scope: scopeOlBlock,
+    test: testOlBlock
+  },
+  'p': {
+    ID: 'p',
+    parse: parsePBlock,
+    scope: scopePBlock,
+    test: testPBlock
+  },
+  'pre': {
+    ID: 'pre',
+    parse: parsePreBlock,
+    scope: scopePreBlock,
+    test: testPreBlock
+  },
+  'quote': {
+    ID: 'quote',
+    parse: parseQuoteBlock,
+    scope: scopeQuoteBlock,
+    test: testQuoteBlock
+  },
+  'ul': {
+    ID: 'ul',
+    parse: parseUlBlock,
+    scope: scopeUlBlock,
+    test: testUlBlock
+  }
+};
+/// #}}} @const ELEM
+
+/// #{{{ @const ELEM_TESTS
+/**
+ * @private
+ * @const {!Object<string, !Array<!Object<string, (string|!function)>>>}
+ */
+var ELEM_TESTS = {
+  BLOCK: [
+    ELEM.h,
+    ELEM.ul,
+    ELEM.ol,
+    ELEM.hr,
+    ELEM.pre,
+    ELEM.quote,
+    ELEM.p
+  ],
+  INLINE: [
+  ]
+};
+/// #}}} @const ELEM_TESTS
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -328,6 +425,52 @@ var setProperty = loadTaskHelper('set-property');
 
 /// #{{{ @group SPECIAL
 
+/// #{{{ @func getBlockId
+/**
+ * @private
+ * @param {string} line
+ * @return {string}
+ */
+function getBlockId(line) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var id;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step get-block-element-id
+
+  testEachProperty(ELEM_TESTS.BLOCK, function _getBlockId(elem) {
+    if ( elem.test(line) ) {
+      id = elem.ID;
+      return true;
+    }
+    return false;
+  });
+
+  /// #}}} @step get-block-element-id
+
+  /// #{{{ @step return-block-element-id
+
+  return id;
+
+  /// #}}} @step return-block-element-id
+}
+/// #}}} @func getBlockId
+
 /// #{{{ @func newMakeIndent
 /**
  * @private
@@ -427,6 +570,14 @@ function Html(lines, opts) {
 
   /// #{{{ @step set-constants
 
+  /// #{{{ @const ID
+  /**
+   * @private
+   * @const {string}
+   */
+  var ID = 'html';
+  /// #}}} @const ID
+
   /// #{{{ @const ELEMS
   /**
    * @private
@@ -450,6 +601,14 @@ function Html(lines, opts) {
    */
   var LEN = LINES.length;
   /// #}}} @const LEN
+
+  /// #{{{ @const LAST
+  /**
+   * @private
+   * @const {number}
+   */
+  var LAST = LEN - 1;
+  /// #}}} @const LAST
 
   /// #{{{ @const OPTS
   /**
@@ -502,6 +661,13 @@ function Html(lines, opts) {
   setConstantProperty(this, 'DEPTH', DEPTH);
   /// #}}} @member DEPTH
 
+  /// #{{{ @member END
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'END', LEN);
+  /// #}}} @member END
+
   /// #{{{ @member ELEMS
   /**
    * @const {!Array<(!Block|!Inline)>}
@@ -516,12 +682,33 @@ function Html(lines, opts) {
   setConstantProperty(this, 'GITHUB', GITHUB);
   /// #}}} @member GITHUB
 
+  /// #{{{ @member ID
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'ID', ID);
+  /// #}}} @member ID
+
   /// #{{{ @member INDENT
   /**
    * @const {number}
    */
   setConstantProperty(this, 'INDENT', INDENT);
   /// #}}} @member INDENT
+
+  /// #{{{ @member INDEX
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'INDEX', 0);
+  /// #}}} @member INDEX
+
+  /// #{{{ @member LAST
+  /**
+   * @const {number}
+   */
+  setConstantProperty(this, 'LAST', LAST);
+  /// #}}} @member LAST
 
   /// #{{{ @member LEN
   /**
@@ -548,7 +735,7 @@ function Html(lines, opts) {
   /**
    * @description
    *   This parameter is only defined after `Html.prototype.parse` has
-   *   completed. Note that for this member only defined means that its value
+   *   completed. Note that for only this member defined means that its value
    *   is changed from `null` to a `string`. The `result` member maintains
    *   the incomplete states.
    * @type {?string}
@@ -570,19 +757,12 @@ function Html(lines, opts) {
   setProperty(this, 'depth', DEPTH, true);
   /// #}}} @member depth
 
-  /// #{{{ @member i
+  /// #{{{ @member index
   /**
    * @type {number}
    */
-  setProperty(this, 'i', 0, true);
-  /// #}}} @member i
-
-  /// #{{{ @member result
-  /**
-   * @type {string}
-   */
-  setProperty(this, 'result', '', true);
-  /// #}}} @member result
+  setProperty(this, 'index', 0, true);
+  /// #}}} @member index
 
   /// #{{{ @member makeIndent
   /**
@@ -610,7 +790,6 @@ function Html(lines, opts) {
   /// #{{{ @step freeze-instance
 
   freezeObject(this);
-  freezeObject(this.ELEMS);
 
   /// #}}} @step freeze-instance
 }
@@ -644,56 +823,62 @@ function newHtml(lines, opts) {
 }
 /// #}}} @func newHtml
 
-/// #{{{ @func Html.prototype.__
+/// #{{{ @func Html.prototype.parse
 /**
  * @private
  * @this {!Html}
  * @return {!Html}
  */
-function __() {
+function parseHtml() {
 
   /// #{{{ @step declare-variables
 
+  /** @type {string} */
+  var result;
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {!Array<!Block>} */
+  var elems;
+  /** @type {!Block} */
+  var elem;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-parameters
+  /// #{{{ @step parse-lines
 
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, '');
-    case 1:
-      throw setNoArgError(new Error, '');
+  result = '';
+  elems = this.ELEMS;
+  lines = this.LINES;
+  len = this.LEN;
+  i = this.index;
+  while (i < len) {
+    elem = new Block(this);
+    i = elem.END;
+    elems.push(elem);
+    result += elem.RESULT;
+    while ( i < len && PATT.EMPTY.test(lines[i]) ) {
+      ++i;
+    }
+    this.index = i;
   }
 
-  if ( !isString() ) {
-    throw setTypeError(new TypeError, '', 'string');
-  }
-  if ( !isString() ) {
-    throw setTypeError(new TypeError, '', 'string');
-  }
+  /// #}}} @step parse-lines
 
-  if (!) {
-    throw setEmptyError(new Error, '');
-  }
+  /// #{{{ @step freeze-elems
 
-  /// #}}} @step verify-parameters
+  freezeObject(this.ELEMS);
 
-  /// #{{{ @step set-constants
+  /// #}}} @step freeze-elems
 
-  /// #{{{ @const 
-  /**
-   * @private
-   * @const {string}
-   */
-  /// #}}} @const 
+  /// #{{{ @step save-result
 
-  /// #}}} @step set-constants
+  setConstantProperty(this, 'RESULT', result);
 
-  /// #{{{ @step set-member-refs
-
-
-  /// #}}} @step set-member-refs
+  /// #}}} @step save-result
 
   /// #{{{ @step return-instance
 
@@ -701,7 +886,7 @@ function __() {
 
   /// #}}} @step return-instance
 }
-/// #}}} @func Html.prototype.__
+/// #}}} @func Html.prototype.parse
 
 /// #{{{ @step setup-html-constructor
 
@@ -716,7 +901,7 @@ freezeObject(Html);
 
 /// #{{{ @step setup-html-prototype
 
-setConstantProperty(Html.prototype, '__', __);
+setConstantProperty(Html.prototype, 'parse', parseHtml);
 setConstantProperty(Html.prototype, 'constructor', Html, false);
 
 freezeObject(Html.prototype);
@@ -815,8 +1000,24 @@ function Block(parent) {
    * @private
    * @const {number}
    */
-  var INDEX = ROOT.i;
+  var INDEX = ROOT.index;
   /// #}}} @const INDEX
+
+  /// #{{{ @const ID
+  /**
+   * @private
+   * @const {string}
+   */
+  var ID = getBlockId(ROOT.LINES[INDEX]);
+  /// #}}} @const ID
+
+  /// #{{{ @const makeIndent
+  /**
+   * @private
+   * @const {!function(number): string}
+   */
+  var makeIndent = ROOT.makeIndent;
+  /// #}}} @const makeIndent
 
   /// #}}} @step set-constants
 
@@ -836,6 +1037,24 @@ function Block(parent) {
   setConstantProperty(this, 'ELEMS', ELEMS);
   /// #}}} @member ELEMS
 
+  /// #{{{ @member END
+  /**
+   * @description
+   *   This parameter is only defined after `Block.prototype.scope` has
+   *   completed. Note that for only this member defined means that its value
+   *   is changed from `null` to a positive whole `number`.
+   * @type {?number}
+   */
+  setProperty(this, 'END', null);
+  /// #}}} @member END
+
+  /// #{{{ @member ID
+  /**
+   * @const {string}
+   */
+  setConstantProperty(this, 'ID', ID);
+  /// #}}} @member ID
+
   /// #{{{ @member INDEX
   /**
    * @const {number}
@@ -846,13 +1065,24 @@ function Block(parent) {
   /// #{{{ @member LAST
   /**
    * @description
-   *   This parameter is only defined after `Block.prototype.getLastIndex` has
-   *   completed. Note that for this member only defined means that its value
+   *   This parameter is only defined after `Block.prototype.scope` has
+   *   completed. Note that for only this member defined means that its value
    *   is changed from `null` to a positive whole `number`.
    * @type {?number}
    */
   setProperty(this, 'LAST', null);
   /// #}}} @member LAST
+
+  /// #{{{ @member LEN
+  /**
+   * @description
+   *   This parameter is only defined after `Block.prototype.scope` has
+   *   completed. Note that for only this member defined means that its value
+   *   is changed from `null` to a positive whole `number`.
+   * @type {?number}
+   */
+  setProperty(this, 'LEN', null);
+  /// #}}} @member LEN
 
   /// #{{{ @member LINES
   /**
@@ -878,8 +1108,8 @@ function Block(parent) {
   /// #{{{ @member RESULT
   /**
    * @description
-   *   This parameter is only defined after `Html.prototype.parse` has
-   *   completed. Note that for this member only defined means that its value
+   *   This parameter is only defined after `Block.prototype.parse` has
+   *   completed. Note that for only this member defined means that its value
    *   is changed from `null` to a `string`. The `result` member maintains
    *   the incomplete states.
    * @type {?string}
@@ -894,6 +1124,15 @@ function Block(parent) {
   setConstantProperty(this, 'ROOT', ROOT);
   /// #}}} @member ROOT
 
+  /// #{{{ @member makeIndent
+  /**
+   * @private
+   * @param {number} depth
+   * @return {string}
+   */
+  setConstantProperty(this, 'makeIndent', makeIndent);
+  /// #}}} @member makeIndent
+
   /// #}}} @step set-members
 
   /// #{{{ @step cap-instance
@@ -901,6 +1140,12 @@ function Block(parent) {
   capObject(this);
 
   /// #}}} @step cap-instance
+
+  /// #{{{ @step setup-scope
+
+  this.scope();
+
+  /// #}}} @step setup-scope
 
   /// #{{{ @step parse-lines
 
@@ -944,56 +1189,49 @@ function newBlock(lines, opts) {
 }
 /// #}}} @func newBlock
 
-/// #{{{ @func Block.prototype.__
+/// #{{{ @func Block.prototype.parse
 /**
  * @private
  * @this {!Block}
  * @return {!Block}
  */
-function __() {
+function parseBlock() {
 
   /// #{{{ @step declare-variables
 
+  /** @type {string} */
+  var result;
 
   /// #}}} @step declare-variables
 
-  /// #{{{ @step verify-parameters
+  /// #{{{ @step run-correct-parse
 
-  switch (arguments.length) {
-    case 0:
-      throw setNoArgError(new Error, '');
-    case 1:
-      throw setNoArgError(new Error, '');
+  result = ELEM[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
+    this.LEN, this.DEPTH);
+
+  /// #{{{ @step update-root-index
+
+  i = this.END;
+  while ( i < LEN && PATT.EMPTY.test(LINES[i]) ) {
+    ++i;
   }
+  ROOT.index = i;
 
-  if ( !isString() ) {
-    throw setTypeError(new TypeError, '', 'string');
-  }
-  if ( !isString() ) {
-    throw setTypeError(new TypeError, '', 'string');
-  }
+  /// #}}} @step update-root-index
 
-  if (!) {
-    throw setEmptyError(new Error, '');
-  }
+  /// #}}} @step run-correct-parse
 
-  /// #}}} @step verify-parameters
+  /// #{{{ @step freeze-elems
 
-  /// #{{{ @step set-constants
+  freezeObject(this.ELEMS);
 
-  /// #{{{ @const 
-  /**
-   * @private
-   * @const {string}
-   */
-  /// #}}} @const 
+  /// #}}} @step freeze-elems
 
-  /// #}}} @step set-constants
+  /// #{{{ @step save-result
 
-  /// #{{{ @step set-member-refs
+  setConstantProperty(this, 'RESULT', result);
 
-
-  /// #}}} @step set-member-refs
+  /// #}}} @step save-result
 
   /// #{{{ @step return-instance
 
@@ -1001,9 +1239,74 @@ function __() {
 
   /// #}}} @step return-instance
 }
-/// #}}} @func Block.prototype.__
+/// #}}} @func Block.prototype.parse
 
-/// #{{{ @step setup-html-constructor
+/// #{{{ @func Block.prototype.scope
+/**
+ * @private
+ * @this {!Block}
+ * @return {!Block}
+ */
+function scopeBlock() {
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const ROOT
+  /**
+   * @private
+   * @const {!Html}
+   */
+  var ROOT = this.ROOT;
+  /// #}}} @const ROOT
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = ROOT.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = ROOT.LINES;
+  /// #}}} @const LINES
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step run-correct-scope
+
+  ELEM[this.ID].scope(ROOT, LINES, LEN, this.INDEX, this.DEPTH, this,
+    this.LINES);
+
+  /// #}}} @step run-correct-scope
+
+  /// #{{{ @step freeze-lines
+
+  freezeObject(this.LINES);
+
+  /// #}}} @step freeze-lines
+
+  /// #{{{ @step save-end
+
+  setConstantProperty(this, 'LEN', this.LINES.length);
+  setConstantProperty(this, 'END', this.INDEX + this.LEN);
+  setConstantProperty(this, 'LAST', this.END - 1);
+
+  /// #}}} @step save-end
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Block.prototype.scope
+
+/// #{{{ @step setup-block-constructor
 
 Block.Block = Block;
 Block.newBlock = newBlock;
@@ -1012,16 +1315,17 @@ Block.prototype = createObject(null);
 
 freezeObject(Block);
 
-/// #}}} @step setup-html-constructor
+/// #}}} @step setup-block-constructor
 
-/// #{{{ @step setup-html-prototype
+/// #{{{ @step setup-block-prototype
 
-setConstantProperty(Block.prototype, '__', __);
+setConstantProperty(Block.prototype, 'parse', parseBlock);
+setConstantProperty(Block.prototype, 'scope', scopeBlock);
 setConstantProperty(Block.prototype, 'constructor', Block, false);
 
 freezeObject(Block.prototype);
 
-/// #}}} @step setup-html-prototype
+/// #}}} @step setup-block-prototype
 
 /// #}}} @group BLOCK
 
@@ -1128,6 +1432,988 @@ function parseToHtml(lines, opts) {
   /// #}}} @step return-parsed-result
 }
 /// #}}} @func parseToHtml
+
+/// #{{{ @func parse__Block
+/**
+ * @private
+ * @param {!Block} BLK
+ * @param {!Array<(!Block|!Inline)>} ELEMS
+ * @param {!Html} ROOT
+ * @param {!Array<string>} LINES
+ * @param {number} LEN
+ * @param {number} INDEX
+ * @param {number} DEPTH
+ * @return {!Block}
+ */
+function parse__Block(BLK, ELEMS, ROOT, LINES, LEN, INDEX, DEPTH) {
+
+  result = ELEM[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
+    this.LEN, this.DEPTH);
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var result;
+  /** @type {number} */
+  var depth;
+  /** @type {string} */
+  var line;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'BLK');
+    case 1:
+      throw setNoArgError(new Error, 'ELEMS');
+    case 2:
+      throw setNoArgError(new Error, 'ROOT');
+    case 3:
+      throw setNoArgError(new Error, 'LINES');
+    case 4:
+      throw setNoArgError(new Error, 'LEN');
+    case 5:
+      throw setNoArgError(new Error, 'INDEX');
+    case 6:
+      throw setNoArgError(new Error, 'DEPTH');
+  }
+
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+  if ( !isArray(ELEMS) || BLK.ELEMS !== ELEMS ) {
+    throw setTypeError(new TypeError, 'ELEMS', '!Array<(!Block|!Inline)>');
+  }
+  if ( !isInstanceOf(ROOT, Html) ) {
+    throw setTypeError(new TypeError, 'ROOT', '!Html');
+  }
+  if ( !isArray(LINES) || ROOT.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+  if ( !isNumber(LEN)  || ROOT.LEN !== LEN ) {
+    throw setTypeError(new TypeError, 'LEN', 'number');
+  }
+  if ( !isNumber(INDEX) || BLK.INDEX !== INDEX ) {
+    throw setTypeError(new TypeError, 'INDEX', 'number');
+  }
+  if ( !isNumber(DEPTH) || BLK.DEPTH !== DEPTH ) {
+    throw setTypeError(new TypeError, 'DEPTH', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step parse-each-line
+
+  i = INDEX;
+  while (++i < LEN) {
+    line = LINES[i];
+    if ( /* !isValidLine */ ) {
+      break;
+    }
+  }
+
+  /// #}}} @step parse-each-line
+
+  /// #{{{ @step update
+
+  i = INDEX;
+  while (++i < LEN) {
+    line = LINES[i];
+    if ( /* !isValidLine */ ) {
+      break;
+    }
+  }
+
+  /// #}}} @step parse-each-line
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func parse__Block
+
+/// #{{{ @func scopeHBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopeHBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  ++index;
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopeHBlock
+
+/// #{{{ @func scopeHrBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopeHrBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  ++index;
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopeHrBlock
+
+/// #{{{ @func scopeOlBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopeOlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = ++depth;
+  /// #}}} @const DEPTH
+
+  /// #{{{ @const PATTERN
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var PATTERN = new RegExp(
+    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '[0-9]+\\) ');
+  /// #}}} @const PATTERN
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  while (++index < $LEN) {
+    line = $LINES[index];
+    if ( isIndented(line, DEPTH) || PATTERN.test(line) ) {
+      LINES.push(line);
+    }
+    else {
+      break;
+    }
+  }
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopeOlBlock
+
+/// #{{{ @func scopePBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopePBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  while (++index < $LEN) {
+    line = $LINES[index];
+    if ( isEmptyLine(line, depth) || getBlockId(line) !== 'p' ) {
+      break;
+    }
+    else {
+      LINES.push(line);
+    }
+  }
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopePBlock
+
+/// #{{{ @func scopePreBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopePreBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PATTERN
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var PATTERN = new RegExp(
+    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '```');
+  /// #}}} @const PATTERN
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  while (++index < $LEN) {
+    line = $LINES[index];
+    if ( PATTERN.test(line) ) {
+      break;
+    }
+    else {
+      LINES.push(line);
+    }
+  }
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopePreBlock
+
+/// #{{{ @func scopeQuoteBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopeQuoteBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PATTERN
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var PATTERN = new RegExp(
+    '^' + $LINES[index].replace(PATT.SCOPE.QUOTE, '$1'));
+  /// #}}} @const PATTERN
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  while (++index < $LEN) {
+    line = $LINES[index];
+    if ( PATTERN.test(line) ) {
+      LINES.push(line);
+    }
+    else {
+      break;
+    }
+  }
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopeQuoteBlock
+
+/// #{{{ @func scopeUlBlock
+/**
+ * @private
+ * @param {!Html} $ROOT
+ * @param {!Array<string>} $LINES
+ * @param {number} $LEN
+ * @param {number} index
+ * @param {number} depth
+ * @param {!Block} BLK
+ * @param {!Array<string>} LINES
+ * @return {!Block}
+ */
+function scopeUlBlock($ROOT, $LINES, $LEN, index, depth, BLK, LINES) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var line;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, '$ROOT');
+    case 1:
+      throw setNoArgError(new Error, '$LINES');
+    case 2:
+      throw setNoArgError(new Error, '$LEN');
+    case 3:
+      throw setNoArgError(new Error, 'index');
+    case 4:
+      throw setNoArgError(new Error, 'depth');
+    case 5:
+      throw setNoArgError(new Error, 'BLK');
+    case 6:
+      throw setNoArgError(new Error, 'LINES');
+  }
+
+  if ( !isInstanceOf($ROOT, Html) ) {
+    throw setTypeError(new TypeError, '$ROOT', '!Html');
+  }
+  if ( !isInstanceOf(BLK, Block) ) {
+    throw setTypeError(new TypeError, 'BLK', '!Block');
+  }
+
+  if ( !isArray($LINES) || $ROOT.LINES !== $LINES ) {
+    throw setTypeError(new TypeError, '$LINES', '!Array<string>');
+  }
+  if ( !isArray(LINES) || BLK.LINES !== LINES ) {
+    throw setTypeError(new TypeError, 'LINES', '!Array<string>');
+  }
+
+  if ( !isNumber($LEN)  || $ROOT.LEN !== $LEN ) {
+    throw setTypeError(new TypeError, '$LEN', 'number');
+  }
+  if ( !isNumber(index) || BLK.INDEX !== index ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) || BLK.DEPTH !== depth ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = ++depth;
+  /// #}}} @const DEPTH
+
+  /// #{{{ @const PATTERN
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var PATTERN = new RegExp(
+    '^' + $LINES[index].replace(PATT.INDENT.GET, '$1') + '- ');
+  /// #}}} @const PATTERN
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step set-lines-in-scope
+
+  line = $LINES[index];
+  LINES.push(line);
+
+  while (++index < $LEN) {
+    line = $LINES[index];
+    if ( isIndented(line, DEPTH) || PATTERN.test(line) ) {
+      LINES.push(line);
+    }
+    else {
+      break;
+    }
+  }
+
+  /// #}}} @step set-lines-in-scope
+
+  /// #{{{ @step return-block-instance
+
+  return BLK;
+
+  /// #}}} @step return-block-instance
+}
+/// #}}} @func scopeUlBlock
+
+/// #{{{ @func testHBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testHBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.H.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testHBlock
+
+/// #{{{ @func testHrBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testHrBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.HR.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testHrBlock
+
+/// #{{{ @func testOlBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testOlBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.OL.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testOlBlock
+
+/// #{{{ @func testPBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testPBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return true;
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testPBlock
+
+/// #{{{ @func testPreBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testPreBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.PRE.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testPreBlock
+
+/// #{{{ @func testQuoteBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testQuoteBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.QUOTE.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testQuoteBlock
+
+/// #{{{ @func testUlBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testUlBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return PATT.TEST.UL.test(line);
+
+  /// #}}} @step return-result
+}
+/// #}}} @func testUlBlock
 
 /// #}}} @group METHODS
 
