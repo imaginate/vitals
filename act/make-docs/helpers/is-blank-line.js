@@ -34,7 +34,7 @@ var loadTaskHelper = require('./load-task-helper.js');
  * @private
  * @const {!RegExp}
  */
-var BLANK = /^ *$/;
+var BLANK = /^ +$/;
 /// #}}} @const BLANK
 
 /// #{{{ @const IS

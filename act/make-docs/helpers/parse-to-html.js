@@ -479,6 +479,15 @@ function getBlockId(line) {
 }
 /// #}}} @func getBlockId
 
+/// #{{{ @func newIsEmptyLine
+/**
+ * @private
+ * @param {number=} count = `2`
+ * @return {!function(string, number=): boolean}
+ */
+var newIsEmptyLine = require('./is-empty-line.js').create;
+/// #}}} @func newIsEmptyLine
+
 /// #{{{ @func newIsIndented
 /**
  * @private
@@ -659,12 +668,20 @@ function Html(lines, opts) {
   var INDENT = OPTS['indent'];
   /// #}}} @const INDENT
 
+  /// #{{{ @const isEmptyLine
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isEmptyLine = newIsEmptyLine(INDENT);
+  /// #}}} @const isEmptyLine
+
   /// #{{{ @const isIndented
   /**
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isIndented = newIsIndented(INDENT);
+  var isIndented = isEmptyLine.isIndented;
   /// #}}} @const isIndented
 
   /// #{{{ @const makeIndent
@@ -788,6 +805,16 @@ function Html(lines, opts) {
    */
   setProperty(this, 'index', 0, true);
   /// #}}} @member index
+
+  /// #{{{ @member isEmptyLine
+  /**
+   * @private
+   * @param {string} line
+   * @param {number=} depth = `0`
+   * @return {boolean}
+   */
+  setConstantProperty(this, 'isEmptyLine', isEmptyLine);
+  /// #}}} @member isEmptyLine
 
   /// #{{{ @member isIndented
   /**
@@ -1046,6 +1073,14 @@ function Block(parent) {
   var ID = getBlockId(ROOT.LINES[INDEX]);
   /// #}}} @const ID
 
+  /// #{{{ @const isEmptyLine
+  /**
+   * @private
+   * @const {!function(string, number=): boolean}
+   */
+  var isEmptyLine = ROOT.isEmptyLine;
+  /// #}}} @const isEmptyLine
+
   /// #{{{ @const isIndented
   /**
    * @private
@@ -1166,6 +1201,16 @@ function Block(parent) {
    */
   setConstantProperty(this, 'ROOT', ROOT);
   /// #}}} @member ROOT
+
+  /// #{{{ @member isEmptyLine
+  /**
+   * @private
+   * @param {string} line
+   * @param {number=} depth = `0`
+   * @return {boolean}
+   */
+  setConstantProperty(this, 'isEmptyLine', isEmptyLine);
+  /// #}}} @member isEmptyLine
 
   /// #{{{ @member isIndented
   /**
