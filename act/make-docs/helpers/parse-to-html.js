@@ -45,10 +45,6 @@ var IS = loadTaskHelper('is');
  * @struct
  */
 var PATT = {
-  INDENT: {
-    GET: /^( *).*$/,
-    HAS: /^ +/
-  },
   SCOPE: {
     QUOTE: /^( *>+).*$/
   },
@@ -485,6 +481,15 @@ function getBlockId(line) {
   /// #}}} @step return-block-element-id
 }
 /// #}}} @func getBlockId
+
+/// #{{{ @func getIndent
+/**
+ * @private
+ * @param {string} line
+ * @return {string}
+ */
+var getIndent = require('./get-indent.js');
+/// #}}} @func getIndent
 
 /// #{{{ @func newIsEmptyLine
 /**
@@ -1832,8 +1837,7 @@ function scopeOlBlock(ROOT, BLK, index, depth) {
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp(
-    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '[0-9]+\\) ');
+  var PATTERN = new RegExp('^' + getIndent(ROOT.LINES[index]) + '[0-9]+\\) ');
   /// #}}} @const PATTERN
 
   /// #{{{ @const isIndented
@@ -1995,8 +1999,7 @@ function scopePreBlock(ROOT, BLK, index, depth) {
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp(
-    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '```');
+  var PATTERN = new RegExp('^' + getIndent(ROOT.LINES[index]) + '```');
   /// #}}} @const PATTERN
 
   /// #}}} @step set-constants
@@ -2171,8 +2174,7 @@ function scopeUlBlock(ROOT, BLK, index, depth) {
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp(
-    '^' + ROOT.LINES[index].replace(PATT.INDENT.GET, '$1') + '- ');
+  var PATTERN = new RegExp('^' + getIndent(ROOT.LINES[index]) + '- ');
   /// #}}} @const PATTERN
 
   /// #{{{ @const isIndented
