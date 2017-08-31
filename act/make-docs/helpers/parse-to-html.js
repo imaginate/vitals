@@ -206,6 +206,17 @@ var setNoArgError = setError.noArg;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
+/// #{{{ @func setWholeError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} param
+ * @param {number} value
+ * @return {!RangeError}
+ */
+var setWholeError = setError.whole;
+/// #}}} @func setWholeError
+
 /// #}}} @group ERROR
 
 /// #{{{ @group HAS
@@ -607,7 +618,7 @@ function Html(lines, opts) {
   /// #{{{ @const ELEMS
   /**
    * @private
-   * @const {!Array<(!Block|!Inline)>}
+   * @const {!Array<!Block>}
    */
   var ELEMS = [];
   /// #}}} @const ELEMS
@@ -778,8 +789,7 @@ function Html(lines, opts) {
    * @description
    *   This parameter is only defined after `Html.prototype.parse` has
    *   completed. Note that for only this member defined means that its value
-   *   is changed from `null` to a `string`. The `result` member maintains
-   *   the incomplete states.
+   *   is changed from `null` to a `string`.
    * @type {?string}
    */
   setProperty(this, 'RESULT', null);
@@ -791,20 +801,6 @@ function Html(lines, opts) {
    */
   setConstantProperty(this, 'ROOT', this);
   /// #}}} @member ROOT
-
-  /// #{{{ @member depth
-  /**
-   * @type {number}
-   */
-  setProperty(this, 'depth', DEPTH, true);
-  /// #}}} @member depth
-
-  /// #{{{ @member index
-  /**
-   * @type {number}
-   */
-  setProperty(this, 'index', 0, true);
-  /// #}}} @member index
 
   /// #{{{ @member isEmptyLine
   /**
@@ -897,42 +893,76 @@ function parseHtml() {
 
   /** @type {string} */
   var result;
-  /** @type {!Array<string>} */
-  var lines;
-  /** @type {!Array<!Block>} */
-  var elems;
+  /** @type {string} */
+  var line;
   /** @type {!Block} */
   var elem;
-  /** @type {number} */
-  var len;
   /** @type {number} */
   var i;
 
   /// #}}} @step declare-variables
 
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = this.DEPTH;
+  /// #}}} @const DEPTH
+
+  /// #{{{ @const ELEMS
+  /**
+   * @private
+   * @const {!Array<!Block>}
+   */
+  var ELEMS = this.ELEMS;
+  /// #}}} @const ELEMS
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = this.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = this.LINES;
+  /// #}}} @const LINES
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step parse-lines
 
   result = '';
-  elems = this.ELEMS;
-  lines = this.LINES;
-  len = this.LEN;
-  i = this.index;
-  while (i < len) {
-    elem = new Block(this);
-    i = elem.END;
-    elems.push(elem);
+  i = this.INDEX;
+  while (i < LEN) {
+    elem = new Block(this, i, DEPTH);
     result += elem.RESULT;
-    while ( i < len && isBlankLine(lines[i]) ) {
-      ++i;
+    ELEMS.push(elem);
+    i = elem.END;
+    while (i < len) {
+      line = LINES[i];
+      if ( isBlankLine(line) ) {
+        ++i;
+      }
+      else {
+        break;
+      }
     }
-    this.index = i;
   }
 
   /// #}}} @step parse-lines
 
   /// #{{{ @step freeze-elems
 
-  freezeObject(this.ELEMS);
+  freezeObject(ELEMS);
 
   /// #}}} @step freeze-elems
 
@@ -978,10 +1008,12 @@ freezeObject(Html.prototype);
 /**
  * @private
  * @param {(!Html|!Block)} parent
+ * @param {number} index
+ * @param {number} depth
  * @constructor
  * @struct
  */
-function Block(parent) {
+function Block(parent, index, depth) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -996,10 +1028,27 @@ function Block(parent) {
   switch (arguments.length) {
     case 0:
       throw setNoArgError(new Error, 'parent');
+    case 1:
+      throw setNoArgError(new Error, 'index');
+    case 2:
+      throw setNoArgError(new Error, 'depth');
   }
 
   if ( !isInstanceOf(parent, Block) && !isInstanceOf(parent, Html) ) {
     throw setTypeError(new TypeError, 'parent', '(!Html|!Block)');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+  if ( !isNumber(depth) ) {
+    throw setTypeError(new TypeError, 'depth', 'number');
+  }
+
+  if ( !isWholeNumber(index) ) {
+    throw setWholeError(new RangeError, 'index', index);
+  }
+  if ( !isWholeNumber(depth) ) {
+    throw setWholeError(new RangeError, 'depth', depth);
   }
 
   /// #}}} @step verify-parameters
@@ -1013,6 +1062,22 @@ function Block(parent) {
    */
   var PARENT = parent;
   /// #}}} @const PARENT
+
+  /// #{{{ @const INDEX
+  /**
+   * @private
+   * @const {number}
+   */
+  var INDEX = index;
+  /// #}}} @const INDEX
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = depth;
+  /// #}}} @const DEPTH
 
   /// #{{{ @const ELEMS
   /**
@@ -1048,22 +1113,6 @@ function Block(parent) {
    */
   var ROOT = PARENT.ROOT;
   /// #}}} @const ROOT
-
-  /// #{{{ @const DEPTH
-  /**
-   * @private
-   * @const {number}
-   */
-  var DEPTH = ROOT.depth;
-  /// #}}} @const DEPTH
-
-  /// #{{{ @const INDEX
-  /**
-   * @private
-   * @const {number}
-   */
-  var INDEX = ROOT.index;
-  /// #}}} @const INDEX
 
   /// #{{{ @const ID
   /**
@@ -1306,16 +1355,6 @@ function parseBlock() {
 
   result = ELEM[this.ID].parse(this.ROOT, this, this.ELEMS, this.LINES,
     this.LEN, this.DEPTH);
-
-  /// #{{{ @step update-root-index
-
-  i = this.END;
-  while ( i < LEN && isBlankLine(LINES[i]) ) {
-    ++i;
-  }
-  ROOT.index = i;
-
-  /// #}}} @step update-root-index
 
   /// #}}} @step run-correct-parse
 
