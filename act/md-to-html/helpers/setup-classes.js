@@ -230,6 +230,36 @@ var hasOwnEnumProperty = loadTaskHelper('has-own-enum-property');
 
 /// #{{{ @group IS
 
+/// #{{{ @func isEmpty
+/**
+ * @description
+ *   Checks if a value is considered empty. The definition of empty is
+ *   defined as follows in order of priority (per the #val data type):
+ *   - *`null`*!$
+ *     `null` is considered empty.
+ *   - *`undefined`*!$
+ *     `undefined` is considered empty.
+ *   - *`number`*!$
+ *     Only `0` and `NaN` are considered empty.
+ *   - *`string`*!$
+ *     Only `""` is considered empty.
+ *   - *`boolean`*!$
+ *     Only `false` is considered empty.
+ *   - *`function`*!$
+ *     The length property must be `0` to be considered empty.
+ *   - *`!Array`*!$
+ *     The length property must be `0` to be considered empty.
+ *   - *`!Object`*!$
+ *     The `object` must **not** own any properties to be considered empty.
+ *   - *`*`*!$
+ *     All other data types are **not** considered empty.
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isEmpty = IS.empty;
+/// #}}} @func isEmpty
+
 /// #{{{ @func isFile
 /**
  * @private
