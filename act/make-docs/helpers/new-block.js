@@ -29,24 +29,6 @@ var loadTaskHelper = require('./load-task-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const BLOCKS
-/**
- * @private
- * @const {!Object<string, (!function(!Block): !Block)>}
- * @dict
- */
-var BLOCKS = loadTaskHelper('freeze-object')({
-  'h': require('./new-heading.js'),
-  'hr': require('./new-horizontal.js'),
-  'li': require('./new-list-item.js'),
-  'ol': require('./new-ordered-list.js'),
-  'p': require('./new-paragraph.js'),
-  'pre': require('./new-code-block.js'),
-  'quote': require('./new-quote-block.js'),
-  'ul': require('./new-unordered-list.js')
-});
-/// #}}} @const BLOCKS
-
 /// #{{{ @const IS
 /**
  * @private
@@ -391,6 +373,19 @@ var setProperty = loadTaskHelper('set-property');
 
 /// #}}} @group OBJECT
 
+/// #{{{ @group PATH
+
+/// #{{{ @func resolvePath
+/**
+ * @private
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
+ * @return {string}
+ */
+var resolvePath = loadTaskHelper('resolve-path');
+/// #}}} @func resolvePath
+
+/// #}}} @group PATH
+
 /// #{{{ @group SPECIAL
 
 /// #{{{ @func getBlockId
@@ -405,6 +400,31 @@ var getBlockId = require('./get-block-id.js');
 /// #}}} @group SPECIAL
 
 /// #}}} @group HELPERS
+
+/// #{{{ @group PATHS
+//////////////////////////////////////////////////////////////////////////////
+// PATHS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @const BLOCKS
+/**
+ * @private
+ * @const {!Object<string, string>}
+ * @dict
+ */
+var BLOCKS = freezeObject({
+  'h': resolvePath(__dirname, 'new-heading.js'),
+  'hr': resolvePath(__dirname, 'new-horizontal.js'),
+  'li': resolvePath(__dirname, 'new-list-item.js'),
+  'ol': resolvePath(__dirname, 'new-ordered-list.js'),
+  'p': resolvePath(__dirname, 'new-paragraph.js'),
+  'pre': resolvePath(__dirname, 'new-code-block.js'),
+  'quote': resolvePath(__dirname, 'new-quote-block.js'),
+  'ul': resolvePath(__dirname, 'new-unordered-list.js')
+});
+/// #}}} @const BLOCKS
+
+/// #}}} @group PATHS
 
 /// #{{{ @group CLASS
 //////////////////////////////////////////////////////////////////////////////
@@ -717,7 +737,7 @@ function Block(parent, index, depth, id) {
 
   /// #{{{ @step run-special-class-setup
 
-  BLOCKS[ID](this);
+  require(BLOCKS[ID])(this);
 
   /// #}}} @step run-special-class-setup
 
