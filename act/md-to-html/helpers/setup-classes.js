@@ -279,6 +279,16 @@ var isString = IS.string;
 var createObject = loadTaskHelper('create-object');
 /// #}}} @func createObject
 
+/// #{{{ @func forEachProperty
+/**
+ * @private
+ * @param {(!Array|!Arguments|!Object|!Function)} src
+ * @param {!function(*, (number|string))} func
+ * @return {(!Array|!Arguments|!Object|!Function)}
+ */
+var forEachProperty = loadTaskHelper('for-each-property');
+/// #}}} @func forEachProperty
+
 /// #{{{ @func freezeObject
 /**
  * @private
