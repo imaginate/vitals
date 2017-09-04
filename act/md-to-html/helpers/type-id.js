@@ -269,6 +269,7 @@ var setConstantProperty = loadTaskHelper('set-constant-property');
  * @dict
  */
 var IDS = freezeObject({
+  'blk': 'BLOCK',
   'h': 'BLOCK',
   'hr': 'BLOCK',
   'html': 'ROOT',
