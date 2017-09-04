@@ -100,7 +100,7 @@ var isObject = IS.object;
  * @param {*} val
  * @return {boolean}
  */
-var isTypeId = require('./type-id-class.js').isTypeId;
+var isTypeId = require('./type-id.js').isTypeId;
 /// #}}} @func isTypeId
 
 /// #}}} @group IS
