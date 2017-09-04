@@ -13,14 +13,14 @@
 // LOADERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #}}} @group LOADERS
 
@@ -59,7 +59,7 @@ var INDENT_PATTERN_START = /^ /;
  * @const {!Object<string, !function>}
  * @struct
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
 /// #}}} @group CONSTANTS
@@ -78,7 +78,7 @@ var IS = loadHelper('is');
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadHelper('set-error');
+var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
 
 /// #{{{ @func setIndexError
@@ -176,7 +176,7 @@ var isWholeNumber = IS.wholeNumber;
  * @param {boolean=} deep = `false`
  * @return {(?Object|?Function)}
  */
-var freezeObject = loadHelper('freeze-object');
+var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
 
 /// #}}} @group OBJECT

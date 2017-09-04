@@ -13,14 +13,14 @@
 // LOADERS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func loadHelper
+/// #{{{ @func loadTaskHelper
 /**
  * @private
  * @param {string} name
  * @return {(!Object|!Function)}
  */
-var loadHelper = require('./load-helper.js');
-/// #}}} @func loadHelper
+var loadTaskHelper = require('./load-task-helper.js');
+/// #}}} @func loadTaskHelper
 
 /// #}}} @group LOADERS
 
@@ -43,7 +43,7 @@ var INDENT_COUNT = require('../config.json').defaults.indentWhitespaceCount;
  * @const {!Object<string, !function>}
  * @struct
  */
-var IS = loadHelper('is');
+var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
 /// #}}} @group CONSTANTS
@@ -62,7 +62,7 @@ var IS = loadHelper('is');
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadHelper('set-error');
+var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
 
 /// #{{{ @func setIndexError
@@ -119,7 +119,7 @@ var setWholeError = setError.whole;
  * @param {string} line
  * @return {boolean}
  */
-var isBlankLine = loadHelper('is-blank-line');
+var isBlankLine = require('./is-blank-line.js');
 /// #}}} @func isBlankLine
 
 /// #{{{ @func isNumber
@@ -169,7 +169,7 @@ var isWholeNumber = IS.wholeNumber;
  * @param {boolean=} deep = `false`
  * @return {(?Object|?Function)}
  */
-var freezeObject = loadHelper('freeze-object');
+var freezeObject = loadTaskHelper('freeze-object');
 /// #}}} @func freezeObject
 
 /// #}}} @group OBJECT
@@ -182,7 +182,7 @@ var freezeObject = loadHelper('freeze-object');
  * @param {number=} count = `2`
  * @return {!function(string, number=): boolean}
  */
-var newIsIndented = loadHelper('is-indented').create;
+var newIsIndented = require('./is-indented.js').create;
 /// #}}} @func newIsIndented
 
 /// #}}} @group SPECIAL
