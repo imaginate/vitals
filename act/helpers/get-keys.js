@@ -3,7 +3,7 @@
  * GET-KEYS HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 'use strict';
@@ -17,6 +17,7 @@
 /**
  * @private
  * @const {!Object<string, !function>}
+ * @struct
  */
 var IS = require('./is.js');
 /// #}}} @const IS
@@ -28,6 +29,43 @@ var IS = require('./is.js');
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @group ERROR
+
+/// #{{{ @func setError
+/**
+ * @private
+ * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
+ * @param {string} msg
+ * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
+ */
+var setError = require('./set-error.js');
+/// #}}} @func setError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setTypeError
+/**
+ * @private
+ * @param {!TypeError} err
+ * @param {string} param
+ * @param {string} types
+ * @return {!TypeError}
+ */
+var setTypeError = setError.type;
+/// #}}} @func setTypeError
+
+/// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
 /// #{{{ @func hasOwnProperty
 /**
  * @private
@@ -38,6 +76,10 @@ var IS = require('./is.js');
 var hasOwnProperty = require('./has-own-property.js');
 /// #}}} @func hasOwnProperty
 
+/// #}}} @group HAS
+
+/// #{{{ @group IS
+
 /// #{{{ @func isHashMap
 /**
  * @private
@@ -47,11 +89,13 @@ var hasOwnProperty = require('./has-own-property.js');
 var isHashMap = IS.hashMap;
 /// #}}} @func isHashMap
 
+/// #}}} @group IS
+
 /// #}}} @group HELPERS
 
-/// #{{{ @group EXPORTS
+/// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
-// EXPORTS
+// METHODS
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @func getKeys
@@ -62,23 +106,51 @@ var isHashMap = IS.hashMap;
  */
 function getKeys(src) {
 
+  /// #{{{ @step declare-variables
+
   /** @type {!Array<string>} */
   var keys;
   /** @type {string} */
   var key;
 
-  if ( !isHashMap(src) )
-    throw new TypeError('invalid `src` data type\n' +
-      '    valid-types: `(!Object|!Function)`)');
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'src');
+  }
+  if ( !isHashMap(src) ) {
+    throw setTypeError(new TypeError, 'src', '(!Object|!Function)');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-array-of-keys
 
   keys = [];
   for (key in src) {
-    if ( hasOwnProperty(src, key) )
+    if ( hasOwnProperty(src, key) ) {
       keys.push(key);
+    }
   }
+
+  /// #}}} @step make-array-of-keys
+
+  /// #{{{ @step return-array-of-keys
+
   return keys;
+
+  /// #}}} @step return-array-of-keys
 }
 /// #}}} @func getKeys
+
+/// #}}} @group METHODS
+
+/// #{{{ @group EXPORTS
+//////////////////////////////////////////////////////////////////////////////
+// EXPORTS
+//////////////////////////////////////////////////////////////////////////////
 
 module.exports = getKeys;
 
