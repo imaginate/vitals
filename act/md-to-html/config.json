@@ -1,0 +1,7 @@
+{
+  "defaults": {
+    "initialIndentDepth": 0,
+    "indentWhitespaceCount": 2,
+    "outputGithubMarkdown": false
+  }
+}
