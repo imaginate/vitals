@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * GET-BLOCK-ELEMENT-TEST HELPER
+ * GET-BLOCK-TEST HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
@@ -44,14 +44,14 @@ var IS = loadTaskHelper('is');
  * @const {!Object<string, !RegExp>}
  * @struct
  */
-var PATT = {
+var PATT = loadTaskHelper('freeze-object')({
   H: /^ *#{1,6} /,
   HR: /^ *---+/,
   OL: /^ *[0-9]+\) /,
   PRE: /^ *```/,
   QUOTE: /^ *>+/,
   UL: /^ *- /
-};
+});
 /// #}}} @const PATT
 
 /// #}}} @group CONSTANTS
@@ -115,10 +115,11 @@ function setElemIdError(err, param, id) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'invalid `Block` element id used for `' + param + '` parameter\n'
+  msg = 'invalid `Block` id for `' + param + '` parameter in `getBlockTest` '
+    + 'call\n'
     + '    invalid-id: `"' + id + '"`\n'
     + '    valid-ids:\n'
-    + '        `"' + getKeys(ELEMENTS).join('"`\n        `"') + '"`';
+    + '        `"' + getKeys(BLOCKS).join('"`\n        `"') + '"`';
 
   /// #}}} @step make-error-message
 
@@ -293,6 +294,34 @@ function testHrBlock(line) {
 testHrBlock.ID = 'hr';
 /// #}}} @func testHrBlock
 
+/// #{{{ @func testLiBlock
+/**
+ * @private
+ * @param {string} line
+ * @return {boolean}
+ */
+function testLiBlock(line) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'line');
+  }
+  if ( !isString(line) ) {
+    throw setTypeError(new TypeError, 'line', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-result
+
+  return false;
+
+  /// #}}} @step return-result
+}
+testLiBlock.ID = 'li';
+/// #}}} @func testLiBlock
+
 /// #{{{ @func testOlBlock
 /**
  * @private
@@ -433,44 +462,38 @@ function testUlBlock(line) {
 testUlBlock.ID = 'ul';
 /// #}}} @func testUlBlock
 
-/// #}}} @group TESTS
-
-/// #{{{ @group ELEMENTS
-//////////////////////////////////////////////////////////////////////////////
-// ELEMENTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const ELEMENTS
+/// #{{{ @const BLOCKS
 /**
  * @private
  * @const {!Object<string, !Function>}
  * @dict
  */
-var ELEMENTS = freezeObject({
+var BLOCKS = freezeObject({
   'h': testHBlock,
   'hr': testHrBlock,
+  'li': testLiBlock,
   'ol': testOlBlock,
   'p': testPBlock,
   'pre': testPreBlock,
   'quote': testQuoteBlock,
   'ul': testUlBlock
 }, true);
-/// #}}} @const ELEMENTS
+/// #}}} @const BLOCKS
 
-/// #}}} @group ELEMENTS
+/// #}}} @group TESTS
 
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func getBlockElementTest
+/// #{{{ @func getBlockTest
 /**
  * @public
  * @param {string} id
  * @return {!function(string): boolean}
  */
-function getBlockElementTest(id) {
+function getBlockTest(id) {
 
   /// #{{{ @step verify-parameters
 
@@ -483,7 +506,7 @@ function getBlockElementTest(id) {
   if (!id) {
     throw setEmptyError(new Error, 'id');
   }
-  if ( !hasOwnEnumProperty(ELEMENTS, id) ) {
+  if ( !hasOwnEnumProperty(BLOCKS, id) ) {
     throw setElemIdError(new RangeError, 'id', id);
   }
 
@@ -491,11 +514,11 @@ function getBlockElementTest(id) {
 
   /// #{{{ @step return-element-test
 
-  return ELEMENTS[id];
+  return BLOCKS[id];
 
   /// #}}} @step return-element-test
 }
-/// #}}} @func getBlockElementTest
+/// #}}} @func getBlockTest
 
 /// #}}} @group METHODS
 
@@ -504,7 +527,7 @@ function getBlockElementTest(id) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = getBlockElementTest;
+module.exports = getBlockTest;
 
 /// #}}} @group EXPORTS
 
