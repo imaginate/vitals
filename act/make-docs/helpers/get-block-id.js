@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * GET-BLOCK-ELEMENT-ID HELPER
+ * GET-BLOCK-ID HELPER
  * ---------------------------------------------------------------------------
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
@@ -119,54 +119,54 @@ var testEachProperty = loadTaskHelper('test-each-property');
 
 /// #{{{ @group SPECIAL
 
-/// #{{{ @func getBlockElementTest
+/// #{{{ @func getBlockTest
 /**
  * @private
  * @param {string} id
  * @return {!function(string): boolean}
  */
-var getBlockElementTest = require('./get-block-element-test.js');
-/// #}}} @func getBlockElementTest
+var getBlockTest = require('./get-block-test.js');
+/// #}}} @func getBlockTest
 
 /// #}}} @group SPECIAL
 
 /// #}}} @group HELPERS
 
-/// #{{{ @group ELEMENTS
+/// #{{{ @group TESTS
 //////////////////////////////////////////////////////////////////////////////
-// ELEMENTS
+// TESTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @const ELEMENTS
+/// #{{{ @const TESTS
 /**
  * @private
  * @const {!Array<!function(string): boolean>}
  */
-var ELEMENTS = freezeObject([
-  getBlockElementTest('h'),
-  getBlockElementTest('ul'),
-  getBlockElementTest('ol'),
-  getBlockElementTest('hr'),
-  getBlockElementTest('pre'),
-  getBlockElementTest('quote'),
-  getBlockElementTest('p')
+var TESTS = freezeObject([
+  getBlockTest('h'),
+  getBlockTest('ul'),
+  getBlockTest('ol'),
+  getBlockTest('hr'),
+  getBlockTest('pre'),
+  getBlockTest('quote'),
+  getBlockTest('p')
 ]);
-/// #}}} @const ELEMENTS
+/// #}}} @const TESTS
 
-/// #}}} @group ELEMENTS
+/// #}}} @group TESTS
 
 /// #{{{ @group METHODS
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @func getBlockElementId
+/// #{{{ @func getBlockId
 /**
  * @public
  * @param {string} line
  * @return {string}
  */
-function getBlockElementId(line) {
+function getBlockId(line) {
 
   /// #{{{ @step declare-variables
 
@@ -188,7 +188,7 @@ function getBlockElementId(line) {
 
   /// #{{{ @step get-block-element-id
 
-  testEachProperty(ELEMENTS, function _getBlockElementId(elemTest) {
+  testEachProperty(TESTS, function _getBlockId(elemTest) {
     if ( elemTest(line) ) {
       id = elemTest.ID;
       return true;
@@ -204,7 +204,7 @@ function getBlockElementId(line) {
 
   /// #}}} @step return-block-element-id
 }
-/// #}}} @func getBlockElementId
+/// #}}} @func getBlockId
 
 /// #}}} @group METHODS
 
@@ -213,7 +213,7 @@ function getBlockElementId(line) {
 // EXPORTS
 //////////////////////////////////////////////////////////////////////////////
 
-module.exports = getBlockElementId;
+module.exports = getBlockId;
 
 /// #}}} @group EXPORTS
 
