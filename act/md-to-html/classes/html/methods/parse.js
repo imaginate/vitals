@@ -112,7 +112,7 @@ function parseHtml() {
   /** @type {string} */
   var line;
   /** @type {!Block} */
-  var elem;
+  var blk;
   /** @type {number} */
   var i;
 
@@ -159,11 +159,10 @@ function parseHtml() {
   result = '';
   i = 0;
   while (i < LEN) {
-    elem = newBlock(this, i, DEPTH);
-    result += elem.RESULT;
-    ELEMS.push(elem);
-    i = elem.END;
-    i = skipBlankLines(LINES, len, i);
+    blk = newBlock(this, i, DEPTH);
+    result += blk.RESULT;
+    ELEMS.push(blk);
+    i = skipBlankLines(LINES, len, blk.END);
   }
 
   /// #}}} @step parse-lines
