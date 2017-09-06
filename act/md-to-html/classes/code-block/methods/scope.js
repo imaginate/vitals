@@ -179,6 +179,8 @@ function scopeCodeBlock(ROOT, BLOCK, index, depth) {
 
   /** @type {string} */
   var line;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
@@ -217,35 +219,53 @@ function scopeCodeBlock(ROOT, BLOCK, index, depth) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-line-variable
-
-  line = ROOT.LINES[index];
-
-  /// #}}} @step set-line-variable
-
   /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = BLOCK.PARENT;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = PARENT.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = PARENT.LINES;
+  /// #}}} @const LINES
 
   /// #{{{ @const PATTERN
   /**
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp('^' + getIndent(line) + '```');
+  var PATTERN = new RegExp('^' + getIndent(LINES[0]) + '```');
   /// #}}} @const PATTERN
 
   /// #}}} @step set-constants
 
   /// #{{{ @step save-lines-in-scope
 
+  line = LINES[0];
   BLOCK.LINES.push(line);
 
-  while (++index < ROOT.LEN) {
-    line = ROOT.LINES[index];
+  i = 0;
+  while (++i < LEN) {
+    line = LINES[i];
+    BLOCK.LINES.push(line);
     if ( PATTERN.test(line) ) {
       break;
-    }
-    else {
-      BLOCK.LINES.push(line);
     }
   }
 
