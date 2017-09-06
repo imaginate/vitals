@@ -162,13 +162,6 @@ var isWholeNumber = IS.wholeNumber;
  */
 function scopeHorizontal(ROOT, BLOCK, index, depth) {
 
-  /// #{{{ @step declare-variables
-
-  /** @type {string} */
-  var line;
-
-  /// #}}} @step declare-variables
-
   /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
@@ -204,10 +197,37 @@ function scopeHorizontal(ROOT, BLOCK, index, depth) {
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = BLOCK.PARENT;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = PARENT.LINES;
+  /// #}}} @const LINES
+
+  /// #{{{ @const LINE
+  /**
+   * @private
+   * @const {string}
+   */
+  var LINE = LINES[0];
+  /// #}}} @const LINE
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step save-lines-in-scope
 
-  line = ROOT.LINES[index];
-  BLOCK.LINES.push(line);
+  BLOCK.LINES.push(LINE);
 
   /// #}}} @step save-lines-in-scope
 
