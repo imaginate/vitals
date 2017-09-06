@@ -187,6 +187,8 @@ function scopeParagraph(ROOT, BLOCK, index, depth) {
 
   /** @type {string} */
   var line;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
@@ -227,27 +229,62 @@ function scopeParagraph(ROOT, BLOCK, index, depth) {
 
   /// #{{{ @step set-constants
 
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = BLOCK.PARENT;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = PARENT.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = PARENT.LINES;
+  /// #}}} @const LINES
+
+  /// #{{{ @const DEPTH
+  /**
+   * @private
+   * @const {number}
+   */
+  var DEPTH = depth - 1;
+  /// #}}} @const DEPTH
+
   /// #{{{ @const isEmptyLine
   /**
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isEmptyLine = ROOT.isEmptyLine;
+  var isEmptyLine = BLOCK.isEmptyLine;
   /// #}}} @const isEmptyLine
 
   /// #}}} @step set-constants
 
   /// #{{{ @step save-lines-in-scope
 
-  while (index < ROOT.LEN) {
-    line = ROOT.LINES[index++];
-    if (isEmptyLine(line, depth)
-        || CLOSE_PATTERN.test(line)
-        || getBlockId(line) !== 'p' ) {
+  line = LINES[0];
+  BLOCK.LINES.push(line);
+
+  i = 0;
+  while (++i < LEN) {
+    line = LINES[i];
+    if ( isEmptyLine(line, DEPTH) || getBlockId(line) !== 'p' ) {
       break;
     }
-    else {
-      BLOCK.LINES.push(line);
+    BLOCK.LINES.push(line);
+    if ( CLOSE_PATTERN.test(line) ) {
+      break;
     }
   }
 
