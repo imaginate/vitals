@@ -347,6 +347,18 @@ function parseOrderedList(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step set-constants
+
+  /// #{{{ @const INDEX
+  /**
+   * @private
+   * @const {number}
+   */
+  var INDEX = BLOCK.INDEX;
+  /// #}}} @const INDEX
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step parse-each-line
 
   result = '<ol>';
@@ -357,11 +369,10 @@ function parseOrderedList(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
     if ( String(++rank) !== line.replace(OL_PATTERN, '$1') ) {
       throw setOlRankError(new RangeError, BLOCK, i, rank);
     }
-    blk = new Block(BLOCK, i, DEPTH, 'li');
+    blk = newBlock(BLOCK, (i + INDEX), (DEPTH + 1), 'li');
     result += blk.RESULT;
     ELEMS.push(blk);
-    i = blk.END;
-    i = skipBlankLines(LINES, LEN, i);
+    i = skipBlankLines(LINES, LEN, blk.LEN);
   }
   result += '</ol>';
 
