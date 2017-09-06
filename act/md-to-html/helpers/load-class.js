@@ -65,6 +65,69 @@ var IS = loadTaskHelper('is');
 var setError = loadTaskHelper('set-error');
 /// #}}} @func setError
 
+/// #{{{ @func setEmptyCacheError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @param {string} id
+ * @return {!Error}
+ */
+function setEmptyCacheError(err, param, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid empty class cache at `' + param + '` for '
+    + '`loadClass("' + id + '")` call';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setEmptyCacheError
+
 /// #{{{ @func setEmptyError
 /**
  * @private
@@ -150,6 +213,69 @@ function setIdError(err, param, id) {
 var setNoArgError = setError.noArg;
 /// #}}} @func setNoArgError
 
+/// #{{{ @func setNoCacheError
+/**
+ * @private
+ * @param {!ReferenceError} err
+ * @param {string} param
+ * @param {string} id
+ * @return {!ReferenceError}
+ */
+function setNoCacheError(err, param, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'param');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!ReferenceError');
+  }
+  if ( !isString(param) ) {
+    throw setTypeError(new TypeError, 'param', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing class cache at `' + param + '` for `loadClass("' + id + '")` '
+    + 'call';
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'ReferenceError') {
+    err.name = 'ReferenceError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setNoCacheError
+
 /// #{{{ @func setTypeError
 /**
  * @private
@@ -178,6 +304,36 @@ var hasOwnEnumProperty = loadTaskHelper('has-own-enum-property');
 /// #}}} @group HAS
 
 /// #{{{ @group IS
+
+/// #{{{ @func isEmpty
+/**
+ * @description
+ *   Checks if a value is considered empty. The definition of empty is
+ *   defined as follows in order of priority (per the #val data type):
+ *   - *`null`*!$
+ *     `null` is considered empty.
+ *   - *`undefined`*!$
+ *     `undefined` is considered empty.
+ *   - *`number`*!$
+ *     Only `0` and `NaN` are considered empty.
+ *   - *`string`*!$
+ *     Only `""` is considered empty.
+ *   - *`boolean`*!$
+ *     Only `false` is considered empty.
+ *   - *`function`*!$
+ *     The length property must be `0` to be considered empty.
+ *   - *`!Array`*!$
+ *     The length property must be `0` to be considered empty.
+ *   - *`!Object`*!$
+ *     The `object` must **not** own any properties to be considered empty.
+ *   - *`*`*!$
+ *     All other data types are **not** considered empty.
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isEmpty = IS.empty;
+/// #}}} @func isEmpty
 
 /// #{{{ @func isError
 /**
@@ -242,6 +398,20 @@ function loadClass(id) {
   var path;
 
   /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-global-class-cache
+
+  if ( !hasOwnEnumProperty(global, GLOBAL_KEY) ) {
+    throw setNoCacheError(new ReferenceError, 'global.' + GLOBAL_KEY, id);
+  }
+  if ( !isObject(global[GLOBAL_KEY]) ) {
+    throw setTypeError(new TypeError, 'global.' + GLOBAL_KEY, '!Object');
+  }
+  if ( isEmpty(global[GLOBAL_KEY]) ) {
+    throw setEmptyCacheError(new Error, 'global.' + GLOBAL_KEY, id);
+  }
+
+  /// #}}} @step verify-global-class-cache
 
   /// #{{{ @step verify-parameters
 
