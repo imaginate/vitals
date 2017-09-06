@@ -195,10 +195,10 @@ function scopeOrderedList(ROOT, BLOCK, index, depth) {
       throw setNoArgError(new Error, 'depth');
   }
 
-  if ( !isHtml(ROOT, Html) || ROOT !== this.BLOCK.ROOT ) {
+  if ( !isHtml(ROOT) || ROOT !== this.BLOCK.ROOT ) {
     throw setTypeError(new TypeError, 'ROOT', '!Html');
   }
-  if ( !isBlock(BLOCK, Block) || BLOCK !== this.BLOCK ) {
+  if ( !isBlock(BLOCK) || BLOCK !== this.BLOCK ) {
     throw setTypeError(new TypeError, 'BLOCK', '!Block');
   }
   if ( !isNumber(index) ) {
