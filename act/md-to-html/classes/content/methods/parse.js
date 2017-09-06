@@ -89,38 +89,20 @@ var SPACE_END_PATTERN = / +$/;
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setNoArgError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setNoArgError = setError.noArg;
-/// #}}} @func setNoArgError
-
-/// #{{{ @func set_Range_Error
+/// #{{{ @func setAnchorHrefError
 /**
  * @private
  * @param {!RangeError} err
  * @param {string} SOURCE
- * @param {string} __
+ * @param {string} href
  * @return {!RangeError}
  */
-function set_Range_Error(err, SOURCE, __) {
+function setAnchorHrefError(err, SOURCE, href) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {!Array<string>} */
-  var lines;
-  /** @type {string} */
-  var line;
   /** @type {string} */
   var msg;
-  /** @type {number} */
-  var end;
-  /** @type {number} */
-  var i;
 
   /// #}}} @step declare-variables
 
@@ -132,7 +114,7 @@ function set_Range_Error(err, SOURCE, __) {
     case 1:
       throw setNoArgError(new Error, 'SOURCE');
     case 2:
-      throw setNoArgError(new Error, '__');
+      throw setNoArgError(new Error, 'href');
   }
 
   if ( !isError(err) ) {
@@ -141,39 +123,29 @@ function set_Range_Error(err, SOURCE, __) {
   if ( !isString(SOURCE) ) {
     throw setTypeError(new TypeError, 'SOURCE', 'string');
   }
-  if ( !isString(__) ) {
-    throw setTypeError(new TypeError, '__', 'string');
+  if ( !isString(href) ) {
+    throw setTypeError(new TypeError, 'href', 'string');
   }
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/https?:\\/\\/[a-zA-Z0-9_\\-\\.]+\\.[a-zA-Z]{2,}/';
+
+  /// #}}} @step set-constants
+
   /// #{{{ @step make-error-message
 
-  index += BLOCK.INDEX;
-
-  msg = 'invalid `count` for `bullet` in documentation `ordered-list`\n'
-    + '    line-number-within-snippet: `' + (index + 1) + '`\n'
-    + '    valid-bullet-value: `"' + rank + ')"`\n'
-    + '    snippet-of-lines:';
-
-  lines = BLOCK.ROOT.LINES;
-  end = index + 9;
-  i = index - 9;
-  if (end > lines.length) {
-    end = lines.length;
-  }
-  if (i < 0) {
-    i = 0;
-  }
-  while (i < end) {
-    msg += '\n    ';
-    msg += i === index
-      ? '--> '
-      : '    ';
-    line = lines[i++] || ' ';
-    line = line.replace(/`/g, '\\`');
-    msg += i + ' `' + line + '`';
-  }
+  msg = 'invalid http `link` for `href` attribute in documentation `anchor`\n'
+    + '    invalid-href-link-value: `"' + href + '"`\n'
+    + '    valid-href-link-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
 
   /// #}}} @step make-error-message
 
@@ -191,29 +163,97 @@ function set_Range_Error(err, SOURCE, __) {
 
   /// #}}} @step return-error
 }
-/// #}}} @func set_Range_Error
+/// #}}} @func setAnchorHrefError
 
-/// #{{{ @func set_Syntax_Error
+/// #{{{ @func setAnchorIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setAnchorIdError(err, SOURCE, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\$][a-zA-Z0-9_\\-\\$]*$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid reference `id` for `anchor` in documentation\n'
+    + '    invalid-ref-id-value: `"' + id + '"`\n'
+    + '    valid-ref-id-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setAnchorIdError
+
+/// #{{{ @func setAnchorNoCloseError
 /**
  * @private
  * @param {!SyntaxError} err
  * @param {string} SOURCE
  * @return {!SyntaxError}
  */
-function set_Syntax_Error(err, SOURCE) {
+function setAnchorNoCloseError(err, SOURCE) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {!Array<string>} */
-  var lines;
-  /** @type {string} */
-  var line;
   /** @type {string} */
   var msg;
-  /** @type {number} */
-  var end;
-  /** @type {number} */
-  var i;
 
   /// #}}} @step declare-variables
 
@@ -237,31 +277,10 @@ function set_Syntax_Error(err, SOURCE) {
 
   /// #{{{ @step make-error-message
 
-  index += BLOCK.INDEX;
-
-  msg = 'invalid `count` for `bullet` in documentation `ordered-list`\n'
-    + '    line-number-within-snippet: `' + (index + 1) + '`\n'
-    + '    valid-bullet-value: `"' + rank + ')"`\n'
-    + '    snippet-of-lines:';
-
-  lines = BLOCK.ROOT.LINES;
-  end = index + 9;
-  i = index - 9;
-  if (end > lines.length) {
-    end = lines.length;
-  }
-  if (i < 0) {
-    i = 0;
-  }
-  while (i < end) {
-    msg += '\n    ';
-    msg += i === index
-      ? '--> '
-      : '    ';
-    line = lines[i++] || ' ';
-    line = line.replace(/`/g, '\\`');
-    msg += i + ' `' + line + '`';
-  }
+  msg = 'missing closing `]` & `href` attribute for `anchor` in '
+    + 'documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
 
   /// #}}} @step make-error-message
 
@@ -279,7 +298,1171 @@ function set_Syntax_Error(err, SOURCE) {
 
   /// #}}} @step return-error
 }
-/// #}}} @func set_Syntax_Error
+/// #}}} @func setAnchorNoCloseError
+
+/// #{{{ @func setAnchorNoHrefCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setAnchorNoHrefCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `)` for `href` attribute of `anchor` in '
+    + 'documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setAnchorNoHrefCloseError
+
+/// #{{{ @func setAnchorNoHrefError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setAnchorNoHrefError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing `href` attribute for `anchor` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setAnchorNoHrefError
+
+/// #{{{ @func setAnchorNoIdCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setAnchorNoIdCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `]` for reference `id` of `anchor` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setAnchorNoIdCloseError
+
+/// #{{{ @func setAsteriskError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setAsteriskError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid asterisk `*` use within content in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setAsteriskError
+
+/// #{{{ @func setEmailError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} email
+ * @return {!RangeError}
+ */
+function setEmailError(err, SOURCE, email) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'email');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(email) ) {
+    throw setTypeError(new TypeError, 'email', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\-+=.]+@[a-zA-Z0-9_\\-.]+\\.[a-z]{2,}([/?].*)?$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid `email` for angle bracketed `anchor` in documentation\n'
+    + '    invalid-email-value: `"' + email + '"`\n'
+    + '    valid-email-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setEmailError
+
+/// #{{{ @func setEmailNoCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setEmailNoCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `>` for `email` specific `anchor` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setEmailNoCloseError
+
+/// #{{{ @func setHashtagIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setHashtagIdError(err, SOURCE, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\$][a-zA-Z0-9_\\-\\$]*$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid reference `id` for `hashtag` in documentation\n'
+    + '    invalid-ref-id-value: `"' + id + '"`\n'
+    + '    valid-ref-id-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setHashtagIdError
+
+/// #{{{ @func setImgIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setImgIdError(err, SOURCE, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\$][a-zA-Z0-9_\\-\\$]*$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid reference `id` for `src` attribute of `img` in '
+    + 'documentation\n'
+    + '    invalid-ref-id-value: `"' + id + '"`\n'
+    + '    valid-ref-id-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgIdError
+
+/// #{{{ @func setImgNoCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setImgNoCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `]` & `src` attribute for `img` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgNoCloseError
+
+/// #{{{ @func setImgNoIdCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setImgNoIdCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `]` for reference `id` of `img` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgNoIdCloseError
+
+/// #{{{ @func setImgNoSrcCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setImgNoSrcCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing `)` for `src` attribute of `img` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgNoSrcCloseError
+
+/// #{{{ @func setImgNoSrcError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setImgNoSrcError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing `src` attribute for `img` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgNoSrcError
+
+/// #{{{ @func setImgSrcError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} src
+ * @return {!RangeError}
+ */
+function setImgSrcError(err, SOURCE, src) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'src');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(src) ) {
+    throw setTypeError(new TypeError, 'src', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/https?:\\/\\/[a-zA-Z0-9_\\-\\.]+\\.[a-zA-Z]{2,}/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid http `link` for `src` attribute of `img` in documentation\n'
+    + '    invalid-src-link-value: `"' + src + '"`\n'
+    + '    valid-src-link-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setImgSrcError
+
+/// #{{{ @func setMentionsHashIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setMentionsHashIdError(err, SOURCE, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\$][a-zA-Z0-9_\\-\\$]*$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid reference `id` after `#` for `mentions` in documentation\n'
+    + '    invalid-ref-id-value: `"' + id + '"`\n'
+    + '    valid-ref-id-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setMentionsHashIdError
+
+/// #{{{ @func setMentionsIdError
+/**
+ * @private
+ * @param {!RangeError} err
+ * @param {string} SOURCE
+ * @param {string} id
+ * @return {!RangeError}
+ */
+function setMentionsIdError(err, SOURCE, id) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+    case 2:
+      throw setNoArgError(new Error, 'id');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!RangeError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+  if ( !isString(id) ) {
+    throw setTypeError(new TypeError, 'id', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^[a-zA-Z0-9_\\$][a-zA-Z0-9_\\-\\$]*$/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid reference `id` for `mentions` in documentation\n'
+    + '    invalid-ref-id-value: `"' + id + '"`\n'
+    + '    valid-ref-id-regexp: `' + PATT + '`\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'RangeError') {
+    err.name = 'RangeError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setMentionsIdError
+
+/// #{{{ @func setNoArgError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} param
+ * @return {!Error}
+ */
+var setNoArgError = setError.noArg;
+/// #}}} @func setNoArgError
+
+/// #{{{ @func setNoCodeCloseError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setNoCodeCloseError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing closing backtick `\\`` for inline `code` in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setNoCodeCloseError
+
+/// #{{{ @func setTickError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setTickError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid backtick `\\`` use within content in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTickError
+
+/// #{{{ @func setTildeError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {string} SOURCE
+ * @return {!SyntaxError}
+ */
+function setTildeError(err, SOURCE) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var msg;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'SOURCE');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isString(SOURCE) ) {
+    throw setTypeError(new TypeError, 'SOURCE', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid tilde `~` use within content in documentation\n'
+    + '    containing-source:\n'
+    + '        ' + SOURCE.replace(/`/g, '\\`');
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setTildeError
 
 /// #{{{ @func setTypeError
 /**
@@ -293,6 +1476,20 @@ var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
 /// #}}} @group ERROR
+
+/// #{{{ @group HAS
+
+/// #{{{ @func hasOwnEnumProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnEnumProperty = loadHelper('has-own-enum-property');
+/// #}}} @func hasOwnEnumProperty
+
+/// #}}} @group HAS
 
 /// #{{{ @group IS
 
@@ -398,16 +1595,6 @@ var isUndefined = IS.void;
 /// #}}} @group IS
 
 /// #{{{ @group OBJECT
-
-/// #{{{ @func freezeObject
-/**
- * @private
- * @param {(?Object|?Function)} src
- * @param {boolean=} deep = `false`
- * @return {(?Object|?Function)}
- */
-var freezeObject = loadHelper('freeze-object');
-/// #}}} @func freezeObject
 
 /// #{{{ @func setConstantProperty
 /**
