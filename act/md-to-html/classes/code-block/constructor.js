@@ -123,6 +123,16 @@ var isInstanceOf = IS.instanceOf;
 
 /// #{{{ @group OBJECT
 
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadHelper('freeze-object');
+/// #}}} @func freezeObject
+
 /// #{{{ @func setConstantProperty
 /**
  * @private
@@ -147,11 +157,11 @@ var setConstantProperty = loadHelper('set-constant-property');
 /// #{{{ @func CodeBlock
 /**
  * @private
- * @param {!Block} base
+ * @param {!Block} BLOCK
  * @constructor
  * @struct
  */
-function CodeBlock(base) {
+function CodeBlock(BLOCK) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -164,30 +174,48 @@ function CodeBlock(base) {
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'base');
+    throw setNoArgError(new Error, 'BLOCK');
   }
-  if ( !isBlock(base) || base.ID !== 'pre' ) {
-    throw setTypeError(new TypeError, 'base', '!Block');
+  if ( !isBlock(BLOCK) || BLOCK.ID !== 'pre' || BLOCK.TYPE.ID !== 'blk' ) {
+    throw setTypeError(new TypeError, 'BLOCK', '!Block');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-to-base-block-instance
+  /// #{{{ @step set-instance-members
 
-  this = base;
+  /// #{{{ @member BLOCK
+  /**
+   * @const {!Block}
+   */
+  setConstantProperty(this, 'BLOCK', BLOCK);
+  /// #}}} @member BLOCK
 
-  /// #}}} @step set-to-base-block-instance
+  /// #}}} @step set-instance-members
 
-  /// #{{{ @step update-members
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
+
+  /// #{{{ @step update-block-members
+
+  /// #{{{ @member CLASS
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(BLOCK, 'CLASS', this);
+  /// #}}} @member CLASS
 
   /// #{{{ @member TYPE
   /**
    * @const {!TypeId}
    */
-  setConstantProperty(this, 'TYPE', PRE_TYPE);
+  setConstantProperty(BLOCK, 'TYPE', PRE_TYPE);
   /// #}}} @member TYPE
 
-  /// #}}} @step update-members
+  /// #}}} @step update-block-members
 }
 /// #}}} @func CodeBlock
 
@@ -203,22 +231,22 @@ var isCodeBlock = IS.codeBlock;
 /// #{{{ @func newCodeBlock
 /**
  * @public
- * @param {!Block} base
+ * @param {!Block} BLOCK
  * @return {!CodeBlock}
  */
-function newCodeBlock(base) {
+function newCodeBlock(BLOCK) {
 
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'base');
+    throw setNoArgError(new Error, 'BLOCK');
   }
 
   /// #}}} @step verify-parameters
 
   /// #{{{ @step return-new-code-block-instance
 
-  return new CodeBlock(base);
+  return new CodeBlock(BLOCK);
 
   /// #}}} @step return-new-code-block-instance
 }

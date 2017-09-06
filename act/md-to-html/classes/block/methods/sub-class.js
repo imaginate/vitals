@@ -36,11 +36,18 @@ var loadClass = require('../../../helpers/load-class.js');
  * @return {!Block}
  */
 function subClassBlock() {
-  /// #{{{ @step return-updated-block-instance
 
-  return loadClass(this.ID).create(this);
+  /// #{{{ @step set-block-sub-class
 
-  /// #}}} @step return-updated-block-instance
+  loadClass(this.ID).create(this);
+
+  /// #}}} @step set-block-sub-class
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
 }
 /// #}}} @func Block.prototype.subClass
 

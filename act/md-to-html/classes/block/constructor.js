@@ -485,6 +485,17 @@ function Block(parent, index, depth, id) {
 
   /// #{{{ @step set-members
 
+  /// #{{{ @member CLASS
+  /**
+   * @description
+   *   This parameter is only defined after `Block.prototype.subClass` has
+   *   completed. Note that for only this member defined means that its value
+   *   is changed from `null` to an `object`.
+   * @type {?Object}
+   */
+  setProperty(this, 'CLASS', null);
+  /// #}}} @member CLASS
+
   /// #{{{ @member DEPTH
   /**
    * @const {number}
@@ -631,7 +642,7 @@ function Block(parent, index, depth, id) {
 
   /// #{{{ @step setup-sub-class
 
-  this = this.subClass();
+  this.subClass();
 
   /// #}}} @step setup-sub-class
 

@@ -123,6 +123,16 @@ var isInstanceOf = IS.instanceOf;
 
 /// #{{{ @group OBJECT
 
+/// #{{{ @func freezeObject
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
+ */
+var freezeObject = loadHelper('freeze-object');
+/// #}}} @func freezeObject
+
 /// #{{{ @func setConstantProperty
 /**
  * @private
@@ -147,11 +157,11 @@ var setConstantProperty = loadHelper('set-constant-property');
 /// #{{{ @func OrderedList
 /**
  * @private
- * @param {!Block} base
+ * @param {!Block} BLOCK
  * @constructor
  * @struct
  */
-function OrderedList(base) {
+function OrderedList(BLOCK) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -164,30 +174,48 @@ function OrderedList(base) {
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'base');
+    throw setNoArgError(new Error, 'BLOCK');
   }
-  if ( !isBlock(base) || base.ID !== 'ol' ) {
-    throw setTypeError(new TypeError, 'base', '!Block');
+  if ( !isBlock(BLOCK) || BLOCK.ID !== 'ol' || BLOCK.TYPE.ID !== 'blk' ) {
+    throw setTypeError(new TypeError, 'BLOCK', '!Block');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-to-base-block-instance
+  /// #{{{ @step set-instance-members
 
-  this = base;
+  /// #{{{ @member BLOCK
+  /**
+   * @const {!Block}
+   */
+  setConstantProperty(this, 'BLOCK', BLOCK);
+  /// #}}} @member BLOCK
 
-  /// #}}} @step set-to-base-block-instance
+  /// #}}} @step set-instance-members
 
-  /// #{{{ @step update-members
+  /// #{{{ @step freeze-instance
+
+  freezeObject(this);
+
+  /// #}}} @step freeze-instance
+
+  /// #{{{ @step update-block-members
+
+  /// #{{{ @member CLASS
+  /**
+   * @const {!Object}
+   */
+  setConstantProperty(BLOCK, 'CLASS', this);
+  /// #}}} @member CLASS
 
   /// #{{{ @member TYPE
   /**
    * @const {!TypeId}
    */
-  setConstantProperty(this, 'TYPE', OL_TYPE);
+  setConstantProperty(BLOCK, 'TYPE', OL_TYPE);
   /// #}}} @member TYPE
 
-  /// #}}} @step update-members
+  /// #}}} @step update-block-members
 }
 /// #}}} @func OrderedList
 
@@ -203,22 +231,22 @@ var isOrderedList = IS.orderedList;
 /// #{{{ @func newOrderedList
 /**
  * @public
- * @param {!Block} base
+ * @param {!Block} BLOCK
  * @return {!OrderedList}
  */
-function newOrderedList(base) {
+function newOrderedList(BLOCK) {
 
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'base');
+    throw setNoArgError(new Error, 'BLOCK');
   }
 
   /// #}}} @step verify-parameters
 
   /// #{{{ @step return-new-ordered-list-instance
 
-  return new OrderedList(base);
+  return new OrderedList(BLOCK);
 
   /// #}}} @step return-new-ordered-list-instance
 }
