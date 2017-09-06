@@ -297,7 +297,7 @@ function setNoCloseError(err, file, content, linenum) {
    * @private
    * @const {number}
    */
-  var LINENUM = lineum;
+  var LINENUM = linenum;
   /// #}}} @const LINENUM
 
   /// #{{{ @step make-error-message
@@ -544,7 +544,7 @@ function setNoMethodError(err, file, content, linenum) {
    * @private
    * @const {number}
    */
-  var LINENUM = lineum;
+  var LINENUM = linenum;
   /// #}}} @const LINENUM
 
   /// #{{{ @step make-error-message
@@ -591,6 +591,90 @@ function setNoMethodError(err, file, content, linenum) {
   /// #}}} @step return-error
 }
 /// #}}} @func setNoMethodError
+
+/// #{{{ @func setNoSuperError
+/**
+ * @private
+ * @param {!Error} err
+ * @param {string} file
+ * @param {string} content
+ * @return {!Error}
+ */
+function setNoSuperError(err, file, content) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var msg;
+  /** @type {number} */
+  var end;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'file');
+    case 2:
+      throw setNoArgError(new Error, 'content');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!Error');
+  }
+  if ( !isString(file) ) {
+    throw setTypeError(new TypeError, 'file', 'string');
+  }
+  if ( !isString(content) ) {
+    throw setTypeError(new TypeError, 'content', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'missing `@super SUPERMETHOD` within source file `content`\n'
+    + '    source-file: `' + file + '`\n'
+    + '    code-snippet:';
+
+  lines = content.split('\n');
+  end = 15;
+  if (end > lines.length) {
+    end = lines.length;
+  }
+  i = 0;
+  while (i < end) {
+    line = lines[i++] || ' ';
+    line = line.replace(/`/g, '\\`');
+    msg += '\n        ' + i + ' `' + line + '`';
+  }
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'Error') {
+    err.name = 'Error';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setNoSuperError
 
 /// #{{{ @func setParamError
 /**
