@@ -29,6 +29,14 @@ var loadHelper = require('../../../helpers/load-helper.js');
 // CONSTANTS
 //////////////////////////////////////////////////////////////////////////////
 
+/// #{{{ @const CLOSE_PATTERN
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var CLOSE_PATTERN = /!\$ *$/;
+/// #}}} @const CLOSE_PATTERN
+
 /// #{{{ @const IS
 /**
  * @private
@@ -231,12 +239,11 @@ function scopeParagraph(ROOT, BLOCK, index, depth) {
 
   /// #{{{ @step save-lines-in-scope
 
-  line = ROOT.LINES[index];
-  BLOCK.LINES.push(line);
-
-  while (++index < ROOT.LEN) {
-    line = ROOT.LINES[index];
-    if ( isEmptyLine(line, depth) || getBlockId(line) !== 'p' ) {
+  while (index < ROOT.LEN) {
+    line = ROOT.LINES[index++];
+    if (isEmptyLine(line, depth)
+        || CLOSE_PATTERN.test(line)
+        || getBlockId(line) !== 'p' ) {
       break;
     }
     else {
