@@ -496,6 +496,16 @@ function Block(parent, index, depth, id) {
   setProperty(this, 'CLASS', null);
   /// #}}} @member CLASS
 
+  /// #{{{ @member CONTENT
+  /**
+   * @description
+   *   This parameter is only defined after `Block.prototype.parse` has
+   *   completed.
+   * @type {?Content}
+   */
+  setProperty(this, 'CONTENT', null);
+  /// #}}} @member CONTENT
+
   /// #{{{ @member DEPTH
   /**
    * @const {number}

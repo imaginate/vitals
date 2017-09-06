@@ -90,6 +90,14 @@ function parseBlock() {
 
   /// #}}} @step freeze-scoped-blocks
 
+  /// #{{{ @step freeze-content
+
+  if (!this.CONTENT) {
+    setConstantProperty(this, 'CONTENT', null);
+  }
+
+  /// #}}} @step freeze-content
+
   /// #{{{ @step save-result
 
   setConstantProperty(this, 'RESULT', result);
