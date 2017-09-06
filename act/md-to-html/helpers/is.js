@@ -62,6 +62,15 @@ var isBlock = require('./is-block.js');
 var isCodeBlock = require('./is-code-block.js');
 /// #}}} @func isCodeBlock
 
+/// #{{{ @func isContent
+/**
+ * @public
+ * @param {*} val
+ * @return {boolean}
+ */
+var isContent = require('./is-content.js');
+/// #}}} @func isContent
+
 /// #{{{ @func isHeading
 /**
  * @public
@@ -137,6 +146,8 @@ IS.block = isBlock;
 IS.codeBlock = isCodeBlock;
 IS.codeblock = isCodeBlock;
 IS.pre = isCodeBlock;
+
+IS.content = isContent;
 
 IS.heading = isHeading;
 IS.h = isHeading;
