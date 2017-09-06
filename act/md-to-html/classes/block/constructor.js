@@ -319,7 +319,7 @@ var getBlockId = loadHelper('get-block-id');
 
 /// #{{{ @func Block
 /**
- * @private
+ * @public
  * @param {(!Html|!Block)} parent
  * @param {number} index
  * @param {number} depth
@@ -515,7 +515,7 @@ function Block(parent, index, depth, id) {
 
   /// #{{{ @member ELEMS
   /**
-   * @const {!Array<(!Block|!List)>}
+   * @const {!Array<!Block>}
    */
   setConstantProperty(this, 'ELEMS', ELEMS);
   /// #}}} @member ELEMS
@@ -576,7 +576,7 @@ function Block(parent, index, depth, id) {
 
   /// #{{{ @member PARENT
   /**
-   * @const {(!Html|!Block|!List)}
+   * @const {(!Html|!Block)}
    */
   setConstantProperty(this, 'PARENT', PARENT);
   /// #}}} @member PARENT
@@ -678,7 +678,7 @@ function Block(parent, index, depth, id) {
 
 /// #{{{ @func isBlock
 /**
- * @private
+ * @public
  * @param {*} val
  * @return {boolean}
  */
