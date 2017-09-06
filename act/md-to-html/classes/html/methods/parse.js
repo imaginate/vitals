@@ -147,7 +147,7 @@ var setConstantProperty = loadHelper('set-constant-property');
  * @param {number} depth
  * @return {!Block}
  */
-var newBlock = loadClass('block').create;
+var newBlock = loadClass('blk').create;
 /// #}}} @func newBlock
 
 /// #}}} @group SPECIAL
