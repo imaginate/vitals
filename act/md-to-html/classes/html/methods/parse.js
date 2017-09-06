@@ -33,83 +33,10 @@ var loadHelper = require('../../../helpers/load-helper.js');
 
 /// #}}} @group LOADERS
 
-/// #{{{ @group CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-// CONSTANTS
-//////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @const IS
-/**
- * @private
- * @const {!Object<string, !function>}
- * @struct
- */
-var IS = loadHelper('is');
-/// #}}} @const IS
-
-/// #}}} @group CONSTANTS
-
 /// #{{{ @group HELPERS
 //////////////////////////////////////////////////////////////////////////////
 // HELPERS
 //////////////////////////////////////////////////////////////////////////////
-
-/// #{{{ @group ERROR
-
-/// #{{{ @func setError
-/**
- * @private
- * @param {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)} err
- * @param {string} msg
- * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
- */
-var setError = loadHelper('set-error');
-/// #}}} @func setError
-
-/// #{{{ @func setNoArgError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setNoArgError = setError.noArg;
-/// #}}} @func setNoArgError
-
-/// #{{{ @func setTypeError
-/**
- * @private
- * @param {!TypeError} err
- * @param {string} param
- * @param {string} types
- * @return {!TypeError}
- */
-var setTypeError = setError.type;
-/// #}}} @func setTypeError
-
-/// #}}} @group ERROR
-
-/// #{{{ @group IS
-
-/// #{{{ @func isBlankLine
-/**
- * @private
- * @param {string} line
- * @return {boolean}
- */
-var isBlankLine = require('./is-blank-line.js');
-/// #}}} @func isBlankLine
-
-/// #{{{ @func isHtml
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isHtml = IS.html;
-/// #}}} @func isHtml
-
-/// #}}} @group IS
 
 /// #{{{ @group OBJECT
 
@@ -149,6 +76,17 @@ var setConstantProperty = loadHelper('set-constant-property');
  */
 var newBlock = loadClass('blk').create;
 /// #}}} @func newBlock
+
+/// #{{{ @func skipBlankLines
+/**
+ * @private
+ * @param {!Array<string>} lines
+ * @param {number} len
+ * @param {number} i
+ * @return {number}
+ */
+var skipBlankLines = loadHelper('skip-blank-lines');
+/// #}}} @func skipBlankLines
 
 /// #}}} @group SPECIAL
 
@@ -225,15 +163,7 @@ function parseHtml() {
     result += elem.RESULT;
     ELEMS.push(elem);
     i = elem.END;
-    while (i < len) {
-      line = LINES[i];
-      if ( isBlankLine(line) ) {
-        ++i;
-      }
-      else {
-        break;
-      }
-    }
+    i = skipBlankLines(LINES, len, i);
   }
 
   /// #}}} @step parse-lines
