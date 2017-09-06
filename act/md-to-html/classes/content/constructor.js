@@ -307,7 +307,7 @@ function Content(BLOCK, SOURCE) {
 
   /// #{{{ @step parse-source
 
-  this.parse();
+  this.parse(ROOT, BLOCK, SOURCE);
 
   /// #}}} @step parse-source
 
