@@ -65,6 +65,213 @@ var IS = loadHelper('is');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
+/// #{{{ @func setLiIndentError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Block} BLOCK
+ * @param {number} INDEX
+ * @param {number} DEPTH
+ * @return {!SyntaxError}
+ */
+function setLiIndentError(err, BLOCK, INDEX, DEPTH) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var msg;
+  /** @type {number} */
+  var end;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'BLOCK');
+    case 2:
+      throw setNoArgError(new Error, 'INDEX');
+    case 3:
+      throw setNoArgError(new Error, 'DEPTH');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isBlock(BLOCK) ) {
+    throw setTypeError(new TypeError, 'BLOCK', '!Block');
+  }
+  if ( !isNumber(INDEX) ) {
+    throw setTypeError(new TypeError, 'INDEX', 'number');
+  }
+  if ( !isNumber(DEPTH) ) {
+    throw setTypeError(new TypeError, 'DEPTH', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step set-constants
+
+  /**
+   * @private
+   * @const {number}
+   */
+  var INDENTS = BLOCK.makeIndent.INDENT_COUNT * (DEPTH - 1);
+
+  /**
+   * @private
+   * @const {string}
+   */
+  var PATT = '/^ {' + INDENTS + '}/';
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid line indentation for `li` list-item in documentation\n'
+    + '    line-number-within-snippet: `' + (INDEX + 1) + '`\n'
+    + '    valid-line-indent-regexp: `' + PATT + '`\n'
+    + '    snippet-of-lines:';
+
+  lines = BLOCK.ROOT.LINES;
+  end = INDEX + 8;
+  i = INDEX - 7;
+  if (end > lines.length) {
+    end = lines.length;
+  }
+  if (i < 0) {
+    i = 0;
+  }
+  while (i < end) {
+    msg += '\n    ';
+    msg += i === INDEX
+      ? '--> '
+      : '    ';
+    line = lines[i++] || ' ';
+    line = line.replace(/`/g, '\\`');
+    msg += i + ' `' + line + '`';
+  }
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setLiIndentError
+
+/// #{{{ @func setLiParentError
+/**
+ * @private
+ * @param {!SyntaxError} err
+ * @param {!Block} BLOCK
+ * @param {number} INDEX
+ * @return {!SyntaxError}
+ */
+function setLiParentError(err, BLOCK, INDEX) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<string>} */
+  var lines;
+  /** @type {string} */
+  var line;
+  /** @type {string} */
+  var msg;
+  /** @type {number} */
+  var end;
+  /** @type {number} */
+  var i;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'err');
+    case 1:
+      throw setNoArgError(new Error, 'BLOCK');
+    case 2:
+      throw setNoArgError(new Error, 'INDEX');
+  }
+
+  if ( !isError(err) ) {
+    throw setTypeError(new TypeError, 'err', '!SyntaxError');
+  }
+  if ( !isBlock(BLOCK) ) {
+    throw setTypeError(new TypeError, 'BLOCK', '!Block');
+  }
+  if ( !isNumber(INDEX) ) {
+    throw setTypeError(new TypeError, 'INDEX', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-error-message
+
+  msg = 'invalid line indentation for a `pre` code-block in documentation\n'
+    + '    line-number-within-snippet: `' + (INDEX + 1) + '`\n'
+    + '    invalid-parent-id: `"' + BLOCK.PARENT.ID + '"`\n'
+    + '    valid-parent-ids: `"ol"` or `"ul"`\n'
+    + '    snippet-of-lines:';
+
+  lines = BLOCK.ROOT.LINES;
+  end = INDEX + 8;
+  i = INDEX - 7;
+  if (end > lines.length) {
+    end = lines.length;
+  }
+  if (i < 0) {
+    i = 0;
+  }
+  while (i < end) {
+    msg += '\n    ';
+    msg += i === INDEX
+      ? '--> '
+      : '    ';
+    line = lines[i++] || ' ';
+    line = line.replace(/`/g, '\\`');
+    msg += i + ' `' + line + '`';
+  }
+
+  /// #}}} @step make-error-message
+
+  /// #{{{ @step set-error-name-property
+
+  if (err.name !== 'SyntaxError') {
+    err.name = 'SyntaxError';
+  }
+
+  /// #}}} @step set-error-name-property
+
+  /// #{{{ @step return-error
+
+  return setError(err, msg);
+
+  /// #}}} @step return-error
+}
+/// #}}} @func setLiParentError
+
 /// #{{{ @func setNewError
 /**
  * @private
@@ -109,6 +316,15 @@ var setTypeError = setError.type;
 var isBlock = IS.block;
 /// #}}} @func isBlock
 
+/// #{{{ @func isError
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isError = IS.error;
+/// #}}} @func isError
+
 /// #{{{ @func isInstanceOf
 /**
  * @private
@@ -118,6 +334,15 @@ var isBlock = IS.block;
  */
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
+
+/// #{{{ @func isNumber
+/**
+ * @private
+ * @param {*} val
+ * @return {boolean}
+ */
+var isNumber = IS.number;
+/// #}}} @func isNumber
 
 /// #}}} @group IS
 
@@ -146,6 +371,19 @@ var setConstantProperty = loadHelper('set-constant-property');
 /// #}}} @func setConstantProperty
 
 /// #}}} @group OBJECT
+
+/// #{{{ @group SPECIAL
+
+/// #{{{ @func getIndent
+/**
+ * @private
+ * @param {string} line
+ * @return {string}
+ */
+var getIndent = loadHelper('get-indent');
+/// #}}} @func getIndent
+
+/// #}}} @group SPECIAL
 
 /// #}}} @group HELPERS
 
@@ -176,11 +414,29 @@ function ListItem(BLOCK) {
   if (!arguments.length) {
     throw setNoArgError(new Error, 'BLOCK');
   }
+
   if ( !isBlock(BLOCK) || BLOCK.ID !== 'li' || BLOCK.TYPE.ID !== 'blk' ) {
     throw setTypeError(new TypeError, 'BLOCK', '!Block');
   }
 
   /// #}}} @step verify-parameters
+
+  /// #{{{ @step verify-line-indentation
+
+  if (getIndent(BLOCK.PARENT.LINES[0] || '')
+      !== BLOCK.makeIndent(BLOCK.DEPTH - 1) ) {
+    throw setLiIndentError(new SyntaxError, BLOCK, BLOCK.INDEX, BLOCK.DEPTH);
+  }
+
+  /// #}}} @step verify-line-indentation
+
+  /// #{{{ @step verify-parent-id
+
+  if (BLOCK.PARENT.ID !== 'ol' && BLOCK.PARENT.ID !== 'ul') {
+    throw setLiParentError(new SyntaxError, BLOCK, BLOCK.INDEX);
+  }
+
+  /// #}}} @step verify-parent-id
 
   /// #{{{ @step set-instance-members
 
