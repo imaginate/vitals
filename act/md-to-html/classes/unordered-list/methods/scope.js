@@ -179,6 +179,8 @@ function scopeUnorderedList(ROOT, BLOCK, index, depth) {
 
   /** @type {string} */
   var line;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
@@ -217,13 +219,31 @@ function scopeUnorderedList(ROOT, BLOCK, index, depth) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-line-variable
-
-  line = ROOT.LINES[index];
-
-  /// #}}} @step set-line-variable
-
   /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = BLOCK.PARENT;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = PARENT.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = PARENT.LINES;
+  /// #}}} @const LINES
 
   /// #{{{ @const DEPTH
   /**
@@ -238,7 +258,7 @@ function scopeUnorderedList(ROOT, BLOCK, index, depth) {
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp('^' + getIndent(line) + '- ');
+  var PATTERN = new RegExp('^' + getIndent(LINES[0]) + '- ');
   /// #}}} @const PATTERN
 
   /// #{{{ @const isIndented
@@ -246,18 +266,17 @@ function scopeUnorderedList(ROOT, BLOCK, index, depth) {
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isIndented = ROOT.isIndented;
+  var isIndented = BLOCK.isIndented;
   /// #}}} @const isIndented
 
   /// #}}} @step set-constants
 
   /// #{{{ @step save-lines-in-scope
 
-  BLOCK.LINES.push(line);
-
-  while (++index < ROOT.LEN) {
-    line = ROOT.LINES[index];
-    if ( isIndented(line, DEPTH) || PATTERN.test(line) ) {
+  i = -1;
+  while (++i < LEN) {
+    line = LINES[i];
+    if ( PATTERN.test(line) || isIndented(line, DEPTH) ) {
       BLOCK.LINES.push(line);
     }
     else {
