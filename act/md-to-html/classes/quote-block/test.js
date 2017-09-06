@@ -43,7 +43,7 @@ var IS = loadHelper('is');
  * @private
  * @const {!RegExp}
  */
-var PATTERN = /^ *>+/;
+var PATTERN = /^ *>+(?: .*)?$/;
 /// #}}} @const PATTERN
 
 /// #}}} @group CONSTANTS

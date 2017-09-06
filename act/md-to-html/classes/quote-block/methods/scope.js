@@ -43,7 +43,7 @@ var IS = loadHelper('is');
  * @private
  * @const {!RegExp}
  */
-var QUOTE_PATTERN = /^( *>+).*$/;
+var QUOTE_PATTERN = /^( *>+)(?: .*)?$/;
 /// #}}} @const QUOTE_PATTERN
 
 /// #}}} @group CONSTANTS
@@ -151,6 +151,19 @@ var isWholeNumber = IS.wholeNumber;
 
 /// #}}} @group IS
 
+/// #{{{ @group SPECIAL
+
+/// #{{{ @func getIndent
+/**
+ * @private
+ * @param {string} line
+ * @return {string}
+ */
+var getIndent = loadHelper('get-indent');
+/// #}}} @func getIndent
+
+/// #}}} @group SPECIAL
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -174,6 +187,8 @@ function scopeQuoteBlock(ROOT, BLOCK, index, depth) {
 
   /** @type {string} */
   var line;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
@@ -212,31 +227,73 @@ function scopeQuoteBlock(ROOT, BLOCK, index, depth) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-line-variable
-
-  line = ROOT.LINES[index];
-
-  /// #}}} @step set-line-variable
-
   /// #{{{ @step set-constants
+
+  /// #{{{ @const PARENT
+  /**
+   * @private
+   * @const {(!Html|!Block)}
+   */
+  var PARENT = BLOCK.PARENT;
+  /// #}}} @const PARENT
+
+  /// #{{{ @const LEN
+  /**
+   * @private
+   * @const {number}
+   */
+  var LEN = PARENT.LEN;
+  /// #}}} @const LEN
+
+  /// #{{{ @const LINES
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var LINES = PARENT.LINES;
+  /// #}}} @const LINES
+
+  /// #{{{ @const BEGIN
+  /**
+   * @private
+   * @const {string}
+   */
+  var BEGIN = LINES[0].replace(QUOTE_PATTERN, '$1');
+  /// #}}} @const BEGIN
+
+  /// #{{{ @const SEARCH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var SEARCH = new RegExp('^' + BEGIN + ' ?');
+  /// #}}} @const SEARCH
+
+  /// #{{{ @const REPLACE
+  /**
+   * @private
+   * @const {string}
+   */
+  var REPLACE = getIndent(LINES[0]);
+  /// #}}} @const REPLACE
 
   /// #{{{ @const PATTERN
   /**
    * @private
    * @const {!RegExp}
    */
-  var PATTERN = new RegExp('^' + line.replace(QUOTE_PATTERN, '$1'));
+  var PATTERN = new RegExp('^' + BEGIN);
   /// #}}} @const PATTERN
 
   /// #}}} @step set-constants
 
   /// #{{{ @step save-lines-in-scope
 
-  BLOCK.LINES.push(line);
-
-  while (++index < ROOT.LEN) {
-    line = ROOT.LINES[index];
+  i = -1;
+  while (++i < LEN) {
+    line = LINES[i];
     if ( PATTERN.test(line) ) {
+      line = line.replace(SEARCH, REPLACE);
       BLOCK.LINES.push(line);
     }
     else {
