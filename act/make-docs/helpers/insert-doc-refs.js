@@ -499,7 +499,6 @@ function setNoIdError(err, file, id, refs) {
     + '    source-file-path: `' + file + '`\n'
     + '    invalid-ref-id: `"' + id + '"`\n'
     + '    valid-ref-ids:';
-    + 
 
   ids = getKeys(refs);
   msg += ids.length > 0
