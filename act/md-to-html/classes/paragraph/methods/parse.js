@@ -374,15 +374,19 @@ function parseParagraph(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step prepare-content-source
+  /// #{{{ @step set-constants
 
   /// #{{{ @const isIndented
   /**
    * @private
    * @const {!function(string, number=): boolean}
    */
-  var isIndented = ROOT.isIndented;
+  var isIndented = BLOCK.isIndented;
   /// #}}} @const isIndented
+
+  /// #}}} @step set-constants
+
+  /// #{{{ @step prepare-content-source
 
   content = '';
   i = -1;
