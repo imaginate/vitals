@@ -302,7 +302,7 @@ function setNoCloseError(err, file, content, linenum) {
 
   /// #{{{ @step make-error-message
 
-  msg = 'unclosed comment in documentation`\n'
+  msg = 'unclosed comment in documentation\n'
     + '    source-file-path: `' + file + '`\n'
     + '    open-line-number: `' + linenum + '`\n'
     + '    code-snippet:';
@@ -984,17 +984,18 @@ var insertMentions = loadHelper('insert-mentions');
 var insertTag = loadHelper('insert-tag');
 /// #}}} @func insertTag
 
-/// #{{{ @func parseToHtml
+/// #{{{ @func markdownToHtml
 /**
  * @private
  * @param {!Array<string>} lines
  * @param {?Object=} opts
+ * @param {number=} opts.indent = `2`
  * @param {number=} opts.depth = `0`
  * @param {boolean=} opts.github = `false`
  * @return {string}
  */
-var parseToHtml = loadHelper('parse-to-html');
-/// #}}} @func parseToHtml
+var markdownToHtml = require('../md-to-html/main.js');
+/// #}}} @func markdownToHtml
 
 /// #}}} @group SPECIAL
 
@@ -1252,7 +1253,7 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
       line = details[i].replace(PATT.BODY.DESC_LINE, '');
       lines.push(line);
     }
-    part = parseToHtml(lines, {
+    part = markdownToHtml(lines, {
       'github': true
     });
   }
@@ -1420,7 +1421,7 @@ function makeMethodBodyDetailParam(section, superMethod, method, lines, index) {
   result = insertTag(result, 'dflt', part);
 
   lines.shift();
-  part = parseToHtml(lines, {
+  part = markdownToHtml(lines, {
     'github': true
   });
   result = insertTag(result, 'desc', part);
@@ -1516,7 +1517,7 @@ function makeMethodBodyDetailReturn(section, superMethod, method, lines) {
   if (line) {
     lines.shift();
   }
-  part = parseToHtml(lines, {
+  part = markdownToHtml(lines, {
     'github': true
   });
   result = insertTag(result, 'description', part);
