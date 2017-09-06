@@ -934,7 +934,7 @@ makeDocsBuilder.create = makeDocsBuilder;
  * @private
  * @param {string} srcFile
  * @param {string} destFile
- * @param {string} srcCode
+ * @param {string} srcContent
  * @return {string}
  */
 var makeMethodDocs = require('./make-docs/make-method-docs.js');
