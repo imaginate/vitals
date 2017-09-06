@@ -65,16 +65,6 @@ var IS = loadHelper('is');
 var setError = loadHelper('set-error');
 /// #}}} @func setError
 
-/// #{{{ @func setEmptyError
-/**
- * @private
- * @param {!Error} err
- * @param {string} param
- * @return {!Error}
- */
-var setEmptyError = setError.empty;
-/// #}}} @func setEmptyError
-
 /// #{{{ @func setIndexError
 /**
  * @private
@@ -118,17 +108,6 @@ var setNoArgError = setError.noArg;
 var setTypeError = setError.type;
 /// #}}} @func setTypeError
 
-/// #{{{ @func setWholeError
-/**
- * @private
- * @param {!RangeError} err
- * @param {string} param
- * @param {number} value
- * @return {!RangeError}
- */
-var setWholeError = setError.whole;
-/// #}}} @func setWholeError
-
 /// #}}} @group ERROR
 
 /// #{{{ @group IS
@@ -141,15 +120,6 @@ var setWholeError = setError.whole;
  */
 var isArray = IS.array;
 /// #}}} @func isArray
-
-/// #{{{ @func isBlankLine
-/**
- * @private
- * @param {string} line
- * @return {boolean}
- */
-var isBlankLine = loadHelper('is-blank-line');
-/// #}}} @func isBlankLine
 
 /// #{{{ @func isBoolean
 /**
@@ -170,15 +140,6 @@ var isBoolean = IS.boolean;
 var isInstanceOf = IS.instanceOf;
 /// #}}} @func isInstanceOf
 
-/// #{{{ @func isNull
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isNull = IS.nil;
-/// #}}} @func isNull
-
 /// #{{{ @func isNumber
 /**
  * @private
@@ -197,33 +158,6 @@ var isNumber = IS.number;
 var isObject = IS.object;
 /// #}}} @func isObject
 
-/// #{{{ @func isPlainObject
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isPlainObject = IS.plainObject;
-/// #}}} @func isPlainObject
-
-/// #{{{ @func isRegExp
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isRegExp = IS.regexp;
-/// #}}} @func isRegExp
-
-/// #{{{ @func isString
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isString = IS.string;
-/// #}}} @func isString
-
 /// #{{{ @func isStringList
 /**
  * @private
@@ -232,15 +166,6 @@ var isString = IS.string;
  */
 var isStringList = IS.stringList;
 /// #}}} @func isStringList
-
-/// #{{{ @func isUndefined
-/**
- * @private
- * @param {*} val
- * @return {boolean}
- */
-var isUndefined = IS.void;
-/// #}}} @func isUndefined
 
 /// #{{{ @func isWholeNumber
 /**
@@ -255,14 +180,15 @@ var isWholeNumber = IS.wholeNumber;
 
 /// #{{{ @group OBJECT
 
-/// #{{{ @func createObject
+/// #{{{ @func capObject
 /**
  * @private
- * @param {?Object} proto
- * @return {!Object}
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {(?Object|?Function)}
  */
-var createObject = loadHelper('create-object');
-/// #}}} @func createObject
+var capObject = loadHelper('cap-object');
+/// #}}} @func capObject
 
 /// #{{{ @func freezeObject
 /**
@@ -310,15 +236,6 @@ var setProperty = loadHelper('set-property');
  */
 var newIsEmptyLine = loadHelper('is-empty-line').create;
 /// #}}} @func newIsEmptyLine
-
-/// #{{{ @func newIsIndented
-/**
- * @private
- * @param {number=} count = `2`
- * @return {!function(string, number=): boolean}
- */
-var newIsIndented = loadHelper('is-indented').create;
-/// #}}} @func newIsIndented
 
 /// #{{{ @func newMakeIndent
 /**
