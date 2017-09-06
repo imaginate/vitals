@@ -188,15 +188,6 @@ var newContent = loadClass('content').create;
  */
 function parseHeading(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
 
-  /// #{{{ @step declare-variables
-
-  /** @type {!Content} */
-  var content;
-  /** @type {string} */
-  var result;
-
-  /// #}}} @step declare-variables
-
   /// #{{{ @step verify-parameters
 
   switch (arguments.length) {
@@ -245,14 +236,6 @@ function parseHeading(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
   var LINE = LINES[0];
   /// #}}} @const LINE
 
-  /// #{{{ @const CONTENT
-  /**
-   * @private
-   * @const {string}
-   */
-  var CONTENT = LINE.replace(H_PATTERN, '$2');
-  /// #}}} @const CONTENT
-
   /// #{{{ @const SIZE
   /**
    * @private
@@ -261,31 +244,33 @@ function parseHeading(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
   var SIZE = LINE.replace(H_PATTERN, '$1').length;
   /// #}}} @const SIZE
 
+  /// #{{{ @const SOURCE
+  /**
+   * @private
+   * @const {string}
+   */
+  var SOURCE = LINE.replace(H_PATTERN, '$2');
+  /// #}}} @const SOURCE
+
+  /// #{{{ @const CONTENT
+  /**
+   * @private
+   * @const {!Content}
+   */
+  var CONTENT = newContent(BLOCK, SOURCE);
+  /// #}}} @const CONTENT
+
   /// #}}} @step set-constants
-
-  /// #{{{ @step parse-content
-
-  content = newContent(BLOCK, CONTENT);
-
-  /// #}}} @step parse-content
 
   /// #{{{ @step save-content
 
-  setConstantProperty(BLOCK, 'CONTENT', content);
+  setConstantProperty(BLOCK, 'CONTENT', CONTENT);
 
   /// #}}} @step save-content
 
-  /// #{{{ @step make-header-result
-
-  result = '<h' + SIZE + '>';
-  result += content.RESULT;
-  result += '</h' + SIZE + '>';
-
-  /// #}}} @step make-header-result
-
   /// #{{{ @step return-parsed-result
 
-  return result;
+  return '<h' + SIZE + '>' + CONTENT.RESULT + '</h' + SIZE + '>';
 
   /// #}}} @step return-parsed-result
 }
