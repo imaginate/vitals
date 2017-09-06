@@ -399,7 +399,9 @@ function parseParagraph(ROOT, BLOCK, ELEMS, LINES, LEN, DEPTH) {
     line = line.replace(SPACE_END_PATTERN, '');
     content += !!line
       ? line + ' '
-      : '<br>';
+      : i > 0
+        ? '<br>'
+        : '';
   }
   content = content.replace(CLOSE_PATTERN, '');
   content = content.replace(SPACE_END_PATTERN, '');
