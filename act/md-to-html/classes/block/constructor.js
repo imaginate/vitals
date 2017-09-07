@@ -454,7 +454,7 @@ function Block(parent, index, depth, id) {
    * @private
    * @const {string}
    */
-  var ID = id || getBlockId(ROOT.LINES[INDEX]);
+  var ID = id || getBlockId(PARENT.LINES[0]);
   /// #}}} @const ID
 
   /// #{{{ @const isEmptyLine
