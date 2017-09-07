@@ -162,7 +162,7 @@ var freezeObject = require('./freeze-object.js');
  */
 var DFLT = freezeObject({
   'writable': false,
-  'enumerable': true,
+  'enumerable': false,
   'configurable': false
 });
 /// #}}} @const DFLT
@@ -175,7 +175,7 @@ var DFLT = freezeObject({
  */
 var VISIBLE = freezeObject({
   'writable': false,
-  'enumerable': false,
+  'enumerable': true,
   'configurable': false
 });
 /// #}}} @const VISIBLE
