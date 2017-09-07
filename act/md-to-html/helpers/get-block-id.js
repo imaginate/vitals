@@ -235,9 +235,9 @@ function getBlockId(line) {
   testEachProperty(TESTS, function _getBlockId(elemTest) {
     if ( elemTest(line) ) {
       id = elemTest.ID;
-      return true;
+      return false;
     }
-    return false;
+    return true;
   });
 
   /// #}}} @step get-block-id
