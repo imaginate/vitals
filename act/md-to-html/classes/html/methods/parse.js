@@ -162,14 +162,14 @@ function parseHtml() {
     blk = newBlock(this, i, DEPTH);
     result += blk.RESULT;
     ELEMS.push(blk);
-    i = skipBlankLines(LINES, len, blk.END);
+    i = skipBlankLines(LINES, LEN, blk.END);
   }
 
   /// #}}} @step parse-lines
 
   /// #{{{ @step freeze-scoped-elements
 
-  freezeObject(this.ELEMS);
+  freezeObject(ELEMS);
 
   /// #}}} @step freeze-scoped-elements
 
