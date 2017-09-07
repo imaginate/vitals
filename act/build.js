@@ -1584,6 +1584,33 @@ var makeDirectory = loadHelper('make-directory');
 var hasEndSlash = loadHelper('has-end-slash');
 /// #}}} @func hasEndSlash
 
+/// #{{{ @func hasFileExtension
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var hasFileExtension = loadHelper('has-file-extension');
+/// #}}} @func hasFileExtension
+
+/// #{{{ @func hasJsFileExtension
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var hasJsFileExtension = loadHelper('has-file-extension').construct('.js');
+/// #}}} @func hasJsFileExtension
+
+/// #{{{ @func hasMdFileExtension
+/**
+ * @private
+ * @param {string} path
+ * @return {string}
+ */
+var hasMdFileExtension = loadHelper('has-file-extension').construct('.md');
+/// #}}} @func hasMdFileExtension
+
 /// #{{{ @func hasOption
 /**
  * @private
@@ -3194,11 +3221,11 @@ function buildAll(method) {
   branch = {};
 
   branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
-    DIR.SRC, DIR.DEST, method, STATE, flags, makeCompile);
+    DIR.SRC, DIR.DIST, method, STATE, flags, makeCompile);
   branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
-    DIR.DEST, method, STATE, flags, makeCompile);
+    DIR.DIST, method, STATE, flags, makeCompile);
   branch.docs = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC,
-    DIR.DEST, method, STATE, null, makeDocsBuilder);
+    DIR.DIST, method, STATE, null, makeDocsBuilder);
 
   freezeObject(branch);
 
@@ -3273,9 +3300,9 @@ function buildDist(method) {
   branch = {};
 
   branch.browser = new Branch(null, 'browser', CONFIG.branches.browser,
-    DIR.SRC, DIR.DEST, method, STATE, flags, makeCompile);
+    DIR.SRC, DIR.DIST, method, STATE, flags, makeCompile);
   branch.node = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC,
-    DIR.DEST, method, STATE, flags, makeCompile);
+    DIR.DIST, method, STATE, flags, makeCompile);
 
   freezeObject(branch);
 
@@ -3346,7 +3373,7 @@ function buildBrowser(method) {
   /// #{{{ @step make-branch
 
   branch = new Branch(null, 'browser', CONFIG.branches.browser, DIR.SRC,
-    DIR.DEST, method, STATE, flags, makeCompile);
+    DIR.DIST, method, STATE, flags, makeCompile);
 
   /// #}}} @step make-branch
 
@@ -3413,7 +3440,7 @@ function buildNode(method) {
 
   /// #{{{ @step make-branch
 
-  branch = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC, DIR.DEST,
+  branch = new Branch(null, 'node', CONFIG.branches.node, DIR.SRC, DIR.DIST,
     method, STATE, flags, makeCompile);
 
   /// #}}} @step make-branch
@@ -3470,7 +3497,7 @@ function buildDocs(method) {
 
   /// #{{{ @step make-branch
 
-  branch = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC, DIR.DEST,
+  branch = new Branch(null, 'docs', CONFIG.branches.docs, DIR.SRC, DIR.DIST,
     method, STATE, null, makeDocsBuilder);
 
   /// #}}} @step make-branch
