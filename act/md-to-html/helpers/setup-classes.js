@@ -461,6 +461,7 @@ function loadConstructors(CACHE) {
   forEachProperty(paths, function _loadConstructor(path) {
     path = resolvePath(path, 'constructor.js');
     constructor = require(path);
+    constructor.ID = constructor.TYPE.ID;
     constructor.PATH = path;
     constructor.TREE = trimPathName(path);
     constructor.prototype = createObject(null);
@@ -562,7 +563,7 @@ function setupClasses() {
 
   cache = createObject(null);
 
-  global[GLOBAL_KEY] = cache;
+  setConstantProperty(global, GLOBAL_KEY, cache);
 
   loadConstructors(cache);
   loadMethods(cache);
