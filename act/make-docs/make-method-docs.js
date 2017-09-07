@@ -60,7 +60,8 @@ var PATT = {
     RETURN: /^@returns?[ \t]+\{(.+?)\}[ \t]*$/,
     RETURN_LINE: /^[ \t]+\*[ \t]/,
     RETURN_TAG: /^[ \t]+\*[ \t]@returns?[ \t]/,
-    SECTION: /^[ \t]*\/\/\/[ \t]+@section[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/
+    SECTION: /^[ \t]*\/\/\/[ \t]+@section[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
+    SCOPE_TAGS: /^[ \t]+\*[ \t]@(?:public|private)[ \t]*$/
   },
   DOCS: {
     SUPER: /^[ \t]*\/\/\/[ \t]+@super[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/m
@@ -1344,6 +1345,10 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
   result = insertTag(result, 'intro', part);
 
   while ( i < len && PATT.BODY.EMPTY.test(details[i]) ) {
+    ++i;
+  }
+
+  if ( i < len && PATT.BODY.SCOPE_TAGS.test(details[i]) ) {
     ++i;
   }
 
