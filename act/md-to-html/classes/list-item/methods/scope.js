@@ -70,7 +70,7 @@ var UL_PATTERN = /^( *)- +/;
  * @param {string} msg
  * @return {(!Error|!RangeError|!ReferenceError|!SyntaxError|!TypeError)}
  */
-var setError = loadTaskHelper('set-error');
+var setError = loadHelper('set-error');
 /// #}}} @func setError
 
 /// #{{{ @func setIndexError
