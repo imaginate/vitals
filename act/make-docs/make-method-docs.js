@@ -53,8 +53,9 @@ var PATT = {
     DETAILS_OPEN: /^[ \t]*\/\*\*[ \t]*$/,
     EMPTY: /^[ \t]+\*[ \t]{0,2}$/,
     METHOD: /^[ \t]*\/\/\/[ \t]+@method[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
-    PARAM: /^@param(?:eter)?[ \t]+\{(.+?)\}[ \t]+([a-zA-Z_\.\$]+)(?:[ \t]*=[ \t]*`.+?`)?[ \t]*$/,
-    PARAM_DFLT: /^@param(?:eter)?[ \t]+\{.+?\}[ \t]+[a-zA-Z_\.\$]+[ \t]*=[ \t]*`(.+?)`[ \t]*$/,
+    NOTES: /^[ \t]*\/\/\/[ \t]{3,}.*$/,
+    PARAM: /^@param(?:eter)?[ \t]+\{(.+?)\}[ \t]+([a-zA-Z0-9_\.\$]+)(?:[ \t]*=[ \t]*`.+?`)?[ \t]*$/,
+    PARAM_DFLT: /^@param(?:eter)?[ \t]+\{.+?\}[ \t]+[a-zA-Z0-9_\.\$]+[ \t]*=[ \t]*`(.+?)`[ \t]*$/,
     PARAM_LINE: /^[ \t]+\*[ \t]/,
     PARAM_TAG: /^[ \t]+\*[ \t]@param(?:eter)?[ \t]/,
     RETURN: /^@returns?[ \t]+\{(.+?)\}[ \t]*$/,
@@ -1209,6 +1210,9 @@ function makeMethodBody(srcFile, content, superMethod) {
         line = lines[++i];
         alias = line.replace(PATT.BODY.ALIAS, '$1');
         aliases.push(alias);
+      }
+      while ( i < last && PATT.BODY.NOTES.test(lines[i + 1]) ) {
+        ++i;
       }
       if (++i > last) {
         throw setNoDetailsError(new Error, srcFile, content, method, i);
