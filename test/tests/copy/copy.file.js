@@ -141,6 +141,11 @@ function isValidFile(path, encode) {
 
   encode = !!encode;
   content = readFile(path, encode);
+
+  if (encode) {
+    content = setEol(content, 'LF');
+  }
+
   return content === CONTENT;
 }
 /// #}}} @func isValidFile
@@ -181,6 +186,16 @@ var removeDummyPaths = global.VITALS_TEST.DUMMY.remove;
  */
 var resolveDummyPath = global.VITALS_TEST.DUMMY.resolve;
 /// #}}} @func resolveDummyPath
+
+/// #{{{ @func setEol
+/**
+ * @private
+ * @param {string} content
+ * @param {string} eol
+ * @return {string}
+ */
+var setEol = loadHelper('set-eol');
+/// #}}} @func setEol
 
 /// #{{{ @func setupDummyTree
 /**

@@ -152,20 +152,6 @@ var isUndefined = IS.void;
 
 /// #}}} @group IS
 
-/// #{{{ @group STRING
-
-/// #{{{ @func setEol
-/**
- * @private
- * @param {string} content
- * @param {string} eol
- * @return {string}
- */
-var setEol = require('./set-eol.js');
-/// #}}} @func setEol
-
-/// #}}} @group STRING
-
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
@@ -231,10 +217,6 @@ function readFile(path, encode) {
   }
   catch (err) {
     throw setError(err, err.message);
-  }
-
-  if (encode) {
-    content = setEol(content, 'LF');
   }
 
   /// #}}} @step get-file-content
