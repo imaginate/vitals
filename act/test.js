@@ -17,7 +17,7 @@
 
 exports['desc'] = 'runs vitals unit tests';
 exports['value'] = '[SECTION|SUPER|METHOD[-SECTION|SUPER|METHOD]...[:]]...';
-exports['default'] = '-node= all-fs';
+exports['default'] = '-node= main-all-fs';
 exports['methods'] = {
   'all': {
     'desc': 'runs all unit tests for each section and method',
@@ -334,7 +334,8 @@ function setTestItemError(err, itemsList, itemsString) {
 
   /// #{{{ @step make-message
 
-  msg = 'invalid `item` (i.e. `SECTION|SUPER|METHOD`) in `itemsString`\n'
+  msg = 'invalid `item` in `itemsString` for `test` task\n'
+    + '    valid-item-types: `SECTION|SUPER-METHOD|METHOD`\n'
     + '    items-string: `"' + itemsString + '"`\n'
     + '    invalid-item: `"' + item + '"`';
 
@@ -1105,6 +1106,7 @@ function isTestItems(items) {
   /// #{{{ @step setup-flags
 
   flags = {
+    'main': false,
     'section': false,
     'super': false,
     'method': false,
@@ -1116,6 +1118,10 @@ function isTestItems(items) {
   /// #{{{ @step test-each-item
 
   result = testEachProperty(items, function isTestItem(item) {
+    if (item === 'main') {
+      flags['main'] = true;
+      return true;
+    }
     if (item === 'fs') {
       flags['fs'] = true;
       return true;
@@ -1312,7 +1318,7 @@ function makeTestItemsList(itemsString) {
   }
   else {
     itemsList = [
-      [ 'all', 'fs' ]
+      [ 'main', 'all', 'fs' ]
     ];
   }
 
@@ -1356,6 +1362,9 @@ function makeTestOptions(items) {
 
   opts = {};
   forEachProperty(items, function appendTestOption(item) {
+    if (item === 'main') {
+      opts.main = true;
+    }
     if (item === 'fs') {
       opts.fs = true;
     }
@@ -1760,7 +1769,7 @@ var FILE = freezeObject({
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
- * @param {boolean=} opts.main = `true`
+ * @param {boolean=} opts.main = `false`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -1825,7 +1834,7 @@ function Test(build, opts, prev) {
   opts = cloneObject(opts);
 
   if ( !hasOption(opts, 'main') ) {
-    opts['main'] = true;
+    opts['main'] = false;
   }
   else if ( !isBoolean(opts['main']) ) {
     throw setTypeError(new TypeError, 'opts.main', 'boolean=');
@@ -2015,7 +2024,7 @@ function Test(build, opts, prev) {
   setConstantProperty(this, 'section',
     !SECTION && !SUPER && !METHOD && FS
       ? 'fs'
-      : null);
+      : SECTION);
   /// #}}} @member section
 
   /// #{{{ @member super
@@ -2099,7 +2108,7 @@ function Test(build, opts, prev) {
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
- * @param {boolean=} opts.main = `true`
+ * @param {boolean=} opts.main = `false`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -2134,7 +2143,7 @@ function newTest(build, opts, prev) {
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
- * @param {boolean=} opts.main = `true`
+ * @param {boolean=} opts.main = `false`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -2529,7 +2538,7 @@ function testAll() {
 /// #{{{ @func testBrowser
 /**
  * @public
- * @param {(?string|?undefined)=} itemsString = `"all-fs"`
+ * @param {(?string|?undefined)=} itemsString = `"main-all-fs"`
  * @return {void}
  */
 function testBrowser(itemsString) {
@@ -2597,7 +2606,7 @@ function testBrowser(itemsString) {
 /// #{{{ @func testNode
 /**
  * @public
- * @param {(?string|?undefined)=} itemsString = `"all-fs"`
+ * @param {(?string|?undefined)=} itemsString = `"main-all-fs"`
  * @return {void}
  */
 function testNode(itemsString) {
