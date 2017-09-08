@@ -72,7 +72,7 @@ var setTypeError = setError.type;
  * @param {*} val
  * @return {boolean}
  */
-var isArguments IS.args;
+var isArguments = IS.args;
 /// #}}} @func isArguments
 
 /// #{{{ @func isArray
