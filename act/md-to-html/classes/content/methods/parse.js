@@ -2178,7 +2178,7 @@ function parseInlineContent(ROOT, BLOCK, SOURCE, LINK) {
           if (!!ch) {
             ++$i;
           }
-          if (ch !== TICK) {
+          if (ch !== '`') {
             $result += cleanHtmlCharacter(ESC_CHAR);
           }
           $result += cleanHtmlCharacter(ch);
