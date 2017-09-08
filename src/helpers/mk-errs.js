@@ -176,9 +176,9 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @return {string} 
      */
     function _prepMethod(method) {
-      method = method
-        ? _SUPER
-        : _SUPER + '.' + method;
+      method = !!method
+        ? _SUPER + '.' + method
+        : _SUPER;
       return '`' + method + '`';
     }
     /// #}}} @func _prepMethod
