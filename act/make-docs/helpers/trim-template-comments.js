@@ -51,6 +51,14 @@ var COMMENT = {
 var IS = loadTaskHelper('is');
 /// #}}} @const IS
 
+/// #{{{ @const LAST_EOL
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var LAST_EOL = /\n$/;
+/// #}}} @const LAST_EOL
+
 /// #}}} @group CONSTANTS
 
 /// #{{{ @group HELPERS
@@ -132,6 +140,8 @@ function trimTemplateComments(content) {
   content = content.replace(COMMENT.ANY, '');
   content = content.replace(COMMENT.OPEN, '');
   content = content.replace(COMMENT.CLOSE, '');
+
+  content = content.replace(LAST_EOL, '');
 
   return content;
 }
