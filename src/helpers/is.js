@@ -455,18 +455,34 @@ var $is = (function $isPrivateScope() {
    */
   var _FLAGS = (function _FLAGS_PrivateScope() {
 
+    /** @type {!RegExp} */
+    var pattern;
+    /** @type {string} */
+    var source;
     /** @type {string} */
     var flags;
 
     flags = 'img';
 
-    if ('sticky' in REGX_PROTO)
+    if ('sticky' in REGX_PROTO) {
       flags += 'y';
-    if ('unicode' in REGX_PROTO)
-      flags += 'u';
+    }
 
-    flags = '[\\+\\-][' + flags + '\\+\\-]*|[' + flags + ']*';
-    return new REGX('^(?:' + flags + ')$');
+    if ('unicode' in REGX_PROTO) {
+      flags += 'u';
+    }
+
+    source = '^(?:'
+      + '[\\+\\-][' + flags + '\\+\\-]*'
+      + '|'
+      + '[' + flags + ']*'
+      + ')$';
+
+    pattern = new REGX(source);
+    pattern.FLAGS = flags;
+    pattern.SRC = '/' + source + '/';
+
+    return pattern;
   })();
   /// #}}} @const _FLAGS
 
@@ -478,6 +494,8 @@ var $is = (function $isPrivateScope() {
   function isRegExpFlags(val) {
     return _FLAGS['test'](val);
   }
+  isRegExpFlags.FLAGS = _FLAGS.FLAGS;
+  isRegExpFlags.SRC = _FLAGS.SRC;
   /// #}}} @func isRegExpFlags
 
   /// #}}} @group Special

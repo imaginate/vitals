@@ -254,17 +254,19 @@ var copy = (function copyPrivateScope() {
         break;
       default:
         if ( $is.str(flags) ) {
-          if ( !$is.flags(flags) )
-            throw _mkErr(new ERR, 'invalid #flags `string` `' + flags + '` ' +
-              '(must consist of only valid `RegExp` flags and if it starts ' +
-              'with a mod flag, mod flags, `"+"` and `"-"`)', 'regexp');
+          if ( !$is.flags(flags) ) {
+            throw _mkRangeErr(new RANGE_ERR, 'flags', $is.flags.SRC,
+              'regexp');
+          }
         }
-        else if ( !$is.void(flags) )
+        else if ( !$is.void(flags) ) {
           throw _mkTypeErr(new TYPE_ERR, 'flags', flags, 'string=', 'regexp');
+        }
     }
 
-    if ( !$is.regx(source) )
+    if ( !$is.regx(source) ) {
       throw _mkTypeErr(new TYPE_ERR, 'source', source, '!RegExp', 'regexp');
+    }
 
     return _copyRegex(source, flags);
   }
@@ -1150,11 +1152,13 @@ var copy = (function copyPrivateScope() {
     /** @type {string} */
     var flag;
 
-    if ( $is.void(flags) )
+    if ( $is.void(flags) ) {
       return $getFlags(src);
+    }
 
-    if ( !_MOD_FLAGS['test'](flags) )
+    if ( !_MOD_FLAGS['test'](flags) ) {
       return flags;
+    }
 
     /** @const {string} */
     var FLAGS = flags;
