@@ -1756,6 +1756,7 @@ var FILE = freezeObject({
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
+ * @param {boolean=} opts.main = `true`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -1818,6 +1819,13 @@ function Test(build, opts, prev) {
   /// #{{{ @step verify-options
 
   opts = cloneObject(opts);
+
+  if ( !hasOption(opts, 'main') ) {
+    opts['main'] = true;
+  }
+  else if ( !isBoolean(opts['main']) ) {
+    throw setTypeError(new TypeError, 'opts.main', 'boolean=');
+  }
 
   if ( hasOption(opts, 'section') && !isNullString(opts['section']) ) {
     throw setTypeError(new TypeError, 'opts.section', '?string=');
@@ -1904,6 +1912,14 @@ function Test(build, opts, prev) {
   var OPTS = freezeObject(opts);
   /// #}}} @const OPTS
 
+  /// #{{{ @const MAIN
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var MAIN = OPTS['main'];
+  /// #}}} @const MAIN
+
   /// #{{{ @const SECTION
   /**
    * @private
@@ -1970,6 +1986,13 @@ function Test(build, opts, prev) {
    */
   setConstantProperty(this, 'build', BUILD);
   /// #}}} @member build
+
+  /// #{{{ @member main
+  /**
+   * @const {boolean}
+   */
+  setConstantProperty(this, 'main', MAIN);
+  /// #}}} @member main
 
   /// #{{{ @member section
   /**
@@ -2055,6 +2078,7 @@ function Test(build, opts, prev) {
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
+ * @param {boolean=} opts.main = `true`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -2089,6 +2113,7 @@ function newTest(build, opts, prev) {
  *   - `"browser"`
  *   - `"node"`
  * @param {!Object} opts
+ * @param {boolean=} opts.main = `true`
  * @param {?string=} opts.section = `null`
  * @param {?string=} opts.super = `null`
  * @param {?string=} opts.method = `null`
@@ -2202,6 +2227,7 @@ function runTest() {
 
   opts = toJsonString({
     'build': THIS.build,
+    'main': THIS.main,
     'section': THIS.section,
     'super': THIS.super,
     'method': THIS.method,
@@ -2284,6 +2310,7 @@ function setTestExitCode(code) {
 /// #{{{ @step setup-test-constructor
 
 Test.Test = Test;
+Test.create = newTest;
 Test.newTest = newTest;
 Test.construct = newTest;
 Test.prototype = createObject(null);
