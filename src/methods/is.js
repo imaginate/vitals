@@ -444,11 +444,6 @@ var is = (function isPrivateScope() {
    *   must pass the type check to return `true`.
    * @return {boolean}
    *   The evaluation result.
-   * Checks if a value(s) is an object or function.
-   *
-   * @public
-   * @param {...*} val
-   * @return {boolean}
    */
   /// #}}} @docs _object
   /// #if{{{ @code _object
