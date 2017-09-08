@@ -2077,13 +2077,6 @@ function Test(build, opts, prev) {
   setProperty(this, 'exitCode', 0);
   /// #}}} @member exitCode
 
-  /// #{{{ @member exitTime
-  /**
-   * @type {number}
-   */
-  setProperty(this, 'exitTime', 100);
-  /// #}}} @member exitTime
-
   /// #}}} @step set-members
 
   /// #{{{ @step cap-instance
@@ -2091,14 +2084,6 @@ function Test(build, opts, prev) {
   capObject(this);
 
   /// #}}} @step cap-instance
-
-  /// #{{{ @step update-root-exit-time
-
-  if (PREV) {
-    ROOT.exitTime += 500;
-  }
-
-  /// #}}} @step update-root-exit-time
 }
 /// #}}} @func Test
 
@@ -2218,29 +2203,57 @@ function chainTest(build, opts) {
 }
 /// #}}} @func Test.prototype.chain
 
-/// #{{{ @func Test.prototype.exit
+/// #{{{ @func Test.prototype.end
 /**
  * @this {!Test}
- * @return {void}
+ * @param {number} code
+ * @return {!Test}
  */
-function exitTest() {
+function endTest(code) {
 
-  /// #{{{ @step set-this-constant
+  /// #{{{ @step verify-parameters
 
-  /** @const {!Test} */
-  var THIS = this;
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'code');
+  }
+  if ( !isNumber(code) ) {
+    throw setTypeError(new TypeError, 'code', 'number');
+  }
+  if ( !isWholeNumber(code) ) {
+    throw setWholeError(new RangeError, 'code', code);
+  }
 
-  /// #}}} @step set-this-constant
+  /// #}}} @step verify-parameters
 
-  /// #{{{ @step exit-current-process
+  /// #{{{ @step set-exit-code
 
-  setTimeout(function exitTests() {
-    process.exit(THIS.exitCode);
-  }, THIS.root.exitTime);
+  if (this.prev && this.prev.exitCode) {
+    setConstantProperty(this, 'exitCode', this.prev.exitCode);
+  }
+  else {
+    setConstantProperty(this, 'exitCode', code);
+  }
 
-  /// #}}} @step exit-current-process
+  /// #}}} @step set-exit-code
+
+  /// #{{{ @step run-next-test-or-exit
+
+  if (this.next) {
+    this.next.run();
+  }
+  else {
+    process.exit(this.exitCode);
+  }
+
+  /// #}}} @step run-next-test-or-exit
+
+  /// #{{{ @step return-test-instance
+
+  return this;
+
+  /// #}}} @step return-test-instance
 }
-/// #}}} @func Test.prototype.exit
+/// #}}} @func Test.prototype.end
 
 /// #{{{ @func Test.prototype.run
 /**
@@ -2289,13 +2302,7 @@ function runTest() {
     if ( isNull(code) || ( !!code && isNumber(code) && code !== 15 ) ) {
       throw setTestModError(new Error, THIS, code, signal);
     }
-    THIS.setExitCode(code);
-    if (THIS.next) {
-      THIS.next.run();
-    }
-    else {
-      THIS.exit();
-    }
+    THIS.end(code);
   });
 
   /// #}}} @step set-exit-event
@@ -2307,47 +2314,6 @@ function runTest() {
   /// #}}} @step return-test-instance
 }
 /// #}}} @func Test.prototype.run
-
-/// #{{{ @func Test.prototype.setExitCode
-/**
- * @this {!Test}
- * @param {number} code
- * @return {!Test}
- */
-function setTestExitCode(code) {
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'code');
-  }
-  if ( !isNumber(code) ) {
-    throw setTypeError(new TypeError, 'code', 'number');
-  }
-  if ( !isWholeNumber(code) ) {
-    throw setWholeError(new RangeError, 'code', code);
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step set-exit-code
-
-  if (this.prev && this.prev.exitCode) {
-    setConstantProperty(this, 'exitCode', this.prev.exitCode);
-  }
-  else {
-    setConstantProperty(this, 'exitCode', code);
-  }
-
-  /// #}}} @step set-exit-code
-
-  /// #{{{ @step return-test-instance
-
-  return this;
-
-  /// #}}} @step return-test-instance
-}
-/// #}}} @func Test.prototype.setExitCode
 
 /// #{{{ @step setup-test-constructor
 
@@ -2364,9 +2330,8 @@ freezeObject(Test);
 /// #{{{ @step setup-test-prototype
 
 setConstantProperty(Test.prototype, 'chain', chainTest);
-setConstantProperty(Test.prototype, 'exit', exitTest);
+setConstantProperty(Test.prototype, 'end', endTest);
 setConstantProperty(Test.prototype, 'run', runTest);
-setConstantProperty(Test.prototype, 'setExitCode', setTestExitCode);
 setConstantProperty(Test.prototype, 'constructor', Test, false);
 
 freezeObject(Test.prototype);
