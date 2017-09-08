@@ -1976,6 +1976,16 @@ function Test(build, opts, prev) {
   var PREV = prev;
   /// #}}} @const PREV
 
+  /// #{{{ @const ROOT
+  /**
+   * @private
+   * @const {!Test}
+   */
+  var ROOT = !!PREV
+    ? PREV.root
+    : this;
+  /// #}}} @const ROOT
+
   /// #}}} @step set-constants
 
   /// #{{{ @step set-members
@@ -2039,6 +2049,13 @@ function Test(build, opts, prev) {
   setConstantProperty(this, 'slow', SLOW);
   /// #}}} @member slow
 
+  /// #{{{ @member root
+  /**
+   * @const {!Test}
+   */
+  setConstantProperty(this, 'root', ROOT);
+  /// #}}} @member root
+
   /// #{{{ @member prev
   /**
    * @const {?Test}
@@ -2060,6 +2077,13 @@ function Test(build, opts, prev) {
   setProperty(this, 'exitCode', 0);
   /// #}}} @member exitCode
 
+  /// #{{{ @member exitTime
+  /**
+   * @type {number}
+   */
+  setProperty(this, 'exitTime', 100);
+  /// #}}} @member exitTime
+
   /// #}}} @step set-members
 
   /// #{{{ @step cap-instance
@@ -2067,6 +2091,14 @@ function Test(build, opts, prev) {
   capObject(this);
 
   /// #}}} @step cap-instance
+
+  /// #{{{ @step update-root-exit-time
+
+  if (PREV) {
+    ROOT.exitTime += 500;
+  }
+
+  /// #}}} @step update-root-exit-time
 }
 /// #}}} @func Test
 
@@ -2192,9 +2224,19 @@ function chainTest(build, opts) {
  * @return {void}
  */
 function exitTest() {
+
+  /// #{{{ @step set-this-constant
+
+  /** @const {!Test} */
+  var THIS = this;
+
+  /// #}}} @step set-this-constant
+
   /// #{{{ @step exit-current-process
 
-  process.exit(this.exitCode);
+  setTimeout(function exitTests() {
+    process.exit(THIS.exitCode);
+  }, THIS.root.exitTime);
 
   /// #}}} @step exit-current-process
 }
