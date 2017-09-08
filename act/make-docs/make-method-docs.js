@@ -62,7 +62,8 @@ var PATT = {
     RETURN_LINE: /^[ \t]+\*[ \t]/,
     RETURN_TAG: /^[ \t]+\*[ \t]@returns?[ \t]/,
     SECTION: /^[ \t]*\/\/\/[ \t]+@section[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
-    SCOPE_TAGS: /^[ \t]+\*[ \t]@(?:public|private)[ \t]*$/
+    SCOPE_TAGS: /^[ \t]+\*[ \t]@(?:public|private)[ \t]*$/,
+    VITALS: /^vitals\./i
   },
   DOCS: {
     SUPER: /^[ \t]*\/\/\/[ \t]+@super[ \t]+([a-zA-Z0-9_\.]+?)[ \t]*\n[\s\S]+$/
@@ -1403,6 +1404,9 @@ function makeMethodBodyDetail(section, superMethod, method, aliases, details) {
 
   part = getMethodId(method);
   result = insertTag(result, 'id', part);
+
+  part = method.replace(PATT.BODY.VITALS, '');
+  result = insertTag(result, 'trimmed-method', part);
 
   /// #}}} @step build-body-detail
 
