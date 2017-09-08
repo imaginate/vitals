@@ -234,7 +234,7 @@ function readFile(path, encode) {
   }
 
   if (encode) {
-    content = setEol(content);
+    content = setEol(content, 'LF');
   }
 
   /// #}}} @step get-file-content
