@@ -27,7 +27,7 @@ var IS = require('./is.js');
  * @private
  * @const {!Function}
  */
-var LOG = require('log-ocd')().pass;
+var LOG = require('log-ocd')();
 /// #}}} @const LOG
 
 /// #}}} @group CONSTANTS
@@ -121,7 +121,7 @@ var isWholeNumber = IS.wholeNumber;
 // CONFIGURE
 //////////////////////////////////////////////////////////////////////////////
 
-LOG.setConfig({
+LOG.pass.setConfig({
   'header': true,
   'ocdmap': false,
   'style': true,
@@ -131,7 +131,17 @@ LOG.setConfig({
   'msg': false
 });
 
-LOG.setFormat({
+LOG.fail.setConfig({
+  'header': true,
+  'ocdmap': false,
+  'style': true,
+  'stack': false,
+  'throw': false,
+  'exit': false,
+  'msg': false
+});
+
+LOG.pass.setFormat({
   'linesBefore': 1,
   'linesAfter': 1,
   'header': {
@@ -141,13 +151,35 @@ LOG.setFormat({
   }
 });
 
-LOG.setStyle({
+LOG.fail.setFormat({
+  'linesBefore': 1,
+  'linesAfter': 1,
+  'header': {
+    'spaceBefore': 1,
+    'spaceAfter': 6,
+    'accentMark': '`'
+  }
+});
+
+LOG.pass.setStyle({
   'header': {
     'color': 'white',
     'bg': 'green',
     'accent': {
       'color': 'yellow',
       'bg': 'green',
+      'bold': true
+    }
+  }
+});
+
+LOG.fail.setStyle({
+  'header': {
+    'color': 'white',
+    'bg': 'red',
+    'accent': {
+      'color': 'yellow',
+      'bg': 'red',
       'bold': true
     }
   }
@@ -193,7 +225,12 @@ function logMainEnd(failures, opts) {
 
   /// #{{{ @step log-end-message
 
-  LOG('Completed `vitals` unit tests');
+  if (failures > 0) {
+    LOG.fail('Completed `vitals` unit tests');
+  }
+  else {
+    LOG.pass('Completed `vitals` unit tests');
+  }
 
   /// #}}} @step log-end-message
 }
