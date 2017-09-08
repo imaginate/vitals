@@ -29,6 +29,8 @@
 .lock-wscript
 .sass-cache
 
+.dummy/
+
 $RECYCLE.BIN/
 CVS/
 Network Trash Folder/
