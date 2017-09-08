@@ -2598,7 +2598,7 @@ function parseInlineContent(ROOT, BLOCK, SOURCE, LINK) {
       throw setHashtagIdError(new RangeError, SOURCE, id);
     }
 
-    $result += '<a href="@{{!{{ main }}!#!{{ id }}!-params-' + id + '}}@">';
+    $result += '<a href="@{{!{{ super }}!#!{{ id }}!-params-' + id + '}}@">';
     $result += param;
     $result += '</a>';
   }
