@@ -1,178 +1,372 @@
 /**
- * -----------------------------------------------------------------------------
- * VITALS UNIT TESTS: vitals.cut
- * -----------------------------------------------------------------------------
+ * ---------------------------------------------------------------------------
+ * VITALS.CUT UNIT TESTS
+ * ---------------------------------------------------------------------------
+ * @method vitals.cut
+ * @submethod main
+ * @super cut
  * @section base
- * @see [vitals.cut docs](https://github.com/imaginate/vitals/wiki/vitals.cut)
- * @see [test api](https://github.com/imaginate/vitals/blob/master/test/setup/interface.js)
- * @see [test helpers](https://github.com/imaginate/vitals/blob/master/test/setup/helpers.js)
+ * @section all
+ * @build browser
+ * @build node
  *
- * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://github.com/imaginate)
+ * @see [vitals.cut](https://github.com/imaginate/vitals/wiki/vitals.cut)
  *
- * Annotations:
- * @see [JSDoc3](http://usejsdoc.org)
- * @see [Closure Compiler JSDoc Syntax](https://developers.google.com/closure/compiler/docs/js-for-compiler)
+ * @author Adam Smith <adam@imaginate.life> (http://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-method('cut', function() {
+/// #{{{ @group HELPERS
+//////////////////////////////////////////////////////////////////////////////
+// HELPERS
+//////////////////////////////////////////////////////////////////////////////
 
-  should('delete props from obj where obj owns key', function() {
+/// #{{{ @func loadHelper
+/**
+ * @private
+ * @param {string} name
+ * @return {(!Object|!Function)}
+ */
+var loadHelper = global.VITALS_TEST.loadHelper;
+/// #}}} @func loadHelper
 
-    test('<object>', 'a', function() {
-      var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
-      var obj2 = vitals.cut(obj1, 'a');
-      assert( !hasOwn(obj2, 'a') );
-      assert(  hasOwn(obj2, 'b') );
-      assert(  hasOwn(obj2, 'c') );
-      assert( obj1 === obj2 );
+/// #{{{ @func assert
+/**
+ * @private
+ * @param {boolean} result
+ * @return {void}
+ */
+var assert = require('assert');
+/// #}}} @func assert
+
+/// #{{{ @func freeze
+/**
+ * @private
+ * @param {(?Object|?Function)} src
+ * @param {boolean=} deep = `false`
+ * @return {?Object}
+ */
+var freeze = loadHelper('freeze-object');
+/// #}}} @func freeze
+
+/// #{{{ @func owns
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var owns = loadHelper('has-own-property');
+/// #}}} @func owns
+
+/// #{{{ @const is
+/**
+ * @private
+ * @const {!Object<string, !function>}
+ */
+var is = loadHelper('is');
+/// #}}} @const is
+
+/// #{{{ @func throws
+/**
+ * @private
+ * @param {!function} action
+ * @return {void}
+ */
+var throws = loadHelper('throws-error');
+/// #}}} @func throws
+
+/// #{{{ @const vitals
+/**
+ * @private
+ * @const {(!Object|!Function)}
+ */
+var vitals = global.VITALS_TEST.VITALS;
+/// #}}} @const vitals
+
+/// #}}} @group HELPERS
+
+/// #{{{ @group TESTS
+//////////////////////////////////////////////////////////////////////////////
+// TESTS
+//////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @suite cut
+method('cut', function cutTests() {
+
+  /// #{{{ @docrefs cut
+  /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// #}}} @docrefs cut
+
+  /// #{{{ @tests A
+  should('A', 'delete strictly matching owned property keys', function cutTestsA() {
+
+    /// #{{{ @test A1
+    test('A1', [ '<object>', 'a' ], function cutTestA1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
+        'a': 1,
+        'b': 2,
+        'c': 3
+      };
+
+      result = vitals.cut(obj, 'a');
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert(  owns(result, 'b') );
+      assert(  owns(result, 'c') );
     });
+    /// #}}} @test A1
 
-    test('<object>', 'a', 'b', function() {
-      var obj1 = { 'a': 1, 'b': 2, 'c': 3 };
-      var obj2 = vitals.cut(obj1, 'a', 'b');
-      assert( !hasOwn(obj2, 'a') );
-      assert( !hasOwn(obj2, 'b') );
-      assert(  hasOwn(obj2, 'c') );
-      assert( obj1 === obj2 );
+    /// #{{{ @test A2
+    test('A2', [ '<object>', 'a', 'b' ], function cutTestA2() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
+        'a': 1,
+        'b': 2,
+        'c': 3
+      };
+
+      result = vitals.cut(obj, 'a', 'b');
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert( !owns(result, 'b') );
+      assert(  owns(result, 'c') );
     });
+    /// #}}} @test A2
 
-    // Note that `vitals.cut` decides which method of removing properties from a
-    //   non-array object to use based upon the type of the first given value.
+    /// @note first-val-param-matters
+    ///   The data type of the first #val passed to @cut#main decides which
+    ///   method of removing properties from a non-array `object` to use (i.e.
+    ///   pay attention to the **first** #val). Below you will see two
+    ///   examples, %A3 and %A4, that demonstrate @cut#main removing only
+    ///   properties from the #source `object` where a `string` conversion of
+    ///   a #val strictly equals (instead of loosely matching) a property key
+    ///   [owned][own] by the #source because the first #val passed is a
+    ///   `string`.
 
-    // Below you will see two examples that demonstrate `vitals.cut` only
-    //   removing properties where the object [owns](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-    //   the key of the string conversion of one of the values
-    //   because the first value is a string.
+    /// #{{{ @test A3
+    test('A3', [ '<object>', 'a', 2 ], function cutTestA3() {
 
-    test('<object>', 'a', 2, function() {
-      var obj1 = {
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var obj2 = vitals.cut(obj1, 'a', 2);
-      assert( !hasOwn(obj2, 'a')  );
-      assert(  hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert(  hasOwn(obj2, '1')  );
-      assert( !hasOwn(obj2, '2')  );
-      assert(  hasOwn(obj2, '3')  );
-      assert(  hasOwn(obj2, 'a1') );
-      assert(  hasOwn(obj2, 'b2') );
-      assert(  hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
-    });
 
-    test('<object>', [ 'a', 'b', 2, /^[0-9]$/ ], function() {
-      var obj1 = {
+      result = vitals.cut(obj, 'a', 2);
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert(  owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert(  owns(result, '1') );
+      assert( !owns(result, '2') );
+      assert(  owns(result, '3') );
+      assert(  owns(result, 'a1') );
+      assert(  owns(result, 'b2') );
+      assert(  owns(result, 'c3') );
+    });
+    /// #}}} @test A3
+
+    /// #{{{ @test A4
+    test('A4', [
+      '<object>', [ 'a', 'b', 2, /^[0-9]$/ ]
+    ], function cutTestA4() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Array} */
+      var vals;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var keys = [ 'a', 'b', 2, /^[0-9]$/ ];
-      var obj2 = vitals.cut(obj1, keys);
-      assert( !hasOwn(obj2, 'a')  );
-      assert( !hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert(  hasOwn(obj2, '1')  );
-      assert( !hasOwn(obj2, '2')  );
-      assert(  hasOwn(obj2, '3')  );
-      assert(  hasOwn(obj2, 'a1') );
-      assert(  hasOwn(obj2, 'b2') );
-      assert(  hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
+      vals = [ 'a', 'b', 2, /^[0-9]$/ ];
+
+      result = vitals.cut(obj, vals);
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert( !owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert(  owns(result, '1') );
+      assert( !owns(result, '2') );
+      assert(  owns(result, '3') );
+      assert(  owns(result, 'a1') );
+      assert(  owns(result, 'b2') );
+      assert(  owns(result, 'c3') );
     });
+    /// #}}} @test A4
+
   });
+  /// #}}} @tests A
 
-  should('delete props from obj where obj owns matching key', function() {
+  /// #{{{ @tests B
+  should('B', 'delete loosely matching owned property keys', function cutTestsB() {
 
-    test('<object>', /a/, function() {
-      var obj1 = {
+    /// #{{{ @test B1
+    test('B1', [ '<object>', /a/ ], function cutTestB1() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var obj2 = vitals.cut(obj1, /a/);
-      assert( !hasOwn(obj2, 'a')  );
-      assert(  hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert(  hasOwn(obj2, '1')  );
-      assert(  hasOwn(obj2, '2')  );
-      assert(  hasOwn(obj2, '3')  );
-      assert( !hasOwn(obj2, 'a1') );
-      assert(  hasOwn(obj2, 'b2') );
-      assert(  hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
-    });
 
-    test('<object>', /^[0-9]$/, function() {
-      var obj1 = {
+      result = vitals.cut(obj, /a/);
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert(  owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert(  owns(result, '1') );
+      assert(  owns(result, '2') );
+      assert(  owns(result, '3') );
+      assert( !owns(result, 'a1') );
+      assert(  owns(result, 'b2') );
+      assert(  owns(result, 'c3') );
+    });
+    /// #}}} @test B1
+
+    /// #{{{ @test B2
+    test('B2', [ '<object>', /^[0-9]$/ ], function cutTestB2() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var obj2 = vitals.cut(obj1, /^[0-9]$/);
-      assert(  hasOwn(obj2, 'a')  );
-      assert(  hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert( !hasOwn(obj2, '1')  );
-      assert( !hasOwn(obj2, '2')  );
-      assert( !hasOwn(obj2, '3')  );
-      assert(  hasOwn(obj2, 'a1') );
-      assert(  hasOwn(obj2, 'b2') );
-      assert(  hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
+
+      result = vitals.cut(obj, /^[0-9]$/);
+
+      assert(result === obj);
+
+      assert(  owns(result, 'a') );
+      assert(  owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert( !owns(result, '1') );
+      assert( !owns(result, '2') );
+      assert( !owns(result, '3') );
+      assert(  owns(result, 'a1') );
+      assert(  owns(result, 'b2') );
+      assert(  owns(result, 'c3') );
     });
+    /// #}}} @test B2
 
-    // Note that `vitals.cut` decides which method of removing properties from a
-    //   non-array object to use based upon the type of the first given value.
+    /// @note first-val-param-matters
+    ///   The data type of the first #val passed to @cut#main decides which
+    ///   method of removing properties from a non-array `object` to use (i.e.
+    ///   pay attention to the **first** #val). Below you will see two
+    ///   examples, %B3 and %B4, that demonstrate @cut#main removing all
+    ///   properties from the #source `object` where a #val loosely matches
+    ///   (see @has#pattern) a property key [owned][own] by the #source
+    ///   because the first #val passed is a `RegExp` instance.
 
-    // Below you will see two examples that demonstrate `vitals.cut` only
-    //   removing properties where the object [owns](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
-    //   a key that [matches](https://github.com/imaginate/vitals/wiki/vitals.has#haspattern)
-    //   one of the values because the first value is a regex.
+    /// #{{{ @test B3
+    test('B3', [ '<object>', /a/, 2 ], function cutTestB3() {
 
-    test('<object>', /a/, 2, function() {
-      var obj1 = {
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var obj2 = vitals.cut(obj1, /a/, 2);
-      assert( !hasOwn(obj2, 'a')  );
-      assert(  hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert(  hasOwn(obj2, '1')  );
-      assert( !hasOwn(obj2, '2')  );
-      assert(  hasOwn(obj2, '3')  );
-      assert( !hasOwn(obj2, 'a1') );
-      assert( !hasOwn(obj2, 'b2') );
-      assert(  hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
-    });
 
-    test('<object>', [ /a$/, 'b', 3 ], function() {
-      var obj1 = {
+      result = vitals.cut(obj, /a/, 2);
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert(  owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert(  owns(result, '1') );
+      assert( !owns(result, '2') );
+      assert(  owns(result, '3') );
+      assert( !owns(result, 'a1') );
+      assert( !owns(result, 'b2') );
+      assert(  owns(result, 'c3') );
+    });
+    /// #}}} @test B3
+
+    /// #{{{ @test B4
+    test('B4', [ '<object>', [ /a$/, 'b', 3 ] ], function cutTestB4() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Array} */
+      var vals;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
          'a': 1,  'b': 2,  'c': 3,
          '1': 4,  '2': 5,  '3': 6,
         'a1': 7, 'b2': 8, 'c3': 9
       };
-      var obj2 = vitals.cut(obj1, [ /a$/, 'b', 3 ]);
-      assert( !hasOwn(obj2, 'a')  );
-      assert( !hasOwn(obj2, 'b')  );
-      assert(  hasOwn(obj2, 'c')  );
-      assert(  hasOwn(obj2, '1')  );
-      assert(  hasOwn(obj2, '2')  );
-      assert( !hasOwn(obj2, '3')  );
-      assert(  hasOwn(obj2, 'a1') );
-      assert( !hasOwn(obj2, 'b2') );
-      assert( !hasOwn(obj2, 'c3') );
-      assert( obj1 === obj2 );
+      vals = [ /a$/, 'b', 3 ];
+
+      result = vitals.cut(obj, vals);
+
+      assert(result === obj);
+
+      assert( !owns(result, 'a') );
+      assert( !owns(result, 'b') );
+      assert(  owns(result, 'c') );
+      assert(  owns(result, '1') );
+      assert(  owns(result, '2') );
+      assert( !owns(result, '3') );
+      assert(  owns(result, 'a1') );
+      assert( !owns(result, 'b2') );
+      assert( !owns(result, 'c3') );
     });
+    /// #}}} @test B4
+
   });
+  /// #}}} @tests B
 
-  should('delete props from obj where value === val', function() {
+  /// #{{{ @tests C
+  should('C', 'delete strictly matching owned property values', function cutTestsC() {
 
     test('<object>', 3, function() {
       var obj1 = { a: 1, b: 2, c: 3 };
@@ -183,6 +377,29 @@ method('cut', function() {
       assert( obj1 === obj2 );
     });
 
+    /// #{{{ @test C1
+    test('C1', [ /regexp/ ], function cutTestC1() {
+
+      /** @type {!RegExp} */
+      var before;
+      /** @type {!RegExp} */
+      var after;
+
+      before = /regexp/;
+      after = vitals.cut(before);
+
+      assert(after !== before);
+
+      assert(after.source === 'regexp');
+      assert(after.global === false);
+      assert(after.ignoreCase === false);
+
+      assert(after.source === before.source);
+      assert(after.global === before.global);
+      assert(after.ignoreCase === before.ignoreCase);
+    });
+    /// #}}} @test C1
+
     test('<object>', 1, 3, function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var obj2 = vitals.cut(obj1, 1, 3);
@@ -191,6 +408,29 @@ method('cut', function() {
       assert( !hasOwn(obj2, 'c') );
       assert( obj1 === obj2 );
     });
+
+    /// #{{{ @test C2
+    test('C2', [ /regexp/ig ], function cutTestC2() {
+
+      /** @type {!RegExp} */
+      var before;
+      /** @type {!RegExp} */
+      var after;
+
+      before = /regexp/ig;
+      after = vitals.cut(before);
+
+      assert(after !== before);
+
+      assert(after.source === 'regexp');
+      assert(after.global === true);
+      assert(after.ignoreCase === true);
+
+      assert(after.source === before.source);
+      assert(after.global === before.global);
+      assert(after.ignoreCase === before.ignoreCase);
+    });
+    /// #}}} @test C2
 
     // Note that `vitals.cut` decides which method of removing properties from a
     //   non-array object to use based upon the type of the first given value.
@@ -230,9 +470,12 @@ method('cut', function() {
       assert( !hasOwn(obj2, 'h') );
       assert( obj1 === obj2 );
     });
-  });
 
-  should('delete props from obj where filter returns false', function() {
+  });
+  /// #}}} @tests C
+
+  /// #{{{ @tests D
+  should('D', 'delete owned properties via filter function', function cutTestsD() {
 
     test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
@@ -246,6 +489,29 @@ method('cut', function() {
       assert( obj1 === obj2 );
     });
 
+    /// #{{{ @test D1
+    test('D1', [ '<array>' ], function cutTestD1() {
+
+      /** @type {!Array} */
+      var before;
+      /** @type {!Array} */
+      var after;
+
+      before = freeze([
+        1,
+        { 'b': 2 },
+        3
+      ], true);
+      after = vitals.cut(before);
+
+      assert(after !== before);
+      assert(after[0] === before[0]);
+      assert(after[1] === before[1]);
+      assert(after[2] === before[2]);
+      assert(after[1].b === before[1].b);
+    });
+    /// #}}} @test D1
+
     test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3 };
       var fltr = function filter() {
@@ -257,6 +523,29 @@ method('cut', function() {
       assert( !hasOwn(obj2, 'c') );
       assert( obj1 === obj2 );
     });
+
+    /// #{{{ @test D2
+    test('D2', [ '<array>', true ], function cutTestD2() {
+
+      /** @type {!Array} */
+      var before;
+      /** @type {!Array} */
+      var after;
+
+      before = freeze([
+        1,
+        { 'b': 2 },
+        3
+      ], true);
+      after = vitals.cut(before, true);
+
+      assert(after !== before);
+      assert(after[0] === before[0]);
+      assert(after[1] !== before[1]);
+      assert(after[2] === before[2]);
+      assert(after[1].b === before[1].b);
+    });
+    /// #}}} @test D2
 
     test('<object>', '<filter>', function() {
       var obj1 = { a: 1, b: 2, c: 3, d: 4, e: 5 };
@@ -312,9 +601,12 @@ method('cut', function() {
       assert( !hasOwn(obj2, 'c') );
       assert( obj1 === obj2 );
     });
-  });
 
-  should('splice props from array where index === val', function() {
+  });
+  /// #}}} @tests D
+
+  /// #{{{ @tests E
+  should('E', 'splice indexed properties from array by index', function cutTestsE() {
 
     test('<array>', 1, function() {
       var arr1 = [ 1, 2, 3 ];
@@ -325,6 +617,25 @@ method('cut', function() {
       assert( arr2[1] === 3 );
       assert( arr2.length === 2 );
     });
+
+    /// #{{{ @test E1
+    test('E1', [ '<function>' ], function cutTestE1() {
+
+      /** @type {!Function} */
+      var before;
+      /** @type {!Function} */
+      var after;
+
+      before = newFunc();
+      after = vitals.cut(before);
+
+      assert(after !== before);
+      assert(after() === before());
+      assert(after.a === before.a);
+      assert(after.b === before.b);
+      assert(after.b.c === before.b.c);
+    });
+    /// #}}} @test E1
 
     // Note that `vitals.cut` decides which method of removing properties from
     //   an array to use based upon the type of the first or all given values.
@@ -344,6 +655,25 @@ method('cut', function() {
       assert( arr2.length === 3 );
     });
 
+    /// #{{{ @test E2
+    test('E2', [ '<function>', true ], function cutTestE2() {
+
+      /** @type {!Function} */
+      var before;
+      /** @type {!Function} */
+      var after;
+
+      before = newFunc();
+      after = vitals.cut(before, true);
+
+      assert(after !== before);
+      assert(after() === before());
+      assert(after.a === before.a);
+      assert(after.b !== before.b);
+      assert(after.b.c === before.b.c);
+    });
+    /// #}}} @test E2
+
     test('<array>', [ 0, 1 ], function() {
       var arr1 = [ 1, 2, 3, 4, 5 ];
       var arr2 = vitals.cut(arr1, [ 0, 1 ]);
@@ -354,9 +684,12 @@ method('cut', function() {
       assert( arr2[2] === 5 );
       assert( arr2.length === 3 );
     });
-  });
 
-  should('splice props from array where value === val', function() {
+  });
+  /// #}}} @tests E
+
+  /// #{{{ @tests F
+  should('F', 'splice indexed properties from array by value', function cutTestsF() {
 
     test('<array>', 'a', function() {
       var arr1 = [ 'a', 'b', 'c' ];
@@ -367,6 +700,16 @@ method('cut', function() {
       assert( arr2[1] === 'c' );
       assert( arr2.length === 2 );
     });
+
+    /// #{{{ @test F1
+    test('F1', [], function cutTestF1() {
+
+      throws(function() {
+        vitals.cut();
+      });
+
+    });
+    /// #}}} @test F1
 
     // Note that `vitals.cut` decides which method of removing properties from
     //   an array to use based upon the type of the first or all given values.
@@ -385,6 +728,16 @@ method('cut', function() {
       assert( arr2.length === 2 );
     });
 
+    /// #{{{ @test F2
+    test('F2', [ {}, 'fail' ], function cutTestF2() {
+
+      throws.type(function() {
+        vitals.cut({}, 'fail');
+      });
+
+    });
+    /// #}}} @test F2
+
     test('<array>', [ 2, /b/ ], function() {
       var arr1 = [ 1, 2, 'a', 'b' ];
       var arr2 = vitals.cut(arr1, [ 2, /b/ ]);
@@ -395,9 +748,12 @@ method('cut', function() {
       assert( arr2[2] === 'b' );
       assert( arr2.length === 3 );
     });
-  });
 
-  should('splice props from array where filter returns false', function() {
+  });
+  /// #}}} @tests F
+
+  /// #{{{ @tests G
+  should('G', 'splice properties from array via filter function', function cutTestsG() {
 
     test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
@@ -413,6 +769,16 @@ method('cut', function() {
       assert( arr2.length === 3 );
     });
 
+    /// #{{{ @test G1
+    test('G1', [], function cutTestG1() {
+
+      throws(function() {
+        vitals.cut();
+      });
+
+    });
+    /// #}}} @test G1
+
     test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
       var fltr = function filter() {
@@ -423,6 +789,16 @@ method('cut', function() {
       assert( arr2 === arr1 );
       assert( arr2.length === 0 );
     });
+
+    /// #{{{ @test G2
+    test('G2', [ {}, 'fail' ], function cutTestG2() {
+
+      throws.type(function() {
+        vitals.cut({}, 'fail');
+      });
+
+    });
+    /// #}}} @test G2
 
     test('<array>', '<filter>', function() {
       var arr1 = [ 1, 2, 3 ];
@@ -476,19 +852,42 @@ method('cut', function() {
       assert( arr2[0] === 1 );
       assert( arr2.length === 1 );
     });
-  });
 
-  should('remove all substrings from string', function() {
+  });
+  /// #}}} @tests G
+
+  /// #{{{ @tests H
+  should('H', 'remove all substrings from string', function cutTestsH() {
 
     test('abcABCabc', 'a', function() {
       var str = vitals.cut('abcABCabc', 'a');
       assert( str === 'bcABCbc' );
     });
 
+    /// #{{{ @test H1
+    test('H1', [], function cutTestH1() {
+
+      throws(function() {
+        vitals.cut();
+      });
+
+    });
+    /// #}}} @test H1
+
     test('abc123a1b2c3', 1, 'a', function() {
       var str = vitals.cut('abc123a1b2c3', 1, 'a');
       assert( str === 'bc23b2c3' );
     });
+
+    /// #{{{ @test H2
+    test('H2', [ {}, 'fail' ], function cutTestH2() {
+
+      throws.type(function() {
+        vitals.cut({}, 'fail');
+      });
+
+    });
+    /// #}}} @test H2
 
     test('abc123a1b2c3', [ { 'a': 2 }, 'c' ], function() {
       var str = vitals.cut('abc123a1b2c3', [ { 'a': 2 }, 'c' ]);
@@ -504,19 +903,42 @@ method('cut', function() {
       var str = vitals.cut('ABC.a*b*c.123', '.*');
       assert( str === 'ABC.a*b*c.123' );
     });
-  });
 
-  should('remove all patterns from string', function() {
+  });
+  /// #}}} @tests H
+
+  /// #{{{ @tests I
+  should('I', 'remove all patterns from string', function cutTestsI() {
 
     test('abc123', /[a-z]/, function() {
       var str = vitals.cut('abc123', /[a-z]/);
       assert( str === 'bc123' );
     });
 
+    /// #{{{ @test I1
+    test('I1', [], function cutTestI1() {
+
+      throws(function() {
+        vitals.cut();
+      });
+
+    });
+    /// #}}} @test I1
+
     test('abc123', /[a-z]/g, function() {
       var str = vitals.cut('abc123', /[a-z]/g);
       assert( str === '123' );
     });
+
+    /// #{{{ @test I2
+    test('I2', [ {}, 'fail' ], function cutTestI2() {
+
+      throws.type(function() {
+        vitals.cut({}, 'fail');
+      });
+
+    });
+    /// #}}} @test I2
 
     // Note that for string sources `vitals.cut` removes patterns in the defined
     //   order. Below you will see two examples that remove the same patterns
@@ -531,33 +953,60 @@ method('cut', function() {
       var str = vitals.cut('abc.123.abc1', [ /[a-z]$/, 1, 'c' ]);
       assert( str === 'ab.23.ab' );
     });
+
   });
+  /// #}}} @tests I
 
-  should('throw an error', function() {
+  /// #{{{ @tests J
+  should('J', 'should throw a vitals error', function cutTestsJ() {
 
-    test(function() {
-      assert.throws(function() {
+    /// #{{{ @test J1
+    test('J1', [], function cutTestJ1() {
+
+      throws(function() {
         vitals.cut();
-      }, validErr);
-    });
+      });
 
-    test({}, function() {
-      assert.throws(function() {
+    });
+    /// #}}} @test J1
+
+    /// #{{{ @test J2
+    test('J2', [ {} ], function cutTestJ2() {
+
+      throws(function() {
         vitals.cut({});
-      }, validErr);
-    });
+      });
 
-    test(1, 1, function() {
-      assert.throws(function() {
+    });
+    /// #}}} @test J2
+
+    /// #{{{ @test J3
+    test('J3', [ 1, 1 ], function cutTestJ3() {
+
+      throws.type(function() {
         vitals.cut(1, 1);
-      }, validTypeErr);
-    });
+      });
 
-    test({}, '<filter>', false, function() {
-      assert.throws(function() {
-        var fltr = function filter(){};
-        vitals.cut({}, fltr, false);
-      }, validTypeErr);
     });
+    /// #}}} @test J3
+
+    /// #{{{ @test J4
+    test('J4', [ {}, '<filter>', false ], function cutTestJ4() {
+
+      throws.type(function() {
+        function filter(){}
+        vitals.cut({}, filter, false);
+      });
+
+    });
+    /// #}}} @test J4
+
   });
+  /// #}}} @tests J
+
 });
+/// #}}} @suite cut
+
+/// #}}} @group TESTS
+
+// vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
