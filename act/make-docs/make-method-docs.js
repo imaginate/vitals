@@ -64,7 +64,7 @@ var PATT = {
     SCOPE_TAGS: /^[ \t]+\*[ \t]@(?:public|private)[ \t]*$/
   },
   DOCS: {
-    SUPER: /^[ \t]*\/\/\/[ \t]+@super[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/m
+    SUPER: /^[ \t]*\/\/\/[ \t]+@super[ \t]+([a-zA-Z0-9_\.]+?)[ \t]*\n[\s\S]+$/
   },
   HEADER: {
     ALIAS: /^[ \t]*\/\/\/[ \t]+@alias[ \t]+([a-zA-Z0-9_\.]+)[ \t]*$/,
