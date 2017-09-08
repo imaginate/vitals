@@ -128,11 +128,12 @@ function trimTemplateComments(content) {
     throw setTypeError(new TypeError, 'content', 'string');
   }
 
+  COMMENT.ANY.lastIndex = 0;
+  content = content.replace(COMMENT.ANY, '');
   content = content.replace(COMMENT.OPEN, '');
   content = content.replace(COMMENT.CLOSE, '');
 
-  COMMENT.ANY.lastIndex = 0;
-  return content.replace(COMMENT.ANY, '');
+  return content;
 }
 /// #}}} @func trimTemplateComments
 
