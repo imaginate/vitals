@@ -19,6 +19,10 @@ exports['desc'] = 'runs vitals unit tests';
 exports['value'] = '[SECTION|SUPER|METHOD[-SECTION|SUPER|METHOD]...[:]]...';
 exports['default'] = '-node= all-fs';
 exports['methods'] = {
+  'all': {
+    'desc': 'runs all unit tests for each section and method',
+    'method': testAll
+  },
   'browser': {
     'desc': 'runs browser specific unit tests for one or more sections, '
       + 'super method groups, and/or methods',
@@ -2346,6 +2350,181 @@ freezeObject(Test.prototype);
 //////////////////////////////////////////////////////////////////////////////
 // METHODS
 //////////////////////////////////////////////////////////////////////////////
+
+/// #{{{ @func testAll
+/**
+ * @public
+ * @return {void}
+ */
+function testAll() {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!Array<!Array<string>>} */
+  var itemsList;
+  /** @type {!Array<!Object>} */
+  var optsList;
+  /** @type {!Test} */
+  var tests;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step make-browser-items
+
+  itemsList = makeTestItemsList(
+      'all:'
+    + 'base:'
+    + 'strict:'
+    + 'amend:'
+    + 'copy:'
+    + 'create:'
+    + 'cut:'
+    + 'each:'
+    + 'fill:'
+    + 'freeze:'
+    + 'fuse:'
+    + 'get:'
+    + 'has:'
+    + 'is:'
+    + 'remap:'
+    + 'roll:'
+    + 'same:'
+    + 'seal:'
+    + 'slice:'
+    + 'to:'
+    + 'until');
+
+  /// #}}} @step make-browser-items
+
+  /// #{{{ @step verify-browser-items
+
+  if ( !isTestItemsList(itemsList) ) {
+    throw setTestItemError(new RangeError, itemsList, itemsString);
+  }
+
+  /// #}}} @step verify-browser-items
+
+  /// #{{{ @step make-browser-options
+
+  optsList = remapEachProperty(itemsList, makeTestOptions);
+
+  /// #}}} @step make-browser-options
+
+  /// #{{{ @step make-browser-tests
+
+  tests = new Test('browser', {
+    'main': true,
+    'section': null,
+    'super': null,
+    'method': null,
+    'fs': false
+  });
+  forEachProperty(optsList, function makeNewTest(opts) {
+    tests.chain('browser', opts);
+  });
+
+  /// #}}} @step make-browser-tests
+
+  /// #{{{ @step make-node-items
+
+  itemsList = makeTestItemsList(
+      'main-all:'
+    + 'main-base:'
+    + 'main-base-fs:'
+    + 'main-fs:'
+    + 'main-shell:'
+    + 'main-strict:'
+    + 'main-amend:'
+    + 'main-copy:'
+    + 'main-copy-fs:'
+    + 'main-create:'
+    + 'main-cut:'
+    + 'main-each:'
+    + 'main-fill:'
+    + 'main-freeze:'
+    + 'main-fuse:'
+    + 'main-get:'
+    + 'main-get-fs:'
+    + 'main-has:'
+    + 'main-is:'
+    + 'main-is-fs:'
+    + 'main-remap:'
+    + 'main-roll:'
+    + 'main-run:'
+    + 'main-same:'
+    + 'main-seal:'
+    + 'main-slice:'
+    + 'main-to:'
+    + 'main-to-fs:'
+    + 'main-until'
+    + 'all:'
+    + 'base:'
+    + 'base-fs:'
+    + 'fs:'
+    + 'shell:'
+    + 'strict:'
+    + 'amend:'
+    + 'copy:'
+    + 'copy-fs:'
+    + 'create:'
+    + 'cut:'
+    + 'each:'
+    + 'fill:'
+    + 'freeze:'
+    + 'fuse:'
+    + 'get:'
+    + 'get-fs:'
+    + 'has:'
+    + 'is:'
+    + 'is-fs:'
+    + 'remap:'
+    + 'roll:'
+    + 'run:'
+    + 'same:'
+    + 'seal:'
+    + 'slice:'
+    + 'to:'
+    + 'to-fs:'
+    + 'until');
+
+  /// #}}} @step make-node-items
+
+  /// #{{{ @step verify-node-items
+
+  if ( !isTestItemsList(itemsList) ) {
+    throw setTestItemError(new RangeError, itemsList, itemsString);
+  }
+
+  /// #}}} @step verify-node-items
+
+  /// #{{{ @step make-node-options
+
+  optsList = remapEachProperty(itemsList, makeTestOptions);
+
+  /// #}}} @step make-node-options
+
+  /// #{{{ @step make-node-tests
+
+  tests.chain('node', {
+    'main': true,
+    'section': null,
+    'super': null,
+    'method': null,
+    'fs': true
+  });
+  forEachProperty(optsList, function makeNewTest(opts) {
+    tests.chain('node', opts);
+  });
+
+  /// #}}} @step make-node-tests
+
+  /// #{{{ @step run-tests
+
+  tests.run();
+
+  /// #}}} @step run-tests
+}
+/// #}}} @func testAll
 
 /// #{{{ @func testBrowser
 /**
