@@ -1081,14 +1081,6 @@ var copy = (function copyPrivateScope() {
   /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @group RegExp-Helpers
 
-  /// #{{{ @const _ADD_FLAG
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _ADD_FLAG = /^\+/;
-  /// #}}} @const _ADD_FLAG
-
   /// #{{{ @const _MOD_FLAGS
   /**
    * @private
@@ -1097,25 +1089,15 @@ var copy = (function copyPrivateScope() {
   var _MOD_FLAGS = /^[\+\-]/;
   /// #}}} @const _MOD_FLAGS
 
-  /// #{{{ @const _RM_FLAG
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _RM_FLAG = /^\-/;
-  /// #}}} @const _RM_FLAG
-
   /// #{{{ @func _addFlags
   /**
    * @private
-   * @param {string} src
-   * @param {string} mod
-   * @return {string}
+   * @param {!Object<string, boolean>} FLAGS
+   * @param {!Array<string>} flags
+   * @return {!Object<string, boolean>}
    */
-  function _addFlags(src, mod) {
+  function _addFlags(FLAGS, flags) {
 
-    /** @type {!Array<string>} */
-    var flags;
     /** @type {string} */
     var flag;
     /** @type {number} */
@@ -1123,16 +1105,13 @@ var copy = (function copyPrivateScope() {
     /** @type {number} */
     var i;
 
-    mod = mod['replace'](_ADD_FLAG, '');
-    flags = mod['split']('');
     len = flags['length'];
     i = -1;
     while (++i < len) {
       flag = flags[i];
-      if ( !$inStr(src, flag) )
-        src += flag;
+      FLAGS[flag] = true;
     }
-    return src;
+    return FLAGS;
   }
   /// #}}} @func _addFlags
 
@@ -1145,10 +1124,6 @@ var copy = (function copyPrivateScope() {
    */
   function _getFlags(src, flags) {
 
-    /** @type {(?Array|?Object)} */
-    var result;
-    /** @type {!RegExp} */
-    var patt;
     /** @type {string} */
     var flag;
 
@@ -1160,55 +1135,106 @@ var copy = (function copyPrivateScope() {
       return flags;
     }
 
-    /** @const {string} */
-    var FLAGS = flags;
+    /// #{{{ @const FLAGS
+    /**
+     * @private
+     * @const {!Object<string, boolean>}
+     */
+    var FLAGS = _mkFlags(src);
+    /// #}}} @const FLAGS
 
-    patt = /[\+\-][imgyu]+/g;
-    flags = $getFlags(src);
-    result = patt['exec'](FLAGS);
-    while (result) {
-      flag = result[0];
-      flags = _ADD_FLAG['test'](flag)
-        ? _addFlags(flags, flag)
-        : _rmFlags(flags, flag);
-      result = patt['exec'](FLAGS);
+    /// #{{{ @func _modFlags
+    /**
+     * @private
+     * @param {string} match
+     * @param {string} sign
+     * @param {string} flags
+     * @return {string}
+     */
+    function _modFlags(match, sign, flags) {
+
+      /** @type {!Array<string>} */
+      var flagsArray;
+
+      flagsArray = flags['split']('');
+
+      if (sign === '+') {
+        _addFlags(FLAGS, flagsArray);
+      }
+      else {
+        _rmFlags(FLAGS, flagsArray);
+      }
+
+      return '';
+    }
+    /// #}}} @func _modFlags
+
+    flags.replace(/([\+\-])([imgyu]+)/g, _modFlags);
+
+    flags = '';
+    for (flag in FLAGS) {
+      if ( $own(FLAGS, flag) && FLAGS[flag] && !$inStr(flags, flag) ) {
+        flags += flag;
+      }
     }
     return flags;
   }
   /// #}}} @func _getFlags
 
-  /// #{{{ @func _rmFlags
+  /// #{{{ @func _mkFlags
   /**
    * @private
-   * @param {string} src
-   * @param {string} mod
-   * @return {string}
+   * @param {!RegExp} src
+   * @return {!Object<string, string>}
    */
-  function _rmFlags(src, mod) {
+  function _mkFlags(src) {
 
+    /** @type {!Object<string, boolean>} */
+    var result;
     /** @type {!Array<string>} */
     var flags;
     /** @type {string} */
     var flag;
-    /** @type {!RegExp} */
-    var patt;
     /** @type {number} */
     var len;
     /** @type {number} */
     var i;
 
-    mod = mod['replace'](_RM_FLAG, '');
-    flags = mod['split']('');
+    result = {};
+    flags = $getFlags(src)['split']('');
     len = flags['length'];
     i = -1;
     while (++i < len) {
       flag = flags[i];
-      if ( $inStr(src, flag) ) {
-        patt = new REGX(flag, 'g');
-        src['replace'](patt, '');
-      }
+      result[flag] = true;
     }
-    return src;
+    return result;
+  }
+  /// #}}} @func _mkFlags
+
+  /// #{{{ @func _rmFlags
+  /**
+   * @private
+   * @param {!Object<string, boolean>} FLAGS
+   * @param {!Array<string>} flags
+   * @return {!Object<string, boolean>}
+   */
+  function _rmFlags(FLAGS, flags) {
+
+    /** @type {string} */
+    var flag;
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = flags['length'];
+    i = -1;
+    while (++i < len) {
+      flag = flags[i];
+      FLAGS[flag] = false;
+    }
+    return FLAGS;
   }
   /// #}}} @func _rmFlags
 
