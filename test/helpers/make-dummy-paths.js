@@ -441,13 +441,17 @@ function makeDummyPaths(paths) {
 
   /// #{{{ @step make-dummy-directories
 
-  forEachProperty(DIRS, makeDirectory);
+  forEachProperty(DIRS, function _makeDummyDirectory(path) {
+    makeDirectory(path);
+  });
 
   /// #}}} @step make-dummy-directories
 
   /// #{{{ @step make-dummy-files
 
-  forEachProperty(FILES, makeDummyFile);
+  forEachProperty(FILES, function _makeDummyFile(path) {
+    makeDummyFile(path);
+  });
 
   /// #}}} @step make-dummy-files
 }
