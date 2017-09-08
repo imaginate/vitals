@@ -1091,7 +1091,7 @@ method('amend', function amendTests() {
       'string'
     ], function amendTestE5() {
 
-      throws(function() {
+      throws.type(function() {
         vitals.amend({}, 'a,b,c', 5, 'string');
       });
 
