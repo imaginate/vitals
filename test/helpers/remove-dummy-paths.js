@@ -253,6 +253,20 @@ var rmfile = FS.unlinkSync;
 
 /// #}}} @group FS
 
+/// #{{{ @group HAS
+
+/// #{{{ @func hasOwnEnumProperty
+/**
+ * @private
+ * @param {(!Object|!Function)} src
+ * @param {(string|number)} key
+ * @return {boolean}
+ */
+var hasOwnEnumProperty = require('./has-own-enum-property.js');
+/// #}}} @func hasOwnEnumProperty
+
+/// #}}} @group HAS
+
 /// #{{{ @group IS
 
 /// #{{{ @func isArray
@@ -550,22 +564,50 @@ function removeDummyPaths(paths) {
     /// #{{{ @step parse-dirs
 
     forEachProperty(dirs, function _parseDir(val, key) {
+
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var dirpath;
+
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step check-undefined-value
+
+      if ( isUndefined(val) ) {
+        return;
+      }
+
+      /// #}}} @step check-undefined-value
+
+      /// #{{{ @step resolve-new-parent-path
+
+      dirpath = resolveDummyPath(path, key);
+
+      /// #}}} @step resolve-new-parent-path
+
+      /// #{{{ @step parse-new-paths
+
       if ( isString(val) ) {
-        parseFile(path, val);
+        parseFile(dirpath, val);
       }
       else if ( isArray(val) ) {
-        parseFiles(path, val);
+        parseFiles(dirpath, val);
       }
       else if ( isPlainObject(val) ) {
-        parseDir(path, key);
-        parseDirs(path, val);
+        parseDirs(dirpath, val);
       }
-      else if ( isNull(val) ) {
-        parseDir(path, key);
-      }
-      else if ( !isUndefined(val) ) {
+      else if ( !isNull(val) ) {
         throw setTypeError(new TypeError, 'dirs.' + key, '(?Files|?Dirs)=');
       }
+
+      /// #}}} @step parse-new-paths
+
+      /// #{{{ @step parse-new-directory
+
+      parseDir(path, key);
+
+      /// #}}} @step parse-new-directory
     });
 
     /// #}}} @step parse-dirs
@@ -580,11 +622,16 @@ function removeDummyPaths(paths) {
   else if ( isArray(paths) ) {
     parseFiles('', paths);
   }
-  else if ( isPlainObject(paths) ) {
+  else if ( !isPlainObject(paths) ) {
+    throw setTypeError(new TypeError, 'paths', '(?Files|?Dirs)=');
+  }
+  else if ( hasOwnEnumProperty(paths, 'root') ) {
+    parseFiles('', paths.root);
+    paths.root = undefined;
     parseDirs('', paths);
   }
   else {
-    throw setTypeError(new TypeError, 'paths', '(?Files|?Dirs)=');
+    parseDirs('', paths);
   }
 
   /// #}}} @step parse-paths
