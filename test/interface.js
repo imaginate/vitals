@@ -1425,12 +1425,57 @@ function Interface(suite) {
      * @description
      *   Execute before running any unit test within the same context.
      * @public
-     * @param {string} name
+     * @param {string} id
+     * @param {string} msg
      * @param {!function} fn
      * @return {void}
      */
-    context.before = function beforeUnitTests(name, fn) {
-      SUITES[0].beforeAll(name, fn);
+    context.before = function beforeUnitTests(id, msg, fn) {
+
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
+      var suite;
+
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'fn', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(fn) ) {
+        throw setTestsTypeError(new TypeError, 'fn', '!function', id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step run-before-all
+
+      suite.beforeAll(id, fn);
+
+      /// #}}} @step run-before-all
     };
     /// #}}} @func before
 
@@ -1439,12 +1484,57 @@ function Interface(suite) {
      * @description
      *   Execute after running all unit tests within the same context.
      * @public
-     * @param {string} name
+     * @param {string} id
+     * @param {string} msg
      * @param {!function} fn
      * @return {void}
      */
-    context.after = function afterUnitTests(name, fn) {
-      SUITES[0].afterAll(name, fn);
+    context.after = function afterUnitTests(id, msg, fn) {
+
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
+      var suite;
+
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'fn', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(fn) ) {
+        throw setTestsTypeError(new TypeError, 'fn', '!function', id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step run-after-all
+
+      suite.afterAll(id, fn);
+
+      /// #}}} @step run-after-all
     };
     /// #}}} @func after
 
@@ -1453,12 +1543,57 @@ function Interface(suite) {
      * @description
      *   Execute before running each unit test within the same context.
      * @public
-     * @param {string} name
+     * @param {string} id
+     * @param {string} msg
      * @param {!function} fn
      * @return {void}
      */
-    context.beforeEach = function beforeEachUnitTest(name, fn) {
-      SUITES[0].beforeEach(name, fn);
+    context.beforeEach = function beforeEachUnitTest(id, msg, fn) {
+
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
+      var suite;
+
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'fn', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(fn) ) {
+        throw setTestsTypeError(new TypeError, 'fn', '!function', id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step run-before-each
+
+      suite.beforeEach(id, fn);
+
+      /// #}}} @step run-before-each
     };
     /// #}}} @func beforeEach
 
@@ -1467,12 +1602,57 @@ function Interface(suite) {
      * @description
      *   Execute after running each unit test within the same context.
      * @public
-     * @param {string} name
+     * @param {string} id
+     * @param {string} msg
      * @param {!function} fn
      * @return {void}
      */
-    context.afterEach = function afterEachUnitTest(name, fn) {
-      SUITES[0].afterEach(name, fn);
+    context.afterEach = function afterEachUnitTest(id, msg, fn) {
+
+      /// #{{{ @step declare-variables
+
+      /** @type {string} */
+      var method;
+      /** @type {!Suite} */
+      var suite;
+
+      /// #}}} @step declare-variables
+
+      /// #{{{ @step get-current-suite-details
+
+      suite = SUITES[0];
+      method = suite.METHOD;
+
+      /// #}}} @step get-current-suite-details
+
+      /// #{{{ @step verify-parameters
+
+      switch (arguments.length) {
+        case 0:
+          throw setTestsNoArgError(new Error, 'id', id, method);
+        case 1:
+          throw setTestsNoArgError(new Error, 'msg', id, method);
+        case 2:
+          throw setTestsNoArgError(new Error, 'fn', id, method);
+      }
+
+      if ( !isString(id) ) {
+        throw setTestsTypeError(new TypeError, 'id', 'string', id, method);
+      }
+      if ( !isString(msg) ) {
+        throw setTestsTypeError(new TypeError, 'msg', 'string', id, method);
+      }
+      if ( !isFunction(fn) ) {
+        throw setTestsTypeError(new TypeError, 'fn', '!function', id, method);
+      }
+
+      /// #}}} @step verify-parameters
+
+      /// #{{{ @step run-after-each
+
+      suite.afterEach(id, fn);
+
+      /// #}}} @step run-after-each
     };
     /// #}}} @func afterEach
 
