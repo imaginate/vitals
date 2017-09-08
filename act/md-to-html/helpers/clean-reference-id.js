@@ -119,9 +119,16 @@ function cleanReferenceId(id) {
 
   /// #}}} @step verify-parameters
 
+  /// #{{{ @step clean-reference-id
+
+  id = id.toLowerCase();
+  id = id.replace(/\./g, '-');
+
+  /// #}}} @step clean-reference-id
+
   /// #{{{ @step return-result
 
-  return id && id.replace(/\./g, '-');
+  return id;
 
   /// #}}} @step return-result
 }

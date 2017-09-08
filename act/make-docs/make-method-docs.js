@@ -1109,7 +1109,7 @@ var TMPL = freezeObject({
   HEADER: {
     MAIN: getTemplate('method/header'),
     ROW: getTemplate('method/header/row'),
-    ALIAS: getTemplate('method/header/alias').replace(/\n/g, '')
+    ALIAS: getTemplate('method/header/alias')
   }
 }, true);
 /// #}}} @const TMPL
@@ -1501,6 +1501,7 @@ function makeMethodBodyDetailParam(section, superMethod, method, lines, index) {
   part = line.replace(PATT.BODY.PARAM, '$2');
   result = insertTag(result, 'param', part);
 
+  part = part.toLowerCase();
   part = part.replace(/\./g, '-');
   result = insertTag(result, 'param-id', part);
 
