@@ -418,7 +418,7 @@ function clearDummyTree() {
     'extend': false,
     'validDirs': null,
     'invalidDirs': null
-  }).reverse();
+  }).slice().reverse();
 
   /// #}}} @step get-dummy-directories
 
