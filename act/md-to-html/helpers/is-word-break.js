@@ -34,7 +34,7 @@ var loadTaskHelper = require('./load-task-helper.js');
  * @private
  * @const {!RegExp}
  */
-var BREAK_PATTERN = /^[ \t\r\n)}\].!?:;]+$/;
+var BREAK_PATTERN = /^[ \t\r\n)}\].,!?:;]+$/;
 /// #}}} @const BREAK_PATTERN
 
 /// #{{{ @const IS
