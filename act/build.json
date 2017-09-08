@@ -403,79 +403,79 @@
       "files": [
         {
           "src": "amend.js",
-          "dest": "amend.js"
+          "dest": "vitals.amend.md"
         },
         {
           "src": "copy.js",
-          "dest": "copy.js"
+          "dest": "vitals.copy.md"
         },
         {
           "src": "create.js",
-          "dest": "create.js"
+          "dest": "vitals.create.md"
         },
         {
           "src": "cut.js",
-          "dest": "cut.js"
+          "dest": "vitals.cut.md"
         },
         {
           "src": "each.js",
-          "dest": "each.js"
+          "dest": "vitals.each.md"
         },
         {
           "src": "fill.js",
-          "dest": "fill.js"
+          "dest": "vitals.fill.md"
         },
         {
           "src": "freeze.js",
-          "dest": "freeze.js"
+          "dest": "vitals.freeze.md"
         },
         {
           "src": "fuse.js",
-          "dest": "fuse.js"
+          "dest": "vitals.fuse.md"
         },
         {
           "src": "get.js",
-          "dest": "get.js"
+          "dest": "vitals.get.md"
         },
         {
           "src": "has.js",
-          "dest": "has.js"
+          "dest": "vitals.has.md"
         },
         {
           "src": "is.js",
-          "dest": "is.js"
+          "dest": "vitals.is.md"
         },
         {
           "src": "remap.js",
-          "dest": "remap.js"
+          "dest": "vitals.remap.md"
         },
         {
           "src": "roll.js",
-          "dest": "roll.js"
+          "dest": "vitals.roll.md"
         },
         {
           "src": "run.js",
-          "dest": "run.js"
+          "dest": "vitals.run.md"
         },
         {
           "src": "same.js",
-          "dest": "same.js"
+          "dest": "vitals.same.md"
         },
         {
           "src": "seal.js",
-          "dest": "seal.js"
+          "dest": "vitals.seal.md"
         },
         {
           "src": "slice.js",
-          "dest": "slice.js"
+          "dest": "vitals.slice.md"
         },
         {
           "src": "to.js",
-          "dest": "to.js"
+          "dest": "vitals.to.md"
         },
         {
           "src": "until.js",
-          "dest": "until.js"
+          "dest": "vitals.until.md"
         }
       ]
     }
