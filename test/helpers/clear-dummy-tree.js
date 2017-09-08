@@ -338,6 +338,19 @@ var forEachProperty = require('./for-each-property.js');
 
 /// #}}} @group OBJECT
 
+/// #{{{ @group PATH
+
+/// #{{{ @func resolveDummyPath
+/**
+ * @private
+ * @param {(!Array<string>|!Arguments<string>|...string)=} path
+ * @return {string}
+ */
+var resolveDummyPath = require('./resolve-dummy-path.js');
+/// #}}} @func resolveDummyPath
+
+/// #}}} @group PATH
+
 /// #}}} @group HELPERS
 
 /// #{{{ @group METHODS
