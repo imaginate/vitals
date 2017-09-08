@@ -1217,15 +1217,14 @@ var setIndexError = setError.index;
 /**
  * @private
  * @param {!RangeError} err
+ * @param {string} path
  * @param {string} method
  * @return {!RangeError}
  */
-function setMethodError(err, method) {
+function setMethodError(err, path, method) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {string} */
-  var path;
   /** @type {string} */
   var msg;
 
@@ -1237,25 +1236,22 @@ function setMethodError(err, method) {
     case 0:
       throw setNoArgError(new Error, 'err');
     case 1:
+      throw setNoArgError(new Error, 'path');
+    case 2:
       throw setNoArgError(new Error, 'method');
   }
 
   if ( !isError(err) ) {
     throw setTypeError(new TypeError, 'err', '!RangeError');
   }
+  if ( !isString(path) ) {
+    throw setTypeError(new TypeError, 'path', 'string');
+  }
   if ( !isString(method) ) {
     throw setTypeError(new TypeError, 'method', 'string');
   }
 
   /// #}}} @step verify-parameters
-
-  /// #{{{ @step get-method-name
-
-  path = method;
-  method = getPathName(method);
-  method = trimJsFileExtension(method);
-
-  /// #}}} @step get-method-name
 
   /// #{{{ @step make-message
 
@@ -2015,6 +2011,52 @@ var cleanPath = loadHelper('clean-path');
 var getPathName = loadHelper('get-path-name');
 /// #}}} @func getPathName
 
+/// #{{{ @func makeMethodPath
+/**
+ * @private
+ * @param {string} method
+ * @return {string}
+ */
+function makeMethodPath(method) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {string} */
+  var path;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'method');
+  }
+  if ( !isString(method) ) {
+    throw setTypeError(new TypeError, 'method', 'string');
+  }
+  if (!method) {
+    throw setEmptyError(new Error, 'method');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-method-path
+
+  path = cleanPath(method);
+  path = trimJsFileExtension(path);
+  path += '.js';
+  path = resolvePath(DIR.METHODS, path);
+
+  /// #}}} @step make-method-path
+
+  /// #{{{ @step return-method-path
+
+  return path;
+
+  /// #}}} @step return-method-path
+}
+/// #}}} @func makeMethodPath
+
 /// #{{{ @func resolvePath
 /**
  * @private
@@ -2079,7 +2121,7 @@ var DIR = freezeObject({
  * @private
  * @param {?Branch} parent
  * @param {string} name
- * @param {!Object} config
+ * @param {!Object} conf
  * @param {string} src
  * @param {string} dest
  * @param {string} method
@@ -2090,8 +2132,7 @@ var DIR = freezeObject({
  * @constructor
  * @struct
  */
-function Branch(
-          parent, name, config, src, dest, method, state, flags, alter) {
+function Branch(parent, name, conf, src, dest, method, state, flags, alter) {
 
   /// #{{{ @step verify-new-keyword
 
@@ -2109,7 +2150,7 @@ function Branch(
     case 1:
       throw setNoArgError(new Error, 'name');
     case 2:
-      throw setNoArgError(new Error, 'config');
+      throw setNoArgError(new Error, 'conf');
     case 3:
       throw setNoArgError(new Error, 'src');
     case 4:
@@ -2139,8 +2180,8 @@ function Branch(
   if ( !isString(name) ) {
     throw setTypeError(new TypeError, 'name', 'string');
   }
-  if ( !isObject(config) ) {
-    throw setTypeError(new TypeError, 'config', '!Object');
+  if ( !isObject(conf) ) {
+    throw setTypeError(new TypeError, 'conf', '!Object');
   }
   if ( !isString(src) ) {
     throw setTypeError(new TypeError, 'src', 'string');
@@ -2177,39 +2218,38 @@ function Branch(
 
   /// #{{{ @step verify-config-properties
 
-  if ( hasOption(config, 'src') ) {
-    if ( !isString(config.src) ) {
+  if ( hasOption(conf, 'src') ) {
+    if ( !isString(conf.src) ) {
       throw setBuildTypeError(new TypeError, name, 'src', 'string');
     }
-    if ( !!config.src && !hasEndSlash(config.src) ) {
-      throw setBuildSlashError(new RangeError, name, 'src', config.src);
+    if ( !!conf.src && !hasEndSlash(conf.src) ) {
+      throw setBuildSlashError(new RangeError, name, 'src', conf.src);
     }
   }
 
-  if ( hasOption(config, 'dest') ) {
-    if ( !isString(config.dest) ) {
+  if ( hasOption(conf, 'dest') ) {
+    if ( !isString(conf.dest) ) {
       throw setBuildTypeError(new TypeError, name, 'dest', 'string');
     }
-    if ( !!config.dest && !hasEndSlash(config.dest) ) {
-      throw setBuildSlashError(new RangeError, name, 'dest', config.dest);
+    if ( !!conf.dest && !hasEndSlash(conf.dest) ) {
+      throw setBuildSlashError(new RangeError, name, 'dest', conf.dest);
     }
   }
 
-  if ( hasOption(config, 'state') && !isNullObject(config.state) ) {
+  if ( hasOption(conf, 'state') && !isNullObject(conf.state) ) {
     throw setBuildTypeError(new TypeError, name, 'state',
       '?Object<string, (boolean|!Object<string, boolean>)>');
   }
 
-  if ( hasOption(config, 'flags') && !isNullObject(config.flags) ) {
+  if ( hasOption(conf, 'flags') && !isNullObject(conf.flags) ) {
     throw setBuildTypeError(new TypeError, name, 'flags', '?Object');
   }
 
-  if ( hasOption(config, 'files') && !isNullObjectList(config.files) ) {
+  if ( hasOption(conf, 'files') && !isNullObjectList(conf.files) ) {
     throw setBuildTypeError(new TypeError, name, 'files', '?Array<!Object>');
   }
 
-  if ( hasOption(config, 'branches')
-        && !isNullObjectHashMap(config.branches) ) {
+  if ( hasOption(conf, 'branches') && !isNullObjectHashMap(conf.branches) ) {
     throw setBuildTypeError(new TypeError, name, 'branches',
       '?Object<!Object>');
   }
@@ -2239,7 +2279,7 @@ function Branch(
    * @private
    * @const {!Object}
    */
-  var CONFIG = freezeObject(config);
+  var CONFIG = freezeObject(conf);
   /// #}}} @const CONFIG
 
   /// #{{{ @const SRC
@@ -2265,10 +2305,28 @@ function Branch(
   /// #{{{ @const METHOD
   /**
    * @private
+   * @const {!RegExp}
+   */
+  var METHOD = !!method
+    ? new RegExp('^' + method)
+    : /./;
+  /// #}}} @const METHOD
+
+  /// #{{{ @const METHOD.NAME
+  /**
+   * @private
    * @const {string}
    */
-  var METHOD = method;
-  /// #}}} @const METHOD
+  METHOD.NAME = method;
+  /// #}}} @const METHOD.NAME
+
+  /// #{{{ @const METHOD.PATH
+  /**
+   * @private
+   * @const {string}
+   */
+  METHOD.PATH = method && makeMethodPath(method);
+  /// #}}} @const METHOD.PATH
 
   /// #{{{ @const STATE
   /**
@@ -2276,7 +2334,7 @@ function Branch(
    * @const {!Object<string, (boolean|!Object<string, boolean>)>}
    */
   var STATE = hasOption(CONFIG, 'state') && !!CONFIG.state
-    ? deepMergeObject(state, config.state)
+    ? deepMergeObject(state, conf.state)
     : cloneObject(state);
   /// #}}} @const STATE
 
@@ -2286,7 +2344,7 @@ function Branch(
    * @const {!Object}
    */
   var FLAGS = hasOption(CONFIG, 'flags') && !!CONFIG.flags
-    ? mergeObject(flags, config.flags)
+    ? mergeObject(flags, conf.flags)
     : cloneObject(flags);
   /// #}}} @const FLAGS
 
@@ -2318,23 +2376,20 @@ function Branch(
 
   /// #{{{ @step verify-method
 
-  if (METHOD) {
-    method = resolvePath(DIR.METHODS, METHOD);
-    if ( !isFile(method) ) {
-      throw setFileError(new Error, 'method', method);
-    }
+  if ( !!METHOD.PATH && !isFile(METHOD.PATH) ) {
+    throw setMethodError(new RangeError, 'method', METHOD.PATH, METHOD.NAME);
   }
 
   /// #}}} @step verify-method
 
-  /// #{{{ @step make-dest
+  /// #{{{ @step make-destination-directory
 
   makeDirectory(DEST, {
     'mode': DIR_MODE,
     'parents': true
   });
 
-  /// #}}} @step make-dest
+  /// #}}} @step make-destination-directory
 
   /// #{{{ @step set-members
 
@@ -2375,7 +2430,7 @@ function Branch(
 
   /// #{{{ @member method
   /**
-   * @const {string}
+   * @const {!RegExp}
    */
   setConstantProperty(this, 'method', METHOD);
   /// #}}} @member method
@@ -2425,25 +2480,31 @@ function Branch(
 
   /// #{{{ @step make-files
 
-  if ( hasOption(CONFIG, 'files') ) {
+  if ( hasOption(CONFIG, 'files') && !!CONFIG.files ) {
     this.makeFiles(CONFIG.files);
-  }
-  else {
-    this.makeFiles(null);
   }
 
   /// #}}} @step make-files
 
+  /// #{{{ @step freeze-files
+
+  freezeObject(this.files);
+
+  /// #}}} @step freeze-files
+
   /// #{{{ @step make-branches
 
-  if ( hasOption(CONFIG, 'branches') ) {
+  if ( hasOption(CONFIG, 'branches') && !!CONFIG.branches ) {
     this.makeBranches(CONFIG.branches);
-  }
-  else {
-    this.makeBranches(null);
   }
 
   /// #}}} @step make-branches
+
+  /// #{{{ @step freeze-branches
+
+  freezeObject(this.branches);
+
+  /// #}}} @step freeze-branches
 }
 /// #}}} @func Branch
 
@@ -2452,7 +2513,7 @@ function Branch(
  * @private
  * @param {?Branch} parent
  * @param {string} name
- * @param {!Object} config
+ * @param {!Object} conf
  * @param {string} src
  * @param {string} dest
  * @param {string} method
@@ -2462,8 +2523,7 @@ function Branch(
  * @param {(?function(string, string, ?Object): (?function(string): string))=} alter.create = `null`
  * @return {!Branch}
  */
-function newBranch(
-          parent, name, config, src, dest, method, state, flags, alter) {
+function newBranch(parent, name, conf, src, dest, method, state, flags, alter) {
 
   /// #{{{ @step verify-parameters
 
@@ -2473,7 +2533,7 @@ function newBranch(
     case 1:
       throw setNoArgError(new Error, 'name');
     case 2:
-      throw setNoArgError(new Error, 'config');
+      throw setNoArgError(new Error, 'conf');
     case 3:
       throw setNoArgError(new Error, 'src');
     case 4:
@@ -2501,8 +2561,8 @@ function newBranch(
 
   /// #{{{ @step return-new-branch
 
-  return new Branch(
-    parent, name, config, src, dest, method, state, flags, alter);
+  return new Branch(parent, name, conf, src, dest, method, state, flags,
+    alter);
 
   /// #}}} @step return-new-branch
 }
@@ -2528,11 +2588,19 @@ function buildBranch(build) {
 
   /// #{{{ @step build-each-file
 
-  forEachProperty(this.files, function buildEachFile(/** !File */ file) {
+  forEachProperty(this.files, function _buildFiles(file) {
     file.build(build);
   });
 
   /// #}}} @step build-each-file
+
+  /// #{{{ @step build-each-branch
+
+  forEachProperty(this.branches, function _buildBranches(branch) {
+    branch.build(build);
+  });
+
+  /// #}}} @step build-each-branch
 
   /// #{{{ @step return-instance
 
@@ -2542,42 +2610,12 @@ function buildBranch(build) {
 }
 /// #}}} @func Branch.prototype.build
 
-/// #{{{ @func Branch.prototype.isMethod
-/**
- * @param {!Object} file
- * @return {boolean}
- */
-function isMethod(file) {
-
-  /// #{{{ @step verify-parameters
-
-  if (!arguments.length) {
-    throw setNoArgError(new Error, 'file');
-  }
-  if ( !isObject(file) ) {
-    throw setTypeError(new TypeError, 'file', '!Object');
-  }
-  if (!file) {
-    throw setEmptyError(new Error, 'file');
-  }
-
-  /// #}}} @step verify-parameters
-
-  /// #{{{ @step return-result
-
-  return !this.method
-    || ( hasOption(file, 'src') && file.src === this.method );
-
-  /// #}}} @step return-result
-}
-/// #}}} @func Branch.prototype.isMethod
-
 /// #{{{ @func Branch.prototype.makeBranches
 /**
- * @param {?Object<!Object>} branches
+ * @param {!Object<!Object>} branchConfigs
  * @return {!Branch}
  */
-function makeBranches(branches) {
+function makeBranches(branchConfigs) {
 
   /// #{{{ @step declare-variables
 
@@ -2585,116 +2623,33 @@ function makeBranches(branches) {
   var branch;
   /** @type {string} */
   var name;
+  /** @type {string} */
+  var key;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'branches');
+    throw setNoArgError(new Error, 'branchConfigs');
   }
-  if ( !isNullObjectHashMap(branches) ) {
-    throw setTypeError(new TypeError, 'branches', '?Object<!Object>');
+  if ( !isObjectHashMap(branchConfigs) ) {
+    throw setTypeError(new TypeError, 'branchConfigs', '!Object<!Object>');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-constants
-
-  /// #{{{ @const THIS
-  /**
-   * @private
-   * @const {!Branch}
-   */
-  var THIS = this;
-  /// #}}} @const THIS
-
-  /// #{{{ @const NAME
-  /**
-   * @private
-   * @const {string}
-   */
-  var NAME = this.name;
-  /// #}}} @const NAME
-
-  /// #{{{ @const SRC
-  /**
-   * @private
-   * @const {string}
-   */
-  var SRC = this.src;
-  /// #}}} @const SRC
-
-  /// #{{{ @const DEST
-  /**
-   * @private
-   * @const {string}
-   */
-  var DEST = this.dest;
-  /// #}}} @const DEST
-
-  /// #{{{ @const METHOD
-  /**
-   * @private
-   * @const {string}
-   */
-  var METHOD = this.method;
-  /// #}}} @const METHOD
-
-  /// #{{{ @const STATE
-  /**
-   * @private
-   * @const {!Object<string, (boolean|!Object<string, boolean>)>}
-   */
-  var STATE = this.state;
-  /// #}}} @const STATE
-
-  /// #{{{ @const FLAGS
-  /**
-   * @private
-   * @const {!Object}
-   */
-  var FLAGS = this.flags;
-  /// #}}} @const FLAGS
-
-  /// #{{{ @const ALTER
-  /**
-   * @private
-   * @const {?function(string): string}
-   */
-  var ALTER = this.alter;
-  /// #}}} @const ALTER
-
-  /// #{{{ @const BRANCHES
-  /**
-   * @private
-   * @const {!Object}
-   */
-  var BRANCHES = this.branches;
-  /// #}}} @const BRANCHES
-
-  /// #}}} @step set-constants
-
   /// #{{{ @step make-each-branch
 
-  if (branches) {
-    forEachProperty(branches, function makeEachBranch(
-        /** !Object */ config,
-        /** string */ key) {
-      name = NAME + '.' + key;
-      branch = new Branch(THIS, name, config, SRC, DEST, METHOD, STATE, FLAGS,
-        ALTER);
-      setConstantProperty(BRANCHES, key, branch);
-    });
+  for (key in branchConfigs) {
+    if ( hasOwnProperty(branchConfigs, key) ) {
+      name = this.name + '.' + key;
+      branch = this.makeBranch(branchConfigs[key], name);
+      setConstantProperty(this.branches, key, branch);
+    }
   }
 
   /// #}}} @step make-each-branch
-
-  /// #{{{ @step freeze-branches-member
-
-  freezeObject(BRANCHES);
-
-  /// #}}} @step freeze-branches-member
 
   /// #{{{ @step return-instance
 
@@ -2704,82 +2659,81 @@ function makeBranches(branches) {
 }
 /// #}}} @func Branch.prototype.makeBranches
 
+/// #{{{ @func Branch.prototype.makeBranch
+/**
+ * @param {!Object} branchConfig
+ * @param {string} name
+ * @return {!Branch}
+ *   The **new** `Branch` instance.
+ */
+function makeBranch(branchConfig, name) {
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'branchConfig');
+    case 1:
+      throw setNoArgError(new Error, 'name');
+  }
+
+  if ( !isObject(branchConfig) ) {
+    throw setTypeError(new TypeError, 'branchConfig', '!Object');
+  }
+  if ( !isString(name) ) {
+    throw setTypeError(new TypeError, 'name', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step return-new-branch-instance
+
+  return new Branch(this, name, branchConfig, this.src, this.dest,
+    this.method.NAME, this.state, this.flags, this.alter);
+
+  /// #}}} @step return-new-branch-instance
+}
+/// #}}} @func Branch.prototype.makeBranch
+
 /// #{{{ @func Branch.prototype.makeFiles
 /**
- * @param {?Array<!Object>} files
+ * @param {!Array<!Object>} fileConfigs
  * @return {!Branch}
  */
-function makeFiles(files) {
+function makeFiles(fileConfigs) {
 
   /// #{{{ @step declare-variables
 
-  /** @type {!File} */
-  var file;
-  /** @type {string} */
-  var name;
+  /** @type {!Object} */
+  var fileConfig;
+  /** @type {number} */
+  var len;
+  /** @type {number} */
+  var i;
 
   /// #}}} @step declare-variables
 
   /// #{{{ @step verify-parameters
 
   if (!arguments.length) {
-    throw setNoArgError(new Error, 'files');
+    throw setNoArgError(new Error, 'fileConfigs');
   }
-  if ( !isNullObjectList(files) ) {
-    throw setTypeError(new TypeError, 'files', '?Array<!Object>');
+  if ( !isArray(fileConfigs) || !isObjectList(fileConfigs) ) {
+    throw setTypeError(new TypeError, 'fileConfigs', '!Array<!Object>');
   }
 
   /// #}}} @step verify-parameters
 
-  /// #{{{ @step set-constants
-
-  /// #{{{ @const THIS
-  /**
-   * @private
-   * @const {!Branch}
-   */
-  var THIS = this;
-  /// #}}} @const THIS
-
-  /// #{{{ @const NAME
-  /**
-   * @private
-   * @const {string}
-   */
-  var NAME = this.name;
-  /// #}}} @const NAME
-
-  /// #{{{ @const FILES
-  /**
-   * @private
-   * @const {!Array<!File>}
-   */
-  var FILES = this.files;
-  /// #}}} @const FILES
-
-  /// #}}} @step set-constants
-
   /// #{{{ @step make-each-file
 
-  if (files) {
-    forEachProperty(files, function makeEachFile(
-        /** !Object */ config,
-        /** number */ i) {
-      if ( THIS.isMethod(config) ) {
-        name = NAME + '.files[' + i + ']';
-        file = new File(THIS, name, config);
-        FILES.push(file);
-      }
-    });
+  len = fileConfigs.length;
+  i = -1;
+  while (++i < len) {
+    fileConfig = fileConfigs[i];
+    this.makeFile(fileConfig, i);
   }
 
   /// #}}} @step make-each-file
-
-  /// #{{{ @step freeze-files-member
-
-  freezeObject(FILES);
-
-  /// #}}} @step freeze-files-member
 
   /// #{{{ @step return-instance
 
@@ -2788,6 +2742,87 @@ function makeFiles(files) {
   /// #}}} @step return-instance
 }
 /// #}}} @func Branch.prototype.makeFiles
+
+/// #{{{ @func Branch.prototype.makeFile
+/**
+ * @param {!Object} fileConfig
+ * @param {number} index
+ * @return {!Branch}
+ */
+function makeFile(fileConfig, index) {
+
+  /// #{{{ @step declare-variables
+
+  /** @type {!File} */
+  var file;
+  /** @type {string} */
+  var name;
+  /** @type {string} */
+  var src;
+
+  /// #}}} @step declare-variables
+
+  /// #{{{ @step verify-parameters
+
+  switch (arguments.length) {
+    case 0:
+      throw setNoArgError(new Error, 'fileConfig');
+    case 1:
+      throw setNoArgError(new Error, 'index');
+  }
+
+  if ( !isObject(fileConfig) ) {
+    throw setTypeError(new TypeError, 'fileConfig', '!Object');
+  }
+  if ( !isNumber(index) ) {
+    throw setTypeError(new TypeError, 'index', 'number');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step make-config-name
+
+  name = this.name + '.files[' + index + ']';
+
+  /// #}}} @step make-config-name
+
+  /// #{{{ @step verify-config-source
+
+  if ( !hasOption(fileConfig, 'src') ) {
+    throw setBuildOwnError(new ReferenceError, name, 'src');
+  }
+  if ( !isString(fileConfig.src) ) {
+    throw setBuildTypeError(new TypeError, name, 'src', 'string');
+  }
+  if (!fileConfig.src) {
+    throw setBuildEmptyError(new Error, name, 'src');
+  }
+
+  /// #}}} @step verify-config-source
+
+  /// #{{{ @step get-config-source
+
+  src = cleanPath(fileConfig.src);
+  src = getPathName(src);
+
+  /// #}}} @step get-config-source
+
+  /// #{{{ @step make-file
+
+  if ( this.method.test(src) ) {
+    file = new File(this, name, fileConfig);
+    this.files.push(file);
+  }
+
+  /// #}}} @step make-file
+
+  /// #{{{ @step return-instance
+
+  return this;
+
+  /// #}}} @step return-instance
+}
+/// #}}} @func Branch.prototype.makeFile
 
 /// #{{{ @step setup-branch-constructor
 
@@ -2804,9 +2839,10 @@ freezeObject(Branch);
 
 setConstantProperty(Branch.prototype, 'build', buildBranch);
 setConstantProperty(Branch.prototype, 'constructor', Branch, false);
-setConstantProperty(Branch.prototype, 'isMethod', isMethod);
 setConstantProperty(Branch.prototype, 'makeBranches', makeBranches);
+setConstantProperty(Branch.prototype, 'makeBranch', makeBranch);
 setConstantProperty(Branch.prototype, 'makeFiles', makeFiles);
+setConstantProperty(Branch.prototype, 'makeFile', makeFile);
 
 freezeObject(Branch.prototype);
 
@@ -2940,7 +2976,7 @@ function File(parent, name, config) {
   /// #{{{ @const METHOD
   /**
    * @private
-   * @const {string}
+   * @const {!RegExp}
    */
   var METHOD = PARENT.method;
   /// #}}} @const METHOD
@@ -3029,7 +3065,7 @@ function File(parent, name, config) {
 
   /// #{{{ @member method
   /**
-   * @const {string}
+   * @const {!RegExp}
    */
   setConstantProperty(this, 'method', METHOD);
   /// #}}} @member method
@@ -3183,6 +3219,8 @@ function buildAll(method) {
   var branch;
   /** @type {!Object} */
   var flags;
+  /** @type {string} */
+  var path;
 
   /// #}}} @step declare-variables
 
@@ -3195,13 +3233,14 @@ function buildAll(method) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
   else if (method) {
-    method = cleanPath(method);
-    method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(DIR.METHODS, method);
-    if ( !isFile(method) ) {
-      throw setMethodError(new RangeError, method);
+    path = makeMethodPath(method);
+
+    method = getPathName(path);
+    method = trimJsFileExtension(method);
+
+    if ( !isFile(path) ) {
+      throw setMethodError(new RangeError, path, method);
     }
-    method = getPathName(method);
   }
 
   /// #}}} @step verify-parameters
@@ -3274,13 +3313,14 @@ function buildDist(method) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
   else if (method) {
-    method = cleanPath(method);
-    method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(DIR.METHODS, method);
-    if ( !isFile(method) ) {
-      throw setMethodError(new RangeError, method);
+    path = makeMethodPath(method);
+
+    method = getPathName(path);
+    method = trimJsFileExtension(method);
+
+    if ( !isFile(path) ) {
+      throw setMethodError(new RangeError, path, method);
     }
-    method = getPathName(method);
   }
 
   /// #}}} @step verify-parameters
@@ -3350,13 +3390,14 @@ function buildBrowser(method) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
   else if (method) {
-    method = cleanPath(method);
-    method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(DIR.METHODS, method);
-    if ( !isFile(method) ) {
-      throw setMethodError(new RangeError, method);
+    path = makeMethodPath(method);
+
+    method = getPathName(path);
+    method = trimJsFileExtension(method);
+
+    if ( !isFile(path) ) {
+      throw setMethodError(new RangeError, path, method);
     }
-    method = getPathName(method);
   }
 
   /// #}}} @step verify-parameters
@@ -3418,13 +3459,14 @@ function buildNode(method) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
   else if (method) {
-    method = cleanPath(method);
-    method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(DIR.METHODS, method);
-    if ( !isFile(method) ) {
-      throw setMethodError(new RangeError, method);
+    path = makeMethodPath(method);
+
+    method = getPathName(path);
+    method = trimJsFileExtension(method);
+
+    if ( !isFile(path) ) {
+      throw setMethodError(new RangeError, path, method);
     }
-    method = getPathName(method);
   }
 
   /// #}}} @step verify-parameters
@@ -3484,13 +3526,14 @@ function buildDocs(method) {
     throw setTypeError(new TypeError, 'method', '?string=');
   }
   else if (method) {
-    method = cleanPath(method);
-    method = trimJsFileExtension(method) + '.js';
-    method = resolvePath(DIR.METHODS, method);
-    if ( !isFile(method) ) {
-      throw setMethodError(new RangeError, method);
+    path = makeMethodPath(method);
+
+    method = getPathName(path);
+    method = trimJsFileExtension(method);
+
+    if ( !isFile(path) ) {
+      throw setMethodError(new RangeError, path, method);
     }
-    method = getPathName(method);
   }
 
   /// #}}} @step verify-parameters
