@@ -7,7 +7,7 @@
  * @see [vitals.amend](https://github.com/imaginate/vitals/wiki/vitals.amend)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -24,7 +24,7 @@
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @const {!Function}
  * @dict
  */
 var amend = (function amendPrivateScope() {
@@ -1630,7 +1630,10 @@ var amend = (function amendPrivateScope() {
    */
   var _MK_ERR = $mkErrs('amend');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

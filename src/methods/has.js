@@ -7,7 +7,7 @@
  * @see [vitals.has](https://github.com/imaginate/vitals/wiki/vitals.has)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -25,7 +25,7 @@
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @const {!Function}
  * @dict
  */
 var has = (function hasPrivateScope() {
@@ -469,7 +469,10 @@ var has = (function hasPrivateScope() {
    */
   var _MK_ERR = $mkErrs('has');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

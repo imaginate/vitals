@@ -8,7 +8,7 @@
  * @see [vitals.get](https://github.com/imaginate/vitals/wiki/vitals.get)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -37,14 +37,14 @@
 /// #ifnot{{{ @scope FS_ONLY
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @const {!Function}
  * @dict
  */
 /// #ifnot}}} @scope FS_ONLY
 /// #if{{{ @scope FS_ONLY
 /**
  * @public
- * @const {!Object<string, !Function>}
+ * @const {!Object}
  * @dict
  */
 /// #if}}} @scope FS_ONLY
@@ -3198,7 +3198,12 @@ var get = (function getPrivateScope() {
    */
   var _MK_ERR = $mkErrs('get');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

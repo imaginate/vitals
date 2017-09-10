@@ -7,7 +7,7 @@
  * @see [vitals.run](https://github.com/imaginate/vitals/wiki/vitals.run)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -24,7 +24,7 @@
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
- * @const {!Function<string, !Function>}
+ * @const {!Function}
  * @dict
  */
 var run = (function runPrivateScope() {
@@ -341,7 +341,12 @@ var run = (function runPrivateScope() {
    */
   var _MK_ERR = $mkErrs('run');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

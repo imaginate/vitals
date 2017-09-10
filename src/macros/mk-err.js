@@ -6,11 +6,10 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #def{{{ @code MK_ERR
-
   /// #{{{ @func _mkErr
   /**
    * @private
@@ -21,7 +20,9 @@
    */
   var _mkErr = _MK_ERR.error;
   /// #}}} @func _mkErr
+/// #def}}} @code MK_ERR
 
+/// #def{{{ @code MK_TYPE_ERR
   /// #{{{ @func _mkTypeErr
   /**
    * @private
@@ -34,7 +35,9 @@
    */
   var _mkTypeErr = _MK_ERR.typeError;
   /// #}}} @func _mkTypeErr
+/// #def}}} @code MK_TYPE_ERR
 
+/// #def{{{ @code MK_RANGE_ERR
   /// #{{{ @func _mkRangeErr
   /**
    * @private
@@ -48,6 +51,6 @@
    */
   var _mkRangeErr = _MK_ERR.rangeError;
   /// #}}} @func _mkRangeErr
-/// #def}}} @code MK_ERR
+/// #def}}} @code MK_RANGE_ERR
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

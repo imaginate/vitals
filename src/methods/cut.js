@@ -7,7 +7,7 @@
  * @see [vitals.cut](https://github.com/imaginate/vitals/wiki/vitals.cut)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -27,7 +27,7 @@
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
- * @type {!Function<string, !Function>}
+ * @type {!Function}
  * @dict
  */
 var cut = (function cutPrivateScope() {
@@ -1940,7 +1940,10 @@ var cut = (function cutPrivateScope() {
    */
   var _MK_ERR = $mkErrs('cut');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://github.com/imaginate)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #def{{{ @code EXPORT
@@ -18,24 +18,29 @@
   /// #ifnot{{{ @env NODE
   (function __exportVitals() {
 
-    if (ENV.HAS_WINDOW)
+    if (ENV.HAS_WINDOW) {
       _appendVitals(window);
-    if (ENV.HAS_SELF)
+    }
+    if (ENV.HAS_SELF) {
       _appendVitals(self);
+    }
 
     _appendVitals(ROOT);
 
     if (ENV.HAS_EXPORTS && ENV.HAS_MODULE) {
-      if (module.exports === exports)
+      if (module.exports === exports) {
         module.exports = vitals;
-      else
+      }
+      else {
         _appendVitals(exports);
+      }
     }
 
-    if (ENV.HAS_DEFINE)
+    if (ENV.HAS_DEFINE) {
       define(function() {
         return vitals;
       });
+    }
 
     /// #{{{ @func _appendVitals
     /**
@@ -45,7 +50,6 @@
      */
     function _appendVitals(obj) {
       obj['vitals'] = vitals;
-      obj['Vitals'] = vitals;
       obj['VITALS'] = vitals;
     }
     /// #}}} @func _appendVitals

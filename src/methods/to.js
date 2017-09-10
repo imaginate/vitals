@@ -8,7 +8,7 @@
  * @see [vitals.to](https://github.com/imaginate/vitals/wiki/vitals.to)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #if{{{ @scope SOLO
@@ -30,7 +30,7 @@
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
- * @const {!Object<string, !Function>}
+ * @const {!Object}
  * @dict
  */
 var to = (function toPrivateScope() {
@@ -599,7 +599,12 @@ var to = (function toPrivateScope() {
    */
   var _MK_ERR = $mkErrs('to');
   /// #}}} @const _MK_ERR
+
   /// #insert @code MK_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 
