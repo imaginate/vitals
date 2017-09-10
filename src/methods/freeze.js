@@ -34,6 +34,7 @@ var freeze = (function freezePrivateScope() {
   /// #{{{ @docs main
   /// @section strict
   /// @method vitals.freeze
+  /// @alias vitals.freeze.main
   /**
    * @description
    *   [Freezes][freeze] an `object` or `function` with the option to
@@ -77,6 +78,7 @@ var freeze = (function freezePrivateScope() {
           : _freeze(obj);
     }
   }
+  freeze['main'] = freeze;
   /// #if}}} @code main
   /// #}}} @submethod main
 

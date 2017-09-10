@@ -54,6 +54,7 @@ var remap = (function remapPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.remap
+  /// @alias vitals.remap.main
   /**
    * @description
    *   A shortcut for making a new `object`, `array`, or `string` by invoking
@@ -182,6 +183,7 @@ var remap = (function remapPrivateScope() {
       ? _remapArr(source, iteratee, thisArg)
       : _remapObj(source, iteratee, thisArg);
   }
+  remap['main'] = remap;
   /// #if}}} @code main
   /// #}}} @submethod main
 

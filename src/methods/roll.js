@@ -52,6 +52,7 @@ var roll = (function rollPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.roll
+  /// @alias vitals.roll.main
   /**
    * @description
    *   A shortcut for deriving a result by carrying a value over each
@@ -190,6 +191,7 @@ var roll = (function rollPrivateScope() {
         ? _rollBaseObj(base, source, iteratee, thisArg)
         : _rollObj(source, iteratee, thisArg);
   }
+  roll['main'] = roll;
   /// #if}}} @code main
   /// #}}} @submethod main
 

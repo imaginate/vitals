@@ -48,6 +48,7 @@ var each = (function eachPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.each
+  /// @alias vitals.each.main
   /**
    * @description
    *   A shortcut for iterating over [owned][own] `object` properties, indexed
@@ -164,6 +165,7 @@ var each = (function eachPrivateScope() {
       ? _eachArr(source, iteratee, thisArg)
       : _eachObj(source, iteratee, thisArg);
   }
+  each['main'] = each;
   /// #if}}} @code main
   /// #}}} @submethod main
 

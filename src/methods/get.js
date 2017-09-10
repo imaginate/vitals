@@ -66,7 +66,7 @@ var get = (function getPrivateScope() {
   /// #if{{{ @scope FS_ONLY
   /**
    * @public
-   * @type {!Object<string, !Function>}
+   * @type {!Object}
    * @dict
    */
   var get = {};
@@ -77,6 +77,7 @@ var get = (function getPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.get
+  /// @alias vitals.get.main
   /**
    * @description
    *   Retrieves keys and values from an `object` or `function`, indexes and
@@ -151,6 +152,7 @@ var get = (function getPrivateScope() {
             : _byValKeys(source, val);
     }
   }
+  get['main'] = get;
   /// #if}}} @code main
   /// #}}} @submethod main
 

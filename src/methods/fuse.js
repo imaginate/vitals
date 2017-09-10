@@ -39,6 +39,7 @@ var fuse = (function fusePrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.fuse
+  /// @alias vitals.fuse.main
   /**
    * @description
    *   Merges objects, [concatenates][concat] arrays, appends properties to
@@ -114,6 +115,7 @@ var fuse = (function fusePrivateScope() {
           : _fuseObjs(dest, val);
     }
   }
+  fuse['main'] = fuse;
   /// #if}}} @code main
   /// #}}} @submethod main
 

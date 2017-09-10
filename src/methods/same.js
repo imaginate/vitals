@@ -34,6 +34,7 @@ var same = (function samePrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.same
+  /// @alias vitals.same.main
   /**
    * @description
    *   A functional representation of [strict equality][equal].
@@ -55,6 +56,7 @@ var same = (function samePrivateScope() {
 
     return val1 === val2;
   }
+  same['main'] = same;
   /// #if}}} @code main
   /// #}}} @submethod main
 

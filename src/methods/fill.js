@@ -37,6 +37,7 @@ var fill = (function fillPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.fill
+  /// @alias vitals.fill.main
   /**
    * @description
    *   Fills an `array`, `object`, or `string` with specified values.
@@ -123,6 +124,7 @@ var fill = (function fillPrivateScope() {
 
     return _fillKeys(source, keys, val);
   }
+  fill['main'] = fill;
   /// #if}}} @code main
   /// #}}} @submethod main
 

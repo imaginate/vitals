@@ -55,6 +55,7 @@ var cut = (function cutPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.cut
+  /// @alias vitals.cut.main
   /**
    * @description
    *   Removes properties from an `object`, `array`, or `function` or
@@ -192,6 +193,7 @@ var cut = (function cutPrivateScope() {
         return _cutProps(source, val);
     }
   }
+  cut['main'] = cut;
   /// #if}}} @code main
   /// #}}} @submethod main
 

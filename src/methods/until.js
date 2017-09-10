@@ -49,6 +49,7 @@ var until = (function untilPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.until
+  /// @alias vitals.until.main
   /**
    * @description
    *   A shortcut for iterating over [owned][own] `object` properties, indexed
@@ -215,6 +216,7 @@ var until = (function untilPrivateScope() {
       ? _untilArr(end, source, iteratee, thisArg)
       : _untilObj(end, source, iteratee, thisArg);
   }
+  until['main'] = until;
   /// #if}}} @code main
   /// #}}} @submethod main
 

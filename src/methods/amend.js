@@ -40,6 +40,7 @@ var amend = (function amendPrivateScope() {
   /// #{{{ @docs main
   /// @section strict
   /// @method vitals.amend
+  /// @alias vitals.amend.main
   /**
    * @description
    *   A shortcut for [Object.defineProperties][define-props] that includes
@@ -273,6 +274,7 @@ var amend = (function amendPrivateScope() {
       ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
       : _amendProps(source, props, descriptor, strongType, setter);
   }
+  amend['main'] = amend;
   /// #if}}} @code main
   /// #}}} @submethod main
 

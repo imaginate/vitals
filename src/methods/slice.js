@@ -40,6 +40,7 @@ var slice = (function slicePrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.slice
+  /// @alias vitals.slice.main
   /**
    * @description
    *   Makes a shallow [copy][clone] of specified indexed properties for an
@@ -146,6 +147,7 @@ var slice = (function slicePrivateScope() {
 
     return $sliceArr(source, start, end);
   }
+  slice['main'] = slice;
   /// #if}}} @code main
   /// #}}} @submethod main
 

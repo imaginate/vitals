@@ -48,6 +48,7 @@ var has = (function hasPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.has
+  /// @alias vitals.has.main
   /**
    * @description
    *   Checks if an `object` or `function` [owns][own] a property, if an
@@ -136,6 +137,7 @@ var has = (function hasPrivateScope() {
         ? _ownMatch(source, val)
         : $own(source, val);
   }
+  has['main'] = has;
   /// #if}}} @code main
   /// #}}} @submethod main
 

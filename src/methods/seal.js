@@ -34,6 +34,7 @@ var seal = (function sealPrivateScope() {
   /// #{{{ @docs main
   /// @section strict
   /// @method vitals.seal
+  /// @alias vitals.seal.main
   /**
    * @description
    *   [Seals][seal] an `object` or `function` with the option to
@@ -77,6 +78,7 @@ var seal = (function sealPrivateScope() {
           : _seal(obj);
     }
   }
+  seal['main'] = seal;
   /// #if}}} @code main
   /// #}}} @submethod main
 

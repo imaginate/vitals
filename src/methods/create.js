@@ -41,6 +41,7 @@ var create = (function createPrivateScope() {
   /// #{{{ @docs main
   /// @section strict
   /// @method vitals.create
+  /// @alias vitals.create.main
   /**
    * @description
    *   A shortcut for [Object.create][create] that includes easier property
@@ -83,6 +84,7 @@ var create = (function createPrivateScope() {
         return amend['apply'](NIL, args);
     }
   }
+  create['main'] = create;
   /// #if}}} @code main
   /// #}}} @submethod main
 

@@ -52,7 +52,7 @@ var to = (function toPrivateScope() {
   /// #ifnot{{{ @scope DOCS_ONLY
   /**
    * @public
-   * @type {!Object<string, !Function>}
+   * @type {!Object}
    * @dict
    */
   var to = {};

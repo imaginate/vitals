@@ -38,6 +38,7 @@ var run = (function runPrivateScope() {
   /// #{{{ @docs main
   /// @section shell
   /// @method vitals.run
+  /// @alias vitals.run.main
   /**
    * @description
    *   A shortcut for [child_process.spawnSync][spawn] that returns the
@@ -179,6 +180,7 @@ var run = (function runPrivateScope() {
 
     return _cleanStdout(result['stdout'], opts['eol'], opts['buffer']);
   }
+  run['main'] = run;
   /// #if}}} @code main
   /// #}}} @submethod main
 

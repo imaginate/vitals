@@ -71,7 +71,7 @@ var copy = (function copyPrivateScope() {
   /// #if{{{ @scope FS_ONLY
   /**
    * @public
-   * @type {!Object<string, !Function>}
+   * @type {!Object}
    * @dict
    */
   var copy = {};
@@ -82,6 +82,7 @@ var copy = (function copyPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.copy
+  /// @alias vitals.copy.main
   /**
    * @description
    *   Makes a [copy][clone] of any value. Note that for `array` values @slice 
@@ -119,6 +120,7 @@ var copy = (function copyPrivateScope() {
             ? _copyRegex(val)
             : _copyObj(val, deep);  
   }
+  copy['main'] = copy;
   /// #if}}} @code main
   /// #}}} @submethod main
 

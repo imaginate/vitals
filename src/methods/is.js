@@ -64,7 +64,7 @@ var is = (function isPrivateScope() {
   /// #if{{{ @scope FS_ONLY
   /**
    * @public
-   * @type {!Object<string, !Function>}
+   * @type {!Object}
    * @dict
    */
   var is = {};
@@ -75,6 +75,7 @@ var is = (function isPrivateScope() {
   /// #{{{ @docs main
   /// @section base
   /// @method vitals.is
+  /// @alias vitals.is.main
   /**
    * @description
    *   Checks if a value or many values are a specific data type or types. See
@@ -134,6 +135,7 @@ var is = (function isPrivateScope() {
       ? _checkVals(checks, arguments, nullable)
       : _checkVal(checks, val, nullable);
   }
+  is['main'] = is;
   /// #if}}} @code main
   /// #}}} @submethod main
 
