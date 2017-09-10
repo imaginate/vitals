@@ -30,10 +30,6 @@ var sew = (function fusePrivateScope() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs sew
-  /// @docref [push]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push)
-  /// @docref [slice]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice)
-  /// @docref [concat]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat)
-  /// @docref [unshift]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift)
   /// #if}}} @docrefs sew
 
   /// #{{{ @submethod main
