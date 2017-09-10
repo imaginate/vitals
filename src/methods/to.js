@@ -66,21 +66,20 @@ var to = (function toPrivateScope() {
   /// @alias vitals.to.str
   /**
    * @description
-   *   Converts any value to a `string` with [String][string], the value's (if
-   *   it is a `RegExp`) `toString` property, or optionally (if it is an
-   *   `array`) [Array.prototype.join][join].
+   *   Converts any value into a `string` using @stringify or if it the value
+   *   is an `array` and the #separator is defined,
+   *   [Array.prototype.join][join].
    * @public
    * @param {*} val
    * @param {(string|undefined)=} separator = `undefined`
-   *   Only allowed for use if the #val is an `array`. If the #separator is
-   *   defined, [Array.prototype.join][join] is called on the #val using the
+   *   Only use if the #val is an `array`. If the #separator is defined,
+   *   [Array.prototype.join][join] is called on the #val using the
    *   #separator value to join each indexed property.
    * @return {string}
    */
   /// #}}} @docs string
   /// #if{{{ @code string
   function toString(val, separator) {
-
     switch (arguments['length']) {
       case 0:
         throw _mkErr(new ERR, 'no #val defined', 'string');
@@ -89,15 +88,18 @@ var to = (function toPrivateScope() {
         return $mkStr(val);
 
       default:
-        if ( $is.void(separator) )
+        if ( $is.void(separator) ) {
           return $mkStr(val);
+        }
 
-        if ( !$is.arr(val) )
+        if ( !$is.arr(val) ) {
           throw _mkErr(new ERR, 'invalid #separator defined (' +
             'only allowed with an `array` #val)', 'string');
-        if ( !$is.str(separator) )
+        }
+        if ( !$is.str(separator) ) {
           throw _mkTypeErr(new TYPE_ERR, 'separator', separator, 'string=',
             'string');
+        }
 
         return val['join'](separator);
     }

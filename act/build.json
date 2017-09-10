@@ -166,6 +166,10 @@
               "dest": "slice.js"
             },
             {
+              "src": "stringify.js",
+              "dest": "stringify.js"
+            },
+            {
               "src": "to.js",
               "dest": "to.js"
             },
@@ -375,6 +379,10 @@
               "dest": "slice.js"
             },
             {
+              "src": "stringify.js",
+              "dest": "stringify.js"
+            },
+            {
               "src": "to.js",
               "dest": "to.js"
             },
@@ -480,6 +488,10 @@
         {
           "src": "slice.js",
           "dest": "vitals.slice.md"
+        },
+        {
+          "src": "stringify.js",
+          "dest": "vitals.stringify.md"
         },
         {
           "src": "to.js",
