@@ -158,6 +158,10 @@
               "dest": "seal.js"
             },
             {
+              "src": "sew.js",
+              "dest": "sew.js"
+            },
+            {
               "src": "slice.js",
               "dest": "slice.js"
             },
@@ -363,6 +367,10 @@
               "dest": "seal.js"
             },
             {
+              "src": "sew.js",
+              "dest": "sew.js"
+            },
+            {
               "src": "slice.js",
               "dest": "slice.js"
             },
@@ -464,6 +472,10 @@
         {
           "src": "seal.js",
           "dest": "vitals.seal.md"
+        },
+        {
+          "src": "sew.js",
+          "dest": "vitals.sew.md"
         },
         {
           "src": "slice.js",

@@ -40,6 +40,7 @@
 /// #include @super remap ./methods/remap.js
 /// #include @super roll ./methods/roll.js
 /// #include @super same ./methods/same.js
+/// #include @super sew ./methods/sew.js
 /// #include @super slice ./methods/slice.js
 /// #include @super to ./methods/to.js
 /// #include @super until ./methods/until.js
@@ -109,18 +110,21 @@ function newVitals(method) {
       case 1:
         method = method[0];
 
-        if ( !$is.str(method) )
+        if ( !$is.str(method) ) {
           throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
-        else if (!method)
+        }
+        else if (!method) {
           throw _mkErr(new ERR, 'invalid empty #method `string`');
+        }
 
         if ( _isSection(method) ) {
           sections = _getSections([ method ]);
           methods = [];
         }
-        else if ( !_isMethod(method) )
+        else if ( !_isMethod(method) ) {
           throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+        }
         else {
           sections = [];
           methods = [ method ];
@@ -128,30 +132,36 @@ function newVitals(method) {
         break;
 
       default:
-        if ( !_isStrArr(method) )
+        if ( !_isStrArr(method) ) {
           throw _mkTypeErr(new TYPE_ERR, 'method', method,
             '(!Array<string>|...string)=');
-        else if ( !_isFullStrArr(method) )
+        }
+        else if ( !_isFullStrArr(method) ) {
           throw _mkErr(new ERR, 'invalid empty #method `string`');
-        else if ( !_isValidStrArr(method) )
+        }
+        else if ( !_isValidStrArr(method) ) {
           throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+        }
 
         sections = _getSections(method);
         methods = _getMethods(method, sections);
         break;
     }
   }
-  else if ( !$is.str(method) )
+  else if ( !$is.str(method) ) {
     throw _mkTypeErr(new TYPE_ERR, 'method', method,
       '(!Array<string>|...string)=');
-  else if (!method)
+  }
+  else if (!method) {
     throw _mkErr(new ERR, 'invalid empty #method `string`');
+  }
   else if ( _isSection(method) ) {
     sections = _getSections([ method ]);
     methods = [];
   }
-  else if ( !_isMethod(method) )
+  else if ( !_isMethod(method) ) {
     throw _mkRangeErr(new RANGE_ERR, 'method', _VALID_RANGE);
+  }
   else {
     sections = [];
     methods = [ method ];
@@ -211,6 +221,7 @@ var _METHODS = {
   'run':    YES,
   'same':   YES,
   'seal':   YES,
+  'sew':    YES,
   'slice':  YES,
   'to':     YES,
   'until':  YES
@@ -241,6 +252,7 @@ var _SECTION_METHODS = {
     'run',
     'same',
     'seal',
+    'sew',
     'slice',
     'to',
     'until'
@@ -257,6 +269,7 @@ var _SECTION_METHODS = {
     'remap',
     'roll',
     'same',
+    'sew',
     'slice',
     'to',
     'until'
@@ -306,6 +319,7 @@ var _VALID_RANGE = [
   'run',
   'same',
   'seal',
+  'sew',
   'slice',
   'to',
   'until'
@@ -766,7 +780,12 @@ function _isValidStrArr(methods) {
  */
 var _MK_ERR = $mkErrs();
 /// #}}} @const _MK_ERR
+
 /// #insert @code MK_ERR ./macros/mk-err.js
+
+/// #insert @code MK_TYPE_ERR ./macros/mk-err.js
+
+/// #insert @code MK_RANGE_ERR ./macros/mk-err.js
 
 /// #}}} @group errors
 
