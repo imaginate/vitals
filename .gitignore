@@ -49,7 +49,7 @@ temp/
 tmp/
 www/
 
-!docs/src/
+!src/docs/
 
 Desktop.ini
 
