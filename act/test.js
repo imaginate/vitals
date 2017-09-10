@@ -293,6 +293,7 @@ function setTestItemError(err, itemsList, itemsString) {
   /// #{{{ @step setup-flags
 
   flags = {
+    'main': false,
     'section': false,
     'super': false,
     'method': false,
@@ -304,6 +305,10 @@ function setTestItemError(err, itemsList, itemsString) {
   /// #{{{ @step get-invalid-item
 
   testEachProperty(items, function getInvalidItem(_item) {
+    if (_item === 'main') {
+      flags['main'] = true;
+      return true;
+    }
     if (_item === 'fs') {
       flags['fs'] = true;
       return true;
@@ -2369,6 +2374,8 @@ function testAll() {
 
   /// #{{{ @step declare-variables
 
+  /** @type {string} */
+  var itemsString;
   /** @type {!Array<!Array<string>>} */
   var itemsList;
   /** @type {!Array<!Object>} */
@@ -2380,8 +2387,8 @@ function testAll() {
 
   /// #{{{ @step make-browser-items
 
-  itemsList = makeTestItemsList(
-      'all:'
+  itemsString = ''
+    + 'all:'
     + 'base:'
     + 'strict:'
     + 'amend:'
@@ -2401,7 +2408,8 @@ function testAll() {
     + 'seal:'
     + 'slice:'
     + 'to:'
-    + 'until');
+    + 'until';
+  itemsList = makeTestItemsList(itemsString);
 
   /// #}}} @step make-browser-items
 
@@ -2436,8 +2444,8 @@ function testAll() {
 
   /// #{{{ @step make-node-items
 
-  itemsList = makeTestItemsList(
-      'main-all:'
+  itemsString = ''
+    + 'main-all:'
     + 'main-base:'
     + 'main-base-fs:'
     + 'main-fs:'
@@ -2465,7 +2473,7 @@ function testAll() {
     + 'main-slice:'
     + 'main-to:'
     + 'main-to-fs:'
-    + 'main-until'
+    + 'main-until:'
     + 'all:'
     + 'base:'
     + 'base-fs:'
@@ -2494,7 +2502,8 @@ function testAll() {
     + 'slice:'
     + 'to:'
     + 'to-fs:'
-    + 'until');
+    + 'until';
+  itemsList = makeTestItemsList(itemsString);
 
   /// #}}} @step make-node-items
 
