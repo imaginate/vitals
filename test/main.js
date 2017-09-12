@@ -837,10 +837,10 @@ function main(opts) {
     if ( !hasOption(opts, 'method') ) {
       opts['method'] = DFLTS['method'] && trimVitals(DFLTS['method']);
       if (opts['method']) {
-        if (opts['super']) {
-          opts['method'] = opts['super'] + trimSuperMethod(opts['method']);
+        if ( !trimSuperMethod(opts['method']) ) {
+          opts['method'] += '.main';
         }
-        else {
+        if (!opts['super']) {
           opts['super'] = getSuperMethod(opts['method']);
         }
       }
@@ -854,12 +854,19 @@ function main(opts) {
     else {
       opts['method'] = opts['method'].toLowerCase();
       opts['method'] = trimVitals(opts['method']);
+      if ( !isInArray(OPTS['super'], getSuperMethod(opts['method'])) ) {
+        throw setOptionError(new RangeError, 'opts.method',
+          getSuperMethod(opts['method']), OPTS['super']);
+      }
+      if ( !trimSuperMethod(opts['method']) ) {
+        opts['method'] += '.main';
+      }
       if ( !isInArray(OPTS['method'], opts['method']) ) {
         throw setOptionError(new RangeError, 'opts.method', opts['method'],
           OPTS['method']);
       }
       if (!opts['super']) {
-        opts['super'] = getSuperMethod(opts['method']) || null;
+        opts['super'] = getSuperMethod(opts['method']);
       }
     }
 
