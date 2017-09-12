@@ -109,6 +109,12 @@ function incrementProps(src, amount) {
   if ('c' in src) {
     src.c += amount;
   }
+  if ('a,b' in src) {
+    src['a,b'] += amount;
+  }
+  if ('a,b,c' in src) {
+    src['a,b,c'] += amount;
+  }
 
   return src;
 }
@@ -258,11 +264,7 @@ method('amend', function amendTests() {
     /// #}}} @test A2
 
     /// #{{{ @test A3
-    test('A3', [
-      {},
-      'a,b,c',
-      5
-    ], function amendTestA3() {
+    test('A3', [ {}, 'a,b,c', 5 ], function amendTestA3() {
 
       /** @type {!Object} */
       var result;
@@ -275,19 +277,16 @@ method('amend', function amendTests() {
 
       assert(result === obj);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
-      assert(result.c === 5);
+      assert(result['a,b,c'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
-      assert(result.c === 6);
+      assert(result['a,b,c'] === 6);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
-      assert( hasOwnEnum(result, 'c') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( !hasOwn(result, 'c') );
+      assert( hasOwnEnum(result, 'a,b,c') );
     });
     /// #}}} @test A3
 
@@ -429,12 +428,7 @@ method('amend', function amendTests() {
     /// #}}} @test B2
 
     /// #{{{ @test B3
-    test('B3', [
-      {},
-      'a,b',
-      5,
-      '<descriptor>'
-    ], function amendTestB3() {
+    test('B3', [ {}, 'a,b', 5, '<descriptor>' ], function amendTestB3() {
 
       /** @type {!Object} */
       var result;
@@ -452,16 +446,15 @@ method('amend', function amendTests() {
 
       assert(result === obj);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
 
-      assert( hasOwnNoEnum(result, 'a') );
-      assert( hasOwnNoEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnNoEnum(result, 'a,b') );
     });
     /// #}}} @test B3
 
@@ -518,9 +511,7 @@ method('amend', function amendTests() {
 
     /// #{{{ @test C1
     test('C1', [
-      {},
-      { 'a': 1, 'b': 2 },
-      'number'
+      {}, { 'a': 1, 'b': 2 }, 5, 'number'
     ], function amendTestC1() {
 
       /** @type {!Object} */
@@ -536,7 +527,7 @@ method('amend', function amendTests() {
         'b': 2
       });
 
-      result = vitals.amend(obj, props, 'number');
+      result = vitals.amend(obj, props, 5, 'number');
 
       assert(result === obj);
 
@@ -565,10 +556,7 @@ method('amend', function amendTests() {
 
     /// #{{{ @test C2
     test('C2', [
-      {},
-      [ 'a', 'b' ],
-      5,
-      'number'
+      {}, [ 'a', 'b' ], 5, 'number'
     ], function amendTestC2() {
 
       /** @type {!Object} */
@@ -613,10 +601,7 @@ method('amend', function amendTests() {
 
     /// #{{{ @test C3
     test('C3', [
-      {},
-      'a,b',
-      5,
-      'number'
+      {}, 'a,b', 5, 'number'
     ], function amendTestC3() {
 
       /** @type {!Object} */
@@ -630,35 +615,26 @@ method('amend', function amendTests() {
 
       assert(result === obj);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnEnum(result, 'a,b') );
 
       throws.setter(function() {
-        result.a = 'string';
-      });
-      throws.setter(function() {
-        result.b = 'string';
+        result['a,b'] = 'string';
       });
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
     });
     /// #}}} @test C3
 
     /// #{{{ @test C4
-    test('C4', [
-      {},
-      '<descriptors>',
-      'number'
-    ], function amendTestC4() {
+    test('C4', [ {}, '<descriptors>', 5, 'number' ], function amendTestC4() {
 
       /** @type {!Object} */
       var result;
@@ -679,7 +655,7 @@ method('amend', function amendTests() {
         }
       });
 
-      result = vitals.amend(obj, props, 'number');
+      result = vitals.amend(obj, props, 5, 'number');
 
       assert(result === obj);
 
@@ -708,10 +684,7 @@ method('amend', function amendTests() {
 
     /// #{{{ @test C5
     test('C5', [
-      {},
-      '<descriptors>',
-      '<descriptor>',
-      'number'
+      {}, '<descriptors>', '<descriptor>', 'number'
     ], function amendTestC5() {
 
       /** @type {!Object} */
@@ -772,9 +745,7 @@ method('amend', function amendTests() {
 
     /// #{{{ @test D1
     test('D1', [
-      {},
-      { 'a': 1, 'b': 2 },
-      '<setter>'
+      {}, { 'a': 1, 'b': 2 }, 5, '<setter>'
     ], function amendTestD1() {
 
       /** @type {!Object} */
@@ -790,7 +761,7 @@ method('amend', function amendTests() {
         'b': 2
       });
 
-      result = vitals.amend(obj, props, setter);
+      result = vitals.amend(obj, props, 5, setter);
 
       assert(result === obj);
 
@@ -846,12 +817,7 @@ method('amend', function amendTests() {
     /// #}}} @test D2
 
     /// #{{{ @test D3
-    test('D3', [
-      {},
-      'a,b',
-      5,
-      '<setter>'
-    ], function amendTestD3() {
+    test('D3', [ {}, 'a,b', 5, '<setter>' ], function amendTestD3() {
 
       /** @type {!Object} */
       var result;
@@ -864,24 +830,21 @@ method('amend', function amendTests() {
 
       assert(result === obj);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 11);
-      assert(result.b === 11);
+      assert(result['a,b'] === 11);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnEnum(result, 'a,b') );
     });
     /// #}}} @test D3
 
     /// #{{{ @test D4
     test('D4', [
-      {},
-      '<descriptors>',
-      '<setter>'
+      {}, '<descriptors>', 5, '<setter>'
     ], function amendTestD4() {
 
       /** @type {!Object} */
@@ -903,7 +866,7 @@ method('amend', function amendTests() {
         }
       }, true);
 
-      result = vitals.amend(obj, props, setter);
+      result = vitals.amend(obj, props, 5, setter);
 
       assert(result === obj);
 
@@ -1071,13 +1034,12 @@ method('amend', function amendTests() {
     /// #}}} @test E3
 
     /// #{{{ @test E4
-    test('E4', [
-      {},
-      'a,b,c'
-    ], function amendTestE4() {
+    test('E4', [ {}, 'a,b', 5, { 'fail': false } ], function amendTestE4() {
 
-      throws(function() {
-        vitals.amend({}, 'a,b,c');
+      throws.range(function() {
+        vitals.amend({}, 'a,b', 5, {
+          'fail': false
+        });
       });
 
     });
