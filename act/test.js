@@ -841,22 +841,22 @@ function isMethod(item) {
 
   /// #{{{ @step get-sub-method
 
-  subMethod = trimSuperMethod(item);
+  subMethod = getSubMethod(item);
 
   /// #}}} @step get-sub-method
 
-  /// #{{{ @step check-main-sub-method
+  /// #{{{ @step check-empty-sub-method
 
-  if (!subMethod || subMethod === 'main') {
-    return superMethod !== 'to';
+  if (!subMethod) {
+    return false;
   }
 
-  /// #}}} @step check-main-sub-method
+  /// #}}} @step check-empty-sub-method
 
   /// #{{{ @step make-path
 
   path = superMethod + '.' + subMethod + '.js';
-  path = resolvePath(DIR.TEST.METHODS, superMethod, path);
+  path = resolvePath(DIR.TEST.TESTS, superMethod, path);
 
   /// #}}} @step make-path
 
@@ -1380,9 +1380,6 @@ function makeTestOptions(items) {
       opts.super = item;
     }
     else if ( isMethod(item) ) {
-      if (trimSuperMethod(item) === 'main') {
-        item = getSuperMethod(item);
-      }
       opts.method = item;
     }
   });
@@ -1586,6 +1583,42 @@ var escapeSource = loadHelper('escape-source');
 /// #}}} @group REGEXP
 
 /// #{{{ @group STRING
+
+/// #{{{ @func getSubMethod
+/**
+ * @private
+ * @param {string} item
+ * @return {string}
+ */
+function getSubMethod(item) {
+
+  /// #{{{ @step verify-parameters
+
+  if (!arguments.length) {
+    throw setNoArgError(new Error, 'item');
+  }
+  if ( !isString(item) ) {
+    throw setTypeError(new TypeError, 'item', 'string');
+  }
+
+  /// #}}} @step verify-parameters
+
+  /// #{{{ @step check-empty-item
+
+  if (!item) {
+    return '';
+  }
+
+  /// #}}} @step check-empty-item
+
+  /// #{{{ @step return-result
+
+  item = trimSuperMethod(item);
+  return item || 'main';
+
+  /// #}}} @step return-result
+}
+/// #}}} @func getSubMethod
 
 /// #{{{ @func getSuperMethod
 /**
