@@ -119,6 +119,12 @@ function incrementProps(src, amount) {
   if ('c' in src) {
     src.c += amount;
   }
+  if ('a,b' in src) {
+    src['a,b'] += amount;
+  }
+  if ('a,b,c' in src) {
+    src['a,b,c'] += amount;
+  }
 
   return src;
 }
@@ -378,19 +384,16 @@ method('create.main', function createMainTests() {
 
       assert(proto1 === proto2);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
-      assert(result.c === 5);
+      assert(result['a,b,c'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
-      assert(result.c === 6);
+      assert(result['a,b,c'] === 6);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
-      assert( hasOwnEnum(result, 'c') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( !hasOwn(result, 'c') );
+      assert( hasOwnEnum(result, 'a,b,c') );
     });
     /// #}}} @test B3
 
@@ -439,6 +442,77 @@ method('create.main', function createMainTests() {
       assert( hasOwnNoEnum(result, 'b') );
     });
     /// #}}} @test B4
+
+    /// #{{{ @test B5
+    test('B5', [ {}, [ 'a', 'b', 'c' ] ], function createMainTestB5() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var proto1;
+      /** @type {!Object} */
+      var proto2;
+      /** @type {!Array} */
+      var keys;
+
+      proto1 = {};
+      keys = freeze([ 'a', 'b', 'c' ]);
+
+      result = vitals.create(proto1, keys);
+      proto2 = getPrototype(result);
+
+      assert( isObject(result) );
+      assert( isObject(proto1) );
+      assert( isObject(proto2) );
+
+      assert(proto1 === proto2);
+
+      assert(result.a === undefined);
+      assert(result.b === undefined);
+      assert(result.c === undefined);
+
+      assert( hasOwnEnum(result, 'a') );
+      assert( hasOwnEnum(result, 'b') );
+      assert( hasOwnEnum(result, 'c') );
+    });
+    /// #}}} @test B5
+
+    /// #{{{ @test B6
+    test('B6', [ {}, [ 'a', 'b', 'c' ], {} ], function createMainTestB6() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var proto1;
+      /** @type {!Object} */
+      var proto2;
+      /** @type {!Array} */
+      var keys;
+      /** @type {!Object} */
+      var val;
+
+      proto1 = {};
+      val = freeze({});
+      keys = freeze([ 'a', 'b', 'c' ]);
+
+      result = vitals.create(proto1, keys, val);
+      proto2 = getPrototype(result);
+
+      assert( isObject(result) );
+      assert( isObject(proto1) );
+      assert( isObject(proto2) );
+
+      assert(proto1 === proto2);
+
+      assert(result.a === val);
+      assert(result.b === val);
+      assert(result.c === val);
+
+      assert( hasOwnEnum(result, 'a') );
+      assert( hasOwnEnum(result, 'b') );
+      assert( hasOwnEnum(result, 'c') );
+    });
+    /// #}}} @test B6
 
   });
   /// #}}} @tests B
@@ -498,7 +572,9 @@ method('create.main', function createMainTests() {
     /// #}}} @test C1
 
     /// #{{{ @test C2
-    test('C2', [ {}, [ 'a','b' ], 5, '<descriptor>' ], function createMainTestC2() {
+    test('C2', [
+      {}, [ 'a','b' ], 5, '<descriptor>'
+    ], function createMainTestC2() {
 
       /** @type {!Object} */
       var result;
@@ -565,21 +641,22 @@ method('create.main', function createMainTests() {
 
       assert(proto1 === proto2);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
 
-      assert( hasOwnNoEnum(result, 'a') );
-      assert( hasOwnNoEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnNoEnum(result, 'a,b') );
     });
     /// #}}} @test C3
 
     /// #{{{ @test C4
-    test('C4', [ {}, '<varied-props>', '<descriptor>' ], function createMainTestC4() {
+    test('C4', [
+      {}, '<varied-props>', '<descriptor>'
+    ], function createMainTestC4() {
 
       /** @type {!Object} */
       var result;
@@ -598,7 +675,11 @@ method('create.main', function createMainTests() {
           'value': 1,
           'enumerable': true
         },
-        'b': 2
+        'b': 2,
+        'c': {
+          'value': 3,
+          'enumerable': true
+        }
       }, true);
       desc = freeze({
         'enumerable': false
@@ -615,16 +696,121 @@ method('create.main', function createMainTests() {
 
       assert(result.a === 1);
       assert(result.b === 2);
+      assert(result.c === 3);
 
       incrementProps(result, 1);
 
       assert(result.a === 2);
       assert(result.b === 3);
+      assert(result.c === 4);
 
       assert( hasOwnEnum(result, 'a') );
       assert( hasOwnNoEnum(result, 'b') );
+      assert( hasOwnEnum(result, 'c') );
     });
     /// #}}} @test C4
+
+    /// #{{{ @test C5
+    test('C5', [
+      {}, '<varied-props>', 5, '<descriptor>'
+    ], function createMainTestC5() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var proto1;
+      /** @type {!Object} */
+      var proto2;
+      /** @type {!Object} */
+      var props;
+      /** @type {!Object} */
+      var desc;
+
+      proto1 = {};
+      props = freeze({
+        'a': {
+          'value': 1,
+          'enumerable': true
+        },
+        'b': 2,
+        'c': {
+          'enumerable': true
+        }
+      }, true);
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.create(proto1, props, 5, desc);
+      proto2 = getPrototype(result);
+
+      assert( isObject(result) );
+      assert( isObject(proto1) );
+      assert( isObject(proto2) );
+
+      assert(proto1 === proto2);
+
+      assert(result.a === 1);
+      assert(result.b === 2);
+      assert(result.c === 5);
+
+      incrementProps(result, 1);
+
+      assert(result.a === 2);
+      assert(result.b === 3);
+      assert(result.c === 6);
+
+      assert( hasOwnEnum(result, 'a') );
+      assert( hasOwnNoEnum(result, 'b') );
+      assert( hasOwnEnum(result, 'c') );
+    });
+    /// #}}} @test C5
+
+    /// #{{{ @test C6
+    test('C6', [
+      {}, [ 'a', 'b', 'c' ], '<descriptor>', '<descriptor>'
+    ], function createMainTestC6() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var proto1;
+      /** @type {!Object} */
+      var proto2;
+      /** @type {!Array} */
+      var keys;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var val;
+
+      proto1 = {};
+      keys = freeze([ 'a', 'b', 'c' ]);
+      val = freeze({
+        'enumerable': true
+      });
+      desc = freeze({
+        'enumerable': false
+      });
+
+      result = vitals.create(proto1, keys, val, desc);
+      proto2 = getPrototype(result);
+
+      assert( isObject(result) );
+      assert( isObject(proto1) );
+      assert( isObject(proto2) );
+
+      assert(proto1 === proto2);
+
+      assert(result.a === val);
+      assert(result.b === val);
+      assert(result.c === val);
+
+      assert( hasOwnNoEnum(result, 'a') );
+      assert( hasOwnNoEnum(result, 'b') );
+      assert( hasOwnNoEnum(result, 'c') );
+    });
+    /// #}}} @test C6
 
   });
   /// #}}} @tests C
@@ -633,7 +819,9 @@ method('create.main', function createMainTests() {
   should('D', 'make object with prototype, properties, and strong type check', function createMainTestsD() {
 
     /// #{{{ @test D1
-    test('D1', [ {}, { 'a': 1, 'b': 2 }, 'number' ], function createMainTestD1() {
+    test('D1', [
+      {}, { 'a': 1, 'b': 2 }, 5, 'number'
+    ], function createMainTestD1() {
 
       /** @type {!Object} */
       var result;
@@ -650,7 +838,7 @@ method('create.main', function createMainTests() {
         'b': 2
       });
 
-      result = vitals.create(proto1, props, 'number');
+      result = vitals.create(proto1, props, 5, 'number');
       proto2 = getPrototype(result);
 
       assert( isObject(result) );
@@ -683,7 +871,9 @@ method('create.main', function createMainTests() {
     /// #}}} @test D1
 
     /// #{{{ @test D2
-    test('D2', [ {}, [ 'a', 'b' ], 5, 'number' ], function createMainTestD2() {
+    test('D2', [
+      {}, [ 'a', 'b' ], 5, 'number'
+    ], function createMainTestD2() {
 
       /** @type {!Object} */
       var result;
@@ -748,31 +938,28 @@ method('create.main', function createMainTests() {
 
       assert(proto1 === proto2);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnEnum(result, 'a,b') );
 
       throws.setter(function() {
-        result.a = 'string';
-      });
-      throws.setter(function() {
-        result.b = 'string';
+        result['a,b'] = 'string';
       });
 
-      assert(result.a === 6);
-      assert(result.b === 6);
+      assert(result['a,b'] === 6);
     });
     /// #}}} @test D3
 
     /// #{{{ @test D4
-    test('D4', [ {}, '<descriptors>', 'number' ], function createMainTestD4() {
+    test('D4', [
+      {}, '<descriptors>', 5, 'number'
+    ], function createMainTestD4() {
 
       /** @type {!Object} */
       var result;
@@ -795,7 +982,7 @@ method('create.main', function createMainTests() {
         }
       }, true);
 
-      result = vitals.create(proto1, props, 'number');
+      result = vitals.create(proto1, props, 5, 'number');
       proto2 = getPrototype(result);
 
       assert( isObject(result) );
@@ -896,7 +1083,9 @@ method('create.main', function createMainTests() {
   should('E', 'make object with prototype, properties, and setter', function createMainTestsE() {
 
     /// #{{{ @test E1
-    test('E1', [ {}, { 'a': 1, 'b': 2 }, '<setter>' ], function createMainTestE1() {
+    test('E1', [
+      {}, { 'a': 1, 'b': 2 }, 5, '<setter>'
+    ], function createMainTestE1() {
 
       /** @type {!Object} */
       var result;
@@ -913,7 +1102,7 @@ method('create.main', function createMainTests() {
         'b': 2
       });
 
-      result = vitals.create(proto1, props, setter);
+      result = vitals.create(proto1, props, 5, setter);
       proto2 = getPrototype(result);
 
       assert( isObject(result) );
@@ -936,7 +1125,9 @@ method('create.main', function createMainTests() {
     /// #}}} @test E1
 
     /// #{{{ @test E2
-    test('E2', [ {}, [ 'a', 'b' ], 5, '<setter>' ], function createMainTestE2() {
+    test('E2', [
+      {}, [ 'a', 'b' ], 5, '<setter>'
+    ], function createMainTestE2() {
 
       /** @type {!Object} */
       var result;
@@ -949,6 +1140,7 @@ method('create.main', function createMainTests() {
 
       proto1 = {};
       keys = freeze([ 'a', 'b' ]);
+
       result = vitals.create(proto1, keys, 5, setter);
       proto2 = getPrototype(result);
 
@@ -982,6 +1174,7 @@ method('create.main', function createMainTests() {
       var proto2;
 
       proto1 = {};
+
       result = vitals.create(proto1, 'a,b', 5, setter);
       proto2 = getPrototype(result);
 
@@ -991,21 +1184,22 @@ method('create.main', function createMainTests() {
 
       assert(proto1 === proto2);
 
-      assert(result.a === 5);
-      assert(result.b === 5);
+      assert(result['a,b'] === 5);
 
       incrementProps(result, 1);
 
-      assert(result.a === 11);
-      assert(result.b === 11);
+      assert(result['a,b'] === 11);
 
-      assert( hasOwnEnum(result, 'a') );
-      assert( hasOwnEnum(result, 'b') );
+      assert( !hasOwn(result, 'a') );
+      assert( !hasOwn(result, 'b') );
+      assert( hasOwnEnum(result, 'a,b') );
     });
     /// #}}} @test E3
 
     /// #{{{ @test E4
-    test('E4', [ {}, '<descriptors>', '<setter>' ], function createMainTestE4() {
+    test('E4', [
+      {}, '<descriptors>', 5, '<setter>'
+    ], function createMainTestE4() {
 
       /** @type {!Object} */
       var result;
@@ -1028,7 +1222,7 @@ method('create.main', function createMainTests() {
         }
       }, true);
 
-      result = vitals.create(proto1, props, setter);
+      result = vitals.create(proto1, props, 5, setter);
       proto2 = getPrototype(result);
 
       assert( isObject(result) );
@@ -1183,10 +1377,10 @@ method('create.main', function createMainTests() {
     /// #}}} @test F1
 
     /// #{{{ @test F2
-    test('F2', [ 'string' ], function createMainTestF2() {
+    test('F2', [ 'fail' ], function createMainTestF2() {
 
       throws.type(function() {
-        vitals.create('string');
+        vitals.create('fail');
       });
 
     });
@@ -1203,34 +1397,76 @@ method('create.main', function createMainTests() {
     /// #}}} @test F3
 
     /// #{{{ @test F4
-    test('F4', [ {}, 'a,b,c' ], function createMainTestF4() {
+    test('F4', [
+      {}, 'a,b', 5, { 'fail': true }
+    ], function createMainTestF4() {
 
-      throws(function() {
-        vitals.create({}, 'a,b,c');
+      throws.range(function() {
+        vitals.create({}, 'a,b', 5, {
+          'fail': true
+        });
       });
 
     });
     /// #}}} @test F4
 
     /// #{{{ @test F5
-    test('F5', [ {}, 'a,b,c', 5, 'string' ], function createMainTestF5() {
+    test('F5', [
+      {}, 'a,b,c', [ 'not-string' ], 'string'
+    ], function createMainTestF5() {
 
       throws.type(function() {
-        vitals.create({}, 'a,b,c', 5, 'string');
+        vitals.create({}, 'a,b,c', [ 'not-string' ], 'string');
       });
 
     });
     /// #}}} @test F5
 
     /// #{{{ @test F6
-    test('F6', [ {}, 'a,b,c', 5, 'number', {} ], function createMainTestF6() {
+    test('F6', [
+      {}, 'a,b,c', 5, 'number', [ 'not-function' ]
+    ], function createMainTestF6() {
 
       throws.type(function() {
-        vitals.create({}, 'a,b,c', 5, 'number', {});
+        vitals.create({}, 'a,b,c', 5, 'number', [ 'not-function' ]);
       });
 
     });
     /// #}}} @test F6
+
+    /// #{{{ @test F7
+    test('F7', [ {}, '', 5 ], function createMainTestF7() {
+
+      throws(function() {
+        vitals.create({}, '', 5);
+      });
+
+    });
+    /// #}}} @test F7
+
+    /// #{{{ @test F8
+    test('F8', [ {}, [ 'a', '', 'c' ], 5 ], function createMainTestF8() {
+
+      throws(function() {
+        vitals.create({}, [ 'a', '', 'c' ], 5);
+      });
+
+    });
+    /// #}}} @test F8
+
+    /// #{{{ @test F9
+    test('F9', [
+      {}, 'a,b', 5, '<descriptor>', 'number'
+    ], function createMainTestF9() {
+
+      throws(function() {
+        vitals.create({}, 'a,b', 5, {
+          'writable': false
+        }, 'number');
+      });
+
+    });
+    /// #}}} @test F9
 
   });
   /// #}}} @tests F
