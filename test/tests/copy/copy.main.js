@@ -3,6 +3,7 @@
  * VITALS.COPY UNIT TESTS
  * ---------------------------------------------------------------------------
  * @method vitals.copy
+ * @alias vitals.copy.main
  * @submethod main
  * @super copy
  * @section base
@@ -112,14 +113,14 @@ var vitals = global.VITALS_TEST.VITALS;
 // TESTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @suite copy
-method('copy', function copyTests() {
+/// #{{{ @suite copy.main
+method('copy.main', function copyMainTests() {
 
   /// #{{{ @tests A
-  should('A', 'return a primitive without alteration', function copyTestsA() {
+  should('A', 'return a primitive without alteration', function copyMainTestsA() {
 
     /// #{{{ @test A1
-    test('A1', [ null ], function copyTestA1() {
+    test('A1', [ null ], function copyMainTestA1() {
 
       /** @type {null} */
       var before;
@@ -135,7 +136,7 @@ method('copy', function copyTests() {
     /// #}}} @test A1
 
     /// #{{{ @test A2
-    test('A2', [ undefined ], function copyTestA2() {
+    test('A2', [ undefined ], function copyMainTestA2() {
 
       /** @type {undefined} */
       var before;
@@ -151,7 +152,7 @@ method('copy', function copyTests() {
     /// #}}} @test A2
 
     /// #{{{ @test A3
-    test('A3', [ true ], function copyTestA3() {
+    test('A3', [ true ], function copyMainTestA3() {
 
       /** @type {boolean} */
       var before;
@@ -167,7 +168,7 @@ method('copy', function copyTests() {
     /// #}}} @test A3
 
     /// #{{{ @test A4
-    test('A4', [ 'string' ], function copyTestA4() {
+    test('A4', [ 'string' ], function copyMainTestA4() {
 
       /** @type {string} */
       var before;
@@ -183,7 +184,7 @@ method('copy', function copyTests() {
     /// #}}} @test A4
 
     /// #{{{ @test A5
-    test('A5', [ 5 ], function copyTestA5() {
+    test('A5', [ 5 ], function copyMainTestA5() {
 
       /** @type {number} */
       var before;
@@ -199,7 +200,7 @@ method('copy', function copyTests() {
     /// #}}} @test A5
 
     /// #{{{ @test A6
-    test('A6', [ NaN ], function copyTestA6() {
+    test('A6', [ NaN ], function copyMainTestA6() {
 
       /** @type {!Nan} */
       var before;
@@ -218,10 +219,10 @@ method('copy', function copyTests() {
   /// #}}} @tests A
 
   /// #{{{ @tests B
-  should('B', 'return a clone of the object', function copyTestsB() {
+  should('B', 'return a clone of the object', function copyMainTestsB() {
 
     /// #{{{ @test B1
-    test('B1', [ '<object>' ], function copyTestB1() {
+    test('B1', [ '<object>' ], function copyMainTestB1() {
 
       /** @type {!Object} */
       var before;
@@ -244,7 +245,7 @@ method('copy', function copyTests() {
     /// #}}} @test B1
 
     /// #{{{ @test B2
-    test('B2', [ '<object>', true ], function copyTestB2() {
+    test('B2', [ '<object>', true ], function copyMainTestB2() {
 
       /** @type {!Object} */
       var before;
@@ -270,10 +271,10 @@ method('copy', function copyTests() {
   /// #}}} @tests B
 
   /// #{{{ @tests C
-  should('C', 'return a clone of the regexp', function copyTestsC() {
+  should('C', 'return a clone of the regexp', function copyMainTestsC() {
 
     /// #{{{ @test C1
-    test('C1', [ /regexp/ ], function copyTestC1() {
+    test('C1', [ /regexp/ ], function copyMainTestC1() {
 
       /** @type {!RegExp} */
       var before;
@@ -296,7 +297,7 @@ method('copy', function copyTests() {
     /// #}}} @test C1
 
     /// #{{{ @test C2
-    test('C2', [ /regexp/ig ], function copyTestC2() {
+    test('C2', [ /regexp/ig ], function copyMainTestC2() {
 
       /** @type {!RegExp} */
       var before;
@@ -322,10 +323,10 @@ method('copy', function copyTests() {
   /// #}}} @tests C
 
   /// #{{{ @tests D
-  should('D', 'return a clone of the array', function copyTestsD() {
+  should('D', 'return a clone of the array', function copyMainTestsD() {
 
     /// #{{{ @test D1
-    test('D1', [ '<array>' ], function copyTestD1() {
+    test('D1', [ '<array>' ], function copyMainTestD1() {
 
       /** @type {!Array} */
       var before;
@@ -348,7 +349,7 @@ method('copy', function copyTests() {
     /// #}}} @test D1
 
     /// #{{{ @test D2
-    test('D2', [ '<array>', true ], function copyTestD2() {
+    test('D2', [ '<array>', true ], function copyMainTestD2() {
 
       /** @type {!Array} */
       var before;
@@ -374,10 +375,10 @@ method('copy', function copyTests() {
   /// #}}} @tests D
 
   /// #{{{ @tests E
-  should('E', 'return a clone of the function', function copyTestsE() {
+  should('E', 'return a clone of the function', function copyMainTestsE() {
 
     /// #{{{ @test E1
-    test('E1', [ '<function>' ], function copyTestE1() {
+    test('E1', [ '<function>' ], function copyMainTestE1() {
 
       /** @type {!Function} */
       var before;
@@ -396,7 +397,7 @@ method('copy', function copyTests() {
     /// #}}} @test E1
 
     /// #{{{ @test E2
-    test('E2', [ '<function>', true ], function copyTestE2() {
+    test('E2', [ '<function>', true ], function copyMainTestE2() {
 
       /** @type {!Function} */
       var before;
@@ -418,10 +419,10 @@ method('copy', function copyTests() {
   /// #}}} @tests E
 
   /// #{{{ @tests F
-  should('F', 'should throw a vitals error', function copyTestsF() {
+  should('F', 'should throw a vitals error', function copyMainTestsF() {
 
     /// #{{{ @test F1
-    test('F1', [], function copyTestF1() {
+    test('F1', [], function copyMainTestF1() {
 
       throws(function() {
         vitals.copy();
@@ -431,7 +432,7 @@ method('copy', function copyTests() {
     /// #}}} @test F1
 
     /// #{{{ @test F2
-    test('F2', [ {}, 'fail' ], function copyTestF2() {
+    test('F2', [ {}, 'fail' ], function copyMainTestF2() {
 
       throws.type(function() {
         vitals.copy({}, 'fail');
@@ -444,7 +445,7 @@ method('copy', function copyTests() {
   /// #}}} @tests F
 
 });
-/// #}}} @suite copy
+/// #}}} @suite copy.main
 
 /// #}}} @group TESTS
 
