@@ -304,7 +304,7 @@ method('amend.main', function amendMainTests() {
           'value': 2,
           'enumerable': false
         }
-      });
+      }, true);
 
       result = vitals.amend(obj, props);
 
@@ -334,11 +334,7 @@ method('amend.main', function amendMainTests() {
       var obj;
 
       obj = {};
-      keys = freeze([
-        'a',
-        'b',
-        'c'
-      ]);
+      keys = freeze([ 'a', 'b', 'c' ]);
 
       result = vitals.amend(obj, keys);
 
@@ -367,12 +363,8 @@ method('amend.main', function amendMainTests() {
       var val;
 
       obj = {};
-      val = {};
-      keys = freeze([
-        'a',
-        'b',
-        'c'
-      ]);
+      val = freeze({});
+      keys = freeze([ 'a', 'b', 'c' ]);
 
       result = vitals.amend(obj, keys, val);
 
@@ -610,7 +602,7 @@ method('amend.main', function amendMainTests() {
 
     /// #{{{ @test B6
     test('B6', [
-      {}, [ 'a', 'b' ], '<descriptor>', '<descriptor>'
+      {}, [ 'a', 'b', 'c' ], '<descriptor>', '<descriptor>'
     ], function amendMainTestB6() {
 
       /** @type {!Object} */
@@ -778,7 +770,9 @@ method('amend.main', function amendMainTests() {
     /// #}}} @test C3
 
     /// #{{{ @test C4
-    test('C4', [ {}, '<descriptors>', 5, 'number' ], function amendMainTestC4() {
+    test('C4', [
+      {}, '<descriptors>', 5, 'number'
+    ], function amendMainTestC4() {
 
       /** @type {!Object} */
       var result;
@@ -797,7 +791,7 @@ method('amend.main', function amendMainTests() {
           'value': 2,
           'enumerable': false
         }
-      });
+      }, true);
 
       result = vitals.amend(obj, props, 5, 'number');
 
@@ -849,7 +843,7 @@ method('amend.main', function amendMainTests() {
         'b': {
           'value': 2
         }
-      });
+      }, true);
       desc = freeze({
         'enumerable': false
       });
@@ -924,26 +918,20 @@ method('amend.main', function amendMainTests() {
 
     /// #{{{ @test D2
     test('D2', [
-      {},
-      [ 'a', 'b' ],
-      5,
-      '<setter>'
+      {}, [ 'a', 'b' ], 5, '<setter>'
     ], function amendMainTestD2() {
 
       /** @type {!Object} */
       var result;
       /** @type {!Array} */
-      var props;
+      var keys;
       /** @type {!Object} */
       var obj;
 
       obj = {};
-      props = freeze([
-        'a',
-        'b'
-      ]);
+      keys = freeze([ 'a', 'b' ]);
 
-      result = vitals.amend(obj, props, 5, setter);
+      result = vitals.amend(obj, keys, 5, setter);
 
       assert(result === obj);
 
@@ -1075,11 +1063,7 @@ method('amend.main', function amendMainTests() {
 
     /// #{{{ @test D6
     test('D6', [
-      {},
-      '<descriptors>',
-      '<descriptor>',
-      'number',
-      '<setter>'
+      {}, '<descriptors>', '<descriptor>', 'number', '<setter>'
     ], function amendMainTestD6() {
 
       /** @type {!Object} */
@@ -1170,7 +1154,9 @@ method('amend.main', function amendMainTests() {
     /// #}}} @test E3
 
     /// #{{{ @test E4
-    test('E4', [ {}, 'a,b', 5, { 'fail': true } ], function amendMainTestE4() {
+    test('E4', [
+      {}, 'a,b', 5, { 'fail': true }
+    ], function amendMainTestE4() {
 
       throws.range(function() {
         vitals.amend({}, 'a,b', 5, {
