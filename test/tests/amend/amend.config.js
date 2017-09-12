@@ -457,6 +457,34 @@ method('amend.config', 'amend.cfg', function amendConfigTests() {
     });
     /// #}}} @test B9
 
+    /// #{{{ @test B10
+    test('B10', [
+      { 'a': 1 }, '', '<descriptor>'
+    ], function amendConfigTestB10() {
+
+      throws(function() {
+        vitals.amend.config({ 'a': 1 }, '', {
+          'configurable': false
+        });
+      });
+
+    });
+    /// #}}} @test B10
+
+    /// #{{{ @test B11
+    test('B11', [
+      '<object>', [ 'a', '', 'c' ], '<descriptor>'
+    ], function amendConfigTestB11() {
+
+      throws(function() {
+        vitals.amend.config({ 'a': 1, 'b': 2, 'c': 3 }, [ 'a', '', 'c' ], {
+          'configurable': false
+        });
+      });
+
+    });
+    /// #}}} @test B11
+
   });
   /// #}}} @tests B
 
