@@ -757,29 +757,6 @@ var amend = (function amendPrivateScope() {
   /// #if{{{ @code property.config
   function amendPropertyConfig(source, key, descriptor) {
 
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property.config');
-      case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'property.config');
-      case 2:
-        throw _mkErr(new ERR, 'no #descriptor defined', 'property.config');
-    }
-
-    if ( !$is.obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
-        'property.config');
-    if ( !$is.str(key) )
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property.config');
-    if ( !$is.obj(descriptor) )
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '!Object',
-        'property.config');
-    if ( !$own(source, key) )
-      throw _mkErr(new ERR, 'undefined #key name in #source',
-        'property.config');
-
-    return _amendConfig(source, key, descriptor);
-
     /** @type {number} */
     var len;
 
@@ -797,11 +774,6 @@ var amend = (function amendPrivateScope() {
         'property.config');
     }
 
-    byKey = $is.str(props);
-
-    if (byKey) {
-      byKeys = false;
-    }
     if ( !$is.str(key) ) {
       throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property.config');
     }
