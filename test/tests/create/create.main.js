@@ -3,6 +3,7 @@
  * VITALS.CREATE UNIT TESTS
  * ---------------------------------------------------------------------------
  * @method vitals.create
+ * @alias vitals.create.main
  * @submethod main
  * @super create
  * @section strict
@@ -182,8 +183,8 @@ var vitals = global.VITALS_TEST.VITALS;
 // TESTS
 //////////////////////////////////////////////////////////////////////////////
 
-/// #{{{ @suite create
-method('create', function createTests() {
+/// #{{{ @suite create.main
+method('create.main', function createMainTests() {
 
   /// #{{{ @func setter
   /**
@@ -201,10 +202,10 @@ method('create', function createTests() {
   /// #}}} @func setter
 
   /// #{{{ @tests A
-  should('A', 'make new object with given prototype', function createTestsA() {
+  should('A', 'make new object with given prototype', function createMainTestsA() {
 
     /// #{{{ @test A1
-    test('A1', [ null ], function createTestA1() {
+    test('A1', [ null ], function createMainTestA1() {
 
       /** @type {!Object} */
       var result;
@@ -220,7 +221,7 @@ method('create', function createTests() {
     /// #}}} @test A1
 
     /// #{{{ @test A2
-    test('A2', [ {} ], function createTestA2() {
+    test('A2', [ {} ], function createMainTestA2() {
 
       /** @type {!Object} */
       var result;
@@ -242,7 +243,7 @@ method('create', function createTests() {
     /// #}}} @test A2
 
     /// #{{{ @test A3
-    test('A3', [ '<Array.prototype>' ], function createTestA3() {
+    test('A3', [ '<Array.prototype>' ], function createMainTestA3() {
 
       /** @type {!Object} */
       var result;
@@ -267,10 +268,10 @@ method('create', function createTests() {
   /// #}}} @tests A
 
   /// #{{{ @tests B
-  should('B', 'make new object with prototype and properties', function createTestsB() {
+  should('B', 'make new object with prototype and properties', function createMainTestsB() {
 
     /// #{{{ @test B1
-    test('B1', [ {}, { 'a': 1, 'b': 2, 'c': 3 } ], function createTestB1() {
+    test('B1', [ {}, { 'a': 1, 'b': 2, 'c': 3 } ], function createMainTestB1() {
 
       /** @type {!Object} */
       var result;
@@ -314,7 +315,7 @@ method('create', function createTests() {
     /// #}}} @test B1
 
     /// #{{{ @test B2
-    test('B2', [ {}, [ 'a', 'b', 'c' ], 5 ], function createTestB2() {
+    test('B2', [ {}, [ 'a', 'b', 'c' ], 5 ], function createMainTestB2() {
 
       /** @type {!Object} */
       var result;
@@ -358,7 +359,7 @@ method('create', function createTests() {
     /// #}}} @test B2
 
     /// #{{{ @test B3
-    test('B3', [ {}, 'a,b,c', 5 ], function createTestB3() {
+    test('B3', [ {}, 'a,b,c', 5 ], function createMainTestB3() {
 
       /** @type {!Object} */
       var result;
@@ -394,7 +395,7 @@ method('create', function createTests() {
     /// #}}} @test B3
 
     /// #{{{ @test B4
-    test('B4', [ {}, '<descriptors>' ], function createTestB4() {
+    test('B4', [ {}, '<descriptors>' ], function createMainTestB4() {
 
       /** @type {!Object} */
       var result;
@@ -443,12 +444,12 @@ method('create', function createTests() {
   /// #}}} @tests B
 
   /// #{{{ @tests C
-  should('C', 'make object with prototype, properties, and descriptors', function createTestsC() {
+  should('C', 'make object with prototype, properties, and descriptors', function createMainTestsC() {
 
     /// #{{{ @test C1
     test('C1', [ 
       {}, { 'a': 1, 'b': 2, 'c': 3 }, '<descriptor>'
-    ], function createTestC1() {
+    ], function createMainTestC1() {
 
       /** @type {!Object} */
       var result;
@@ -497,7 +498,7 @@ method('create', function createTests() {
     /// #}}} @test C1
 
     /// #{{{ @test C2
-    test('C2', [ {}, [ 'a','b' ], 5, '<descriptor>' ], function createTestC2() {
+    test('C2', [ {}, [ 'a','b' ], 5, '<descriptor>' ], function createMainTestC2() {
 
       /** @type {!Object} */
       var result;
@@ -539,7 +540,7 @@ method('create', function createTests() {
     /// #}}} @test C2
 
     /// #{{{ @test C3
-    test('C3', [ {}, 'a,b', 5, '<descriptor>' ], function createTestC3() {
+    test('C3', [ {}, 'a,b', 5, '<descriptor>' ], function createMainTestC3() {
 
       /** @type {!Object} */
       var result;
@@ -578,7 +579,7 @@ method('create', function createTests() {
     /// #}}} @test C3
 
     /// #{{{ @test C4
-    test('C4', [ {}, '<varied-props>', '<descriptor>' ], function createTestC4() {
+    test('C4', [ {}, '<varied-props>', '<descriptor>' ], function createMainTestC4() {
 
       /** @type {!Object} */
       var result;
@@ -629,10 +630,10 @@ method('create', function createTests() {
   /// #}}} @tests C
 
   /// #{{{ @tests D
-  should('D', 'make object with prototype, properties, and strong type check', function createTestsD() {
+  should('D', 'make object with prototype, properties, and strong type check', function createMainTestsD() {
 
     /// #{{{ @test D1
-    test('D1', [ {}, { 'a': 1, 'b': 2 }, 'number' ], function createTestD1() {
+    test('D1', [ {}, { 'a': 1, 'b': 2 }, 'number' ], function createMainTestD1() {
 
       /** @type {!Object} */
       var result;
@@ -682,7 +683,7 @@ method('create', function createTests() {
     /// #}}} @test D1
 
     /// #{{{ @test D2
-    test('D2', [ {}, [ 'a', 'b' ], 5, 'number' ], function createTestD2() {
+    test('D2', [ {}, [ 'a', 'b' ], 5, 'number' ], function createMainTestD2() {
 
       /** @type {!Object} */
       var result;
@@ -728,7 +729,7 @@ method('create', function createTests() {
     /// #}}} @test D2
 
     /// #{{{ @test D3
-    test('D3', [ {}, 'a,b', 5, 'number' ], function createTestD3() {
+    test('D3', [ {}, 'a,b', 5, 'number' ], function createMainTestD3() {
 
       /** @type {!Object} */
       var result;
@@ -771,7 +772,7 @@ method('create', function createTests() {
     /// #}}} @test D3
 
     /// #{{{ @test D4
-    test('D4', [ {}, '<descriptors>', 'number' ], function createTestD4() {
+    test('D4', [ {}, '<descriptors>', 'number' ], function createMainTestD4() {
 
       /** @type {!Object} */
       var result;
@@ -829,7 +830,7 @@ method('create', function createTests() {
     /// #{{{ @test D5
     test('D5', [
       {}, '<descriptors>', '<descriptor>', 'number'
-    ], function createTestD5() {
+    ], function createMainTestD5() {
 
       /** @type {!Object} */
       var result;
@@ -892,10 +893,10 @@ method('create', function createTests() {
   /// #}}} @tests D
 
   /// #{{{ @tests E
-  should('E', 'make object with prototype, properties, and setter', function createTestsE() {
+  should('E', 'make object with prototype, properties, and setter', function createMainTestsE() {
 
     /// #{{{ @test E1
-    test('E1', [ {}, { 'a': 1, 'b': 2 }, '<setter>' ], function createTestE1() {
+    test('E1', [ {}, { 'a': 1, 'b': 2 }, '<setter>' ], function createMainTestE1() {
 
       /** @type {!Object} */
       var result;
@@ -935,7 +936,7 @@ method('create', function createTests() {
     /// #}}} @test E1
 
     /// #{{{ @test E2
-    test('E2', [ {}, [ 'a', 'b' ], 5, '<setter>' ], function createTestE2() {
+    test('E2', [ {}, [ 'a', 'b' ], 5, '<setter>' ], function createMainTestE2() {
 
       /** @type {!Object} */
       var result;
@@ -971,7 +972,7 @@ method('create', function createTests() {
     /// #}}} @test E2
 
     /// #{{{ @test E3
-    test('E3', [ {}, 'a,b', 5, '<setter>' ], function createTestE3() {
+    test('E3', [ {}, 'a,b', 5, '<setter>' ], function createMainTestE3() {
 
       /** @type {!Object} */
       var result;
@@ -1004,7 +1005,7 @@ method('create', function createTests() {
     /// #}}} @test E3
 
     /// #{{{ @test E4
-    test('E4', [ {}, '<descriptors>', '<setter>' ], function createTestE4() {
+    test('E4', [ {}, '<descriptors>', '<setter>' ], function createMainTestE4() {
 
       /** @type {!Object} */
       var result;
@@ -1052,7 +1053,7 @@ method('create', function createTests() {
     /// #{{{ @test E5
     test('E5', [
       {}, '<descriptors>', '<descriptor>', '<setter>'
-    ], function createTestE5() {
+    ], function createMainTestE5() {
 
       /** @type {!Object} */
       var result;
@@ -1105,7 +1106,7 @@ method('create', function createTests() {
     /// #{{{ @test E6
     test('E6', [
       {}, '<descriptors>', '<descriptor>', 'number', '<setter>'
-    ], function createTestE6() {
+    ], function createMainTestE6() {
 
       /** @type {!Object} */
       var result;
@@ -1169,10 +1170,10 @@ method('create', function createTests() {
   /// #}}} @tests E
 
   /// #{{{ @tests F
-  should('F', 'should throw a vitals error', function createTestsF() {
+  should('F', 'should throw a vitals error', function createMainTestsF() {
 
     /// #{{{ @test F1
-    test('F1', [], function createTestF1() {
+    test('F1', [], function createMainTestF1() {
 
       throws(function() {
         vitals.create();
@@ -1182,7 +1183,7 @@ method('create', function createTests() {
     /// #}}} @test F1
 
     /// #{{{ @test F2
-    test('F2', [ 'string' ], function createTestF2() {
+    test('F2', [ 'string' ], function createMainTestF2() {
 
       throws.type(function() {
         vitals.create('string');
@@ -1192,7 +1193,7 @@ method('create', function createTests() {
     /// #}}} @test F2
 
     /// #{{{ @test F3
-    test('F3', [ {}, 5, 5 ], function createTestF3() {
+    test('F3', [ {}, 5, 5 ], function createMainTestF3() {
 
       throws.type(function() {
         vitals.create({}, 5, 5);
@@ -1202,7 +1203,7 @@ method('create', function createTests() {
     /// #}}} @test F3
 
     /// #{{{ @test F4
-    test('F4', [ {}, 'a,b,c' ], function createTestF4() {
+    test('F4', [ {}, 'a,b,c' ], function createMainTestF4() {
 
       throws(function() {
         vitals.create({}, 'a,b,c');
@@ -1212,7 +1213,7 @@ method('create', function createTests() {
     /// #}}} @test F4
 
     /// #{{{ @test F5
-    test('F5', [ {}, 'a,b,c', 5, 'string' ], function createTestF5() {
+    test('F5', [ {}, 'a,b,c', 5, 'string' ], function createMainTestF5() {
 
       throws.type(function() {
         vitals.create({}, 'a,b,c', 5, 'string');
@@ -1222,7 +1223,7 @@ method('create', function createTests() {
     /// #}}} @test F5
 
     /// #{{{ @test F6
-    test('F6', [ {}, 'a,b,c', 5, 'number', {} ], function createTestF6() {
+    test('F6', [ {}, 'a,b,c', 5, 'number', {} ], function createMainTestF6() {
 
       throws.type(function() {
         vitals.create({}, 'a,b,c', 5, 'number', {});
@@ -1235,7 +1236,7 @@ method('create', function createTests() {
   /// #}}} @tests F
 
 });
-/// #}}} @suite create
+/// #}}} @suite create.main
 
 /// #}}} @group TESTS
 
