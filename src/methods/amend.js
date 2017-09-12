@@ -170,7 +170,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
           + '#props');
       }
-      byKeys = false;
+      byKeys = NO;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props,
@@ -185,14 +185,14 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR,
           'invalid empty key name `string` defined in #props `array`');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props');
     }
     else {
-      byKeys = false;
+      byKeys = NO;
     }
 
     switch (len) {
@@ -427,7 +427,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'undefined #source key name defined by #props '
           + '`string`', 'config');
       }
-      byKeys = false;
+      byKeys = NO;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
@@ -446,7 +446,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
           + '`array`', 'config');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
       throw _mkErr(new ERR, 'undefined #source key name defined in #props '
@@ -465,7 +465,7 @@ var amend = (function amendPrivateScope() {
         + 'properties for a property value within the #props', 'config');
     }
     else {
-      byKeys = false;
+      byKeys = NO;
     }
 
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
@@ -957,7 +957,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'invalid empty key name defined in #props '
           + '`string`', 'properties');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props,
@@ -972,14 +972,14 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
           + '#props `array`', 'properties');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props', 'properties');
     }
     else {
-      byKeys = false;
+      byKeys = NO;
     }
 
     switch (len) {
@@ -1222,7 +1222,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
           + '`string`', 'properties.config');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
@@ -1241,7 +1241,7 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
           + '`array`', 'properties.config');
       }
-      byKeys = true;
+      byKeys = YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
       throw _mkErr(new ERR, 'undefined #source key name defined in #props '
@@ -1261,7 +1261,7 @@ var amend = (function amendPrivateScope() {
         'properties.config');
     }
     else {
-      byKeys = false;
+      byKeys = NO;
     }
 
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
