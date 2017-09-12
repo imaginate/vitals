@@ -14,7 +14,7 @@
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $merge ../helpers/merge.js
+/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
