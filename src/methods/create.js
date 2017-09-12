@@ -14,9 +14,8 @@
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
-/// #include @helper $sliceArr ../helpers/slice-arr.js
+/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
 /// #include @super amend ./amend.js
@@ -62,26 +61,35 @@ var create = (function createPrivateScope() {
   /// #if{{{ @code main
   function create(proto, props, val, descriptor, strongType, setter) {
 
-    /** @type {!Array} */
-    var args;
+    /** @type {!Object} */
+    var obj;
+    /** @type {number} */
+    var len;
 
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #proto defined');
+    len = arguments['length'];
 
+    if (len < 1) {
+      throw _mkErr(new ERR, 'no #proto defined');
+    }
+    if ( !$is.nil(proto) && !$is.obj(proto) ) {
+      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
+    }
+
+    obj = $mkObj(proto);
+
+    switch (len) {
       case 1:
-        if ( !$is.nil(proto) && !$is.obj(proto) )
-          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
-
-        return $mkObj(proto);
-
+        return obj;
+      case 2:
+        return amend(obj, props);
+      case 3:
+        return amend(obj, props, val);
+      case 4:
+        return amend(obj, props, val, descriptor);
+      case 5:
+        return amend(obj, props, val, descriptor, strongType);
       default:
-        if ( !$is.nil(proto) && !$is.obj(proto) )
-          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
-
-        args = $sliceArr(arguments);
-        args[0] = $mkObj(proto);
-        return amend['apply'](NIL, args);
+        return amend(obj, props, val, descriptor, strongType, setter);
     }
   }
   create['main'] = create;
@@ -113,26 +121,35 @@ var create = (function createPrivateScope() {
   /// #if{{{ @code object
   function createObject(proto, props, val, descriptor, strongType, setter) {
 
-    /** @type {!Array} */
-    var args;
+    /** @type {!Object} */
+    var obj;
+    /** @type {number} */
+    var len;
 
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #proto defined', 'object');
+    len = arguments['length'];
 
+    if (len < 1) {
+      throw _mkErr(new ERR, 'no #proto defined', 'object');
+    }
+    if ( !$is.nil(proto) && !$is.obj(proto) ) {
+      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
+    }
+
+    obj = $mkObj(proto);
+
+    switch (len) {
       case 1:
-        if ( !$is.nil(proto) && !$is.obj(proto) )
-          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
-
-        return $mkObj(proto);
-
+        return obj;
+      case 2:
+        return amend(obj, props);
+      case 3:
+        return amend(obj, props, val);
+      case 4:
+        return amend(obj, props, val, descriptor);
+      case 5:
+        return amend(obj, props, val, descriptor, strongType);
       default:
-        if ( !$is.nil(proto) && !$is.obj(proto) )
-          throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object', 'object');
-
-        args = $sliceArr(arguments);
-        args[0] = $mkObj(proto);
-        return amend['apply'](NIL, args);
+        return amend(obj, props, val, descriptor, strongType, setter);
     }
   }
   create['object'] = createObject;

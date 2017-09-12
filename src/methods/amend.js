@@ -14,8 +14,8 @@
 /// #insert @wrapper OPEN ../macros/wrapper.js
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
-/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
+/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
 /// #include @super is ./is.js
 /// #if}}} @scope SOLO
@@ -126,7 +126,8 @@ var amend = (function amendPrivateScope() {
    *   an *accessor* or *data* specific descriptor property is defined for a
    *   property's value, **no** descriptor values are changed for that
    *   specific property. If the #strongType is defined, the #setter will
-   *   **not** get called until after the @is#main test is complete.
+   *   **not** get called until after the @is#main test is complete and
+   *   successful.
    *   ```
    *   descriptor.set = function set(newValue) {
    *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
@@ -176,6 +177,14 @@ var amend = (function amendPrivateScope() {
         '!Object<string, *>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
+      if ( !_keysTypeCheckProps(props) ) {
+        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+          '!Array<string>');
+      }
+      if ( !_keysCheckProps(props) ) {
+        throw _mkErr(new ERR,
+          'invalid empty key name `string` defined in #props `array`');
+      }
       byKeys = true;
     }
     else if ( !_descriptorCheckProps(props) ) {
@@ -446,37 +455,51 @@ var amend = (function amendPrivateScope() {
   /// @alias vitals.amend.prop
   /**
    * @description
-   *   A shortcut for [Object.defineProperty][define-prop].
+   *   A shortcut for [Object.defineProperty][define-prop] that includes
+   *   easier property value assignment, strong type declarations, and
+   *   flexible default [descriptor][descriptor] options.
    * @public
    * @param {!Object} source
    * @param {string} key
-   * @param {*=} val
-   *   The #val is required if the #descriptor is not defined.
+   * @param {*=} val = `undefined`
+   *   If the #descriptor is defined and contains an [owned][own] `"value"`
+   *   property, the value set by #val overrides the value defined within the
+   *   #descriptor. If the #strongType or the #setter is defined, the #val or
+   *   the #descriptor (or both) must be defined.
    * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
+   *   If the #strongType or the #setter is defined, the #val or the
+   *   #descriptor (or both) must be defined.
    * @param {string=} strongType
-   *   If the #strongType is defined, the new property is assigned an
-   *   [accessor descriptor][descriptor] that includes a `set` function that
-   *   throws an error if @is#main returns `false` for a new property `value`.
-   *   See the below snippet for an example #strongType `set` function.
+   *   If the #strongType is defined, the new or edited property is assigned
+   *   an [accessor descriptor][descriptor] with a *set* `function` that
+   *   throws a `TypeError` instance if any new value fails an @is#main test
+   *   for the data types specicified by the #strongType `string`. If the
+   *   #setter is defined, the #strongType check is still completed.
    *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
+   *   descriptor.set = function set(newValue) {
+   *     if ( !vitals.is(strongType, newValue) ) {
    *       throw new TypeError("...");
-   *     value = newVal;
+   *     }
+   *     value = !!setter
+   *       ? setter(newValue, value)
+   *       : newValue;
    *   };
    *   ```
-   * @param {(!function(*, *): *)=} setter
-   *   If defined the new property is assigned an
-   *   [accessor descriptor][descriptor] that includes a `set` function that
-   *   sets the property to the value returned by #setter. The #setter
-   *   function will receive two params, the new value and the current value.
-   *   If #strongType is defined #setter will not get called until the new
-   *   value passes the @is#main test.
+   * @param {(?function(*, *): *)=} setter
+   *   If the #setter is defined, the new or edited property is assigned an
+   *   [accessor descriptor][descriptor] with a *set* `function` that sets
+   *   the property's value to the value returned by a call to the #setter
+   *   `function`. The #setter is passed the following two arguments:
+   *   - **newValue** *`*`*
+   *   - **oldValue** *`*`*
+   *   If the #strongType is defined, the #setter will **not** get called
+   *   until after the @is#main test is complete and successful.
    *   ```
-   *   descriptor.set = function set(newVal) {
-   *     if ( !vitals.is(strongType, newVal) )
+   *   descriptor.set = function set(newValue) {
+   *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
    *       throw new TypeError("...");
-   *     value = setter(newVal, value);
+   *     }
+   *     value = setter(newValue, value);
    *   };
    *   ```
    * @return {!Object}
@@ -486,80 +509,164 @@ var amend = (function amendPrivateScope() {
   /// #if{{{ @code property
   function amendProperty(source, key, val, descriptor, strongType, setter) {
 
-    /** @type {boolean} */
-    var byKey;
+    /** @type {number} */
+    var len;
 
-    switch (arguments['length']) {
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
         throw _mkErr(new ERR, 'no #source defined', 'property');
-
       case 1:
         throw _mkErr(new ERR, 'no #key defined', 'property');
+    }
 
+    if ( !$is.obj(source) ) {
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
+    }
+
+    if ( !$is.str(key) ) {
+      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
+    }
+    else if (!key) {
+      throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
+        + '#key', 'property');
+    }
+
+    switch (len) {
       case 2:
-        throw _mkErr(new ERR, 'no #val or #descriptor defined', 'property');
+        return _amendProp(source, key, VOID, NIL, '', NIL);
 
       case 3:
         if ( _isDescriptor(val) ) {
           descriptor = val;
-          val = descriptor['value'];
+          val = $own(descriptor, 'value')
+            ? descriptor['value']
+            : VOID;
         }
-        break;
+        else {
+          descriptor = NIL;
+        }
+
+        return _amendProp(source, key, val, descriptor, '', NIL);
 
       case 4:
         if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          descriptor = VOID;
+          setter = NIL;
+          if ( _isDescriptor(val) ) {
+            descriptor = val;
+            val = $own(descriptor, 'value')
+              ? descriptor['value']
+              : VOID;
+          }
+          else {
+            descriptor = NIL;
+          }
         }
         else if ( $is.fun(descriptor) ) {
+          strongType = '';
           setter = descriptor;
-          descriptor = VOID;
+          if ( _isDescriptor(val) ) {
+            descriptor = val;
+            val = $own(descriptor, 'value')
+              ? descriptor['value']
+              : VOID;
+          }
+          else {
+            descriptor = NIL;
+          }
         }
-
-        if ( _isDescriptor(val) ) {
-          descriptor = val;
-          val = descriptor['value'];
+        else {
+          strongType = '';
+          setter = NIL;
         }
         break;
 
       case 5:
-        if ( $is.fun(strongType) ) {
-          setter = strongType;
-          strongType = VOID;
-          if ( $is.str(descriptor) ) {
-            strongType = descriptor;
-            descriptor = VOID;
+        if ( $is.str(descriptor) ) {
+          setter = $is.void(strongType)
+            ? NIL
+            : strongType;
+          strongType = descriptor;
+          if ( _isDescriptor(val) ) {
+            descriptor = val;
+            val = $own(descriptor, 'value')
+              ? descriptor['value']
+              : VOID;
+          }
+          else {
+            descriptor = NIL;
           }
         }
-
-        if ( _isDescriptor(val) ) {
-          descriptor = val;
-          val = descriptor['value'];
+        else {
+          if ( $is.nil(strongType) || $is.fun(strongType) ) {
+            setter = strongType;
+            strongType = '';
+          }
+          else {
+            if ( $is.void(strongType) ) {
+              strongType = '';
+            }
+            setter = NIL;
+          }
+          if ( $is.void(descriptor) ) {
+            descriptor = NIL;
+          }
         }
         break;
+
+      default:
+        if ( $is.void(descriptor) ) {
+          descriptor = NIL;
+        }
+        if ( $is.void(strongType) ) {
+          strongType = '';
+        }
+        if ( $is.void(setter) ) {
+          setter = NIL;
+        }
     }
 
-    if ( !$is.obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
-    if ( !$is.str(key) )
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
-    if ( !$is.void(descriptor) && !$is.obj(descriptor) )
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '!Object=',
+    if ( $is.obj(descriptor) ) {
+      if ( !_hasOnlyDescriptorProps(descriptor) ) {
+        throw _mkRangeErr(new RANGE_ERR, 'descriptor property defined',
+          _DESCRIPTOR_KEYS, 'property');
+      }
+      if ( _isBadDescriptor(descriptor) ) {
+        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+          + 'properties within the #descriptor', 'property');
+      }
+    }
+    else if ( !$is.nil(descriptor) ) {
+      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
         'property');
-    if ( !$is.void(strongType) && !$is.str(strongType) )
+    }
+
+    if ( !$is.str(strongType) ) {
       throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=',
         'property');
-    if ( !$is.void(setter) && !$is.fun(setter) )
+    }
+    else if ( !!strongType && !$is.void(val) && !is(strongType, val) ) {
+      strongType = _appendEqualSign(strongType);
+      throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType, 'property');
+    }
+
+    if ( !$is.nil(setter) && !$is.fun(setter) ) {
       throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
-        '(!function(*, *): *)=', 'property');
-    if ( !!strongType && !is(strongType + '=', val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType + '=',
-        'property');
-    if (descriptor
-        && (strongType || setter)
-        && $own(descriptor, 'writable') )
-      throw _mkErr(new ERR, 'invalid data #descriptor used with defined ' +
-        '#strongType or #setter', 'property');
+        '(?function(*, *): *)=', 'property');
+    }
+
+    if ( !!descriptor && (!!strongType || !!setter) ) {
+      if ( _hasAccessorProp(descriptor) ) {
+        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
+          + '#strongType and/or #setter', 'property');
+      }
+      else if ( $own(descriptor, 'writable') ) {
+        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
+          + '#strongType and/or #setter', 'property');
+      }
+    }
 
     return _amendProp(source, key, val, descriptor, strongType, setter);
   }
@@ -711,7 +818,8 @@ var amend = (function amendPrivateScope() {
    *   an *accessor* or *data* specific descriptor property is defined for a
    *   property's value, **no** descriptor values are changed for that
    *   specific property. If the #strongType is defined, the #setter will
-   *   **not** get called until after the @is#main test is complete.
+   *   **not** get called until after the @is#main test is complete and
+   *   successful.
    *   ```
    *   descriptor.set = function set(newValue) {
    *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
@@ -752,9 +860,11 @@ var amend = (function amendPrivateScope() {
         throw _mkErr(new ERR, 'invalid empty `string` defined for #props',
           'properties');
       }
-      props = props === ' '
-        ? [ ' ' ]
-        : $splitKeys(props);
+      props = $splitKeys(props);
+      if ( !_keysCheckProps(props) ) {
+        throw _mkErr(new ERR, 'invalid empty key name defined in #props '
+          + '`string`', 'properties');
+      }
       byKeys = true;
     }
     else if ( !$is.obj(props) ) {
@@ -762,6 +872,14 @@ var amend = (function amendPrivateScope() {
         '!Object<string, *>|!Array<string>|string', 'properties');
     }
     else if ( $is.arr(props) ) {
+      if ( !_keysTypeCheckProps(props) ) {
+        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+          '!Array<string>', 'properties');
+      }
+      if ( !_keysCheckProps(props) ) {
+        throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
+          + '#props `array`', 'properties');
+      }
       byKeys = true;
     }
     else if ( !_descriptorCheckProps(props) ) {
@@ -1936,6 +2054,54 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _descriptorCheckProps
 
+  /// #{{{ @func _keysCheckProps
+  /**
+   * @private
+   * @param {!Array<string>} props
+   * @return {boolean}
+   */
+  function _keysCheckProps(props) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = props['length'];
+    i = -1;
+    while (++i < len) {
+      if (!props[i]) {
+        return NO;
+      }
+    }
+    return YES;
+  }
+  /// #}}} @func _keysCheckProps
+
+  /// #{{{ @func _keysTypeCheckProps
+  /**
+   * @private
+   * @param {!Array<string>} props
+   * @return {boolean}
+   */
+  function _keysTypeCheckProps(props) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = props['length'];
+    i = -1;
+    while (++i < len) {
+      if ( !$is.str(props[i]) ) {
+        return NO;
+      }
+    }
+    return YES;
+  }
+  /// #}}} @func _keysTypeCheckProps
+
   /// #{{{ @func _strongTypeCheckProps
   /**
    * @private
@@ -2005,6 +2171,8 @@ var amend = (function amendPrivateScope() {
   /// #insert @code MK_ERR ../macros/mk-err.js
 
   /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+
+  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
 
   /// #}}} @group errors
 

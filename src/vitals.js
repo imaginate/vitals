@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #ifnot{{{ @env NODE
@@ -25,6 +25,7 @@
 /// #include @helper $match ./helpers/match.js
 /// #include @helper $merge ./helpers/merge.js
 /// #include @helper $ownEnum ./helpers/own-enum.js
+/// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $sliceArr ./helpers/slice-arr.js
 /// #include @helper $sliceStr ./helpers/slice-str.js
 /// #include @helper $splitKeys ./helpers/split-keys.js
