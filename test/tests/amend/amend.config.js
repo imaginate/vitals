@@ -3,6 +3,8 @@
  * VITALS.AMEND.CONFIG UNIT TESTS
  * ---------------------------------------------------------------------------
  * @method vitals.amend.config
+ * @alias vitals.amend.conf
+ * @alias vitals.amend.cfg
  * @submethod config
  * @super amend
  * @section strict
@@ -84,16 +86,13 @@ var vitals = global.VITALS_TEST.VITALS;
 //////////////////////////////////////////////////////////////////////////////
 
 /// #{{{ @suite amend.config
-method('amend.config', function amendConfigTests() {
+method('amend.config', 'amend.cfg', function amendConfigTests() {
 
   /// #{{{ @tests A
   should('A', "update each property's descriptor", function amendConfigTestsA() {
 
     /// #{{{ @test A1
-    test('A1', [
-      '<object>',
-      '<props>'
-    ], function amendConfigTestA1() {
+    test('A1', [ '<object>', '<props>' ], function amendConfigTestA1() {
 
       /** @type {!Object} */
       var result;
@@ -130,17 +129,14 @@ method('amend.config', function amendConfigTests() {
       assert(result.c === 3);
 
       desc = getDescriptor(result, 'a');
-
       assert(desc.enumerable === true);
       assert(desc.configurable === false);
 
       desc = getDescriptor(result, 'b');
-
       assert(desc.enumerable === false);
       assert(desc.configurable === true);
 
       desc = getDescriptor(result, 'c');
-
       assert(desc.enumerable === true);
       assert(desc.configurable === false);
     });
@@ -148,9 +144,7 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test A2
     test('A2', [
-      '<object>',
-      [ 'a', 'b' ],
-      '<descriptor>'
+      '<object>', [ 'a', 'b' ], '<descriptor>'
     ], function amendConfigTestA2() {
 
       /** @type {!Object} */
@@ -167,10 +161,7 @@ method('amend.config', function amendConfigTests() {
         'b': 2,
         'c': 3
       };
-      keys = freeze([
-        'a',
-        'b'
-      ]);
+      keys = freeze([ 'a', 'b' ]);
       desc = freeze({
         'configurable': false
       });
@@ -184,17 +175,14 @@ method('amend.config', function amendConfigTests() {
       assert(result.c === 3);
 
       desc = getDescriptor(result, 'a');
-
       assert(desc.enumerable === true);
       assert(desc.configurable === false);
 
       desc = getDescriptor(result, 'b');
-
       assert(desc.enumerable === true);
       assert(desc.configurable === false);
 
       desc = getDescriptor(result, 'c');
-
       assert(desc.enumerable === true);
       assert(desc.configurable === true);
     });
@@ -202,9 +190,7 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test A3
     test('A3', [
-      '<object>',
-      'a,b',
-      '<descriptor>'
+      '<object>', 'a,b', '<descriptor>'
     ], function amendConfigTestA3() {
 
       /** @type {!Object} */
@@ -217,7 +203,7 @@ method('amend.config', function amendConfigTests() {
       obj = {
         'a': 1,
         'b': 2,
-        'c': 3
+        'a,b': 3
       };
       desc = freeze({
         'configurable': false
@@ -229,24 +215,124 @@ method('amend.config', function amendConfigTests() {
 
       assert(result.a === 1);
       assert(result.b === 2);
+      assert(result['a,b'] === 3);
+
+      desc = getDescriptor(result, 'a');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === true);
+
+      desc = getDescriptor(result, 'b');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === true);
+
+      desc = getDescriptor(result, 'a,b');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === false);
+    });
+    /// #}}} @test A3
+
+    /// #{{{ @test A4
+    test('A4', [
+      '<object>', [ 'a', 'b' ], null
+    ], function amendConfigTestA4() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Array} */
+      var keys;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
+        'a': 1,
+        'b': 2,
+        'c': 3
+      };
+      keys = freeze([ 'a', 'b' ]);
+
+      result = vitals.amend.config(obj, keys, null);
+
+      assert(result === obj);
+
+      assert(result.a === 1);
+      assert(result.b === 2);
       assert(result.c === 3);
 
       desc = getDescriptor(result, 'a');
-
       assert(desc.enumerable === true);
-      assert(desc.configurable === false);
+      assert(desc.configurable === true);
 
       desc = getDescriptor(result, 'b');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === true);
 
+      desc = getDescriptor(result, 'c');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === true);
+    });
+    /// #}}} @test A4
+
+    /// #{{{ @test A5
+    test('A5', [
+      '<object>', '<props>', '<descriptor>'
+    ], function amendConfigTestA5() {
+
+      /** @type {!Object} */
+      var result;
+      /** @type {!Object} */
+      var props;
+      /** @type {!Object} */
+      var desc;
+      /** @type {!Object} */
+      var obj;
+
+      obj = {
+        'a': 1,
+        'b': 2,
+        'c': 3
+      };
+      /// @note undefined-props-property
+      ///   Any @amend#config #props property that has a value of `undefined`
+      ///   is skipped. Due to the *skip*, defining the #props `"x"` property
+      ///   with the value of `undefined` in this example, %A5, will **not**
+      ///   cause an `Error` to be thrown. While defining the #props `"x"`
+      ///   property with the value of `null` in example %B7 will cause an
+      ///   `Error` to be thrown.
+      props = freeze({
+        'x': undefined,
+        'a': undefined,
+        'b': null,
+        'c': {
+          'enumerable': false
+        }
+      }, true);
+      desc = freeze({
+        'configurable': false
+      });
+
+      result = vitals.amend.config(obj, props, desc);
+
+      assert(result === obj);
+
+      assert(result.a === 1);
+      assert(result.b === 2);
+      assert(result.c === 3);
+
+      desc = getDescriptor(result, 'a');
+      assert(desc.enumerable === true);
+      assert(desc.configurable === true);
+
+      desc = getDescriptor(result, 'b');
       assert(desc.enumerable === true);
       assert(desc.configurable === false);
 
       desc = getDescriptor(result, 'c');
-
-      assert(desc.enumerable === true);
+      assert(desc.enumerable === false);
       assert(desc.configurable === true);
     });
-    /// #}}} @test A3
+    /// #}}} @test A5
 
   });
   /// #}}} @tests A
@@ -266,13 +352,11 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test B2
     test('B2', [
-      'fail',
-      'a,b,c',
-      '<descriptor>'
+      'fail', 'a', '<descriptor>'
     ], function amendConfigTestB2() {
 
       throws.type(function() {
-        vitals.amend.config('fail', 'a,b,c', {
+        vitals.amend.config('fail', 'a', {
           'configurable': false
         });
       });
@@ -282,9 +366,7 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test B3
     test('B3', [
-      { '5': 1 },
-      5,
-      '<descriptor>'
+      { '5': 1 }, 5, '<descriptor>'
     ], function amendConfigTestB3() {
 
       throws.type(function() {
@@ -297,17 +379,12 @@ method('amend.config', function amendConfigTests() {
     /// #}}} @test B3
 
     /// #{{{ @test B4
-    /**
-     * @description
-     *   Ensure proper error thrown for a missing descriptor.
-     */
     test('B4', [
-      '<object>',
-      'a,b,c'
+      { 'a': 1 }, 'a', { 'fail': true }
     ], function amendConfigTestB4() {
 
-      throws(function() {
-        vitals.amend.config({ 'a': 1, 'b': 2, 'c': 3 }, 'a,b,c');
+      throws.range(function() {
+        vitals.amend.config({ 'a': 1 }, 'a', { 'fail': true });
       });
 
     });
@@ -315,12 +392,11 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test B5
     test('B5', [
-      '<object>',
-      { 'a': 1 }
+      { 'a': 1 }, { 'a': 'fail' }
     ], function amendConfigTestB5() {
 
       throws.type(function() {
-        vitals.amend.config({ 'a': 1, 'b': 2, 'c': 3 }, { 'a': 1 });
+        vitals.amend.config({ 'a': 1 }, { 'a': 'fail' });
       });
 
     });
@@ -328,19 +404,58 @@ method('amend.config', function amendConfigTests() {
 
     /// #{{{ @test B6
     test('B6', [
-      '<object>',
-      'a,d',
-      '<descriptor>'
+      { 'a': 1 }, 'x', '<descriptor>'
     ], function amendConfigTestB6() {
 
       throws(function() {
-        vitals.amend.config({ 'a': 1, 'b': 2, 'c': 3 }, 'a,d', {
+        vitals.amend.config({ 'a': 1 }, 'x', {
           'configurable': false
         });
       });
 
     });
     /// #}}} @test B6
+
+    /// #{{{ @test B7
+    test('B7', [
+      { 'a': 1 }, { 'x': null }, '<descriptor>'
+    ], function amendConfigTestB7() {
+
+      throws(function() {
+        vitals.amend.config({ 'a': 1 }, { 'x': null }, {
+          'configurable': false
+        });
+      });
+
+    });
+    /// #}}} @test B7
+
+    /// #{{{ @test B8
+    test('B8', [
+      { 'a': 1 }, { 'a': { 'fail': true } }
+    ], function amendConfigTestB8() {
+
+      throws.range(function() {
+        vitals.amend.config({ 'a': 1 }, { 'a': { 'fail': true } });
+      });
+
+    });
+    /// #}}} @test B8
+
+    /// #{{{ @test B9
+    test('B9', [
+      { 'a': 1 }, 'a', '<bad-descriptor>'
+    ], function amendConfigTestB9() {
+
+      throws(function() {
+        vitals.amend.config({ 'a': 1 }, 'a', {
+          'set': function setter(){},
+          'writable': true
+        });
+      });
+
+    });
+    /// #}}} @test B9
 
   });
   /// #}}} @tests B
