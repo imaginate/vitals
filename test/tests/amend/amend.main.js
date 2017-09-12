@@ -231,11 +231,7 @@ method('amend.main', function amendMainTests() {
       var obj;
 
       obj = {};
-      keys = freeze([
-        'a',
-        'b',
-        'c'
-      ]);
+      keys = freeze([ 'a', 'b', 'c' ]);
 
       result = vitals.amend(obj, keys, 5);
 
@@ -445,10 +441,7 @@ method('amend.main', function amendMainTests() {
       var obj;
 
       obj = {};
-      keys = freeze([
-        'a',
-        'b'
-      ]);
+      keys = freeze([ 'a', 'b' ]);
       desc = freeze({
         'enumerable': false
       });
@@ -698,17 +691,14 @@ method('amend.main', function amendMainTests() {
       /** @type {!Object} */
       var result;
       /** @type {!Array} */
-      var props;
+      var keys;
       /** @type {!Object} */
       var obj;
 
       obj = {};
-      props = freeze([
-        'a',
-        'b'
-      ]);
+      keys = freeze([ 'a', 'b' ]);
 
-      result = vitals.amend(obj, props, 5, 'number');
+      result = vitals.amend(obj, keys, 5, 'number');
 
       assert(result === obj);
 
@@ -1202,7 +1192,9 @@ method('amend.main', function amendMainTests() {
     /// #}}} @test E7
 
     /// #{{{ @test E8
-    test('E8', [ {}, [ 'a', '', 'c' ], 5 ], function amendMainTestE8() {
+    test('E8', [
+      {}, [ 'a', '', 'c' ], 5
+    ], function amendMainTestE8() {
 
       throws(function() {
         vitals.amend({}, [ 'a', '', 'c' ], 5);
