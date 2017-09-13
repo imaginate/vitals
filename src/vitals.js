@@ -207,27 +207,28 @@ var _SECTIONS = {
  * @dict
  */
 var _METHODS = {
-  'amend':  YES,
-  'copy':   YES,
-  'create': YES,
-  'cut':    YES,
-  'each':   YES,
-  'fill':   YES,
-  'freeze': YES,
-  'fuse':   YES,
-  'get':    YES,
-  'has':    YES,
-  'is':     YES,
-  'remap':  YES,
-  'roll':   YES,
-  'run':    YES,
-  'same':   YES,
-  'seal':   YES,
-  'sew':    YES,
-  'slice':  YES,
-  'stringify':    YES,
-  'to':     YES,
-  'until':  YES
+  'amend':     YES,
+  'copy':      YES,
+  'cp':        YES,
+  'create':    YES,
+  'cut':       YES,
+  'each':      YES,
+  'fill':      YES,
+  'freeze':    YES,
+  'fuse':      YES,
+  'get':       YES,
+  'has':       YES,
+  'is':        YES,
+  'remap':     YES,
+  'roll':      YES,
+  'run':       YES,
+  'same':      YES,
+  'seal':      YES,
+  'sew':       YES,
+  'slice':     YES,
+  'stringify': YES,
+  'to':        YES,
+  'until':     YES
 };
 /// #}}} @const _METHODS
 
@@ -241,6 +242,7 @@ var _SECTION_METHODS = {
   'all': [
     'amend',
     'copy',
+    'cp',
     'create',
     'cut',
     'each',
@@ -286,7 +288,7 @@ var _SECTION_METHODS = {
     'seal'
   ],
   'fs': [
-    'copy',
+    'cp',
     'get',
     'is',
     'to'
@@ -310,6 +312,7 @@ var _VALID_RANGE = [
   'shell',
   'amend',
   'copy',
+  'cp',
   'create',
   'cut',
   'each',

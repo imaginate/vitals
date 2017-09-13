@@ -7,7 +7,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #insert @wrapper OPEN ../macros/wrapper.js
@@ -25,7 +25,7 @@
 /// #include @helper $readFile ../helpers/read-file.js
 /// #include @helper $writeFile ../helpers/write-file.js
 /// #{{{ @section fs
-/// #include @super copy ../methods/copy.js
+/// #include @super cp ../methods/cp.js
 /// #include @super get ../methods/get.js
 /// #include @super is ../methods/is.js
 /// #include @super to ../methods/to.js

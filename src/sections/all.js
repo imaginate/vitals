@@ -64,6 +64,9 @@
 /// #include @super seal ../methods/seal.js
 /// #}}} @section strict
 /// #if{{{ @env NODE
+/// #{{{ @section fs
+/// #include @super cp ../methods/cp.js
+/// #}}} @section fs
 /// #{{{ @section shell
 /// #include @super run ../methods/run.js
 /// #}}} @section shell

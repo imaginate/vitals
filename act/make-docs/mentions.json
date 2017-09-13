@@ -7,6 +7,7 @@
     "shell": "vitals shell section",
     "amend": "vitals.amend",
     "copy": "vitals.copy",
+    "cp": "vitals.cp",
     "create": "vitals.create",
     "cut": "vitals.cut",
     "each": "vitals.each",
@@ -35,6 +36,7 @@
   "METHOD": {
     "amend": true,
     "copy": true,
+    "cp": true,
     "create": true,
     "cut": true,
     "each": true,
@@ -70,6 +72,7 @@
     "shell": "https://github.com/imaginate/vitals/wiki#user-content-api",
     "amend": "https://github.com/imaginate/vitals/wiki/vitals.amend",
     "copy": "https://github.com/imaginate/vitals/wiki/vitals.copy",
+    "cp": "https://github.com/imaginate/vitals/wiki/vitals.cp",
     "create": "https://github.com/imaginate/vitals/wiki/vitals.create",
     "cut": "https://github.com/imaginate/vitals/wiki/vitals.cut",
     "each": "https://github.com/imaginate/vitals/wiki/vitals.each",

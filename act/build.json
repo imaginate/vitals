@@ -278,8 +278,8 @@
               "dest": "copy.js"
             },
             {
-              "src": "copy.js",
-              "dest": "copy-fs.js",
+              "src": "cp.js",
+              "dest": "cp.js",
               "state": {
                 "scope": {
                   "FS": true
@@ -424,6 +424,10 @@
         {
           "src": "copy.js",
           "dest": "vitals.copy.md"
+        },
+        {
+          "src": "cp.js",
+          "dest": "vitals.cp.md"
         },
         {
           "src": "create.js",
