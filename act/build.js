@@ -3301,6 +3301,8 @@ function buildDist(method) {
   var branch;
   /** @type {!Object} */
   var flags;
+  /** @type {string} */
+  var path;
 
   /// #}}} @step declare-variables
 
@@ -3378,6 +3380,8 @@ function buildBrowser(method) {
   var branch;
   /** @type {!Object} */
   var flags;
+  /** @type {string} */
+  var path;
 
   /// #}}} @step declare-variables
 
@@ -3447,6 +3451,8 @@ function buildNode(method) {
   var branch;
   /** @type {!Object} */
   var flags;
+  /** @type {string} */
+  var path;
 
   /// #}}} @step declare-variables
 
@@ -3514,6 +3520,8 @@ function buildDocs(method) {
 
   /** @type {!Branch} */
   var branch;
+  /** @type {string} */
+  var path;
 
   /// #}}} @step declare-variables
 
