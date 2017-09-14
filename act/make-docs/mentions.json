@@ -6,6 +6,7 @@
     "fs": "vitals fs section",
     "shell": "vitals shell section",
     "amend": "vitals.amend",
+    "assign": "vitals.assign",
     "copy": "vitals.copy",
     "cp": "vitals.cp",
     "create": "vitals.create",
@@ -35,6 +36,7 @@
   },
   "METHOD": {
     "amend": true,
+    "assign": true,
     "copy": true,
     "cp": true,
     "create": true,
@@ -71,6 +73,7 @@
     "fs": "https://github.com/imaginate/vitals/wiki#user-content-api",
     "shell": "https://github.com/imaginate/vitals/wiki#user-content-api",
     "amend": "https://github.com/imaginate/vitals/wiki/vitals.amend",
+    "assign": "https://github.com/imaginate/vitals/wiki/vitals.assign",
     "copy": "https://github.com/imaginate/vitals/wiki/vitals.copy",
     "cp": "https://github.com/imaginate/vitals/wiki/vitals.cp",
     "create": "https://github.com/imaginate/vitals/wiki/vitals.create",

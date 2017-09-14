@@ -17,6 +17,8 @@
 /// #include @helper $cloneFun ../helpers/clone-fun.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $cloneRegx ../helpers/clone-regx.js
+/// #include @helper $defProp ../helpers/def-prop.js
+/// #include @helper $defProps ../helpers/def-props.js
 /// #include @helper $escRegx ../helpers/esc-regx.js
 /// #include @helper $getFlags ../helpers/get-flags.js
 /// #include @helper $inArr ../helpers/in-arr.js
@@ -59,6 +61,7 @@
 /// #}}} @section base
 /// #{{{ @section strict
 /// #include @super amend ../methods/amend.js
+/// #include @super assign ../methods/assign.js
 /// #include @super create ../methods/create.js
 /// #include @super freeze ../methods/freeze.js
 /// #include @super seal ../methods/seal.js

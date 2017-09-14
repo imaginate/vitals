@@ -84,7 +84,11 @@
           "files": [
             {
               "src": "amend.js",
-              "dest": "amend.js",
+              "dest": "amend.js"
+            },
+            {
+              "src": "assign.js",
+              "dest": "assign.js",
               "state": {
                 "scope": {
                   "IS_MAIN_ONLY": true
@@ -266,7 +270,11 @@
           "files": [
             {
               "src": "amend.js",
-              "dest": "amend.js",
+              "dest": "amend.js"
+            },
+            {
+              "src": "assign.js",
+              "dest": "assign.js",
               "state": {
                 "scope": {
                   "IS_MAIN_ONLY": true
@@ -420,6 +428,10 @@
         {
           "src": "amend.js",
           "dest": "vitals.amend.md"
+        },
+        {
+          "src": "assign.js",
+          "dest": "vitals.assign.md"
         },
         {
           "src": "copy.js",

@@ -49,6 +49,7 @@
 /// #}}} @section base
 /// #{{{ @section strict
 /// #include @super amend ./methods/amend.js
+/// #include @super assign ./methods/assign.js
 /// #include @super create ./methods/create.js
 /// #include @super freeze ./methods/freeze.js
 /// #include @super seal ./methods/seal.js
@@ -208,6 +209,7 @@ var _SECTIONS = {
  */
 var _METHODS = {
   'amend':     YES,
+  'assign':    YES,
   'copy':      YES,
   'cp':        YES,
   'create':    YES,
@@ -241,6 +243,7 @@ var _METHODS = {
 var _SECTION_METHODS = {
   'all': [
     'amend',
+    'assign',
     'copy',
     'cp',
     'create',
@@ -283,6 +286,7 @@ var _SECTION_METHODS = {
   ],
   'strict': [
     'amend',
+    'assign',
     'create',
     'freeze',
     'seal'
@@ -311,6 +315,7 @@ var _VALID_RANGE = [
   'fs',
   'shell',
   'amend',
+  'assign',
   'copy',
   'cp',
   'create',
