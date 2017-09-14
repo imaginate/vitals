@@ -15,9 +15,10 @@
 /// #include @core constants ../core/constants.js
 /// #include @core helpers ../core/helpers.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
+/// #include @helper $defProp ../helpers/def-prop.js
+/// #include @helper $defProps ../helpers/def-props.js
 /// #include @helper $ownsOne ../helpers/owns-one.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #include @super is ./is.js
 /// #if}}} @scope SOLO
 
 /// #{{{ @super amend
@@ -44,325 +45,9 @@ var amend = (function amendPrivateScope() {
   /// @alias vitals.amend.main
   /**
    * @description
-   *   A shortcut for [Object.defineProperties][define-props] that includes
-   *   easier property value assignment, strong type declarations, and
-   *   flexible default [descriptor][descriptor] options.
-   * @public
-   * @param {!Object} source
-   * @param {(!Object<string, *>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, *>`*!$
-   *     For each [owned][own] property within the #props `object`, the key
-   *     name should be the key name of a property to be edited within or
-   *     added to the #source `object` and the value should be the
-   *     [descriptor][descriptor] or value to set the new or edited property
-   *     to. Note that @amend#main considers a property value to be a
-   *     [descriptor][descriptor] only when it is an `object` that [owns][own]
-   *     at least one [descriptor][descriptor] property and that does **not**
-   *     [own][own] any non-descriptor properties. The following values are
-   *     the key names that mark a property as a [descriptor][descriptor]
-   *     property:
-   *     - `"configurable"`
-   *     - `"enumerable"`
-   *     - `"get"`
-   *     - `"set"`
-   *     - `"value"`
-   *     - `"writable"`
-   *   - *`!Array<string>`*!$
-   *     Each indexed property within the #props `array` should be a property
-   *     key name to edit within or add to the #source `object`.
-   *   - *`string`*!$
-   *     The #props `string` should be the property key name to edit within or
-   *     add to the #source `object`.
-   * @param {*=} val = `undefined`
-   *   If the #val is defined, the #val sets the value for each property
-   *   listed by the #props. If the #props is an `object` and a
-   *   [descriptor][descriptor] that contains an [owned][own] `"value"`
-   *   property or an [accessor descriptor][descriptor] is defined for a
-   *   property's value, the #val does **not** apply to that specific
-   *   property. If the #descriptor is defined and contains an [owned][own]
-   *   `"value"` property, the value set by #val overrides the value defined
-   *   within the #descriptor. If the #strongType or #setter is defined, the
-   *   #val or #descriptor (or both) must be defined.
-   * @param {?Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   The new [descriptor][descriptor] for each property defined by #props.
-   *   If #props is an `object` and a [descriptor][descriptor] is defined for
-   *   a property value, the #descriptor acts as a base for the property's
-   *   [descriptor][descriptor] (i.e. any property defined within the
-   *   #descriptor and not defined within a #props [descriptor][descriptor]
-   *   that is of the same [descriptor type][descriptor] is set within the
-   *   #props descriptor to the value defined by #descriptor). If the
-   *   #strongType or #setter is defined, the #val or #descriptor (or both)
-   *   must be defined.
-   * @param {string=} strongType
-   *   If the #strongType is defined, all new or edited properties defined by
-   *   #props are assigned an [accessor descriptor][descriptor] with a *set*
-   *   `function` that throws a `TypeError` instance if any new value fails an
-   *   @is#main test for the data types specicified by the #strongType
-   *   `string`. If the #props is an `object` and a [descriptor][descriptor]
-   *   containing an *accessor* or *data* specific descriptor property is
-   *   defined for a property's value, **no** descriptor values are changed
-   *   for that specific property. If the #setter is defined, the #strongType
-   *   check is still completed.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = !!setter
-   *       ? setter(newValue, value)
-   *       : newValue;
-   *   };
-   *   ```
-   * @param {(?function(*, *): *)=} setter
-   *   If the #setter is defined, all new or edited properties defined by
-   *   #props are assigned an [accessor descriptor][descriptor] with a *set*
-   *   `function` that sets the property's value to the value returned by a
-   *   call to the #setter `function`. The #setter is passed the following
-   *   two arguments:
-   *   - **newValue** *`*`*
-   *   - **oldValue** *`*`*
-   *   If the #props is an `object` and a [descriptor][descriptor] containing
-   *   an *accessor* or *data* specific descriptor property is defined for a
-   *   property's value, **no** descriptor values are changed for that
-   *   specific property. If the #strongType is defined, the #setter will
-   *   **not** get called until after the @is#main test is complete and
-   *   successful.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = setter(newValue, value);
-   *   };
-   *   ```
-   * @return {!Object}
-   *   The amended #source.
-   */
-  /// #}}} @docs main
-  /// #if{{{ @code main
-  function amend(source, props, val, descriptor, strongType, setter) {
-
-    /** @type {boolean} */
-    var byKeys;
-    /** @type {boolean} */
-    var byKey;
-    /** @type {number} */
-    var len;
-
-    len = arguments['length'];
-
-    switch (len) {
-      case 0:
-        throw _mkErr(new ERR, 'no #source defined');
-      case 1:
-        throw _mkErr(new ERR, 'no #props defined');
-    }
-
-    if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object');
-    }
-
-    byKey = $is.str(props);
-
-    if (byKey) {
-      if (!props) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
-          + '#props');
-      }
-      byKeys = NO;
-    }
-    else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props,
-        '!Object<string, *>|!Array<string>|string');
-    }
-    else if ( $is.arr(props) ) {
-      if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-          '!Array<string>');
-      }
-      if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR,
-          'invalid empty key name `string` defined in #props `array`');
-      }
-      byKeys = YES;
-    }
-    else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props');
-    }
-    else {
-      byKeys = NO;
-    }
-
-    switch (len) {
-      case 2:
-        return byKey
-          ? _amendProp(source, props, VOID, NIL, '', NIL)
-          : byKeys
-            ? _amendPropsByKey(source, props, VOID, NIL, '', NIL)
-            : _amendProps(source, props, VOID, NIL, '', NIL);
-
-      case 3:
-        if ( _isDescriptor(val) ) {
-          descriptor = val;
-          val = $own(descriptor, 'value')
-            ? descriptor['value']
-            : VOID;
-        }
-        else {
-          descriptor = NIL;
-        }
-
-        return byKey
-          ? _amendProp(source, props, val, descriptor, '', NIL)
-          : byKeys
-            ? _amendPropsByKey(source, props, val, descriptor, '', NIL)
-            : _amendProps(source, props, val, descriptor, '', NIL);
-
-      case 4:
-        if ( $is.str(descriptor) ) {
-          strongType = descriptor;
-          setter = NIL;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else if ( $is.fun(descriptor) ) {
-          strongType = '';
-          setter = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          strongType = '';
-          setter = NIL;
-        }
-        break;
-
-      case 5:
-        if ( $is.str(descriptor) ) {
-          setter = $is.void(strongType)
-            ? NIL
-            : strongType;
-          strongType = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          if ( $is.nil(strongType) || $is.fun(strongType) ) {
-            setter = strongType;
-            strongType = '';
-          }
-          else {
-            if ( $is.void(strongType) ) {
-              strongType = '';
-            }
-            setter = NIL;
-          }
-          if ( $is.void(descriptor) ) {
-            descriptor = NIL;
-          }
-        }
-        break;
-
-      default:
-        if ( $is.void(descriptor) ) {
-          descriptor = NIL;
-        }
-        if ( $is.void(strongType) ) {
-          strongType = '';
-        }
-        if ( $is.void(setter) ) {
-          setter = NIL;
-        }
-    }
-
-    if ( $is.obj(descriptor) ) {
-      if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
-          + '`object`', _DESCRIPTOR_KEYS);
-      }
-      if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor');
-      }
-    }
-    else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=');
-    }
-
-    if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=');
-    }
-    else if (strongType) {
-      if ( !$is.void(val) && !is(strongType, val) ) {
-        strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType);
-      }
-      if ( !byKey && !byKeys && !_strongTypeCheckProps(strongType, props) ) {
-        strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'props property value', props,
-          strongType);
-      }
-    }
-
-    if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
-        '(?function(*, *): *)=');
-    }
-
-    if ( !!descriptor && (!!strongType || !!setter) ) {
-      if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter');
-      }
-      else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter');
-      }
-    }
-
-    return byKey
-      ? _amendProp(source, props, val, descriptor, strongType, setter)
-      : byKeys
-        ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
-        : _amendProps(source, props, val, descriptor, strongType, setter);
-  }
-  amend['main'] = amend;
-  /// #if}}} @code main
-  /// #}}} @submethod main
-
-  /// #{{{ @submethod config
-  /// #{{{ @docs config
-  /// @section strict
-  /// @method vitals.amend.config
-  /// @alias vitals.amend.conf
-  /// @alias vitals.amend.cfg
-  /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that only
-   *   updates the descriptors of existing properties.
+   *   A shortcut for [Object.defineProperties][define-props] and
+   *   [Object.defineProperty][define-prop] that only updates the
+   *   [descriptor][descriptor] of existing properties.
    * @public
    * @param {!Object} source
    * @param {(!Object<string, (?Object|?undefined)>|!Array<string>|string)} props
@@ -392,9 +77,9 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  /// #}}} @docs config
-  /// #if{{{ @code config
-  function amendConfig(source, props, descriptor) {
+  /// #}}} @docs main
+  /// #if{{{ @code main
+  function amend(source, props, descriptor) {
 
     /** @type {boolean} */
     var byKeys;
@@ -407,13 +92,13 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'config');
+        throw _mkErr(new ERR, 'no #source defined');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'config');
+        throw _mkErr(new ERR, 'no #props defined');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'config');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object');
     }
 
     byKey = $is.str(props);
@@ -421,48 +106,48 @@ var amend = (function amendPrivateScope() {
     if (byKey) {
       if (!props) {
         throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
-          + '#props', 'config');
+          + '#props');
       }
       if ( !$own(source, props) ) {
         throw _mkErr(new ERR, 'undefined #source key name defined by #props '
-          + '`string`', 'config');
+          + '`string`');
       }
       byKeys = NO;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
-        + '(?Object|?undefined)>|!Array<string>|string', 'config');
+        + '(?Object|?undefined)>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
-      if ( !_keysTypeCheckProps(props) ) {
+      if ( !_typeCheckKeys(props) ) {
         throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-          '!Array<string>', 'config');
+          '!Array<string>');
       }
       if ( !_keysCheckProps(props) ) {
         throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
-          + '#props `array`', 'config');
+          + '#props `array`');
       }
-      if ( !_ownKeysCheckProps(source, props) ) {
+      if ( !_ownCheckKeys(source, props) ) {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
-          + '`array`', 'config');
+          + '`array`');
       }
       byKeys = YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
       throw _mkErr(new ERR, 'undefined #source key name defined in #props '
-        + '`object`', 'config');
+        + '`object`');
     }
-    else if ( !_configTypeCheckProps(props) ) {
+    else if ( !_typeCheckProps(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-        '!Object<string, (?Object|?undefined)>', 'config');
+        '!Object<string, (?Object|?undefined)>');
     }
-    else if ( !_configDescCheckProps(props) ) {
+    else if ( !_notDescCheckProps(props) ) {
       throw _mkRangeErr(new RANGE_ERR, '!descriptor property defined in '
-        + '#props `object`', _DESCRIPTOR_KEYS, 'config');
+        + '#props `object`', _DESCRIPTOR_KEYS);
     }
-    else if ( !_configBadDescCheckProps(props) ) {
+    else if ( !_descConflictCheckProps(props) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props', 'config');
+        + 'properties for a property value within the #props');
     }
     else {
       byKeys = NO;
@@ -471,274 +156,40 @@ var amend = (function amendPrivateScope() {
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
       return byKey || byKeys
         ? source
-        : _amendConfigs(source, props, NIL);
+        : _amendProps(source, props, NIL);
     }
 
     if ( !$is.obj(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'config');
+      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=');
     }
-    else if ( !_hasOnlyDescriptorProps(descriptor) ) {
+    else if ( !_hasOnlyDescProps(descriptor) ) {
       throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
-        + '`object`', _DESCRIPTOR_KEYS, 'config');
+        + '`object`', _DESCRIPTOR_KEYS);
     }
-    else if ( _isBadConfigDescriptor(descriptor) ) {
+    else if ( _hasDescConflict(descriptor) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties within the #descriptor', 'config');
+        + 'properties within the #descriptor');
     }
 
     return $is.empty(descriptor)
       ? byKey || byKeys
         ? source
-        : _amendConfigs(source, props, NIL)
+        : _amendProps(source, props, NIL)
       : byKey
-        ? _amendConfig(source, props, descriptor)
+        ? _amendKey(source, props, descriptor)
         : byKeys
-          ? _amendConfigsByKey(source, props, descriptor)
-          : _amendConfigs(source, props, descriptor);
+          ? _amendKeys(source, props, descriptor)
+          : _amendProps(source, props, descriptor);
   }
-  amend['config'] = amendConfig;
-  amend['conf'] = amendConfig;
-  amend['cfg'] = amendConfig;
-  /// #if}}} @code config
-  /// #}}} @submethod config
+  amend['main'] = amend;
+  /// #if}}} @code main
+  /// #}}} @submethod main
 
   /// #{{{ @submethod property
   /// #{{{ @docs property
   /// @section strict
   /// @method vitals.amend.property
   /// @alias vitals.amend.prop
-  /**
-   * @description
-   *   A shortcut for [Object.defineProperty][define-prop] that includes
-   *   easier property value assignment, strong type declarations, and
-   *   flexible default [descriptor][descriptor] options.
-   * @public
-   * @param {!Object} source
-   * @param {string} key
-   * @param {*=} val = `undefined`
-   *   If the #descriptor is defined and contains an [owned][own] `"value"`
-   *   property, the value set by #val overrides the value defined within the
-   *   #descriptor. If the #strongType or the #setter is defined, the #val or
-   *   the #descriptor (or both) must be defined.
-   * @param {!Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   If the #strongType or the #setter is defined, the #val or the
-   *   #descriptor (or both) must be defined.
-   * @param {string=} strongType
-   *   If the #strongType is defined, the new or edited property is assigned
-   *   an [accessor descriptor][descriptor] with a *set* `function` that
-   *   throws a `TypeError` instance if any new value fails an @is#main test
-   *   for the data types specicified by the #strongType `string`. If the
-   *   #setter is defined, the #strongType check is still completed.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = !!setter
-   *       ? setter(newValue, value)
-   *       : newValue;
-   *   };
-   *   ```
-   * @param {(?function(*, *): *)=} setter
-   *   If the #setter is defined, the new or edited property is assigned an
-   *   [accessor descriptor][descriptor] with a *set* `function` that sets
-   *   the property's value to the value returned by a call to the #setter
-   *   `function`. The #setter is passed the following two arguments:
-   *   - **newValue** *`*`*
-   *   - **oldValue** *`*`*
-   *   If the #strongType is defined, the #setter will **not** get called
-   *   until after the @is#main test is complete and successful.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = setter(newValue, value);
-   *   };
-   *   ```
-   * @return {!Object}
-   *   The amended #source.
-   */
-  /// #}}} @docs property
-  /// #if{{{ @code property
-  function amendProperty(source, key, val, descriptor, strongType, setter) {
-
-    /** @type {number} */
-    var len;
-
-    len = arguments['length'];
-
-    switch (len) {
-      case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property');
-      case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'property');
-    }
-
-    if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
-    }
-
-    if ( !$is.str(key) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
-    }
-    else if (!key) {
-      throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
-        + '#key', 'property');
-    }
-
-    switch (len) {
-      case 2:
-        return _amendProp(source, key, VOID, NIL, '', NIL);
-
-      case 3:
-        if ( _isDescriptor(val) ) {
-          descriptor = val;
-          val = $own(descriptor, 'value')
-            ? descriptor['value']
-            : VOID;
-        }
-        else {
-          descriptor = NIL;
-        }
-
-        return _amendProp(source, key, val, descriptor, '', NIL);
-
-      case 4:
-        if ( $is.str(descriptor) ) {
-          strongType = descriptor;
-          setter = NIL;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else if ( $is.fun(descriptor) ) {
-          strongType = '';
-          setter = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          strongType = '';
-          setter = NIL;
-        }
-        break;
-
-      case 5:
-        if ( $is.str(descriptor) ) {
-          setter = $is.void(strongType)
-            ? NIL
-            : strongType;
-          strongType = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          if ( $is.nil(strongType) || $is.fun(strongType) ) {
-            setter = strongType;
-            strongType = '';
-          }
-          else {
-            if ( $is.void(strongType) ) {
-              strongType = '';
-            }
-            setter = NIL;
-          }
-          if ( $is.void(descriptor) ) {
-            descriptor = NIL;
-          }
-        }
-        break;
-
-      default:
-        if ( $is.void(descriptor) ) {
-          descriptor = NIL;
-        }
-        if ( $is.void(strongType) ) {
-          strongType = '';
-        }
-        if ( $is.void(setter) ) {
-          setter = NIL;
-        }
-    }
-
-    if ( $is.obj(descriptor) ) {
-      if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, 'descriptor property defined',
-          _DESCRIPTOR_KEYS, 'property');
-      }
-      if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor', 'property');
-      }
-    }
-    else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'property');
-    }
-
-    if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=',
-        'property');
-    }
-    else if ( !!strongType && !$is.void(val) && !is(strongType, val) ) {
-      strongType = _appendEqualSign(strongType);
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType, 'property');
-    }
-
-    if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
-        '(?function(*, *): *)=', 'property');
-    }
-
-    if ( !!descriptor && (!!strongType || !!setter) ) {
-      if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter', 'property');
-      }
-      else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter', 'property');
-      }
-    }
-
-    return _amendProp(source, key, val, descriptor, strongType, setter);
-  }
-  amend['property'] = amendProperty;
-  amend['prop'] = amendProperty;
-  /// #if}}} @code property
-  /// #}}} @submethod property
-
-  /// #{{{ @submethod property.config
-  /// #{{{ @docs property.config
-  /// @section strict
-  /// @method vitals.amend.property.config
-  /// @alias vitals.amend.property.conf
-  /// @alias vitals.amend.property.cfg
-  /// @alias vitals.amend.prop.config
-  /// @alias vitals.amend.prop.conf
-  /// @alias vitals.amend.prop.cfg
   /**
    * @description
    *   A shortcut for [Object.defineProperty][define-prop] that only updates
@@ -753,9 +204,9 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  /// #}}} @docs property.config
-  /// #if{{{ @code property.config
-  function amendPropertyConfig(source, key, descriptor) {
+  /// #}}} @docs property
+  /// #if{{{ @code property
+  function amendProperty(source, key, descriptor) {
 
     /** @type {number} */
     var len;
@@ -764,25 +215,24 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property.config');
+        throw _mkErr(new ERR, 'no #source defined', 'property');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'property.config');
+        throw _mkErr(new ERR, 'no #props defined', 'property');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
-        'property.config');
+      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
     }
 
     if ( !$is.str(key) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property.config');
+      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
     }
     else if (!key) {
-      throw _mkErr(new ERR, 'invalid empty #key `string`', 'property.config');
+      throw _mkErr(new ERR, 'invalid empty #key `string`', 'property');
     }
     else if ( !$own(source, key) ) {
       throw _mkErr(new ERR, 'undefined #source key name defined by #key',
-        'property.config');
+        'property');
     }
 
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
@@ -791,361 +241,31 @@ var amend = (function amendPrivateScope() {
 
     if ( !$is.obj(descriptor) ) {
       throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'property.config');
+        'property');
     }
-    else if ( !_hasOnlyDescriptorProps(descriptor) ) {
+    else if ( !_hasOnlyDescProps(descriptor) ) {
       throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
-        + '`object`', _DESCRIPTOR_KEYS, 'property.config');
+        + '`object`', _DESCRIPTOR_KEYS, 'property');
     }
-    else if ( _isBadConfigDescriptor(descriptor) ) {
+    else if ( _hasDescConflict(descriptor) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties within the #descriptor', 'property.config');
+        + 'properties within the #descriptor', 'property');
     }
 
     return $is.empty(descriptor)
       ? source
-      : _amendConfig(source, key, descriptor);
+      : _amendKey(source, key, descriptor);
   }
-  amend['property']['config'] = amendPropertyConfig;
-  amend['property']['conf'] = amendPropertyConfig;
-  amend['property']['cfg'] = amendPropertyConfig;
-  amend['prop']['config'] = amendPropertyConfig;
-  amend['prop']['conf'] = amendPropertyConfig;
-  amend['prop']['cfg'] = amendPropertyConfig;
-  /// #if}}} @code property.config
-  /// #}}} @submethod property.config
+  amend['property'] = amendProperty;
+  amend['prop'] = amendProperty;
+  /// #if}}} @code property
+  /// #}}} @submethod property
 
   /// #{{{ @submethod properties
   /// #{{{ @docs properties
   /// @section strict
   /// @method vitals.amend.properties
   /// @alias vitals.amend.props
-  /**
-   * @description
-   *   A shortcut for [Object.defineProperties][define-props] that includes
-   *   easier property value assignment, strong type declarations, and
-   *   flexible default [descriptor][descriptor] options.
-   * @public
-   * @param {!Object} source
-   * @param {(!Object<string, *>|!Array<string>|string)} props
-   *   The details are as follows (per #props type):
-   *   - *`!Object<string, *>`*!$
-   *     For each [owned][own] property within the #props `object`, the key
-   *     name should be the key name of a property to be edited within or
-   *     added to the #source `object` and the value should be the
-   *     [descriptor][descriptor] or value to set the new or edited property
-   *     to. Note that @amend#properties considers a property value to be a
-   *     [descriptor][descriptor] only when it is an `object` that [owns][own]
-   *     at least one [descriptor][descriptor] property and that does **not**
-   *     [own][own] any non-descriptor properties. The following values are
-   *     the key names that mark a property as a [descriptor][descriptor]
-   *     property:
-   *     - `"configurable"`
-   *     - `"enumerable"`
-   *     - `"get"`
-   *     - `"set"`
-   *     - `"value"`
-   *     - `"writable"`
-   *   - *`!Array<string>`*!$
-   *     Each indexed property within the #props `array` should be a property
-   *     key name to edit within or add to the #source `object`.
-   *   - *`string`*!$
-   *     The #props `string` should be a list of property key names to edit
-   *     within or add to the #source `object`. The first of the following
-   *     values found within the #props `string` is used as the separator
-   *     (values listed in order):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
-   * @param {*=} val = `undefined`
-   *   If the #val is defined, the #val sets the value for each property
-   *   listed by the #props. If the #props is an `object` and a
-   *   [descriptor][descriptor] that contains an [owned][own] `"value"`
-   *   property or an [accessor descriptor][descriptor] is defined for a
-   *   property's value, the #val does **not** apply to that specific
-   *   property. If the #descriptor is defined and contains an [owned][own]
-   *   `"value"` property, the value set by #val overrides the value defined
-   *   within the #descriptor. If the #strongType or #setter is defined, the
-   *   #val or #descriptor (or both) must be defined.
-   * @param {?Object=} descriptor = `{ writable: true, enumerable: true, configurable: true }`
-   *   The new [descriptor][descriptor] for each property defined by #props.
-   *   If #props is an `object` and a [descriptor][descriptor] is defined for
-   *   a property value, the #descriptor acts as a base for the property's
-   *   [descriptor][descriptor] (i.e. any property defined within the
-   *   #descriptor and not defined within a #props [descriptor][descriptor]
-   *   that is of the same [descriptor type][descriptor] is set within the
-   *   #props descriptor to the value defined by #descriptor). If the
-   *   #strongType or #setter is defined, the #val or #descriptor (or both)
-   *   must be defined.
-   * @param {string=} strongType
-   *   If the #strongType is defined, all new or edited properties defined by
-   *   #props are assigned an [accessor descriptor][descriptor] with a *set*
-   *   `function` that throws a `TypeError` instance if any new value fails an
-   *   @is#main test for the data types specicified by the #strongType
-   *   `string`. If the #props is an `object` and a [descriptor][descriptor]
-   *   containing an *accessor* or *data* specific descriptor property is
-   *   defined for a property's value, **no** descriptor values are changed
-   *   for that specific property. If the #setter is defined, the #strongType
-   *   check is still completed.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = !!setter
-   *       ? setter(newValue, value)
-   *       : newValue;
-   *   };
-   *   ```
-   * @param {(?function(*, *): *)=} setter
-   *   If the #setter is defined, all new or edited properties defined by
-   *   #props are assigned an [accessor descriptor][descriptor] with a *set*
-   *   `function` that sets the property's value to the value returned by a
-   *   call to the #setter `function`. The #setter is passed the following
-   *   two arguments:
-   *   - **newValue** *`*`*
-   *   - **oldValue** *`*`*
-   *   If the #props is an `object` and a [descriptor][descriptor] containing
-   *   an *accessor* or *data* specific descriptor property is defined for a
-   *   property's value, **no** descriptor values are changed for that
-   *   specific property. If the #strongType is defined, the #setter will
-   *   **not** get called until after the @is#main test is complete and
-   *   successful.
-   *   ```
-   *   descriptor.set = function set(newValue) {
-   *     if ( !!strongType && !vitals.is(strongType, newValue) ) {
-   *       throw new TypeError("...");
-   *     }
-   *     value = setter(newValue, value);
-   *   };
-   *   ```
-   * @return {!Object}
-   *   The amended #source.
-   */
-  /// #}}} @docs properties
-  /// #if{{{ @code properties
-  function amendProperties(
-    source, props, val, descriptor, strongType, setter) {
-
-    /** @type {boolean} */
-    var byKeys;
-    /** @type {number} */
-    var len;
-
-    len = arguments['length'];
-
-    switch (len) {
-      case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'properties');
-      case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'properties');
-    }
-
-    if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
-        'properties');
-    }
-
-    if ( $is.str(props) ) {
-      if (!props) {
-        throw _mkErr(new ERR, 'invalid empty `string` defined for #props',
-          'properties');
-      }
-      props = $splitKeys(props);
-      if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name defined in #props '
-          + '`string`', 'properties');
-      }
-      byKeys = YES;
-    }
-    else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props,
-        '!Object<string, *>|!Array<string>|string', 'properties');
-    }
-    else if ( $is.arr(props) ) {
-      if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-          '!Array<string>', 'properties');
-      }
-      if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
-          + '#props `array`', 'properties');
-      }
-      byKeys = YES;
-    }
-    else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props', 'properties');
-    }
-    else {
-      byKeys = NO;
-    }
-
-    switch (len) {
-      case 2:
-        return byKeys
-          ? _amendPropsByKey(source, props, VOID, NIL, '', NIL)
-          : _amendProps(source, props, VOID, NIL, '', NIL);
-
-      case 3:
-        if ( _isDescriptor(val) ) {
-          descriptor = val;
-          val = $own(descriptor, 'value')
-            ? descriptor['value']
-            : VOID;
-        }
-        else {
-          descriptor = NIL;
-        }
-
-        return byKeys
-          ? _amendPropsByKey(source, props, val, descriptor, '', NIL)
-          : _amendProps(source, props, val, descriptor, '', NIL);
-
-      case 4:
-        if ( $is.str(descriptor) ) {
-          strongType = descriptor;
-          setter = NIL;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else if ( $is.fun(descriptor) ) {
-          strongType = '';
-          setter = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          strongType = '';
-          setter = NIL;
-        }
-        break;
-
-      case 5:
-        if ( $is.str(descriptor) ) {
-          setter = $is.void(strongType)
-            ? NIL
-            : strongType;
-          strongType = descriptor;
-          if ( _isDescriptor(val) ) {
-            descriptor = val;
-            val = $own(descriptor, 'value')
-              ? descriptor['value']
-              : VOID;
-          }
-          else {
-            descriptor = NIL;
-          }
-        }
-        else {
-          if ( $is.nil(strongType) || $is.fun(strongType) ) {
-            setter = strongType;
-            strongType = '';
-          }
-          else {
-            if ( $is.void(strongType) ) {
-              strongType = '';
-            }
-            setter = NIL;
-          }
-          if ( $is.void(descriptor) ) {
-            descriptor = NIL;
-          }
-        }
-        break;
-
-      default:
-        if ( $is.void(descriptor) ) {
-          descriptor = NIL;
-        }
-        if ( $is.void(strongType) ) {
-          strongType = '';
-        }
-        if ( $is.void(setter) ) {
-          setter = NIL;
-        }
-    }
-
-    if ( $is.obj(descriptor) ) {
-      if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
-          + '`object`', _DESCRIPTOR_KEYS, 'properties');
-      }
-      if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor', 'properties');
-      }
-    }
-    else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'properties');
-    }
-
-    if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=',
-        'properties');
-    }
-    else if (strongType) {
-      if ( !$is.void(val) && !is(strongType, val) ) {
-        strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType, 'properties');
-      }
-      if ( !byKeys && !_strongTypeCheckProps(strongType, props) ) {
-        strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'props property value', props,
-          strongType, 'properties');
-      }
-    }
-
-    if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
-        '(?function(*, *): *)=', 'properties');
-    }
-
-    if ( !!descriptor && (!!strongType || !!setter) ) {
-      if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter', 'properties');
-      }
-      else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter', 'properties');
-      }
-    }
-
-    return byKeys
-      ? _amendPropsByKey(source, props, val, descriptor, strongType, setter)
-      : _amendProps(source, props, val, descriptor, strongType, setter);
-  }
-  amend['properties'] = amendProperties;
-  amend['props'] = amendProperties;
-  /// #if}}} @code properties
-  /// #}}} @submethod properties
-
-  /// #{{{ @submethod properties.config
-  /// #{{{ @docs properties.config
-  /// @section strict
-  /// @method vitals.amend.properties.config
-  /// @alias vitals.amend.properties.conf
-  /// @alias vitals.amend.properties.cfg
-  /// @alias vitals.amend.props.config
-  /// @alias vitals.amend.props.conf
-  /// @alias vitals.amend.props.cfg
   /**
    * @description
    *   A shortcut for [Object.defineProperties][define-props] that only
@@ -1185,9 +305,9 @@ var amend = (function amendPrivateScope() {
    * @return {!Object}
    *   The amended #source.
    */
-  /// #}}} @docs properties.config
-  /// #if{{{ @code properties.config
-  function amendPropertiesConfig(source, props, descriptor) {
+  /// #}}} @docs properties
+  /// #if{{{ @code properties
+  function amendProperties(source, props, descriptor) {
 
     /** @type {boolean} */
     var byKeys;
@@ -1198,67 +318,66 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'properties.config');
+        throw _mkErr(new ERR, 'no #source defined', 'properties');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'properties.config');
+        throw _mkErr(new ERR, 'no #props defined', 'properties');
     }
 
     if ( !$is.obj(source) ) {
       throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
-        'properties.config');
+        'properties');
     }
 
     if ( $is.str(props) ) {
       if (!props) {
         throw _mkErr(new ERR, 'invalid empty `string` defined for #props',
-          'properties.config');
+          'properties');
       }
       props = $splitKeys(props);
       if ( !_keysCheckProps(props) ) {
         throw _mkErr(new ERR, 'invalid empty key name defined in #props '
-          + '`string`', 'properties.config');
+          + '`string`', 'properties');
       }
-      if ( !_ownKeysCheckProps(source, props) ) {
+      if ( !_ownCheckKeys(source, props) ) {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
-          + '`string`', 'properties.config');
+          + '`string`', 'properties');
       }
       byKeys = YES;
     }
     else if ( !$is.obj(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
-        + '(?Object|?undefined)>|!Array<string>|string', 'properties.config');
+        + '(?Object|?undefined)>|!Array<string>|string', 'properties');
     }
     else if ( $is.arr(props) ) {
-      if ( !_keysTypeCheckProps(props) ) {
+      if ( !_typeCheckKeys(props) ) {
         throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-          '!Array<string>', 'properties.config');
+          '!Array<string>', 'properties');
       }
       if ( !_keysCheckProps(props) ) {
         throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
-          + '#props `array`', 'properties.config');
+          + '#props `array`', 'properties');
       }
-      if ( !_ownKeysCheckProps(source, props) ) {
+      if ( !_ownCheckKeys(source, props) ) {
         throw _mkErr(new ERR, 'undefined #source key name defined in #props '
-          + '`array`', 'properties.config');
+          + '`array`', 'properties');
       }
       byKeys = YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
       throw _mkErr(new ERR, 'undefined #source key name defined in #props '
-        + '`object`', 'properties.config');
+        + '`object`', 'properties');
     }
-    else if ( !_configTypeCheckProps(props) ) {
+    else if ( !_typeCheckProps(props) ) {
       throw _mkTypeErr(new TYPE_ERR, 'props property', props,
-        '!Object<string, (?Object|?undefined)>', 'properties.config');
+        '!Object<string, (?Object|?undefined)>', 'properties');
     }
-    else if ( !_configDescCheckProps(props) ) {
+    else if ( !_notDescCheckProps(props) ) {
       throw _mkRangeErr(new RANGE_ERR, '!descriptor property defined in '
-        + '#props `object`', _DESCRIPTOR_KEYS, 'properties.config');
+        + '#props `object`', _DESCRIPTOR_KEYS, 'properties');
     }
-    else if ( !_configBadDescCheckProps(props) ) {
+    else if ( !_descConflictCheckProps(props) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props',
-        'properties.config');
+        + 'properties for a property value within the #props', 'properties');
     }
     else {
       byKeys = NO;
@@ -1267,135 +386,40 @@ var amend = (function amendPrivateScope() {
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
       return byKeys
         ? source
-        : _amendConfigs(source, props, NIL);
+        : _amendProps(source, props, NIL);
     }
 
     if ( !$is.obj(descriptor) ) {
       throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'properties.config');
+        'properties');
     }
-    else if ( !_hasOnlyDescriptorProps(descriptor) ) {
+    else if ( !_hasOnlyDescProps(descriptor) ) {
       throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
-        + '`object`', _DESCRIPTOR_KEYS, 'properties.config');
+        + '`object`', _DESCRIPTOR_KEYS, 'properties');
     }
-    else if ( _isBadConfigDescriptor(descriptor) ) {
+    else if ( _hasDescConflict(descriptor) ) {
       throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
-        + 'properties within the #descriptor', 'properties.config');
+        + 'properties within the #descriptor', 'properties');
     }
 
     return $is.empty(descriptor)
       ? byKeys
         ? source
-        : _amendConfigs(source, props, NIL)
+        : _amendProps(source, props, NIL)
       : byKeys
-        ? _amendConfigsByKey(source, props, descriptor)
-        : _amendConfigs(source, props, descriptor);
+        ? _amendKeys(source, props, descriptor)
+        : _amendProps(source, props, descriptor);
   }
-  amend['properties']['config'] = amendPropertiesConfig;
-  amend['properties']['conf'] = amendPropertiesConfig;
-  amend['properties']['cfg'] = amendPropertiesConfig;
-  amend['props']['config'] = amendPropertiesConfig;
-  amend['props']['conf'] = amendPropertiesConfig;
-  amend['props']['cfg'] = amendPropertiesConfig;
-  /// #if}}} @code properties.config
-  /// #}}} @submethod properties.config
+  amend['properties'] = amendProperties;
+  amend['props'] = amendProperties;
+  /// #if}}} @code properties
+  /// #}}} @submethod properties
 
   /// #if{{{ @helpers amend
 
   /// #{{{ @group main
 
-  /// #{{{ @func _amendProp
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {string} key
-   * @param {*} val
-   * @param {?Object} desc
-   * @param {string} strongType
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _amendProp(obj, key, val, desc, strongType, setter) {
-
-    /** @type {?function(*): boolean} */
-    var typeCheck;
-    /** @type {boolean} */
-    var hasSetter;
-
-    typeCheck = _mkStrongTypeCheck(strongType);
-    hasSetter = !!typeCheck || !!setter;
-    desc = _mkDefaultDescriptor(desc, val, hasSetter);
-    if (hasSetter) {
-      desc = _setupGetSet(val, desc, typeCheck, setter);
-    }
-    return _ObjDefineProp(obj, key, desc);
-  }
-  /// #}}} @func _amendProp
-
-  /// #{{{ @func _amendProps
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {!Object} props
-   * @param {*} val
-   * @param {?Object} desc
-   * @param {string} strongType
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _amendProps(obj, props, val, desc, strongType, setter) {
-
-    /** @type {?function(*): boolean} */
-    var typeCheck;
-    /** @type {boolean} */
-    var hasSetter;
-
-    typeCheck = _mkStrongTypeCheck(strongType);
-    hasSetter = !!typeCheck || !!setter;
-    desc = _mkDefaultDescriptor(desc, val, hasSetter);
-    props = hasSetter
-      ? _setupPropsWithSetter(props, val, desc, typeCheck, setter)
-      : _setupProps(props, val, desc);
-    return _ObjDefineProps(obj, props);
-  }
-  /// #}}} @func _amendProps
-
-  /// #{{{ @func _amendPropsByKey
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {!Array<string>} props
-   * @param {*} val
-   * @param {?Object} desc
-   * @param {string} strongType
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _amendPropsByKey(obj, props, val, desc, strongType, setter) {
-
-    /** @type {?function(*): boolean} */
-    var typeCheck;
-    /** @type {boolean} */
-    var hasSetter;
-
-    switch (props['length']) {
-      case 0:
-        return obj;
-      case 1:
-        return _amendProp(obj, props[0], val, desc, strongType, setter);
-    }
-
-    typeCheck = _mkStrongTypeCheck(strongType);
-    hasSetter = !!typeCheck || !!setter;
-    desc = _mkDefaultDescriptor(desc, val, hasSetter);
-    props = hasSetter
-      ? _setupPropsByKeyWithSetter(props, val, desc, typeCheck, setter)
-      : _setupPropsByKey(props, desc);
-    return _ObjDefineProps(obj, props);
-  }
-  /// #}}} @func _amendPropsByKey
-
-  /// #{{{ @func _amendConfig
+  /// #{{{ @func _amendKey
   /**
    * @private
    * @param {!Object} src
@@ -1403,28 +427,12 @@ var amend = (function amendPrivateScope() {
    * @param {!Object} descriptor
    * @return {!Object}
    */
-  function _amendConfig(src, key, descriptor) {
-    return _ObjDefineProp(src, key, descriptor);
+  function _amendKey(src, key, descriptor) {
+    return $defProp(src, key, descriptor);
   }
-  /// #}}} @func _amendConfig
+  /// #}}} @func _amendKey
 
-  /// #{{{ @func _amendConfigs
-  /**
-   * @private
-   * @param {!Object} src
-   * @param {!Object} props
-   * @param {?Object} descriptor
-   * @return {!Object}
-   */
-  function _amendConfigs(src, props, descriptor) {
-    props = _setupConfigProps(props, descriptor);
-    return $is.empty(props)
-      ? src
-      : _ObjDefineProps(src, props);
-  }
-  /// #}}} @func _amendConfigs
-
-  /// #{{{ @func _amendConfigsByKey
+  /// #{{{ @func _amendKeys
   /**
    * @private
    * @param {!Object} src
@@ -1432,7 +440,7 @@ var amend = (function amendPrivateScope() {
    * @param {!Object} descriptor
    * @return {!Object}
    */
-  function _amendConfigsByKey(src, keys, descriptor) {
+  function _amendKeys(src, keys, descriptor) {
 
     /** @type {!Object} */
     var props;
@@ -1441,31 +449,33 @@ var amend = (function amendPrivateScope() {
       case 0:
         return src;
       case 1:
-        return _ObjDefineProp(src, keys[0], descriptor);
+        return $defProp(src, keys[0], descriptor);
     }
 
     props = _setupPropsByKey(keys, descriptor);
-    return _ObjDefineProps(src, props);
+    return $defProps(src, props);
   }
-  /// #}}} @func _amendConfigsByKey
+  /// #}}} @func _amendKeys
+
+  /// #{{{ @func _amendProps
+  /**
+   * @private
+   * @param {!Object} src
+   * @param {!Object} props
+   * @param {?Object} descriptor
+   * @return {!Object}
+   */
+  function _amendProps(src, props, descriptor) {
+    props = _setupProps(props, descriptor);
+    return $is.empty(props)
+      ? src
+      : $defProps(src, props);
+  }
+  /// #}}} @func _amendProps
 
   /// #}}} @group main
 
-  /// #{{{ @group descriptors
-
   /// #{{{ @group constants
-
-  /// #{{{ @const _ACCESSOR_DESCRIPTOR
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @dict
-   */
-  var _ACCESSOR_DESCRIPTOR = {
-    'enumerable': YES,
-    'configurable': YES
-  };
-  /// #}}} @const _ACCESSOR_DESCRIPTOR
 
   /// #{{{ @const _ACCESSOR_KEYS
   /**
@@ -1477,19 +487,6 @@ var amend = (function amendPrivateScope() {
     'set'
   ];
   /// #}}} @const _ACCESSOR_KEYS
-
-  /// #{{{ @const _DATA_DESCRIPTOR
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @dict
-   */
-  var _DATA_DESCRIPTOR = {
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
-  };
-  /// #}}} @const _DATA_DESCRIPTOR
 
   /// #{{{ @const _DATA_KEYS
   /**
@@ -1509,12 +506,12 @@ var amend = (function amendPrivateScope() {
    * @dict
    */
   var _DESCRIPTOR_PROPS = {
+    'configurable': YES,
+    'enumerable': YES,
     'get': YES,
     'set': YES,
     'value': YES,
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
+    'writable': YES
   };
   /// #}}} @const _DESCRIPTOR_PROPS
 
@@ -1533,495 +530,7 @@ var amend = (function amendPrivateScope() {
   ];
   /// #}}} @const _DESCRIPTOR_KEYS
 
-  /// #{{{ @const _SETTER_KEYS
-  /**
-   * @description
-   *   These key names mark a descriptor to skip setter assignments for.
-   * @private
-   * @const {!Array<string>}
-   */
-  var _SETTER_KEYS = [
-    'get',
-    'set',
-    'writable'
-  ];
-  /// #}}} @const _SETTER_KEYS
-
   /// #}}} @group constants
-
-  /// #{{{ @group setup
-
-  /// #{{{ @func _setupDesc
-  /**
-   * @private
-   * @param {*} val
-   * @param {*} dfltVal
-   * @param {!Object} dfltDesc
-   * @param {boolean} isAccessor
-   * @return {!Object}
-   */
-  function _setupDesc(val, dfltVal, dfltDesc, isAccessor) {
-
-    /** @type {!Object} */
-    var desc;
-
-    if ( !_isDescriptor(val) ) {
-      desc = $cloneObj(dfltDesc);
-      if (!isAccessor) {
-        desc['value'] = val;
-      }
-    }
-    else if ( _hasAccessorProp(val) ) {
-      desc = $cloneObj(val);
-      if ( !_hasBoolPropVal(desc, 'enumerable') ) {
-        desc['enumerable'] = dfltDesc['enumerable'];
-      }
-      if ( !_hasBoolPropVal(desc, 'configurable') ) {
-        desc['configurable'] = dfltDesc['configurable'];
-      }
-      if ( $own(desc, 'value') ) {
-        delete desc['value'];
-      }
-    }
-    else if ( _hasDataProp(val) ) {
-      desc = $cloneObj(val);
-      if ( !$own(desc, 'value') ) {
-        desc['value'] = dfltVal;
-      }
-      if ( !_hasBoolPropVal(desc, 'writable') ) {
-        desc['writable'] = isAccessor
-          ? _DATA_DESCRIPTOR['writable']
-          : dfltDesc['writable'];
-      }
-      if ( !_hasBoolPropVal(desc, 'enumerable') ) {
-        desc['enumerable'] = dfltDesc['enumerable'];
-      }
-      if ( !_hasBoolPropVal(desc, 'configurable') ) {
-        desc['configurable'] = dfltDesc['configurable'];
-      }
-    }
-    else {
-      desc = $cloneObj(dfltDesc);
-      if ( _hasBoolPropVal(val, 'enumerable') ) {
-        desc['enumerable'] = val['enumerable'];
-      }
-      if ( _hasBoolPropVal(val, 'configurable') ) {
-        desc['configurable'] = val['configurable'];
-      }
-    }
-    return desc;
-  }
-  /// #}}} @func _setupDesc
-
-  /// #{{{ @func _setupDescWithSetter
-  /**
-   * @private
-   * @param {*} val
-   * @param {*} dfltVal
-   * @param {!Object} dfltDesc
-   * @param {?function(*): boolean} typeCheck
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _setupDescWithSetter(val, dfltVal, dfltDesc, typeCheck, setter) {
-
-    /** @type {!Object} */
-    var desc;
-
-    if ( !_isDescriptor(val) ) {
-      desc = $cloneObj(dfltDesc);
-      desc = _setupGetSet(val, desc, typeCheck, setter);
-    }
-    else if ( _hasAccessorProp(val) ) {
-      desc = $cloneObj(val);
-      if ( !_hasBoolPropVal(desc, 'enumerable') ) {
-        desc['enumerable'] = dfltDesc['enumerable'];
-      }
-      if ( !_hasBoolPropVal(desc, 'configurable') ) {
-        desc['configurable'] = dfltDesc['configurable'];
-      }
-      if ( $own(desc, 'value') ) {
-        delete desc['value'];
-      }
-    }
-    else if ( $own(val, 'writable') ) {
-      desc = $cloneObj(val);
-      if ( !$own(desc, 'value') ) {
-        desc['value'] = dfltVal;
-      }
-      if ( !_hasBoolPropVal(desc, 'enumerable') ) {
-        desc['enumerable'] = dfltDesc['enumerable'];
-      }
-      if ( !_hasBoolPropVal(desc, 'configurable') ) {
-        desc['configurable'] = dfltDesc['configurable'];
-      }
-    }
-    else {
-      desc = $cloneObj(dfltDesc);
-      if ( _hasBoolPropVal(val, 'enumerable') ) {
-        desc['enumerable'] = val['enumerable'];
-      }
-      if ( _hasBoolPropVal(val, 'configurable') ) {
-        desc['configurable'] = val['configurable'];
-      }
-      val = $own(val, 'value')
-        ? val['value']
-        : dfltVal;
-      desc = _setupGetSet(val, desc, typeCheck, setter);
-    }
-    return desc;
-  }
-  /// #}}} @func _setupDescWithSetter
-
-  /// #{{{ @func _setupGetSet
-  /**
-   * @private
-   * @param {*} val
-   * @param {!Object} descriptor
-   * @param {?function(*): boolean} typeCheck
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _setupGetSet(val, descriptor, typeCheck, setter) {
-    descriptor['get'] = function get() {
-      return val;
-    };
-    descriptor['set'] = !!typeCheck && !!setter
-      ? function set(newVal) {
-          if ( !typeCheck(newVal) ) {
-            throw _mkStrongTypeErr(new TYPE_ERR,
-              'invalid data type for property value: `' + newVal + '`');
-          }
-          val = setter(newVal, val);
-        }
-      : !!typeCheck
-        ? function set(newVal) {
-            if ( !typeCheck(newVal) ) {
-              throw _mkStrongTypeErr(new TYPE_ERR,
-                'invalid data type for property value: `' + newVal + '`');
-            }
-            val = newVal;
-          }
-        : function set(newVal) {
-            val = setter(newVal, val);
-          };
-    return descriptor;
-  }
-  /// #}}} @func _setupGetSet
-
-  /// #}}} @group setup
-
-  /// #{{{ @group tests
-
-  /// #{{{ @func _hasAccessorProp
-  /**
-   * @private
-   * @param {!Object} src
-   * @return {boolean}
-   */
-  function _hasAccessorProp(src) {
-    return $ownsOne(src, _ACCESSOR_KEYS);
-  }
-  /// #}}} @func _hasAccessorProp
-
-  /// #{{{ @func _hasBoolPropVal
-  /**
-   * @private
-   * @param {!Object} src
-   * @param {string} key
-   * @return {boolean}
-   */
-  function _hasBoolPropVal(src, key) {
-    return $own(src, key) && $is.bool(src[key]);
-  }
-  /// #}}} @func _hasBoolPropVal
-
-  /// #{{{ @func _hasDataProp
-  /**
-   * @private
-   * @param {!Object} src
-   * @return {boolean}
-   */
-  function _hasDataProp(src) {
-    return $ownsOne(src, _DATA_KEYS);
-  }
-  /// #}}} @func _hasDataProp
-
-  /// #{{{ @func _hasDescriptorProp
-  /**
-   * @private
-   * @param {!Object} src
-   * @return {boolean}
-   */
-  function _hasDescriptorProp(src) {
-    return $ownsOne(src, _DESCRIPTOR_KEYS);
-  }
-  /// #}}} @func _hasDescriptorProp
-
-  /// #{{{ @func _hasOnlyDescriptorProps
-  /**
-   * @private
-   * @param {!Object} src
-   * @return {boolean}
-   */
-  function _hasOnlyDescriptorProps(src) {
-
-    /** @type {string} */
-    var key;
-
-    for (key in src) {
-      if ( $own(src, key) && !$own(_DESCRIPTOR_PROPS, key) ) {
-        return NO;
-      }
-    }
-    return YES;
-  }
-  /// #}}} @func _hasOnlyDescriptorProps
-
-  /// #{{{ @func _hasSkipSetterProp
-  /**
-   * @private
-   * @param {!Object} src
-   * @return {boolean}
-   */
-  function _hasSkipSetterProp(src) {
-    return $ownsOne(src, _SETTER_KEYS);
-  }
-  /// #}}} @func _hasSkipSetterProp
-
-  /// #{{{ @func _isBadConfigDescriptor
-  /**
-   * @private
-   * @param {!Object} desc
-   * @return {boolean}
-   */
-  function _isBadConfigDescriptor(desc) {
-    return $ownsOne(desc, _ACCESSOR_KEYS) && $ownsOne(desc, _DATA_KEYS);
-  }
-  /// #}}} @func _isBadConfigDescriptor
-
-  /// #{{{ @func _isBadDescriptor
-  /**
-   * @private
-   * @param {!Object} desc
-   * @return {boolean}
-   */
-  function _isBadDescriptor(desc) {
-    return $ownsOne(desc, _ACCESSOR_KEYS) && $own(desc, 'writable');
-  }
-  /// #}}} @func _isBadDescriptor
-
-  /// #{{{ @func _isDescriptor
-  /**
-   * @private
-   * @param {*} val
-   * @return {boolean}
-   */
-  function _isDescriptor(val) {
-    return $is.obj(val)
-      && _hasDescriptorProp(val)
-      && _hasOnlyDescriptorProps(val);
-  }
-  /// #}}} @func _isDescriptor
-
-  /// #}}} @group tests
-
-  /// #{{{ @group makers
-
-  /// #{{{ @func _mkDefaultDescriptor
-  /**
-   * @private
-   * @param {?Object} desc
-   * @param {*} val
-   * @param {boolean} hasSetter
-   * @return {!Object}
-   */
-  function _mkDefaultDescriptor(desc, val, hasSetter) {
-
-    /** @type {!Object} */
-    var dflt;
-
-    if (!desc) {
-      if (hasSetter) {
-        dflt = $cloneObj(_ACCESSOR_DESCRIPTOR);
-      }
-      else {
-        dflt = $cloneObj(_DATA_DESCRIPTOR);
-        dflt['value'] = val;
-      }
-    }
-    else if ( hasSetter || _hasAccessorProp(desc) ) {
-      dflt = $cloneObj(_ACCESSOR_DESCRIPTOR);
-      if ( _hasBoolPropVal(desc, 'enumerable') ) {
-        dflt['enumerable'] = desc['enumerable'];
-      }
-      if ( _hasBoolPropVal(desc, 'configurable') ) {
-        dflt['configurable'] = desc['configurable'];
-      }
-      if (!hasSetter) {
-        if ( _hasBoolPropVal(desc, 'get') ) {
-          dflt['get'] = desc['get'];
-        }
-        if ( _hasBoolPropVal(desc, 'set') ) {
-          dflt['set'] = desc['set'];
-        }
-      }
-    }
-    else {
-      dflt = $cloneObj(_DATA_DESCRIPTOR);
-      if ( _hasBoolPropVal(desc, 'writable') ) {
-        dflt['writable'] = desc['writable'];
-      }
-      if ( _hasBoolPropVal(desc, 'enumerable') ) {
-        dflt['enumerable'] = desc['enumerable'];
-      }
-      if ( _hasBoolPropVal(desc, 'configurable') ) {
-        dflt['configurable'] = desc['configurable'];
-      }
-      dflt['value'] = val;
-    }
-    return dflt;
-  }
-  /// #}}} @func _mkDefaultDescriptor
-
-  /// #{{{ @func _mkStrongTypeCheck
-  /**
-   * @private
-   * @param {string} strongType
-   * @return {?function(*): boolean}
-   */
-  function _mkStrongTypeCheck(strongType) {
-
-    if (!strongType) {
-      return NIL;
-    }
-
-    /// #{{{ @func strongTypeCheck
-    /**
-     * @param {*} newVal
-     * @return {boolean}
-     */
-    function strongTypeCheck(newVal) {
-      return is(strongType, newVal);
-    }
-    /// #}}} @func strongTypeCheck
-
-    return strongTypeCheck;
-  }
-  /// #}}} @func _mkStrongTypeCheck
-
-  /// #}}} @group makers
-
-  /// #}}} @group descriptors
-
-  /// #{{{ @group object-properties
-
-  /// #{{{ @group polyfills
-
-  /// #{{{ @const _HAS_DEFINE_PROPS
-  /**
-   * @private
-   * @const {boolean}
-   */
-  var _HAS_DEFINE_PROPS = (function _HAS_DEFINE_PROPS_PrivateScope() {
-
-    /** @type {!Object} */
-    var descriptor;
-    /** @type {string} */
-    var name;
-    /** @type {!Object} */
-    var obj;
-    /** @type {string} */
-    var key;
-
-    name = 'defineProperties';
-
-    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return NO;
-
-    name = 'defineProperty';
-
-    if ( !(name in OBJ) || !$is.fun(OBJ[name]) )
-      return NO;
-
-    /** @dict */ 
-    obj = {};
-    /** @dict */ 
-    descriptor = {};
-
-    descriptor['value'] = obj;
-    descriptor['enumerable'] = NO;
-
-    try {
-      OBJ[name](obj, 'key', descriptor);
-      for (key in obj) {
-        if (key === 'key')
-          return NO;
-      }
-    }
-    catch (e) {
-      return NO;
-    }
-
-    return obj['key'] === obj;
-  })();
-  /// #}}} @const _HAS_DEFINE_PROPS
-
-  /// #{{{ @func _ObjDefineProp
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {string} key
-   * @param {!Object} descriptor
-   * @return {!Object}
-   */
-  var _ObjDefineProp = (function _ObjDefinePropPrivateScope() {
-
-    if (_HAS_DEFINE_PROPS)
-      return OBJ['defineProperty'];
-
-    return function defineProperty(obj, key, descriptor) {
-      obj[key] = $own(descriptor, 'get')
-        ? descriptor['get']()
-        : descriptor['value'];
-      return obj;
-    };
-  })();
-  /// #}}} @func _ObjDefineProp
-
-  /// #{{{ @func _ObjDefineProps
-  /**
-   * @private
-   * @param {!Object} obj
-   * @param {!Object<string, !Object>} props
-   * @return {!Object}
-   */
-  var _ObjDefineProps = (function _ObjDefinePropsPrivateScope() {
-
-    if (_HAS_DEFINE_PROPS)
-      return OBJ['defineProperties'];
-
-    return function defineProperties(obj, props) {
-
-      /** @type {!Object} */
-      var descriptor;
-      /** @type {string} */
-      var key;
-
-      for (key in props) {
-        if ( $own(props, key) ) {
-          descriptor = props[key];
-          obj[key] = $own(descriptor, 'get')
-            ? descriptor['get']()
-            : descriptor['value'];
-        }
-      }
-      return obj;
-    };
-  })();
-  /// #}}} @func _ObjDefineProps
-
-  /// #}}} @group polyfills
 
   /// #{{{ @group setup
 
@@ -2029,59 +538,36 @@ var amend = (function amendPrivateScope() {
   /**
    * @private
    * @param {!Object} props
-   * @param {*} dfltVal
-   * @param {!Object} dfltDesc
+   * @param {?Object} dfltDesc
    * @return {!Object}
    */
-  function _setupProps(props, dfltVal, dfltDesc) {
+  function _setupProps(props, dfltDesc) {
 
-    /** @type {boolean} */
-    var isAccessor;
     /** @type {!Object} */
     var newProps;
     /** @type {string} */
     var key;
+    /** @type {(?Object|undefined)} */
+    var val;
 
     newProps = {};
 
-    isAccessor = _hasAccessorProp(dfltDesc);
     for (key in props) {
       if ( $own(props, key) ) {
-        newProps[key] = _setupDesc(props[key], dfltVal, dfltDesc, isAccessor);
+        val = props[key];
+        if (!!val) {
+          if ( !$is.empty(val) ) {
+            newProps[key] = $cloneObj(val);
+          }
+        }
+        else if ( !$is.void(val) && !!dfltDesc ) {
+          newProps[key] = $cloneObj(dfltDesc);
+        }
       }
     }
     return newProps;
   }
   /// #}}} @func _setupProps
-
-  /// #{{{ @func _setupPropsWithSetter
-  /**
-   * @private
-   * @param {!Object} props
-   * @param {*} dfltVal
-   * @param {!Object} dfltDesc
-   * @param {?function(*): boolean} typeCheck
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _setupPropsWithSetter(props, dfltVal, dfltDesc, typeCheck, setter) {
-
-    /** @type {!Object} */
-    var newProps;
-    /** @type {string} */
-    var key;
-
-    newProps = {};
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        newProps[key] = _setupDescWithSetter(props[key], dfltVal, dfltDesc,
-          typeCheck, setter);
-      }
-    }
-    return newProps;
-  }
-  /// #}}} @func _setupPropsWithSetter
 
   /// #{{{ @func _setupPropsByKey
   /**
@@ -2113,223 +599,65 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _setupPropsByKey
 
-  /// #{{{ @func _setupPropsByKeyWithSetter
-  /**
-   * @private
-   * @param {!Array<string>} keys
-   * @param {*} dfltVal
-   * @param {!Object} dfltDesc
-   * @param {?function(*): boolean} typeCheck
-   * @param {?function} setter
-   * @return {!Object}
-   */
-  function _setupPropsByKeyWithSetter(
-      keys, dfltVal, dfltDesc, typeCheck, setter) {
-
-    /** @type {!Object} */
-    var props;
-    /** @type {!Object} */
-    var desc;
-    /** @type {string} */
-    var key;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
-
-    props = {};
-
-    len = keys['length'];
-    i = -1;
-    while (++i < len) {
-      key = keys[i];
-      desc = $cloneObj(dfltDesc);
-      props[key] = _setupGetSet(dfltVal, desc, typeCheck, setter);
-    }
-    return props;
-  }
-  /// #}}} @func _setupPropsByKeyWithSetter
-
-  /// #{{{ @func _setupConfigProps
-  /**
-   * @private
-   * @param {!Object} props
-   * @param {?Object} dfltDesc
-   * @return {!Object}
-   */
-  function _setupConfigProps(props, dfltDesc) {
-
-    /** @type {!Object} */
-    var newProps;
-    /** @type {string} */
-    var key;
-    /** @type {(?Object|undefined)} */
-    var val;
-
-    newProps = {};
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if (!!val) {
-          if ( !$is.empty(val) ) {
-            newProps[key] = $cloneObj(val);
-          }
-        }
-        else if ( !$is.void(val) && !!dfltDesc ) {
-          newProps[key] = $cloneObj(dfltDesc);
-        }
-      }
-    }
-    return newProps;
-  }
-  /// #}}} @func _setupConfigProps
-
   /// #}}} @group setup
 
   /// #{{{ @group tests
 
-  /// #{{{ @func _hasKeys
+  /// #{{{ @func _descConflictCheckProps
+  /**
+   * @private
+   * @param {!Object} props
+   * @return {boolean}
+   */
+  function _descConflictCheckProps(props) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    for (key in props) {
+      if ( $own(props, key) ) {
+        val = props[key];
+        if ( $is.obj(val) && _hasDescConflict(val) ) {
+          return NO;
+        }
+      }
+    }
+    return YES;
+  }
+  /// #}}} @func _descConflictCheckProps
+
+  /// #{{{ @func _hasDescConflict
+  /**
+   * @private
+   * @param {!Object} desc
+   * @return {boolean}
+   */
+  function _hasDescConflict(desc) {
+    return $ownsOne(desc, _ACCESSOR_KEYS) && $ownsOne(desc, _DATA_KEYS);
+  }
+  /// #}}} @func _hasDescConflict
+
+  /// #{{{ @func _hasOnlyDescProps
   /**
    * @private
    * @param {!Object} src
-   * @param {!Object} base
    * @return {boolean}
    */
-  function _hasKeys(src, base) {
+  function _hasOnlyDescProps(src) {
 
     /** @type {string} */
     var key;
 
-    for (key in base) {
-      if ( $own(base, key) && !$own(src, key) ) {
+    for (key in src) {
+      if ( $own(src, key) && !$own(_DESCRIPTOR_PROPS, key) ) {
         return NO;
       }
     }
     return YES;
   }
-  /// #}}} @func _hasKeys
-
-  /// #{{{ @const _EQUAL_SIGN
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _EQUAL_SIGN = /=/;
-  /// #}}} @const _EQUAL_SIGN
-
-  /// #{{{ @func _appendEqualSign
-  /**
-   * @private
-   * @param {string} strongType
-   * @return {string}
-   */
-  function _appendEqualSign(strongType) {
-    return _EQUAL_SIGN['test'](strongType)
-      ? strongType
-      : strongType + '=';
-  }
-  /// #}}} @func _appendEqualSign
-
-  /// #{{{ @func _configBadDescCheckProps
-  /**
-   * @private
-   * @param {!Object} props
-   * @return {boolean}
-   */
-  function _configBadDescCheckProps(props) {
-
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if ( $is.obj(val) && _isBadConfigDescriptor(val) ) {
-          return NO;
-        }
-      }
-    }
-    return YES;
-  }
-  /// #}}} @func _configBadDescCheckProps
-
-  /// #{{{ @func _configDescCheckProps
-  /**
-   * @private
-   * @param {!Object} props
-   * @return {boolean}
-   */
-  function _configDescCheckProps(props) {
-
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if ( $is.obj(val) && !_hasOnlyDescriptorProps(val) ) {
-          return NO;
-        }
-      }
-    }
-    return YES;
-  }
-  /// #}}} @func _configDescCheckProps
-
-  /// #{{{ @func _configTypeCheckProps
-  /**
-   * @private
-   * @param {!Object} props
-   * @return {boolean}
-   */
-  function _configTypeCheckProps(props) {
-
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if ( !$is.void(val) && !$is.nil(val) && !$is.obj(val) ) {
-          return NO;
-        }
-      }
-    }
-    return YES;
-  }
-  /// #}}} @func _configTypeCheckProps
-
-  /// #{{{ @func _descriptorCheckProps
-  /**
-   * @private
-   * @param {!Object} props
-   * @return {boolean}
-   */
-  function _descriptorCheckProps(props) {
-
-    /** @type {string} */
-    var key;
-    /** @type {*} */
-    var val;
-
-    for (key in props) {
-      if ( $own(props, key) ) {
-        val = props[key];
-        if ( _isDescriptor(val) && _isBadDescriptor(val) ) {
-          return NO;
-        }
-      }
-    }
-    return YES;
-  }
-  /// #}}} @func _descriptorCheckProps
+  /// #}}} @func _hasOnlyDescProps
 
   /// #{{{ @func _keysCheckProps
   /**
@@ -2355,13 +683,39 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _keysCheckProps
 
-  /// #{{{ @func _keysTypeCheckProps
+  /// #{{{ @func _notDescCheckProps
   /**
    * @private
+   * @param {!Object} props
+   * @return {boolean}
+   */
+  function _notDescCheckProps(props) {
+
+    /** @type {string} */
+    var key;
+    /** @type {*} */
+    var val;
+
+    for (key in props) {
+      if ( $own(props, key) ) {
+        val = props[key];
+        if ( $is.obj(val) && !_hasOnlyDescProps(val) ) {
+          return NO;
+        }
+      }
+    }
+    return YES;
+  }
+  /// #}}} @func _notDescCheckProps
+
+  /// #{{{ @func _ownCheckKeys
+  /**
+   * @private
+   * @param {!Object} source
    * @param {!Array<string>} props
    * @return {boolean}
    */
-  function _keysTypeCheckProps(props) {
+  function _ownCheckKeys(source, props) {
 
     /** @type {number} */
     var len;
@@ -2371,13 +725,13 @@ var amend = (function amendPrivateScope() {
     len = props['length'];
     i = -1;
     while (++i < len) {
-      if ( !$is.str(props[i]) ) {
+      if ( !$own(source, props[i]) ) {
         return NO;
       }
     }
     return YES;
   }
-  /// #}}} @func _keysTypeCheckProps
+  /// #}}} @func _ownCheckKeys
 
   /// #{{{ @func _ownCheckProps
   /**
@@ -2400,14 +754,13 @@ var amend = (function amendPrivateScope() {
   }
   /// #}}} @func _ownCheckProps
 
-  /// #{{{ @func _ownKeysCheckProps
+  /// #{{{ @func _typeCheckKeys
   /**
    * @private
-   * @param {!Object} source
    * @param {!Array<string>} props
    * @return {boolean}
    */
-  function _ownKeysCheckProps(source, props) {
+  function _typeCheckKeys(props) {
 
     /** @type {number} */
     var len;
@@ -2417,22 +770,21 @@ var amend = (function amendPrivateScope() {
     len = props['length'];
     i = -1;
     while (++i < len) {
-      if ( !$own(source, props[i]) ) {
+      if ( !$is.str(props[i]) ) {
         return NO;
       }
     }
     return YES;
   }
-  /// #}}} @func _ownKeysCheckProps
+  /// #}}} @func _typeCheckKeys
 
-  /// #{{{ @func _strongTypeCheckProps
+  /// #{{{ @func _typeCheckProps
   /**
    * @private
-   * @param {string} strongType
    * @param {!Object} props
    * @return {boolean}
    */
-  function _strongTypeCheckProps(strongType, props) {
+  function _typeCheckProps(props) {
 
     /** @type {string} */
     var key;
@@ -2442,45 +794,18 @@ var amend = (function amendPrivateScope() {
     for (key in props) {
       if ( $own(props, key) ) {
         val = props[key];
-        if ( _isDescriptor(val) ) {
-          if ( _hasSkipSetterProp(val) || !$own(val, 'value') ) {
-            continue;
-          }
-          val = val['value'];
-        }
-        if ( !$is.void(val) && !is(strongType, val) ) {
+        if ( !$is.void(val) && !$is.nil(val) && !$is.obj(val) ) {
           return NO;
         }
       }
     }
     return YES;
   }
-  /// #}}} @func _strongTypeCheckProps
+  /// #}}} @func _typeCheckProps
 
   /// #}}} @group tests
 
-  /// #}}} @group object-properties
-
   /// #{{{ @group errors
-
-  /// #{{{ @func _mkStrongTypeErr
-  /**
-   * @private
-   * @param {!TypeError} err
-   * @param {string} msg
-   * @return {!TypeError}
-   */
-  function _mkStrongTypeErr(err, msg) {
-    err['__setter'] = YES;
-    err['setter'] = YES;
-    err['__type'] = YES;
-    err['type'] = YES;
-    err['name'] = 'TypeError';
-    err['message'] = msg;
-    err['msg'] = msg;
-    return err;
-  }
-  /// #}}} @func _mkStrongTypeErr
 
   /// #{{{ @const _MK_ERR
   /**
