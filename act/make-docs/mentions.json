@@ -31,6 +31,7 @@
     "trim": "vitals.trim",
     "until": "vitals.until",
     "issue": "issue on Github",
+    "license": "license",
     "contributing": "contributing",
     "contribute-guide": "vitals contributing guide"
   },
@@ -98,6 +99,7 @@
     "trim": "https://github.com/imaginate/vitals/wiki/vitals.trim",
     "until": "https://github.com/imaginate/vitals/wiki/vitals.until",
     "issue": "https://github.com/imaginate/vitals/issues",
+    "license": "https://github.com/imaginate/vitals/blob/master/LICENSE.md",
     "contributing": "https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md",
     "contribute-guide": "https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md"
   }
