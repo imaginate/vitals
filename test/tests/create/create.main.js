@@ -4,6 +4,8 @@
  * ---------------------------------------------------------------------------
  * @method vitals.create
  * @alias vitals.create.main
+ * @alias vitals.create.object
+ * @alias vitals.create.obj
  * @submethod main
  * @super create
  * @section strict
