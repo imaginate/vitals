@@ -1,84 +1,251 @@
-# vitals [![build status](https://travis-ci.org/imaginate/vitals.svg?branch=master)](https://travis-ci.org/imaginate/vitals) [![npm version](https://img.shields.io/badge/npm-5.0.0-brightgreen.svg?style=flat)](https://www.npmjs.com/package/node-vitals)
+# vitals [![build status][status]][travis] [![npm version][badge]][npm]
+
 ### Give Your JS Life
-_vitals_ is a foundational JavaScript library designed to replace all native string, object and array methods with just 16 [base methods](#api). It will improve your project's **readability**, **stability** and **performance**. It fixes core JS issues such as [+ overloading](http://www.crockford.com/javascript/javascript.html) and [unequal equality](http://whydoesitsuck.com/why-does-javascript-suck/). Its additional methods will also allow you to more efficiently utilize [immutability](https://en.wikipedia.org/wiki/Immutable_object), [strong typing](https://en.wikipedia.org/wiki/Strong_and_weak_typing), and [node.js](https://nodejs.org) interactions with the [file system](https://en.wikipedia.org/wiki/File_system) or [shell](https://en.wikipedia.org/wiki/Command-line_interface#Command-line_interpreter). Built with **simplicity** _vitals_ hopes to inspire you to use [functional JavaScript](https://medium.com/javascript-scene/the-two-pillars-of-javascript-pt-2-functional-programming-a63aa53a41a4) as the bedrock for all of your projects!
+_vitals_ is a [functional][functional] JavaScript library designed to be at
+the heart of all of your JS code. It is intended to replace almost all native
+JavaScript interaction. It will improve your project's **readability**,
+**stability**, and **performance**. It fixes core JS issues such as browser
+compatibility, [+ overloading][overplus], and [unequal equality][unequality].
+It allows you to easily add the power of [immutability][immutability] and
+[strong typing][strongtype] to your projects, to utilize the comfort and
+flexibility of [node.js][nodejs] for your system administration, and to
+identify the causes of those annoying bugs and glitches. At the core, _vitals_
+just wants to make dealing with JavaScript easier and your life better!
 
-#### Own That String Example
+#### Examples
+
 ```javascript
-// every root vitals method handles multiple operations
-// most handle responses for objects, arrays, and strings
-// sub vitals methods offer fine-grained control
-// watch this example of vitals owning stringy things
+var life = '123abc345XYZ';
 
-var v, i, t, a, l, s;
-var functional, life;
+var v = require('node-vitals')();
+var i = v.find.all(life, /[A-Z]/); // sets `i` to `[ "X", "Y", "Z" ]`
+var t = v.sew('v', 5, life);       // sets `t` to `"v5123abc345XYZ"`
+var a = v.cut(life, 3, /[a-z]/g);  // sets `a` to `"1245XYZ"`
+var l = v.slice(life, -3, -1);     // sets `l` to `"XY"`
+var s = v.replace(life, 3, 'w$&'); // sets `s` to `"12w3abcw345XYZ"`
 
-life = '123abc345XYZ';
-v = require('node-vitals')('base');
-i = v.cut(life, 3, /[a-z]/g); // "1245XYZ"
-t = v.remap(life, 3, 'w$&');  // "12w3abcw345XYZ"
-a = v.slice(life, -3, -1);    // "XY"
-l = v.get(life, /[A-Z]/);     // [ "X", "Y", "Z" ]
-s = v.fuse('v', life);        // "v123abc345XYZ"
-v.has(life, 'Z');             // true
-v.is('str|arr', i, t, a, l);  // true
-v.is.str(i, t, a, l);         // false
-l = v.to.str(l, '~');         // "X~Y~Z"
-v.is.str(i, t, a, l);         // true
+v.is('arr|str', i, t); // returns `true`
+v.is.string(a, i);     // returns `true`
+v.is.str(i, t)         // returns `false`
 
-// goodbye confusing equality
-var same = require('node-vitals')('same');
-var v =  1;
-var _ = '1';
-same.ish(v, _); // true
-same(v, _);    // false
+v.matches.any(life, /^[A-Z]/, 1, 'Z'); // returns `true`
+v.matches(life, /^[A-Z]/, 1, 'Z');     // returns `false`
+
+v.has(life, /[A-Z]/, 1, 'Z'); // returns `false`
+v.has(life, 1, 'Z');          // returns `true`
+
+v.is.same(1, '1');    // returns `false`
+v.is.similar(1, '1'); // returns `true`
+
+life = v.create(null, {
+  'v': 1,
+  'i': 2,
+  't': 3,
+  'a': 4,
+  'l': 5
+});
+
+v.is.obj(life); // returns `true`
+
+v.has(life, 1);    // returns `true`
+v.has(life, 'v');  // returns `false`
+v.owns(life, 'v'); // returns `true`
+
+v.amend(life, 'v', {
+  'enumerable': false
+});
+
+v.owns(life, 'v');      // returns `true`
+v.owns.enum(life, 'v'); // returns `false`
+
+v.assign(life, 's', 6, 'number'); // sets `life.s` to `6` with
+                                  // strong type of `"number"`
+
+life.s = 7;   // sets `life.v` to `7`
+life.s = '8'; // throws a `TypeError`
+
+// For this example each of the following variables will **always**
+// be an instance of the *vitals* file wrapper class: `v.Fs`.
+var fs, dir, file;
+
+// For this example `path` will always be a primitive string.
+var path;
+
+path = v.resolve('path', '../to/dir'); // returns absolute path
+
+path = '../dir/path';
+dir = v.cd(path); // sets `process.cwd` to `v.resolve(path)`
+
+v.is.str(dir);  // returns `false`
+v.is.obj(dir);  // returns `true`
+v.test.fs(dir); // returns `true`
+
+v.is.same(v.cwd, dir); // returns `true`
+
+dir = v.mk('../dir/path'); // returns new `v.Fs` instance
+dir = v.mk.dir(dir);       // makes directory at `dir.abspath`
+
+path = '../dir/path';
+dir = v.mk.dir(path); // makes directory at `v.resolve(path)`
+
+dir.isDirectory(); // returns `true`
+dir.isSymlink();   // returns `false`
+dir.isFile();      // returns `false`
+
+v.test('f', dir);  // returns `false`
+v.test('d', dir);  // returns `true`
+v.test('d', path); // returns `true`
+v.test('h', path); // returns `false`
+
+v.test.f(path);   // returns `false`
+v.test.d(dir);    // returns `true`
+v.test.file(dir); // returns `false`
+v.test.dir(path); // returns `true`
+
+// note that all vitals *ls* methods return an array of `v.Fs` instances
+v.ls();          // returns all immediate paths in `v.cwd.abspath`
+v.ls(dir);       // returns all immediate paths in `dir.abspath`
+v.ls(path);      // returns all immediate paths in `v.resolve(path)`
+v.ls(true);      // returns all paths in `v.cwd.abspath`
+v.ls(dir, true); // returns all paths in `dir.abspath`
+v.ls.file(dir, { // returns all files with `".js"` extension in `dir.abspath`
+  deep: true,
+  ext: 'js'
+});
 ```
 
 
-## Install & Use
-#### node.js
-- ``` npm install node-vitals ```
-- ``` var vitals = require('node-vitals')([...method|section]) ```
+## Install
 
-#### browser
-- download [vitals.min.js](https://github.com/imaginate/vitals/blob/master/src/browser/vitals.min.js)
-- ``` <script src="vitals.min.js"></script> ``` ([add to html](http://javascript.info/tutorial/adding-script-html#external-scripts))
-- ``` vitals.<method> ``` (appended to [window](https://developer.mozilla.org/en-US/docs/Web/API/Window))
+#### node.js
+
+```bash
+npm install --save @imaginate/vitals
+```
+
+#### amd/browser
+Download [vitals.js][browsermain] or a specific method/section from
+[vitals browser distributables][browser].
+
+
+## Use
+
+#### node.js
+
+```javascript
+var vitals = require('@imaginate/vitals');
+```
 
 #### amd
-- download [vitals.min.js](https://github.com/imaginate/vitals/blob/master/src/browser/vitals.min.js)
-- ``` require([ 'vitals' ], function(null) { ... }) ```
-- ``` vitals.<method> ``` (appended to [window](https://developer.mozilla.org/en-US/docs/Web/API/Window))
+
+```javascript
+require([ 'vitals' ], function(null) {
+  var vitals = window.vitals;
+});
+```
+
+#### browser
+
+```html
+<script src="vitals.min.js"></script>
+<script>var vitals = window.vitals;</script>
+```
+
+For help see:
+- [adding a script to html][addscript]
+- [understanding the window object][window]
 
 
 ## API
-| Base Methods                                                   | Strict Methods                                                   | File System Methods                                          | Shell Methods                                              |
-| :------------------------------------------------------------: | :--------------------------------------------------------------: | :----------------------------------------------------------: | :--------------------------------------------------------: |
-| bind*                                                          | [amend](https://github.com/imaginate/vitals/wiki/vitals.amend)   | [copy](https://github.com/imaginate/vitals/wiki/vitals.copy) | [run](https://github.com/imaginate/vitals/wiki/vitals.run) |
-| [copy](https://github.com/imaginate/vitals/wiki/vitals.copy)   | cap*                                                             | cut*                                                         |                                                            |
-| [cut](https://github.com/imaginate/vitals/wiki/vitals.cut)     | [create](https://github.com/imaginate/vitals/wiki/vitals.create) | [get](https://github.com/imaginate/vitals/wiki/vitals.get)   |                                                            |
-| [each](https://github.com/imaginate/vitals/wiki/vitals.each)   | [freeze](https://github.com/imaginate/vitals/wiki/vitals.freeze) | [to](https://github.com/imaginate/vitals/wiki/vitals.to)     |                                                            |
-| [fill](https://github.com/imaginate/vitals/wiki/vitals.fill)   | [seal](https://github.com/imaginate/vitals/wiki/vitals.seal)     |                                                              |                                                            |
-| [fuse](https://github.com/imaginate/vitals/wiki/vitals.fuse)   |                                                                  |                                                              |                                                            |
-| [get](https://github.com/imaginate/vitals/wiki/vitals.get)     |                                                                  |                                                              |                                                            |
-| [has](https://github.com/imaginate/vitals/wiki/vitals.has)     |                                                                  |                                                              |                                                            |
-| [is](https://github.com/imaginate/vitals/wiki/vitals.is)       |                                                                  |                                                              |                                                            |
-| [remap](https://github.com/imaginate/vitals/wiki/vitals.remap) |                                                                  |                                                              |                                                            |
-| [roll](https://github.com/imaginate/vitals/wiki/vitals.roll)   |                                                                  |                                                              |                                                            |
-| [same](https://github.com/imaginate/vitals/wiki/vitals.same)   |                                                                  |                                                              |                                                            |
-| [slice](https://github.com/imaginate/vitals/wiki/vitals.slice) |                                                                  |                                                              |                                                            |
-| [to](https://github.com/imaginate/vitals/wiki/vitals.to)       |                                                                  |                                                              |                                                            |
-| trim*                                                          |                                                                  |                                                              |                                                            |
-| [until](https://github.com/imaginate/vitals/wiki/vitals.until) |                                                                  |                                                              |                                                            |
+
+| Base Methods           | Strict Methods   | File System Methods | Shell Methods |
+| :--------------------: | :--------------: | :-----------------: | :-----------: |
+| bind\*                 | [amend][amend]   | [cat][cat]          | [run][run]    |
+| [copy][copy]           | [assign][assign] | [cd][cd]            |               |
+| [cut][cut]             | cap\*            | [ch][ch]            |               |
+| [each][each]           | [create][create] | [cp][cp]            |               |
+| [fill][fill]           | [freeze][freeze] | [ls][ls]            |               |
+| [fuse][fuse]           | [seal][seal]     | [mk][mk]            |               |
+| [get][get]             |                  | [mv][mv]            |               |
+| [has][has]             |                  | [resolve][resolve]  |               |
+| [is][is]               |                  | [rm][rm]            |               |
+| [remap][remap]         |                  | [tee][tee]          |               |
+| [roll][roll]           |                  | [test][test]        |               |
+| [sew][sew]             |                  |                     |               |
+| [slice][slice]         |                  |                     |               |
+| [stringify][stringify] |                  |                     |               |
+| [to][to]               |                  |                     |               |
+| [trim][trim]           |                  |                     |               |
+| [until][until]         |                  |                     |               |
 \* Scheduled for future release.
 
 
 ## Other Details
-**contributing:** [see contributing guideline](https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md)<br>
-**bugs/improvements:** [open an issue](https://github.com/imaginate/vitals/issues)<br>
-**questions:** dev@vitalsjs.com
+
+### Contributing
+See the [contributing guideline][contribute].
+
+### Bugs/Improvements
+Open an [issue on GitHub][issue].
+
+### Questions
+Send an email to <dev@vitalsjs.com>.
 
 
---
-**Happy Developing,**
+<hr>
+### Happy Developing
 
-<a href="http://vitalsjs.com"><img src="http://www.algorithmiv.com/images/aIV-logo.png" alt="Algorithm IV Logo" /></a>
+[vitals]: https://github.com/imaginate/vitals/wiki
+[github]: https://github.com/imaginate/vitals
+[npm]: https://www.npmjs.com/package/node-vitals
+[travis]: https://travis-ci.org/imaginate/vitals
+[badge]: https://img.shields.io/badge/npm-5.0.0-brightgreen.svg?style=flat
+[status]: https://travis-ci.org/imaginate/vitals.svg?branch=master
+[issue]: https://github.com/imaginate/vitals/issues
+[browser]: https://github.com/imaginate/vitals/tree/master/dist/browser
+[browsermain]: https://github.com/imaginate/vitals/blob/master/dist/browser/vitals.js
+[license]: https://github.com/imaginate/vitals/blob/master/LICENSE.md
+[contribute]: https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md
+
+[base]: https://github.com/imaginate/vitals/wiki#user-content-api
+[strict]: https://github.com/imaginate/vitals/wiki#user-content-api
+[fs]: https://github.com/imaginate/vitals/wiki#user-content-api
+[shell]: https://github.com/imaginate/vitals/wiki#user-content-api
+
+[amend]: https://github.com/imaginate/vitals/wiki/vitals.amend
+[assign]: https://github.com/imaginate/vitals/wiki/vitals.assign
+[copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
+[cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
+[create]: https://github.com/imaginate/vitals/wiki/vitals.create
+[cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
+[each]: https://github.com/imaginate/vitals/wiki/vitals.each
+[fill]: https://github.com/imaginate/vitals/wiki/vitals.fill
+[freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
+[fuse]: https://github.com/imaginate/vitals/wiki/vitals.fuse
+[get]: https://github.com/imaginate/vitals/wiki/vitals.get
+[has]: https://github.com/imaginate/vitals/wiki/vitals.has
+[is]: https://github.com/imaginate/vitals/wiki/vitals.is
+[is-types]: https://github.com/imaginate/vitals/wiki/vitals.is-types
+[remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
+[roll]: https://github.com/imaginate/vitals/wiki/vitals.roll
+[run]: https://github.com/imaginate/vitals/wiki/vitals.run
+[same]: https://github.com/imaginate/vitals/wiki/vitals.same
+[seal]: https://github.com/imaginate/vitals/wiki/vitals.seal
+[sew]: https://github.com/imaginate/vitals/wiki/vitals.sew
+[slice]: https://github.com/imaginate/vitals/wiki/vitals.slice
+[stringify]: https://github.com/imaginate/vitals/wiki/vitals.stringify
+[to]: https://github.com/imaginate/vitals/wiki/vitals.to
+[trim]: https://github.com/imaginate/vitals/wiki/vitals.trim
+[until]: https://github.com/imaginate/vitals/wiki/vitals.until
+
+[addscript]: http://javascript.info/tutorial/adding-script-html#external-scripts
+[cli]: https://en.wikipedia.org/wiki/Command-line_interface#Command-line_interpreter
+[filesystem]: https://en.wikipedia.org/wiki/File_system
+[functional]: https://medium.com/javascript-scene/the-two-pillars-of-javascript-pt-2-functional-programming-a63aa53a41a4
+[immutability]: https://en.wikipedia.org/wiki/Immutable_object
+[nodejs]: https://nodejs.org
+[overplus]: http://www.crockford.com/javascript/javascript.html
+[strongtype]: https://en.wikipedia.org/wiki/Strong_and_weak_typing
+[unequality]: http://whydoesitsuck.com/why-does-javascript-suck/
+[window]: https://developer.mozilla.org/en-US/docs/Web/API/Window
+
