@@ -10,24 +10,41 @@
  */
 
 /// #def{{{ @wrapper OPEN
-;(function(/** (?Object|?Function|undefined) */ __THIS,
-           /** undefined */ __VOID) {
+/**
+ * @param {(?Object|?Function|undefined)=} __THIS__
+ * @param {undefined=} __VOID__
+ * @return {void}
+ */
+;(function __vitalsWrapper__(__THIS__, __VOID__) {
 
   /// #if{{{ @env USE_STRICT
   'use strict';
 
   /// #if}}} @env USE_STRICT
-  /// #ifnot{{{ @scope SOLO
-  /// #ifnot{{{ @scope CONSTRUCTOR
+  /// #{{{ @const __NIL__
   /**
-   * @public
-   * @type {(!Object|!Function)}
-   * @dict
+   * @private
+   * @const {null}
    */
-  var vitals = {};
+  var __NIL__ = null;
+  /// #}}} @const __NIL__
 
-  /// #ifnot}}} @scope CONSTRUCTOR
-  /// #ifnot}}} @scope SOLO
+  /// #{{{ @const __NO__
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var __NO__ = !!__VOID__;
+  /// #}}} @const __NO__
+
+  /// #{{{ @const __YES__
+  /**
+   * @private
+   * @const {boolean}
+   */
+  var __YES__ = !__VOID__;
+  /// #}}} @const __YES__
+
 /// #def}}} @wrapper OPEN
 
 /// #def{{{ @wrapper CLOSE

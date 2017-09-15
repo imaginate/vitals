@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @constant NIL
@@ -14,7 +14,7 @@
  * @private
  * @const {null}
  */
-var NIL = null;
+var NIL = __NIL__;
 /// #}}} @constant NIL
 
 /// #{{{ @constant NO
@@ -22,7 +22,7 @@ var NIL = null;
  * @private
  * @const {boolean}
  */
-var NO = false;
+var NO = __NO__;
 /// #}}} @constant NO
 
 /// #{{{ @constant VOID
@@ -30,7 +30,7 @@ var NO = false;
  * @private
  * @const {undefined}
  */
-var VOID = __VOID;
+var VOID = __VOID__;
 /// #}}} @constant VOID
 
 /// #{{{ @constant YES
@@ -38,7 +38,7 @@ var VOID = __VOID;
  * @private
  * @const {boolean}
  */
-var YES = true;
+var YES = __YES__;
 /// #}}} @constant YES
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
