@@ -1,4 +1,9 @@
-# vitals [![build status][status]][travis] [![npm version][badge]][npm]
+# vitals [![npm version][badge]][npm]
+
+#### Warning
+This version of _vitals_ is still receiving **major changes**. Nothing shown
+on this branch should be trusted until an official release is completed (i.e.
+when this branch is merged into the master).
 
 ### Give Your JS Life
 _vitals_ is a [functional][functional] JavaScript library designed to be at
@@ -158,25 +163,27 @@ For help see:
 
 ## API
 
-| Base Methods           | Strict Methods   | File System Methods | Shell Methods |
-| :--------------------: | :--------------: | :-----------------: | :-----------: |
-| bind\*                 | [amend][amend]   | [cat][cat]          | [run][run]    |
-| [copy][copy]           | [assign][assign] | [cd][cd]            |               |
-| [cut][cut]             | cap\*            | [ch][ch]            |               |
-| [each][each]           | [create][create] | [cp][cp]            |               |
-| [fill][fill]           | [freeze][freeze] | [ls][ls]            |               |
-| [fuse][fuse]           | [seal][seal]     | [mk][mk]            |               |
-| [get][get]             |                  | [mv][mv]            |               |
-| [has][has]             |                  | [resolve][resolve]  |               |
-| [is][is]               |                  | [rm][rm]            |               |
-| [remap][remap]         |                  | [tee][tee]          |               |
-| [roll][roll]           |                  | [test][test]        |               |
-| [sew][sew]             |                  |                     |               |
-| [slice][slice]         |                  |                     |               |
-| [stringify][stringify] |                  |                     |               |
-| [to][to]               |                  |                     |               |
-| [trim][trim]           |                  |                     |               |
-| [until][until]         |                  |                     |               |
+| Base Methods           | Strict Methods   | File System Methods | Shell Methods          |
+| :--------------------: | :--------------: | :-----------------: | :--------------------: |
+| bind\*                 | [amend][amend]   | [cat][cat]          | [exit][exit]           |
+| [copy][copy]           | [assign][assign] | [cd][cd]            | [parseopts][parseopts] |
+| [cut][cut]             | [cap][cap]       | [ch][ch]            | [run][run]             |
+| [each][each]           | [create][create] | [cp][cp]            |                        |
+| [fill][fill]           | [freeze][freeze] | [ls][ls]            |                        |
+| [filter][filter]       | [seal][seal]     | [mk][mk]            |                        |
+| [find][find]           |                  | [mv][mv]            |                        |
+| [get][get]             |                  | [resolve][resolve]  |                        |
+| [has][has]             |                  | [rm][rm]            |                        |
+| [is][is]               |                  | [tee][tee]          |                        |
+| [matches][matches]     |                  | [test][test]        |                        |
+| [remap][remap]         |                  |                     |                        |
+| [roll][roll]           |                  |                     |                        |
+| [sew][sew]             |                  |                     |                        |
+| [slice][slice]         |                  |                     |                        |
+| [stringify][stringify] |                  |                     |                        |
+| [to][to]               |                  |                     |                        |
+| [trim][trim]           |                  |                     |                        |
+| [until][until]         |                  |                     |                        |
 \* Scheduled for future release.
 
 
@@ -199,7 +206,7 @@ Send an email to <dev@vitalsjs.com>.
 [github]: https://github.com/imaginate/vitals
 [npm]: https://www.npmjs.com/package/node-vitals
 [travis]: https://travis-ci.org/imaginate/vitals
-[badge]: https://img.shields.io/badge/npm-5.0.0-brightgreen.svg?style=flat
+[badge]: https://img.shields.io/badge/npm-5.0.0--alpha-red.svg?style=flat
 [status]: https://travis-ci.org/imaginate/vitals.svg?branch=master
 [issue]: https://github.com/imaginate/vitals/issues
 [browser]: https://github.com/imaginate/vitals/tree/master/dist/browser
@@ -214,12 +221,15 @@ Send an email to <dev@vitalsjs.com>.
 
 [amend]: https://github.com/imaginate/vitals/wiki/vitals.amend
 [assign]: https://github.com/imaginate/vitals/wiki/vitals.assign
+[cap]: https://github.com/imaginate/vitals/wiki/vitals.cap
 [copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
 [cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
 [create]: https://github.com/imaginate/vitals/wiki/vitals.create
 [cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
 [each]: https://github.com/imaginate/vitals/wiki/vitals.each
 [fill]: https://github.com/imaginate/vitals/wiki/vitals.fill
+[filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
+[find]: https://github.com/imaginate/vitals/wiki/vitals.find
 [freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
 [fuse]: https://github.com/imaginate/vitals/wiki/vitals.fuse
 [get]: https://github.com/imaginate/vitals/wiki/vitals.get
