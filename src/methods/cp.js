@@ -57,7 +57,49 @@ var cp = (function cpPrivateScope() {
   /// @alias vitals.cp.main
   /**
    * @description
+   *   Copy the contents of a file or all of the files within a directory to
+   *   new or existing locations.
    * @public
+   * @param {...string} source
+   *   The #source must be a valid path to an existing file or directory. If
+   *   a #source path to a directory is defined, all paths to a file within
+   *   the directory's immediate scope (unless #opts.deep is set to `true`)
+   *   will be copied to the #dest directory.
+   * @param {string} dest
+   *   If only one #source path to a file is defined, the #dest may be a path
+   *   to a new or existing file. Otherwise, the #dest must be a path to a new
+   *   or existing directory. If the #dest is a path to a new directory, the
+   *   #dest `string` must end with a forward-slash (e.g. `"/"`).
+   * @param {(?Object|?boolean)=} opts
+   *   If the #opts is a `boolean` value, it sets the #opts.deep option to its
+   *   value.
+   * @param {boolean=} opts.deep = `false`
+   *   The #opts.deep option tells @cp#directory whether it should
+   *   recursively copy all of the sub-directory trees within the #source.
+   * @param {boolean=} opts.recursive
+   *   An alias for the #opts.deep option.
+   * @param {boolean=} opts.buffer = `true`
+   *   If set to `true`, the #opts.buffer option directs @cp#directory to
+   *   not convert the `buffer` of each #source file's contents into a
+   *   `string` before saving it into the #dest directory (i.e. do not apply
+   *   any normalization to the #source contents while copying).
+   * @param {?string=} opts.encoding = `null`
+   *   The #opts.encoding option sets the character encoding for each #source
+   *   contents saved to each #dest file. If it is `null`, no character
+   *   encoding is applied.
+   * @param {?string=} opts.encode
+   *   An alias for the #opts.encoding option.
+   * @param {?string=} opts.eol = `null`
+   *   The #opts.eol option only applies if #opts.buffer is `false`. It sets
+   *   the end of line character to use when normalizing the #source contents
+   *   before they are saved to the #dest. If #opts.eol is set to `null`, no
+   *   end of line character normalization is completed. The optional `string`
+   *   values are as follows (values are **not** case-sensitive):
+   *   - `"LF"`
+   *   - `"CR"`
+   *   - `"CRLF"`
+   * @return {!Array<string>}
+   *   An `array` of each file name copied from the #source to the #dest.
    */
   /// #}}} @docs main
   /// #if{{{ @code main
@@ -86,7 +128,7 @@ var cp = (function cpPrivateScope() {
    *   Copy the contents of a file to a new or existing file.
    * @public
    * @param {string} source
-   *   Must be a valid filepath to an existing file.
+   *   The #source must be a valid path to an existing file.
    * @param {string} dest
    *   Must be a valid filepath to a new or existing file, a valid dirpath to
    *   an existing directory, or a valid dirpath to a new directory noted by
@@ -241,7 +283,7 @@ var cp = (function cpPrivateScope() {
    *   Copy all of the files in a directory to another directory.
    * @public
    * @param {string} source
-   *   Must be a valid directory path to an existing directory.
+   *   The #source must be a valid path to an existing directory.
    * @param {string} dest
    *   Must be a valid directory path to an existing directory or a valid
    *   directory path to a new directory noted by ending the #dest `string`
