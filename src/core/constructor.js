@@ -939,6 +939,105 @@ function makeNewVitals() {
     })();
     /// #}}} @const _HAS_FUN_DEFINE_PROPS
 
+    /// #{{{ @const _HAS_IS_EXTENSIBLE
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_EXTENSIBLE = 'isExtensible' in _OBJ
+      && _isFun(_OBJ['isExtensible']);
+    /// #}}} @const _HAS_IS_EXTENSIBLE
+
+    /// #{{{ @const _HAS_IS_FUN_EXTENSIBLE
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_FUN_EXTENSIBLE = (function __vitalsVerifyIsExtensible__() {
+
+      /** @type {*} */
+      var err;
+
+      if (!_HAS_IS_EXTENSIBLE) {
+        return __NO__;
+      }
+
+      try {
+        _OBJ['isExtensible'](function(){});
+      }
+      catch (err) {
+        return __NO__;
+      }
+      return __YES__;
+    })();
+    /// #}}} @const _HAS_IS_FUN_EXTENSIBLE
+
+    /// #{{{ @const _HAS_IS_FROZEN
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_FROZEN = 'isFrozen' in _OBJ
+      && _isFun(_OBJ['isFrozen']);
+    /// #}}} @const _HAS_IS_FROZEN
+
+    /// #{{{ @const _HAS_IS_FUN_FROZEN
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_FUN_FROZEN = (function __vitalsVerifyIsFrozen__() {
+
+      /** @type {*} */
+      var err;
+
+      if (!_HAS_IS_FROZEN) {
+        return __NO__;
+      }
+
+      try {
+        _OBJ['isFrozen'](function(){});
+      }
+      catch (err) {
+        return __NO__;
+      }
+      return __YES__;
+    })();
+    /// #}}} @const _HAS_IS_FUN_FROZEN
+
+    /// #{{{ @const _HAS_IS_SEALED
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_SEALED = 'isSealed' in _OBJ
+      && _isFun(_OBJ['isSealed']);
+    /// #}}} @const _HAS_IS_SEALED
+
+    /// #{{{ @const _HAS_IS_FUN_SEALED
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_IS_FUN_SEALED = (function __vitalsVerifyIsSealed__() {
+
+      /** @type {*} */
+      var err;
+
+      if (!_HAS_IS_SEALED) {
+        return __NO__;
+      }
+
+      try {
+        _OBJ['isSealed'](function(){});
+      }
+      catch (err) {
+        return __NO__;
+      }
+      return __YES__;
+    })();
+    /// #}}} @const _HAS_IS_FUN_SEALED
+
   /// #{{{ @func _create
   /**
    * @private
@@ -1584,6 +1683,27 @@ function makeNewVitals() {
     ENV_HAS.FUNCTION_DEFINE_PROPERTY = _HAS_FUN_DEFINE_PROP;
     /// #}}} @const ENV_HAS.FUNCTION_DEFINE_PROPERTY
 
+    /// #{{{ @const ENV_HAS.FUNCTION_IS_EXTENSIBLE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.FUNCTION_IS_EXTENSIBLE = _HAS_IS_FUN_EXTENSIBLE;
+    /// #}}} @const ENV_HAS.FUNCTION_IS_EXTENSIBLE
+
+    /// #{{{ @const ENV_HAS.FUNCTION_IS_FROZEN
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.FUNCTION_IS_FROZEN = _HAS_IS_FUN_FROZEN;
+    /// #}}} @const ENV_HAS.FUNCTION_IS_FROZEN
+
+    /// #{{{ @const ENV_HAS.FUNCTION_IS_SEALED
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.FUNCTION_IS_SEALED = _HAS_IS_FUN_SEALED;
+    /// #}}} @const ENV_HAS.FUNCTION_IS_SEALED
+
     /// #{{{ @const ENV_HAS.GLOBAL
     /**
      * @const {boolean}
@@ -1613,6 +1733,27 @@ function makeNewVitals() {
      */
     ENV_HAS.OBJECT_DEFINE_PROPERTY = _HAS_DEFINE_PROP;
     /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTY
+
+    /// #{{{ @const ENV_HAS.OBJECT_IS_EXTENSIBLE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_IS_EXTENSIBLE = _HAS_IS_EXTENSIBLE;
+    /// #}}} @const ENV_HAS.OBJECT_IS_EXTENSIBLE
+
+    /// #{{{ @const ENV_HAS.OBJECT_IS_FROZEN
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_IS_FROZEN = _HAS_IS_FROZEN;
+    /// #}}} @const ENV_HAS.OBJECT_IS_FROZEN
+
+    /// #{{{ @const ENV_HAS.OBJECT_IS_SEALED
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_IS_SEALED = _HAS_IS_SEALED;
+    /// #}}} @const ENV_HAS.OBJECT_IS_SEALED
 
     /// #{{{ @const ENV_HAS.MODULE
     /**
