@@ -120,31 +120,40 @@ v.ls.file(dir, { // returns all files with `".js"` extension in `dir.abspath`
 ```
 
 
+<a name="install"></a>
 ## Install
 
+<a name="install-node"></a>
 #### node.js
 
 ```bash
 npm install --save @imaginate/vitals
 ```
 
+<a name="install-amd"></a>
 #### amd
-Download [vitals.js][distamdmain] or a specific method/section from
-[vitals amd distributables][distamd].
+Download the [main amd build][distamdmain] of vitals or pick a specific build
+of vitals (e.g. only one method or section) from the vitals
+[amd distributables tree][distamd].
 
+<a name="install-browser"></a>
 #### browser
-Download [vitals.js][distbrowsermain] or a specific method/section from
-[vitals browser distributables][distbrowser].
+Download the [main browser build][distbrowsermain] of vitals or pick a
+specific build of vitals (e.g. only one method or section) from the vitals
+[browser distributables tree][distbrowser].
 
 
+<a name="use"></a>
 ## Use
 
+<a name="use-node"></a>
 #### node.js
 
 ```javascript
 var vitals = require('@imaginate/vitals');
 ```
 
+<a name="use-amd"></a>
 #### amd
 
 ```javascript
@@ -153,6 +162,7 @@ require([ 'vitals' ], function(null) {
 });
 ```
 
+<a name="use-browser"></a>
 #### browser
 
 ```html
@@ -188,7 +198,6 @@ For help see:
 | [to][to]               |                  |                     |                        |
 | [trim][trim]           |                  |                     |                        |
 | [until][until]         |                  |                     |                        |
-\* Scheduled for future release.
 
 
 ## Other Details
@@ -204,6 +213,7 @@ Send an email to <dev@vitalsjs.com>.
 
 
 <hr>
+
 ### Happy Developing
 
 [vitals]: https://github.com/imaginate/vitals/wiki
