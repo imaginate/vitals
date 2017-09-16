@@ -584,6 +584,7 @@ var $is = (function __vitals$is__() {
 
   /// #{{{ @func _getLinkStats
   /**
+   * @private
    * @param {string} path
    * @return {!Object}
    */
@@ -592,11 +593,21 @@ var $is = (function __vitals$is__() {
 
   /// #{{{ @func _getStats
   /**
+   * @private
    * @param {string} path
    * @return {!Object}
    */
   var _getStats = $FS['statSync'];
   /// #}}} @func _getStats
+
+  /// #{{{ @func _pathExists
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  var _pathExists = $FS['existsSync'];
+  /// #}}} @func _pathExists
 
   /// #{{{ @func isDirectory
   /**
@@ -643,6 +654,16 @@ var $is = (function __vitals$is__() {
     }
   }
   /// #}}} @func isFile
+
+  /// #{{{ @func isFsPath
+  /**
+   * @param {string} path
+   * @return {boolean}
+   */
+  function isFsPath(path) {
+    return !!path && isString(path) && _pathExists(path);
+  }
+  /// #}}} @func isFsPath
 
   /// #{{{ @func isSymLink
   /**
@@ -735,6 +756,7 @@ var $is = (function __vitals$is__() {
     /// #{{{ @group file-system
     dir:     isDirectory,
     file:    isFile,
+    path:    isFsPath,
     symlink: isSymLink
     /// #}}} @group file-system
     /// #if}}} @build NODE
