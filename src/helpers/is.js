@@ -244,16 +244,6 @@ var $is = (function __vitals$is__() {
     /// #ifnot}}} @env ARGS_POLYFILL
   /// #}}} @func isArrayOrArguments
 
-  /// #if{{{ @build NODE
-  /// #{{{ @func isBuffer
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  var isBuffer = $BUFF['isBuffer'];
-  /// #}}} @func isBuffer
-  /// #if}}} @build NODE
-
   /// #}}} @group js-objects
 
   /// #{{{ @group dom-objects
@@ -279,6 +269,60 @@ var $is = (function __vitals$is__() {
   /// #}}} @func isDomElement
 
   /// #}}} @group dom-objects
+
+  /// #if{{{ @build NODE
+  /// #{{{ @group node-objects
+
+  /// #{{{ @func isAuthorityError
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isAuthorityError(val) {
+
+    if ( !isCodedError(val) ) {
+      return $NO;
+    }
+
+    switch (val['code']) {
+      case 'EACCES':
+      case 'EPERM':
+        return $YES;
+    }
+    return $NO;
+  }
+  /// #}}} @func isAuthorityError
+
+  /// #{{{ @func isBuffer
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  var isBuffer = $BUFF['isBuffer'];
+  /// #}}} @func isBuffer
+
+  /// #{{{ @func isCodedError
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isCodedError(val) {
+    return isError(val) && $own(val, 'code') && isString(val['code']);
+  }
+  /// #}}} @func isCodedError
+
+  /// #{{{ @func isExistError
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isExistError(val) {
+    return isCodedError(val) && val['code'] === 'EEXIST';
+  }
+  /// #}}} @func isExistError
+
+  /// #}}} @group node-objects
+  /// #if}}} @build NODE
 
   /// #{{{ @group special
 
@@ -718,15 +762,21 @@ var $is = (function __vitals$is__() {
     regx: isRegExp,
     date: isDate,
     err:  isError,
-    /// #if{{{ @build NODE
-    buff: isBuffer,
-    /// #if}}} @build NODE
     /// #}}} @group js-objects
 
     /// #{{{ @group dom-objects
     doc:  isDomDocument,
     elem: isDomElement,
     /// #}}} @group dom-objects
+
+    /// #if{{{ @build NODE
+    /// #{{{ @group node-objects
+    autherr:  isAuthorityError,
+    buff:     isBuffer,
+    codederr: isCodedError,
+    existerr: isExistError,
+    /// #}}} @group node-objects
+    /// #if}}} @build NODE
 
     /// #{{{ @group special
     arrish: isArrayLike,
