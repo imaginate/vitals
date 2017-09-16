@@ -6,34 +6,43 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @constant CP
+/// #{{{ @constant $REQUIRE
+/**
+ * @private
+ * @const {!Function}
+ * @dict
+ */
+var $REQUIRE = require;
+/// #}}} @constant $REQUIRE
+
+/// #{{{ @constant $CP
 /**
  * @private
  * @const {!Object}
  * @dict
  */
-var CP = require('child_process');
-/// #}}} @constant CP
+var $CP = $REQUIRE('child_process');
+/// #}}} @constant $CP
 
-/// #{{{ @constant FS
+/// #{{{ @constant $FS
 /**
  * @private
  * @const {!Object}
  * @dict
  */
-var FS = require('fs');
-/// #}}} @constant FS
+var $FS = $REQUIRE('fs');
+/// #}}} @constant $FS
 
-/// #{{{ @constant PATH
+/// #{{{ @constant $PATH
 /**
  * @private
  * @const {!Object}
  * @dict
  */
-var PATH = require('path');
-/// #}}} @constant PATH
+var $PATH = $REQUIRE('path');
+/// #}}} @constant $PATH
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

@@ -9,36 +9,36 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @constant NIL
+/// #{{{ @constant $NIL
 /**
  * @private
  * @const {null}
  */
-var NIL = __NIL__;
-/// #}}} @constant NIL
+var $NIL = __NIL__;
+/// #}}} @constant $NIL
 
-/// #{{{ @constant NO
+/// #{{{ @constant $NO
 /**
  * @private
  * @const {boolean}
  */
-var NO = __NO__;
-/// #}}} @constant NO
+var $NO = __NO__;
+/// #}}} @constant $NO
 
-/// #{{{ @constant VOID
+/// #{{{ @constant $VOID
 /**
  * @private
  * @const {undefined}
  */
-var VOID = __VOID__;
-/// #}}} @constant VOID
+var $VOID = __VOID__;
+/// #}}} @constant $VOID
 
-/// #{{{ @constant YES
+/// #{{{ @constant $YES
 /**
  * @private
  * @const {boolean}
  */
-var YES = __YES__;
-/// #}}} @constant YES
+var $YES = __YES__;
+/// #}}} @constant $YES
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
