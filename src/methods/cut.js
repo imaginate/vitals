@@ -11,9 +11,7 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $cloneArr ../helpers/clone-arr.js
 /// #include @helper $cloneFun ../helpers/clone-fun.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
@@ -30,7 +28,7 @@
  * @type {!Function}
  * @dict
  */
-var cut = (function cutPrivateScope() {
+$VITALS['cut'] = (function __vitalsCut__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs cut
@@ -141,10 +139,10 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined');
+        throw _mkErr(new $ERR, 'no #source defined');
 
       case 1:
-        throw _mkErr(new ERR, 'no #val defined');
+        throw _mkErr(new $ERR, 'no #val defined');
 
       case 2:
         if ( $is.str(source) )
@@ -153,7 +151,7 @@ var cut = (function cutPrivateScope() {
             : _cutPattern(source, val);
 
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments|string');
 
         if ( $is.args(source) )
@@ -161,8 +159,8 @@ var cut = (function cutPrivateScope() {
 
         return $is.fun(val)
           ? $is.arr(source)
-            ? _filterArr(source, val, VOID)
-            : _filterObj(source, val, VOID)
+            ? _filterArr(source, val, $VOID)
+            : _filterObj(source, val, $VOID)
           : $is.arr(val)
             ? _cutProps(source, val)
             : _cutProp(source, val);
@@ -174,7 +172,7 @@ var cut = (function cutPrivateScope() {
         }
 
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments|string');
 
         if ( $is.args(source) )
@@ -182,7 +180,7 @@ var cut = (function cutPrivateScope() {
 
         if ( $is.fun(val) ) {
           if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
-            throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=');
+            throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=');
 
           return $is.arr(source)
             ? _filterArr(source, val, thisArg)
@@ -281,14 +279,14 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property');
+        throw _mkErr(new $ERR, 'no #source defined', 'property');
 
       case 1:
-        throw _mkErr(new ERR, 'no #val defined', 'property');
+        throw _mkErr(new $ERR, 'no #val defined', 'property');
 
       case 2:
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments', 'property');
 
         if ( $is.args(source) )
@@ -296,13 +294,13 @@ var cut = (function cutPrivateScope() {
 
         return $is.fun(val)
           ? $is.arr(source)
-            ? _filterArr(source, val, VOID)
-            : _filterObj(source, val, VOID)
+            ? _filterArr(source, val, $VOID)
+            : _filterObj(source, val, $VOID)
           : _cutProp(source, val);
 
       default:
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Object|!Function|!Array|!Arguments', 'property');
 
         if ( $is.args(source) )
@@ -310,7 +308,7 @@ var cut = (function cutPrivateScope() {
 
         if ( $is.fun(val) ) {
           if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
-            throw _mkTypeErr(new TYPE_ERR, 'thisArg', thisArg, '?Object=',
+            throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=',
               'property');
 
           return $is.arr(source)
@@ -348,14 +346,15 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'key');
+        throw _mkErr(new $ERR, 'no #source defined', 'key');
       case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'key');
+        throw _mkErr(new $ERR, 'no #key defined', 'key');
     }
 
-    if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
+    if ( !$is._obj(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object|!Function',
         'key');
+    }
 
     return _cutKey(source, key);
   }
@@ -415,48 +414,50 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'index');
+        throw _mkErr(new $ERR, 'no #source defined', 'index');
 
       case 1:
-        throw _mkErr(new ERR, 'no #index defined', 'index');
+        throw _mkErr(new $ERR, 'no #index defined', 'index');
 
       case 2:
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function', 'index');
         if ( !$is.arrish(source) )
-          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
-            'length must be a whole `number` that is `0` or more)', 'index');
+          throw _mkErr(new $ERR, '#source failed `array-like` test '
+            + '(#source.length must be a whole `number` that is `0` or more)',
+            'index');
         if ( !$is.num(index) )
-          throw _mkTypeErr(new TYPE_ERR, 'index', index, 'number', 'index');
+          throw _mkTypeErr(new $TYPE_ERR, 'index', index, 'number', 'index');
         if ( !$is.whole(index) )
-          throw _mkErr(new ERR, 'invalid #index `number` (' +
+          throw _mkErr(new $ERR, 'invalid #index `number` (' +
             'must be a whole `number`)', 'index');
 
         if ( !$is.arr(source) )
           source = $sliceArr(source);
 
-        return _cutIndex(source, index, VOID);
+        return _cutIndex(source, index, $VOID);
 
       default:
         if ( !$is._obj(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source,
+          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
             '!Array|!Arguments|!Object|!Function', 'index');
         if ( !$is.arrish(source) )
-          throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
-            'length must be a whole `number` that is `0` or more)', 'index');
+          throw _mkErr(new $ERR, '#source failed `array-like` test '
+            + '(#source.length must be a whole `number` that is `0` or more)',
+            'index');
         if ( !$is.num(index) )
-          throw _mkTypeErr(new TYPE_ERR, 'index', index, 'number', 'index');
+          throw _mkTypeErr(new $TYPE_ERR, 'index', index, 'number', 'index');
         if ( !$is.whole(index) )
-          throw _mkErr(new ERR, 'invalid #index `number` (' +
+          throw _mkErr(new $ERR, 'invalid #index `number` (' +
             'must be a whole `number`)', 'index');
 
         if ( !$is.void(toIndex) ) {
           if ( !$is.num(toIndex) )
-            throw _mkTypeErr(new TYPE_ERR, 'toIndex', toIndex, 'number',
+            throw _mkTypeErr(new $TYPE_ERR, 'toIndex', toIndex, 'number',
               'index');
           if ( !$is.whole(index) )
-            throw _mkErr(new ERR, 'invalid #toIndex `number` (' +
+            throw _mkErr(new $ERR, 'invalid #toIndex `number` (' +
               'must be a whole `number`)', 'index');
         }
 
@@ -503,22 +504,26 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'type');
+        throw _mkErr(new $ERR, 'no #source defined', 'type');
       case 1:
-        throw _mkErr(new ERR, 'no #type defined', 'type');
+        throw _mkErr(new $ERR, 'no #type defined', 'type');
     }
 
-    if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+    if ( !$is._obj(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments', 'type');
-    if ( !$is.str(type) )
-      throw _mkTypeErr(new TYPE_ERR, 'type', type, 'string', 'type');
+    }
+    if ( !$is.str(type) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'type', type, 'string', 'type');
+    }
 
-    if ( $is.args(source) )
+    if ( $is.args(source) ) {
       source = $sliceArr(source);
+    }
 
     if ( $is.empty(source) ) {
-      is(type, ''); // run once to catch any invalid types in #type
+      /// Run @is once to catch any invalid types in #type.
+      $VITALS['is'](type, '');
       return source;
     }
 
@@ -560,17 +565,19 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'value');
+        throw _mkErr(new $ERR, 'no #source defined', 'value');
       case 1:
-        throw _mkErr(new ERR, 'no #val defined', 'value');
+        throw _mkErr(new $ERR, 'no #val defined', 'value');
     }
 
-    if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+    if ( !$is._obj(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments', 'value');
+    }
 
-    if ( $is.args(source) )
+    if ( $is.args(source) ) {
       source = $sliceArr(source);
+    }
 
     return _cutVal(source, val);
   }
@@ -602,13 +609,14 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'pattern');
+        throw _mkErr(new $ERR, 'no #source defined', 'pattern');
       case 1:
-        throw _mkErr(new ERR, 'no #pattern defined', 'pattern');
+        throw _mkErr(new $ERR, 'no #pattern defined', 'pattern');
     }
 
-    if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'pattern');
+    if ( !$is.str(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, 'string', 'pattern');
+    }
 
     return _cutPattern(source, pattern);
   }
@@ -666,22 +674,23 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'properties');
+        throw _mkErr(new $ERR, 'no #source defined', 'properties');
       case 1:
-        throw _mkErr(new ERR, 'no #val defined', 'properties');
+        throw _mkErr(new $ERR, 'no #val defined', 'properties');
       case 2:
         break;
       default:
         val = $sliceArr(arguments, 1);
-        break;
     }
 
-    if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+    if ( !$is._obj(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments', 'properties');
+    }
 
-    if ( $is.args(source) )
+    if ( $is.args(source) ) {
       source = $sliceArr(source);
+    }
 
     return $is.arr(val)
       ? _cutProps(source, val)
@@ -715,19 +724,19 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'keys');
+        throw _mkErr(new $ERR, 'no #source defined', 'keys');
       case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'keys');
+        throw _mkErr(new $ERR, 'no #key defined', 'keys');
       case 2:
         break;
       default:
         key = $sliceArr(arguments, 1);
-        break;
     }
 
-    if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
+    if ( !$is._obj(source) ) {
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object|!Function',
         'keys');
+    }
 
     return $is.arr(key)
       ? _cutKeys(source, key)
@@ -775,43 +784,42 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'indexes');
+        throw _mkErr(new $ERR, 'no #source defined', 'indexes');
       case 1:
-        throw _mkErr(new ERR, 'no #index defined', 'indexes');
+        throw _mkErr(new $ERR, 'no #index defined', 'indexes');
       case 2:
         break;
       default:
         index = $sliceArr(arguments, 1);
-        break;
     }
 
     if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '!Array|!Arguments|!Object|!Function', 'indexes');
     if ( !$is.arrish(source) )
-      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
-        'length must be a whole `number` that is `0` or more)', 'indexes');
+      throw _mkErr(new $ERR, '#source failed `array-like` test (#source.'
+        + 'length must be a whole `number` that is `0` or more)', 'indexes');
 
     if ( !$is.arr(source) )
       source = $sliceArr(source);
 
     if ( !$is.arr(index) ) {
       if ( !$is.num(index) )
-        throw _mkTypeErr(new TYPE_ERR, 'index', index,
+        throw _mkTypeErr(new $TYPE_ERR, 'index', index,
           '(!Array<number>|...number)', 'indexes');
       if ( !$is.whole(index) )
-        throw _mkErr(new ERR, 'invalid #index `number` (' +
-          'must be a whole `number`)', 'indexes');
+        throw _mkErr(new $ERR, 'invalid #index `number` ('
+          + 'must be a whole `number`)', 'indexes');
 
       return _cutIndex(source, index);
     }
 
     if ( !_isNumArr(index) )
-      throw _mkTypeErr(new TYPE_ERR, 'index', index,
+      throw _mkTypeErr(new $TYPE_ERR, 'index', index,
         '(!Array<number>|...number)', 'indexes');
     if ( !_isWholeNumArr(index) )
-      throw _mkErr(new ERR, 'an invalid #index `number` (' +
-        'every #index must be a whole `number`)', 'indexes');
+      throw _mkErr(new $ERR, 'an invalid #index `number` ('
+        + 'every #index must be a whole `number`)', 'indexes');
 
     return _cutIndexes(source, index);
   }
@@ -853,9 +861,9 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'values');
+        throw _mkErr(new $ERR, 'no #source defined', 'values');
       case 1:
-        throw _mkErr(new ERR, 'no #val defined', 'values');
+        throw _mkErr(new $ERR, 'no #val defined', 'values');
       case 2:
         break;
       default:
@@ -864,7 +872,7 @@ var cut = (function cutPrivateScope() {
     }
 
     if ( !$is._obj(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments', 'values');
 
     if ( $is.args(source) )
@@ -904,9 +912,9 @@ var cut = (function cutPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'patterns');
+        throw _mkErr(new $ERR, 'no #source defined', 'patterns');
       case 1:
-        throw _mkErr(new ERR, 'no #pattern defined', 'patterns');
+        throw _mkErr(new $ERR, 'no #pattern defined', 'patterns');
       case 2:
         break;
       default:
@@ -915,7 +923,7 @@ var cut = (function cutPrivateScope() {
     }
 
     if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'patterns');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, 'string', 'patterns');
 
     return $is.arr(pattern)
       ? _cutPatterns(source, pattern)
@@ -1113,7 +1121,7 @@ var cut = (function cutPrivateScope() {
     if ( !$is.regx(pattern) ) {
       pattern = $mkStr(pattern);
       pattern = $escRegx(pattern);
-      pattern = new REGX(pattern, 'g');
+      pattern = new $REGX(pattern, 'g');
     }
     return source['replace'](pattern, '');
   }
@@ -1234,8 +1242,9 @@ var cut = (function cutPrivateScope() {
     var key;
 
     for (key in source) {
-      if ( $own(source, key) && is(type, source[key]) )
+      if ( $own(source, key) && $VITALS['is'](type, source[key]) ) {
         delete source[key];
+      }
     }
     return source;
   }
@@ -1365,8 +1374,9 @@ var cut = (function cutPrivateScope() {
 
     i = source['length'];
     while (i--) {
-      if ( is(type, source[i]) )
+      if ( $VITALS['is'](type, source[i]) ) {
         source['splice'](i, 1);
+      }
     }
     return source;
   }
@@ -1874,10 +1884,11 @@ var cut = (function cutPrivateScope() {
     i = -1;
     while (++i < len) {
       propVal = vals[i];
-      if ( !$is.num(propVal) || !$is.whole(propVal) )
-        return NO;
+      if ( !$is.num(propVal) || !$is.whole(propVal) ) {
+        return $NO;
+      }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _isIntArr
 
@@ -1895,15 +1906,16 @@ var cut = (function cutPrivateScope() {
     var i;
 
     if ( !$is.arr(val) )
-      return NO;
+      return $NO;
 
     len = val['length'];
     i = -1;
     while (++i < len) {
-      if ( !$is.num(val[i]) )
-        return NO;
+      if ( !$is.num(val[i]) ) {
+        return $NO;
+      }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _isNumArr
 
@@ -1923,10 +1935,11 @@ var cut = (function cutPrivateScope() {
     len = nums['length'];
     i = -1;
     while (++i < len) {
-      if ( !$is.whole(nums[i]) )
-        return NO;
+      if ( !$is.whole(nums[i]) ) {
+        return $NO;
+      }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _isWholeNumArr
 
@@ -1954,17 +1967,11 @@ var cut = (function cutPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return cut;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['cut'] = cut;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super cut
 
 /// #if{{{ @scope SOLO
-var vitals = cut;
-vitals['cut'] = cut;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

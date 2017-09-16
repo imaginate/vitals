@@ -11,9 +11,7 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $defProp ../helpers/def-prop.js
 /// #include @helper $defProps ../helpers/def-props.js
@@ -30,7 +28,7 @@
  * @const {!Function}
  * @dict
  */
-var create = (function createPrivateScope() {
+$VITALS['create'] = (function __vitalsCreate__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs create
@@ -159,10 +157,10 @@ var create = (function createPrivateScope() {
     len = arguments['length'];
 
     if (len < 1) {
-      throw _mkErr(new ERR, 'no #proto defined');
+      throw _mkErr(new $ERR, 'no #proto defined');
     }
     if ( !$is.nil(proto) && !$is.obj(proto) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'proto', proto, '?Object');
+      throw _mkTypeErr(new $TYPE_ERR, 'proto', proto, '?Object');
     }
 
     obj = $mkObj(proto);
@@ -171,16 +169,15 @@ var create = (function createPrivateScope() {
       case 1:
         return obj;
       case 2:
-        return assign(obj, props);
+        return $VITALS['assign'](obj, props);
       case 3:
-        return assign(obj, props, val);
+        return $VITALS['assign'](obj, props, val);
       case 4:
-        return assign(obj, props, val, descriptor);
+        return $VITALS['assign'](obj, props, val, descriptor);
       case 5:
-        return assign(obj, props, val, descriptor, strongType);
-      default:
-        return assign(obj, props, val, descriptor, strongType, setter);
+        return $VITALS['assign'](obj, props, val, descriptor, strongType);
     }
+    return $VITALS['assign'](obj, props, val, descriptor, strongType, setter);
   }
   create['main'] = create;
   create['object'] = create;
@@ -212,17 +209,11 @@ var create = (function createPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return create;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['create'] = create;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super create
 
 /// #if{{{ @scope SOLO
-var vitals = create;
-vitals['create'] = create;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
