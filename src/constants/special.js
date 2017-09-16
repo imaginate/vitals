@@ -25,6 +25,14 @@ var $NIL = __NIL__;
 var $NO = __NO__;
 /// #}}} @constant $NO
 
+/// #{{{ @constant $VERSION
+/**
+ * @private
+ * @const {string}
+ */
+var $VERSION = __VERSION__;
+/// #}}} @constant $VERSION
+
 /// #{{{ @constant $VOID
 /**
  * @private
