@@ -57,7 +57,10 @@ function makeNewVitals() {
    *   - `"Vitals"`
    *   - `"VITALS"`
    *   See all of the #opts.event.attach options to learn more.
-   * @param {boolean=} opts.event.attach.exports = `true`
+   * @param {boolean=} opts.event.attach.define = `false`
+   *   The #opts.event.attach.define option enables or disables the *attach*
+   *   event for an #opts.env.define hash map.
+   * @param {boolean=} opts.event.attach.exports = `false`
    *   The #opts.event.attach.exports option enables or disables the *attach*
    *   event for an #opts.env.exports hash map.
    * @param {boolean=} opts.event.attach.force = `false`
@@ -74,13 +77,16 @@ function makeNewVitals() {
    * @param {boolean=} opts.event.attach.global = `false`
    *   The #opts.event.attach.global option enables or disables the *attach*
    *   event for an #opts.env.global hash map.
+   * @param {boolean=} opts.event.attach.module = `false`
+   *   The #opts.event.attach.module option enables or disables the *attach*
+   *   event for an #opts.env.module hash map.
    * @param {boolean=} opts.event.attach.root = `false`
    *   The #opts.event.attach.root option enables or disables the *attach*
    *   event for an #opts.env.root hash map.
    * @param {boolean=} opts.event.attach.self = `false`
    *   The #opts.event.attach.self option enables or disables the *attach*
    *   event for an #opts.env.self hash map.
-   * @param {boolean=} opts.event.attach.window = `true`
+   * @param {boolean=} opts.event.attach.window = `false`
    *   The #opts.event.attach.window option enables or disables the *attach*
    *   event for an #opts.env.window hash map.
    * @param {boolean=} opts.event.attach.testVersion = `true`
@@ -93,6 +99,14 @@ function makeNewVitals() {
    *   - `false`!$
    *     The #opts.env hash map is not checked for a pre-existing @vitals
    *     attachment with a different version.
+   * @param {boolean=} opts.event.define = `false`
+   *   The #opts.event.export option allows you to control whether the new
+   *   `Vitals` instance is set as the value for the `"exports"` property of
+   *   an existing #opts.env.module hash map.
+   * @param {boolean=} opts.event.export = `false`
+   *   The #opts.event.export option allows you to control whether the new
+   *   `Vitals` instance is set as the value for the `"exports"` property of
+   *   an existing #opts.env.module hash map.
    * @param {(?Object|?Function)=} opts.root = `null`
    *   The #opts.root option is an alias for #opts.env.root.
    * @return {!Function}
@@ -103,32 +117,124 @@ function makeNewVitals() {
 
     /// #{{{ @group constants
 
+    /// #{{{ @const _ERR
+    /**
+     * @private
+     * @const {!Function}
+     * @constructor
+     */
+    var _ERR = Error;
+    /// #}}} @const _ERR
+
+    /// #{{{ @const _FUN
+    /**
+     * @private
+     * @const {!Function}
+     * @constructor
+     */
+    var _FUN = Function;
+    /// #}}} @const _FUN
+
     /// #{{{ @const _OBJ
     /**
-     * @const {!Object}
+     * @private
+     * @const {!Function}
+     * @constructor
      */
     var _OBJ = Object;
     /// #}}} @const _OBJ
 
     /// #{{{ @const _OBJ_PROTO
     /**
+     * @private
      * @const {!Object}
+     * @dict
      */
     var _OBJ_PROTO = _OBJ['prototype'];
     /// #}}} @const _OBJ_PROTO
 
-    /// #}}} @group constants
-
-    /// #{{{ @group has
-
-    /// #{{{ @func _hasEnumProp
+    /// #{{{ @const _TYPE_ERR
     /**
      * @private
+     * @const {!Function}
+     * @constructor
+     */
+    var _TYPE_ERR = TypeError;
+    /// #}}} @const _TYPE_ERR
+
+    /// #}}} @group constants
+
+    /// #{{{ @group owns
+
+    /// #{{{ @func _owns
+    /**
+     * @private
+     * @param {(!Object|!Function)} src
      * @param {*} key
      * @return {boolean}
      */
-    var _hasEnumProp = _OBJ_PROTO['propertyIsEnumerable'];
-    /// #}}} @func _hasEnumProp
+    var _owns = (function __newVitalsHasOwnProp__() {
+
+      /// #{{{ @func _hasOwnProp
+      /**
+       * @private
+       * @param {*} key
+       * @return {boolean}
+       */
+      var _hasOwnProp = _OBJ_PROTO['hasOwnProperty'];
+      /// #}}} @func _hasOwnProp
+
+      /// #{{{ @func owns
+      /**
+       * @param {(!Object|!Function)} src
+       * @param {*} key
+       * @return {boolean}
+       */
+      function owns(src, key) {
+        return _hasOwnProp['call'](src, key);
+      }
+      /// #}}} @func owns
+
+      return owns;
+    })();
+    /// #}}} @func _owns
+
+    /// #{{{ @func _ownsEnum
+    /**
+     * @private
+     * @param {(!Object|!Function)} src
+     * @param {*} key
+     * @return {boolean}
+     */
+    var _ownsEnum = (function __newVitalsHasOwnEnumProp__() {
+
+      /// #{{{ @func _hasEnumProp
+      /**
+       * @private
+       * @param {*} key
+       * @return {boolean}
+       */
+      var _hasEnumProp = _OBJ_PROTO['propertyIsEnumerable'];
+      /// #}}} @func _hasEnumProp
+
+      /// #{{{ @func ownsEnum
+      /**
+       * @param {(!Object|!Function)} src
+       * @param {*} key
+       * @return {boolean}
+       */
+      function ownsEnum(src, key) {
+        return _owns(src, key) && _hasEnumProp['call'](src, key);
+      }
+      /// #}}} @func ownsEnum
+
+      return ownsEnum;
+    })();
+    /// #}}} @func _ownsEnum
+
+    /// #}}} @group owns
+
+    /// #{{{ @group has
 
     /// #{{{ @func _hasNodeType
     /**
@@ -141,6 +247,30 @@ function makeNewVitals() {
     }
     /// #}}} @func _hasNodeType
 
+    /// #{{{ @func _hasBoolOpt
+    /**
+     * @private
+     * @param {(?Object|?Function)} opts
+     * @param {string} key
+     * @return {boolean}
+     */
+    function _hasBoolOpt(opts, key) {
+      return !!opts && _ownsEnum(opts, key) && _isBool(opts[key]);
+    }
+    /// #}}} @func _hasBoolOpt
+
+    /// #{{{ @func _hasFunOpt
+    /**
+     * @private
+     * @param {(?Object|?Function)} opts
+     * @param {string} key
+     * @return {boolean}
+     */
+    function _hasFunOpt(opts, key) {
+      return !!opts && _ownsEnum(opts, key) && _isFun(opts[key]);
+    }
+    /// #}}} @func _hasFunOpt
+
     /// #{{{ @func _hasObjFunOpt
     /**
      * @private
@@ -149,10 +279,8 @@ function makeNewVitals() {
      * @return {boolean}
      */
     function _hasObjFunOpt(opts, key) {
-      return !!opts
-        && _hasOwnProp.call(opts, key)
-        && _hasEnumProp.call(opts, key)
-        && _isObjFun(opts[key]);
+      return !!opts && _ownsEnum(opts, key) && _isObjFun(opts[key]);
+    }
     /// #}}} @func _hasObjFunOpt
 
     /// #{{{ @func _hasOpt
@@ -163,20 +291,9 @@ function makeNewVitals() {
      * @return {boolean}
      */
     function _hasOpt(opts, key) {
-      return !!opts
-        && _hasOwnProp.call(opts, key)
-        && _hasEnumProp.call(opts, key)
-        && !_isVoid(opts[key]);
+      return !!opts && _ownsEnum(opts, key) && !_isVoid(opts[key]);
+    }
     /// #}}} @func _hasOpt
-
-    /// #{{{ @func _hasOwnProp
-    /**
-     * @private
-     * @param {*} key
-     * @return {boolean}
-     */
-    var _hasOwnProp = _OBJ_PROTO['hasOwnProperty'];
-    /// #}}} @func _hasOwnProp
 
     /// #{{{ @func _hasRootObj
     /**
@@ -188,6 +305,18 @@ function makeNewVitals() {
       return !!val && 'Object' in val && val['Object'] === _OBJ;
     }
     /// #}}} @func _hasRootObj
+
+    /// #{{{ @func _hasTrueOpt
+    /**
+     * @private
+     * @param {(?Object|?Function)} opts
+     * @param {string} key
+     * @return {boolean}
+     */
+    function _hasTrueOpt(opts, key) {
+      return _hasBoolOpt(opts, key) && opts[key];
+    }
+    /// #}}} @func _hasTrueOpt
 
     /// #}}} @group has
 
@@ -210,7 +339,7 @@ function makeNewVitals() {
           aliasKey = mainKey;
           break;
         case 3:
-          if (typeof aliasOpts === 'string') {
+          if ( _isStr(aliasOpts) ) {
             aliasKey = aliasOpts;
             aliasOpts = mainOpts;
           }
@@ -411,6 +540,17 @@ function makeNewVitals() {
     }
     /// #}}} @func _isObjType
 
+    /// #{{{ @func _isStr
+    /**
+     * @private
+     * @param {*} val
+     * @return {boolean}
+     */
+    function _isStr(val) {
+      return typeof val === 'string';
+    }
+    /// #}}} @func _isStr
+
     /// #{{{ @func _isVoid
     /**
      * @private
@@ -436,9 +576,9 @@ function makeNewVitals() {
      * @return {!TypeError}
      */
     function _setAttachTypeErr(err, name, val, type) {
-      name = 'event.attach.' + name;
+      name = 'attach.' + name;
       type = type || 'boolean=';
-      return _setTypeErr(err, name, val, type);
+      return _setEventTypeErr(err, name, val, type);
     }
     /// #}}} @func _setAttachTypeErr
 
@@ -506,6 +646,22 @@ function makeNewVitals() {
       return err;
     }
     /// #}}} @func _setErrProps
+
+    /// #{{{ @func _setEventTypeErr
+    /**
+     * @private
+     * @param {!TypeError} err
+     * @param {string} name
+     * @param {*} val
+     * @param {string=} type = `"boolean="`
+     * @return {!TypeError}
+     */
+    function _setEventTypeErr(err, name, val, type) {
+      name = 'event.' + name;
+      type = type || 'boolean=';
+      return _setTypeErr(err, name, val, type);
+    }
+    /// #}}} @func _setEventTypeErr
 
     /// #{{{ @func _setTypeErr
     /**
@@ -755,7 +911,7 @@ function makeNewVitals() {
    */
   var _create = _HAS_CREATE
     ? _OBJ['create']
-    : (function __vitalsMakeCreatePolyfill__() {
+    : (function __vitalsMakeObjectCreatePolyfill__() {
 
         /// #{{{ @func _Obj
         /**
@@ -796,8 +952,8 @@ function makeNewVitals() {
      */
     var _defProp = _HAS_FUN_DEFINE_PROP
       ? _OBJ['defineProperty']
-      : function _defProp(src, key, descriptor) {
-          if ( _hasOwnProp.call(descriptor, 'value') ) {
+      : function defineProperty(src, key, descriptor) {
+          if ( _owns(descriptor, 'value') ) {
             src[key] = descriptor['value'];
           }
           return src;
@@ -805,6 +961,184 @@ function makeNewVitals() {
     /// #}}} @func _defProp
 
     /// #}}} @group polyfills
+
+    /// #{{{ @group events
+
+    /// #{{{ @func _runAttachEvent
+    /**
+     * @private
+     * @param {!Object<string, (?Object|?Function)>} env
+     * @param {?Object<string, boolean>} attach
+     * @param {!Function} newVitalsInst
+     * @return {void}
+     */
+    var _runAttachEvent = (function __newVitalsAttachEvent__() {
+
+      /// #{{{ @const _VITALS_KEYS
+      /**
+       * @private
+       * @const {!Array<string>}
+       */
+      var _VITALS_KEYS = [
+        'vitals',
+        'Vitals',
+        'VITALS'
+      ];
+      /// #}}} @const _VITALS_KEYS
+
+      /// #{{{ @func _attachVitals
+      /**
+       * @private
+       * @param {(?Object|?Function)} src
+       * @param {string} envKey
+       * @param {!Function} newVitalsInst
+       * @param {boolean} force
+       * @param {boolean} testVersion
+       * @return {void}
+       */
+      function _attachVitals(src, envKey, newVitalsInst, force, testVersion) {
+
+        /** @type {string} */
+        var key;
+        /** @type {number} */
+        var len;
+        /** @type {number} */
+        var i;
+
+        if (!src) {
+          return;
+        }
+
+        len = _VITALS_KEYS['length'];
+        i = -1;
+        while (++i < len) {
+          key = _VITALS_KEYS[i];
+          if ( _hasFunOpt(src, key) ) {
+            if ( testVersion && !_hasMatchingVersion(src[key]) ) {
+              throw _setErr(new _ERR, envKey, key, src[key]);
+            }
+            if (force) {
+              src[key] = newVitalsInst;
+            }
+            else {
+              _attachVitalsSuper(src[key], newVitalsInst);
+            }
+          }
+          else {
+            src[key] = newVitalsInst;
+          }
+        }
+      }
+      /// #}}} @func _attachVitals
+
+      /// #{{{ @func _attachVitalsSuper
+      /**
+       * @private
+       * @param {!Function} oldVitalsInst
+       * @param {!Function} newVitalsInst
+       * @return {void}
+       */
+      function _attachVitalsSuper(oldVitalsInst, newVitalsInst) {
+
+        /** @type {string} */
+        var key;
+
+        for (key in newVitalsInst) {
+          if ( _owns(newVitalsInst, key)
+                && _isFun(newVitalsInst[key])
+                && !_hasFunOpt(oldVitalsInst, key) ) {
+            oldVitalsInst[key] = newVitalsInst[key];
+          }
+        }
+      }
+      /// #}}} @func _attachVitalsSuper
+
+      /// #{{{ @func _hasMatchingVersion
+      /**
+       * @private
+       * @param {!Function} oldVitalsInst
+       * @return {boolean}
+       */
+      function _hasMatchingVersion(oldVitalsInst) {
+        return _hasFunOpt(oldVitalsInst, 'version')
+          && oldVitalsInst['version']() === __VERSION__;
+      }
+      /// #}}} @func _hasMatchingVersion
+
+      /// #{{{ @func _setVersionErr
+      /**
+       * @private
+       * @param {!Error} err
+       * @param {string} envKey
+       * @param {string} vitalsKey
+       * @param {!Function} oldVitalsInst
+       * @return {!Error}
+       */
+      function _setVersionErr(err, envKey, vitalsKey, oldVitalsInst) {
+
+        /** @type {string} */
+        var version;
+        /** @type {string} */
+        var msg;
+        /** @type {*} */
+        var val;
+
+        val = _hasFunOpt(oldVitalsInst, 'version')
+          && oldVitalsInst['version']();
+
+        if ( !_isStr(val) && _owns(oldVitalsInst, 'VERSION') ) {
+          val = oldVitalsInst['VERSION'];
+        }
+
+        version = _isStr(val) && val !== __VERSION__
+          ? val
+          : '';
+
+        msg = 'non-matching `vitals` version at #opts.env.' + envKey + '.'
+          + vitalsKey + ' for `newVitals` call\n'
+          + '    current-version: `"' + __VERSION__ + '"`\n'
+          + '    invalid-version: `"' + version + '"`';
+
+        return _setErrProps(err, 'Error', msg, oldVitalsInst);
+      }
+      /// #}}} @func _setVersionErr
+
+      /// #{{{ @func runAttachEvent
+      /**
+       * @param {!Object<string, (?Object|?Function)>} env
+       * @param {?Object<string, boolean>} attach
+       * @param {!Function} newVitalsInst
+       * @return {void}
+       */
+      function runAttachEvent(env, attach, newVitalsInst) {
+
+        /** @type {boolean} */
+        var testVersion;
+        /** @type {boolean} */
+        var force;
+        /** @type {string} */
+        var key;
+
+        force = _hasTrueOpt(attach, 'force');
+
+        key = 'testVersion';
+        testVersion = _hasBoolOpt(attach, key)
+          ? attach[key]
+          : __YES__;
+
+        for (key in env) {
+          if ( _owns(env, key) && _hasTrueOpt(attach, key) ) {
+            _attachVitals(env[key], key, newVitalsInst, force, testVersion);
+          }
+        }
+      }
+      /// #}}} @func runAttachEvent
+
+      return runAttachEvent;
+    })();
+    /// #}}} @func _runAttachEvent
+
+    /// #}}} @group events
 
     /// #}}} @step set-helpers
 
@@ -816,8 +1150,6 @@ function makeNewVitals() {
     var attach;
     /** @type {?Object} */
     var events;
-    /** @type {boolean} */
-    var force;
     /** @type {?Object} */
     var env;
 
@@ -828,17 +1160,17 @@ function makeNewVitals() {
     if ( arguments['length'] > 0 && !_isVoid(opts) && !_isNull(opts) ) {
 
       if ( !_isObj(opts) ) {
-        throw _setTypeErr(new TypeError, 'opts', opts, '?Object=');
+        throw _setTypeErr(new _TYPE_ERR, 'opts', opts, '?Object=');
       }
 
       if ( _hasBadObjOpt(opts, 'env') ) {
-        throw _setTypeErr(new TypeError, 'env', opts['env'], '?Object=');
+        throw _setTypeErr(new _TYPE_ERR, 'env', opts['env'], '?Object=');
       }
       if ( _hasBadObjOpt(opts, 'event') ) {
-        throw _setTypeErr(new TypeError, 'event', opts['event'], '?Object=');
+        throw _setTypeErr(new _TYPE_ERR, 'event', opts['event'], '?Object=');
       }
       if ( _hasBadObjFunOpt(opts, 'root') ) {
-        throw _setTypeErr(new TypeError, 'root', opts['root'],
+        throw _setTypeErr(new _TYPE_ERR, 'root', opts['root'],
           '(?Object|?Function)=');
       }
 
@@ -857,31 +1189,31 @@ function makeNewVitals() {
 
     if (!!env) {
       if ( _hasBadFunOpt(env, 'define') ) {
-        throw _setEnvTypeErr(new TypeError, 'define', env['define'],
+        throw _setEnvTypeErr(new _TYPE_ERR, 'define', env['define'],
           '?Function=');
       }
       if ( _hasBadObjFunOpt(env, 'exports') ) {
-        throw _setEnvTypeErr(new TypeError, 'exports', env['exports']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'exports', env['exports']);
       }
       if ( _hasBadObjFunOpt(env, 'global') ) {
-        throw _setEnvTypeErr(new TypeError, 'global', env['global']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'global', env['global']);
       }
       if ( _hasBadObjFunOpt(env, 'module') ) {
-        throw _setEnvTypeErr(new TypeError, 'module', env['module']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'module', env['module']);
       }
       if ( _hasBadObjFunOpt(env, 'root') ) {
-        throw _setEnvTypeErr(new TypeError, 'root', env['root']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'root', env['root']);
       }
       if ( _hasBadObjFunOpt(env, 'self') ) {
-        throw _setEnvTypeErr(new TypeError, 'self', env['self']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'self', env['self']);
       }
       if ( _hasBadObjFunOpt(env, 'window') ) {
-        throw _setEnvTypeErr(new TypeError, 'window', env['window']);
+        throw _setEnvTypeErr(new _TYPE_ERR, 'window', env['window']);
       }
     }
 
     if ( _isBadAlias(env, 'root', opts) ) {
-      throw _setErr(new Error, 'conflicting values set for #opts.env.root'
+      throw _setErr(new _ERR, 'conflicting values set for #opts.env.root'
         + ' and its #opts.root alias',
         {
           'root': opts['root'],
@@ -892,44 +1224,56 @@ function makeNewVitals() {
     }
 
     if ( _isBadRootOpt(env, 'root') ) {
-      throw _setErr(new Error, 'invalid #opts.env.root defined', env['root']);
+      throw _setErr(new _ERR, 'invalid #opts.env.root defined', env['root']);
     }
     if ( _isBadRootOpt(opts, 'root') ) {
-      throw _setErr(new Error, 'invalid #opts.root defined', opts['root']);
+      throw _setErr(new _ERR, 'invalid #opts.root defined', opts['root']);
     }
 
     if (!!events) {
       if ( _hasBadObjOpt(events, 'attach') ) {
-        throw _setTypeErr(new TypeError, 'event.attach', events['attach'],
+        throw _setEventTypeErr(new _TYPE_ERR, 'attach', events['attach'],
           '?Object=');
+      }
+      if ( _hasBadBoolOpt(events, 'define') ) {
+        throw _setEventTypeErr(new _TYPE_ERR, 'define', events['define']);
+      }
+      if ( _hasBadBoolOpt(events, 'export') ) {
+        throw _setEventTypeErr(new _TYPE_ERR, 'export', events['export']);
       }
     }
 
     attach = _hasOpt(events, 'attach')
-      ? opts['attach']
+      ? events['attach']
       : __NIL__;
 
     if (!!attach) {
+      if ( _hasBadBoolOpt(attach, 'define') ) {
+        throw _setAttachTypeErr(new _TYPE_ERR, 'define', attach['define']);
+      }
       if ( _hasBadBoolOpt(attach, 'exports') ) {
-        throw _setAttachTypeErr(new TypeError, 'exports', attach['exports']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'exports', attach['exports']);
       }
       if ( _hasBadBoolOpt(attach, 'force') ) {
-        throw _setAttachTypeErr(new TypeError, 'force', attach['force']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'force', attach['force']);
       }
       if ( _hasBadBoolOpt(attach, 'global') ) {
-        throw _setAttachTypeErr(new TypeError, 'global', attach['global']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'global', attach['global']);
+      }
+      if ( _hasBadBoolOpt(attach, 'module') ) {
+        throw _setAttachTypeErr(new _TYPE_ERR, 'module', attach['module']);
       }
       if ( _hasBadBoolOpt(attach, 'root') ) {
-        throw _setAttachTypeErr(new TypeError, 'root', attach['root']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'root', attach['root']);
       }
       if ( _hasBadBoolOpt(attach, 'self') ) {
-        throw _setAttachTypeErr(new TypeError, 'self', attach['self']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'self', attach['self']);
       }
       if ( _hasBadBoolOpt(attach, 'window') ) {
-        throw _setAttachTypeErr(new TypeError, 'window', attach['window']);
+        throw _setAttachTypeErr(new _TYPE_ERR, 'window', attach['window']);
       }
       if ( _hasBadBoolOpt(attach, 'testVersion') ) {
-        throw _setAttachTypeErr(new TypeError, 'testVersion',
+        throw _setAttachTypeErr(new _TYPE_ERR, 'testVersion',
           attach['testVersion']);
       }
     }
@@ -1012,7 +1356,7 @@ function makeNewVitals() {
               : _isObjFun(__this__)
                 ? __this__
                 : __NIL__;
-        })( (new Function('return this;'))() );
+        })( (new _FUN('return this;'))() );
     /// #}}} @const _THIS
 
     /// #{{{ @const ENV_HAS_DFLT.THIS
@@ -1396,7 +1740,7 @@ function makeNewVitals() {
     /// #{{{ @step verify-environment-root
 
     if ( !_hasRootObj(ENV.ROOT) ) {
-      throw _setErr(new Error, 'unable to find valid JS env root', ENV.ROOT);
+      throw _setErr(new _ERR, 'unable to find valid JS env root', ENV.ROOT);
     }
 
     /// #}}} @step verify-environment-root
@@ -1419,18 +1763,29 @@ function makeNewVitals() {
 
     /// #}}} @step create-new-vitals-instance
 
-    /// #{{{ @step check-global-vitals-version
+    /// #{{{ @step run-new-vitals-events
 
-    if ( _hasOpt(attach, 'testVersion') && attach['testVersion'] ) {
+    _runAttachEvent({
+      'define': ENV.DEFINE,
+      'exports': ENV.EXPORTS,
+      'global': ENV.GLOBAL,
+      'module': ENV.MODULE,
+      'root': ENV.ROOT,
+      'self': ENV.SELF,
+      'window': ENV.WINDOW
+    }, attach, newVitalsInstance);
+
+    if ( _hasTrueOpt(events, 'define') && !!ENV.DEFINE ) {
+      ENV.DEFINE(function() {
+        return newVitalsInstance;
+      });
     }
 
-    /// #}}} @step check-global-vitals-version
+    if ( _hasTrueOpt(events, 'export') && !!ENV.MODULE ) {
+      ENV.MODULE['exports'] = newVitalsInstance;
+    }
 
-    /// #{{{ @step define-global-vitals-properties
-
-    force = _hasOpt(attach, 'force') && attach['force'];
-
-    /// #}}} @step define-global-vitals-properties
+    /// #}}} @step run-new-vitals-events
 
     /// #{{{ @step return-new-vitals-instance
 
