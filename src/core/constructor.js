@@ -942,24 +942,6 @@ function makeNewVitals() {
       })();
   /// #}}} @func _create
 
-    /// #{{{ @func _defProp
-    /**
-     * @private
-     * @param {(!Object|!Function)} src
-     * @param {string} key
-     * @param {!Object} descriptor
-     * @return {(!Object|!Function)}
-     */
-    var _defProp = _HAS_FUN_DEFINE_PROP
-      ? _OBJ['defineProperty']
-      : function defineProperty(src, key, descriptor) {
-          if ( _owns(descriptor, 'value') ) {
-            src[key] = descriptor['value'];
-          }
-          return src;
-        };
-    /// #}}} @func _defProp
-
     /// #}}} @group polyfills
 
     /// #{{{ @group events
