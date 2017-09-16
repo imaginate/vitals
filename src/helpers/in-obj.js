@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $inObj
@@ -22,10 +22,11 @@ function $inObj(src, val) {
   var key;
 
   for (key in src) {
-    if ( $own(src, key) && src[key] === val )
-      return YES;
+    if ( $own(src, key) && src[key] === val ) {
+      return $YES;
+    }
   }
-  return NO;
+  return $NO;
 }
 /// #}}} @helper $inObj
 

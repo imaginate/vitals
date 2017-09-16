@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $getFlags
@@ -16,7 +16,7 @@
  * @param {boolean=} forceGlobal
  * @return {!RegExp}
  */
-var $getFlags = (function $getFlagsPrivateScope() {
+var $getFlags = (function __vitals$getFlags__() {
 
   /// #{{{ @const _GLOBAL
   /**
@@ -32,25 +32,26 @@ var $getFlags = (function $getFlagsPrivateScope() {
    * @const {!Object<string, string>}
    * @dict
    */
-  var _FLAGS = (function _FLAGS_PrivateScope() {
+  var _FLAGS = (function __vitals$getFlags_FLAGS__() {
 
     /**
-     * @type {!Object<string, string>}
+     * @const {!Object<string, string>}
      * @dict
      */
-    var flags;
+    var FLAGS = {};
 
-    flags = {};
-    flags['ignoreCase'] = 'i';
-    flags['multiline'] = 'm';
-    flags['global'] = 'g';
+    FLAGS['ignoreCase'] = 'i';
+    FLAGS['multiline'] = 'm';
+    FLAGS['global'] = 'g';
 
-    if ('sticky' in REGX_PROTO)
-      flags['sticky'] = 'y';
-    if ('unicode' in REGX_PROTO)
-      flags['unicode'] = 'u';
+    if ('sticky' in $REGX_PROTO) {
+      FLAGS['sticky'] = 'y';
+    }
+    if ('unicode' in $REGX_PROTO) {
+      FLAGS['unicode'] = 'u';
+    }
 
-    return flags;
+    return FLAGS;
   })();
   /// #}}} @const _FLAGS
 
@@ -70,8 +71,9 @@ var $getFlags = (function $getFlagsPrivateScope() {
 
     flags = '';
     for (key in _FLAGS) {
-      if ( $own(_FLAGS, key) && src[key] )
+      if ( $own(_FLAGS, key) && src[key] ) {
         flags += _FLAGS[key];
+      }
     }
 
     return !!forceGlobal && !_GLOBAL['test'](flags)

@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $inArr
@@ -26,10 +26,11 @@ function $inArr(src, val) {
   len = src['length'];
   i = -1;
   while (++i < len) {
-    if (src[i] === val)
-      return YES;
+    if (src[i] === val) {
+      return $YES;
+    }
   }
-  return NO;
+  return $NO;
 }
 /// #}}} @helper $inArr
 

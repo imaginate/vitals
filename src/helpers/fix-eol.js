@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $fixEol
@@ -16,7 +16,7 @@
  * @param {string} eol
  * @return {string}
  */
-var $fixEol = (function $fixEolPrivateScope() {
+var $fixEol = (function __vitals$fixEol__() {
 
   /// #{{{ @const _EOLS
   /**
