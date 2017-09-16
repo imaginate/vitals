@@ -27,10 +27,10 @@ function $ownsOne(src, keys) {
   i = -1;
   while (++i < len) {
     if ( $own(src, keys[i]) ) {
-      return YES;
+      return $YES;
     }
   }
-  return NO;
+  return $NO;
 }
 /// #}}} @helper $ownsOne
 

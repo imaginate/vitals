@@ -17,7 +17,7 @@
  * @return {boolean}
  */
 function $hasOpt(opts, opt) {
-  return $own(opts, opt) && !$is.void(opts[opt]);
+  return $ownEnum(opts, opt) && !$is.void(opts[opt]);
 }
 /// #}}} @helper $hasOpt
 

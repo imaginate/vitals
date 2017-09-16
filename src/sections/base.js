@@ -22,7 +22,6 @@
 /// #include @helper $inStr ../helpers/in-str.js
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $merge ../helpers/merge.js
-/// #include @helper $ownEnum ../helpers/own-enum.js
 /// #include @helper $sliceArr ../helpers/slice-arr.js
 /// #include @helper $sliceStr ../helpers/slice-str.js
 /// #include @helper $splitKeys ../helpers/split-keys.js

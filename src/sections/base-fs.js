@@ -27,7 +27,6 @@
 /// #include @helper $match ../helpers/match.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $mkdir ../helpers/mkdir.js
-/// #include @helper $ownEnum ../helpers/own-enum.js
 /// #include @helper $pathname ../helpers/pathname.js
 /// #include @helper $readDir ../helpers/read-dir.js
 /// #include @helper $readFile ../helpers/read-file.js

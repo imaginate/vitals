@@ -18,7 +18,6 @@
 /// #include @helper $inArr ../helpers/in-arr.js
 /// #include @helper $inObj ../helpers/in-obj.js
 /// #include @helper $inStr ../helpers/in-str.js
-/// #include @helper $ownEnum ../helpers/own-enum.js
 /// #if}}} @scope SOLO
 
 /// #{{{ @super has

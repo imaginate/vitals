@@ -21,6 +21,8 @@
 /// #{{{ @core helpers
 /// #include @helper $objStr ../helpers/obj-str.js
 /// #include @helper $own ../helpers/own.js
+/// #include @helper $hasEnum ../helpers/has-enum.js
+/// #include @helper $ownEnum ../helpers/own-enum.js
 /// #include @helper $is ../helpers/is.js
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
