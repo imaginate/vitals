@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $mkObj
@@ -15,7 +15,7 @@
  * @param {?Object} proto
  * @return {!Object}
  */
-var $mkObj = (function $mkObjPrivateScope() {
+var $mkObj = (function __vitals$mkObj__() {
 
   /// #{{{ @docrefs $mkObj
   /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
@@ -29,38 +29,37 @@ var $mkObj = (function $mkObjPrivateScope() {
    * @param {?Object} proto
    * @return {!Object}
    */
-  var _create = (function _createPrivateScope() {
+  var _create = $ENV.HAS.OBJECT_CREATE
+    ? $OBJ['create']
+    : (function __vitals$mkObjCreate__() {
 
-    if ( 'create' in OBJ && $is.fun(OBJ['create']) )
-      return OBJ['create'];
+        /// #{{{ @func _Obj
+        /**
+         * @private
+         * @constructor
+         */
+        function _Obj(){}
+        /// #}}} @func _Obj
 
-    /// #{{{ @func _Obj
-    /**
-     * @private
-     * @constructor
-     */
-    function _Obj(){}
-    /// #}}} @func _Obj
+        /// #{{{ @func create
+        /**
+         * @param {?Object} proto
+         * @return {!Object}
+         */
+        function create(proto) {
 
-    /// #{{{ @func create
-    /**
-     * @param {?Object} proto
-     * @return {!Object}
-     */
-    function create(proto) {
+          /** @type {!Object} */
+          var obj;
 
-      /** @type {!Object} */
-      var obj;
+          _Obj['prototype'] = proto;
+          obj = new _Obj();
+          _Obj['prototype'] = $NIL;
+          return obj;
+        }
+        /// #}}} @func create
 
-      _Obj['prototype'] = proto;
-      obj = new _Obj();
-      _Obj['prototype'] = NIL;
-      return obj;
-    }
-    /// #}}} @func create
-
-    return create;
-  })();
+        return create;
+      })();
   /// #}}} @func _create
 
   /// #{{{ @func $mkObj

@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $match
@@ -21,14 +21,15 @@
  */
 function $match(src, patt) {
 
-  if ( $is.regx(patt) )
+  if ( $is.regx(patt) ) {
     return patt['test'](src);
+  }
 
   patt = $mkStr(patt);
   return !src
     ? !patt
     : !patt
-      ? YES
+      ? $YES
       : $strIncl(src, patt);
 }
 /// #}}} @helper $match

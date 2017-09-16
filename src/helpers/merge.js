@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $merge
@@ -22,8 +22,9 @@ function $merge(dest, src) {
   var key;
 
   for (key in src) {
-    if ( $own(src, key) )
+    if ( $own(src, key) ) {
       dest[key] = src[key];
+    }
   }
   return dest;
 }

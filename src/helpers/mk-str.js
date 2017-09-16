@@ -23,12 +23,12 @@ function $mkStr(val) {
 
   if ( $is.obj(val) || $is.fun(val) ) {
     if ( !('toString' in val) || !$is.fun(val['toString']) ) {
-      return STR(val);
+      return $STR(val);
     }
     val = val['toString']();
     return $is.str(val)
       ? val
-      : STR(val);
+      : $STR(val);
   }
 
   return $is.void(val)
@@ -41,7 +41,7 @@ function $mkStr(val) {
           : 'false'
         : $is.nan(val)
           ? 'NaN'
-          : STR(val);
+          : $STR(val);
 }
 /// #}}} @helper $mkStr
 
