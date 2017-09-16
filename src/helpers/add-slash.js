@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $addSlash
@@ -15,7 +15,7 @@
  * @param {string} path
  * @return {string}
  */
-var $addSlash = (function $addSlashPrivateScope() {
+var $addSlash = (function __vitals$addSlash__() {
 
     /// #{{{ @const _END_SLASH
     /**

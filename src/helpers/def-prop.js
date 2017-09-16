@@ -12,117 +12,110 @@
 /// #{{{ @helper $defProp
 /**
  * @private
- * @param {!Object} obj
+ * @param {(!Object|!Function)} src
  * @param {string} key
  * @param {!Object} descriptor
- * @return {!Object}
+ * @return {(!Object|!Function)}
  */
-var $defProp = (function $defPropPrivateScope() {
+var $defProp = (function __vitals$defProp__() {
 
   /// #{{{ @docrefs $defProp
   /// @docref [define-prop]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty)
   /// #}}} @docrefs $defProp
-
-  /// #{{{ @const _HAS_DEFINE_PROP
-  /**
-   * @private
-   * @const {boolean}
-   */
-  var _HAS_DEFINE_PROP = (function _HAS_DEFINE_PROP_PrivateScope() {
-
-    /** @type {!Object} */
-    var descriptor;
-    /** @type {string} */
-    var name;
-    /** @type {!Object} */
-    var obj;
-    /** @type {string} */
-    var key;
-
-    name = 'defineProperty';
-
-    if ( !(name in OBJ) || !$is.fun(OBJ[name]) ) {
-      return NO;
-    }
-
-    /** @dict */ 
-    obj = {};
-    /** @dict */ 
-    descriptor = {};
-
-    descriptor['value'] = obj;
-    descriptor['enumerable'] = NO;
-
-    try {
-      OBJ[name](obj, 'key', descriptor);
-      for (key in obj) {
-        if (key === 'key') {
-          return NO;
-        }
-      }
-    }
-    catch (e) {
-      return NO;
-    }
-
-    return obj['key'] === obj;
-  })();
-  /// #}}} @const _HAS_DEFINE_PROP
 
   /// #{{{ @func _defineProperty
   /**
    * @description
    *   Polyfills [Object.defineProperty][define-prop] if it does not exist.
    * @private
-   * @param {!Object} obj
+   * @param {(!Object|!Function)} src
    * @param {string} key
    * @param {!Object} descriptor
-   * @return {!Object}
+   * @return {(!Object|!Function)}
    */
-  var _defineProperty = (function _definePropertyPrivateScope() {
+  var _defineProperty = $ENV.HAS.FUNCTION_DEFINE_PROPERTY
+    ? $OBJ['defineProperty']
+    : $ENV.HAS.OBJECT_DEFINE_PROPERTY
+      ? (function __vitalsFunctionDefinePropertyPolyfill__() {
 
-    if (_HAS_DEFINE_PROP) {
-      return OBJ['defineProperty'];
-    }
+          /// #{{{ @func __defineProperty
+          /**
+           * @private
+           * @param {!Object} src
+           * @param {string} key
+           * @param {!Object} descriptor
+           * @return {!Object}
+           */
+          var __defineProperty = $OBJ['defineProperty'];
+          /// #}}} @func __defineProperty
 
-    /// #{{{ @func defineProperty
-    /**
-     * @param {!Object} obj
-     * @param {string} key
-     * @param {!Object} descriptor
-     * @return {!Object}
-     */
-    function defineProperty(obj, key, descriptor) {
+          /// #{{{ @func _defineProperty
+          /**
+           * @private
+           * @param {!Function} src
+           * @param {string} key
+           * @param {!Object} descriptor
+           * @return {!Function}
+           */
+          function _defineProperty(src, key, descriptor) {
 
-      if ( $own(descriptor, 'get') ) {
-        obj[key] = descriptor['get']();
-      }
-      else if ( $own(descriptor, 'value') ) {
-        obj[key] = descriptor['value'];
-      }
-      else if ( !$own(obj, key) ) {
-        obj[key] = VOID;
-      }
+            if ( $own(descriptor, 'get') ) {
+              src[key] = descriptor['get']();
+            }
+            else if ( $own(descriptor, 'value') ) {
+              src[key] = descriptor['value'];
+            }
+            else if ( !$own(src, key) ) {
+              src[key] = $VOID;
+            }
 
-      return obj;
-    }
-    /// #}}} @func defineProperty
+            return src;
+          }
+          /// #}}} @func _defineProperty
 
-    return defineProperty;
-  })();
+          /// #{{{ @func defineProperty
+          /**
+           * @param {(!Object|!Function)} src
+           * @param {string} key
+           * @param {!Object} descriptor
+           * @return {(!Object|!Function)}
+           */
+          function defineProperty(src, key, descriptor) {
+            return $is.fun(src)
+              ? _defineProperty(src, key, descriptor)
+              : __defineProperty(src, key, descriptor);
+          }
+          /// #}}} @func defineProperty
+
+          return defineProperty;
+        })()
+      : function defineProperty(src, key, descriptor) {
+
+          if ( $own(descriptor, 'get') ) {
+            src[key] = descriptor['get']();
+          }
+          else if ( $own(descriptor, 'value') ) {
+            src[key] = descriptor['value'];
+          }
+          else if ( !$own(src, key) ) {
+            src[key] = $VOID;
+          }
+
+          return src;
+        };
   /// #}}} @func _defineProperty
 
   /// #{{{ @func $defProp
   /**
    * @description
    *   Cross browser [Object.defineProperty][define-prop] implementation.
-   * @param {!Object} obj
+   * @param {(!Object|!Function)} src
    * @param {string} key
    * @param {!Object} descriptor
-   * @return {!Object}
+   * @return {(!Object|!Function)}
    */
-  function $defProp(obj, key, descriptor) {
-    return _defineProperty(obj, key, descriptor);
+  function $defProp(src, key, descriptor) {
+    return _defineProperty(src, key, descriptor);
   }
   /// #}}} @func $defProp
 

@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $cloneObj
@@ -24,8 +24,9 @@ function $cloneObj(obj) {
 
   clone = {};
   for (key in obj) {
-    if ( $own(obj, key) )
+    if ( $own(obj, key) ) {
       clone[key] = obj[key];
+    }
   }
   return clone;
 }

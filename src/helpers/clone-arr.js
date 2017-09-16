@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $cloneArr
@@ -22,10 +22,11 @@ function $cloneArr(src) {
   /** @type {string} */
   var key;
 
-  clone = new ARR(src['length']);
+  clone = new $ARR(src['length']);
   for (key in src) {
-    if ( $own(src, key) )
+    if ( $own(src, key) ) {
       clone[key] = src[key];
+    }
   }
   return clone;
 }

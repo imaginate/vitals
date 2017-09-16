@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $cloneFun
@@ -17,18 +17,20 @@
  */
 function $cloneFun(func) {
 
-  /** @type {!Function} */
-  function funcCopy() {
-    return func['apply'](NIL, arguments);
-  }
   /** @type {string} */
   var key;
 
-  for (key in func) {
-    if ( $own(func, key) )
-      funcCopy[key] = func[key];
+  /** @type {!Function} */
+  function funCopy() {
+    return func['apply']($NIL, arguments);
   }
-  return funcCopy;
+
+  for (key in func) {
+    if ( $own(func, key) ) {
+      funCopy[key] = func[key];
+    }
+  }
+  return funCopy;
 }
 /// #}}} @helper $cloneFun
 
