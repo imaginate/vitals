@@ -11,9 +11,7 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $merge ../helpers/merge.js
 /// #include @helper $inStr ../helpers/in-str.js
 /// #include @helper $getFlags ../helpers/get-flags.js
@@ -27,7 +25,7 @@
  * @const {!Function}
  * @dict
  */
-var copy = (function copyPrivateScope() {
+$VITALS['copy'] = (function __vitalsCopy__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs copy
@@ -68,16 +66,16 @@ var copy = (function copyPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined');
+        throw _mkErr(new $ERR, 'no #val defined');
       case 1:
-        deep = NO;
+        deep = $NO;
         break;
       default:
         if ( $is.void(deep) ) {
-          deep = NO;
+          deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=');
+          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=');
         }
     }
 
@@ -88,7 +86,7 @@ var copy = (function copyPrivateScope() {
         : $is._arr(val)
           ? _copyArr(val, deep)
           : $is.regx(val)
-            ? _copyRegex(val, VOID)
+            ? _copyRegex(val, $VOID)
             : _copyObj(val, deep);  
   }
   copy['main'] = copy;
@@ -118,21 +116,21 @@ var copy = (function copyPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'object');
+        throw _mkErr(new $ERR, 'no #source defined', 'object');
       case 1:
-        deep = NO;
+        deep = $NO;
         break;
       default:
         if ( $is.void(deep) ) {
-          deep = NO;
+          deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'object');
+          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=', 'object');
         }
     }
 
     if ( !$is.obj(source) && !$is.fun(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object|!Function',
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object|!Function',
         'object');
     }
 
@@ -174,25 +172,25 @@ var copy = (function copyPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'array');
+        throw _mkErr(new $ERR, 'no #source defined', 'array');
       case 1:
-        deep = NO;
+        deep = $NO;
         break;
       default:
         if ( $is.void(deep) ) {
-          deep = NO;
+          deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=', 'array');
+          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=', 'array');
         }
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source,
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
         '(!Array|!Arguments|!Object)', 'array');
     }
     if ( !$is.arrish(source) ) {
-      throw _mkErr(new ERR, '#source failed `array-like` test (#source.' +
+      throw _mkErr(new $ERR, '#source failed `array-like` test (#source.' +
         'length must be a whole `number` that is `0` or more)', 'array');
     }
 
@@ -238,24 +236,25 @@ var copy = (function copyPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'regexp');
+        throw _mkErr(new $ERR, 'no #source defined', 'regexp');
       case 1:
-        flags = VOID;
+        flags = $VOID;
         break;
       default:
         if ( $is.str(flags) ) {
           if ( !$is.flags(flags) ) {
-            throw _mkRangeErr(new RANGE_ERR, 'flags', $is.flags.SRC,
+            throw _mkRangeErr(new $RANGE_ERR, 'flags', $is.flags.SRC,
               'regexp');
           }
         }
         else if ( !$is.void(flags) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'flags', flags, 'string=', 'regexp');
+          throw _mkTypeErr(new $TYPE_ERR, 'flags', flags, 'string=',
+            'regexp');
         }
     }
 
     if ( !$is.regx(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!RegExp', 'regexp');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!RegExp', 'regexp');
     }
 
     return _copyRegex(source, flags);
@@ -301,22 +300,22 @@ var copy = (function copyPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'function');
+        throw _mkErr(new $ERR, 'no #source defined', 'function');
       case 1:
-        deep = NO;
+        deep = $NO;
         break;
       default:
         if ( $is.void(deep) ) {
-          deep = NO;
+          deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'deep', deep, 'boolean=',
+          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=',
             'function');
         }
     }
 
     if ( !$is.fun(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Function',
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Function',
         'function');
     }
 
@@ -362,7 +361,7 @@ var copy = (function copyPrivateScope() {
     /** @type {!Array} */
     var arr;
 
-    arr = new ARR(src['length']);
+    arr = new $ARR(src['length']);
     return deep
       ? _mergeDeep(arr, src)
       : $merge(arr, src);
@@ -397,7 +396,7 @@ var copy = (function copyPrivateScope() {
 
     /** @type {!Function} */
     function funCopy() {
-      return func['apply'](NIL, arguments);
+      return func['apply']($NIL, arguments);
     }
 
     return deep
@@ -438,7 +437,7 @@ var copy = (function copyPrivateScope() {
     i = -1;
     while (++i < len) {
       flag = flags[i];
-      FLAGS[flag] = YES;
+      FLAGS[flag] = $YES;
     }
     return FLAGS;
   }
@@ -535,7 +534,7 @@ var copy = (function copyPrivateScope() {
     i = -1;
     while (++i < len) {
       flag = flags[i];
-      result[flag] = YES;
+      result[flag] = $YES;
     }
     return result;
   }
@@ -561,7 +560,7 @@ var copy = (function copyPrivateScope() {
     i = -1;
     while (++i < len) {
       flag = flags[i];
-      FLAGS[flag] = NO;
+      FLAGS[flag] = $NO;
     }
     return FLAGS;
   }
@@ -585,7 +584,7 @@ var copy = (function copyPrivateScope() {
 
     for (key in source) {
       if ( $own(source, key) )
-        dest[key] = copy(source[key], YES);
+        dest[key] = copy(source[key], $YES);
     }
     return dest;
   }
@@ -617,17 +616,11 @@ var copy = (function copyPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return copy;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['copy'] = copy;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super copy
 
 /// #if{{{ @scope SOLO
-var vitals = copy;
-vitals['copy'] = copy;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

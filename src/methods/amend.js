@@ -11,9 +11,7 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $defProp ../helpers/def-prop.js
 /// #include @helper $defProps ../helpers/def-props.js
@@ -28,7 +26,7 @@
  * @const {!Function}
  * @dict
  */
-var amend = (function amendPrivateScope() {
+$VITALS['amend'] = (function __vitalsAmend__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs amend
@@ -92,89 +90,89 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined');
+        throw _mkErr(new $ERR, 'no #source defined');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined');
+        throw _mkErr(new $ERR, 'no #props defined');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object');
     }
 
     byKey = $is.str(props);
 
     if (byKey) {
       if (!props) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
+        throw _mkErr(new $ERR, 'invalid empty key name `string` defined for '
           + '#props');
       }
       if ( !$own(source, props) ) {
-        throw _mkErr(new ERR, 'undefined #source key name defined by #props '
+        throw _mkErr(new $ERR, 'undefined #source key name defined by #props '
           + '`string`');
       }
-      byKeys = NO;
+      byKeys = $NO;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
+      throw _mkTypeErr(new $TYPE_ERR, 'props', props, '!Object<string, '
         + '(?Object|?undefined)>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
       if ( !_typeCheckKeys(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
           '!Array<string>');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
+        throw _mkErr(new $ERR, 'invalid empty key name `string` defined in '
           + '#props `array`');
       }
       if ( !_ownCheckKeys(source, props) ) {
-        throw _mkErr(new ERR, 'undefined #source key name defined in #props '
+        throw _mkErr(new $ERR, 'undefined #source key name defined in #props '
           + '`array`');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
-      throw _mkErr(new ERR, 'undefined #source key name defined in #props '
+      throw _mkErr(new $ERR, 'undefined #source key name defined in #props '
         + '`object`');
     }
     else if ( !_typeCheckProps(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+      throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
         '!Object<string, (?Object|?undefined)>');
     }
     else if ( !_notDescCheckProps(props) ) {
-      throw _mkRangeErr(new RANGE_ERR, '!descriptor property defined in '
+      throw _mkRangeErr(new $RANGE_ERR, '!descriptor property defined in '
         + '#props `object`', _DESCRIPTOR_KEYS);
     }
     else if ( !_descConflictCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props');
     }
     else {
-      byKeys = NO;
+      byKeys = $NO;
     }
 
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
       return byKey || byKeys
         ? source
-        : _amendProps(source, props, NIL);
+        : _amendProps(source, props, $NIL);
     }
 
     if ( !$is.obj(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=');
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=');
     }
     else if ( !_hasOnlyDescProps(descriptor) ) {
-      throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
+      throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
         + '`object`', _DESCRIPTOR_KEYS);
     }
     else if ( _hasDescConflict(descriptor) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties within the #descriptor');
     }
 
     return $is.empty(descriptor)
       ? byKey || byKeys
         ? source
-        : _amendProps(source, props, NIL)
+        : _amendProps(source, props, $NIL)
       : byKey
         ? _amendKey(source, props, descriptor)
         : byKeys
@@ -215,23 +213,23 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property');
+        throw _mkErr(new $ERR, 'no #source defined', 'property');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'property');
+        throw _mkErr(new $ERR, 'no #props defined', 'property');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object', 'property');
     }
 
     if ( !$is.str(key) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
+      throw _mkTypeErr(new $TYPE_ERR, 'key', key, 'string', 'property');
     }
     else if (!key) {
-      throw _mkErr(new ERR, 'invalid empty #key `string`', 'property');
+      throw _mkErr(new $ERR, 'invalid empty #key `string`', 'property');
     }
     else if ( !$own(source, key) ) {
-      throw _mkErr(new ERR, 'undefined #source key name defined by #key',
+      throw _mkErr(new $ERR, 'undefined #source key name defined by #key',
         'property');
     }
 
@@ -240,15 +238,15 @@ var amend = (function amendPrivateScope() {
     }
 
     if ( !$is.obj(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
         'property');
     }
     else if ( !_hasOnlyDescProps(descriptor) ) {
-      throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
+      throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
         + '`object`', _DESCRIPTOR_KEYS, 'property');
     }
     else if ( _hasDescConflict(descriptor) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties within the #descriptor', 'property');
     }
 
@@ -318,94 +316,94 @@ var amend = (function amendPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'properties');
+        throw _mkErr(new $ERR, 'no #source defined', 'properties');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'properties');
+        throw _mkErr(new $ERR, 'no #props defined', 'properties');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object',
         'properties');
     }
 
     if ( $is.str(props) ) {
       if (!props) {
-        throw _mkErr(new ERR, 'invalid empty `string` defined for #props',
+        throw _mkErr(new $ERR, 'invalid empty `string` defined for #props',
           'properties');
       }
       props = $splitKeys(props);
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name defined in #props '
+        throw _mkErr(new $ERR, 'invalid empty key name defined in #props '
           + '`string`', 'properties');
       }
       if ( !_ownCheckKeys(source, props) ) {
-        throw _mkErr(new ERR, 'undefined #source key name defined in #props '
+        throw _mkErr(new $ERR, 'undefined #source key name defined in #props '
           + '`string`', 'properties');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props, '!Object<string, '
+      throw _mkTypeErr(new $TYPE_ERR, 'props', props, '!Object<string, '
         + '(?Object|?undefined)>|!Array<string>|string', 'properties');
     }
     else if ( $is.arr(props) ) {
       if ( !_typeCheckKeys(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
           '!Array<string>', 'properties');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
+        throw _mkErr(new $ERR, 'invalid empty key name `string` defined in '
           + '#props `array`', 'properties');
       }
       if ( !_ownCheckKeys(source, props) ) {
-        throw _mkErr(new ERR, 'undefined #source key name defined in #props '
+        throw _mkErr(new $ERR, 'undefined #source key name defined in #props '
           + '`array`', 'properties');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !_ownCheckProps(source, props) ) {
-      throw _mkErr(new ERR, 'undefined #source key name defined in #props '
+      throw _mkErr(new $ERR, 'undefined #source key name defined in #props '
         + '`object`', 'properties');
     }
     else if ( !_typeCheckProps(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+      throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
         '!Object<string, (?Object|?undefined)>', 'properties');
     }
     else if ( !_notDescCheckProps(props) ) {
-      throw _mkRangeErr(new RANGE_ERR, '!descriptor property defined in '
+      throw _mkRangeErr(new $RANGE_ERR, '!descriptor property defined in '
         + '#props `object`', _DESCRIPTOR_KEYS, 'properties');
     }
     else if ( !_descConflictCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props', 'properties');
     }
     else {
-      byKeys = NO;
+      byKeys = $NO;
     }
 
     if ( len === 2 || $is.void(descriptor) || $is.nil(descriptor) ) {
       return byKeys
         ? source
-        : _amendProps(source, props, NIL);
+        : _amendProps(source, props, $NIL);
     }
 
     if ( !$is.obj(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
         'properties');
     }
     else if ( !_hasOnlyDescProps(descriptor) ) {
-      throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
+      throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
         + '`object`', _DESCRIPTOR_KEYS, 'properties');
     }
     else if ( _hasDescConflict(descriptor) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties within the #descriptor', 'properties');
     }
 
     return $is.empty(descriptor)
       ? byKeys
         ? source
-        : _amendProps(source, props, NIL)
+        : _amendProps(source, props, $NIL)
       : byKeys
         ? _amendKeys(source, props, descriptor)
         : _amendProps(source, props, descriptor);
@@ -506,12 +504,12 @@ var amend = (function amendPrivateScope() {
    * @dict
    */
   var _DESCRIPTOR_PROPS = {
-    'configurable': YES,
-    'enumerable': YES,
-    'get': YES,
-    'set': YES,
-    'value': YES,
-    'writable': YES
+    'configurable': $YES,
+    'enumerable': $YES,
+    'get': $YES,
+    'set': $YES,
+    'value': $YES,
+    'writable': $YES
   };
   /// #}}} @const _DESCRIPTOR_PROPS
 
@@ -620,11 +618,11 @@ var amend = (function amendPrivateScope() {
       if ( $own(props, key) ) {
         val = props[key];
         if ( $is.obj(val) && _hasDescConflict(val) ) {
-          return NO;
+          return $NO;
         }
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _descConflictCheckProps
 
@@ -652,10 +650,10 @@ var amend = (function amendPrivateScope() {
 
     for (key in src) {
       if ( $own(src, key) && !$own(_DESCRIPTOR_PROPS, key) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _hasOnlyDescProps
 
@@ -676,10 +674,10 @@ var amend = (function amendPrivateScope() {
     i = -1;
     while (++i < len) {
       if (!props[i]) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _keysCheckProps
 
@@ -700,11 +698,11 @@ var amend = (function amendPrivateScope() {
       if ( $own(props, key) ) {
         val = props[key];
         if ( $is.obj(val) && !_hasOnlyDescProps(val) ) {
-          return NO;
+          return $NO;
         }
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _notDescCheckProps
 
@@ -726,10 +724,10 @@ var amend = (function amendPrivateScope() {
     i = -1;
     while (++i < len) {
       if ( !$own(source, props[i]) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _ownCheckKeys
 
@@ -747,10 +745,10 @@ var amend = (function amendPrivateScope() {
 
     for (key in props) {
       if ( $own(props, key) && !$own(source, key) && !$is.void(props[key]) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _ownCheckProps
 
@@ -771,10 +769,10 @@ var amend = (function amendPrivateScope() {
     i = -1;
     while (++i < len) {
       if ( !$is.str(props[i]) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _typeCheckKeys
 
@@ -795,11 +793,11 @@ var amend = (function amendPrivateScope() {
       if ( $own(props, key) ) {
         val = props[key];
         if ( !$is.void(val) && !$is.nil(val) && !$is.obj(val) ) {
-          return NO;
+          return $NO;
         }
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _typeCheckProps
 
@@ -829,17 +827,11 @@ var amend = (function amendPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return amend;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['amend'] = amend;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super amend
 
 /// #if{{{ @scope SOLO
-var vitals = amend;
-vitals['amend'] = amend;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

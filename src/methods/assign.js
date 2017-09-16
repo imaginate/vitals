@@ -11,9 +11,7 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $cloneObj ../helpers/clone-obj.js
 /// #include @helper $defProp ../helpers/def-prop.js
 /// #include @helper $defProps ../helpers/def-props.js
@@ -29,7 +27,7 @@
  * @const {!Function}
  * @dict
  */
-var assign = (function assignPrivateScope() {
+$VITALS['assign'] = (function __vitalsAssign__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs assign
@@ -156,84 +154,84 @@ var assign = (function assignPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined');
+        throw _mkErr(new $ERR, 'no #source defined');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined');
+        throw _mkErr(new $ERR, 'no #props defined');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object');
     }
 
     byKey = $is.str(props);
 
     if (byKey) {
       if (!props) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
+        throw _mkErr(new $ERR, 'invalid empty key name `string` defined for '
           + '#props');
       }
-      byKeys = NO;
+      byKeys = $NO;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props,
+      throw _mkTypeErr(new $TYPE_ERR, 'props', props,
         '!Object<string, *>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
       if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
           '!Array<string>');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR,
+        throw _mkErr(new $ERR,
           'invalid empty key name `string` defined in #props `array`');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props');
     }
     else {
-      byKeys = NO;
+      byKeys = $NO;
     }
 
     switch (len) {
       case 2:
         return byKey
-          ? _assignKey(source, props, VOID, NIL, '', NIL)
+          ? _assignKey(source, props, $VOID, $NIL, '', $NIL)
           : byKeys
-            ? _assignKeys(source, props, VOID, NIL, '', NIL)
-            : _assignProps(source, props, VOID, NIL, '', NIL);
+            ? _assignKeys(source, props, $VOID, $NIL, '', $NIL)
+            : _assignProps(source, props, $VOID, $NIL, '', $NIL);
 
       case 3:
         if ( _isDescriptor(val) ) {
           descriptor = val;
           val = $own(descriptor, 'value')
             ? descriptor['value']
-            : VOID;
+            : $VOID;
         }
         else {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
 
         return byKey
-          ? _assignKey(source, props, val, descriptor, '', NIL)
+          ? _assignKey(source, props, val, descriptor, '', $NIL)
           : byKeys
-            ? _assignKeys(source, props, val, descriptor, '', NIL)
-            : _assignProps(source, props, val, descriptor, '', NIL);
+            ? _assignKeys(source, props, val, descriptor, '', $NIL)
+            : _assignProps(source, props, val, descriptor, '', $NIL);
 
       case 4:
         if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          setter = NIL;
+          setter = $NIL;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else if ( $is.fun(descriptor) ) {
@@ -243,32 +241,32 @@ var assign = (function assignPrivateScope() {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
           strongType = '';
-          setter = NIL;
+          setter = $NIL;
         }
         break;
 
       case 5:
         if ( $is.str(descriptor) ) {
           setter = $is.void(strongType)
-            ? NIL
+            ? $NIL
             : strongType;
           strongType = descriptor;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
@@ -280,67 +278,67 @@ var assign = (function assignPrivateScope() {
             if ( $is.void(strongType) ) {
               strongType = '';
             }
-            setter = NIL;
+            setter = $NIL;
           }
           if ( $is.void(descriptor) ) {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         break;
 
       default:
         if ( $is.void(descriptor) ) {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
         if ( $is.void(strongType) ) {
           strongType = '';
         }
         if ( $is.void(setter) ) {
-          setter = NIL;
+          setter = $NIL;
         }
     }
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
+        throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
           + '`object`', _DESCRIPTOR_KEYS);
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
           + 'properties within the #descriptor');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=');
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=');
+      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=');
     }
     else if (strongType) {
       if ( !$is.void(val) && !is(strongType, val) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType);
+        throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType);
       }
       if ( !byKey && !byKeys && !_strongTypeCheckProps(strongType, props) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'props property value', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property value', props,
           strongType);
       }
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
+      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
         '(?function(*, *): *)=');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
           + '#strongType and/or #setter');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
           + '#strongType and/or #setter');
       }
     }
@@ -423,52 +421,53 @@ var assign = (function assignPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'property');
+        throw _mkErr(new $ERR, 'no #source defined', 'property');
       case 1:
-        throw _mkErr(new ERR, 'no #key defined', 'property');
+        throw _mkErr(new $ERR, 'no #key defined', 'property');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object', 'property');
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object',
+        'property');
     }
 
     if ( !$is.str(key) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'key', key, 'string', 'property');
+      throw _mkTypeErr(new $TYPE_ERR, 'key', key, 'string', 'property');
     }
     else if (!key) {
-      throw _mkErr(new ERR, 'invalid empty key name `string` defined for '
+      throw _mkErr(new $ERR, 'invalid empty key name `string` defined for '
         + '#key', 'property');
     }
 
     switch (len) {
       case 2:
-        return _assignKey(source, key, VOID, NIL, '', NIL);
+        return _assignKey(source, key, $VOID, $NIL, '', $NIL);
 
       case 3:
         if ( _isDescriptor(val) ) {
           descriptor = val;
           val = $own(descriptor, 'value')
             ? descriptor['value']
-            : VOID;
+            : $VOID;
         }
         else {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
 
-        return _assignKey(source, key, val, descriptor, '', NIL);
+        return _assignKey(source, key, val, descriptor, '', $NIL);
 
       case 4:
         if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          setter = NIL;
+          setter = $NIL;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else if ( $is.fun(descriptor) ) {
@@ -478,32 +477,32 @@ var assign = (function assignPrivateScope() {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
           strongType = '';
-          setter = NIL;
+          setter = $NIL;
         }
         break;
 
       case 5:
         if ( $is.str(descriptor) ) {
           setter = $is.void(strongType)
-            ? NIL
+            ? $NIL
             : strongType;
           strongType = descriptor;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
@@ -515,62 +514,62 @@ var assign = (function assignPrivateScope() {
             if ( $is.void(strongType) ) {
               strongType = '';
             }
-            setter = NIL;
+            setter = $NIL;
           }
           if ( $is.void(descriptor) ) {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         break;
 
       default:
         if ( $is.void(descriptor) ) {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
         if ( $is.void(strongType) ) {
           strongType = '';
         }
         if ( $is.void(setter) ) {
-          setter = NIL;
+          setter = $NIL;
         }
     }
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, 'descriptor property defined',
+        throw _mkRangeErr(new $RANGE_ERR, 'descriptor property defined',
           _DESCRIPTOR_KEYS, 'property');
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
           + 'properties within the #descriptor', 'property');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
         'property');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=',
+      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=',
         'property');
     }
     else if ( !!strongType && !$is.void(val) && !is(strongType, val) ) {
       strongType = _appendEqualSign(strongType);
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType, 'property');
+      throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType, 'property');
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
+      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
         '(?function(*, *): *)=', 'property');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
           + '#strongType and/or #setter', 'property');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
           + '#strongType and/or #setter', 'property');
       }
     }
@@ -704,84 +703,84 @@ var assign = (function assignPrivateScope() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'properties');
+        throw _mkErr(new $ERR, 'no #source defined', 'properties');
       case 1:
-        throw _mkErr(new ERR, 'no #props defined', 'properties');
+        throw _mkErr(new $ERR, 'no #props defined', 'properties');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, '!Object',
+      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object',
         'properties');
     }
 
     if ( $is.str(props) ) {
       if (!props) {
-        throw _mkErr(new ERR, 'invalid empty `string` defined for #props',
+        throw _mkErr(new $ERR, 'invalid empty `string` defined for #props',
           'properties');
       }
       props = $splitKeys(props);
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name defined in #props '
+        throw _mkErr(new $ERR, 'invalid empty key name defined in #props '
           + '`string`', 'properties');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'props', props,
+      throw _mkTypeErr(new $TYPE_ERR, 'props', props,
         '!Object<string, *>|!Array<string>|string', 'properties');
     }
     else if ( $is.arr(props) ) {
       if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new TYPE_ERR, 'props property', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
           '!Array<string>', 'properties');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new ERR, 'invalid empty key name `string` defined in '
+        throw _mkErr(new $ERR, 'invalid empty key name `string` defined in '
           + '#props `array`', 'properties');
       }
-      byKeys = YES;
+      byKeys = $YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
         + 'properties for a property value within the #props', 'properties');
     }
     else {
-      byKeys = NO;
+      byKeys = $NO;
     }
 
     switch (len) {
       case 2:
         return byKeys
-          ? _assignKeys(source, props, VOID, NIL, '', NIL)
-          : _assignProps(source, props, VOID, NIL, '', NIL);
+          ? _assignKeys(source, props, $VOID, $NIL, '', $NIL)
+          : _assignProps(source, props, $VOID, $NIL, '', $NIL);
 
       case 3:
         if ( _isDescriptor(val) ) {
           descriptor = val;
           val = $own(descriptor, 'value')
             ? descriptor['value']
-            : VOID;
+            : $VOID;
         }
         else {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
 
         return byKeys
-          ? _assignKeys(source, props, val, descriptor, '', NIL)
-          : _assignProps(source, props, val, descriptor, '', NIL);
+          ? _assignKeys(source, props, val, descriptor, '', $NIL)
+          : _assignProps(source, props, val, descriptor, '', $NIL);
 
       case 4:
         if ( $is.str(descriptor) ) {
           strongType = descriptor;
-          setter = NIL;
+          setter = $NIL;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else if ( $is.fun(descriptor) ) {
@@ -791,32 +790,32 @@ var assign = (function assignPrivateScope() {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
           strongType = '';
-          setter = NIL;
+          setter = $NIL;
         }
         break;
 
       case 5:
         if ( $is.str(descriptor) ) {
           setter = $is.void(strongType)
-            ? NIL
+            ? $NIL
             : strongType;
           strongType = descriptor;
           if ( _isDescriptor(val) ) {
             descriptor = val;
             val = $own(descriptor, 'value')
               ? descriptor['value']
-              : VOID;
+              : $VOID;
           }
           else {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         else {
@@ -828,69 +827,69 @@ var assign = (function assignPrivateScope() {
             if ( $is.void(strongType) ) {
               strongType = '';
             }
-            setter = NIL;
+            setter = $NIL;
           }
           if ( $is.void(descriptor) ) {
-            descriptor = NIL;
+            descriptor = $NIL;
           }
         }
         break;
 
       default:
         if ( $is.void(descriptor) ) {
-          descriptor = NIL;
+          descriptor = $NIL;
         }
         if ( $is.void(strongType) ) {
           strongType = '';
         }
         if ( $is.void(setter) ) {
-          setter = NIL;
+          setter = $NIL;
         }
     }
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new RANGE_ERR, '!property defined in descriptor '
+        throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
           + '`object`', _DESCRIPTOR_KEYS, 'properties');
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor and data descriptor '
+        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
           + 'properties within the #descriptor', 'properties');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'descriptor', descriptor, '?Object=',
+      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
         'properties');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'strongType', strongType, 'string=',
+      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=',
         'properties');
     }
     else if (strongType) {
       if ( !$is.void(val) && !is(strongType, val) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'val', val, strongType, 'properties');
+        throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType, 'properties');
       }
       if ( !byKeys && !_strongTypeCheckProps(strongType, props) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new TYPE_ERR, 'props property value', props,
+        throw _mkTypeErr(new $TYPE_ERR, 'props property value', props,
           strongType, 'properties');
       }
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new TYPE_ERR, 'setter', setter,
+      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
         '(?function(*, *): *)=', 'properties');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new ERR, 'conflicting accessor #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
           + '#strongType and/or #setter', 'properties');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new ERR, 'conflicting data #descriptor and defined '
+        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
           + '#strongType and/or #setter', 'properties');
       }
     }
@@ -1010,8 +1009,8 @@ var assign = (function assignPrivateScope() {
    * @dict
    */
   var _ACCESSOR_DESCRIPTOR = {
-    'enumerable': YES,
-    'configurable': YES
+    'enumerable': $YES,
+    'configurable': $YES
   };
   /// #}}} @const _ACCESSOR_DESCRIPTOR
 
@@ -1033,9 +1032,9 @@ var assign = (function assignPrivateScope() {
    * @dict
    */
   var _DATA_DESCRIPTOR = {
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
+    'writable': $YES,
+    'enumerable': $YES,
+    'configurable': $YES
   };
   /// #}}} @const _DATA_DESCRIPTOR
 
@@ -1057,12 +1056,12 @@ var assign = (function assignPrivateScope() {
    * @dict
    */
   var _DESCRIPTOR_PROPS = {
-    'get': YES,
-    'set': YES,
-    'value': YES,
-    'writable': YES,
-    'enumerable': YES,
-    'configurable': YES
+    'configurable': $YES,
+    'enumerable': $YES,
+    'get': $YES,
+    'set': $YES,
+    'value': $YES,
+    'writable': $YES
   };
   /// #}}} @const _DESCRIPTOR_PROPS
 
@@ -1185,7 +1184,7 @@ var assign = (function assignPrivateScope() {
   function _mkStrongTypeCheck(strongType) {
 
     if (!strongType) {
-      return NIL;
+      return $NIL;
     }
 
     /// #{{{ @func strongTypeCheck
@@ -1194,7 +1193,7 @@ var assign = (function assignPrivateScope() {
      * @return {boolean}
      */
     function strongTypeCheck(newVal) {
-      return is(strongType, newVal);
+      return $VITALS['is'](strongType, newVal);
     }
     /// #}}} @func strongTypeCheck
 
@@ -1344,7 +1343,7 @@ var assign = (function assignPrivateScope() {
     descriptor['set'] = !!typeCheck && !!setter
       ? function set(newVal) {
           if ( !typeCheck(newVal) ) {
-            throw _mkStrongTypeErr(new TYPE_ERR,
+            throw _mkStrongTypeErr(new $TYPE_ERR,
               'invalid data type for property value: `' + newVal + '`');
           }
           val = setter(newVal, val);
@@ -1352,7 +1351,7 @@ var assign = (function assignPrivateScope() {
       : !!typeCheck
         ? function set(newVal) {
             if ( !typeCheck(newVal) ) {
-              throw _mkStrongTypeErr(new TYPE_ERR,
+              throw _mkStrongTypeErr(new $TYPE_ERR,
                 'invalid data type for property value: `' + newVal + '`');
             }
             val = newVal;
@@ -1510,11 +1509,11 @@ var assign = (function assignPrivateScope() {
       if ( $own(props, key) ) {
         val = props[key];
         if ( _isDescriptor(val) && _isBadDescriptor(val) ) {
-          return NO;
+          return $NO;
         }
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _descriptorCheckProps
 
@@ -1576,10 +1575,10 @@ var assign = (function assignPrivateScope() {
 
     for (key in src) {
       if ( $own(src, key) && !$own(_DESCRIPTOR_PROPS, key) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _hasOnlyDescriptorProps
 
@@ -1635,10 +1634,10 @@ var assign = (function assignPrivateScope() {
     i = -1;
     while (++i < len) {
       if (!props[i]) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _keysCheckProps
 
@@ -1659,10 +1658,10 @@ var assign = (function assignPrivateScope() {
     i = -1;
     while (++i < len) {
       if ( !$is.str(props[i]) ) {
-        return NO;
+        return $NO;
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _keysTypeCheckProps
 
@@ -1690,11 +1689,11 @@ var assign = (function assignPrivateScope() {
           val = val['value'];
         }
         if ( !$is.void(val) && !is(strongType, val) ) {
-          return NO;
+          return $NO;
         }
       }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _strongTypeCheckProps
 
@@ -1710,10 +1709,12 @@ var assign = (function assignPrivateScope() {
    * @return {!TypeError}
    */
   function _mkStrongTypeErr(err, msg) {
-    err['__setter'] = YES;
-    err['setter'] = YES;
-    err['__type'] = YES;
-    err['type'] = YES;
+    err['__setter__'] = $YES;
+    err['__setter'] = $YES;
+    err['setter'] = $YES;
+    err['__type__'] = $YES;
+    err['__type'] = $YES;
+    err['type'] = $YES;
     err['name'] = 'TypeError';
     err['message'] = msg;
     err['msg'] = msg;
@@ -1743,17 +1744,11 @@ var assign = (function assignPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return assign;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['assign'] = assign;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super assign
 
 /// #if{{{ @scope SOLO
-var vitals = assign;
-vitals['assign'] = assign;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
