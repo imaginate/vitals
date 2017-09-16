@@ -11,50 +11,91 @@
 
 /// #def{{{ @code EXPORT
   /// #{{{ @group export
-  vitals['VERSION'] = VERSION;
-  /// #if{{{ @env NODE
-  module.exports = vitals;
-  /// #if}}} @env NODE
-  /// #ifnot{{{ @env NODE
-  (function __exportVitals() {
+  (function __vitalsMakeInitialNewVitalsInstance__() {
 
-    if (ENV.HAS_WINDOW) {
-      _appendVitals(window);
-    }
-    if (ENV.HAS_SELF) {
-      _appendVitals(self);
-    }
-
-    _appendVitals(ROOT);
-
-    if (ENV.HAS_EXPORTS && ENV.HAS_MODULE) {
-      if (module.exports === exports) {
-        module.exports = vitals;
-      }
-      else {
-        _appendVitals(exports);
-      }
-    }
-
-    if (ENV.HAS_DEFINE) {
-      define(function() {
-        return vitals;
-      });
-    }
-
-    /// #{{{ @func _appendVitals
+    /// #{{{ @const _OPTS
     /**
-     * @private
-     * @param {(!Object|!Function)} obj
-     * @return {void}
+     * @const {!Object}
+     * @dict
      */
-    function _appendVitals(obj) {
-      obj['vitals'] = vitals;
-      obj['VITALS'] = vitals;
-    }
-    /// #}}} @func _appendVitals
+    var _OPTS = {};
+    /// #}}} @const _OPTS
+
+    /// #{{{ @const _EVENT_OPTS
+    /**
+     * @const {!Object}
+     * @dict
+     */
+    var _EVENT_OPTS = {};
+    /// #}}} @const _EVENT_OPTS
+    /// #if{{{ @build BROWSER
+
+    /// #{{{ @const _ATTACH_OPTS
+    /**
+     * @const {!Object}
+     * @dict
+     */
+    var _ATTACH_OPTS = {};
+    /// #}}} @const _ATTACH_OPTS
+    /// #if}}} @build BROWSER
+
+    _OPTS['event'] = _EVENT_OPTS;
+    /// #if{{{ @build AMD
+    _EVENT_OPTS['define'] = __YES__;
+    /// #if}}} @build AMD
+    /// #if{{{ @build BROWSER
+    _EVENT_OPTS['attach'] = _ATTACH_OPTS;
+    _EVENT_OPTS['define'] = __YES__;
+    _ATTACH_OPTS['root'] = __YES__;
+    _ATTACH_OPTS['window'] = __YES__;
+    /// #if}}} @build BROWSER
+    /// #if{{{ @build NODE
+    _EVENT_OPTS['export'] = __YES__;
+    /// #if}}} @build NODE
+    /// #ifnot{{{ @build NODE
+    (function __vitalsDetermineExportValue__() {
+
+      /// #{{{ @func _isObjFunType
+      /**
+       * @private
+       * @param {string} typeOf
+       * @return {boolean}
+       */
+      function _isObjFunType(typeOf) {
+        switch (typeOf) {
+          case 'object':
+          case 'function':
+            return __YES__;
+        }
+        return __NO__;
+      }
+      /// #}}} @func _isObjFunType
+
+      /// #{{{ @func _hasNodeType
+      /**
+       * @private
+       * @param {(!Object|!Function)} val
+       * @return {boolean}
+       */
+      function _hasNodeType(val) {
+        return 'nodeType' in val && val['nodeType'] !== __VOID__;
+      }
+      /// #}}} @func _hasNodeType
+
+      if ( _isObjFunType(typeof exports)
+            && !!exports
+            && !_hasNodeType(exports)
+            && _isObjFunType(typeof module)
+            && !!module
+            && !_hasNodeType(module)
+            && 'exports' in module
+            && module['exports'] === exports ) {
+        _EVENT_OPTS['export'] = __YES__;
+      }
+    })();
+    /// #ifnot}}} @build NODE
+    makeNewVitals()(_OPTS);
   })();
-  /// #ifnot}}} @env NODE
   /// #}}} @group export
 /// #def}}} @code EXPORT
 
