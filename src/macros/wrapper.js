@@ -56,6 +56,7 @@
 /// #def}}} @wrapper MAIN_OPEN
 
 /// #def{{{ @wrapper MAKE_OPEN
+
 /**
  * @private
  * @param {!Function} $VITALS
@@ -70,6 +71,7 @@ function makeVitals($VITALS, $ROOT, $ENV, $CONFIG) {
 
 /// #def{{{ @wrapper MAKE_CLOSE
 }
+
 /// #def}}} @wrapper MAKE_CLOSE
 
 /// #def{{{ @wrapper MAIN_CLOSE

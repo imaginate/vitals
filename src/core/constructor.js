@@ -11,7 +11,7 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @core makeNewVitals
+/// #{{{ @core constructor
 /**
  * @private
  * @return {!Function}
@@ -1801,6 +1801,6 @@ function makeNewVitals() {
 
   /// #}}} @step return-new-vitals
 }
-/// #}}} @core makeNewVitals
+/// #}}} @core constructor
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
