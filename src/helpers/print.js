@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $print
@@ -16,23 +16,7 @@
  * @param {number=} depth
  * @return {string}
  */
-var $print = (function $printPrivateScope() {
-
-  /// #{{{ @func $print
-  /**
-   * @param {*} val
-   * @param {number=} depth
-   * @return {string}
-   */
-  function $print(val, depth) {
-    depth = depth || 0;
-    return $is._obj(val)
-      ? $is.regx(val)
-        ? val['toString']()
-        : _mapToStr(val, depth)
-      : _primToStr(val);
-  }
-  /// #}}} @func $print
+var $print = (function __vitals$print__() {
 
   /// #{{{ @group constants
 
@@ -52,17 +36,17 @@ var $print = (function $printPrivateScope() {
   var _MAP_TYPE = /^\[object ([a-zA-Z0-9_\$]+)\]$/;
   /// #}}} @const _MAP_TYPE
 
-  /// #{{{ @const _LAST_SEP
+  /// #{{{ @const _END_COMMA
   /**
    * @private
    * @const {!RegExp}
    */
-  var _LAST_SEP = /,\n$/;
-  /// #}}} @const _LAST_SEP
+  var _END_COMMA = /,$/;
+  /// #}}} @const _END_COMMA
 
   /// #}}} @group constants
 
-  /// #{{{ @group Helpers
+  /// #{{{ @group helpers
 
   /// #{{{ @func _emptyHashMap
   /**
@@ -76,10 +60,11 @@ var $print = (function $printPrivateScope() {
     var key;
 
     for (key in val) {
-      if ( $own(val, key) )
-        return false;
+      if ( $own(val, key) ) {
+        return $NO;
+      }
     }
-    return true;
+    return $YES;
   }
   /// #}}} @func _emptyHashMap
 
@@ -115,8 +100,9 @@ var $print = (function $printPrivateScope() {
 
     if ( $is.fun(val) ) {
       type = 'Function';
-      if (val['name'])
+      if ('name' in val && !!val['name']) {
         type += '(' + val['name'] + ')';
+      }
       return type;
     }
 
@@ -138,19 +124,21 @@ var $print = (function $printPrivateScope() {
     /** @type {string} */
     var indent;
 
-    if (indent < 1)
+    if (indent < 1) {
       return '';
+    }
 
     indent = '';
-    while (depth--)
+    while (depth--) {
       indent += _INDENT;
+    }
     return indent;
   }
   /// #}}} @func _mkIndent
 
-  /// #}}} @group Helpers
+  /// #}}} @group helpers
 
-  /// #{{{ @group Primitives
+  /// #{{{ @group primitives
 
   /// #{{{ @func _primToStr
   /**
@@ -159,31 +147,15 @@ var $print = (function $printPrivateScope() {
    * @return {string}
    */
   function _primToStr(val) {
-
-    if ( $is.bool(val) )
-      return val
-        ? 'true'
-        : 'false';
-
-    if ( $is.nil(val) )
-      return 'null';
-
-    if ( $is.void(val) )
-      return 'undefined';
-
-    if ( $is.nan(val) )
-      return 'NaN';
-
-    if ( $is.str(val) )
-      return '"' + _escStr(val) + '"';
-
-    return $mkStr(val);
+    return $is.str(val)
+      ? '"' + _escStr(val) + '"'
+      : $mkStr(val);
   }
   /// #}}} @func _primToStr
 
-  /// #}}} @group Primitives
+  /// #}}} @group primitives
 
-  /// #{{{ @group Objects
+  /// #{{{ @group objects
 
   /// #{{{ @func _arrToStr
   /**
@@ -199,26 +171,31 @@ var $print = (function $printPrivateScope() {
     /** @type {string} */
     var indent;
     /** @type {number} */
-    var len;
+    var last;
     /** @type {number} */
     var i;
 
-    len = val['length'];
+    last = val['length'] - 1;
 
-    if (len < 1)
+    if (last < 0) {
       return '[]';
+    }
 
     indent = _mkIndent(depth);
     depth += 1;
 
-    result = '[\n';
-    i = -1;
-    while (++i < len) {
-      result += indent + i + ': ';
-      result += $print(val[i], depth) + ',\n';
+    result = '[';
+    i = 0;
+    while ($YES) {
+      result += '\n' + indent + i + ': ' + $print(val[i], depth);
+      if (++i > last) {
+        break;
+      }
+      result += ',';
     }
-    result = result['replace'](_LAST_SEP, '\n');
-    return result + ']';
+    result += '\n' + indent + ']';
+
+    return result;
   }
   /// #}}} @func _arrToStr
 
@@ -245,6 +222,10 @@ var $print = (function $printPrivateScope() {
     /** @type {string} */
     var result;
 
+    if ( $is.regx(val) ) {
+      return $mkStr(val);
+    }
+
     result = _getMapType(val) + ': ';
     result += $is._arr(val)
       ? _arrToStr(val, depth)
@@ -269,26 +250,48 @@ var $print = (function $printPrivateScope() {
     /** @type {string} */
     var key;
 
-    if ( _emptyHashMap(val) )
+    if ( _emptyHashMap(val) ) {
       return '{}';
+    }
 
     indent = _mkIndent(depth);
     depth += 1;
 
-    result = '{\n';
+    result = '{';
     for (key in val) {
       if ( $own(val, key) ) {
-        result += indent;
-        result += _keyToStr(key) + ': ';
-        result += $print(val[key], depth) + ',\n';
+        result += '\n' + indent + _keyToStr(key) + ': '
+          + $print(val[key], depth) + ',';
       }
     }
-    result = result['replace'](_LAST_SEP, '\n');
-    return result + '}';
+    result = result['replace'](_END_COMMA, '');
+    result += '\n' + indent + '}';
+
+    return result;
   }
   /// #}}} @func _ownToStr
 
-  /// #}}} @group Objects
+  /// #}}} @group objects
+
+  /// #{{{ @func $print
+  /**
+   * @param {*} val
+   * @param {number=} depth = `0`
+   * @return {string}
+   */
+  function $print(val, depth) {
+
+    if ( !$is._obj(val) ) {
+      return _primToStr(val);
+    }
+
+    if ( !$is.num(depth) || depth < 0 ) {
+      depth = 0;
+    }
+
+    return _mapToStr(val, depth);
+  }
+  /// #}}} @func $print
 
   return $print;
 })();

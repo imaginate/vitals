@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $pathname
@@ -15,7 +15,7 @@
  * @param {string} path
  * @return {string}
  */
-var $pathname = (function $pathnamePrivateScope() {
+var $pathname = (function __vitals$pathname__() {
 
   /// #{{{ @const _DIRNAME
   /**
