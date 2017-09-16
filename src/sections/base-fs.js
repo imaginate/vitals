@@ -11,9 +11,7 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #include @helper $addSlash ../helpers/add-slash.js
 /// #include @helper $cloneArr ../helpers/clone-arr.js
 /// #include @helper $cloneFun ../helpers/clone-fun.js
@@ -58,7 +56,6 @@
 /// #{{{ @section fs
 /// #include @super cp ../methods/cp.js
 /// #}}} @section fs
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
