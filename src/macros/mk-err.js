@@ -18,7 +18,7 @@
    * @param {string=} method
    * @return {!Error} 
    */
-  var _mkErr = _MK_ERR.error;
+  var _mkErr = _MK_ERR.MAIN;
   /// #}}} @func _mkErr
 /// #def}}} @code MK_ERR
 
@@ -33,7 +33,7 @@
    * @param {string=} methodName
    * @return {!TypeError} 
    */
-  var _mkTypeErr = _MK_ERR.typeError;
+  var _mkTypeErr = _MK_ERR.TYPE;
   /// #}}} @func _mkTypeErr
 /// #def}}} @code MK_TYPE_ERR
 
@@ -49,7 +49,7 @@
    * @param {string=} methodName
    * @return {!RangeError} 
    */
-  var _mkRangeErr = _MK_ERR.rangeError;
+  var _mkRangeErr = _MK_ERR.RANGE;
   /// #}}} @func _mkRangeErr
 /// #def}}} @code MK_RANGE_ERR
 

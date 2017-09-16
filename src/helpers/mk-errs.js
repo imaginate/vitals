@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $mkErrs
@@ -17,7 +17,7 @@
  */
 var $mkErrs = (function $mkErrsPrivateScope() {
 
-  /// #{{{ @group Constants
+  /// #{{{ @group constants
 
   /// #{{{ @const _OPEN_HASH
   /**
@@ -43,9 +43,9 @@ var $mkErrs = (function $mkErrsPrivateScope() {
   var _STRICT = /^\!/;
   /// #}}} @const _STRICT
 
-  /// #}}} @group Constants
+  /// #}}} @group constants
 
-  /// #{{{ @group Helpers
+  /// #{{{ @group helpers
 
   /// #{{{ @func _mkOptions
   /**
@@ -66,8 +66,9 @@ var $mkErrs = (function $mkErrsPrivateScope() {
 
     len = opts['length'];
     i = -1;
-    while (++i < len)
-      result += '\n- `' + $print(opts[i]) + '`';
+    while (++i < len) {
+      result += '\n    - `' + $print(opts[i], 1) + '`';
+    }
     return result;
   }
   /// #}}} @func _mkOptions
@@ -75,14 +76,10 @@ var $mkErrs = (function $mkErrsPrivateScope() {
   /// #{{{ @func _prepSuper
   /**
    * @private
-   * @param {(string|undefined)} name
+   * @param {string} name
    * @return {string}
    */
   function _prepSuper(name) {
-    
-    if ( $is.void(name) )
-      return 'newVitals';
-
     name = name['replace'](_OPEN_VITALS, '');
     return 'vitals.' + name;
   }
@@ -95,17 +92,28 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @return {string}
    */
   function _prepParam(name) {
-
-    if (!name)
-      return '';
-
-    if ( _STRICT['test'](name) )
-      return name['replace'](_STRICT, '');
-
-    name = name['replace'](_OPEN_HASH, '');
-    return '#' + name;
+    return !!name
+      ? _STRICT['test'](name)
+        ? name['replace'](_STRICT, '')
+        : _OPEN_HASH['test'](name)
+          ? name
+          : '#' + name
+      : '';
   }
   /// #}}} @func _prepParam
+
+  /// #{{{ @func _prepParamName
+  /**
+   * @private
+   * @param {string} name
+   * @return {string}
+   */
+  function _prepParamName(name) {
+    return !!name
+      ? name['replace'](_OPEN_HASH, '')['replace'](/[ \t]+/g, '-')
+      : '';
+  }
+  /// #}}} @func _prepParamName
 
   /// #{{{ @func _setErrorProps
   /**
@@ -117,17 +125,20 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @return {!Error}
    */
   function _setErrorProps(err, name, msg, val) {
-    err['__vitals'] = true;
-    err['vitals'] = true;
+    err['__vitals__'] = $YES;
+    err['__vitals'] = $YES;
+    err['vitals'] = $YES;
     err['name'] = name;
     switch (name) {
       case 'TypeError':
-        err['__type'] = true;
-        err['type'] = true;
+        err['__type__'] = $YES;
+        err['__type'] = $YES;
+        err['type'] = $YES;
         break;
       case 'RangeError':
-        err['__range'] = true;
-        err['range'] = true;
+        err['__range__'] = $YES;
+        err['__range'] = $YES;
+        err['range'] = $YES;
         break;
     }
     err['message'] = msg;
@@ -140,7 +151,7 @@ var $mkErrs = (function $mkErrsPrivateScope() {
   }
   /// #}}} @func _setErrorProps
 
-  /// #}}} @group Helpers
+  /// #}}} @group helpers
 
   /// #{{{ @func $mkErrs
   /**
@@ -155,9 +166,9 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      * @struct
      */
     var MK_ERR = {
-      error: error,
-      typeError: typeError,
-      rangeError: rangeError
+      MAIN: error,
+      TYPE: typeError,
+      RANGE: rangeError
     };
     /// #}}} @const MK_ERR
 
@@ -219,10 +230,13 @@ var $mkErrs = (function $mkErrsPrivateScope() {
 
       method = _prepMethod(methodName);
       param = _prepParam(paramName);
-      val = $print(paramVal);
-      msg = 'invalid ' + param + ' data type for ' + method + ' call\n';
-      msg += 'valid data types: `' + validTypes + '`\n';
-      msg += 'actual ' + param + ' value: `' + val + '`';
+      paramName = _prepParamName(param);
+      val = $print(paramVal, 1);
+
+      msg = 'invalid ' + param + ' data type for ' + method + ' call\n'
+        + '    valid-data-types: `' + validTypes + '`\n'
+        + '    invalid-' + paramName + '-value: `' + val + '`';
+
       return _setErrorProps(err, 'TypeError', msg, paramVal);
     }
     /// #}}} @func typeError
@@ -248,11 +262,16 @@ var $mkErrs = (function $mkErrsPrivateScope() {
 
       method = _prepMethod(methodName);
       param = _prepParam(paramName);
+
       msg = 'out-of-range ' + param + ' for ' + method + ' call';
-      if ( $is.str(validRange) )
-        msg += '\nvalid range: `' + validRange + '`';
-      else if ( $is.arr(validRange) )
-        msg += '\nvalid options:' + _mkOptions(validRange);
+
+      if ( $is.str(validRange) ) {
+        msg += '\n    valid-range: `' + validRange + '`';
+      }
+      else if ( $is.arr(validRange) ) {
+        msg += '\n    valid-options:' + _mkOptions(validRange);
+      }
+
       return _setErrorProps(err, 'RangeError', msg);
     }
     /// #}}} @func rangeError
