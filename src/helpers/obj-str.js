@@ -6,26 +6,16 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $objStr
 /**
  * @private
- * @param {!Object} source
+ * @param {!Object} src
  * @return {string}
  */
-var $objStr = (function $objStrPrivateScope() {
-
-  /// #{{{ @func $objStr
-  /**
-   * @param {!Object} source
-   * @return {string}
-   */
-  function $objStr(source) {
-    return _objToStr['call'](source);
-  }
-  /// #}}} @func $objStr
+var $objStr = (function __vitals$objStr__() {
 
   /// #{{{ @func _objToStr
   /**
@@ -33,8 +23,18 @@ var $objStr = (function $objStrPrivateScope() {
    * @this {!Object}
    * @return {string}
    */
-  var _objToStr = OBJ_PROTO['toString'];
+  var _objToStr = $OBJ_PROTO['toString'];
   /// #}}} @func _objToStr
+
+  /// #{{{ @func $objStr
+  /**
+   * @param {!Object} src
+   * @return {string}
+   */
+  function $objStr(src) {
+    return _objToStr['call'](src);
+  }
+  /// #}}} @func $objStr
 
   return $objStr;
 })();
