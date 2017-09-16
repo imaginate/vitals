@@ -693,6 +693,42 @@ function makeNewVitals() {
 
     /// #{{{ @group polyfills
 
+    /// #{{{ @const _HAS_ARGS_CALLEE
+    /**
+     * @private
+     * @const {boolean}
+     */
+    /// #if{{{ @env ARGS_POLYFILL
+    var _HAS_ARGS_CALLEE = (function __newVitalsVerifyArgumentsCallee__() {
+
+      /** @type {*} */
+      var err;
+
+      try {
+        'callee' in {};
+      }
+      catch (err) {
+        return __NO__;
+      }
+      return 'callee' in arguments;
+    })();
+    /// #if}}} @env ARGS_POLYFILL
+    /// #ifnot{{{ @env ARGS_POLYFILL
+    var _HAS_ARGS_CALLEE = __NO__;
+    /// #ifnot}}} @env ARGS_POLYFILL
+    /// #}}} @const _HAS_ARGS_CALLEE
+
+    /// #{{{ @const _HAS_ARGS_CLASS
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_ARGS_CLASS = (function __newVitalsVerifyArgumentsClass__() {
+      return _OBJ_PROTO['toString']['call'](arguments)
+        === '[object Arguments]';
+    })();
+    /// #}}} @const _HAS_ARGS_CLASS
+
     /// #{{{ @const _HAS_CREATE
     /**
      * @private
@@ -1502,6 +1538,20 @@ function makeNewVitals() {
     var ENV_HAS = _create(__NIL__);
     /// #}}} @const ENV_HAS
 
+    /// #{{{ @const ENV_HAS.ARGUMENTS_CALLEE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.ARGUMENTS_CALLEE = _HAS_ARGS_CALLEE;
+    /// #}}} @const ENV_HAS.ARGUMENTS_CALLEE
+
+    /// #{{{ @const ENV_HAS.ARGUMENTS_CLASS
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.ARGUMENTS_CLASS = _HAS_ARGS_CLASS;
+    /// #}}} @const ENV_HAS.ARGUMENTS_CLASS
+
     /// #{{{ @const ENV_HAS.DEFINE
     /**
      * @const {boolean}
@@ -1510,27 +1560,6 @@ function makeNewVitals() {
       ? ENV_HAS_DFLT.DEFINE
       : !!env['define'];
     /// #}}} @const ENV_HAS.DEFINE
-
-    /// #{{{ @const ENV_HAS.OBJECT_CREATE
-    /**
-     * @const {boolean}
-     */
-    ENV_HAS.OBJECT_CREATE = _HAS_CREATE;
-    /// #}}} @const ENV_HAS.OBJECT_CREATE
-
-    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
-    /**
-     * @const {boolean}
-     */
-    ENV_HAS.OBJECT_DEFINE_PROPERTIES = _HAS_DEFINE_PROPS;
-    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
-
-    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTY
-    /**
-     * @const {boolean}
-     */
-    ENV_HAS.OBJECT_DEFINE_PROPERTY = _HAS_DEFINE_PROP;
-    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTY
 
     /// #{{{ @const ENV_HAS.EXPORTS
     /**
@@ -1563,6 +1592,27 @@ function makeNewVitals() {
       ? ENV_HAS_DFLT.GLOBAL
       : !!env['global'] && _hasRootObj(env['global']);
     /// #}}} @const ENV_HAS.GLOBAL
+
+    /// #{{{ @const ENV_HAS.OBJECT_CREATE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_CREATE = _HAS_CREATE;
+    /// #}}} @const ENV_HAS.OBJECT_CREATE
+
+    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_DEFINE_PROPERTIES = _HAS_DEFINE_PROPS;
+    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
+
+    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTY
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_DEFINE_PROPERTY = _HAS_DEFINE_PROP;
+    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTY
 
     /// #{{{ @const ENV_HAS.MODULE
     /**
