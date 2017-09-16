@@ -9,7 +9,7 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #def{{{ @wrapper OPEN
+/// #def{{{ @wrapper MAIN_OPEN
 /**
  * @param {(?Object|?Function|undefined)=} __THIS__
  * @param {undefined=} __VOID__
@@ -45,10 +45,35 @@
   var __YES__ = !__VOID__;
   /// #}}} @const __YES__
 
-/// #def}}} @wrapper OPEN
+  /// #{{{ @const __VERSION__
+  /**
+   * @private
+   * @const {string}
+   */
+  var __VERSION__ = '5.0.0';
+  /// #}}} @const __VERSION__
 
-/// #def{{{ @wrapper CLOSE
+/// #def}}} @wrapper MAIN_OPEN
+
+/// #def{{{ @wrapper MAKE_OPEN
+/**
+ * @private
+ * @param {!Function} $VITALS
+ * @param {(!Object|!Function)} $ROOT
+ * @param {!Object} $ENV
+ * @param {!Object} $CONFIG
+ * @return {!Function}
+ */
+function makeVitals($VITALS, $ROOT, $ENV, $CONFIG) {
+
+/// #def}}} @wrapper MAKE_OPEN
+
+/// #def{{{ @wrapper MAKE_CLOSE
+}
+/// #def}}} @wrapper MAKE_CLOSE
+
+/// #def{{{ @wrapper MAIN_CLOSE
 })(this);
-/// #def}}} @wrapper CLOSE
+/// #def}}} @wrapper MAIN_CLOSE
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
