@@ -101,13 +101,33 @@ function makeNewVitals() {
 
     /// #{{{ @step set-helpers
 
+    /// #{{{ @group constants
+
+    /// #{{{ @const _OBJ
+    /**
+     * @const {!Object}
+     */
+    var _OBJ = Object;
+    /// #}}} @const _OBJ
+
+    /// #{{{ @const _OBJ_PROTO
+    /**
+     * @const {!Object}
+     */
+    var _OBJ_PROTO = _OBJ['prototype'];
+    /// #}}} @const _OBJ_PROTO
+
+    /// #}}} @group constants
+
+    /// #{{{ @group has
+
     /// #{{{ @func _hasEnumProp
     /**
      * @private
      * @param {*} key
      * @return {boolean}
      */
-    var _hasEnumProp = Object['prototype']['propertyIsEnumerable'];
+    var _hasEnumProp = _OBJ_PROTO['propertyIsEnumerable'];
     /// #}}} @func _hasEnumProp
 
     /// #{{{ @func _hasNodeType
@@ -155,7 +175,7 @@ function makeNewVitals() {
      * @param {*} key
      * @return {boolean}
      */
-    var _hasOwnProp = Object['prototype']['hasOwnProperty'];
+    var _hasOwnProp = _OBJ_PROTO['hasOwnProperty'];
     /// #}}} @func _hasOwnProp
 
     /// #{{{ @func _hasRootObj
@@ -165,9 +185,13 @@ function makeNewVitals() {
      * @return {boolean}
      */
     function _hasRootObj(val) {
-      return !!val && 'Object' in val && val['Object'] === Object;
+      return !!val && 'Object' in val && val['Object'] === _OBJ;
     }
     /// #}}} @func _hasRootObj
+
+    /// #}}} @group has
+
+    /// #{{{ @group is
 
     /// #{{{ @func _isBadAlias
     /**
@@ -398,6 +422,10 @@ function makeNewVitals() {
     }
     /// #}}} @func _isVoid
 
+    /// #}}} @group is
+
+    /// #{{{ @group error
+
     /// #{{{ @func _setAttachTypeErr
     /**
      * @private
@@ -504,6 +532,279 @@ function makeNewVitals() {
       return _setErrProps(err, 'TypeError', msg, val);
     }
     /// #}}} @func _setTypeErr
+
+    /// #}}} @group error
+
+    /// #{{{ @group polyfills
+
+    /// #{{{ @const _HAS_CREATE
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_CREATE = 'create' in _OBJ && _isFun(_OBJ['create']);
+    /// #}}} @const _HAS_CREATE
+
+    /// #{{{ @const _HAS_DEFINE_PROP
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_DEFINE_PROP = (function __vitalsVerifyDefineProperty__() {
+
+      /** @type {!Object} */
+      var desc;
+      /** @type {string} */
+      var name;
+      /** @type {string} */
+      var key;
+      /** @type {!Object} */
+      var src;
+      /** @type {*} */
+      var err;
+
+      name = 'defineProperty';
+
+      if ( !(name in _OBJ) || !_isFun(_OBJ[name]) ) {
+        return __NO__;
+      }
+
+      /** @dict */ 
+      src = {};
+
+      /** @dict */ 
+      desc = {};
+      desc['value'] = src;
+      desc['writable'] = __YES__;
+      desc['enumerable'] = __NO__;
+      desc['configurable'] = __YES__;
+
+      try {
+        _OBJ[name](src, 'key', desc);
+        for (key in src) {
+          if (key === 'key') {
+            return __NO__;
+          }
+        }
+      }
+      catch (err) {
+        return __NO__;
+      }
+
+      return src['key'] === src;
+    })();
+    /// #}}} @const _HAS_DEFINE_PROP
+
+    /// #{{{ @const _HAS_DEFINE_PROPS
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_DEFINE_PROPS = (function __vitalsVerifyDefineProperties__() {
+
+      /** @type {!Object} */
+      var props;
+      /** @type {!Object} */
+      var desc;
+      /** @type {string} */
+      var name;
+      /** @type {string} */
+      var key;
+      /** @type {!Object} */
+      var src;
+      /** @type {*} */
+      var err;
+
+      name = 'defineProperties';
+
+      if ( !(name in _OBJ) || !_isFun(_OBJ[name]) ) {
+        return __NO__;
+      }
+
+      /** @dict */ 
+      src = {};
+
+      /** @dict */ 
+      desc = {};
+      desc['value'] = src;
+      desc['writable'] = __YES__;
+      desc['enumerable'] = __NO__;
+      desc['configurable'] = __YES__;
+
+      /** @dict */ 
+      props = {};
+      props['key'] = desc;
+
+      try {
+        _OBJ[name](src, props);
+        for (key in src) {
+          if (key === 'key') {
+            return __NO__;
+          }
+        }
+      }
+      catch (err) {
+        return __NO__;
+      }
+
+      return src['key'] === src;
+    })();
+    /// #}}} @const _HAS_DEFINE_PROPS
+
+    /// #{{{ @const _HAS_FUN_DEFINE_PROP
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_FUN_DEFINE_PROP = (function __vitalsVerifyDefineFunProp__() {
+
+      /** @type {!Object} */
+      var desc;
+      /** @type {string} */
+      var key;
+      /** @type {!Function} */
+      var src;
+      /** @type {*} */
+      var err;
+
+      if (!_HAS_DEFINE_PROP) {
+        return __NO__;
+      }
+
+      src = function __testFunction__(){};
+
+      /** @dict */ 
+      desc = {};
+      desc['value'] = src;
+      desc['writable'] = __YES__;
+      desc['enumerable'] = __NO__;
+      desc['configurable'] = __YES__;
+
+      try {
+        _OBJ['defineProperty'](src, 'key', desc);
+        for (key in src) {
+          if (key === 'key') {
+            return __NO__;
+          }
+        }
+      }
+      catch (err) {
+        return __NO__;
+      }
+
+      return src['key'] === src;
+    })();
+    /// #}}} @const _HAS_FUN_DEFINE_PROP
+
+    /// #{{{ @const _HAS_FUN_DEFINE_PROPS
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var _HAS_FUN_DEFINE_PROPS = (function __vitalsVerifyDefineFunProps__() {
+
+      /** @type {!Object} */
+      var props;
+      /** @type {!Object} */
+      var desc;
+      /** @type {string} */
+      var key;
+      /** @type {!Function} */
+      var src;
+      /** @type {*} */
+      var err;
+
+      if (!_HAS_DEFINE_PROPS) {
+        return __NO__;
+      }
+
+      src = function __testFunction__(){};
+
+      /** @dict */ 
+      desc = {};
+      desc['value'] = src;
+      desc['writable'] = __YES__;
+      desc['enumerable'] = __NO__;
+      desc['configurable'] = __YES__;
+
+      /** @dict */ 
+      props = {};
+      props['key'] = desc;
+
+      try {
+        _OBJ['defineProperties'](src, props);
+        for (key in src) {
+          if (key === 'key') {
+            return __NO__;
+          }
+        }
+      }
+      catch (err) {
+        return __NO__;
+      }
+
+      return src['key'] === src;
+    })();
+    /// #}}} @const _HAS_FUN_DEFINE_PROPS
+
+  /// #{{{ @func _create
+  /**
+   * @private
+   * @param {?Object} proto
+   * @return {!Object}
+   */
+  var _create = _HAS_CREATE
+    ? _OBJ['create']
+    : (function __vitalsMakeCreatePolyfill__() {
+
+        /// #{{{ @func _Obj
+        /**
+         * @private
+         * @constructor
+         */
+        function _Obj(){}
+        /// #}}} @func _Obj
+
+        /// #{{{ @func create
+        /**
+         * @param {?Object} proto
+         * @return {!Object}
+         */
+        function create(proto) {
+
+          /** @type {!Object} */
+          var obj;
+
+          _Obj['prototype'] = proto;
+          obj = new _Obj();
+          _Obj['prototype'] = __NIL__;
+          return obj;
+        }
+        /// #}}} @func create
+
+        return create;
+      })();
+  /// #}}} @func _create
+
+    /// #{{{ @func _defProp
+    /**
+     * @private
+     * @param {(!Object|!Function)} src
+     * @param {string} key
+     * @param {!Object} descriptor
+     * @return {(!Object|!Function)}
+     */
+    var _defProp = _HAS_FUN_DEFINE_PROP
+      ? _OBJ['defineProperty']
+      : function _defProp(src, key, descriptor) {
+          if ( _hasOwnProp.call(descriptor, 'value') ) {
+            src[key] = descriptor['value'];
+          }
+          return src;
+        };
+    /// #}}} @func _defProp
+
+    /// #}}} @group polyfills
 
     /// #}}} @step set-helpers
 
@@ -637,62 +938,65 @@ function makeNewVitals() {
 
     /// #{{{ @step set-environment-constants
 
-    /// #{{{ @const _HAS_EXPORTS
+    /// #{{{ @const ENV_HAS_DFLT
     /**
-     * @private
+     * @const {!Object<string, boolean>}
+     * @struct
+     */
+    var ENV_HAS_DFLT = _create(__NIL__);
+    /// #}}} @const ENV_HAS_DFLT
+
+    /// #{{{ @const ENV_HAS_DFLT.EXPORTS
+    /**
      * @const {boolean}
      */
-    var _HAS_EXPORTS = _isObjFunType(typeof exports)
+    var ENV_HAS_DFLT.EXPORTS = _isObjFunType(typeof exports)
       && !!exports
       && !_hasNodeType(exports);
-    /// #}}} @const _HAS_EXPORTS
+    /// #}}} @const ENV_HAS_DFLT.EXPORTS
 
-    /// #{{{ @const _HAS_MODULE
+    /// #{{{ @const ENV_HAS_DFLT.MODULE
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_MODULE = _isObjFunType(typeof module)
+    var ENV_HAS_DFLT.MODULE = _isObjFunType(typeof module)
       && !!module
       && !_hasNodeType(module);
-    /// #}}} @const _HAS_MODULE
+    /// #}}} @const ENV_HAS_DFLT.MODULE
 
-    /// #{{{ @const _HAS_GLOBAL
+    /// #{{{ @const ENV_HAS_DFLT.GLOBAL
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_GLOBAL = _HAS_EXPORTS
-      && _HAS_MODULE
+    var ENV_HAS_DFLT.GLOBAL = ENV_HAS_DFLT.EXPORTS
+      && ENV_HAS_DFLT.MODULE
       && _isObjType(typeof global)
       && _hasRootObj(global);
-    /// #}}} @const _HAS_GLOBAL
+    /// #}}} @const ENV_HAS_DFLT.GLOBAL
 
-    /// #{{{ @const _HAS_WINDOW
+    /// #{{{ @const ENV_HAS_DFLT.WINDOW
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_WINDOW = _isObjFunType(typeof window) && _hasRootObj(window);
-    /// #}}} @const _HAS_WINDOW
+    var ENV_HAS_DFLT.WINDOW = _isObjFunType(typeof window)
+      && _hasRootObj(window);
+    /// #}}} @const ENV_HAS_DFLT.WINDOW
 
-    /// #{{{ @const _HAS_DEFINE
+    /// #{{{ @const ENV_HAS_DFLT.DEFINE
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_DEFINE = _isFunType(typeof define)
+    var ENV_HAS_DFLT.DEFINE = _isFunType(typeof define)
       && 'amd' in define
       && _isObj(define['amd']);
-    /// #}}} @const _HAS_DEFINE
+    /// #}}} @const ENV_HAS_DFLT.DEFINE
 
-    /// #{{{ @const _HAS_SELF
+    /// #{{{ @const ENV_HAS_DFLT.SELF
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_SELF = _isObjFunType(typeof self) && _hasRootObj(self);
-    /// #}}} @const _HAS_SELF
+    var ENV_HAS_DFLT.SELF = _isObjFunType(typeof self) && _hasRootObj(self);
+    /// #}}} @const ENV_HAS_DFLT.SELF
 
     /// #{{{ @const _THIS
     /**
@@ -711,154 +1015,381 @@ function makeNewVitals() {
         })( (new Function('return this;'))() );
     /// #}}} @const _THIS
 
-    /// #{{{ @const _HAS_THIS
+    /// #{{{ @const ENV_HAS_DFLT.THIS
     /**
-     * @private
      * @const {boolean}
      */
-    var _HAS_THIS = _isObjFun(_THIS) && _hasRootObj(_THIS);
-    /// #}}} @const _HAS_THIS
+    var ENV_HAS_DFLT.THIS = _isObjFun(_THIS) && _hasRootObj(_THIS);
+    /// #}}} @const ENV_HAS_DFLT.THIS
 
     /// #{{{ @const ENV_DFLT
     /**
-     * @const {!Object}
+     * @const {!Object<string, (?Object|?Function)>}
      * @struct
      */
-    var ENV_DFLT = {
-      DEFINE: _HAS_DEFINE
-        ? define
-        : __NIL__,
-      EXPORTS: _HAS_EXPORTS
-        ? exports
-        : __NIL__,
-      GLOBAL: _HAS_GLOBAL
-        ? global
-        : __NIL__,
-      MODULE: _HAS_MODULE
-        ? module
-        : __NIL__,
-      SELF: _HAS_SELF
-        ? self
-        : __NIL__,
-      ROOT: _HAS_GLOBAL
-        ? global
-        : ( _HAS_WINDOW
-            && ( !_HAS_THIS
-              || !('window' in _THIS)
-              || window !== _THIS['window'] ))
-          ? window
-          : _HAS_SELF
-            ? self
-            : _HAS_THIS
-              ? _THIS
-              : __NIL__,
-      THIS: _THIS,
-      WINDOW: _HAS_WINDOW
-        ? window
-        : __NIL__
-    };
+    var ENV_DFLT = _create(__NIL__);
     /// #}}} @const ENV_DFLT
+
+    /// #{{{ @const ENV_DFLT.DEFINE
+    /**
+     * @const {?Function}
+     */
+    ENV_DFLT.DEFINE = ENV_HAS_DFLT.DEFINE
+      ? define
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.DEFINE
+
+    /// #{{{ @const ENV_DFLT.EXPORTS
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.EXPORTS = ENV_HAS_DFLT.EXPORTS
+      ? exports
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.EXPORTS
+
+    /// #{{{ @const ENV_DFLT.GLOBAL
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.GLOBAL = ENV_HAS_DFLT.GLOBAL
+      ? global
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.GLOBAL
+
+    /// #{{{ @const ENV_DFLT.MODULE
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.MODULE = ENV_HAS_DFLT.MODULE
+      ? module
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.MODULE
+
+    /// #{{{ @const ENV_DFLT.SELF
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.SELF = ENV_HAS_DFLT.SELF
+      ? self
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.SELF
+
+    /// #{{{ @const ENV_DFLT.THIS
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.THIS = _THIS;
+    /// #}}} @const ENV_DFLT.THIS
+
+    /// #{{{ @const ENV_DFLT.WINDOW
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.WINDOW = ENV_HAS_DFLT.WINDOW
+      ? window
+      : __NIL__;
+    /// #}}} @const ENV_DFLT.WINDOW
+
+    /// #{{{ @const ENV_DFLT.ROOT
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV_DFLT.ROOT = ENV_HAS_DFLT.GLOBAL
+      ? ENV_DFLT.GLOBAL
+      : ( ENV_HAS_DFLT.WINDOW
+          && ( !ENV_HAS_DFLT.THIS
+            || !('window' in _THIS)
+            || ENV_DFLT.WINDOW !== _THIS['window'] ))
+        ? ENV_DFLT.WINDOW
+        : ENV_HAS_DFLT.SELF
+          ? ENV_DFLT.SELF
+          : ENV_HAS_DFLT.THIS
+            ? _THIS
+            : __NIL__;
+    /// #}}} @const ENV_DFLT.ROOT
 
     /// #{{{ @const ENV_IS_DFLT
     /**
-     * @const {!Object}
+     * @const {!Object<string, boolean>}
      * @struct
      */
-    var ENV_IS_DFLT = {
-      DEFINE: !_hasOpt(env, 'define'),
-      EXPORTS: !_hasOpt(env, 'exports'),
-      GLOBAL: !_hasOpt(env, 'global'),
-      MODULE: !_hasOpt(env, 'module'),
-      ROOT: _hasOpt(env, 'root')
-        ? !_hasObjFunOpt(env, 'root')
-        : !_hasObjFunOpt(opts, 'root'),
-      SELF: !_hasOpt(env, 'self'),
-      WINDOW: !_hasOpt(env, 'window')
-    };
+    var ENV_IS_DFLT = _create(__NIL__);
     /// #}}} @const ENV_IS_DFLT
+
+    /// #{{{ @const ENV_IS_DFLT.DEFINE
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.DEFINE = !_hasOpt(env, 'define');
+    /// #}}} @const ENV_IS_DFLT.DEFINE
+
+    /// #{{{ @const ENV_IS_DFLT.EXPORTS
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.EXPORTS = !_hasOpt(env, 'exports');
+    /// #}}} @const ENV_IS_DFLT.EXPORTS
+
+    /// #{{{ @const ENV_IS_DFLT.GLOBAL
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.GLOBAL = !_hasOpt(env, 'global');
+    /// #}}} @const ENV_IS_DFLT.GLOBAL
+
+    /// #{{{ @const ENV_IS_DFLT.MODULE
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.MODULE = !_hasOpt(env, 'module');
+    /// #}}} @const ENV_IS_DFLT.MODULE
+
+    /// #{{{ @const ENV_IS_DFLT.ROOT
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.ROOT = _hasOpt(env, 'root')
+      ? !_hasObjFunOpt(env, 'root')
+      : !_hasObjFunOpt(opts, 'root');
+    /// #}}} @const ENV_IS_DFLT.ROOT
+
+    /// #{{{ @const ENV_IS_DFLT.SELF
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.SELF = !_hasOpt(env, 'self');
+    /// #}}} @const ENV_IS_DFLT.SELF
+
+    /// #{{{ @const ENV_IS_DFLT.WINDOW
+    /**
+     * @const {boolean}
+     */
+    ENV_IS_DFLT.WINDOW = !_hasOpt(env, 'window');
+    /// #}}} @const ENV_IS_DFLT.WINDOW
 
     /// #{{{ @const ENV_HAS
     /**
-     * @const {!Object}
+     * @const {!Object<string, boolean>}
      * @struct
      */
-    var ENV_HAS = {
-      DEFINE: ENV_IS_DFLT.DEFINE
-        ? _HAS_DEFINE
-        : !!env['define'],
-      EXPORTS: ENV_IS_DFLT.EXPORTS
-        ? _HAS_EXPORTS
-        : !!env['exports'] && !_hasNodeType(env['exports']),
-      GLOBAL: ENV_IS_DFLT.GLOBAL
-        ? _HAS_GLOBAL
-        : !!env['global'] && _hasRootObj(env['global']),
-      MODULE: ENV_IS_DFLT.MODULE
-        ? _HAS_MODULE
-        : !!env['module'] && !_hasNodeType(env['module']),
-      SELF: ENV_IS_DFLT.SELF
-        ? _HAS_SELF
-        : !!env['self'] && _hasRootObj(env['self']),
-      THIS: _HAS_THIS,
-      WINDOW: ENV_IS_DFLT.WINDOW
-        ? _HAS_WINDOW
-        : !!env['window'] && _hasRootObj(env['window'])
-    };
+    var ENV_HAS = _create(__NIL__);
     /// #}}} @const ENV_HAS
+
+    /// #{{{ @const ENV_HAS.DEFINE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.DEFINE = ENV_IS_DFLT.DEFINE
+      ? ENV_HAS_DFLT.DEFINE
+      : !!env['define'];
+    /// #}}} @const ENV_HAS.DEFINE
+
+    /// #{{{ @const ENV_HAS.OBJECT_CREATE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_CREATE = _HAS_CREATE;
+    /// #}}} @const ENV_HAS.OBJECT_CREATE
+
+    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_DEFINE_PROPERTIES = _HAS_DEFINE_PROPS;
+    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTIES
+
+    /// #{{{ @const ENV_HAS.OBJECT_DEFINE_PROPERTY
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.OBJECT_DEFINE_PROPERTY = _HAS_DEFINE_PROP;
+    /// #}}} @const ENV_HAS.OBJECT_DEFINE_PROPERTY
+
+    /// #{{{ @const ENV_HAS.EXPORTS
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.EXPORTS = ENV_IS_DFLT.EXPORTS
+      ? ENV_HAS_DFLT.EXPORTS
+      : !!env['exports'] && !_hasNodeType(env['exports']);
+    /// #}}} @const ENV_HAS.EXPORTS
+
+    /// #{{{ @const ENV_HAS.FUNCTION_DEFINE_PROPERTIES
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.FUNCTION_DEFINE_PROPERTIES = _HAS_FUN_DEFINE_PROPS;
+    /// #}}} @const ENV_HAS.FUNCTION_DEFINE_PROPERTIES
+
+    /// #{{{ @const ENV_HAS.FUNCTION_DEFINE_PROPERTY
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.FUNCTION_DEFINE_PROPERTY = _HAS_FUN_DEFINE_PROP;
+    /// #}}} @const ENV_HAS.FUNCTION_DEFINE_PROPERTY
+
+    /// #{{{ @const ENV_HAS.GLOBAL
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.GLOBAL = ENV_IS_DFLT.GLOBAL
+      ? ENV_HAS_DFLT.GLOBAL
+      : !!env['global'] && _hasRootObj(env['global']);
+    /// #}}} @const ENV_HAS.GLOBAL
+
+    /// #{{{ @const ENV_HAS.MODULE
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.MODULE = ENV_IS_DFLT.MODULE
+      ? ENV_HAS_DFLT.MODULE
+      : !!env['module'] && !_hasNodeType(env['module']);
+    /// #}}} @const ENV_HAS.MODULE
+
+    /// #{{{ @const ENV_HAS.SELF
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.SELF = ENV_IS_DFLT.SELF
+      ? ENV_HAS_DFLT.SELF
+      : !!env['self'] && _hasRootObj(env['self']);
+    /// #}}} @const ENV_HAS.SELF
+
+    /// #{{{ @const ENV_HAS.THIS
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.THIS = ENV_HAS_DFLT.THIS;
+    /// #}}} @const ENV_HAS.THIS
+
+    /// #{{{ @const ENV_HAS.WINDOW
+    /**
+     * @const {boolean}
+     */
+    ENV_HAS.WINDOW = ENV_IS_DFLT.WINDOW
+      ? ENV_HAS_DFLT.WINDOW
+      : !!env['window'] && _hasRootObj(env['window']);
+    /// #}}} @const ENV_HAS.WINDOW
 
     /// #{{{ @const ENV
     /**
-     * @const {!Object}
+     * @const {!Object<string, (?Object|?Function)>}
      * @struct
      */
-    var ENV = {
-      HAS: ENV_HAS,
-      DFLT: ENV_DFLT,
-      IS_DFLT: ENV_IS_DFLT,
-      DEFINE: ENV_IS_DFLT.DEFINE
-        ? ENV_DFLT.DEFINE
-        : env['define'],
-      EXPORTS: ENV_IS_DFLT.EXPORTS
-        ? ENV_DFLT.EXPORTS
-        : env['exports'],
-      GLOBAL: ENV_IS_DFLT.GLOBAL
-        ? ENV_DFLT.GLOBAL
-        : env['global'],
-      MODULE: ENV_IS_DFLT.MODULE
-        ? ENV_DFLT.MODULE
-        : env['module'],
-      ROOT: ENV_IS_DFLT.ROOT
-        ? ENV_HAS.GLOBAL
-          ? ENV_IS_DFLT.GLOBAL
-            ? ENV_DFLT.GLOBAL
-            : env['global']
-          : ( ENV_HAS.WINDOW
-              && ( !ENV_HAS.THIS
-                || !('window' in _THIS)
-                || ( ENV_IS_DFLT.WINDOW
-                  ? ENV_DFLT.WINDOW !== _THIS['window']
-                  : env['window'] !== _THIS['window'] )))
-            ? ENV_IS_DFLT.WINDOW
-              ? ENV_DFLT.WINDOW
-              : env['window']
-            : ENV_HAS.SELF
-              ? ENV_IS_DFLT.SELF
-                ? ENV_DFLT.SELF
-                : env['self']
-              : ENV_HAS.THIS
-                ? _THIS
-                : __NIL__
-        : _hasObjFunOpt(env, 'root')
-          ? env['root']
-          : opts['root'],
-      SELF: ENV_IS_DFLT.SELF
-        ? ENV_DFLT.SELF
-        : env['self'],
-      THIS: _THIS,
-      WINDOW: ENV_IS_DFLT.WINDOW
-        ? ENV_DFLT.WINDOW
-        : env['window']
-    };
+    var ENV = _create(__NIL__);
     /// #}}} @const ENV
+
+    /// #{{{ @const ENV.HAS
+    /**
+     * @const {!Object<string, boolean>}
+     */
+    ENV.HAS = ENV_HAS;
+    /// #}}} @const ENV.HAS
+
+    /// #{{{ @const ENV.DFLT
+    /**
+     * @const {!Object<string, (?Object|?Function)>}
+     */
+    ENV.DFLT = ENV_DFLT;
+    /// #}}} @const ENV.DFLT
+
+    /// #{{{ @const ENV.IS_DFLT
+    /**
+     * @const {!Object<string, boolean>}
+     */
+    ENV.IS_DFLT = ENV_IS_DFLT;
+    /// #}}} @const ENV.IS_DFLT
+
+    /// #{{{ @const ENV.HAS_DFLT
+    /**
+     * @const {!Object<string, boolean>}
+     */
+    ENV.HAS_DFLT = ENV_HAS_DFLT;
+    /// #}}} @const ENV.HAS_DFLT
+
+    /// #{{{ @const ENV.DEFINE
+    /**
+     * @const {?Function}
+     */
+    ENV.DEFINE = ENV_IS_DFLT.DEFINE
+      ? ENV_DFLT.DEFINE
+      : env['define'];
+    /// #}}} @const ENV.DEFINE
+
+    /// #{{{ @const ENV.EXPORTS
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.EXPORTS = ENV_IS_DFLT.EXPORTS
+      ? ENV_DFLT.EXPORTS
+      : env['exports'];
+    /// #}}} @const ENV.EXPORTS
+
+    /// #{{{ @const ENV.GLOBAL
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.GLOBAL = ENV_IS_DFLT.GLOBAL
+      ? ENV_DFLT.GLOBAL
+      : env['global'];
+    /// #}}} @const ENV.GLOBAL
+
+    /// #{{{ @const ENV.MODULE
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.MODULE = ENV_IS_DFLT.MODULE
+      ? ENV_DFLT.MODULE
+      : env['module'];
+    /// #}}} @const ENV.MODULE
+
+    /// #{{{ @const ENV.SELF
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.SELF = ENV_IS_DFLT.SELF
+      ? ENV_DFLT.SELF
+      : env['self'];
+    /// #}}} @const ENV.SELF
+
+    /// #{{{ @const ENV.THIS
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.THIS = _THIS;
+    /// #}}} @const ENV.THIS
+
+    /// #{{{ @const ENV.WINDOW
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.WINDOW = ENV_IS_DFLT.WINDOW
+      ? ENV_DFLT.WINDOW
+      : env['window'];
+    /// #}}} @const ENV.WINDOW
+
+    /// #{{{ @const ENV.ROOT
+    /**
+     * @const {(?Object|?Function)}
+     */
+    ENV.ROOT = ENV_IS_DFLT.ROOT
+      ? ENV_HAS.GLOBAL
+        ? ENV.GLOBAL
+        : ( ENV_HAS.WINDOW
+            && ( !ENV_HAS.THIS
+              || !('window' in _THIS)
+              || ENV.WINDOW !== _THIS['window'] ))
+          ? ENV.WINDOW
+          : ENV_HAS.SELF
+            ? ENV.SELF
+            : ENV_HAS.THIS
+              ? _THIS
+              : __NIL__
+      : _hasObjFunOpt(env, 'root')
+        ? env['root']
+        : opts['root'];
+    /// #}}} @const ENV.ROOT
 
     /// #}}} @step set-environment-constants
 
@@ -870,115 +1401,13 @@ function makeNewVitals() {
 
     /// #}}} @step verify-environment-root
 
-    /// #{{{ @step create-polyfills
-
-    /// #{{{ @const _OBJ
-    /**
-     * @const {!Object}
-     */
-    var _OBJ = ENV.ROOT['Object'];
-    /// #}}} @const _OBJ
-
-    /// #{{{ @const _HAS_DEFINE_PROP
-    /**
-     * @private
-     * @const {boolean}
-     */
-    var _HAS_DEFINE_PROP = (function __vitalsVerifyDefineProperty__() {
-
-      /** @type {!Object} */
-      var desc;
-      /** @type {string} */
-      var name;
-      /** @type {string} */
-      var key;
-      /** @type {(!Object|!Function)} */
-      var src;
-
-      name = 'defineProperty';
-
-      if ( !(name in _OBJ) || !_isFun(_OBJ[name]) ) {
-        return __NO__;
-      }
-
-      /** @dict */ 
-      src = {};
-
-      /** @dict */ 
-      desc = {};
-      desc['value'] = src;
-      desc['writable'] = __YES__;
-      desc['enumerable'] = __NO__;
-      desc['configurable'] = __YES__;
-
-      try {
-        _OBJ[name](src, 'key', desc);
-        for (key in src) {
-          if (key === 'key') {
-            return __NO__;
-          }
-        }
-      }
-      catch (e) {
-        return __NO__;
-      }
-
-      if (src['key'] !== src) {
-        return __NO__;
-      }
-
-      src = function __testFunction__(){};
-
-      /** @dict */ 
-      desc = {};
-      desc['value'] = src;
-      desc['writable'] = __YES__;
-      desc['enumerable'] = __NO__;
-      desc['configurable'] = __YES__;
-
-      try {
-        _OBJ[name](src, 'key', desc);
-        for (key in src) {
-          if (key === 'key') {
-            return __NO__;
-          }
-        }
-      }
-      catch (e) {
-        return __NO__;
-      }
-
-      return src['key'] === src;
-    })();
-    /// #}}} @const _HAS_DEFINE_PROP
-
-    /// #{{{ @func _defProp
-    /**
-     * @private
-     * @param {(!Object|!Function)} src
-     * @param {string} key
-     * @param {!Object} descriptor
-     * @return {(!Object|!Function)}
-     */
-    var _defProp = _HAS_DEFINE_PROP
-      ? _OBJ['defineProperty']
-      : function _defProp(src, key, descriptor) {
-          if ( _hasOwnProp.call(descriptor, 'value') ) {
-            src[key] = descriptor['value'];
-          }
-          return src;
-        };
-    /// #}}} @func _defProp
-
-    /// #}}} @step create-polyfills
-
     /// #{{{ @step create-config-constants
 
     /// #{{{ @const CONFIG
     /**
      * @const {!Object}
      */
-    var CONFIG = {};
+    var CONFIG = _create(__NIL__);
     /// #}}} @const CONFIG
 
     /// #}}} @step create-config-constants
