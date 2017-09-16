@@ -22,7 +22,7 @@ just wants to make dealing with JavaScript easier and your life better!
 ```javascript
 var life = '123abc345XYZ';
 
-var v = require('node-vitals')();
+var v = require('@imaginate/vitals');
 var i = v.find.all(life, /[A-Z]/); // sets `i` to `[ "X", "Y", "Z" ]`
 var t = v.sew('v', 5, life);       // sets `t` to `"v5123abc345XYZ"`
 var a = v.cut(life, 3, /[a-z]/g);  // sets `a` to `"1245XYZ"`
@@ -128,9 +128,13 @@ v.ls.file(dir, { // returns all files with `".js"` extension in `dir.abspath`
 npm install --save @imaginate/vitals
 ```
 
-#### amd/browser
-Download [vitals.js][browsermain] or a specific method/section from
-[vitals browser distributables][browser].
+#### amd
+Download [vitals.js][distamdmain] or a specific method/section from
+[vitals amd distributables][distamd].
+
+#### browser
+Download [vitals.js][distbrowsermain] or a specific method/section from
+[vitals browser distributables][distbrowser].
 
 
 ## Use
@@ -145,14 +149,14 @@ var vitals = require('@imaginate/vitals');
 
 ```javascript
 require([ 'vitals' ], function(null) {
-  var vitals = window.vitals;
+  // ...
 });
 ```
 
 #### browser
 
 ```html
-<script src="vitals.min.js"></script>
+<script src="downloaded/path/to/vitals.js"></script>
 <script>var vitals = window.vitals;</script>
 ```
 
@@ -163,13 +167,13 @@ For help see:
 
 ## API
 
-| Base Methods           | Strict Methods   | File System Methods | Shell Methods          |
+| Base Methods           | Strict Methods   | File System Methods | Process Methods        |
 | :--------------------: | :--------------: | :-----------------: | :--------------------: |
-| bind\*                 | [amend][amend]   | [cat][cat]          | [exit][exit]           |
-| [copy][copy]           | [assign][assign] | [cd][cd]            | [parseopts][parseopts] |
-| [cut][cut]             | [cap][cap]       | [ch][ch]            | [run][run]             |
-| [each][each]           | [create][create] | [cp][cp]            |                        |
-| [fill][fill]           | [freeze][freeze] | [ls][ls]            |                        |
+| bind\*                 | [amend][amend]   | [cat][cat]          | [exec][exec]           |
+| [copy][copy]           | [assign][assign] | [cd][cd]            | [exit][exit]           |
+| [cut][cut]             | [cap][cap]       | [ch][ch]            | [parsecmd][parsecmd]   |
+| [each][each]           | [create][create] | [cp][cp]            | [parseopts][parseopts] |
+| [fill][fill]           | [freeze][freeze] | [ls][ls]            | [run][run]             |
 | [filter][filter]       | [seal][seal]     | [mk][mk]            |                        |
 | [find][find]           |                  | [mv][mv]            |                        |
 | [get][get]             |                  | [resolve][resolve]  |                        |
@@ -209,10 +213,12 @@ Send an email to <dev@vitalsjs.com>.
 [badge]: https://img.shields.io/badge/npm-5.0.0--alpha-red.svg?style=flat
 [status]: https://travis-ci.org/imaginate/vitals.svg?branch=master
 [issue]: https://github.com/imaginate/vitals/issues
-[browser]: https://github.com/imaginate/vitals/tree/master/dist/browser
-[browsermain]: https://github.com/imaginate/vitals/blob/master/dist/browser/vitals.js
 [license]: https://github.com/imaginate/vitals/blob/master/LICENSE.md
 [contribute]: https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md
+[distamd]: https://github.com/imaginate/vitals/tree/master/dist/amd
+[distamdmain]: https://github.com/imaginate/vitals/blob/master/dist/amd/vitals.js
+[distbrowser]: https://github.com/imaginate/vitals/tree/master/dist/browser
+[distbrowsermain]: https://github.com/imaginate/vitals/blob/master/dist/browser/vitals.js
 
 [base]: https://github.com/imaginate/vitals/wiki#user-content-api
 [strict]: https://github.com/imaginate/vitals/wiki#user-content-api
