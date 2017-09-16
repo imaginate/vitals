@@ -11,6 +11,11 @@
     "warningLevel": "QUIET"
   },
   "state": {
+    "build": {
+      "AMD": false,
+      "BROWSER": false,
+      "NODE": false
+    },
     "code": false,
     "docrefs": false,
     "env": {
@@ -29,6 +34,165 @@
     }
   },
   "branches": {
+    "amd": {
+      "dest": "amd/",
+      "compile": true,
+      "flags": {
+        "languageIn": "ES5",
+        "languageOut": "ES3"
+      },
+      "state": {
+        "build": {
+          "AMD": true
+        },
+        "code": true,
+        "env": {
+          "ARGS_POLYFILL": true
+        },
+        "helpers": true
+      },
+      "files": [
+        {
+          "src": "vitals.js",
+          "dest": "vitals.js"
+        }
+      ],
+      "branches": {
+        "sections": {
+          "src": "sections/",
+          "dest": "sections/",
+          "files": [
+            {
+              "src": "all.js",
+              "dest": "all.js"
+            },
+            {
+              "src": "base.js",
+              "dest": "base.js"
+            },
+            {
+              "src": "strict.js",
+              "dest": "strict.js",
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
+              }
+            }
+          ]
+        },
+        "methods": {
+          "src": "methods/",
+          "dest": "methods/",
+          "state": {
+            "scope": {
+              "SOLO": true
+            }
+          },
+          "files": [
+            {
+              "src": "amend.js",
+              "dest": "amend.js"
+            },
+            {
+              "src": "assign.js",
+              "dest": "assign.js",
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
+              }
+            },
+            {
+              "src": "copy.js",
+              "dest": "copy.js"
+            },
+            {
+              "src": "create.js",
+              "dest": "create.js",
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
+              }
+            },
+            {
+              "src": "cut.js",
+              "dest": "cut.js",
+              "state": {
+                "scope": {
+                  "IS_MAIN_ONLY": true
+                }
+              }
+            },
+            {
+              "src": "each.js",
+              "dest": "each.js"
+            },
+            {
+              "src": "fill.js",
+              "dest": "fill.js"
+            },
+            {
+              "src": "freeze.js",
+              "dest": "freeze.js"
+            },
+            {
+              "src": "fuse.js",
+              "dest": "fuse.js"
+            },
+            {
+              "src": "get.js",
+              "dest": "get.js"
+            },
+            {
+              "src": "has.js",
+              "dest": "has.js"
+            },
+            {
+              "src": "is.js",
+              "dest": "is.js"
+            },
+            {
+              "src": "remap.js",
+              "dest": "remap.js"
+            },
+            {
+              "src": "roll.js",
+              "dest": "roll.js"
+            },
+            {
+              "src": "same.js",
+              "dest": "same.js"
+            },
+            {
+              "src": "seal.js",
+              "dest": "seal.js"
+            },
+            {
+              "src": "sew.js",
+              "dest": "sew.js"
+            },
+            {
+              "src": "slice.js",
+              "dest": "slice.js"
+            },
+            {
+              "src": "stringify.js",
+              "dest": "stringify.js"
+            },
+            {
+              "src": "to.js",
+              "dest": "to.js"
+            },
+            {
+              "src": "until.js",
+              "dest": "until.js"
+            }
+          ]
+        }
+      }
+    },
     "browser": {
       "dest": "browser/",
       "compile": true,
@@ -37,6 +201,9 @@
         "languageOut": "ES3"
       },
       "state": {
+        "build": {
+          "BROWSER": true
+        },
         "code": true,
         "env": {
           "ARGS_POLYFILL": true
@@ -194,6 +361,9 @@
         "languageOut": "ES5_STRICT"
       },
       "state": {
+        "build": {
+          "NODE": true
+        },
         "code": true,
         "env": {
           "NODE": true,
