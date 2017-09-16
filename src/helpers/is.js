@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $is
@@ -15,9 +15,9 @@
  * @const {!Object<string, !function>}
  * @struct
  */
-var $is = (function $isPrivateScope() {
+var $is = (function __vitals$is__() {
 
-  /// #{{{ @group Primitives
+  /// #{{{ @group primitives
 
   /// #{{{ @func isNull
   /**
@@ -25,7 +25,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isNull(val) {
-    return val === NIL;
+    return val === $NIL;
   }
   /// #}}} @func isNull
 
@@ -35,7 +35,7 @@ var $is = (function $isPrivateScope() {
    * @return {boolean}
    */
   function isUndefined(val) {
-    return val === VOID;
+    return val === $VOID;
   }
   /// #}}} @func isUndefined
 
@@ -99,9 +99,9 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isNan
 
-  /// #}}} @group Primitives
+  /// #}}} @group primitives
 
-  /// #{{{ @group JS-Objects
+  /// #{{{ @group js-objects
 
   /// #{{{ @func isObject
   /**
@@ -120,16 +120,16 @@ var $is = (function $isPrivateScope() {
    */
   function isObjectOrFunction(val) {
 
-    if (!val)
-      return false;
+    if (!val) {
+      return $NO;
+    }
 
     switch (typeof val) {
       case 'object':
       case 'function':
-        return true;
-      default:
-        return false;
-     }
+        return $YES;
+    }
+    return $NO;
   }
   /// #}}} @func isObjectOrFunction
 
@@ -183,75 +183,29 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isError
 
-  /// #if{{{ @env ARGS_POLYFILL
-  /// #{{{ @const _HAS_ARGS
-  /**
-   * @private
-   * @const {!Object<string, boolean>}
-   * @struct
-   */
-  var _HAS_ARGS = (function _HAS_ARGS_PrivateScope() {
-
-    /// #{{{ @const PRIMARY
-    /**
-     * @description
-     *   Verify the platform's ability to use the primary `Arguments` test.
-     * @const {boolean}
-     */
-    var PRIMARY = (function _HAS_ARGS_PRIMARY_PrivateScope() {
-      return $objStr(arguments) === '[object Arguments]';
-    })();
-    /// #}}} @const PRIMARY
-
-    /// #{{{ @const POLYFILL
-    /**
-     * @description
-     *   Verify the platform's ability to use a check for the `callee`
-     *   property to test for `Arguments`.
-     * @const {boolean}
-     */
-    var POLYFILL = (function _HAS_ARGS_POLYFILL_PrivateScope() {
-      try {
-        'callee' in {};
-      }
-      catch (e) {
-        return false;
-      }
-      return 'callee' in arguments;
-    })();
-    /// #}}} @const POLYFILL
-
-    /// #{{{ @const HAS_ARGS
-    /**
-     * @const {!Object<string, boolean>}
-     * @struct
-     */
-    var HAS_ARGS = {
-      PRIMARY: PRIMARY,
-      POLYFILL: POLYFILL
-    };
-    /// #}}} @const HAS_ARGS
-
-    return HAS_ARGS;
-  })();
-  /// #}}} @const _HAS_ARGS
-
   /// #{{{ @func isArguments
   /**
    * @param {*} val
    * @return {boolean}
    */
-  var isArguments = _HAS_ARGS.PRIMARY
+  var isArguments = $ENV.HAS.ARGUMENTS_CLASS
     ? function isArguments(val) {
         return isObject(val) && $objStr(val) === '[object Arguments]';
       }
-    : _HAS_ARGS.POLYFILL
+    /// #if{{{ @env ARGS_POLYFILL
+    : $ENV.HAS.ARGUMENTS_CALLEE
       ? function isArguments(val) {
           return isObject(val) && 'callee' in val;
         }
       : function isArguments(val) {
-          return false;
+          return $NO;
         };
+    /// #if}}} @env ARGS_POLYFILL
+    /// #ifnot{{{ @env ARGS_POLYFILL
+    : function isArguments(val) {
+        return $NO;
+      };
+    /// #ifnot}}} @env ARGS_POLYFILL
   /// #}}} @func isArguments
 
   /// #{{{ @func isArrayOrArguments
@@ -259,21 +213,22 @@ var $is = (function $isPrivateScope() {
    * @param {*} val
    * @return {boolean}
    */
-  var isArrayOrArguments = _HAS_ARGS.PRIMARY
+  var isArrayOrArguments = $ENV.HAS.ARGUMENTS_CLASS
     ? function isArrayOrArguments(val) {
 
-        if ( !isObject(val) )
-          return false;
+        if ( !isObject(val) ) {
+          return $NO;
+        }
 
         switch ( $objStr(val) ) {
           case '[object Array]':
           case '[object Arguments]':
-            return true;
-          default:
-            return false;
+            return $YES;
         }
+        return $NO;
       }
-    : _HAS_ARGS.POLYFILL
+    /// #if{{{ @env ARGS_POLYFILL
+    : $ENV.HAS.ARGUMENTS_CALLEE
       ? function isArrayOrArguments(val) {
           return isObject(val)
             && ( $objStr(val) === '[object Array]' || 'callee' in val );
@@ -281,54 +236,27 @@ var $is = (function $isPrivateScope() {
       : function isArrayOrArguments(val) {
           return isObject(val) && $objStr(val) === '[object Array]';
         };
+    /// #if}}} @env ARGS_POLYFILL
+    /// #ifnot{{{ @env ARGS_POLYFILL
+    : function isArrayOrArguments(val) {
+        return isObject(val) && $objStr(val) === '[object Array]';
+      };
+    /// #ifnot}}} @env ARGS_POLYFILL
   /// #}}} @func isArrayOrArguments
-  /// #if}}} @env ARGS_POLYFILL
 
-  /// #ifnot{{{ @env ARGS_POLYFILL
-  /// #{{{ @func isArguments
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isArguments(val) {
-    return isObject(val) && $objStr(val) === '[object Arguments]';
-  }
-  /// #}}} @func isArguments
-
-  /// #{{{ @func isArrayOrArguments
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isArrayOrArguments(val) {
-
-    if ( !isObject(val) )
-      return false;
-
-    switch ( $objStr(val) ) {
-      case '[object Array]':
-      case '[object Arguments]':
-        return true;
-      default:
-        return false;
-    }
-  }
-  /// #}}} @func isArrayOrArguments
-  /// #ifnot}}} @env ARGS_POLYFILL
-
-  /// #if{{{ @env NODE
+  /// #if{{{ @build NODE
   /// #{{{ @func isBuffer
   /**
    * @param {*} val
    * @return {boolean}
    */
-  var isBuffer = BUFF['isBuffer'];
+  var isBuffer = $BUFF['isBuffer'];
   /// #}}} @func isBuffer
-  /// #if}}} @env NODE
+  /// #if}}} @build NODE
 
-  /// #}}} @group JS-Objects
+  /// #}}} @group js-objects
 
-  /// #{{{ @group DOM-Objects
+  /// #{{{ @group dom-objects
 
   /// #{{{ @func isDomDocument
   /**
@@ -350,9 +278,9 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isDomElement
 
-  /// #}}} @group DOM-Objects
+  /// #}}} @group dom-objects
 
-  /// #{{{ @group Special
+  /// #{{{ @group special
 
   /// #{{{ @func isArrayLike
   /**
@@ -364,8 +292,9 @@ var $is = (function $isPrivateScope() {
     /** @type {number} */
     var len;
 
-    if ( isArray(val) )
-      return true;
+    if ( isArray(val) ) {
+      return $YES;
+    }
 
     len = val['length'];
     return isNumber(len) && isWholeNumber(len) && len >= 0;
@@ -406,27 +335,31 @@ var $is = (function $isPrivateScope() {
     var key;
 
     // empty primitives - 0, "", null, undefined, false, NaN
-    if (!val)
-      return YES;
+    if (!val) {
+      return $YES;
+    }
 
-    // functions
-    if (typeof val === 'function')
+    if (typeof val === 'function') {
       return val['length'] === 0;
+    }
 
     // remaining primitives
-    if (typeof val !== 'object')
-      return NO;
+    if (typeof val !== 'object') {
+      return $NO;
+    }
 
     // arrays
-    if ($objStr(val) === '[object Array]')
+    if ($objStr(val) === '[object Array]') {
       return val['length'] === 0;
+    }
 
     // remaining objects
     for (key in val) {
-      if ( $own(val, key) )
-        return NO;
+      if ( $own(val, key) ) {
+        return $NO;
+      }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func isEmpty
 
@@ -453,7 +386,7 @@ var $is = (function $isPrivateScope() {
    * @private
    * @const {!RegExp}
    */
-  var _FLAGS = (function _FLAGS_PrivateScope() {
+  var _FLAGS = (function __vitals$is_FLAGS__() {
 
     /** @type {!RegExp} */
     var pattern;
@@ -464,11 +397,11 @@ var $is = (function $isPrivateScope() {
 
     flags = 'img';
 
-    if ('sticky' in REGX_PROTO) {
+    if ('sticky' in $REGX_PROTO) {
       flags += 'y';
     }
 
-    if ('unicode' in REGX_PROTO) {
+    if ('unicode' in $REGX_PROTO) {
       flags += 'u';
     }
 
@@ -478,7 +411,7 @@ var $is = (function $isPrivateScope() {
       + '[' + flags + ']*'
       + ')$';
 
-    pattern = new REGX(source);
+    pattern = new $REGX(source);
     pattern.FLAGS = flags;
     pattern.SRC = '/' + source + '/';
 
@@ -498,37 +431,44 @@ var $is = (function $isPrivateScope() {
   isRegExpFlags.SRC = _FLAGS.SRC;
   /// #}}} @func isRegExpFlags
 
-  /// #}}} @group Special
+  /// #}}} @group special
 
-  /// #{{{ @group Object-States
+  /// #{{{ @group object-states
 
   /// #{{{ @func isExtensible
   /**
    * @param {(!Object|!Function)} src
    * @return {boolean}
    */
-  var isExtensible = (function $isExtensiblePolyfillPrivateScope() {
+  var isExtensible = $ENV.HAS.FUNCTION_IS_EXTENSIBLE
+    ? $OBJ['isExtensible']
+    : $ENV.HAS.OBJECT_IS_EXTENSIBLE
+      ? (function __vitals$isObjectIsExtensiblePolyfill__() {
 
-    /** @type {!function(!Object): boolean} */
-    var objectIsExtensible;
+          /// #{{{ @func _isExtensible
+          /**
+           * @private
+           * @param {!Object} src
+           * @return {boolean}
+           */
+          var _isExtensible = $OBJ['isExtensible'];
+          /// #}}} @func _isExtensible
 
-    if ( !('isExtensible' in OBJ) || !isFunction(OBJ['isExtensible']) )
-      return function isExtensible(src) {
-        return false;
-      };
+          /// #{{{ @func isExtensible
+          /**
+           * @param {(!Object|!Function)} src
+           * @return {boolean}
+           */
+          function isExtensible(src) {
+            return typeof src === 'object' && _isExtensible(src);
+          }
+          /// #}}} @func isExtensible
 
-    objectIsExtensible = OBJ['isExtensible'];
-
-    try {
-      objectIsExtensible(function(){});
-      return objectIsExtensible;
-    }
-    catch (e) {
-      return function isExtensible(src) {
-        return typeof src === 'object' && objectIsExtensible(src);
-      };
-    }
-  })();
+          return isExtensible;
+        })()
+      : function isExtensible(src) {
+          return $NO;
+        };
   /// #}}} @func isExtensible
 
   /// #{{{ @func isFrozen
@@ -536,28 +476,35 @@ var $is = (function $isPrivateScope() {
    * @param {(!Object|!Function)} src
    * @return {boolean}
    */
-  var isFrozen = (function $isFrozenPolyfillPrivateScope() {
+  var isFrozen = $ENV.HAS.FUNCTION_IS_FROZEN
+    ? $OBJ['isFrozen']
+    : $ENV.HAS.OBJECT_IS_FROZEN
+      ? (function __vitals$isObjectIsFrozenPolyfill__() {
 
-    /** @type {!function(!Object): boolean} */
-    var objectIsFrozen;
+          /// #{{{ @func _isFrozen
+          /**
+           * @private
+           * @param {!Object} src
+           * @return {boolean}
+           */
+          var _isFrozen = $OBJ['isFrozen'];
+          /// #}}} @func _isFrozen
 
-    if ( !('isFrozen' in OBJ) || !isFunction(OBJ['isFrozen']) )
-      return function isFrozen(src) {
-        return false;
-      };
+          /// #{{{ @func isFrozen
+          /**
+           * @param {(!Object|!Function)} src
+           * @return {boolean}
+           */
+          function isFrozen(src) {
+            return typeof src === 'object' && _isFrozen(src);
+          }
+          /// #}}} @func isFrozen
 
-    objectIsFrozen = OBJ['isFrozen'];
-
-    try {
-      objectIsFrozen(function(){});
-      return objectIsFrozen;
-    }
-    catch (e) {
-      return function isFrozen(src) {
-        return typeof src === 'object' && objectIsFrozen(src);
-      };
-    }
-  })();
+          return isFrozen;
+        })()
+      : function isFrozen(src) {
+          return $NO;
+        };
   /// #}}} @func isFrozen
 
   /// #{{{ @func isSealed
@@ -565,33 +512,40 @@ var $is = (function $isPrivateScope() {
    * @param {(!Object|!Function)} src
    * @return {boolean}
    */
-  var isSealed = (function $isSealedPolyfillPrivateScope() {
+  var isSealed = $ENV.HAS.FUNCTION_IS_SEALED
+    ? $OBJ['isSealed']
+    : $ENV.HAS.OBJECT_IS_SEALED
+      ? (function __vitals$isObjectIsSealedPolyfill__() {
 
-    /** @type {!function(!Object): boolean} */
-    var objectIsSealed;
+          /// #{{{ @func _isSealed
+          /**
+           * @private
+           * @param {!Object} src
+           * @return {boolean}
+           */
+          var _isSealed = $OBJ['isSealed'];
+          /// #}}} @func _isSealed
 
-    if ( !('isSealed' in OBJ) || !isFunction(OBJ['isSealed']) )
-      return function isSealed(src) {
-        return false;
-      };
+          /// #{{{ @func isSealed
+          /**
+           * @param {(!Object|!Function)} src
+           * @return {boolean}
+           */
+          function isSealed(src) {
+            return typeof src === 'object' && _isSealed(src);
+          }
+          /// #}}} @func isSealed
 
-    objectIsSealed = OBJ['isSealed'];
-
-    try {
-      objectIsSealed(function(){});
-      return objectIsSealed;
-    }
-    catch (e) {
-      return function isSealed(src) {
-        return typeof src === 'object' && objectIsSealed(src);
-      };
-    }
-  })();
+          return isSealed;
+        })()
+      : function isSealed(src) {
+          return $NO;
+        };
   /// #}}} @func isSealed
 
-  /// #}}} @group Object-States
+  /// #}}} @group object-states
 
-  /// #{{{ @group Number-States
+  /// #{{{ @group number-states
 
   /// #{{{ @func isWholeNumber
   /**
@@ -623,34 +577,46 @@ var $is = (function $isPrivateScope() {
   }
   /// #}}} @func isEvenNumber
 
-  /// #}}} @group Number-States
+  /// #}}} @group number-states
 
-  /// #if{{{ @env NODE
-  /// #{{{ @group File-System
+  /// #if{{{ @build NODE
+  /// #{{{ @group file-system
+
+  /// #{{{ @func _getLinkStats
+  /**
+   * @param {string} path
+   * @return {!Object}
+   */
+  var _getLinkStats = $FS['lstatSync'];
+  /// #}}} @func _getLinkStats
 
   /// #{{{ @func _getStats
   /**
    * @param {string} path
    * @return {!Object}
    */
-  var _getStats = FS['statSync'];
+  var _getStats = $FS['statSync'];
   /// #}}} @func _getStats
 
   /// #{{{ @func isDirectory
   /**
-   * @param {string} path
+   * @param {*} path
    * @return {boolean}
    */
   function isDirectory(path) {
 
-    if ( !path || !isString(path) )
-      return NO;
+    /** @type {*} */
+    var err;
+
+    if ( !path || !isString(path) ) {
+      return $NO;
+    }
 
     try {
       return _getStats(path)['isDirectory']();
     }
-    catch (e) {
-      return NO;
+    catch (err) {
+      return $NO;
     }
   }
   /// #}}} @func isDirectory
@@ -662,20 +628,47 @@ var $is = (function $isPrivateScope() {
    */
   function isFile(path) {
 
-    if ( !path || !isString(path) )
-      return NO;
+    /** @type {*} */
+    var err;
+
+    if ( !path || !isString(path) ) {
+      return $NO;
+    }
 
     try {
       return _getStats(path)['isFile']();
     }
-    catch (e) {
-      return NO;
+    catch (err) {
+      return $NO;
     }
   }
   /// #}}} @func isFile
 
-  /// #}}} @group File-System
-  /// #if}}} @env NODE
+  /// #{{{ @func isSymLink
+  /**
+   * @param {string} path
+   * @return {boolean}
+   */
+  function isSymLink(path) {
+
+    /** @type {*} */
+    var err;
+
+    if ( !path || !isString(path) ) {
+      return $NO;
+    }
+
+    try {
+      return _getLinkStats(path)['isSymbolicLink']();
+    }
+    catch (err) {
+      return $NO;
+    }
+  }
+  /// #}}} @func isSymLink
+
+  /// #}}} @group file-system
+  /// #if}}} @build NODE
 
   /// #{{{ @const $is
   /**
@@ -683,8 +676,7 @@ var $is = (function $isPrivateScope() {
    * @struct
    */
   var $is = {
-
-    /// #{{{ @group Primitives
+    /// #{{{ @group primitives
     nil:  isNull,
     void: isUndefined,
     bool: isBoolean,
@@ -693,9 +685,9 @@ var $is = (function $isPrivateScope() {
     num:  isNumber,
     _num: isNonZeroNumber,
     nan:  isNan,
-    /// #}}} @group Primitives
+    /// #}}} @group primitives
 
-    /// #{{{ @group JS-Objects
+    /// #{{{ @group js-objects
     obj:  isObject,
     _obj: isObjectOrFunction,
     fun:  isFunction,
@@ -705,47 +697,47 @@ var $is = (function $isPrivateScope() {
     regx: isRegExp,
     date: isDate,
     err:  isError,
-    /// #if{{{ @env NODE
+    /// #if{{{ @build NODE
     buff: isBuffer,
-    /// #if}}} @env NODE
-    /// #}}} @group JS-Objects
+    /// #if}}} @build NODE
+    /// #}}} @group js-objects
 
-    /// #{{{ @group DOM-Objects
+    /// #{{{ @group dom-objects
     doc:  isDomDocument,
     elem: isDomElement,
-    /// #}}} @group DOM-Objects
+    /// #}}} @group dom-objects
 
-    /// #{{{ @group Special
+    /// #{{{ @group special
     arrish: isArrayLike,
     empty:  isEmpty,
     eol:    isEndOfLine,
     flags:  isRegExpFlags,
-    /// #}}} @group Special
+    /// #}}} @group special
 
-    /// #{{{ @group Object-States
+    /// #{{{ @group object-states
     extend: isExtensible,
     frozen: isFrozen,
     sealed: isSealed,
-    /// #}}} @group Object-States
+    /// #}}} @group object-states
 
-    /// #{{{ @group Number-States
-    // number states
+    /// #{{{ @group number-states
     whole: isWholeNumber,
     odd:   isOddNumber,
-    /// #ifnot{{{ @env NODE
+    /// #ifnot{{{ @build NODE
     even:  isEvenNumber
-    /// #ifnot}}} @env NODE
-    /// #if{{{ @env NODE
+    /// #ifnot}}} @build NODE
+    /// #if{{{ @build NODE
     even:  isEvenNumber,
-    /// #if}}} @env NODE
-    /// #}}} @group Number-States
+    /// #if}}} @build NODE
+    /// #}}} @group number-states
 
-    /// #if{{{ @env NODE
-    /// #{{{ @group File-System
-    dir:  isDirectory,
-    file: isFile
-    /// #}}} @group File-System
-    /// #if}}} @env NODE
+    /// #if{{{ @build NODE
+    /// #{{{ @group file-system
+    dir:     isDirectory,
+    file:    isFile,
+    symlink: isSymLink
+    /// #}}} @group file-system
+    /// #if}}} @build NODE
   };
   /// #}}} @const $is
 
