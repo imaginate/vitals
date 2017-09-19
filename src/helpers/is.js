@@ -340,6 +340,10 @@ var $is = (function __vitals$is__() {
       return $YES;
     }
 
+    if ( !('length' in val) ) {
+      return $NO;
+    }
+
     len = val['length'];
     return isNumber(len) && isWholeNumber(len) && len >= 0;
   }
