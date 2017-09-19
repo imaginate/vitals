@@ -10,6 +10,7 @@
  */
 
 /// #include @core OPEN ./core/open.js
+/// #include @helper $bind ./helpers/bind.js
 /// #include @helper $cloneArr ./helpers/clone-arr.js
 /// #include @helper $cloneFun ./helpers/clone-fun.js
 /// #include @helper $cloneObj ./helpers/clone-obj.js
@@ -41,6 +42,7 @@
 /// #include @super cut ./methods/cut.js
 /// #include @super each ./methods/each.js
 /// #include @super fill ./methods/fill.js
+/// #include @super filter ./methods/filter.js
 /// #include @super fuse ./methods/fuse.js
 /// #include @super get ./methods/get.js
 /// #include @super has ./methods/has.js

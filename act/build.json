@@ -134,6 +134,10 @@
               "dest": "fill.js"
             },
             {
+              "src": "filter.js",
+              "dest": "filter.js"
+            },
+            {
               "src": "freeze.js",
               "dest": "freeze.js"
             },
@@ -291,6 +295,10 @@
             {
               "src": "fill.js",
               "dest": "fill.js"
+            },
+            {
+              "src": "filter.js",
+              "dest": "filter.js"
             },
             {
               "src": "freeze.js",
@@ -491,6 +499,10 @@
               "dest": "fill.js"
             },
             {
+              "src": "filter.js",
+              "dest": "filter.js"
+            },
+            {
               "src": "freeze.js",
               "dest": "freeze.js"
             },
@@ -626,6 +638,10 @@
         {
           "src": "fill.js",
           "dest": "vitals.fill.md"
+        },
+        {
+          "src": "filter.js",
+          "dest": "vitals.filter.md"
         },
         {
           "src": "freeze.js",
