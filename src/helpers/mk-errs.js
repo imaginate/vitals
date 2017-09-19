@@ -167,6 +167,7 @@ var $mkErrs = (function $mkErrsPrivateScope() {
      */
     var MK_ERR = {
       MAIN: error,
+      NOARG: noArgError,
       TYPE: typeError,
       RANGE: rangeError
     };
@@ -207,6 +208,27 @@ var $mkErrs = (function $mkErrsPrivateScope() {
       return _setErrorProps(err, 'Error', msg);
     }
     /// #}}} @func error
+
+    /// #{{{ @func noArgError
+    /**
+     * @param {!Error} err
+     * @param {string} param
+     * @param {string=} method
+     * @return {!Error} 
+     */
+    function noArgError(err, param, method) {
+
+      /** @type {string} */
+      var msg;
+
+      method = _prepMethod(method);
+      param = _prepParam(param) + ' parameter';
+
+      msg = 'missing required ' + param + ' for ' + method + ' call';
+
+      return _setErrorProps(err, 'Error', msg);
+    }
+    /// #}}} @func noArgError
 
     /// #{{{ @func typeError
     /**

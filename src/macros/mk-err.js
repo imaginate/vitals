@@ -22,6 +22,19 @@
   /// #}}} @func _mkErr
 /// #def}}} @code MK_ERR
 
+/// #def{{{ @code MK_NOARG_ERR
+  /// #{{{ @func _mkNoArgErr
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} param
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var _mkNoArgErr = _MK_ERR.NOARG;
+  /// #}}} @func _mkNoArgErr
+/// #def}}} @code MK_NOARG_ERR
+
 /// #def{{{ @code MK_TYPE_ERR
   /// #{{{ @func _mkTypeErr
   /**
