@@ -27,7 +27,7 @@
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
 /// #include @helper $mkObj ../helpers/mk-obj.js
-/// #include @helper $mkErrs ../helpers/mk-errs.js
+/// #include @helper $mkErr ../helpers/mk-err.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
 /// #include @helper $cleanpath ../helpers/cleanpath.js
