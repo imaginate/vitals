@@ -66,7 +66,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new $ERR, 'no #val defined');
+        throw _MKERR_MAIN.noArg(new $ERR, 'val');
       case 1:
         deep = $NO;
         break;
@@ -75,7 +75,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
           deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=');
+          throw _MKERR_MAIN.type(new $TYPE_ERR, 'deep', deep, 'boolean=');
         }
     }
 
@@ -116,7 +116,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'object');
+        throw _MKERR_OBJ.noArg(new $ERR, 'source');
       case 1:
         deep = $NO;
         break;
@@ -125,13 +125,13 @@ $VITALS['copy'] = (function __vitalsCopy__() {
           deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=', 'object');
+          throw _MKERR_OBJ.type(new $TYPE_ERR, 'deep', deep, 'boolean=');
         }
     }
 
     if ( !$is.obj(source) && !$is.fun(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object|!Function',
-        'object');
+      throw _MKERR_OBJ.type(new $TYPE_ERR, 'source', source,
+        '!Object|!Function');
     }
 
     return _copyObj(source, deep);
@@ -172,7 +172,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'array');
+        throw _MKERR_ARR.noArg(new $ERR, 'source');
       case 1:
         deep = $NO;
         break;
@@ -181,17 +181,16 @@ $VITALS['copy'] = (function __vitalsCopy__() {
           deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=', 'array');
+          throw _MKERR_ARR.type(new $TYPE_ERR, 'deep', deep, 'boolean=');
         }
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
-        '(!Array|!Arguments|!Object)', 'array');
+      throw _MKERR_ARR.type(new $TYPE_ERR, 'source', source,
+        '(!Array|!Arguments|!Object)');
     }
     if ( !$is.arrish(source) ) {
-      throw _mkErr(new $ERR, '#source failed `array-like` test (#source.' +
-        'length must be a whole `number` that is `0` or more)', 'array');
+      throw _MKERR_ARR.arrLike(new $ERR, 'source', source);
     }
 
     return _copyArr(source, deep);
@@ -236,25 +235,23 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'regexp');
+        throw _MKERR_REGX.noArg(new $ERR, 'source');
       case 1:
         flags = $VOID;
         break;
       default:
         if ( $is.str(flags) ) {
           if ( !$is.flags(flags) ) {
-            throw _mkRangeErr(new $RANGE_ERR, 'flags', $is.flags.SRC,
-              'regexp');
+            throw _MKERR_REGX.range(new $RANGE_ERR, 'flags', $is.flags.SRC);
           }
         }
         else if ( !$is.void(flags) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'flags', flags, 'string=',
-            'regexp');
+          throw _MKERR_REGX.type(new $TYPE_ERR, 'flags', flags, 'string=');
         }
     }
 
     if ( !$is.regx(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!RegExp', 'regexp');
+      throw _MKERR_REGX.type(new $TYPE_ERR, 'source', source, '!RegExp');
     }
 
     return _copyRegex(source, flags);
@@ -300,7 +297,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'function');
+        throw _MKERR_FUN.noArg(new $ERR, 'source');
       case 1:
         deep = $NO;
         break;
@@ -309,14 +306,12 @@ $VITALS['copy'] = (function __vitalsCopy__() {
           deep = $NO;
         }
         else if ( !$is.bool(deep) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'deep', deep, 'boolean=',
-            'function');
+          throw _MKERR_FUN.type(new $TYPE_ERR, 'deep', deep, 'boolean=');
         }
     }
 
     if ( !$is.fun(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Function',
-        'function');
+      throw _MKERR_FUN.type(new $TYPE_ERR, 'source', source, '!Function');
     }
 
     return _copyFunc(source, deep);
@@ -594,20 +589,50 @@ $VITALS['copy'] = (function __vitalsCopy__() {
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('copy');
-  /// #}}} @const _MK_ERR
+  var _MKERR_MAIN = $mkErr('copy');
+  /// #}}} @const _MKERR_MAIN
 
-  /// #insert @code MK_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_OBJ
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_OBJ = $mkErr('copy', 'object');
+  /// #}}} @const _MKERR_OBJ
 
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_ARR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ARR = $mkErr('copy', 'array');
+  /// #}}} @const _MKERR_ARR
 
-  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_REGX
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_REGX = $mkErr('copy', 'regexp');
+  /// #}}} @const _MKERR_REGX
+
+  /// #{{{ @const _MKERR_FUN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_FUN = $mkErr('copy', 'function');
+  /// #}}} @const _MKERR_FUN
 
   /// #}}} @group errors
 
