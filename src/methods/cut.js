@@ -73,18 +73,6 @@ $VITALS['cut'] = (function __vitalsCut__() {
    *     - **The leading #val is a `string`**!$
    *       This method will [delete][delete] all properties with a key that
    *       matches (via a [strict equality][equal] test) any #val.
-   *     - **The leading #val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the [owned][own] property is [deleted][delete]). It has the
-   *       following optional parameters:
-   *       - **value** *`*`*
-   *       - **key** *`string`*
-   *       - **source** *`!Object|!Function`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `object` within the filter make sure you define the
-   *       filter's third parameter so you can safely assume all references to
-   *       the #source are its original values).
    *     - **All other situations**!$
    *       This method will [delete][delete] from the #source all [owned][own]
    *       properties with a value that matches (via a
@@ -96,18 +84,6 @@ $VITALS['cut'] = (function __vitalsCut__() {
    *       any #val. If a #val is a negative `number`, it is added to the
    *       #source [length][arr-length] before checking for a matching
    *       property.
-   *     - **The leading #val is a `function`**!$
-   *       The #val is considered a filter `function` (i.e. if it returns
-   *       `false` the indexed property is [spliced][splice] from the
-   *       #source). It has the following optional parameters:
-   *       - **value** *`*`*
-   *       - **index** *`number`*
-   *       - **source** *`!Array`*
-   *       Note that this method lazily [clones][clone] the #source based on
-   *       the filter's [length property][func-length] (i.e. if you alter the
-   *       #source `array` within the filter make sure you define the filter's
-   *       third parameter so you can safely assume all references to the
-   *       #source are its original values).
    *     - **All other situations**!$
    *       This method will [splice][splice] from the #source all indexed
    *       properties with a value that matches (via a
@@ -116,20 +92,6 @@ $VITALS['cut'] = (function __vitalsCut__() {
    *     Each `substring` of characters that matches any #val is removed from
    *     the #source. Each #val that is not a `RegExp` or `string` is
    *     converted to a `string` before checking the #source for any matches.
-   * @param {?Object=} thisArg
-   *   Only applicable when a filter `function` is defined for #val (i.e. the
-   *   #source must be an `object`, `function`, or `array`, and the leading
-   *   #val must be a `function`). If #thisArg is defined, the filter
-   *   `function` is bound to its value. Note that the native
-   *   [Function.prototype.bind][bind] is not used to bind the filter
-   *   `function`. Instead the filter `function` is wrapped with a regular new
-   *   [Function][func] that uses [Function.prototype.call][call] to call the
-   *   filter `function` with #thisArg. The new wrapper `function` has the
-   *   same [length property][func-length] value as the filter `function`
-   *   (unless more than three parameters were defined for the filter
-   *   `function` as the wrapper has a max value of `3`) and the
-   *   [name property][func-name] value of `"filter"` (unless you are using a
-   *   [minified][minify] version of `vitals`).
    * @return {(!Object|!Function|!Array|string)}
    *   The amended #source.
    */
@@ -137,59 +99,45 @@ $VITALS['cut'] = (function __vitalsCut__() {
   /// #if{{{ @code main
   function cut(source, val, thisArg) {
 
-    switch (arguments['length']) {
+    /** @type {number} */
+    var len;
+
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined');
-
+        throw _MKERR_MAIN.noArg(new $ERR, 'source');
       case 1:
-        throw _mkErr(new $ERR, 'no #val defined');
-
-      case 2:
-        if ( $is.str(source) )
-          return $is.arr(val)
-            ? _cutPatterns(source, val)
-            : _cutPattern(source, val);
-
-        if ( !$is._obj(source) )
-          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
-            '!Object|!Function|!Array|!Arguments|string');
-
-        if ( $is.args(source) )
-          source = $sliceArr(source);
-
-        return $is.fun(val)
-          ? $is.arr(source)
-            ? _filterArr(source, val, $VOID)
-            : _filterObj(source, val, $VOID)
-          : $is.arr(val)
-            ? _cutProps(source, val)
-            : _cutProp(source, val);
-
-      default:
-        if ( $is.str(source) ) {
-          val = $sliceArr(arguments, 1);
-          return _cutPatterns(source, val);
-        }
-
-        if ( !$is._obj(source) )
-          throw _mkTypeErr(new $TYPE_ERR, 'source', source,
-            '!Object|!Function|!Array|!Arguments|string');
-
-        if ( $is.args(source) )
-          source = $sliceArr(source);
-
-        if ( $is.fun(val) ) {
-          if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) )
-            throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=');
-
-          return $is.arr(source)
-            ? _filterArr(source, val, thisArg)
-            : _filterObj(source, val, thisArg);
-        }
-
-        val = $sliceArr(arguments, 1);
-        return _cutProps(source, val);
+        throw _MKERR_MAIN.noArg(new $ERR, 'val');
     }
+
+    if ( $is.str(source) ) {
+      if (len > 2) {
+        val = $sliceArr(arguments, 1);
+        return _cutPatterns(source, val);
+      }
+      return $is.arr(val)
+        ? _cutPatterns(source, val)
+        : _cutPattern(source, val);
+    }
+
+    if ( !$is._obj(source) ) {
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'source', source,
+        '!Object|!Function|!Array|!Arguments|string');
+    }
+
+    if ( $is.args(source) ) {
+      source = $sliceArr(source);
+    }
+
+    if (len > 2) {
+      val = $sliceArr(arguments, 1);
+      return _cutProps(source, val);
+    }
+
+    return $is.arr(val)
+      ? _cutProps(source, val)
+      : _cutProp(source, val);
   }
   cut['main'] = cut;
   /// #if}}} @code main
@@ -1418,117 +1366,6 @@ $VITALS['cut'] = (function __vitalsCut__() {
 
   /// #}}} @group splice
 
-  /// #{{{ @group filter
-
-  /// #{{{ @func _filterObj
-  /**
-   * @private
-   * @param {(!Object|!Function)} source
-   * @param {!function(*=, string=, (!Object|!Function)=): *} filter
-   * @param {?Object=} thisArg
-   * @return {(!Object|!Function)}
-   */
-  function _filterObj(source, filter, thisArg) {
-
-    /** @type {(!Object|!Function)} */
-    var src;
-    /** @type {string} */
-    var key;
-
-    if ( !$is.void(thisArg) )
-      filter = _bind(filter, thisArg);
-
-    src = filter['length'] > 2
-      ? $is.fun(source)
-        ? $cloneFun(source)
-        : $cloneObj(source)
-      : source;
-
-    switch (filter['length']) {
-      case 0:
-        for (key in src) {
-          if ( $own(src, key) && !filter() )
-            delete source[key];
-        }
-        break;
-      case 1:
-        for (key in src) {
-          if ( $own(src, key) && !filter(src[key]) )
-            delete source[key];
-        }
-        break;
-      case 2:
-        for (key in src) {
-          if ( $own(src, key) && !filter(src[key], key) )
-            delete source[key];
-        }
-        break;
-      default:
-        for (key in src) {
-          if ( $own(src, key) && !filter(src[key], key, src) )
-            delete source[key];
-        }
-        break;
-    }
-    return source;
-  }
-  /// #}}} @func _filterObj
-
-  /// #{{{ @func _filterArr
-  /**
-   * @private
-   * @param {!Array} source
-   * @param {!function(*=, number=, !Array=): *} filter
-   * @param {?Object=} thisArg
-   * @return {!Array}
-   */
-  function _filterArr(source, filter, thisArg) {
-
-    /** @type {!Array} */
-    var src;
-    /** @type {number} */
-    var i;
-
-    if ( !$is.void(thisArg) )
-      filter = _bind(filter, thisArg);
-
-    src = filter['length'] > 2
-      ? $cloneArr(source)
-      : source;
-    i = src['length'];
-
-    switch (filter['length']) {
-      case 0:
-        while (i--) {
-          if ( !filter() )
-            source['splice'](i, 1);
-        }
-        break;
-      case 1:
-        while (i--) {
-          if ( !filter(src[i]) )
-            source['splice'](i, 1);
-        }
-        break;
-      case 2:
-        while (i--) {
-          if ( !filter(src[i], i) )
-            source['splice'](i, 1);
-        }
-        break;
-      default:
-        while (i--) {
-          if ( !filter(src[i], i, src) )
-            source['splice'](i, 1);
-        }
-        break;
-    }
-    return source;
-  }
-  /// #}}} @func _filterArr
-
-  /// #}}} @group filter
-
   /// #{{{ @group sort
 
   /// #{{{ @func _sortIndexes
@@ -1831,38 +1668,6 @@ $VITALS['cut'] = (function __vitalsCut__() {
 
   /// #}}} @group sort
 
-  /// #{{{ @group bind
-
-  /// #{{{ @func _bind
-  /**
-   * @private
-   * @param {!function} func
-   * @param {?Object} thisArg
-   * @return {!function} 
-   */
-  function _bind(func, thisArg) {
-    switch (func['length']) {
-      case 0:
-        return function filter() {
-          return func['call'](thisArg);
-        };
-      case 1:
-        return function filter(val) {
-          return func['call'](thisArg, val);
-        };
-      case 2:
-        return function filter(val, key) {
-          return func['call'](thisArg, val, key);
-        };
-    }
-    return function filter(val, key, obj) {
-      return func['call'](thisArg, val, key, obj);
-    };
-  }
-  /// #}}} @func _bind
-
-  /// #}}} @group bind
-
   /// #{{{ @group is
 
   /// #{{{ @func _isIntArr
@@ -1947,18 +1752,14 @@ $VITALS['cut'] = (function __vitalsCut__() {
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('cut');
-  /// #}}} @const _MK_ERR
-
-  /// #insert @code MK_ERR ../macros/mk-err.js
-
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+  var _MKERR_MAIN = $mkErr('cut');
+  /// #}}} @const _MKERR_MAIN
 
   /// #}}} @group errors
 
