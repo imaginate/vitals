@@ -102,24 +102,25 @@ $VITALS['filter'] = (function __vitalsFilter__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkNoArgErr(new $ERR, 'source');
+        throw _MKERR_MAIN.noArg(new $ERR, 'source');
       case 1:
-        throw _mkNoArgErr(new $ERR, 'validator');
+        throw _MKERR_MAIN.noArg(new $ERR, 'validator');
       case 2:
         thisArg = $VOID;
         break;
       default:
         if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=');
+          throw _MKERR_MAIN.type(new $TYPE_ERR, 'thisArg', thisArg,
+            '?Object=');
         }
     }
 
     if ( !$is._obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'source', source,
         '!Object|!Function|!Array|!Arguments');
     }
     if ( !$is.fun(validator) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'validator', validator,
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'validator', validator,
         '!function(*=, number|string=, !Object|!Function|!Array=): *');
     }
 
@@ -178,26 +179,26 @@ $VITALS['filter'] = (function __vitalsFilter__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkNoArgErr(new $ERR, 'source', 'object');
+        throw _MKERR_OBJ.noArg(new $ERR, 'source');
       case 1:
-        throw _mkNoArgErr(new $ERR, 'validator', 'object');
+        throw _MKERR_OBJ.noArg(new $ERR, 'validator');
       case 2:
         thisArg = $VOID;
         break;
       default:
         if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=',
-            'object');
+          throw _MKERR_OBJ.type(new $TYPE_ERR, 'thisArg', thisArg,
+            '?Object=');
         }
     }
 
     if ( !$is._obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object|!Function',
-        'object');
+      throw _MKERR_OBJ.type(new $TYPE_ERR, 'source', source,
+        '!Object|!Function');
     }
     if ( !$is.fun(validator) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'validator', validator,
-        '!function(*=, string=, !Object|!Function=): *', 'object');
+      throw _MKERR_OBJ.type(new $TYPE_ERR, 'validator', validator,
+        '!function(*=, string=, !Object|!Function=): *');
     }
 
     return _filterObj(source, validator, thisArg);
@@ -255,29 +256,29 @@ $VITALS['filter'] = (function __vitalsFilter__() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkNoArgErr(new $ERR, 'source', 'array');
+        throw _MKERR_ARR.noArg(new $ERR, 'source');
       case 1:
-        throw _mkNoArgErr(new $ERR, 'validator', 'array');
+        throw _MKERR_ARR.noArg(new $ERR, 'validator');
       case 2:
         thisArg = $VOID;
         break;
       default:
         if ( !$is.nil(thisArg) && !$is.void(thisArg) && !$is.obj(thisArg) ) {
-          throw _mkTypeErr(new $TYPE_ERR, 'thisArg', thisArg, '?Object=',
-            'array');
+          throw _MKERR_ARR.type(new $TYPE_ERR, 'thisArg', thisArg,
+            '?Object=');
         }
     }
 
     if ( !$is._obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source,
-        '!Array|!Arguments|!Object|!Function', 'array');
+      throw _MKERR_ARR.type(new $TYPE_ERR, 'source', source,
+        '!Array|!Arguments|!Object|!Function');
     }
     if ( !$is.arrish(source) ) {
-      throw _mkArrishErr(new $ERR, 'source', source, 'array');
+      throw _MKERR_ARR.arrLike(new $ERR, 'source', source);
     }
     if ( !$is.fun(validator) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'validator', validator,
-        '!function(*=, number=, !Array=): *', 'array');
+      throw _MKERR_ARR.type(new $TYPE_ERR, 'validator', validator,
+        '!function(*=, number=, !Array=): *');
     }
 
     if ( !$is.arr(source) ) {
@@ -411,22 +412,32 @@ $VITALS['filter'] = (function __vitalsFilter__() {
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('filter');
-  /// #}}} @const _MK_ERR
+  var _MKERR_MAIN = $mkErr('filter');
+  /// #}}} @const _MKERR_MAIN
 
-  /// #insert @code MK_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_OBJ
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_OBJ = $mkErr('filter', 'object');
+  /// #}}} @const _MKERR_OBJ
 
-  /// #insert @code MK_NOARG_ERR ../macros/mk-err.js
-
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
-
-  /// #insert @code MK_ARRISH_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_ARR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ARR = $mkErr('filter', 'array');
+  /// #}}} @const _MKERR_ARR
 
   /// #}}} @group errors
 
