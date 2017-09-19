@@ -15,7 +15,7 @@
  * @param {string=} superMethod
  * @return {!Object<string, !function>}
  */
-var $mkErrs = (function $mkErrsPrivateScope() {
+var $mkErrs = (function __vitals$mkErrs__() {
 
   /// #{{{ @group constants
 
@@ -125,28 +125,31 @@ var $mkErrs = (function $mkErrsPrivateScope() {
    * @return {!Error}
    */
   function _setErrorProps(err, name, msg, val) {
-    err['__vitals__'] = $YES;
-    err['__vitals'] = $YES;
-    err['vitals'] = $YES;
+
+    err['__VITALS__'] = $YES;
+    err['VITALS'] = $YES;
+
     err['name'] = name;
+
     switch (name) {
       case 'TypeError':
-        err['__type__'] = $YES;
-        err['__type'] = $YES;
-        err['type'] = $YES;
+        err['__TYPE__'] = $YES;
+        err['TYPE'] = $YES;
         break;
       case 'RangeError':
-        err['__range__'] = $YES;
-        err['__range'] = $YES;
-        err['range'] = $YES;
+        err['__RANGE__'] = $YES;
+        err['RANGE'] = $YES;
         break;
     }
+
     err['message'] = msg;
     err['msg'] = msg;
+
     if (arguments['length'] > 3) {
       err['value'] = val;
       err['val'] = val;
     }
+
     return err;
   }
   /// #}}} @func _setErrorProps
