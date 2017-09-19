@@ -1038,45 +1038,6 @@ function makeNewVitals() {
     })();
     /// #}}} @const _HAS_IS_FUN_SEALED
 
-  /// #{{{ @func _create
-  /**
-   * @private
-   * @param {?Object} proto
-   * @return {!Object}
-   */
-  var _create = _HAS_CREATE
-    ? _OBJ['create']
-    : (function __vitalsMakeObjectCreatePolyfill__() {
-
-        /// #{{{ @func _Obj
-        /**
-         * @private
-         * @constructor
-         */
-        function _Obj(){}
-        /// #}}} @func _Obj
-
-        /// #{{{ @func create
-        /**
-         * @param {?Object} proto
-         * @return {!Object}
-         */
-        function create(proto) {
-
-          /** @type {!Object} */
-          var obj;
-
-          _Obj['prototype'] = proto;
-          obj = new _Obj();
-          _Obj['prototype'] = __NIL__;
-          return obj;
-        }
-        /// #}}} @func create
-
-        return create;
-      })();
-  /// #}}} @func _create
-
     /// #}}} @group polyfills
 
     /// #{{{ @group events
@@ -1404,7 +1365,7 @@ function makeNewVitals() {
      * @const {!Object<string, boolean>}
      * @struct
      */
-    var ENV_HAS_DFLT = _create(__NIL__);
+    var ENV_HAS_DFLT = {};
     /// #}}} @const ENV_HAS_DFLT
 
     /// #{{{ @const ENV_HAS_DFLT.EXPORTS
@@ -1488,7 +1449,7 @@ function makeNewVitals() {
      * @const {!Object<string, (?Object|?Function)>}
      * @struct
      */
-    var ENV_DFLT = _create(__NIL__);
+    var ENV_DFLT = {};
     /// #}}} @const ENV_DFLT
 
     /// #{{{ @const ENV_DFLT.DEFINE
@@ -1575,7 +1536,7 @@ function makeNewVitals() {
      * @const {!Object<string, boolean>}
      * @struct
      */
-    var ENV_IS_DFLT = _create(__NIL__);
+    var ENV_IS_DFLT = {};
     /// #}}} @const ENV_IS_DFLT
 
     /// #{{{ @const ENV_IS_DFLT.DEFINE
@@ -1634,7 +1595,7 @@ function makeNewVitals() {
      * @const {!Object<string, boolean>}
      * @struct
      */
-    var ENV_HAS = _create(__NIL__);
+    var ENV_HAS = {};
     /// #}}} @const ENV_HAS
 
     /// #{{{ @const ENV_HAS.ARGUMENTS_CALLEE
@@ -1794,7 +1755,7 @@ function makeNewVitals() {
      * @const {!Object<string, (?Object|?Function)>}
      * @struct
      */
-    var ENV = _create(__NIL__);
+    var ENV = {};
     /// #}}} @const ENV
 
     /// #{{{ @const ENV.HAS
@@ -1924,7 +1885,7 @@ function makeNewVitals() {
     /**
      * @const {!Object}
      */
-    var CONFIG = _create(__NIL__);
+    var CONFIG = {};
     /// #}}} @const CONFIG
 
     /// #}}} @step create-config-constants
