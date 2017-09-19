@@ -154,42 +154,42 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined');
+        throw _MKERR_MAIN.noArg(new $ERR, 'source');
       case 1:
-        throw _mkErr(new $ERR, 'no #props defined');
+        throw _MKERR_MAIN.noArg(new $ERR, 'props');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object');
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'source', source, '!Object');
     }
 
     byKey = $is.str(props);
 
     if (byKey) {
       if (!props) {
-        throw _mkErr(new $ERR, 'invalid empty key name `string` defined for '
-          + '#props');
+        throw _MKERR_MAIN.misc(new $ERR, 'invalid empty key name `string` '
+          + 'defined for #props');
       }
       byKeys = $NO;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'props', props,
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'props', props,
         '!Object<string, *>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
       if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
+        throw _MKERR_MAIN.type(new $TYPE_ERR, 'props property', props,
           '!Array<string>');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new $ERR,
-          'invalid empty key name `string` defined in #props `array`');
+        throw _MKERR_MAIN.misc(new $ERR, 'invalid empty key name `string` '
+          + 'defined in #props `array`');
       }
       byKeys = $YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props');
+      throw _MKERR_MAIN.misc(new $ERR, 'conflicting accessor and data '
+        + 'descriptor properties for a property value within the #props');
     }
     else {
       byKeys = $NO;
@@ -300,46 +300,48 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
-          + '`object`', _DESCRIPTOR_KEYS);
+        throw _MKERR_MAIN.range(new $RANGE_ERR, '!property defined in '
+          + 'descriptor `object`', _DESCRIPTOR_KEYS);
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor');
+        throw _MKERR_MAIN.misc(new $ERR, 'conflicting accessor and data '
+          + 'descriptor properties within the #descriptor');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=');
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'descriptor', descriptor,
+        '?Object=');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=');
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'strongType', strongType,
+        'string=');
     }
     else if (strongType) {
       if ( !$is.void(val) && !is(strongType, val) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType);
+        throw _MKERR_MAIN.type(new $TYPE_ERR, 'val', val, strongType);
       }
       if ( !byKey && !byKeys && !_strongTypeCheckProps(strongType, props) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new $TYPE_ERR, 'props property value', props,
+        throw _MKERR_MAIN.type(new $TYPE_ERR, 'props property value', props,
           strongType);
       }
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'setter', setter,
         '(?function(*, *): *)=');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter');
+        throw _MKERR_MAIN.misc(new $ERR, 'conflicting accessor #descriptor '
+          + 'and defined #strongType and/or #setter');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter');
+        throw _MKERR_MAIN.misc(new $ERR, 'conflicting data #descriptor and '
+          + 'defined #strongType and/or #setter');
       }
     }
 
@@ -421,22 +423,21 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'property');
+        throw _MKERR_PROP.noArg(new $ERR, 'source');
       case 1:
-        throw _mkErr(new $ERR, 'no #key defined', 'property');
+        throw _MKERR_PROP.noArg(new $ERR, 'key');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object',
-        'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'source', source, '!Object');
     }
 
     if ( !$is.str(key) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'key', key, 'string', 'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'key', key, 'string');
     }
     else if (!key) {
-      throw _mkErr(new $ERR, 'invalid empty key name `string` defined for '
-        + '#key', 'property');
+      throw _MKERR_PROP.misc(new $ERR, 'invalid empty key name `string` '
+        + 'defined for #key');
     }
 
     switch (len) {
@@ -536,41 +537,41 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new $RANGE_ERR, 'descriptor property defined',
-          _DESCRIPTOR_KEYS, 'property');
+        throw _MKERR_PROP.range(new $RANGE_ERR, 'descriptor property defined',
+          _DESCRIPTOR_KEYS);
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor', 'property');
+        throw _MKERR_PROP.misc(new $ERR, 'conflicting accessor and data '
+          + 'descriptor properties within the #descriptor');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'descriptor', descriptor,
+        '?Object=');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=',
-        'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'strongType', strongType,
+        'string=');
     }
     else if ( !!strongType && !$is.void(val) && !is(strongType, val) ) {
       strongType = _appendEqualSign(strongType);
-      throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType, 'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'val', val, strongType);
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
-        '(?function(*, *): *)=', 'property');
+      throw _MKERR_PROP.type(new $TYPE_ERR, 'setter', setter,
+        '(?function(*, *): *)=');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter', 'property');
+        throw _MKERR_PROP.misc(new $ERR, 'conflicting accessor #descriptor '
+          + 'and defined #strongType and/or #setter');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter', 'property');
+        throw _MKERR_PROP.misc(new $ERR, 'conflicting data #descriptor and '
+          + 'defined #strongType and/or #setter');
       }
     }
 
@@ -703,46 +704,45 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     switch (len) {
       case 0:
-        throw _mkErr(new $ERR, 'no #source defined', 'properties');
+        throw _MKERR_PROPS.noArg(new $ERR, 'source');
       case 1:
-        throw _mkErr(new $ERR, 'no #props defined', 'properties');
+        throw _MKERR_PROPS.noArg(new $ERR, 'props');
     }
 
     if ( !$is.obj(source) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'source', source, '!Object',
-        'properties');
+      throw _MKERR_PROPS.type(new $TYPE_ERR, 'source', source, '!Object');
     }
 
     if ( $is.str(props) ) {
       if (!props) {
-        throw _mkErr(new $ERR, 'invalid empty `string` defined for #props',
-          'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'invalid empty `string` defined '
+          + 'for #props');
       }
       props = $splitKeys(props);
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new $ERR, 'invalid empty key name defined in #props '
-          + '`string`', 'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'invalid empty key name defined in '
+          + '#props `string`');
       }
       byKeys = $YES;
     }
     else if ( !$is.obj(props) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'props', props,
-        '!Object<string, *>|!Array<string>|string', 'properties');
+      throw _MKERR_PROPS.type(new $TYPE_ERR, 'props', props,
+        '!Object<string, *>|!Array<string>|string');
     }
     else if ( $is.arr(props) ) {
       if ( !_keysTypeCheckProps(props) ) {
-        throw _mkTypeErr(new $TYPE_ERR, 'props property', props,
-          '!Array<string>', 'properties');
+        throw _MKERR_PROPS.type(new $TYPE_ERR, 'props property', props,
+          '!Array<string>');
       }
       if ( !_keysCheckProps(props) ) {
-        throw _mkErr(new $ERR, 'invalid empty key name `string` defined in '
-          + '#props `array`', 'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'invalid empty key name `string` '
+          + 'defined in #props `array`');
       }
       byKeys = $YES;
     }
     else if ( !_descriptorCheckProps(props) ) {
-      throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
-        + 'properties for a property value within the #props', 'properties');
+      throw _MKERR_PROPS.misc(new $ERR, 'conflicting accessor and data '
+        + 'descriptor properties for a property value within the #props');
     }
     else {
       byKeys = $NO;
@@ -849,48 +849,48 @@ $VITALS['assign'] = (function __vitalsAssign__() {
 
     if ( $is.obj(descriptor) ) {
       if ( !_hasOnlyDescriptorProps(descriptor) ) {
-        throw _mkRangeErr(new $RANGE_ERR, '!property defined in descriptor '
-          + '`object`', _DESCRIPTOR_KEYS, 'properties');
+        throw _MKERR_PROPS.range(new $RANGE_ERR, '!property defined in '
+          + 'descriptor `object`', _DESCRIPTOR_KEYS);
       }
       if ( _isBadDescriptor(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor and data descriptor '
-          + 'properties within the #descriptor', 'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'conflicting accessor and data '
+          + 'descriptor properties within the #descriptor');
       }
     }
     else if ( !$is.nil(descriptor) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'descriptor', descriptor, '?Object=',
-        'properties');
+      throw _MKERR_PROPS.type(new $TYPE_ERR, 'descriptor', descriptor,
+        '?Object=');
     }
 
     if ( !$is.str(strongType) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'strongType', strongType, 'string=',
-        'properties');
+      throw _MKERR_PROPS.type(new $TYPE_ERR, 'strongType', strongType,
+        'string=');
     }
     else if (strongType) {
       if ( !$is.void(val) && !is(strongType, val) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new $TYPE_ERR, 'val', val, strongType, 'properties');
+        throw _MKERR_PROPS.type(new $TYPE_ERR, 'val', val, strongType);
       }
       if ( !byKeys && !_strongTypeCheckProps(strongType, props) ) {
         strongType = _appendEqualSign(strongType);
-        throw _mkTypeErr(new $TYPE_ERR, 'props property value', props,
-          strongType, 'properties');
+        throw _MKERR_PROPS.type(new $TYPE_ERR, 'props property value', props,
+          strongType);
       }
     }
 
     if ( !$is.nil(setter) && !$is.fun(setter) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'setter', setter,
-        '(?function(*, *): *)=', 'properties');
+      throw _MKERR_PROPS.type(new $TYPE_ERR, 'setter', setter,
+        '(?function(*, *): *)=');
     }
 
     if ( !!descriptor && (!!strongType || !!setter) ) {
       if ( _hasAccessorProp(descriptor) ) {
-        throw _mkErr(new $ERR, 'conflicting accessor #descriptor and defined '
-          + '#strongType and/or #setter', 'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'conflicting accessor #descriptor '
+          + 'and defined #strongType and/or #setter');
       }
       else if ( $own(descriptor, 'writable') ) {
-        throw _mkErr(new $ERR, 'conflicting data #descriptor and defined '
-          + '#strongType and/or #setter', 'properties');
+        throw _MKERR_PROPS.misc(new $ERR, 'conflicting data #descriptor and '
+          + 'defined #strongType and/or #setter');
       }
     }
 
@@ -1709,33 +1709,48 @@ $VITALS['assign'] = (function __vitalsAssign__() {
    * @return {!TypeError}
    */
   function _mkStrongTypeErr(err, msg) {
-    err['__setter__'] = $YES;
-    err['__setter'] = $YES;
-    err['setter'] = $YES;
-    err['__type__'] = $YES;
-    err['__type'] = $YES;
-    err['type'] = $YES;
+
+    err['__SETTER__'] = $YES;
+    err['SETTER'] = $YES;
+
+    err['__TYPE__'] = $YES;
+    err['TYPE'] = $YES;
+
     err['name'] = 'TypeError';
+
     err['message'] = msg;
     err['msg'] = msg;
+
     return err;
   }
   /// #}}} @func _mkStrongTypeErr
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('assign');
-  /// #}}} @const _MK_ERR
+  var _MKERR_MAIN = $mkErr('assign');
+  /// #}}} @const _MKERR_MAIN
 
-  /// #insert @code MK_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_PROP
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_PROP = $mkErr('assign', 'property');
+  /// #}}} @const _MKERR_PROP
 
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
-
-  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_PROPS
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_PROPS = $mkErr('assign', 'properties');
+  /// #}}} @const _MKERR_PROPS
 
   /// #}}} @group errors
 
