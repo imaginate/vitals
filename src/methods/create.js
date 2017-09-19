@@ -157,10 +157,10 @@ $VITALS['create'] = (function __vitalsCreate__() {
     len = arguments['length'];
 
     if (len < 1) {
-      throw _mkErr(new $ERR, 'no #proto defined');
+      throw _MKERR_MAIN.noArg(new $ERR, 'proto');
     }
     if ( !$is.nil(proto) && !$is.obj(proto) ) {
-      throw _mkTypeErr(new $TYPE_ERR, 'proto', proto, '?Object');
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'proto', proto, '?Object');
     }
 
     obj = $mkObj(proto);
@@ -189,18 +189,14 @@ $VITALS['create'] = (function __vitalsCreate__() {
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('create');
-  /// #}}} @const _MK_ERR
-
-  /// #insert @code MK_ERR ../macros/mk-err.js
-
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+  var _MKERR_MAIN = $mkErr('create');
+  /// #}}} @const _MKERR_MAIN
 
   /// #}}} @group errors
 
