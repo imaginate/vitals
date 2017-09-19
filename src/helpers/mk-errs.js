@@ -19,6 +19,22 @@ var $mkErrs = (function __vitals$mkErrs__() {
 
   /// #{{{ @group constants
 
+  /// #{{{ @const _CLOSE_DASH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _CLOSE_DASH = /-$/;
+  /// #}}} @const _CLOSE_DASH
+
+  /// #{{{ @const _OPEN_DASH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _OPEN_DASH = /^-/;
+  /// #}}} @const _OPEN_DASH
+
   /// #{{{ @const _OPEN_HASH
   /**
    * @private
@@ -109,9 +125,17 @@ var $mkErrs = (function __vitals$mkErrs__() {
    * @return {string}
    */
   function _prepParamName(name) {
-    return !!name
-      ? name['replace'](_OPEN_HASH, '')['replace'](/[ \t]+/g, '-')
-      : '';
+
+    if (!name) {
+      return '';
+    }
+
+    name = name['replace'](_OPEN_HASH, '');
+    name = name['replace'](/[ \t\.]+/g, '-');
+    name = name['replace'](_OPEN_DASH, '');
+    name = name['replace'](_CLOSE_DASH, '');
+
+    return name;
   }
   /// #}}} @func _prepParamName
 
@@ -172,7 +196,8 @@ var $mkErrs = (function __vitals$mkErrs__() {
       MAIN: error,
       NOARG: noArgError,
       TYPE: typeError,
-      RANGE: rangeError
+      RANGE: rangeError,
+      ARRISH: arrayLikeError
     };
     /// #}}} @const MK_ERR
 
@@ -300,6 +325,55 @@ var $mkErrs = (function __vitals$mkErrs__() {
       return _setErrorProps(err, 'RangeError', msg);
     }
     /// #}}} @func rangeError
+
+    /// #{{{ @func arrayLikeError
+    /**
+     * @param {!Error} err
+     * @param {string} paramName
+     * @param {(!Object|!Function)} paramVal
+     * @param {string=} method
+     * @return {!Error} 
+     */
+    function arrayLikeError(err, paramName, paramVal, method) {
+
+      /** @type {string} */
+      var paramLen;
+      /** @type {string} */
+      var param;
+      /** @type {string} */
+      var msg;
+      /** @type {string} */
+      var val;
+      /** @type {*} */
+      var len;
+
+      method = _prepMethod(method);
+      param = _prepParam(paramName);
+
+      if ( !('length' in paramVal) || $is.void(paramVal['length']) ) {
+        msg = 'undefined length in ' + param + ' for ' + method + ' call';
+        return _setErrorProps(err, 'Error', msg, paramVal);
+      }
+
+      len = paramVal['length'];
+      param += '.length';
+      paramLen = $print(len, 1);
+      paramName = _prepParamName(param);
+
+      if ( !$is.num(len) ) {
+        msg = 'invalid ' + param + ' data type for ' + method + ' call\n'
+          + '    valid-data-types: `number`\n'
+          + '    invalid-' + paramName + '-value: `' + paramLen + '`';
+        return _setErrorProps(err, 'TypeError', msg, len);
+      }
+
+      msg = 'out-of-range ' + param + ' for ' + method + ' call\n'
+        + '    valid-range-test: `isWholeNumber(length) && length >= 0`\n'
+        + '    invalid-' + paramName + '-value: `' + paramLen + '`';
+
+      return _setErrorProps(err, 'RangeError', msg, len);
+    }
+    /// #}}} @func arrayLikeError
 
     return MK_ERR;
   }

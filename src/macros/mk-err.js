@@ -66,4 +66,18 @@
   /// #}}} @func _mkRangeErr
 /// #def}}} @code MK_RANGE_ERR
 
+/// #def{{{ @code MK_ARRISH_ERR
+  /// #{{{ @func _mkArrishErr
+  /**
+   * @private
+   * @param {!Error} err
+   * @param {string} paramName
+   * @param {(!Object|!Function)} paramVal
+   * @param {string=} method
+   * @return {!Error} 
+   */
+  var _mkArrishErr = _MK_ERR.ARRISH;
+  /// #}}} @func _mkArrishErr
+/// #def}}} @code MK_ARRISH_ERR
+
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
