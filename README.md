@@ -27,14 +27,14 @@ var i = v.find.all(life, /[A-Z]/); // sets `i` to `[ "X", "Y", "Z" ]`
 var t = v.sew('v', 5, life);       // sets `t` to `"v5123abc345XYZ"`
 var a = v.cut(life, 3, /[a-z]/g);  // sets `a` to `"1245XYZ"`
 var l = v.slice(life, -3, -1);     // sets `l` to `"XY"`
-var s = v.replace(life, 3, 'w$&'); // sets `s` to `"12w3abcw345XYZ"`
+var s = v.replace(life, 3, 'w$&'); // sets `s` to `"12w3abc345XYZ"`
 
 v.is('arr|str', i, t); // returns `true`
 v.is.string(a, i);     // returns `true`
 v.is.str(i, t)         // returns `false`
 
-v.matches.any(life, /^[A-Z]/, 1, 'Z'); // returns `true`
-v.matches(life, /^[A-Z]/, 1, 'Z');     // returns `false`
+v.match.any(life, /^[A-Z]/, 1, 'Z'); // returns `true`
+v.match(life, /^[A-Z]/, 1, 'Z');     // returns `false`
 
 v.has(life, /[A-Z]/, 1, 'Z'); // returns `false`
 v.has(life, 1, 'Z');          // returns `true`
@@ -177,28 +177,50 @@ For help see:
 
 ## API
 
-| Base Methods           | Strict Methods   | File System Methods | Process Methods        |
-| :--------------------: | :--------------: | :-----------------: | :--------------------: |
-| bind\*                 | [amend][amend]   | [cat][cat]          | [exec][exec]           |
-| [copy][copy]           | [assign][assign] | [cd][cd]            | [exit][exit]           |
-| [cut][cut]             | [cap][cap]       | [ch][ch]            | [parsecmd][parsecmd]   |
-| [each][each]           | [create][create] | [cp][cp]            | [parseopts][parseopts] |
-| [fill][fill]           | [freeze][freeze] | [ls][ls]            | [run][run]             |
-| [filter][filter]       | [seal][seal]     | [mk][mk]            |                        |
-| [find][find]           |                  | [mv][mv]            |                        |
-| [get][get]             |                  | [resolve][resolve]  |                        |
-| [has][has]             |                  | [rm][rm]            |                        |
-| [is][is]               |                  | [tee][tee]          |                        |
-| [matches][matches]     |                  | [test][test]        |                        |
-| [remap][remap]         |                  |                     |                        |
-| [roll][roll]           |                  |                     |                        |
-| [sew][sew]             |                  |                     |                        |
-| [slice][slice]         |                  |                     |                        |
-| [stringify][stringify] |                  |                     |                        |
-| [to][to]               |                  |                     |                        |
-| [trim][trim]           |                  |                     |                        |
-| [until][until]         |                  |                     |                        |
+|  Base Methods           |  Strict Methods         |  File System Methods    |  Information Methods    |  Process Methods        |  Special Parse Methods  |
+| :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
+| [bind][bind]            | [amend][amend]          | [cat][cat]              | [config][config]        | [exec][exec]            | [parsecmd][parsecmd]    |
+| [copy][copy]            | [assign][assign]        | [cd][cd]                | [defaults][defaults]    | [exit][exit]            |                         |
+| [cut][cut]              | [cap][cap]              | [ch][ch]                | [env][env]              | [run][run]              |                         |
+| [each][each]            | [create][create]        | [cp][cp]                | [version][version]      |                         |                         |
+| [fill][fill]            | [freeze][freeze]        | [ls][ls]                |                         |                         |                         |
+| [filter][filter]        | [seal][seal]            | [mk][mk]                |                         |                         |                         |
+| [find][find]            |                         | [mv][mv]                |                         |                         |                         |
+| [has][has]              |                         | [resolve][resolve]      |                         |                         |                         |
+| [insert][insert]        |                         | [rm][rm]                |                         |                         |                         |
+| [is][is]                |                         | [tee][tee]              |                         |                         |                         |
+| [join][join]            |                         | [test][test]            |                         |                         |                         |
+| [keys][keys]            |                         |                         |                         |                         |                         |
+| [match][match]          |                         |                         |                         |                         |                         |
+| [owns][owns]            |                         |                         |                         |                         |                         |
+| [remap][remap]          |                         |                         |                         |                         |                         |
+| [remove][remove]        |                         |                         |                         |                         |                         |
+| [replace][replace]      |                         |                         |                         |                         |                         |
+| [roll][roll]            |                         |                         |                         |                         |                         |
+| [sew][sew]              |                         |                         |                         |                         |                         |
+| [slice][slice]          |                         |                         |                         |                         |                         |
+| [split][split]          |                         |                         |                         |                         |                         |
+| [to][to]                |                         |                         |                         |                         |                         |
+| [trim][trim]            |                         |                         |                         |                         |                         |
+| [until][until]          |                         |                         |                         |                         |                         |
 
+
+|  Base Array Methods     |  Base Function Methods  |  Base Object Methods    |  Base String Methods    |
+| :---------------------: | :---------------------: | :---------------------: | :---------------------: |
+| [copy][copy]            | [bind][bind]            | [copy][copy]            | [copy][copy]            |
+| [each][each]            | [copy][copy]            | [each][each]            | [cut][cut]              |
+| [fill][fill]            | [each][each]            | [filter][filter]        | [find][find]            |
+| [filter][filter]        | [filter][filter]        | [has][has]              | [insert][insert]        |
+| [has][has]              | [has][has]              | [is][is]                | [is][is]                |
+| [is][is]                | [is][is]                | [keys][keys]            | [match][match]          |
+| [join][join]            | [keys][keys]            | [owns][owns]            | [replace][replace]      |
+| [owns][owns]            | [owns][owns]            | [remap][remap]          | [sew][sew]              |
+| [remap][remap]          | [remap][remap]          | [remove][remove]        | [slice][slice]          |
+| [remove][remove]        | [remove][remove]        | [roll][roll]            | [split][split]          |
+| [roll][roll]            | [roll][roll]            | [to][to]                | [to][to]                |
+| [slice][slice]          | [to][to]                | [until][until]          | [trim][trim]            |
+| [to][to]                | [until][until]          |                         |                         |
+| [until][until]          |                         |                         |                         |
 
 ## Other Details
 
@@ -237,32 +259,54 @@ Send an email to <dev@vitalsjs.com>.
 
 [amend]: https://github.com/imaginate/vitals/wiki/vitals.amend
 [assign]: https://github.com/imaginate/vitals/wiki/vitals.assign
+[bind]: https://github.com/imaginate/vitals/wiki/vitals.bind
 [cap]: https://github.com/imaginate/vitals/wiki/vitals.cap
+[cat]: https://github.com/imaginate/vitals/wiki/vitals.cat
+[cd]: https://github.com/imaginate/vitals/wiki/vitals.cd
+[ch]: https://github.com/imaginate/vitals/wiki/vitals.ch
+[config]: https://github.com/imaginate/vitals/wiki/vitals.config
 [copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
 [cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
 [create]: https://github.com/imaginate/vitals/wiki/vitals.create
 [cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
+[defaults]: https://github.com/imaginate/vitals/wiki/vitals.defaults
 [each]: https://github.com/imaginate/vitals/wiki/vitals.each
+[env]: https://github.com/imaginate/vitals/wiki/vitals.env
+[exec]: https://github.com/imaginate/vitals/wiki/vitals.exec
+[exit]: https://github.com/imaginate/vitals/wiki/vitals.exit
 [fill]: https://github.com/imaginate/vitals/wiki/vitals.fill
 [filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
 [find]: https://github.com/imaginate/vitals/wiki/vitals.find
 [freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
-[fuse]: https://github.com/imaginate/vitals/wiki/vitals.fuse
-[get]: https://github.com/imaginate/vitals/wiki/vitals.get
 [has]: https://github.com/imaginate/vitals/wiki/vitals.has
+[insert]: https://github.com/imaginate/vitals/wiki/vitals.insert
 [is]: https://github.com/imaginate/vitals/wiki/vitals.is
 [is-types]: https://github.com/imaginate/vitals/wiki/vitals.is-types
+[join]: https://github.com/imaginate/vitals/wiki/vitals.join
+[keys]: https://github.com/imaginate/vitals/wiki/vitals.keys
+[ls]: https://github.com/imaginate/vitals/wiki/vitals.ls
+[match]: https://github.com/imaginate/vitals/wiki/vitals.match
+[mk]: https://github.com/imaginate/vitals/wiki/vitals.mk
+[mv]: https://github.com/imaginate/vitals/wiki/vitals.mv
+[owns]: https://github.com/imaginate/vitals/wiki/vitals.owns
+[parsecmd]: https://github.com/imaginate/vitals/wiki/vitals.parsecmd
 [remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
+[remove]: https://github.com/imaginate/vitals/wiki/vitals.remove
+[replace]: https://github.com/imaginate/vitals/wiki/vitals.replace
+[resolve]: https://github.com/imaginate/vitals/wiki/vitals.resolve
+[rm]: https://github.com/imaginate/vitals/wiki/vitals.rm
 [roll]: https://github.com/imaginate/vitals/wiki/vitals.roll
 [run]: https://github.com/imaginate/vitals/wiki/vitals.run
-[same]: https://github.com/imaginate/vitals/wiki/vitals.same
 [seal]: https://github.com/imaginate/vitals/wiki/vitals.seal
 [sew]: https://github.com/imaginate/vitals/wiki/vitals.sew
 [slice]: https://github.com/imaginate/vitals/wiki/vitals.slice
-[stringify]: https://github.com/imaginate/vitals/wiki/vitals.stringify
+[split]: https://github.com/imaginate/vitals/wiki/vitals.split
+[tee]: https://github.com/imaginate/vitals/wiki/vitals.tee
+[test]: https://github.com/imaginate/vitals/wiki/vitals.test
 [to]: https://github.com/imaginate/vitals/wiki/vitals.to
 [trim]: https://github.com/imaginate/vitals/wiki/vitals.trim
 [until]: https://github.com/imaginate/vitals/wiki/vitals.until
+[version]: https://github.com/imaginate/vitals/wiki/vitals.version
 
 [addscript]: http://javascript.info/tutorial/adding-script-html#external-scripts
 [cli]: https://en.wikipedia.org/wiki/Command-line_interface#Command-line_interpreter
