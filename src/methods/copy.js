@@ -26,6 +26,10 @@
  * @dict
  */
 $VITALS['copy'] = (function __vitalsCopy__() {
+
+  /** @type {*} */
+  var _e;
+
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs copy
@@ -263,16 +267,16 @@ $VITALS['copy'] = (function __vitalsCopy__() {
   /// #if}}} @code regexp
   /// #}}} @submethod regexp
 
-  /// #{{{ @submethod func
-  /// #{{{ @docs func
+  /// #{{{ @submethod function
+  /// #{{{ @docs function
   /// @section base
-  /// @method vitals.copy.func
+  /// @method vitals.copy.function
+  ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
+  ///   browser and other platform environments. Use an alias like
+  ///   `vitals.copy.func` for compatibility with older environments.
+  /// @alias vitals.copy.func
   /// @alias vitals.copy.fun
   /// @alias vitals.copy.fn
-  /// @alias vitals.copy.function
-  ///   Note that `vitals.copy.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.copy.func` for
-  ///   compatibility with older environments.
   /**
    * @description
    *   Makes a [copy][clone] of a `function`. By default it shallowly copies
@@ -291,8 +295,8 @@ $VITALS['copy'] = (function __vitalsCopy__() {
    * @return {!Function}
    *   A new `function` [copied][clone] from the #source.
    */
-  /// #}}} @docs func
-  /// #if{{{ @code func
+  /// #}}} @docs function
+  /// #if{{{ @code function
   function copyFunction(source, deep) {
 
     switch (arguments['length']) {
@@ -322,9 +326,9 @@ $VITALS['copy'] = (function __vitalsCopy__() {
   try {
     copy['function'] = copyFunction;
   }
-  catch (e) {}
-  /// #if}}} @code func
-  /// #}}} @submethod func
+  catch (_e) {}
+  /// #if}}} @code function
+  /// #}}} @submethod function
 
   /// #if{{{ @helpers copy
 
