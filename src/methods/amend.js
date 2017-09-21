@@ -286,13 +286,8 @@ $VITALS['amend'] = (function __vitalsAmend__() {
    *     key name to edit within the #source `object`.
    *   - *`string`*!$
    *     The #props `string` should be a list of property key names to edit
-   *     within the #source `object`. The first of the following values found
-   *     within the #props `string` is used as the separator (values listed in
-   *     order):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
+   *     within the #source `object`. The #props `string` is converted into an
+   *     `array` of key names with @split#keys.
    * @param {?Object=} descriptor = `null`
    *   If the #props is an `array` or `string`, the #descriptor is the new
    *   [descriptor][descriptor] settings for each property key name defined by

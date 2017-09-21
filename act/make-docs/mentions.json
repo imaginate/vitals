@@ -27,6 +27,7 @@
     "seal": "vitals.seal",
     "sew": "vitals.sew",
     "slice": "vitals.slice",
+    "split": "vitals.split",
     "to": "vitals.to",
     "trim": "vitals.trim",
     "until": "vitals.until",
@@ -57,6 +58,7 @@
     "seal": true,
     "sew": true,
     "slice": true,
+    "split": true,
     "to": true,
     "trim": true,
     "until": true
@@ -95,6 +97,7 @@
     "seal": "https://github.com/imaginate/vitals/wiki/vitals.seal",
     "sew": "https://github.com/imaginate/vitals/wiki/vitals.sew",
     "slice": "https://github.com/imaginate/vitals/wiki/vitals.slice",
+    "split": "https://github.com/imaginate/vitals/wiki/vitals.split",
     "to": "https://github.com/imaginate/vitals/wiki/vitals.to",
     "trim": "https://github.com/imaginate/vitals/wiki/vitals.trim",
     "until": "https://github.com/imaginate/vitals/wiki/vitals.until",

@@ -618,13 +618,8 @@ $VITALS['assign'] = (function __vitalsAssign__() {
    *     key name to edit within or add to the #source `object`.
    *   - *`string`*!$
    *     The #props `string` should be a list of property key names to edit
-   *     within or add to the #source `object`. The first of the following
-   *     values found within the #props `string` is used as the separator
-   *     (values listed in order):
-   *     - `", "`
-   *     - `","`
-   *     - `"|"`
-   *     - `" "`
+   *     within or add to the #source `object`. The #props `string` is
+   *     converted into an `array` of key names with @split#keys.
    * @param {*=} val = `undefined`
    *   If the #val is defined, the #val sets the value for each property
    *   listed by the #props. If the #props is an `object` and a
