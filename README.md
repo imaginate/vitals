@@ -177,39 +177,39 @@ For help see:
 
 ## API
 
-|  Base Methods           |  Strict Methods         |  File System Methods    |  Information Methods    |  Process Methods        |  Special Methods        |
-| :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
-| [bind][vm-bind]         | [amend][vm-amend]       | [cat][vm-cat]           | [config][vm-config]     | [exec][vm-exec]         | [parsecmd][vm-parsecmd] |
-| [concat][vm-concat]     | [assign][vm-assign]     | [cd][vm-cd]             | [defaults][vm-defaults] | [exit][vm-exit]         |                         |
-| [copy][vm-copy]         | [cap][vm-cap]           | [ch][vm-ch]             | [env][vm-env]           | [run][vm-run]           |                         |
-| [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   |                         |                         |
-| [each][vm-each]         | [freeze][vm-freeze]     | [ls][vm-ls]             |                         |                         |                         |
-| [fill][vm-fill]         | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |                         |
-| [filter][vm-filter]     |                         | [mv][vm-mv]             |                         |                         |                         |
-| [has][vm-has]           |                         | [resolve][vm-resolve]   |                         |                         |                         |
-| [insert][vm-insert]     |                         | [rm][vm-rm]             |                         |                         |                         |
-| [invert][vm-invert]     |                         | [tee][vm-tee]           |                         |                         |                         |
-| [is][vm-is]             |                         | [test][vm-test]         |                         |                         |                         |
-| [join][vm-join]         |                         |                         |                         |                         |                         |
-| [keys][vm-keys]         |                         |                         |                         |                         |                         |
-| [match][vm-match]       |                         |                         |                         |                         |                         |
-| [merge][vm-merge]       |                         |                         |                         |                         |                         |
-| [owns][vm-owns]         |                         |                         |                         |                         |                         |
-| [pop][vm-pop]           |                         |                         |                         |                         |                         |
-| [push][vm-push]         |                         |                         |                         |                         |                         |
-| [remap][vm-remap]       |                         |                         |                         |                         |                         |
-| [replace][vm-replace]   |                         |                         |                         |                         |                         |
-| [rip][vm-rip]           |                         |                         |                         |                         |                         |
-| [roll][vm-roll]         |                         |                         |                         |                         |                         |
-| [sew][vm-sew]           |                         |                         |                         |                         |                         |
-| [slice][vm-slice]       |                         |                         |                         |                         |                         |
-| [split][vm-split]       |                         |                         |                         |                         |                         |
-| [strike][vm-strike]     |                         |                         |                         |                         |                         |
-| [to][vm-to]             |                         |                         |                         |                         |                         |
-| [trim][vm-trim]         |                         |                         |                         |                         |                         |
-| [unset][vm-unset]       |                         |                         |                         |                         |                         |
-| [until][vm-until]       |                         |                         |                         |                         |                         |
-| [yank][vm-yank]         |                         |                         |                         |                         |                         |
+|  Base Methods           |  Strict Methods         |  File System Methods    |  Information Methods    |  Process Methods        |
+| :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
+| [bind][vm-bind]         | [amend][vm-amend]       | [cat][vm-cat]           | [config][vm-config]     | [cmd][vm-cmd]           |
+| [concat][vm-concat]     | [assign][vm-assign]     | [cd][vm-cd]             | [default][vm-default]   | [exec][vm-exec]         |
+| [copy][vm-copy]         | [cap][vm-cap]           | [ch][vm-ch]             | [env][vm-env]           | [exit][vm-exit]         |
+| [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   | [run][vm-run]           |
+| [each][vm-each]         | [freeze][vm-freeze]     | [ls][vm-ls]             |                         |                         |
+| [fill][vm-fill]         | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |
+| [filter][vm-filter]     |                         | [mv][vm-mv]             |                         |                         |
+| [has][vm-has]           |                         | [resolve][vm-resolve]   |                         |                         |
+| [insert][vm-insert]     |                         | [rm][vm-rm]             |                         |                         |
+| [invert][vm-invert]     |                         | [tee][vm-tee]           |                         |                         |
+| [is][vm-is]             |                         | [test][vm-test]         |                         |                         |
+| [join][vm-join]         |                         |                         |                         |                         |
+| [keys][vm-keys]         |                         |                         |                         |                         |
+| [match][vm-match]       |                         |                         |                         |                         |
+| [merge][vm-merge]       |                         |                         |                         |                         |
+| [owns][vm-owns]         |                         |                         |                         |                         |
+| [pop][vm-pop]           |                         |                         |                         |                         |
+| [push][vm-push]         |                         |                         |                         |                         |
+| [remap][vm-remap]       |                         |                         |                         |                         |
+| [replace][vm-replace]   |                         |                         |                         |                         |
+| [rip][vm-rip]           |                         |                         |                         |                         |
+| [roll][vm-roll]         |                         |                         |                         |                         |
+| [sew][vm-sew]           |                         |                         |                         |                         |
+| [slice][vm-slice]       |                         |                         |                         |                         |
+| [split][vm-split]       |                         |                         |                         |                         |
+| [strike][vm-strike]     |                         |                         |                         |                         |
+| [to][vm-to]             |                         |                         |                         |                         |
+| [trim][vm-trim]         |                         |                         |                         |                         |
+| [unset][vm-unset]       |                         |                         |                         |                         |
+| [until][vm-until]       |                         |                         |                         |                         |
+| [yank][vm-yank]         |                         |                         |                         |                         |
 
 
 |  Base Array Methods     |  Base Function Methods  |  Base Object Methods    |  Base String Methods    |
@@ -273,7 +273,6 @@ Send an email to <dev@vitalsjs.com>.
 [vs-fs]: https://github.com/imaginate/vitals/wiki#user-content-api
 [vs-info]: https://github.com/imaginate/vitals/wiki#user-content-api
 [vs-proc]: https://github.com/imaginate/vitals/wiki#user-content-api
-[vs-special]: https://github.com/imaginate/vitals/wiki#user-content-api
 
 [vs-base-arr]: https://github.com/imaginate/vitals/wiki#user-content-api
 [vs-base-fun]: https://github.com/imaginate/vitals/wiki#user-content-api
@@ -287,13 +286,14 @@ Send an email to <dev@vitalsjs.com>.
 [vm-cat]: https://github.com/imaginate/vitals/wiki/vitals.cat
 [vm-cd]: https://github.com/imaginate/vitals/wiki/vitals.cd
 [vm-ch]: https://github.com/imaginate/vitals/wiki/vitals.ch
+[vm-cmd]: https://github.com/imaginate/vitals/wiki/vitals.cmd
 [vm-concat]: https://github.com/imaginate/vitals/wiki/vitals.concat
 [vm-config]: https://github.com/imaginate/vitals/wiki/vitals.config
 [vm-copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
 [vm-cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
 [vm-create]: https://github.com/imaginate/vitals/wiki/vitals.create
 [vm-cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
-[vm-defaults]: https://github.com/imaginate/vitals/wiki/vitals.defaults
+[vm-default]: https://github.com/imaginate/vitals/wiki/vitals.default
 [vm-each]: https://github.com/imaginate/vitals/wiki/vitals.each
 [vm-env]: https://github.com/imaginate/vitals/wiki/vitals.env
 [vm-exec]: https://github.com/imaginate/vitals/wiki/vitals.exec
@@ -314,7 +314,6 @@ Send an email to <dev@vitalsjs.com>.
 [vm-mk]: https://github.com/imaginate/vitals/wiki/vitals.mk
 [vm-mv]: https://github.com/imaginate/vitals/wiki/vitals.mv
 [vm-owns]: https://github.com/imaginate/vitals/wiki/vitals.owns
-[vm-parsecmd]: https://github.com/imaginate/vitals/wiki/vitals.parsecmd
 [vm-pop]: https://github.com/imaginate/vitals/wiki/vitals.pop
 [vm-push]: https://github.com/imaginate/vitals/wiki/vitals.push
 [vm-remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
