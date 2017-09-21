@@ -3,6 +3,7 @@
  * VITALS.IS
  * ---------------------------------------------------------------------------
  * @section base
+ * @section strict
  * @section fs
  * @version 5.0.0
  * @see [vitals.is](https://github.com/imaginate/vitals/wiki/vitals.is)
@@ -12,28 +13,23 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
+/// #include @core OPEN ../core/open.js
 /// #if}}} @scope SOLO
 
 /// #{{{ @super is
 /// #ifnot{{{ @scope DOCS_ONLY
-/// #ifnot{{{ @scope FS_ONLY
 /**
  * @public
  * @const {!Function}
  * @dict
  */
-/// #ifnot}}} @scope FS_ONLY
-/// #if{{{ @scope FS_ONLY
-/**
- * @public
- * @const {!Object}
- * @dict
- */
-/// #if}}} @scope FS_ONLY
-var is = (function isPrivateScope() {
+$VITALS['is'] = (function __vitalsIs__() {
+
+  /// #ifnot{{{ @scope IS_MAIN_ONLY
+  /** @type {*} */
+  var _e;
+  /// #ifnot}}} @scope IS_MAIN_ONLY
+
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs is
@@ -56,21 +52,12 @@ var is = (function isPrivateScope() {
   /// @docref [regex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
   /// @docref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
   /// @docref [str-prim]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String#Distinction_between_string_primitives_and_String_objects)
+  /// @docref [obj-class]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)
   /// @docref [bool-desc]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean#Description)
   /// @docref [arr-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/length)
   /// @docref [func-length]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/length)
   /// #if}}} @docrefs is
 
-  /// #if{{{ @scope FS_ONLY
-  /**
-   * @public
-   * @type {!Object}
-   * @dict
-   */
-  var is = {};
-  /// #if}}} @scope FS_ONLY
-
-  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod main
   /// #{{{ @docs main
   /// @section base
@@ -105,30 +92,33 @@ var is = (function isPrivateScope() {
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #types defined');
+        throw _MKERR_MAIN.noArg(new $ERR, 'types');
       case 1:
-        throw _mkErr(new ERR, 'no #val defined');
+        throw _MKERR_MAIN.noArg(new $ERR, 'val');
       case 2:
-        vals = NO;
+        vals = $NO;
         break;
       default:
-        vals = YES;
-        break;
+        vals = $YES;
     }
 
-    if ( !$is.str(types) )
-      throw _mkTypeErr(new TYPE_ERR, 'types', types, 'string');
-    if ( !types )
-      throw _mkErr(new ERR, 'invalid empty #types `string`');
+    if ( !$is.str(types) ) {
+      throw _MKERR_MAIN.type(new $TYPE_ERR, 'types', types, 'string');
+    }
+    if (!types) {
+      throw _MKERR_MAIN.misc(new $ERR, 'invalid empty #types `string`');
+    }
 
-    if ( _hasSpecial('*', types) )
-      return YES;
+    if ( _hasSpecial('*', types) ) {
+      return $YES;
+    }
 
     checks = _getChecks(types);
 
-    if (!checks)
-      throw _mkRangeErr(new RANGE_ERR, 'types',
+    if (!checks) {
+      throw _MKERR_MAIN.range(new $RANGE_ERR, 'types',
         'https://github.com/imaginate/vitals/wiki/vitals.is-types');
+    }
 
     nullable = _getNullable(types);
     return vals
@@ -140,6 +130,7 @@ var is = (function isPrivateScope() {
   /// #}}} @submethod main
 
   /// #ifnot{{{ @scope IS_MAIN_ONLY
+
   /// #{{{ @submethod null
   /// #{{{ @docs null
   /// @section base
@@ -158,14 +149,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs null
   /// #if{{{ @code null
   function isNull(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'null');
+        throw _MKERR_NULL.noArg(new $ERR, 'val');
       case 1:
         return $is.nil(val);
-      default:
-        return _are(arguments, $is.nil);
     }
+
+    while (i--) {
+      if ( !$is.nil(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['null'] = isNull;
   is['nil'] = isNull;
@@ -190,14 +192,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs undefined
   /// #if{{{ @code undefined
   function isUndefined(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'undefined');
+        throw _MKERR_VOID.noArg(new $ERR, 'val');
       case 1:
         return $is.void(val);
-      default:
-        return _are(arguments, $is.none);
     }
+
+    while (i--) {
+      if ( !$is.void(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['undefined'] = isUndefined;
   is['void'] = isUndefined;
@@ -223,14 +236,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs boolean
   /// #if{{{ @code boolean
   function isBoolean(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'boolean');
+        throw _MKERR_BOOL.noArg(new $ERR, 'val');
       case 1:
         return $is.bool(val);
-      default:
-        return _are(arguments, $is.bool);
     }
+
+    while (i--) {
+      if ( !$is.bool(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['boolean'] = isBoolean;
   is['bool'] = isBoolean;
@@ -256,52 +280,30 @@ var is = (function isPrivateScope() {
   /// #}}} @docs string
   /// #if{{{ @code string
   function isString(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'string');
+        throw _MKERR_STR.noArg(new $ERR, 'val');
       case 1:
         return $is.str(val);
-      default:
-        return _are(arguments, $is.str);
     }
+
+    while (i--) {
+      if ( !$is.str(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['string'] = isString;
   is['str'] = isString;
   /// #if}}} @code string
   /// #}}} @submethod string
-
-  /// #{{{ @submethod _string
-  /// #{{{ @docs _string
-  /// @section base
-  /// @method vitals.is._string
-  /// @alias vitals.is._str
-  /**
-   * @description
-   *   Checks if a value or many values are a [primitive string][str-prim]
-   *   data type and not empty (e.g. `""`).
-   * @public
-   * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
-   * @return {boolean}
-   *   The evaluation result.
-   */
-  /// #}}} @docs _string
-  /// #if{{{ @code _string
-  function isNonEmptyString(val) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', '_string');
-      case 1:
-        return $is._str(val);
-      default:
-        return _are(arguments, $is._str);
-    }
-  }
-  is['_string'] = isNonEmptyString;
-  is['_str'] = isNonEmptyString;
-  /// #if}}} @code _string
-  /// #}}} @submethod _string
 
   /// #{{{ @submethod number
   /// #{{{ @docs number
@@ -322,52 +324,30 @@ var is = (function isPrivateScope() {
   /// #}}} @docs number
   /// #if{{{ @code number
   function isNumber(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'number');
+        throw _MKERR_NUM.noArg(new $ERR, 'val');
       case 1:
         return $is.num(val);
-      default:
-        return _are(arguments, $is.num);
     }
+
+    while (i--) {
+      if ( !$is.num(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['number'] = isNumber;
   is['num'] = isNumber;
   /// #if}}} @code number
   /// #}}} @submethod number
-
-  /// #{{{ @submethod _number
-  /// #{{{ @docs _number
-  /// @section base
-  /// @method vitals.is._number
-  /// @alias vitals.is._num
-  /**
-   * @description
-   *   Checks if a value or many values are a [primitive][prim] [number][num]
-   *   data type and not `0`.
-   * @public
-   * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
-   * @return {boolean}
-   *   The evaluation result.
-   */
-  /// #}}} @docs _number
-  /// #if{{{ @code _number
-  function isNonZeroNumber(val) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', '_number');
-      case 1:
-        return $is._num(val);
-      default:
-        return _are(arguments, $is._num);
-    }
-  }
-  is['_number'] = isNonZeroNumber;
-  is['_num'] = isNonZeroNumber;
-  /// #if}}} @code _number
-  /// #}}} @submethod _number
 
   /// #{{{ @submethod nan
   /// #{{{ @docs nan
@@ -386,14 +366,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs nan
   /// #if{{{ @code nan
   function isNan(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'nan');
+        throw _MKERR_NAN.noArg(new $ERR, 'val');
       case 1:
         return $is.nan(val);
-      default:
-        return _are(arguments, $is.nan);
     }
+
+    while (i--) {
+      if ( !$is.nan(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['nan'] = isNan;
   /// #if}}} @code nan
@@ -417,29 +408,43 @@ var is = (function isPrivateScope() {
   /// #}}} @docs object
   /// #if{{{ @code object
   function isObject(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'object');
+        throw _MKERR_OBJ.noArg(new $ERR, 'val');
       case 1:
         return $is.obj(val);
-      default:
-        return _are(arguments, $is.obj);
     }
+
+    while (i--) {
+      if ( !$is.obj(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['object'] = isObject;
   is['obj'] = isObject;
   /// #if}}} @code object
   /// #}}} @submethod object
 
-  /// #{{{ @submethod _object
-  /// #{{{ @docs _object
+  /// #{{{ @submethod plain
+  /// #{{{ @docs plain
   /// @section base
-  /// @method vitals.is._object
-  /// @alias vitals.is._obj
+  /// @method vitals.is.plain
+  /// @alias vitals.is.plainObject
+  /// @alias vitals.is.plainobject
+  /// @alias vitals.is.plainObj
+  /// @alias vitals.is.plainobj
   /**
    * @description
-   *   Checks if a value or many values are an [object][obj] or
-   *   [function][func] data type.
+   *   Checks if a value or many values are an instance of the
+   *   [Object][obj-class] constructor.
    * @public
    * @param {...*} val
    *   The value to evaluate. If more than one #val is provided, every #val
@@ -447,33 +452,47 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  /// #}}} @docs _object
-  /// #if{{{ @code _object
-  function isObjectOrFunction(val) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', '_object');
-      case 1:
-        return $is._obj(val);
-      default:
-        return _are(arguments, $is._obj);
-    }
-  }
-  is['_object'] = isObjectOrFunction;
-  is['_obj'] = isObjectOrFunction;
-  /// #if}}} @code _object
-  /// #}}} @submethod _object
+  /// #}}} @docs plain
+  /// #if{{{ @code plain
+  function isPlainObject(val) {
 
-  /// #{{{ @submethod func
-  /// #{{{ @docs func
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
+      case 0:
+        throw _MKERR_PLAIN.noArg(new $ERR, 'val');
+      case 1:
+        return $is.plain(val);
+    }
+
+    while (i--) {
+      if ( !$is.plain(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
+  }
+  is['plainObject'] = isPlainObject;
+  is['plainobject'] = isPlainObject;
+  is['plainObj'] = isPlainObject;
+  is['plainobj'] = isPlainObject;
+  is['plain'] = isPlainObject;
+  /// #if}}} @code plain
+  /// #}}} @submethod plain
+
+  /// #{{{ @submethod function
+  /// #{{{ @docs function
   /// @section base
-  /// @method vitals.is.func
-  /// @alias vitals.is.fn
-  /// @alias vitals.is.fun
-  /// @alias vitals.is.function
+  /// @method vitals.is.function
   ///   Note that `vitals.is.function` will fail in all ES3 and some ES5
-  ///   browser and other platform environments. Use `vitals.is.func` for
-  ///   compatibility with older environments.
+  ///   browser and other platform environments. Use an alias like
+  ///   `vitals.is.func` for compatibility with older environments.
+  /// @alias vitals.is.func
+  /// @alias vitals.is.fun
+  /// @alias vitals.is.fn
   /**
    * @description
    *   Checks if a value or many values are a [function][func] data type. Note
@@ -487,27 +506,38 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  /// #}}} @docs func
-  /// #if{{{ @code func
+  /// #}}} @docs function
+  /// #if{{{ @code function
   function isFunction(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'function');
+        throw _MKERR_FUN.noArg(new $ERR, 'val');
       case 1:
         return $is.fun(val);
-      default:
-        return _are(arguments, $is.fun);
     }
+
+    while (i--) {
+      if ( !$is.fun(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['func'] = isFunction;
   is['fun'] = isFunction;
+  is['fn'] = isFunction;
   try {
-    is['fn'] = isFunction;
     is['function'] = isFunction;
   }
-  catch (e) {}
-  /// #if}}} @code func
-  /// #}}} @submethod func
+  catch (_e) {}
+  /// #if}}} @code function
+  /// #}}} @submethod function
 
   /// #{{{ @submethod array
   /// #{{{ @docs array
@@ -528,52 +558,30 @@ var is = (function isPrivateScope() {
   /// #}}} @docs array
   /// #if{{{ @code array
   function isArray(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'array');
+        throw _MKERR_ARR.noArg(new $ERR, 'val');
       case 1:
         return $is.arr(val);
-      default:
-        return _are(arguments, $is.arr);
     }
+
+    while (i--) {
+      if ( !$is.arr(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['array'] = isArray;
   is['arr'] = isArray;
   /// #if}}} @code array
   /// #}}} @submethod array
-
-  /// #{{{ @submethod _array
-  /// #{{{ @docs _array
-  /// @section base
-  /// @method vitals.is._array
-  /// @alias vitals.is._arr
-  /**
-   * @description
-   *   Checks if a value or many values are an instance of the [array][arr] or
-   *   [arguments][args] `object` types.
-   * @public
-   * @param {...*} val
-   *   The value to evaluate. If more than one #val is provided, every #val
-   *   must pass the type check to return `true`.
-   * @return {boolean}
-   *   The evaluation result.
-   */
-  /// #}}} @docs _array
-  /// #if{{{ @code _array
-  function isArrayOrArguments(val) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', '_array');
-      case 1:
-        return $is._arr(val);
-      default:
-        return _are(arguments, $is._arr);
-    }
-  }
-  is['_array'] = isArrayOrArguments;
-  is['_arr'] = isArrayOrArguments;
-  /// #if}}} @code _array
-  /// #}}} @submethod _array
 
   /// #{{{ @submethod regexp
   /// #{{{ @docs regexp
@@ -596,14 +604,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs regexp
   /// #if{{{ @code regexp
   function isRegExp(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'regexp');
+        throw _MKERR_REGX.noArg(new $ERR, 'val');
       case 1:
         return $is.regx(val);
-      default:
-        return _are(arguments, $is.regx);
     }
+
+    while (i--) {
+      if ( !$is.regx(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['regexp'] = isRegExp;
   is['regex'] = isRegExp;
@@ -630,14 +649,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs date
   /// #if{{{ @code date
   function isDate(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'date');
+        throw _MKERR_DATE.noArg(new $ERR, 'val');
       case 1:
         return $is.date(val);
-      default:
-        return _are(arguments, $is.date);
     }
+
+    while (i--) {
+      if ( !$is.date(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['date'] = isDate;
   /// #if}}} @code date
@@ -662,14 +692,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs error
   /// #if{{{ @code error
   function isError(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'error');
+        throw _MKERR_ERR.noArg(new $ERR, 'val');
       case 1:
         return $is.err(val);
-      default:
-        return _are(arguments, $is.err);
     }
+
+    while (i--) {
+      if ( !$is.err(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['error'] = isError;
   is['err'] = isError;
@@ -694,14 +735,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs args
   /// #if{{{ @code args
   function isArguments(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'args');
+        throw _MKERR_ARGS.noArg(new $ERR, 'val');
       case 1:
         return $is.args(val);
-      default:
-        return _are(arguments, $is.args);
     }
+
+    while (i--) {
+      if ( !$is.args(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['args'] = isArguments;
   /// #if}}} @code args
@@ -726,14 +778,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs document
   /// #if{{{ @code document
   function isDocument(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'document');
+        throw _MKERR_DOC.noArg(new $ERR, 'val');
       case 1:
         return $is.doc(val);
-      default:
-        return _are(arguments, $is.doc);
     }
+
+    while (i--) {
+      if ( !$is.doc(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['document'] = isDocument;
   is['doc'] = isDocument;
@@ -759,14 +822,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs element
   /// #if{{{ @code element
   function isElement(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'element');
+        throw _MKERR_ELEM.noArg(new $ERR, 'val');
       case 1:
         return $is.elem(val);
-      default:
-        return _are(arguments, $is.elem);
     }
+
+    while (i--) {
+      if ( !$is.elem(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['element'] = isElement;
   is['elem'] = isElement;
@@ -811,23 +885,107 @@ var is = (function isPrivateScope() {
   /// #}}} @docs empty
   /// #if{{{ @code empty
   function isEmpty(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'empty');
+        throw _MKERR_EMPTY.noArg(new $ERR, 'val');
       case 1:
         return $is.empty(val);
-      default:
-        return _are(arguments, $is.empty);
     }
+
+    while (i--) {
+      if ( !$is.empty(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['empty'] = isEmpty;
   /// #if}}} @code empty
   /// #}}} @submethod empty
 
+  /// #{{{ @submethod capped
+  /// #{{{ @docs capped
+  /// @section strict
+  /// @method vitals.is.capped
+  /// @alias vitals.is.cappedObject
+  /// @alias vitals.is.cappedobject
+  /// @alias vitals.is.cappedObj
+  /// @alias vitals.is.cappedobj
+  /**
+   * @description
+   *   Checks if an `object` or `function` is extensible.
+   * @public
+   * @param {...(?Object|?Function)} source
+   *   If more than one #source is provided, every #source must be
+   *   extensible to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  /// #}}} @docs capped
+  /// #if{{{ @code capped
+  function isCapped(val) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
+      case 0:
+        throw _MKERR_CAPPED.noArg(new $ERR, 'val');
+      case 1:
+        if ( $is.nil(val) ) {
+          return $NO;
+        }
+        if ( !$is._obj(val) ) {
+          throw _MKERR_CAPPED.type(new $TYPE_ERR, 'val', val,
+            '?Object|?Function');
+        }
+        return !$is.extend(val);
+    }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.nil(val) && !$is._obj(val) ) {
+        throw _MKERR_CAPPED.type(new $TYPE_ERR, 'val', val,
+          '?Object|?Function');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !val || $is.extend(val) ) {
+        return $NO;
+      }
+    }
+    return $YES;
+  }
+  is['cappedObject'] = isCapped;
+  is['cappedobject'] = isCapped;
+  is['cappedObj'] = isCapped;
+  is['cappedobj'] = isCapped;
+  is['capped'] = isCapped;
+  /// #if}}} @code capped
+  /// #}}} @submethod capped
+
   /// #{{{ @submethod frozen
   /// #{{{ @docs frozen
-  /// @section base
+  /// @section strict
   /// @method vitals.is.frozen
+  /// @alias vitals.is.frozenObject
+  /// @alias vitals.is.frozenobject
+  /// @alias vitals.is.frozenObj
+  /// @alias vitals.is.frozenobj
   /**
    * @description
    *   Checks if an `object` or `function` is [frozen][frozen].
@@ -841,24 +999,131 @@ var is = (function isPrivateScope() {
   /// #}}} @docs frozen
   /// #if{{{ @code frozen
   function isFrozen(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'frozen');
+        throw _MKERR_FROZEN.noArg(new $ERR, 'val');
       case 1:
-        return _isFrozen(val);
-      default:
-        return _are(arguments, _isFrozen);
+        if ( $is.nil(val) ) {
+          return $NO;
+        }
+        if ( !$is._obj(val) ) {
+          throw _MKERR_FROZEN.type(new $TYPE_ERR, 'val', val,
+            '?Object|?Function');
+        }
+        return $is.frozen(val);
     }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.nil(val) && !$is._obj(val) ) {
+        throw _MKERR_FROZEN.type(new $TYPE_ERR, 'val', val,
+          '?Object|?Function');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !val || !$is.frozen(val) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
+  is['frozenObject'] = isFrozen;
+  is['frozenobject'] = isFrozen;
+  is['frozenObj'] = isFrozen;
+  is['frozenobj'] = isFrozen;
   is['frozen'] = isFrozen;
   /// #if}}} @code frozen
   /// #}}} @submethod frozen
 
-  /// #{{{ @submethod wholeNumber
-  /// #{{{ @docs wholeNumber
+  /// #{{{ @submethod sealed
+  /// #{{{ @docs sealed
+  /// @section strict
+  /// @method vitals.is.sealed
+  /// @alias vitals.is.sealedObject
+  /// @alias vitals.is.sealedobject
+  /// @alias vitals.is.sealedObj
+  /// @alias vitals.is.sealedobj
+  /**
+   * @description
+   *   Checks if an `object` or `function` is sealed.
+   * @public
+   * @param {...(?Object|?Function)} source
+   *   If more than one #source is provided, every #source must be
+   *   sealed to return `true`.
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  /// #}}} @docs sealed
+  /// #if{{{ @code sealed
+  function isSealed(val) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
+      case 0:
+        throw _MKERR_SEALED.noArg(new $ERR, 'val');
+      case 1:
+        if ( $is.nil(val) ) {
+          return $NO;
+        }
+        if ( !$is._obj(val) ) {
+          throw _MKERR_SEALED.type(new $TYPE_ERR, 'val', val,
+            '?Object|?Function');
+        }
+        return $is.sealed(val);
+    }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.nil(val) && !$is._obj(val) ) {
+        throw _MKERR_SEALED.type(new $TYPE_ERR, 'val', val,
+          '?Object|?Function');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !val || !$is.sealed(val) ) {
+        return $NO;
+      }
+    }
+    return $YES;
+  }
+  is['sealedObject'] = isSealed;
+  is['sealedobject'] = isSealed;
+  is['sealedObj'] = isSealed;
+  is['sealedobj'] = isSealed;
+  is['sealed'] = isSealed;
+  /// #if}}} @code sealed
+  /// #}}} @submethod sealed
+
+  /// #{{{ @submethod whole
+  /// #{{{ @docs whole
   /// @section base
-  /// @method vitals.is.wholeNumber
-  /// @alias vitals.is.whole
+  /// @method vitals.is.whole
+  /// @alias vitals.is.wholeNumber
+  /// @alias vitals.is.wholenumber
+  /// @alias vitals.is.wholeNum
+  /// @alias vitals.is.wholenum
   /**
    * @description
    *   Checks if a [number][num] is whole (i.e. has no fractional portion).
@@ -871,28 +1136,59 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  /// #}}} @docs wholeNumber
-  /// #if{{{ @code wholeNumber
+  /// #}}} @docs whole
+  /// #if{{{ @code whole
   function isWholeNumber(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'wholeNumber');
+        throw _MKERR_WHOLE.noArg(new $ERR, 'val');
       case 1:
-        return _isWhole(val);
-      default:
-        return _are(arguments, _isWhole);
+        if ( !$is.num(val) ) {
+          throw _MKERR_WHOLE.type(new $TYPE_ERR, 'val', val, 'number');
+        }
+        return $is.whole(val);
     }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.num(val) ) {
+        throw _MKERR_WHOLE.type(new $TYPE_ERR, 'val', val, 'number');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      if ( !$is.whole(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['wholeNumber'] = isWholeNumber;
+  is['wholenumber'] = isWholeNumber;
+  is['wholeNum'] = isWholeNumber;
+  is['wholenum'] = isWholeNumber;
   is['whole'] = isWholeNumber;
-  /// #if}}} @code wholeNumber
-  /// #}}} @submethod wholeNumber
+  /// #if}}} @code whole
+  /// #}}} @submethod whole
 
-  /// #{{{ @submethod oddNumber
-  /// #{{{ @docs oddNumber
+  /// #{{{ @submethod odd
+  /// #{{{ @docs odd
   /// @section base
-  /// @method vitals.is.oddNumber
-  /// @alias vitals.is.odd
+  /// @method vitals.is.odd
+  /// @alias vitals.is.oddNumber
+  /// @alias vitals.is.oddnumber
+  /// @alias vitals.is.oddNum
+  /// @alias vitals.is.oddnum
   /**
    * @description
    *   Checks if a [number][num] is odd. All odd numbers less than zero (e.g.
@@ -904,28 +1200,65 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  /// #}}} @docs oddNumber
-  /// #if{{{ @code oddNumber
+  /// #}}} @docs odd
+  /// #if{{{ @code odd
   function isOddNumber(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'oddNumber');
+        throw _MKERR_ODD.noArg(new $ERR, 'val');
       case 1:
-        return _isOdd(val);
-      default:
-        return _are(arguments, _isOdd);
+        if ( !$is.num(val) ) {
+          throw _MKERR_ODD.type(new $TYPE_ERR, 'val', val, 'number');
+        }
+        if ( !$is.whole(val) ) {
+          throw _MKERR_ODD.range(new $RANGE_ERR, 'val', '[-+]?[0-9]+');
+        }
+        return $is.odd(val);
     }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.num(val) ) {
+        throw _MKERR_ODD.type(new $TYPE_ERR, 'val', val, 'number');
+      }
+      if ( !$is.whole(val) ) {
+        throw _MKERR_ODD.range(new $RANGE_ERR, 'val', '[-+]?[0-9]+');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      if ( !$is.odd(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['oddNumber'] = isOddNumber;
+  is['oddnumber'] = isOddNumber;
+  is['oddNum'] = isOddNumber;
+  is['oddnum'] = isOddNumber;
   is['odd'] = isOddNumber;
-  /// #if}}} @code oddNumber
-  /// #}}} @submethod oddNumber
+  /// #if}}} @code odd
+  /// #}}} @submethod odd
 
-  /// #{{{ @submethod evenNumber
-  /// #{{{ @docs evenNumber
+  /// #{{{ @submethod even
+  /// #{{{ @docs even
   /// @section base
-  /// @method vitals.is.evenNumber
-  /// @alias vitals.is.even
+  /// @method vitals.is.even
+  /// @alias vitals.is.evenNumber
+  /// @alias vitals.is.evennumber
+  /// @alias vitals.is.evenNum
+  /// @alias vitals.is.evennum
   /**
    * @description
    *   Checks if a [number][num] is even. All even numbers less than one (e.g.
@@ -937,26 +1270,59 @@ var is = (function isPrivateScope() {
    * @return {boolean}
    *   The evaluation result.
    */
-  /// #}}} @docs evenNumber
-  /// #if{{{ @code evenNumber
+  /// #}}} @docs even
+  /// #if{{{ @code even
   function isEvenNumber(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var len;
+    /** @type {number} */
+    var i;
+
+    len = arguments['length'];
+
+    switch (len) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'evenNumber');
+        throw _MKERR_EVEN.noArg(new $ERR, 'val');
       case 1:
-        return _isEven(val);
-      default:
-        return _are(arguments, _isEven);
+        if ( !$is.num(val) ) {
+          throw _MKERR_EVEN.type(new $TYPE_ERR, 'val', val, 'number');
+        }
+        if ( !$is.whole(val) ) {
+          throw _MKERR_EVEN.range(new $RANGE_ERR, 'val', '[-+]?[0-9]+');
+        }
+        return $is.even(val);
     }
+
+    i = len;
+    while (i--) {
+      val = arguments[i];
+      if ( !$is.num(val) ) {
+        throw _MKERR_EVEN.type(new $TYPE_ERR, 'val', val, 'number');
+      }
+      if ( !$is.whole(val) ) {
+        throw _MKERR_EVEN.range(new $RANGE_ERR, 'val', '[-+]?[0-9]+');
+      }
+    }
+
+    i = len;
+    while (i--) {
+      if ( !$is.even(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['evenNumber'] = isEvenNumber;
+  is['evennumber'] = isEvenNumber;
+  is['evenNum'] = isEvenNumber;
+  is['evennum'] = isEvenNumber;
   is['even'] = isEvenNumber;
-  /// #if}}} @code evenNumber
-  /// #}}} @submethod evenNumber
-  /// #ifnot}}} @scope IS_MAIN_ONLY
-  /// #ifnot}}} @scope FS_ONLY
+  /// #if}}} @code even
+  /// #}}} @submethod even
 
-  /// #if{{{ @scope FS
+  /// #if{{{ @build NODE
+
   /// #{{{ @submethod buffer
   /// #{{{ @docs buffer
   /// @section fs
@@ -976,14 +1342,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs buffer
   /// #if{{{ @code buffer
   function isBuffer(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'buffer');
+        throw _MKERR_BUFF.noArg(new $ERR, 'val');
       case 1:
         return $is.buff(val);
-      default:
-        return _are(arguments, $is.buff);
     }
+
+    while (i--) {
+      if ( !$is.buff(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['buffer'] = isBuffer;
   is['buff'] = isBuffer;
@@ -1009,14 +1386,25 @@ var is = (function isPrivateScope() {
   /// #}}} @docs directory
   /// #if{{{ @code directory
   function isDirectory(val) {
-    switch (arguments['length']) {
+
+    /** @type {number} */
+    var i;
+
+    i = arguments['length'];
+
+    switch (i) {
       case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'directory');
+        throw _MKERR_DIR.noArg(new $ERR, 'val');
       case 1:
         return $is.dir(val);
-      default:
-        return _are(arguments, $is.dir);
     }
+
+    while (i--) {
+      if ( !$is.dir(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
   is['directory'] = isDirectory;
   is['dir'] = isDirectory;
@@ -1040,120 +1428,36 @@ var is = (function isPrivateScope() {
   /// #}}} @docs file
   /// #if{{{ @code file
   function isFile(val) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'file');
-      case 1:
-        return $is.file(val);
-      default:
-        return _are(arguments, $is.file);
-    }
-  }
-  is['file'] = isFile;
-  /// #if}}} @code file
-  /// #}}} @submethod file
-  /// #if}}} @scope FS
-
-  /// #if{{{ @helpers is
-
-  /// #ifnot{{{ @scope IS_MAIN_ONLY
-  /// #{{{ @group main
-
-  /// #{{{ @func _are
-  /**
-   * @private
-   * @param {!Arguments} vals
-   * @param {!function(*): boolean} check
-   * @return {boolean}
-   */
-  function _are(vals, check) {
 
     /** @type {number} */
     var i;
 
-    i = vals['length'];
-    while (i--) {
-      if ( !check(vals[i]) )
-        return NO;
+    i = arguments['length'];
+
+    switch (i) {
+      case 0:
+        throw _MKERR_FILE.noArg(new $ERR, 'val');
+      case 1:
+        return $is.file(val);
     }
-    return YES;
+
+    while (i--) {
+      if ( !$is.file(arguments[i]) ) {
+        return $NO;
+      }
+    }
+    return $YES;
   }
-  /// #}}} @func _are
+  is['file'] = isFile;
+  /// #if}}} @code file
+  /// #}}} @submethod file
 
-  /// #ifnot{{{ @scope FS_ONLY
-  /// #{{{ @func _isFrozen
-  /**
-   * @private
-   * @param {(?Object|?Function)} val
-   * @return {boolean}
-   */
-  function _isFrozen(val) {
+  /// #if}}} @build NODE
 
-    if ( $is.nil(val) )
-      return NO;
-
-    if ( !$is._obj(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, '?Object|?Function',
-        'frozen');
-
-    return $is.frozen(val);
-  }
-  /// #}}} @func _isFrozen
-
-  /// #{{{ @func _isWhole
-  /**
-   * @private
-   * @param {number} val
-   * @return {boolean}
-   */
-  function _isWhole(val) {
-
-    if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'wholeNumber');
-
-    return $is.whole(val);
-  }
-  /// #}}} @func _isWhole
-
-  /// #{{{ @func _isOdd
-  /**
-   * @private
-   * @param {number} val
-   * @return {boolean}
-   */
-  function _isOdd(val) {
-
-    if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'oddNumber');
-    if ( !$is.whole(val) )
-      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'oddNumber');
-
-    return $is.odd(val);
-  }
-  /// #}}} @func _isOdd
-
-  /// #{{{ @func _isEven
-  /**
-   * @private
-   * @param {number} val
-   * @return {boolean}
-   */
-  function _isEven(val) {
-
-    if ( !$is.num(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, 'number', 'evenNumber');
-    if ( !$is.whole(val) )
-      throw _mkRangeErr(new RANGE_ERR, 'val', '-?[0-9]+', 'evenNumber');
-
-    return $is.even(val);
-  }
-  /// #}}} @func _isEven
-  /// #ifnot}}} @scope FS_ONLY
-
-  /// #}}} @group main
   /// #ifnot}}} @scope IS_MAIN_ONLY
 
-  /// #ifnot{{{ @scope FS_ONLY
+  /// #if{{{ @helpers is
+
   /// #{{{ @group check
 
   /// #{{{ @func _checkVal
@@ -1171,10 +1475,11 @@ var is = (function isPrivateScope() {
 
     i = checks['length'];
     while (i--) {
-      if ( checks[i](val, nullable) )
-        return YES;
+      if ( checks[i](val, nullable) ) {
+        return $YES;
+      }
     }
-    return NO;
+    return $NO;
   }
   /// #}}} @func _checkVal
 
@@ -1193,10 +1498,11 @@ var is = (function isPrivateScope() {
 
     i = vals['length'];
     while (--i) {
-      if ( !_checkVal(checks, vals[i], nullable) )
-        return NO;
+      if ( !_checkVal(checks, vals[i], nullable) ) {
+        return $NO;
+      }
     }
-    return YES;
+    return $YES;
   }
   /// #}}} @func _checkVals
 
@@ -1210,38 +1516,115 @@ var is = (function isPrivateScope() {
    * @const {!Object<string, !function(*, boolean=): boolean>}
    * @dict
    */
-  var _TYPES = (function _TYPES_PrivateScope() {
+  var _TYPES = (function __vitals_TYPES__() {
 
+    /// #{{{ @const TYPES
     /**
-     * @type {!Object<string, !function(*, boolean=): boolean>}
+     * @const {!Object<string, !function(*, boolean=): boolean>}
      * @dict
      */
-    var $types = {};
+    var TYPES = {};
+    /// #}}} @const TYPES
+
+    /// #{{{ @func Type
+    /**
+     * @private
+     * @param {string} name
+     * @param {!function(*): boolean} test
+     * @param {(?string|?Array<string>)=} alias
+     * @param {boolean=} nullableDflt = `true`
+     * @constructor
+     * @struct
+     */
+    function Type(name, test, alias, nullableDflt) {
+      this.name = name;
+      this.test = test;
+      if ( $is.bool(alias) ) {
+        this.alias = $NIL;
+        this.nullableDflt = alias;
+      }
+      else {
+        this.alias = !!alias
+          ? alias
+          : $NIL;
+        this.nullableDflt = nullableDflt !== $NO;
+      }
+    }
+    Type['prototype'] = $mkObj($NIL);
+    Type['prototype']['constructor'] = Type;
+    /// #}}} @func Type
+
+    /// #{{{ @func _newType
+    /**
+     * @private
+     * @param {string} name
+     * @param {!function(*): boolean} test
+     * @param {(?string|?Array<string>)=} alias
+     * @param {boolean=} nullableDflt = `true`
+     * @return {!Type}
+     */
+    function _newType(name, test, alias, nullableDflt) {
+
+      switch (arguments['length']) {
+        case 2:
+          return new Type(name, test);
+        case 3:
+          return new Type(name, test, alias);
+      }
+      return new Type(name, test, alias, nullableDflt);
+    }
+    /// #}}} @func _newType
+
+    /// #{{{ @func Type.prototype.add
+    /**
+     * @description
+     *   Adds a type to the *TYPES* hash map with a check method that
+     *   evaluates nullable properties and invokes its type section's method.
+     * @private
+     * @param {string} section
+     *   The type's category.
+     * @return {void}
+     */
+    Type['prototype'].add = function addType(section) {
+
+      if ( $own(_addType, section) ) {
+        this.test = _addType[section](this.test);
+      }
+
+      _addType(section, this.name, this.test, this.nullableDflt);
+
+      if ( $is._str(this.alias) ) {
+        _addAlias(this.name, this.alias);
+      }
+      else if (!!this.alias) {
+        _addAliases(this.name, this.alias);
+      }
+    }
+    /// #}}} @func Type.prototype.add
 
     /// #{{{ @func _addTypes
     /**
      * @description
-     *   Adds types to the *$types* hash map with a check method that
+     *   Adds types to the *TYPES* hash map with a check method that
      *   evaluates nullable properties and invokes their type section's
      *   method.
      * @private
      * @param {string} section
      *   The category for the types.
-     * @param {!Object<string, !function(*): boolean>} types
-     *   Each property should use a type's name for its key and method for its
-     *   value.
-     * @param {boolean=} nullableDefault = `true`
-     *   The default nullable value for each type in #types.
+     * @param {!Array<!Type>} types
      * @return {void}
      */
-    function _addTypes(section, types, nullableDefault) {
+    function _addTypes(section, types) {
 
-      /** @type {string} */
-      var type;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
 
-      for (type in types) {
-        if( $own(types, type) )
-          _addType(section, type, types[type], nullableDefault);
+      len = types['length'];
+      i = 0;
+      while (++i < len) {
+        types[i].add(section);
       }
     }
     /// #}}} @func _addTypes
@@ -1249,8 +1632,8 @@ var is = (function isPrivateScope() {
     /// #{{{ @func _addType
     /**
      * @description
-     *   Adds a type to the *$types* hash map with a check method that
-     *   evaluates nullable properties and invokes its type section's method.
+     *   Adds a type to the *TYPES* hash map with a check method that
+     *   evaluates nullable properties.
      * @private
      * @param {string} section
      *   The type's category.
@@ -1258,60 +1641,68 @@ var is = (function isPrivateScope() {
      *   The type's name.
      * @param {!function(*): boolean} check
      *   The type's check method.
-     * @param {boolean=} nullableDefault = `true`
+     * @param {boolean} nullableDflt
      *   The type's default nullable value.
      * @return {void}
      */
-    function _addType(section, type, check, nullableDefault) {
+    function _addType(section, type, check, nullableDflt) {
 
-      if ( $own(_addType, section) )
-        check = _addType[section](check);
-
-      nullableDefault = nullableDefault !== NO;
-
+      /// #{{{ @func typeCheck
       /**
        * @param {*} val
-       * @param {boolean=} nullable = `nullableDefault`
+       * @param {boolean=} nullable = `nullableDflt`
        * @return {boolean}
        */
       function typeCheck(val, nullable) {
-
-        if ( !$is.bool(nullable) )
-          nullable = nullableDefault;
-
         return $is.nil(val)
-          ? nullable
+          ? $is.bool(nullable)
+            ? nullable
+            : nullableDflt
           : check(val);
       }
+      /// #}}} @func typeCheck
 
-      $types['_' + type] = typeCheck;
+      TYPES['_' + type] = typeCheck;
     }
     /// #}}} @func _addType
 
-    /// #{{{ @func _addShortcuts
+    /// #{{{ @func _addAliases
     /**
      * @description
-     *   Adds the type shortcuts to the *$types* hash map.
+     *   Adds the type aliases to the *TYPES* hash map.
      * @private
-     * @param {!Object<string, string>} shortcuts
+     * @param {string} name
+     * @param {!Array<string>} aliases
      * @return {void}
      */
-    function _addShortcuts(shortcuts) {
+    function _addAliases(name, aliases) {
 
-      /** @type {string} */
-      var shortcut;
-      /** @type {string} */
-      var type;
+      /** @type {number} */
+      var len;
+      /** @type {number} */
+      var i;
 
-      for (shortcut in shortcuts) {
-        if( $own(shortcuts, shortcut) ) {
-          type = '_' + shortcuts[shortcut];
-          shortcut = '_' + shortcut;
-          $types[shortcut] = $types[type];
-        }
+      len = aliases['length'];
+      i = 0;
+      while (++i < len) {
+        _addAlias(name, aliases[i]);
       }
     }
-    /// #}}} @func _addShortcuts
+    /// #}}} @func _addAliases
+
+    /// #{{{ @func _addAlias
+    /**
+     * @description
+     *   Adds the type alias to the *TYPES* hash map.
+     * @private
+     * @param {string} name
+     * @param {string} alias
+     * @return {void}
+     */
+    function _addAlias(name, alias) {
+      TYPES['_' + alias] = TYPES['_' + name];
+    }
+    /// #}}} @func _addAlias
 
     /// #{{{ @func _addArrayType
     /**
@@ -1323,6 +1714,7 @@ var is = (function isPrivateScope() {
      */
     function _addArrayType(eachCheck) {
 
+      /// #{{{ @func check
       /**
        * @param {*} val
        * @return {boolean}
@@ -1332,16 +1724,19 @@ var is = (function isPrivateScope() {
         /** @type {number} */
         var i;
 
-        if ( !$is.arr(val) )
-          return NO;
+        if ( !$is.arr(val) ) {
+          return $NO;
+        }
 
         i = val['length'];
         while (i--) {
-          if ( !eachCheck(val[i]) )
-            return NO;
+          if ( !eachCheck(val[i]) ) {
+            return $NO;
+          }
         }
-        return YES;
+        return $YES;
       }
+      /// #}}} @func check
 
       return check;
     }
@@ -1358,6 +1753,7 @@ var is = (function isPrivateScope() {
      */
     function _addMapType(eachCheck) {
 
+      /// #{{{ @func check
       /**
        * @param {*} val
        * @return {boolean}
@@ -1367,169 +1763,111 @@ var is = (function isPrivateScope() {
         /** @type {string} */
         var key;
 
-        if ( !$is.obj(val) )
-          return NO;
+        if ( !$is.obj(val) ) {
+          return $NO;
+        }
 
         for (key in val) {
-          if( $own(val, key) && !eachCheck(val[key]) )
-            return NO;
+          if( $own(val, key) && !eachCheck(val[key]) ) {
+            return $NO;
+          }
         }
-        return YES;
+        return $YES;
       }
+      /// #}}} @func check
 
       return check;
     }
     _addType['maps'] = _addMapType;
     /// #}}} @func _addMapType
 
-    /// #{{{ @group Add-Types
+    /// #{{{ @step add-primitives
 
-    /// #{{{ @group Primitives
-    _addTypes('primitives', {
-      'undefined': $is.void,
-      'boolean':   $is.bool,
-      'string':    $is.str,
-      'number':    $is.num,
-      'nan':       $is.nan
-    }, NO);
-    _addType('primitives', 'null', $is.nil);
-    /// #}}} @group Primitives
+    _addTypes('primitives', [
+      _newType('null', $is.nil, 'nil'),
+      _newType('undefined', $is.void, 'void', $NO),
+      _newType('boolean', $is.bool, 'bool', $NO),
+      _newType('string', $is.str, 'str', $NO),
+      _newType('number', $is.num, 'num', $NO),
+      _newType('nan', $is.nan, $NO)
+    ]);
 
-    /// #{{{ @group JS-Objects
-    _addTypes('js_objects', {
-      'object': $is.obj,
-      'regexp': $is.regx,
-      'array':  $is.arr,
-      'error':  $is.err,
-      'date':   $is.date
-    });
-    _addType('js_objects', 'arguments', $is.args);
-    _addType('js_objects', 'function', $is.fun, NO);
-    /// #}}} @group JS-Objects
+    /// #}}} @step add-primitives
 
-    /// #{{{ @group DOM-Objects
-    _addTypes('dom_objects', {
-      'element':  $is.elem,
-      'document': $is.doc
-    });
-    /// #}}} @group DOM-Objects
+    /// #{{{ @step add-js-objects
 
-    /// #{{{ @group Others
-    _addType('others', 'empty', $is.empty);
-    /// #}}} @group Others
+    _addTypes('js_objects', [
+      _newType('object', $is.obj, 'obj'),
+      _newType('function', $is.fun, [ 'func', 'fun', 'fn' ], $NO),
+      _newType('array', $is.arr, 'arr'),
+      _newType('regexp', $is.regx, [ 'regex', 'regx', 're' ]),
+      _newType('error', $is.err, 'err'),
+      _newType('date', $is.date),
+      _newType('arguments', $is.args, 'args')
+    ]);
 
-    /// #{{{ @group Arrays
-    _addTypes('arrays', {
-      'undefineds': $is.void,
-      'nulls':      $is.nil,
-      'booleans':   $is.bool,
-      'strings':    $is.str,
-      'numbers':    $is.num,
-      'nans':       $is.nan,
-      'objects':    $is.obj,
-      'functions':  $is.fun,
-      'regexps':    $is.regx,
-      'arrays':     $is.arr,
-      'dates':      $is.date,
-      'errors':     $is.err,
-      'elements':   $is.elem,
-      'documents':  $is.doc
-    });
-    /// #}}} @group Arrays
+    /// #}}} @step add-js-objects
 
-    /// #{{{ @group Maps
-    _addTypes('maps', {
-      'undefinedmap': $is.void,
-      'nullmap':      $is.nil,
-      'booleanmap':   $is.bool,
-      'stringmap':    $is.str,
-      'numbermap':    $is.num,
-      'nanmap':       $is.nan,
-      'objectmap':    $is.obj,
-      'functionmap':  $is.func,
-      'regexpmap':    $is.regex,
-      'arraymap':     $is.arr,
-      'datemap':      $is.date,
-      'errormap':     $is.err,
-      'elementmap':   $is.elem,
-      'documentmap':  $is.doc
-    });
-    /// #}}} @group Maps
+    /// #{{{ @step add-dom-objects
 
-    /// #}}} @group Add-Types
+    _addTypes('dom_objects', [
+      _newType('document', $is.doc, [ 'htmldocument', 'doc' ]),
+      _newType('element', $is.elem, [ 'htmlelement', 'elem' ])
+    ]);
 
-    /// #{{{ @group Add-Shortcuts
-    _addShortcuts({
+    /// #}}} @step add-dom-objects
 
-      /// #{{{ @group Primitives
-      'nil':  'null',
-      'bool': 'boolean',
-      'str':  'string',
-      'num':  'number',
-      'void': 'undefined',
-      /// #}}} @group Primitives
+    /// #{{{ @step add-specials
 
-      /// #{{{ @group JS-Objects
-      'obj':   'object',
-      'func':  'function',
-      'fun':   'function',
-      'fn':    'function',
-      'regex': 'regexp',
-      'regx':  'regexp',
-      're':    'regexp',
-      'arr':   'array',
-      'err':   'error',
-      'args':  'arguments',
-      /// #}}} @group JS-Objects
+    _addTypes('specials', [
+      _newType('empty', $is.empty)
+    ]);
 
-      /// #{{{ @group DOM-Objects
-      'elem': 'element',
-      'doc':  'document',
-      /// #}}} @group DOM-Objects
+    /// #}}} @step add-specials
 
-      /// #{{{ @group Arrays
-      'undefinedes': 'undefineds',
-      'voids':   'undefineds',
-      'nils':    'nulls',
-      'strs':    'strings',
-      'nums':    'numbers',
-      'bools':   'booleans',
-      'objs':    'objects',
-      'funcs':   'functions',
-      'funs':    'functions',
-      'fns':     'functions',
-      'regexes': 'regexps',
-      'regexs':  'regexps',
-      'res':     'regexps',
-      'arrs':    'arrays',
-      'errs':    'errors',
-      'elems':   'elements',
-      'docs':    'documents',
-      /// #}}} @group Arrays
+    /// #{{{ @step add-arrays
 
-      /// #{{{ @group Maps
-      'voidmap':  'undefinedmap',
-      'nilmap':   'nullmap',
-      'strmap':   'stringmap',
-      'nummap':   'numbermap',
-      'boolmap':  'booleanmap',
-      'objmap':   'objectmap',
-      'funcmap':  'functionmap',
-      'funmap':   'functionmap',
-      'fnmap':    'functionmap',
-      'regexmap': 'regexpmap',
-      'regxmap':  'regexpmap',
-      'remap':    'regexpmap',
-      'arrmap':   'arraymap',
-      'errmap':   'errormap',
-      'elemmap':  'elementmap',
-      'docmap':   'documentmap'
-      /// #}}} @group Maps
+    _addTypes('arrays', [
+      _newType('nulls', $is.nil, 'nils'),
+      _newType('undefineds', $is.void, [ 'undefinedes', 'voids' ]),
+      _newType('booleans', $is.bool, 'bools'),
+      _newType('strings', $is.str, 'strs'),
+      _newType('numbers', $is.num, 'nums'),
+      _newType('nans', $is.nan),
+      _newType('objects', $is.obj, 'objs'),
+      _newType('functions', $is.fun, [ 'funcs', 'funs', 'fns' ]),
+      _newType('arrays', $is.arr, 'arrs'),
+      _newType('regexps', $is.regx, [ 'regexes', 'regexs', 'regxs', 'res' ]),
+      _newType('errors', $is.err, 'errs'),
+      _newType('dates', $is.date),
+      _newType('documents', $is.doc, [ 'htmldocuments', 'docs' ]),
+      _newType('elements', $is.elem, [ 'htmlelements', 'elems' ])
+    ]);
 
-    });
-    /// #}}} @group Add-Shortcuts
+    /// #}}} @step add-arrays
 
-    return $types;
+    /// #{{{ @step add-maps
+
+    _addTypes('maps', [
+      _newType('nullmap', $is.nil, 'nilmap'),
+      _newType('undefinedmap', $is.void, 'voidmap'),
+      _newType('booleanmap', $is.bool, 'boolmap'),
+      _newType('stringmap', $is.str, 'strmap'),
+      _newType('numbermap', $is.num, 'nummap'),
+      _newType('nanmap', $is.nan),
+      _newType('objectmap', $is.obj, 'objmap'),
+      _newType('functionmap', $is.fun, [ 'funcmap', 'funmap', 'fnmap' ]),
+      _newType('arraymap', $is.arr, 'arrmap'),
+      _newType('regexpmap', $is.regx, [ 'regexmap', 'regxmap', 'remap' ]),
+      _newType('errormap', $is.err, 'errmap'),
+      _newType('datemap', $is.date),
+      _newType('documentmap', $is.doc, [ 'htmldocumentmap', 'docmap' ]),
+      _newType('elementmap', $is.elem, [ 'htmlelementmap', 'elemmap' ])
+    ]);
+
+    /// #}}} @step add-maps
+
+    return TYPES;
   })();
   /// #}}} @const _TYPES
 
@@ -1688,8 +2026,9 @@ var is = (function isPrivateScope() {
     /** @type {number} */
     var i;
 
-    if ( _hasSpecial('=', types) )
+    if ( _hasSpecial('=', types) ) {
       types += '|undefined';
+    }
 
     types = types['toLowerCase']();
     types = types['replace'](_ALL_SPECIALS, '');
@@ -1698,14 +2037,15 @@ var is = (function isPrivateScope() {
     i = checks['length'];
     while (i--) {
       type = '_' + checks[i];
-      if ( !$own(_TYPES, type) )
-        return NIL;
+      if ( !$own(_TYPES, type) ) {
+        return $NIL;
+      }
       checks[i] = _TYPES[type];
     }
 
     return checks['length']
       ? checks
-      : NIL;
+      : $NIL;
   }
   /// #}}} @func _getChecks
 
@@ -1730,33 +2070,268 @@ var is = (function isPrivateScope() {
     ensure = _hasSpecial('?', types);
     negate = _hasSpecial('!', types);
     override = ensure && negate
-      ? NO
+      ? $NO
       : ensure || negate;
     return override
       ? !negate && ensure
-      : VOID;
+      : $VOID;
   }
   /// #}}} @func _getNullable
 
   /// #}}} @group parse
-  /// #ifnot}}} @scope FS_ONLY
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_MAIN
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('is');
-  /// #}}} @const _MK_ERR
+  var _MKERR_MAIN = $mkErr('is');
+  /// #}}} @const _MKERR_MAIN
 
-  /// #insert @code MK_ERR ../macros/mk-err.js
+  /// #ifnot{{{ @scope IS_MAIN_ONLY
 
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_NULL
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_NULL = $mkErr('is', 'null');
+  /// #}}} @const _MKERR_NULL
 
-  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_VOID
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_VOID = $mkErr('is', 'undefined');
+  /// #}}} @const _MKERR_VOID
+
+  /// #{{{ @const _MKERR_BOOL
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_BOOL = $mkErr('is', 'boolean');
+  /// #}}} @const _MKERR_BOOL
+
+  /// #{{{ @const _MKERR_STR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_STR = $mkErr('is', 'string');
+  /// #}}} @const _MKERR_STR
+
+  /// #{{{ @const _MKERR_NUM
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_NUM = $mkErr('is', 'number');
+  /// #}}} @const _MKERR_NUM
+
+  /// #{{{ @const _MKERR_NAN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_NAN = $mkErr('is', 'nan');
+  /// #}}} @const _MKERR_NAN
+
+  /// #{{{ @const _MKERR_OBJ
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_OBJ = $mkErr('is', 'object');
+  /// #}}} @const _MKERR_OBJ
+
+  /// #{{{ @const _MKERR_PLAIN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_PLAIN = $mkErr('is', 'plain');
+  /// #}}} @const _MKERR_PLAIN
+
+  /// #{{{ @const _MKERR_FUN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_FUN = $mkErr('is', 'function');
+  /// #}}} @const _MKERR_FUN
+
+  /// #{{{ @const _MKERR_ARR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ARR = $mkErr('is', 'array');
+  /// #}}} @const _MKERR_ARR
+
+  /// #{{{ @const _MKERR_REGX
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_REGX = $mkErr('is', 'regexp');
+  /// #}}} @const _MKERR_REGX
+
+  /// #{{{ @const _MKERR_DATE
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_DATE = $mkErr('is', 'date');
+  /// #}}} @const _MKERR_DATE
+
+  /// #{{{ @const _MKERR_ERR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ERR = $mkErr('is', 'error');
+  /// #}}} @const _MKERR_ERR
+
+  /// #{{{ @const _MKERR_ARGS
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ARGS = $mkErr('is', 'args');
+  /// #}}} @const _MKERR_ARGS
+
+  /// #{{{ @const _MKERR_DOC
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_DOC = $mkErr('is', 'document');
+  /// #}}} @const _MKERR_DOC
+
+  /// #{{{ @const _MKERR_ELEM
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ELEM = $mkErr('is', 'element');
+  /// #}}} @const _MKERR_ELEM
+
+  /// #{{{ @const _MKERR_EMPTY
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_EMPTY = $mkErr('is', 'empty');
+  /// #}}} @const _MKERR_EMPTY
+
+  /// #{{{ @const _MKERR_CAPPED
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_CAPPED = $mkErr('is', 'capped');
+  /// #}}} @const _MKERR_CAPPED
+
+  /// #{{{ @const _MKERR_FROZEN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_FROZEN = $mkErr('is', 'frozen');
+  /// #}}} @const _MKERR_FROZEN
+
+  /// #{{{ @const _MKERR_SEALED
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_SEALED = $mkErr('is', 'sealed');
+  /// #}}} @const _MKERR_SEALED
+
+  /// #{{{ @const _MKERR_WHOLE
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_WHOLE = $mkErr('is', 'whole');
+  /// #}}} @const _MKERR_WHOLE
+
+  /// #{{{ @const _MKERR_ODD
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ODD = $mkErr('is', 'odd');
+  /// #}}} @const _MKERR_ODD
+
+  /// #{{{ @const _MKERR_EVEN
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_EVEN = $mkErr('is', 'even');
+  /// #}}} @const _MKERR_EVEN
+
+  /// #if{{{ @build NODE
+
+  /// #{{{ @const _MKERR_BUFF
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_BUFF = $mkErr('is', 'buffer');
+  /// #}}} @const _MKERR_BUFF
+
+  /// #{{{ @const _MKERR_DIR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_DIR = $mkErr('is', 'directory');
+  /// #}}} @const _MKERR_DIR
+
+  /// #{{{ @const _MKERR_FILE
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_FILE = $mkErr('is', 'file');
+  /// #}}} @const _MKERR_FILE
+
+  /// #if}}} @build NODE
+
+  /// #ifnot}}} @scope IS_MAIN_ONLY
 
   /// #}}} @group errors
 
@@ -1765,19 +2340,11 @@ var is = (function isPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return is;
 })();
-/// #ifnot{{{ @scope SOLO
-/// #ifnot{{{ @scope IS_MAIN_ONLY
-vitals['is'] = is;
-/// #ifnot}}} @scope IS_MAIN_ONLY
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super is
 
 /// #if{{{ @scope SOLO
-var vitals = is;
-vitals['is'] = is;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
