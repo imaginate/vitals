@@ -12,12 +12,8 @@
  */
 
 /// #if{{{ @scope SOLO
-/// #insert @wrapper OPEN ../macros/wrapper.js
-/// #include @core constants ../core/constants.js
-/// #include @core helpers ../core/helpers.js
-/// #ifnot{{{ @scope FS_ONLY
+/// #include @core OPEN ../core/open.js
 /// #include @helper $splitKeys ../helpers/split-keys.js
-/// #ifnot}}} @scope FS_ONLY
 /// #if{{{ @scope FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
@@ -33,7 +29,7 @@
  * @const {!Object}
  * @dict
  */
-var to = (function toPrivateScope() {
+$VITALS['to'] = (function __vitalsTo__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs to
@@ -58,7 +54,6 @@ var to = (function toPrivateScope() {
   var to = {};
   /// #ifnot}}} @scope DOCS_ONLY
 
-  /// #ifnot{{{ @scope FS_ONLY
   /// #{{{ @submethod string
   /// #{{{ @docs string
   /// @section base
@@ -66,43 +61,53 @@ var to = (function toPrivateScope() {
   /// @alias vitals.to.str
   /**
    * @description
-   *   Converts any value into a `string` using @stringify or if it the value
-   *   is an `array` and the #separator is defined,
-   *   [Array.prototype.join][join].
+   *   The @to#string method converts any value into a `string`.
    * @public
    * @param {*} val
-   * @param {(string|undefined)=} separator = `undefined`
-   *   Only use if the #val is an `array`. If the #separator is defined,
-   *   [Array.prototype.join][join] is called on the #val using the
-   *   #separator value to join each indexed property.
    * @return {string}
+   *   The returned `string` conversion of #val uses the following rules in
+   *   listed order (per #val data type):
+   *   - *`string`*!$
+   *     This method returns unchanged #val.
+   *   - *`!Object|!Function|!Array|!Arguments|!RegExp|!Date|!object`*!$
+   *     If the #val contains a `function` property named `"toString"`, this
+   *     method calls `val.toString`, converts its result to a `string` with
+   *     the [String][string] constructor, and returns the final result.
+   *     Otherwise, this method returns the result of [String][string] called
+   *     on the #val.
+   *     ```
+   *     if ( !('toString' in val) || !isFunction(val.toString) ) {
+   *       return String(val);
+   *     }
+   *     val = val.toString();
+   *     return isString(val)
+   *       ? val
+   *       : String(val);
+   *     ```
+   *   - *`undefined`*!$
+   *     This method returns `"undefined"`.
+   *   - *`null`*!$
+   *     This method returns `"null"`.
+   *   - *`boolean`*!$
+   *     This method returns `"true"` or `"false"`.
+   *   - *`nan`*!$
+   *     This method returns `"NaN"`.
+   *   - *`*`*!$
+   *     This method returns the result of [String][string] called on the
+   *     #val.
+   *     ```
+   *     return String(val);
+   *     ```
    */
   /// #}}} @docs string
   /// #if{{{ @code string
-  function toString(val, separator) {
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'string');
+  function toString(val) {
 
-      case 1:
-        return $mkStr(val);
-
-      default:
-        if ( $is.void(separator) ) {
-          return $mkStr(val);
-        }
-
-        if ( !$is.arr(val) ) {
-          throw _mkErr(new ERR, 'invalid #separator defined (' +
-            'only allowed with an `array` #val)', 'string');
-        }
-        if ( !$is.str(separator) ) {
-          throw _mkTypeErr(new TYPE_ERR, 'separator', separator, 'string=',
-            'string');
-        }
-
-        return val['join'](separator);
+    if (!arguments['length']) {
+      throw _MKERR_STR.noArg(new $ERR, 'val');
     }
+
+    return $mkStr(val);
   }
   to['string'] = toString;
   to['str'] = toString;
@@ -116,48 +121,57 @@ var to = (function toPrivateScope() {
   /// @alias vitals.to.num
   /**
    * @description
-   *   Converts most [primitive][prim] values to a `number`.
+   *   The @to#number method converts most [primitive][prim] values to a
+   *   `number`.
    * @public
    * @param {(?string|?number|?boolean)} val
-   *   If the #val is a `string`, [Number][number] is used to convert it to a
-   *   `number`. Only [valid strings][str2num] are allowed.
+   *   If the #val is a `string`, the [Number][number] constructor is used to
+   *   convert a [valid string][str2num] #val into a `number`.
    * @return {number}
-   *   The return details are as follows (per #val data type):
-   *   - *`boolean`*!$
-   *     This method will return `1` for `true` or `0` for `false`.
+   *   This method's return details are as follows (per #val data type):
    *   - *`number`*!$
-   *     This method will return the value of #val.
-   *   - *`string`*!$
-   *     This method will return the result from [Number][number] unless it is
-   *     `NaN`. If the result is `NaN`, an [Error][error] will be thrown.
+   *     This method will return the unchanged #val.
    *   - *`null`*!$
    *     This method will return `0`.
+   *   - *`boolean`*!$
+   *     This method will return `1` for `true` or `0` for `false`.
+   *   - *`string`*!$
+   *     This method will return the result from a call of [Number][number] on
+   *     the #val unless the result is `NaN`. If the result is `NaN`, a
+   *     [RangeError][error] will be thrown.
    */
   /// #}}} @docs number
   /// #if{{{ @code number
   function toNumber(val) {
 
-    if (arguments['length'] < 1)
-      throw _mkErr(new ERR, 'no #val defined', 'number');
+    if (!arguments['length']) {
+      throw _MKERR_NUM.noArg(new $ERR, 'val');
+    }
 
-    if ( $is.num(val) )
+    if ( $is.num(val) ) {
       return val;
-    if ( $is.nil(val) )
+    }
+    if ( $is.nil(val) ) {
       return 0;
-    if ( $is.bool(val) )
+    }
+    if ( $is.bool(val) ) {
       return val
         ? 1
         : 0;
+    }
 
-    if ( !$is.str(val) )
-      throw _mkTypeErr(new TYPE_ERR, 'val', val, '?string|?number|?boolean',
-        'number');
+    if ( !$is.str(val) ) {
+      throw _MKERR_NUM.type(new $TYPE_ERR, 'val', val,
+        '?string|?number|?boolean');
+    }
 
-    val = NUM(val);
+    val = $NUM(val);
 
-    if ( $is.nan(val) )
-      throw _mkRangeErr(new RANGE_ERR, 'val', 'https://github.com/' +
-        'imaginate/vitals/wiki/vitals.to#user-content-number', 'number');
+    if ( $is.nan(val) ) {
+      throw _MKERR_NUM.range(new $RANGE_ERR, 'val', 'https://developer.'
+        + 'mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/'
+        + 'Number#Convert_numeric_strings_to_numbers');
+    }
 
     return val;
   }
@@ -173,7 +187,7 @@ var to = (function toPrivateScope() {
   /// @alias vitals.to.bool
   /**
    * @description
-   *   Converts any value into a `boolean`.
+   *   The @to#boolean method converts any value into a `boolean`.
    * @public
    * @param {*} val
    * @return {boolean}
@@ -182,8 +196,9 @@ var to = (function toPrivateScope() {
   /// #if{{{ @code boolean
   function toBoolean(val) {
 
-    if (arguments['length'] < 1)
-      throw _mkErr(new ERR, 'no #val defined', 'boolean');
+    if (!arguments['length']) {
+      throw _MKERR_BOOL.noArg(new $ERR, 'val');
+    }
 
     return !!val;
   }
@@ -199,10 +214,10 @@ var to = (function toPrivateScope() {
   /// @alias vitals.to.arr
   /**
    * @description
-   *   Converts a `string` or `number` into an `array`.
+   *   The @to#array method converts a `string` or `number` into an `array`.
    * @public
    * @param {(string|number)} val
-   *   The #val details are as follows (per #val type):
+   *   The details are as follows (per #val data type):
    *   - *`string`*!$
    *     [String.prototype.split][split] is called on the #val.
    *   - *`number`*!$
@@ -224,38 +239,36 @@ var to = (function toPrivateScope() {
   /// #if{{{ @code array
   function toArray(val, separator) {
 
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #val defined', 'array');
+    /** @type {number} */
+    var len;
 
-      case 1:
-        if ( $is.num(val) )
-          return new ARR(val);
+    len = arguments['length'];
 
-        if ( !$is.str(val) )
-          throw _mkTypeErr(new TYPE_ERR, 'val', val, 'string|number',
-            'array');
-
-        return $splitKeys(val);
-
-      default:
-        if ( $is.num(val) ) {
-          if ( !$is.void(separator) )
-            throw _mkErr(new ERR, 'invalid #separator defined (' +
-              'only allowed with a `string` #val)', 'array');
-
-          return new ARR(val);
-        }
-
-        if ( !$is.str(val) )
-          throw _mkTypeErr(new TYPE_ERR, 'val', val, 'string|number',
-            'array');
-
-        if ( !$is.regx(separator) )
-          separator = $mkStr(separator);
-
-        return val['split'](separator);
+    if (!len) {
+      throw _MKERR_ARR.noArg(new $ERR, 'val');
     }
+
+    if ( $is.num(val) ) {
+      if ( len > 1 && !$is.void(separator) ) {
+        throw _MKERR_ARR.type(new $TYPE_ERR, 'separator', separator,
+          'undefined');
+      }
+      return new $ARR(val);
+    }
+
+    if ( !$is.str(val) ) {
+      throw _MKERR_ARR.type(new $TYPE_ERR, 'val', val, 'string|number');
+    }
+
+    if (len === 1) {
+      return $splitKeys(val);
+    }
+
+    if ( !$is.regx(separator) ) {
+      separator = $mkStr(separator);
+    }
+
+    return val['split'](separator);
   }
   to['array'] = toArray;
   to['arr'] = toArray;
@@ -267,133 +280,145 @@ var to = (function toPrivateScope() {
   /// @section base
   /// @method vitals.to.regexp
   /// @alias vitals.to.regex
+  /// @alias vitals.to.regx
   /// @alias vitals.to.re
   /**
    * @description
-   *   Converts a `string` into a `RegExp`.
+   *   The @to#regexp method converts a `string` into a `RegExp`.
    * @public
    * @param {string} source
    *   The [RegExp.prototype.source][regx-src] pattern for the new `RegExp`.
    * @param {(string|undefined)=} flags
-   *   If #flags is defined, it is the [RegExp flags][regexp] to assign to the
-   *   new `RegExp`.
+   *   If the #flags is defined, it is the [RegExp flags][regexp] to assign to
+   *   the new `RegExp`.
    * @return {!RegExp}
    */
   /// #}}} @docs regexp
   /// #if{{{ @code regexp
   function toRegExp(source, flags) {
 
-    switch (arguments['length']) {
-      case 0:
-        throw _mkErr(new ERR, 'no #source defined', 'regexp');
+    /** @type {number} */
+    var len;
 
-      case 1:
-        if ( !$is.str(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string',
-            'regexp');
+    len = arguments['length'];
 
-        return new REGX(source);
-
-      default:
-        if ( !$is.str(source) )
-          throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string',
-            'regexp');
-
-        if ( $is.void(flags) )
-          return new REGX(source);
-
-        if ( !$is.str(flags) )
-          throw _mkTypeErr(new TYPE_ERR, 'flags', flags, 'string=', 'regexp');
-
-        return new REGX(source, flags);
+    if (!len) {
+      throw _MKERR_REGX.noArg(new $ERR, 'source');
     }
+
+    if ( !$is.str(source) ) {
+      throw _MKERR_REGX.type(new $TYPE_ERR, 'source', source, 'string');
+    }
+
+    if ( len === 1 || $is.void(flags) ) {
+      return new REGX(source);
+    }
+
+    if ( !$is.str(flags) ) {
+      throw _MKERR_REGX.type(new $TYPE_ERR, 'flags', flags, 'string=');
+    }
+
+    return new REGX(source, flags);
   }
   to['regexp'] = toRegExp;
   to['regex'] = toRegExp;
+  to['regx'] = toRegExp;
   to['re'] = toRegExp;
   /// #if}}} @code regexp
   /// #}}} @submethod regexp
 
-  /// #{{{ @submethod upperCase
-  /// #{{{ @docs upperCase
+  /// #{{{ @submethod upper
+  /// #{{{ @docs upper
   /// @section base
-  /// @method vitals.to.upperCase
-  /// @alias vitals.to.upper
+  /// @method vitals.to.upper
+  /// @alias vitals.to.upperCase
+  /// @alias vitals.to.uppercase
   /**
    * @description
-   *   Converts all characters in a `string` to upper case.
+   *   The @to#upper method converts all characters in a `string` to upper
+   *   case.
    * @public
    * @param {string} source
    * @return {string}
    */
-  /// #}}} @docs upperCase
-  /// #if{{{ @code upperCase
+  /// #}}} @docs upper
+  /// #if{{{ @code upper
   function toUpperCase(source) {
 
-    if (arguments['length'] < 1)
-      throw _mkErr(new ERR, 'no #source defined', 'upperCase');
-    if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'upperCase');
+    if (!arguments['length']) {
+      throw _MKERR_UPPER.noArg(new $ERR, 'source');
+    }
+    if ( !$is.str(source) ) {
+      throw _MKERR_UPPER.type(new $TYPE_ERR, 'source', source, 'string');
+    }
 
     return source['toUpperCase']();
   }
   to['upperCase'] = toUpperCase;
+  to['uppercase'] = toUpperCase;
   to['upper'] = toUpperCase;
-  /// #if}}} @code upperCase
-  /// #}}} @submethod upperCase
+  /// #if}}} @code upper
+  /// #}}} @submethod upper
 
-  /// #{{{ @submethod lowerCase
-  /// #{{{ @docs lowerCase
+  /// #{{{ @submethod lower
+  /// #{{{ @docs lower
   /// @section base
-  /// @method vitals.to.lowerCase
-  /// @alias vitals.to.lower
+  /// @method vitals.to.lower
+  /// @alias vitals.to.lowerCase
+  /// @alias vitals.to.lowercase
   /**
    * @description
-   *   Converts all characters in a `string` to lower case.
+   *   The @to#lower method converts all characters in a `string` to lower
+   *   case.
    * @public
    * @param {string} source
    * @return {string}
    */
-  /// #}}} @docs lowerCase
-  /// #if{{{ @code lowerCase
+  /// #}}} @docs lower
+  /// #if{{{ @code lower
   function toLowerCase(source) {
 
-    if (arguments['length'] < 1)
-      throw _mkErr(new ERR, 'no #source defined', 'lowerCase');
-    if ( !$is.str(source) )
-      throw _mkTypeErr(new TYPE_ERR, 'source', source, 'string', 'lowerCase');
+    if (!arguments['length']) {
+      throw _MKERR_LOWER.noArg(new $ERR, 'source');
+    }
+    if ( !$is.str(source) ) {
+      throw _MKERR_LOWER.type(new $TYPE_ERR, 'source', source, 'string');
+    }
 
     return source['toLowerCase']();
   }
   to['lowerCase'] = toLowerCase;
+  to['lowercase'] = toLowerCase;
   to['lower'] = toLowerCase;
-  /// #if}}} @code lowerCase
-  /// #}}} @submethod lowerCase
-  /// #ifnot}}} @scope FS_ONLY
+  /// #if}}} @code lower
+  /// #}}} @submethod lower
 
   /// #if{{{ @scope FS
+
   /// #{{{ @submethod file
   /// #{{{ @docs file
   /// @section fs
   /// @method vitals.to.file
   /**
    * @description
-   *   Write the contents of a file to a new or existing file.
+   *   The @to#file method writes user-defined #content to a new or existing
+   *   file.
    * @public
-   * @param {(!Buffer|string)} contents
    * @param {string} dest
-   *   Must be a valid filepath to a new or existing file.
+   *   The #dest must be a valid absolute or relative path to a new or
+   *   existing regular file.
+   * @param {(!Buffer|string)} content
    * @param {(?Object|?string|undefined)=} opts
    *   If the #opts is `null` or a `string` value, it sets the #opts.encoding
    *   option to its value.
    * @param {?string=} opts.encoding = `"utf8"`
    *   The #opts.encoding option sets the character encoding for the
-   *   #contents. If it is `null`, no character encoding is set.
+   *   #content. If it is `null`, no character encoding is set.
    * @param {?string=} opts.encode
    *   An alias for the #opts.encoding option.
    * @param {?string=} opts.eol = `null`
    *   The #opts.eol option sets the end of line character to use when
-   *   normalizing the #contents before they are saved to the #dest. If
+   *   normalizing the #content before they are saved to the #dest. If
    *   it is set to `null`, no end of line character normalization is
    *   completed. The optional `string` values are as follows (values are
    *   **not** case-sensitive):
@@ -401,27 +426,24 @@ var to = (function toPrivateScope() {
    *   - `"CR"`
    *   - `"CRLF"`
    * @return {(!Buffer|string)}
-   *   The original #contents (without any normalization applied).
+   *   The original #content without any normalization applied.
    */
   /// #}}} @docs file
   /// #if{{{ @code file
-  function toFile(contents, dest, opts) {
+  function toFile(dest, content, opts) {
 
     /** @type {string} */
     var encoding;
 
     switch (arguments['length']) {
       case 0:
-        throw _mkErr(new ERR, 'no #contents defined', 'file');
-
+        throw _MKERR_FILE.noArg(new $ERR, 'dest');
       case 1:
-        throw _mkErr(new ERR, 'no #dest defined', 'file');
-
+        throw _MKERR_FILE.noArg(new $ERR, 'content');
       case 2:
         /** @dict */
         opts = $cloneObj(_DFLT_FILE_OPTS);
         break;
-
       default:
         if ( $is.void(opts) ) {
           /** @dict */
@@ -432,89 +454,110 @@ var to = (function toPrivateScope() {
         if ( $is.nil(opts) ) {
           /** @dict */
           opts = $cloneObj(_DFLT_FILE_OPTS);
-          opts['encoding'] = NIL;
+          opts['encoding'] = $NIL;
           break;
         }
 
         if ( $is.str(opts) ) {
           encoding = opts;
-
-          if (!encoding)
-            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
-              'file');
-
+          if (!encoding) {
+            throw _MKERR_FILE.misc(new $ERR, 'invalid empty #opts.encoding '
+              + '`string`');
+          }
           /** @dict */
           opts = $cloneObj(_DFLT_FILE_OPTS);
           opts['encoding'] = encoding;
           break;
         }
 
-        if ( !$is.obj(opts) )
-          throw _mkTypeErr(new TYPE_ERR, 'opts', opts, '(?Object|?string)=',
-            'file');
+        if ( !$is.obj(opts) ) {
+          throw _MKERR_FILE.type(new $TYPE_ERR, 'opts', opts,
+            '(?Object|?string)=');
+        }
 
         /** @dict */
         opts = $cloneObj(opts);
 
-        if ( !$hasOpt(opts, 'encode') )
-          opts['encode'] = VOID;
+        if ( !$hasOpt(opts, 'encode') ) {
+          opts['encode'] = $VOID;
+        }
         else if ( $is.str(opts['encode']) ) {
-          if (!opts['encode'])
-            throw _mkErr(new ERR, 'invalid empty #opts.encode `string`',
-              'file');
+          if (!opts['encode']) {
+            throw _MKERR_FILE.misc(new $ERR, 'invalid empty #opts.encode '
+              + '`string`');
+          }
         }
-        else if ( !$is.nil(opts['encode']) )
-          throw _mkTypeErr(new TYPE_ERR, 'opts.encode', opts['encode'],
-            '?string=', 'file');
+        else if ( !$is.nil(opts['encode']) ) {
+          throw _MKERR_FILE.type(new $TYPE_ERR, 'opts.encode', opts['encode'],
+            '?string=');
+        }
 
-        if ( !$hasOpt(opts, 'encoding') )
+        if ( !$hasOpt(opts, 'encoding') ) {
           opts['encoding'] = _DFLT_FILE_OPTS['encoding'];
-        else if ( $is.str(opts['encoding']) ) {
-          if (!opts['encoding'])
-            throw _mkErr(new ERR, 'invalid empty #opts.encoding `string`',
-              'file');
         }
-        else if ( !$is.nil(opts['encoding']) )
-          throw _mkTypeErr(new TYPE_ERR, 'opts.encoding', opts['encoding'],
-            '?string=', 'file');
+        else if ( $is.str(opts['encoding']) ) {
+          if (!opts['encoding']) {
+            throw _MKERR_FILE.misc(new $ERR, 'invalid empty #opts.encoding '
+              + '`string`');
+          }
+        }
+        else if ( !$is.nil(opts['encoding']) ) {
+          throw _MKERR_FILE.type(new $TYPE_ERR, 'opts.encoding',
+            opts['encoding'], '?string=');
+        }
 
-        if ( !$hasOpt(opts, 'eol') )
+        if ( !$hasOpt(opts, 'eol') ) {
           opts['eol'] = _DFLT_FILE_OPTS['eol'];
+        }
         else if ( $is.str(opts['eol']) ) {
-          if ( !$is.eol(opts['eol']) )
-            throw _mkRangeErr(new RANGE_ERR, 'opts.eol',
-              [ 'LF', 'CR', 'CRLF' ], 'file');
-
+          if ( !$is.eol(opts['eol']) ) {
+            throw _MKERR_FILE.range(new $RANGE_ERR, 'opts.eol', _EOL_OPTS);
+          }
           opts['eol'] = opts['eol']['toUpperCase']();
         }
-        else if ( !$is.nil(opts['eol']) )
-          throw _mkTypeErr(new TYPE_ERR, 'opts.eol', opts['eol'], '?string=',
-            'file');
+        else if ( !$is.nil(opts['eol']) ) {
+          throw _MKERR_FILE.type(new $TYPE_ERR, 'opts.eol', opts['eol'],
+            '?string=');
+        }
     }
 
-    if ( !$is.str(dest) )
-      throw _mkTypeErr(new TYPE_ERR, 'dest', dest, 'string', 'file');
-    else if (!dest)
-      throw _mkErr(new ERR, 'invalid empty #dest `string`', 'file');
+    if ( !$is.str(dest) ) {
+      throw _MKERR_FILE.type(new $TYPE_ERR, 'dest', dest, 'string');
+    }
+    else if (!dest) {
+      throw _MKERR_FILE.misc(new $ERR, 'invalid empty #dest `string`');
+    }
 
-    if ( $is.buff(contents) )
-      return _toFileByBuff(contents, dest, opts);
+    if ( $is.buff(content) ) {
+      return _toFileByBuff(content, dest, opts);
+    }
 
-    if ( !$is.str(contents) )
-      throw _mkTypeErr(new TYPE_ERR, 'contents', contents, '!Buffer|string',
-        'file');
+    if ( !$is.str(content) ) {
+      throw _MKERR_FILE.type(new $TYPE_ERR, 'content', content,
+        '!Buffer|string');
+    }
 
-    return _toFileByStr(contents, dest, opts);
+    return _toFileByStr(content, dest, opts);
   }
   to['file'] = toFile;
   /// #if}}} @code file
   /// #}}} @submethod file
+
   /// #if}}} @scope FS
 
   /// #if{{{ @helpers to
 
   /// #if{{{ @scope FS
+
   /// #{{{ @group main
+
+  /// #{{{ @const _EOL_OPTS
+  /**
+   * @private
+   * @const {!Array<string>}
+   */
+  var _EOL_OPTS = [ 'LF', 'CR', 'CRLF' ];
+  /// #}}} @const _EOL_OPTS
 
   /// #{{{ @func _toFileByBuff
   /**
@@ -536,10 +579,12 @@ var to = (function toPrivateScope() {
       _contents = $fixEol(_contents, opts['eol']);
     }
 
-    if (opts['encoding'])
+    if (opts['encoding']) {
       $writeFile(dest, _contents, opts['encoding']);
-    else
+    }
+    else {
       $writeFile(dest, _contents);
+    }
 
     return contents;
   }
@@ -560,13 +605,16 @@ var to = (function toPrivateScope() {
 
     _contents = contents;
 
-    if (opts['eol'])
+    if (opts['eol']) {
       _contents = $fixEol(_contents, opts['eol']);
+    }
 
-    if (opts['encoding'])
+    if (opts['encoding']) {
       $writeFile(dest, _contents, opts['encoding']);
-    else
+    }
+    else {
       $writeFile(dest, _contents);
+    }
 
     return contents;
   }
@@ -589,24 +637,86 @@ var to = (function toPrivateScope() {
   /// #}}} @const _DFLT_FILE_OPTS
 
   /// #}}} @group defaults
+
   /// #if}}} @scope FS
 
   /// #{{{ @group errors
 
-  /// #{{{ @const _MK_ERR
+  /// #{{{ @const _MKERR_STR
   /**
    * @private
-   * @const {!Object<string, !function>}
+   * @const {!ErrorMaker}
    * @struct
    */
-  var _MK_ERR = $mkErrs('to');
-  /// #}}} @const _MK_ERR
+  var _MKERR_STR = $mkErr('to', 'string');
+  /// #}}} @const _MKERR_STR
 
-  /// #insert @code MK_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_NUM
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_NUM = $mkErr('to', 'number');
+  /// #}}} @const _MKERR_NUM
 
-  /// #insert @code MK_TYPE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_BOOL
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_BOOL = $mkErr('to', 'boolean');
+  /// #}}} @const _MKERR_BOOL
 
-  /// #insert @code MK_RANGE_ERR ../macros/mk-err.js
+  /// #{{{ @const _MKERR_ARR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ARR = $mkErr('to', 'array');
+  /// #}}} @const _MKERR_ARR
+
+  /// #{{{ @const _MKERR_REGX
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_REGX = $mkErr('to', 'regexp');
+  /// #}}} @const _MKERR_REGX
+
+  /// #{{{ @const _MKERR_UPPER
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_UPPER = $mkErr('to', 'upper');
+  /// #}}} @const _MKERR_UPPER
+
+  /// #{{{ @const _MKERR_LOWER
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_LOWER = $mkErr('to', 'lower');
+  /// #}}} @const _MKERR_LOWER
+
+  /// #if{{{ @scope FS
+
+  /// #{{{ @const _MKERR_FILE
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_FILE = $mkErr('to', 'file');
+  /// #}}} @const _MKERR_FILE
+
+  /// #if}}} @scope FS
 
   /// #}}} @group errors
 
@@ -615,17 +725,11 @@ var to = (function toPrivateScope() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return to;
 })();
-/// #ifnot{{{ @scope SOLO
-vitals['to'] = to;
-/// #ifnot}}} @scope SOLO
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @super to
 
 /// #if{{{ @scope SOLO
-var vitals = to;
-vitals['to'] = to;
-/// #insert @code EXPORT ../macros/export.js
-/// #insert @wrapper CLOSE ../macros/wrapper.js
+/// #include @core CLOSE ../core/close.js
 /// #if}}} @scope SOLO
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
