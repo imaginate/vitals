@@ -48,6 +48,7 @@ $VITALS['is'] = (function __vitalsIs__() {
   /// @docref [void]:(https://developer.mozilla.org/en-US/docs/Glossary/undefined)
   /// @docref [ecma3]:(http://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%203rd%20edition,%20December%201999.pdf)
   /// @docref [ecma5]:(http://www.ecma-international.org/ecma-262/5.1/index.html)
+  /// @docref [equal]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness)
   /// @docref [error]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error#Error_types)
   /// @docref [regex]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions)
   /// @docref [frozen]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen)
@@ -908,6 +909,68 @@ $VITALS['is'] = (function __vitalsIs__() {
   is['empty'] = isEmpty;
   /// #if}}} @code empty
   /// #}}} @submethod empty
+
+  /// #{{{ @submethod same
+  /// #{{{ @docs same
+  /// @section base
+  /// @method vitals.is.same
+  /**
+   * @description
+   *   A functional representation of [strict equality][equal].
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  /// #}}} @docs same
+  /// #if{{{ @code same
+  function isSame(val1, val2) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _MKERR_SAME.noArg(new $ERR, 'val1');
+      case 1:
+        throw _MKERR_SAME.noArg(new $ERR, 'val2');
+    }
+
+    return val1 === val2;
+  }
+  is['same'] = isSame;
+  /// #if}}} @code same
+  /// #}}} @submethod same
+
+  /// #{{{ @submethod similar
+  /// #{{{ @docs similar
+  /// @section base
+  /// @method vitals.is.similar
+  /// @alias vitals.is.sim
+  /**
+   * @description
+   *   A functional representation of [loose equality][equal].
+   * @public
+   * @param {*} val1
+   * @param {*} val2
+   * @return {boolean}
+   *   The evaluation result.
+   */
+  /// #}}} @docs similar
+  /// #if{{{ @code similar
+  function isSimilar(val1, val2) {
+
+    switch (arguments['length']) {
+      case 0:
+        throw _MKERR_SIM.noArg(new $ERR, 'val1');
+      case 1:
+        throw _MKERR_SIM.noArg(new $ERR, 'val2');
+    }
+
+    return val1 == val2;
+  }
+  is['similar'] = isSimilar;
+  is['sim'] = isSimilar;
+  /// #if}}} @code similar
+  /// #}}} @submethod similar
 
   /// #{{{ @submethod capped
   /// #{{{ @docs capped
@@ -2245,6 +2308,24 @@ $VITALS['is'] = (function __vitalsIs__() {
    */
   var _MKERR_EMPTY = $mkErr('is', 'empty');
   /// #}}} @const _MKERR_EMPTY
+
+  /// #{{{ @const _MKERR_SAME
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_SAME = $mkErr('is', 'same');
+  /// #}}} @const _MKERR_SAME
+
+  /// #{{{ @const _MKERR_SIM
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_SIM = $mkErr('is', 'similar');
+  /// #}}} @const _MKERR_SIM
 
   /// #{{{ @const _MKERR_CAPPED
   /**

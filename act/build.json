@@ -166,10 +166,6 @@
               "dest": "roll.js"
             },
             {
-              "src": "same.js",
-              "dest": "same.js"
-            },
-            {
               "src": "seal.js",
               "dest": "seal.js"
             },
@@ -327,10 +323,6 @@
             {
               "src": "roll.js",
               "dest": "roll.js"
-            },
-            {
-              "src": "same.js",
-              "dest": "same.js"
             },
             {
               "src": "seal.js",
@@ -551,10 +543,6 @@
             {
               "src": "run.js",
               "dest": "run.js"
-            },
-            {
-              "src": "same.js",
-              "dest": "same.js"
             },
             {
               "src": "seal.js",
