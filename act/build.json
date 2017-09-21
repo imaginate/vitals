@@ -118,12 +118,7 @@
             },
             {
               "src": "cut.js",
-              "dest": "cut.js",
-              "state": {
-                "scope": {
-                  "IS_MAIN_ONLY": true
-                }
-              }
+              "dest": "cut.js"
             },
             {
               "src": "each.js",
@@ -281,12 +276,7 @@
             },
             {
               "src": "cut.js",
-              "dest": "cut.js",
-              "state": {
-                "scope": {
-                  "IS_MAIN_ONLY": true
-                }
-              }
+              "dest": "cut.js"
             },
             {
               "src": "each.js",
@@ -483,12 +473,7 @@
             },
             {
               "src": "cut.js",
-              "dest": "cut.js",
-              "state": {
-                "scope": {
-                  "IS_MAIN_ONLY": true
-                }
-              }
+              "dest": "cut.js"
             },
             {
               "src": "each.js",
@@ -529,11 +514,7 @@
             },
             {
               "src": "is.js",
-              "dest": "is.js"
-            },
-            {
-              "src": "is.js",
-              "dest": "is-fs.js",
+              "dest": "is.js",
               "state": {
                 "scope": {
                   "FS": true
