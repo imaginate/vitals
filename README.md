@@ -1,4 +1,4 @@
-# vitals [![npm version][badge]][npm]
+# vitals [![npm version][v-badge]][v-npm]
 
 #### Warning
 This version of _vitals_ is still receiving **major changes**. Nothing shown
@@ -13,7 +13,7 @@ JavaScript interaction. It will improve your project's **readability**,
 compatibility, [+ overloading][overplus], and [unequal equality][unequality].
 It allows you to easily add the power of [immutability][immutability] and
 [strong typing][strongtype] to your projects, to utilize the comfort and
-flexibility of [node.js][nodejs] for your system administration, and to
+flexibility of [node.js][node] for your system administration, and to
 identify the causes of those annoying bugs and glitches. At the core, _vitals_
 just wants to make dealing with JavaScript easier and your life better!
 
@@ -132,15 +132,15 @@ npm install --save @imaginate/vitals
 
 <a name="install-amd"></a>
 #### amd
-Download the [main amd build][distamdmain] of vitals or pick a specific build
+Download the [main amd build][vd-amd-main] of vitals or pick a specific build
 of vitals (e.g. only one method or section) from the vitals
-[amd distributables tree][distamd].
+[amd distributables tree][vd-amd].
 
 <a name="install-browser"></a>
 #### browser
-Download the [main browser build][distbrowsermain] of vitals or pick a
+Download the [main browser build][vd-browser-main] of vitals or pick a
 specific build of vitals (e.g. only one method or section) from the vitals
-[browser distributables tree][distbrowser].
+[browser distributables tree][vd-browser].
 
 
 <a name="use"></a>
@@ -177,69 +177,69 @@ For help see:
 
 ## API
 
-|  Base Methods           |  Strict Methods         |  File System Methods    |  Information Methods    |  Process Methods        |  Special Parse Methods  |
+|  Base Methods           |  Strict Methods         |  File System Methods    |  Information Methods    |  Process Methods        |  Special Methods        |
 | :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
-| [bind][bind]            | [amend][amend]          | [cat][cat]              | [config][config]        | [exec][exec]            | [parsecmd][parsecmd]    |
-| [concat][concat]        | [assign][assign]        | [cd][cd]                | [defaults][defaults]    | [exit][exit]            |                         |
-| [copy][copy]            | [cap][cap]              | [ch][ch]                | [env][env]              | [run][run]              |                         |
-| [cut][cut]              | [create][create]        | [cp][cp]                | [version][version]      |                         |                         |
-| [each][each]            | [freeze][freeze]        | [ls][ls]                |                         |                         |                         |
-| [fill][fill]            | [seal][seal]            | [mk][mk]                |                         |                         |                         |
-| [filter][filter]        |                         | [mv][mv]                |                         |                         |                         |
-| [has][has]              |                         | [resolve][resolve]      |                         |                         |                         |
-| [insert][insert]        |                         | [rm][rm]                |                         |                         |                         |
-| [invert][invert]        |                         | [tee][tee]              |                         |                         |                         |
-| [is][is]                |                         | [test][test]            |                         |                         |                         |
-| [join][join]            |                         |                         |                         |                         |                         |
-| [keys][keys]            |                         |                         |                         |                         |                         |
-| [match][match]          |                         |                         |                         |                         |                         |
-| [merge][merge]          |                         |                         |                         |                         |                         |
-| [owns][owns]            |                         |                         |                         |                         |                         |
-| [pop][pop]              |                         |                         |                         |                         |                         |
-| [push][push]            |                         |                         |                         |                         |                         |
-| [remap][remap]          |                         |                         |                         |                         |                         |
-| [replace][replace]      |                         |                         |                         |                         |                         |
-| [rip][rip]              |                         |                         |                         |                         |                         |
-| [roll][roll]            |                         |                         |                         |                         |                         |
-| [sew][sew]              |                         |                         |                         |                         |                         |
-| [slice][slice]          |                         |                         |                         |                         |                         |
-| [split][split]          |                         |                         |                         |                         |                         |
-| [strike][strike]        |                         |                         |                         |                         |                         |
-| [to][to]                |                         |                         |                         |                         |                         |
-| [trim][trim]            |                         |                         |                         |                         |                         |
-| [unset][unset]          |                         |                         |                         |                         |                         |
-| [until][until]          |                         |                         |                         |                         |                         |
-| [yank][yank]            |                         |                         |                         |                         |                         |
+| [bind][vm-bind]         | [amend][vm-amend]       | [cat][vm-cat]           | [config][vm-config]     | [exec][vm-exec]         | [parsecmd][vm-parsecmd] |
+| [concat][vm-concat]     | [assign][vm-assign]     | [cd][vm-cd]             | [defaults][vm-defaults] | [exit][vm-exit]         |                         |
+| [copy][vm-copy]         | [cap][vm-cap]           | [ch][vm-ch]             | [env][vm-env]           | [run][vm-run]           |                         |
+| [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   |                         |                         |
+| [each][vm-each]         | [freeze][vm-freeze]     | [ls][vm-ls]             |                         |                         |                         |
+| [fill][vm-fill]         | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |                         |
+| [filter][vm-filter]     |                         | [mv][vm-mv]             |                         |                         |                         |
+| [has][vm-has]           |                         | [resolve][vm-resolve]   |                         |                         |                         |
+| [insert][vm-insert]     |                         | [rm][vm-rm]             |                         |                         |                         |
+| [invert][vm-invert]     |                         | [tee][vm-tee]           |                         |                         |                         |
+| [is][vm-is]             |                         | [test][vm-test]         |                         |                         |                         |
+| [join][vm-join]         |                         |                         |                         |                         |                         |
+| [keys][vm-keys]         |                         |                         |                         |                         |                         |
+| [match][vm-match]       |                         |                         |                         |                         |                         |
+| [merge][vm-merge]       |                         |                         |                         |                         |                         |
+| [owns][vm-owns]         |                         |                         |                         |                         |                         |
+| [pop][vm-pop]           |                         |                         |                         |                         |                         |
+| [push][vm-push]         |                         |                         |                         |                         |                         |
+| [remap][vm-remap]       |                         |                         |                         |                         |                         |
+| [replace][vm-replace]   |                         |                         |                         |                         |                         |
+| [rip][vm-rip]           |                         |                         |                         |                         |                         |
+| [roll][vm-roll]         |                         |                         |                         |                         |                         |
+| [sew][vm-sew]           |                         |                         |                         |                         |                         |
+| [slice][vm-slice]       |                         |                         |                         |                         |                         |
+| [split][vm-split]       |                         |                         |                         |                         |                         |
+| [strike][vm-strike]     |                         |                         |                         |                         |                         |
+| [to][vm-to]             |                         |                         |                         |                         |                         |
+| [trim][vm-trim]         |                         |                         |                         |                         |                         |
+| [unset][vm-unset]       |                         |                         |                         |                         |                         |
+| [until][vm-until]       |                         |                         |                         |                         |                         |
+| [yank][vm-yank]         |                         |                         |                         |                         |                         |
 
 
 |  Base Array Methods     |  Base Function Methods  |  Base Object Methods    |  Base String Methods    |
 | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
-| [concat][concat]        | [bind][bind]            | [copy][copy]            | [copy][copy]            |
-| [copy][copy]            | [copy][copy]            | [each][each]            | [cut][cut]              |
-| [each][each]            | [each][each]            | [filter][filter]        | [insert][insert]        |
-| [fill][fill]            | [filter][filter]        | [has][has]              | [invert][invert]        |
-| [filter][filter]        | [has][has]              | [is][is]                | [is][is]                |
-| [has][has]              | [is][is]                | [keys][keys]            | [match][match]          |
-| [invert][invert]        | [keys][keys]            | [merge][merge]          | [replace][replace]      |
-| [is][is]                | [merge][merge]          | [owns][owns]            | [sew][sew]              |
-| [join][join]            | [owns][owns]            | [remap][remap]          | [slice][slice]          |
-| [pop][pop]              | [remap][remap]          | [roll][roll]            | [split][split]          |
-| [push][push]            | [roll][roll]            | [strike][strike]        | [to][to]                |
-| [remap][remap]          | [strike][strike]        | [to][to]                | [trim][trim]            |
-| [rip][rip]              | [to][to]                | [unset][unset]          | [yank][yank]            |
-| [roll][roll]            | [unset][unset]          | [until][until]          |                         |
-| [slice][slice]          | [until][until]          |                         |                         |
-| [strike][strike]        |                         |                         |                         |
-| [to][to]                |                         |                         |                         |
-| [until][until]          |                         |                         |                         |
+| [concat][vm-concat]     | [bind][vm-bind]         | [copy][vm-copy]         | [copy][vm-copy]         |
+| [copy][vm-copy]         | [copy][vm-copy]         | [each][vm-each]         | [cut][vm-cut]           |
+| [each][vm-each]         | [each][vm-each]         | [filter][vm-filter]     | [insert][vm-insert]     |
+| [fill][vm-fill]         | [filter][vm-filter]     | [has][vm-has]           | [invert][vm-invert]     |
+| [filter][vm-filter]     | [has][vm-has]           | [is][vm-is]             | [is][vm-is]             |
+| [has][vm-has]           | [is][vm-is]             | [keys][vm-keys]         | [match][vm-match]       |
+| [invert][vm-invert]     | [keys][vm-keys]         | [merge][vm-merge]       | [replace][vm-replace]   |
+| [is][vm-is]             | [merge][vm-merge]       | [owns][vm-owns]         | [sew][vm-sew]           |
+| [join][vm-join]         | [owns][vm-owns]         | [remap][vm-remap]       | [slice][vm-slice]       |
+| [pop][vm-pop]           | [remap][vm-remap]       | [roll][vm-roll]         | [split][vm-split]       |
+| [push][vm-push]         | [roll][vm-roll]         | [strike][vm-strike]     | [to][vm-to]             |
+| [remap][vm-remap]       | [strike][vm-strike]     | [to][vm-to]             | [trim][vm-trim]         |
+| [rip][vm-rip]           | [to][vm-to]             | [unset][vm-unset]       | [yank][vm-yank]         |
+| [roll][vm-roll]         | [unset][vm-unset]       | [until][vm-until]       |                         |
+| [slice][vm-slice]       | [until][vm-until]       |                         |                         |
+| [strike][vm-strike]     |                         |                         |                         |
+| [to][vm-to]             |                         |                         |                         |
+| [until][vm-until]       |                         |                         |                         |
 
 ## Other Details
 
 ### Contributing
-See the [contributing guideline][contribute].
+See the [contributing guideline][v-contribute].
 
 ### Bugs/Improvements
-Open an [issue on GitHub][issue].
+Open an [issue on GitHub][v-issue].
 
 ### Questions
 Send an email to <dev@vitalsjs.com>.
@@ -249,89 +249,101 @@ Send an email to <dev@vitalsjs.com>.
 
 ### Happy Developing
 
-[vitals]: https://github.com/imaginate/vitals/wiki
-[github]: https://github.com/imaginate/vitals
-[npm]: https://www.npmjs.com/package/node-vitals
-[travis]: https://travis-ci.org/imaginate/vitals
-[badge]: https://img.shields.io/badge/npm-5.0.0--alpha-red.svg?style=flat
-[status]: https://travis-ci.org/imaginate/vitals.svg?branch=master
-[issue]: https://github.com/imaginate/vitals/issues
-[license]: https://github.com/imaginate/vitals/blob/master/LICENSE.md
-[contribute]: https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md
-[distamd]: https://github.com/imaginate/vitals/tree/master/dist/amd
-[distamdmain]: https://github.com/imaginate/vitals/blob/master/dist/amd/vitals.js
-[distbrowser]: https://github.com/imaginate/vitals/tree/master/dist/browser
-[distbrowsermain]: https://github.com/imaginate/vitals/blob/master/dist/browser/vitals.js
+[v]: https://github.com/imaginate/vitals
+[v-docs]: https://github.com/imaginate/vitals/wiki
+[v-wiki]: https://github.com/imaginate/vitals/wiki
+[v-github]: https://github.com/imaginate/vitals
+[v-npm]: https://www.npmjs.com/package/node-vitals
+[v-travis]: https://travis-ci.org/imaginate/vitals
+[v-badge]: https://img.shields.io/badge/npm-5.0.0--alpha-red.svg?style=flat
+[v-status]: https://travis-ci.org/imaginate/vitals.svg?branch=master
+[v-issue]: https://github.com/imaginate/vitals/issues
+[v-license]: https://github.com/imaginate/vitals/blob/master/LICENSE.md
+[v-contribute]: https://github.com/imaginate/vitals/blob/master/CONTRIBUTING.md
 
-[base]: https://github.com/imaginate/vitals/wiki#user-content-api
-[strict]: https://github.com/imaginate/vitals/wiki#user-content-api
-[fs]: https://github.com/imaginate/vitals/wiki#user-content-api
-[shell]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vd-amd]: https://github.com/imaginate/vitals/tree/master/dist/amd
+[vd-amd-main]: https://github.com/imaginate/vitals/blob/master/dist/amd/vitals.js
+[vd-browser]: https://github.com/imaginate/vitals/tree/master/dist/browser
+[vd-browser-main]: https://github.com/imaginate/vitals/blob/master/dist/browser/vitals.js
+[vd-node]: https://github.com/imaginate/vitals/tree/master/dist/node
+[vd-node-main]: https://github.com/imaginate/vitals/blob/master/dist/node/vitals.js
 
-[amend]: https://github.com/imaginate/vitals/wiki/vitals.amend
-[assign]: https://github.com/imaginate/vitals/wiki/vitals.assign
-[bind]: https://github.com/imaginate/vitals/wiki/vitals.bind
-[cap]: https://github.com/imaginate/vitals/wiki/vitals.cap
-[cat]: https://github.com/imaginate/vitals/wiki/vitals.cat
-[cd]: https://github.com/imaginate/vitals/wiki/vitals.cd
-[ch]: https://github.com/imaginate/vitals/wiki/vitals.ch
-[concat]: https://github.com/imaginate/vitals/wiki/vitals.concat
-[config]: https://github.com/imaginate/vitals/wiki/vitals.config
-[copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
-[cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
-[create]: https://github.com/imaginate/vitals/wiki/vitals.create
-[cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
-[defaults]: https://github.com/imaginate/vitals/wiki/vitals.defaults
-[each]: https://github.com/imaginate/vitals/wiki/vitals.each
-[env]: https://github.com/imaginate/vitals/wiki/vitals.env
-[exec]: https://github.com/imaginate/vitals/wiki/vitals.exec
-[exit]: https://github.com/imaginate/vitals/wiki/vitals.exit
-[fill]: https://github.com/imaginate/vitals/wiki/vitals.fill
-[filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
-[freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
-[has]: https://github.com/imaginate/vitals/wiki/vitals.has
-[insert]: https://github.com/imaginate/vitals/wiki/vitals.insert
-[invert]: https://github.com/imaginate/vitals/wiki/vitals.invert
-[is]: https://github.com/imaginate/vitals/wiki/vitals.is
-[is-types]: https://github.com/imaginate/vitals/wiki/vitals.is-types
-[join]: https://github.com/imaginate/vitals/wiki/vitals.join
-[keys]: https://github.com/imaginate/vitals/wiki/vitals.keys
-[ls]: https://github.com/imaginate/vitals/wiki/vitals.ls
-[match]: https://github.com/imaginate/vitals/wiki/vitals.match
-[merge]: https://github.com/imaginate/vitals/wiki/vitals.merge
-[mk]: https://github.com/imaginate/vitals/wiki/vitals.mk
-[mv]: https://github.com/imaginate/vitals/wiki/vitals.mv
-[owns]: https://github.com/imaginate/vitals/wiki/vitals.owns
-[parsecmd]: https://github.com/imaginate/vitals/wiki/vitals.parsecmd
-[pop]: https://github.com/imaginate/vitals/wiki/vitals.pop
-[push]: https://github.com/imaginate/vitals/wiki/vitals.push
-[remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
-[replace]: https://github.com/imaginate/vitals/wiki/vitals.replace
-[resolve]: https://github.com/imaginate/vitals/wiki/vitals.resolve
-[rip]: https://github.com/imaginate/vitals/wiki/vitals.rip
-[rm]: https://github.com/imaginate/vitals/wiki/vitals.rm
-[roll]: https://github.com/imaginate/vitals/wiki/vitals.roll
-[run]: https://github.com/imaginate/vitals/wiki/vitals.run
-[seal]: https://github.com/imaginate/vitals/wiki/vitals.seal
-[sew]: https://github.com/imaginate/vitals/wiki/vitals.sew
-[slice]: https://github.com/imaginate/vitals/wiki/vitals.slice
-[split]: https://github.com/imaginate/vitals/wiki/vitals.split
-[strike]: https://github.com/imaginate/vitals/wiki/vitals.strike
-[tee]: https://github.com/imaginate/vitals/wiki/vitals.tee
-[test]: https://github.com/imaginate/vitals/wiki/vitals.test
-[to]: https://github.com/imaginate/vitals/wiki/vitals.to
-[trim]: https://github.com/imaginate/vitals/wiki/vitals.trim
-[unset]: https://github.com/imaginate/vitals/wiki/vitals.unset
-[until]: https://github.com/imaginate/vitals/wiki/vitals.until
-[version]: https://github.com/imaginate/vitals/wiki/vitals.version
-[yank]: https://github.com/imaginate/vitals/wiki/vitals.yank
+[vs-base]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-strict]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-fs]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-info]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-proc]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-special]: https://github.com/imaginate/vitals/wiki#user-content-api
+
+[vs-base-arr]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-base-fun]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-base-obj]: https://github.com/imaginate/vitals/wiki#user-content-api
+[vs-base-str]: https://github.com/imaginate/vitals/wiki#user-content-api
+
+[vm-amend]: https://github.com/imaginate/vitals/wiki/vitals.amend
+[vm-assign]: https://github.com/imaginate/vitals/wiki/vitals.assign
+[vm-bind]: https://github.com/imaginate/vitals/wiki/vitals.bind
+[vm-cap]: https://github.com/imaginate/vitals/wiki/vitals.cap
+[vm-cat]: https://github.com/imaginate/vitals/wiki/vitals.cat
+[vm-cd]: https://github.com/imaginate/vitals/wiki/vitals.cd
+[vm-ch]: https://github.com/imaginate/vitals/wiki/vitals.ch
+[vm-concat]: https://github.com/imaginate/vitals/wiki/vitals.concat
+[vm-config]: https://github.com/imaginate/vitals/wiki/vitals.config
+[vm-copy]: https://github.com/imaginate/vitals/wiki/vitals.copy
+[vm-cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
+[vm-create]: https://github.com/imaginate/vitals/wiki/vitals.create
+[vm-cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
+[vm-defaults]: https://github.com/imaginate/vitals/wiki/vitals.defaults
+[vm-each]: https://github.com/imaginate/vitals/wiki/vitals.each
+[vm-env]: https://github.com/imaginate/vitals/wiki/vitals.env
+[vm-exec]: https://github.com/imaginate/vitals/wiki/vitals.exec
+[vm-exit]: https://github.com/imaginate/vitals/wiki/vitals.exit
+[vm-fill]: https://github.com/imaginate/vitals/wiki/vitals.fill
+[vm-filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
+[vm-freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
+[vm-has]: https://github.com/imaginate/vitals/wiki/vitals.has
+[vm-insert]: https://github.com/imaginate/vitals/wiki/vitals.insert
+[vm-invert]: https://github.com/imaginate/vitals/wiki/vitals.invert
+[vm-is]: https://github.com/imaginate/vitals/wiki/vitals.is
+[vm-is-types]: https://github.com/imaginate/vitals/wiki/vitals.is-types
+[vm-join]: https://github.com/imaginate/vitals/wiki/vitals.join
+[vm-keys]: https://github.com/imaginate/vitals/wiki/vitals.keys
+[vm-ls]: https://github.com/imaginate/vitals/wiki/vitals.ls
+[vm-match]: https://github.com/imaginate/vitals/wiki/vitals.match
+[vm-merge]: https://github.com/imaginate/vitals/wiki/vitals.merge
+[vm-mk]: https://github.com/imaginate/vitals/wiki/vitals.mk
+[vm-mv]: https://github.com/imaginate/vitals/wiki/vitals.mv
+[vm-owns]: https://github.com/imaginate/vitals/wiki/vitals.owns
+[vm-parsecmd]: https://github.com/imaginate/vitals/wiki/vitals.parsecmd
+[vm-pop]: https://github.com/imaginate/vitals/wiki/vitals.pop
+[vm-push]: https://github.com/imaginate/vitals/wiki/vitals.push
+[vm-remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
+[vm-replace]: https://github.com/imaginate/vitals/wiki/vitals.replace
+[vm-resolve]: https://github.com/imaginate/vitals/wiki/vitals.resolve
+[vm-rip]: https://github.com/imaginate/vitals/wiki/vitals.rip
+[vm-rm]: https://github.com/imaginate/vitals/wiki/vitals.rm
+[vm-roll]: https://github.com/imaginate/vitals/wiki/vitals.roll
+[vm-run]: https://github.com/imaginate/vitals/wiki/vitals.run
+[vm-seal]: https://github.com/imaginate/vitals/wiki/vitals.seal
+[vm-sew]: https://github.com/imaginate/vitals/wiki/vitals.sew
+[vm-slice]: https://github.com/imaginate/vitals/wiki/vitals.slice
+[vm-split]: https://github.com/imaginate/vitals/wiki/vitals.split
+[vm-strike]: https://github.com/imaginate/vitals/wiki/vitals.strike
+[vm-tee]: https://github.com/imaginate/vitals/wiki/vitals.tee
+[vm-test]: https://github.com/imaginate/vitals/wiki/vitals.test
+[vm-to]: https://github.com/imaginate/vitals/wiki/vitals.to
+[vm-trim]: https://github.com/imaginate/vitals/wiki/vitals.trim
+[vm-unset]: https://github.com/imaginate/vitals/wiki/vitals.unset
+[vm-until]: https://github.com/imaginate/vitals/wiki/vitals.until
+[vm-version]: https://github.com/imaginate/vitals/wiki/vitals.version
+[vm-yank]: https://github.com/imaginate/vitals/wiki/vitals.yank
 
 [addscript]: http://javascript.info/tutorial/adding-script-html#external-scripts
 [cli]: https://en.wikipedia.org/wiki/Command-line_interface#Command-line_interpreter
-[filesystem]: https://en.wikipedia.org/wiki/File_system
+[fs]: https://en.wikipedia.org/wiki/File_system
 [functional]: https://medium.com/javascript-scene/the-two-pillars-of-javascript-pt-2-functional-programming-a63aa53a41a4
 [immutability]: https://en.wikipedia.org/wiki/Immutable_object
-[nodejs]: https://nodejs.org
+[node]: https://nodejs.org
 [overplus]: http://www.crockford.com/javascript/javascript.html
 [strongtype]: https://en.wikipedia.org/wiki/Strong_and_weak_typing
 [unequality]: http://whydoesitsuck.com/why-does-javascript-suck/
