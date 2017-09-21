@@ -36,11 +36,14 @@ v.is.str(i, t)         // returns `false`
 v.match.any(life, /^[A-Z]/, 1, 'Z'); // returns `true`
 v.match(life, /^[A-Z]/, 1, 'Z');     // returns `false`
 
-v.has(life, /[A-Z]/, 1, 'Z'); // returns `false`
-v.has(life, 1, 'Z');          // returns `true`
-
 v.is.same(1, '1');    // returns `false`
 v.is.similar(1, '1'); // returns `true`
+
+v.has({}, 'toString');  // returns `true`
+v.owns({}, 'toString'); // returns `false`
+
+v.has.val({}, Object.prototype.toString);  // returns `true`
+v.owns.val({}, Object.prototype.toString); // returns `false`
 
 life = v.create(null, {
   'v': 1,
@@ -52,29 +55,33 @@ life = v.create(null, {
 
 v.is.obj(life); // returns `true`
 
-v.has(life, 1);    // returns `true`
-v.has(life, 'v');  // returns `false`
+v.has(life, 1);     // returns `false`
+v.has.val(life, 1); // returns `true`
+
+v.has(life, 'v');  // returns `true`
 v.owns(life, 'v'); // returns `true`
+
+v.has.enum(life, 'v');  // returns `true`
+v.owns.enum(life, 'v'); // returns `true`
 
 v.amend(life, 'v', {
   'enumerable': false
 });
 
-v.owns(life, 'v');      // returns `true`
+v.has(life, 'v');  // returns `true`
+v.owns(life, 'v'); // returns `true`
+
+v.has.enum(life, 'v');  // returns `false`
 v.owns.enum(life, 'v'); // returns `false`
 
-v.assign(life, 's', 6, 'number'); // sets `life.s` to `6` with
-                                  // strong type of `"number"`
+v.assign(life, 's', 6, 'number'); // sets `life.s` to `6` with a
+                                  // *strong* data type of `"number"`
 
 life.s = 7;   // sets `life.v` to `7`
 life.s = '8'; // throws a `TypeError`
 
-// For this example each of the following variables will **always**
-// be an instance of the *vitals* file wrapper class: `v.Fs`.
-var fs, dir, file;
-
-// For this example `path` will always be a primitive string.
-var path;
+var dir, file; // will always be instance of `VitalsFileClass` aka `VFC`
+var path;      // will always be a primitive string
 
 path = v.resolve('path', '../to/dir'); // returns absolute path
 
@@ -83,11 +90,11 @@ dir = v.cd(path); // sets `process.cwd` to `v.resolve(path)`
 
 v.is.str(dir); // returns `false`
 v.is.obj(dir); // returns `true`
-v.is.fs(dir);  // returns `true`
+v.is.vfc(dir); // returns `true`
 
 v.is.same(v.cwd, dir); // returns `true`
 
-dir = v.mk('../dir/path'); // returns new `v.Fs` instance
+dir = v.mk('../dir/path'); // returns new `VFC` instance
 dir = v.mk.dir(dir);       // makes directory at `dir.abspath`
 
 path = '../dir/path';
@@ -101,7 +108,7 @@ v.is.symlink(dir); // returns `false`
 v.is.file(path);   // returns `false`
 v.is.dir(path);    // returns `true`
 
-// note that all vitals *ls* methods return an array of `v.Fs` instances
+// note that all `vitals.ls` methods return an array of `VFC` instances
 v.ls();          // returns all immediate paths in `v.cwd.abspath`
 v.ls(dir);       // returns all immediate paths in `dir.abspath`
 v.ls(path);      // returns all immediate paths in `v.resolve(path)`
@@ -210,19 +217,20 @@ For help see:
 | :---------------------: | :---------------------: | :---------------------: | :---------------------: |
 | [concat][vm-concat]     | [bind][vm-bind]         | [copy][vm-copy]         | [copy][vm-copy]         |
 | [copy][vm-copy]         | [copy][vm-copy]         | [each][vm-each]         | [cut][vm-cut]           |
-| [each][vm-each]         | [each][vm-each]         | [filter][vm-filter]     | [insert][vm-insert]     |
-| [fill][vm-fill]         | [filter][vm-filter]     | [has][vm-has]           | [invert][vm-invert]     |
-| [filter][vm-filter]     | [has][vm-has]           | [is][vm-is]             | [is][vm-is]             |
-| [has][vm-has]           | [is][vm-is]             | [keys][vm-keys]         | [match][vm-match]       |
-| [invert][vm-invert]     | [keys][vm-keys]         | [merge][vm-merge]       | [replace][vm-replace]   |
-| [is][vm-is]             | [merge][vm-merge]       | [owns][vm-owns]         | [sew][vm-sew]           |
-| [join][vm-join]         | [owns][vm-owns]         | [remap][vm-remap]       | [slice][vm-slice]       |
-| [pop][vm-pop]           | [remap][vm-remap]       | [roll][vm-roll]         | [split][vm-split]       |
-| [push][vm-push]         | [roll][vm-roll]         | [strike][vm-strike]     | [to][vm-to]             |
-| [remap][vm-remap]       | [strike][vm-strike]     | [to][vm-to]             | [trim][vm-trim]         |
-| [rip][vm-rip]           | [to][vm-to]             | [unset][vm-unset]       | [yank][vm-yank]         |
-| [roll][vm-roll]         | [unset][vm-unset]       | [until][vm-until]       |                         |
-| [slice][vm-slice]       | [until][vm-until]       |                         |                         |
+| [each][vm-each]         | [each][vm-each]         | [filter][vm-filter]     | [inject][vm-inject]     |
+| [fill][vm-fill]         | [filter][vm-filter]     | [has][vm-has]           | [insert][vm-insert]     |
+| [filter][vm-filter]     | [has][vm-has]           | [is][vm-is]             | [invert][vm-invert]     |
+| [has][vm-has]           | [is][vm-is]             | [keys][vm-keys]         | [is][vm-is]             |
+| [insert][vm-insert]     | [keys][vm-keys]         | [merge][vm-merge]       | [match][vm-match]       |
+| [invert][vm-invert]     | [merge][vm-merge]       | [owns][vm-owns]         | [replace][vm-replace]   |
+| [is][vm-is]             | [owns][vm-owns]         | [remap][vm-remap]       | [sew][vm-sew]           |
+| [join][vm-join]         | [remap][vm-remap]       | [roll][vm-roll]         | [slice][vm-slice]       |
+| [pop][vm-pop]           | [roll][vm-roll]         | [strike][vm-strike]     | [split][vm-split]       |
+| [push][vm-push]         | [strike][vm-strike]     | [to][vm-to]             | [to][vm-to]             |
+| [remap][vm-remap]       | [to][vm-to]             | [unset][vm-unset]       | [trim][vm-trim]         |
+| [rip][vm-rip]           | [unset][vm-unset]       | [until][vm-until]       | [yank][vm-yank]         |
+| [roll][vm-roll]         | [until][vm-until]       |                         |                         |
+| [slice][vm-slice]       |                         |                         |                         |
 | [strike][vm-strike]     |                         |                         |                         |
 | [to][vm-to]             |                         |                         |                         |
 | [until][vm-until]       |                         |                         |                         |
@@ -296,6 +304,7 @@ Send an email to <dev@vitalsjs.com>.
 [vm-filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
 [vm-freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
 [vm-has]: https://github.com/imaginate/vitals/wiki/vitals.has
+[vm-inject]: https://github.com/imaginate/vitals/wiki/vitals.inject
 [vm-insert]: https://github.com/imaginate/vitals/wiki/vitals.insert
 [vm-invert]: https://github.com/imaginate/vitals/wiki/vitals.invert
 [vm-is]: https://github.com/imaginate/vitals/wiki/vitals.is
