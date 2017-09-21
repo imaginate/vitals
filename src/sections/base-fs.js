@@ -45,6 +45,7 @@
 /// #include @super fuse ../methods/fuse.js
 /// #include @super get ../methods/get.js
 /// #include @super has ../methods/has.js
+/// #include @super join ../methods/join.js
 /// #include @super remap ../methods/remap.js
 /// #include @super roll ../methods/roll.js
 /// #include @super sew ../methods/sew.js

@@ -158,6 +158,10 @@
               "dest": "is.js"
             },
             {
+              "src": "join.js",
+              "dest": "join.js"
+            },
+            {
               "src": "remap.js",
               "dest": "remap.js"
             },
@@ -315,6 +319,10 @@
             {
               "src": "is.js",
               "dest": "is.js"
+            },
+            {
+              "src": "join.js",
+              "dest": "join.js"
             },
             {
               "src": "remap.js",
@@ -531,6 +539,10 @@
                   "FS": true
                 }
               }
+            },
+            {
+              "src": "join.js",
+              "dest": "join.js"
             },
             {
               "src": "remap.js",
