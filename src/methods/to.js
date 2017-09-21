@@ -13,7 +13,6 @@
 
 /// #if{{{ @scope SOLO
 /// #include @core OPEN ../core/open.js
-/// #include @helper $splitKeys ../helpers/split-keys.js
 /// #if{{{ @scope FS
 /// #include @helper $fixEol ../helpers/fix-eol.js
 /// #include @helper $hasOpt ../helpers/has-opt.js
@@ -214,61 +213,31 @@ $VITALS['to'] = (function __vitalsTo__() {
   /// @alias vitals.to.arr
   /**
    * @description
-   *   The @to#array method converts a `string` or `number` into an `array`.
+   *   The @to#array method converts a `number` #val into an `array` with #val
+   *   [length][arr-length].
    * @public
-   * @param {(string|number)} val
-   *   The details are as follows (per #val data type):
-   *   - *`string`*!$
-   *     [String.prototype.split][split] is called on the #val.
-   *   - *`number`*!$
-   *     A new `array` with #val [length][arr-length] is created.
-   * @param {*=} separator
-   *   Only allowed for use if the #val is a `string`. The #separator is used
-   *   to [split][split] the `string` into `array` properties. If the
-   *   #separator is defined and is not a `RegExp`, it is converted into a
-   *   `string`. If the #separator is **not** defined, one of the following
-   *   values is used to [split][split] the `string` (values listed in order
-   *   of rank):
-   *   - `", "`
-   *   - `","`
-   *   - `"|"`
-   *   - `" "`
+   * @param {number} val
+   *   The #val must be a whole `number`. If the #val is less than `0`, it is
+   *   set to `0`.
    * @return {!Array}
    */
   /// #}}} @docs array
   /// #if{{{ @code array
-  function toArray(val, separator) {
+  function toArray(val) {
 
-    /** @type {number} */
-    var len;
-
-    len = arguments['length'];
-
-    if (!len) {
+    if (!arguments['length']) {
       throw _MKERR_ARR.noArg(new $ERR, 'val');
     }
-
-    if ( $is.num(val) ) {
-      if ( len > 1 && !$is.void(separator) ) {
-        throw _MKERR_ARR.type(new $TYPE_ERR, 'separator', separator,
-          'undefined');
-      }
-      return new $ARR(val);
+    if ( !$is.num(val) ) {
+      throw _MKERR_ARR.type(new $TYPE_ERR, 'val', val, 'number');
+    }
+    if ( !$is.whole(val) ) {
+      throw _MKERR_ARR.range(new $RANGE_ERR, 'val', '[-+]?[0-9]+');
     }
 
-    if ( !$is.str(val) ) {
-      throw _MKERR_ARR.type(new $TYPE_ERR, 'val', val, 'string|number');
-    }
-
-    if (len === 1) {
-      return $splitKeys(val);
-    }
-
-    if ( !$is.regx(separator) ) {
-      separator = $mkStr(separator);
-    }
-
-    return val['split'](separator);
+    return val > 0
+      ? new $ARR(val)
+      : [];
   }
   to['array'] = toArray;
   to['arr'] = toArray;
