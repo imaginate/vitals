@@ -1198,6 +1198,7 @@ function makeMethodBody(srcFile, content, superMethod) {
     line = lines[i];
     if ( PATT.BODY.SECTION.test(line) ) {
       section = line.replace(PATT.BODY.SECTION, '$1');
+
       if (++i > last) {
         throw setNoMethodError(new Error, srcFile, content, i);
       }
@@ -1206,15 +1207,22 @@ function makeMethodBody(srcFile, content, superMethod) {
         throw setNoMethodError(new Error, srcFile, content, i);
       }
       method = line.replace(PATT.BODY.METHOD, '$1');
+
+      while ( i < last && PATT.BODY.NOTES.test(lines[i + 1]) ) {
+        ++i;
+      }
+
       aliases = [];
       while ( i < last && PATT.BODY.ALIAS.test(lines[i + 1]) ) {
         line = lines[++i];
         alias = line.replace(PATT.BODY.ALIAS, '$1');
         aliases.push(alias);
       }
+
       while ( i < last && PATT.BODY.NOTES.test(lines[i + 1]) ) {
         ++i;
       }
+
       if (++i > last) {
         throw setNoDetailsError(new Error, srcFile, content, method, i);
       }
@@ -1238,6 +1246,7 @@ function makeMethodBody(srcFile, content, superMethod) {
         }
         line = lines[i];
       }
+
       result += makeMethodBodyDetail(section, superMethod, method, aliases,
         details);
     }
