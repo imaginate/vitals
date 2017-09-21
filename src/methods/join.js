@@ -46,22 +46,29 @@ $VITALS['join'] = (function __vitalsJoin__() {
    *   or `function`. The #source is considered array-like when it has a
    *   `"length"` property that is a whole `number` greater than or equal to
    *   zero.
-   * @param {*=} joint = `''`
-   *   If the #joint is not a `string`, it is converted into a `string` with
-   *   @to#string.
+   * @param {*=} joint = `""`
+   *   The #joint abides by the first of the following rules that match (per
+   *   #joint data type):
+   *   - *`undefined`*!$
+   *     The #joint is set to `""`.
+   *   - *`string`*!$
+   *     The #joint is used unchanged.
+   *   - *`*`*!$
+   *     The #joint is converted into a `string` with @to#string.
    * @return {string}
    */
   /// #}}} @docs main
   /// #if{{{ @code main
   function join(source, joint) {
 
-    switch (arguments['length']) {
-      case 0:
-        throw _MKERR_MAIN.noArg(new $ERR, 'source');
-      case 1:
-        joint = '';
-    }
+    /** @type {number} */
+    var len;
 
+    len = arguments['length'];
+
+    if (!len) {
+      throw _MKERR_MAIN.noArg(new $ERR, 'source');
+    }
     if ( !$is._obj(source) ) {
       throw _MKERR_MAIN.type(new $TYPE_ERR, 'source', source,
         '(!Array|!Arguments|!Object|!Function)');
@@ -69,6 +76,14 @@ $VITALS['join'] = (function __vitalsJoin__() {
     if ( !$is.arrish(source) ) {
       throw _MKERR_MAIN.arrLike(new $ERR, 'source', source);
     }
+
+    if (!source['length']) {
+      return '';
+    }
+
+    joint = len === 1 || $is.void(joint)
+      ? ''
+      : $mkStr(joint);
 
     return _join(source, joint);
   }
@@ -84,7 +99,7 @@ $VITALS['join'] = (function __vitalsJoin__() {
   /**
    * @private
    * @param {(!Array|!Arguments|!Object|!Function)} src
-   * @param {*} joint
+   * @param {string} joint
    * @return {string}
    */
   function _join(src, joint) {
@@ -96,15 +111,8 @@ $VITALS['join'] = (function __vitalsJoin__() {
     /** @type {number} */
     var i;
 
-    last = src['length'] - 1;
-
-    if (last < 0) {
-      return '';
-    }
-
-    joint = $mkStr(joint);
-
     result = '';
+    last = src['length'] - 1;
     i = -1;
     while (++i < last) {
       result += $mkStr(src[i]) + joint;
