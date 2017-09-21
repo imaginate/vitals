@@ -12,7 +12,7 @@
 /// #{{{ @helper $sliceArr
 /**
  * @private
- * @param {(!Object|!Function)} src
+ * @param {(!Array|!Arguments|!Object|!Function)} src
  * @param {(number|undefined)=} start = `0`
  * @param {(number|undefined)=} end = `src.length`
  * @return {!Array}
