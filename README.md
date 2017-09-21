@@ -81,9 +81,9 @@ path = v.resolve('path', '../to/dir'); // returns absolute path
 path = '../dir/path';
 dir = v.cd(path); // sets `process.cwd` to `v.resolve(path)`
 
-v.is.str(dir);  // returns `false`
-v.is.obj(dir);  // returns `true`
-v.test.fs(dir); // returns `true`
+v.is.str(dir); // returns `false`
+v.is.obj(dir); // returns `true`
+v.is.fs(dir);  // returns `true`
 
 v.is.same(v.cwd, dir); // returns `true`
 
@@ -97,15 +97,9 @@ dir.isDirectory(); // returns `true`
 dir.isSymlink();   // returns `false`
 dir.isFile();      // returns `false`
 
-v.test('f', dir);  // returns `false`
-v.test('d', dir);  // returns `true`
-v.test('d', path); // returns `true`
-v.test('h', path); // returns `false`
-
-v.test.f(path);   // returns `false`
-v.test.d(dir);    // returns `true`
-v.test.file(dir); // returns `false`
-v.test.dir(path); // returns `true`
+v.is.symlink(dir); // returns `false`
+v.is.file(path);   // returns `false`
+v.is.dir(path);    // returns `true`
 
 // note that all vitals *ls* methods return an array of `v.Fs` instances
 v.ls();          // returns all immediate paths in `v.cwd.abspath`
@@ -182,14 +176,14 @@ For help see:
 | [bind][vm-bind]         | [amend][vm-amend]       | [cat][vm-cat]           | [config][vm-config]     | [cmd][vm-cmd]           |
 | [concat][vm-concat]     | [assign][vm-assign]     | [cd][vm-cd]             | [default][vm-default]   | [exec][vm-exec]         |
 | [copy][vm-copy]         | [cap][vm-cap]           | [ch][vm-ch]             | [env][vm-env]           | [exit][vm-exit]         |
-| [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   | [run][vm-run]           |
-| [each][vm-each]         | [freeze][vm-freeze]     | [ls][vm-ls]             |                         |                         |
-| [fill][vm-fill]         | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |
-| [filter][vm-filter]     |                         | [mv][vm-mv]             |                         |                         |
-| [has][vm-has]           |                         | [resolve][vm-resolve]   |                         |                         |
-| [insert][vm-insert]     |                         | [rm][vm-rm]             |                         |                         |
-| [invert][vm-invert]     |                         | [tee][vm-tee]           |                         |                         |
-| [is][vm-is]             |                         | [test][vm-test]         |                         |                         |
+| [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   | [is][vm-is]             |
+| [each][vm-each]         | [freeze][vm-freeze]     | [is][vm-is]             |                         | [run][vm-run]           |
+| [fill][vm-fill]         | [is][vm-is]             | [ls][vm-ls]             |                         |                         |
+| [filter][vm-filter]     | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |
+| [has][vm-has]           |                         | [mv][vm-mv]             |                         |                         |
+| [insert][vm-insert]     |                         | [resolve][vm-resolve]   |                         |                         |
+| [invert][vm-invert]     |                         | [rm][vm-rm]             |                         |                         |
+| [is][vm-is]             |                         | [tee][vm-tee]           |                         |                         |
 | [join][vm-join]         |                         |                         |                         |                         |
 | [keys][vm-keys]         |                         |                         |                         |                         |
 | [match][vm-match]       |                         |                         |                         |                         |
@@ -329,7 +323,6 @@ Send an email to <dev@vitalsjs.com>.
 [vm-split]: https://github.com/imaginate/vitals/wiki/vitals.split
 [vm-strike]: https://github.com/imaginate/vitals/wiki/vitals.strike
 [vm-tee]: https://github.com/imaginate/vitals/wiki/vitals.tee
-[vm-test]: https://github.com/imaginate/vitals/wiki/vitals.test
 [vm-to]: https://github.com/imaginate/vitals/wiki/vitals.to
 [vm-trim]: https://github.com/imaginate/vitals/wiki/vitals.trim
 [vm-unset]: https://github.com/imaginate/vitals/wiki/vitals.unset
