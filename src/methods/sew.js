@@ -43,13 +43,14 @@ var sew = (function fusePrivateScope() {
    * @public
    * @param {(!Array<*>|...*)=} val
    *   If only one `array` #val is provided, it is considered an `array` of
-   *   values. Each value is converted to a `string` via @stringify and
+   *   values. Each value is converted into a `string` via @to#string and
    *   combined in the recieved order.
    * @return {string}
    */
   /// #}}} @docs main
   /// #if{{{ @code main
   function sew(val) {
+
     switch (arguments['length']) {
       case 0:
         return '';
@@ -57,9 +58,9 @@ var sew = (function fusePrivateScope() {
         return $is.arr(val)
           ? _sew(val)
           : $mkStr(val);
-      default:
-        return _sew(arguments);
     }
+
+    return _sew(arguments);
   }
   sew['main'] = sew;
   /// #if}}} @code main

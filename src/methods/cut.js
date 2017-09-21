@@ -44,7 +44,7 @@ $VITALS['cut'] = (function __vitalsCut__() {
    * @param {...*} pattern
    *   If only one `array` #pattern is defined, it is considered an `array`
    *   of patterns. If a #pattern is **not** a `RegExp`, it is converted into
-   *   a `string` via @stringify and, **only the first** `substring` of
+   *   a `string` via @to#string, and **only the first** `substring` of
    *   matching characters is removed from the #source.
    * @return {string}
    *   The amended #source.
@@ -95,7 +95,7 @@ $VITALS['cut'] = (function __vitalsCut__() {
    * @param {...*} pattern
    *   If only one `array` #pattern is defined, it is considered an `array`
    *   of patterns. If a #pattern is **not** a `RegExp`, it is converted into
-   *   a `string` via @stringify, and **every** `substring` of matching
+   *   a `string` via @to#string, and **every** `substring` of matching
    *   characters is removed from the #source.
    * @return {string}
    *   The amended #source.

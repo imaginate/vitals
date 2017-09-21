@@ -51,7 +51,6 @@
 /// #include @super roll ./methods/roll.js
 /// #include @super sew ./methods/sew.js
 /// #include @super slice ./methods/slice.js
-/// #include @super stringify ./methods/stringify.js
 /// #include @super to ./methods/to.js
 /// #include @super until ./methods/until.js
 /// #}}} @section base

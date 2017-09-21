@@ -182,10 +182,6 @@
               "dest": "slice.js"
             },
             {
-              "src": "stringify.js",
-              "dest": "stringify.js"
-            },
-            {
               "src": "to.js",
               "dest": "to.js"
             },
@@ -343,10 +339,6 @@
             {
               "src": "slice.js",
               "dest": "slice.js"
-            },
-            {
-              "src": "stringify.js",
-              "dest": "stringify.js"
             },
             {
               "src": "to.js",
@@ -569,10 +561,6 @@
               "dest": "slice.js"
             },
             {
-              "src": "stringify.js",
-              "dest": "stringify.js"
-            },
-            {
               "src": "to.js",
               "dest": "to.js"
             },
@@ -664,6 +652,10 @@
           "dest": "vitals.is.md"
         },
         {
+          "src": "join.js",
+          "dest": "vitals.join.md"
+        },
+        {
           "src": "remap.js",
           "dest": "vitals.remap.md"
         },
@@ -676,10 +668,6 @@
           "dest": "vitals.run.md"
         },
         {
-          "src": "same.js",
-          "dest": "vitals.same.md"
-        },
-        {
           "src": "seal.js",
           "dest": "vitals.seal.md"
         },
@@ -690,10 +678,6 @@
         {
           "src": "slice.js",
           "dest": "vitals.slice.md"
-        },
-        {
-          "src": "stringify.js",
-          "dest": "vitals.stringify.md"
         },
         {
           "src": "to.js",
