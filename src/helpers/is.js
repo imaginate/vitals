@@ -113,6 +113,16 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isObject
 
+  /// #{{{ @func isPlainObject
+  /**
+   * @param {*} val
+   * @return {boolean}
+   */
+  function isPlainObject(val) {
+    return isObject(val) && val instanceof $OBJ;
+  }
+  /// #}}} @func isPlainObject
+
   /// #{{{ @func isObjectOrFunction
   /**
    * @param {*} val
@@ -757,15 +767,16 @@ var $is = (function __vitals$is__() {
     /// #}}} @group primitives
 
     /// #{{{ @group js-objects
-    obj:  isObject,
-    _obj: isObjectOrFunction,
-    fun:  isFunction,
-    arr:  isArray,
-    _arr: isArrayOrArguments,
-    args: isArguments,
-    regx: isRegExp,
-    date: isDate,
-    err:  isError,
+    obj:   isObject,
+    plain: isPlainObject,
+    _obj:  isObjectOrFunction,
+    fun:   isFunction,
+    arr:   isArray,
+    _arr:  isArrayOrArguments,
+    args:  isArguments,
+    regx:  isRegExp,
+    date:  isDate,
+    err:   isError,
     /// #}}} @group js-objects
 
     /// #{{{ @group dom-objects
