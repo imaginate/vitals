@@ -159,12 +159,11 @@ $VITALS['copy'] = (function __vitalsCopy__() {
    *   shallowly copies all of the #source properties with the option to
    *   deeply [copy][clone] them as well.
    * @public
-   * @param {(!Array|!Arguments|!Object)} source
-   *   Must be an `array` or array-like `object`. The #source is considered
-   *   array-like when it [owns][own] a property with the `"length"` key name
-   *   (e.g. `source.length` like the `array` [length property][arr-length])
-   *   whose value is a whole `number` that is greater than or equal to zero
-   *   (e.g. `isWholeNumber(source.length) && source.length >= 0`).
+   * @param {(!Array|!Arguments|!Object|!Function)} source
+   *   If the #source is **not** an `array`, it must be an array-like `object`
+   *   or `function`. The #source is considered array-like when it has a
+   *   `"length"` property that is a whole `number` greater than or equal to
+   *   zero.
    * @param {boolean=} deep = `false`
    *   Whether to recursively [copy][clone] the #source property values.
    * @return {!Array}
@@ -189,9 +188,9 @@ $VITALS['copy'] = (function __vitalsCopy__() {
         }
     }
 
-    if ( !$is.obj(source) ) {
+    if ( !$is._obj(source) ) {
       throw _MKERR_ARR.type(new $TYPE_ERR, 'source', source,
-        '(!Array|!Arguments|!Object)');
+        '(!Array|!Arguments|!Object|!Function)');
     }
     if ( !$is.arrish(source) ) {
       throw _MKERR_ARR.arrLike(new $ERR, 'source', source);
@@ -351,7 +350,7 @@ $VITALS['copy'] = (function __vitalsCopy__() {
   /// #{{{ @func _copyArr
   /**
    * @private
-   * @param {(!Array|!Arguments|!Object)} src
+   * @param {(!Array|!Arguments|!Object|!Function)} src
    * @param {boolean} deep
    * @return {!Array}
    */
@@ -572,18 +571,19 @@ $VITALS['copy'] = (function __vitalsCopy__() {
   /// #{{{ @func _mergeDeep
   /**
    * @private
-   * @param {(!Object|!Function)} dest
-   * @param {(!Object|!Function)} source
-   * @return {(!Object|!Function)}
+   * @param {(!Object|!Function|!Array)} dest
+   * @param {(!Object|!Function|!Array|!Arguments)} src
+   * @return {(!Object|!Function|!Array)}
    */
-  function _mergeDeep(dest, source) {
+  function _mergeDeep(dest, src) {
 
     /** @type {string} */
     var key;
 
-    for (key in source) {
-      if ( $own(source, key) )
-        dest[key] = copy(source[key], $YES);
+    for (key in src) {
+      if ( $own(src, key) ) {
+        dest[key] = copy(src[key], $YES);
+      }
     }
     return dest;
   }
