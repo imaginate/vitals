@@ -13,6 +13,7 @@
 /**
  * @private
  * @param {string} path
+ * @param {string=} home
  * @return {string}
  */
 var $insHome = (function __vitals$insHome__() {
@@ -44,22 +45,24 @@ var $insHome = (function __vitals$insHome__() {
   /// #{{{ @func $insHome
   /**
    * @param {string} path
+   * @param {string=} home
    * @return {string}
    */
-  function $insHome(path) {
-
-    /** @type {string} */
-    var home;
+  function $insHome(path, home) {
 
     if ( _TILDE_ONLY['test'](path) ) {
-      return $homedir();
+      return $is.str(home)
+        ? home
+        : $homedir();
     }
 
     if ( !_TILDE_START['test'](path) ) {
       return path;
     }
 
-    home = $homedir();
+    if ( !$is.str(home) ) {
+      home = $homedir();
+    }
 
     if ( !!home && !_END_SLASH['test'](home) ) {
       home += '/';
