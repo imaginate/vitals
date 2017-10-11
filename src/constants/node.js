@@ -36,6 +36,15 @@ var $CP = $REQUIRE('child_process');
 var $FS = $REQUIRE('fs');
 /// #}}} @constant $FS
 
+/// #{{{ @constant $OS
+/**
+ * @private
+ * @const {!Object}
+ * @dict
+ */
+var $OS = $REQUIRE('os');
+/// #}}} @constant $OS
+
 /// #{{{ @constant $PATH
 /**
  * @private

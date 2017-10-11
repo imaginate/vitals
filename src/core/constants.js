@@ -42,6 +42,7 @@
 /// #include @constant $REQUIRE ../constants/node.js
 /// #include @constant $CP ../constants/node.js
 /// #include @constant $FS ../constants/node.js
+/// #include @constant $OS ../constants/node.js
 /// #include @constant $PATH ../constants/node.js
 /// #if}}} @build NODE
 /// #}}} @core constants
