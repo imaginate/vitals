@@ -23,7 +23,7 @@ var $insHome = (function __vitals$insHome__() {
      * @private
      * @const {!RegExp}
      */
-    var _END_SLASH = /\/$/;
+    var _END_SLASH = /[\/\\]$/;
     /// #}}} @const _END_SLASH
 
   /// #{{{ @const _TILDE_ONLY
