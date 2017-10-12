@@ -30,7 +30,7 @@ var $cleanpath = (function __vitals$cleanpath__() {
    * @private
    * @const {!RegExp}
    */
-  var _UNC = /^[\/\\][\/\\]+[^\/\\]/;
+  var _UNC = /^[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]/;
   /// #}}} @const _UNC
 
   /// #{{{ @func _capitalizeDrive
