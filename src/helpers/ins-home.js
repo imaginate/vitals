@@ -23,7 +23,7 @@ var $insHome = (function __vitals$insHome__() {
    * @private
    * @const {!RegExp}
    */
-  var _DRIVE = /^[a-zA-Z](?=:)/;
+  var _DRIVE = /^[a-zA-Z]:/;
   /// #}}} @const _DRIVE
 
     /// #{{{ @const _END_SLASH
@@ -74,9 +74,9 @@ var $insHome = (function __vitals$insHome__() {
       home = $homedir();
     }
 
-    if ( _DRIVE['test'](path) && _DRIVE['test'](home) ) {
+    if ( _DRIVE['test'](path) ) {
       home = home['replace'](_DRIVE, '');
-      home = path['replace'](_NOT_DRIVE, '')['toUpperCase']() + home;
+      home = path['replace'](_NOT_DRIVE, '')['toUpperCase']() + ':' + home;
     }
 
     if ( _TILDE_ONLY['test'](path) ) {
