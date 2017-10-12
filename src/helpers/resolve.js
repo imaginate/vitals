@@ -6,7 +6,7 @@
  * @see [vitals](https://github.com/imaginate/vitals)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
- * @copyright 2014-2017 Adam A Smith <adam@imaginate.life> (https://imaginate.life)
+ * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
 /// #{{{ @helper $resolve
@@ -15,7 +15,7 @@
  * @param {(!Array<string|undefined>|!Arguments<string|undefined>|...string)=} path
  * @return {string}
  */
-var $resolve = (function $resolvePrivateScope() {
+var $resolve = (function __vitals$resolve__() {
 
   /// #{{{ @docrefs $resolve
   /// @docref [node]:(https://nodejs.org/)
@@ -26,11 +26,10 @@ var $resolve = (function $resolvePrivateScope() {
   /// #{{{ @func _mkPaths
   /**
    * @private
-   * @param {string} cwd
-   * @param {(!Array<string|undefined>|!Arguments<string|undefined>)} paths
+   * @param {(!Array<(string|undefined)>|!Arguments<(string|undefined)>)} paths
    * @return {!Array<string>}
    */
-  function _mkPaths(cwd, paths) {
+  function _mkPaths(paths) {
 
     /** @type {!Array<string>} */
     var result;
@@ -41,13 +40,15 @@ var $resolve = (function $resolvePrivateScope() {
     /** @type {number} */
     var i;
 
-    result = [ cwd ];
+    result = [];
     len = paths['length'];
     i = -1;
     while (++i < len) {
       path = paths[i];
-      if ( $is._str(path) )
+      if ( $is._str(path) ) {
+        path = $insHome(path);
         result['push'](path);
+      }
     }
     return result;
   }
@@ -64,21 +65,27 @@ var $resolve = (function $resolvePrivateScope() {
    * @param {...string} path
    * @return {string}
    */
-  var _resolve = PATH['resolve'];
+  var _resolve = $PATH['resolve'];
   /// #}}} @func _resolve
 
   /// #{{{ @func _resolvePaths
   /**
    * @private
-   * @param {string} cwd
-   * @param {(!Array<string|undefined>|!Arguments<string|undefined>)} paths
+   * @param {(!Array<(string|undefined)>|!Arguments<(string|undefined)>)} paths
    * @return {string}
    */
-  function _resolvePaths(cwd, paths) {
-    paths = _mkPaths(cwd, paths);
-    return paths['length'] > 1
-      ? _resolve['apply'](NIL, paths)
-      : $cleanpath(cwd);
+  function _resolvePaths(paths) {
+
+    paths = _mkPaths(paths);
+
+    switch (paths['length']) {
+      case 0:
+        return process['cwd']();
+      case 1:
+        return _resolve(paths[0]);
+    }
+
+    return _resolve['apply']($NIL, paths);
   }
   /// #}}} @func _resolvePaths
 
@@ -87,33 +94,32 @@ var $resolve = (function $resolvePrivateScope() {
    * @description
    *   Resolves path segments into an absolute path or returns the current
    *   working directory.
-   * @param {(!Array<string|undefined>|!Arguments<string|undefined>|...string)=} path
+   * @param {(!Array<(string|undefined)>|!Arguments<(string|undefined)>|...(string|undefined))=} path
    * @return {string}
    */
   function $resolve(path) {
 
-    /** @type {string} */
-    var cwd;
-
-    cwd = process['cwd']();
-
     switch (arguments['length']) {
       case 0:
-        return $cleanpath(cwd);
-
+        path = process['cwd']();
+        break;
       case 1:
-        if ( $is.void(path) )
-          return $cleanpath(cwd);
-
-        path = $is.str(path)
-          ? _resolve(cwd, path)
-          : _resolvePaths(cwd, path);
-        return $cleanpath(path);
-
+        if (!path) {
+          path = process['cwd']();
+        }
+        else if ( $is.str(path) ) {
+          path = $insHome(path);
+          path = _resolve(path);
+        }
+        else {
+          path = _resolvePaths(path);
+        }
+        break;
       default:
-        path = _resolvePaths(cwd, arguments);
-        return $cleanpath(path);
+        path = _resolvePaths(arguments);
     }
+
+    return $cleanpath(path);
   }
   /// #}}} @func $resolve
 
