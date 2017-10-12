@@ -18,6 +18,14 @@
  */
 var $insHome = (function __vitals$insHome__() {
 
+  /// #{{{ @const _DRIVE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _DRIVE = /^[a-zA-Z](?=:)/;
+  /// #}}} @const _DRIVE
+
     /// #{{{ @const _END_SLASH
     /**
      * @private
@@ -26,12 +34,20 @@ var $insHome = (function __vitals$insHome__() {
     var _END_SLASH = /[\/\\]$/;
     /// #}}} @const _END_SLASH
 
+  /// #{{{ @const _NOT_DRIVE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _NOT_DRIVE = /:[\s\S]*$/;
+  /// #}}} @const _NOT_DRIVE
+
   /// #{{{ @const _TILDE_ONLY
   /**
    * @private
    * @const {!RegExp}
    */
-  var _TILDE_ONLY = /^~[\/\\]?$/;
+  var _TILDE_ONLY = /^(?:[a-zA-Z]:)?~[\/\\]?$/;
   /// #}}} @const _TILDE_ONLY
 
   /// #{{{ @const _TILDE_START
@@ -39,7 +55,7 @@ var $insHome = (function __vitals$insHome__() {
    * @private
    * @const {!RegExp}
    */
-  var _TILDE_START = /^~[\/\\]/;
+  var _TILDE_START = /^(?:[a-zA-Z]:)?~[\/\\]/;
   /// #}}} @const _TILDE_START
 
   /// #{{{ @func $insHome
@@ -56,6 +72,11 @@ var $insHome = (function __vitals$insHome__() {
 
     if ( !$is.str(home) ) {
       home = $homedir();
+    }
+
+    if ( _DRIVE['test'](path) && _DRIVE['test'](home) ) {
+      home = home['replace'](_DRIVE, '');
+      home = path['replace'](_NOT_DRIVE, '')['toUpperCase']() + home;
     }
 
     if ( _TILDE_ONLY['test'](path) ) {

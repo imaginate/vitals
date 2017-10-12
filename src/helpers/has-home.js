@@ -22,7 +22,7 @@ var $hasHome = (function __vitals$hasHome__() {
    * @private
    * @const {!RegExp}
    */
-  var _HOME = /^~(?:[\/\\][\s\S]*)?$/;
+  var _HOME = /^(?:[a-zA-Z]:)?~(?:[\/\\][\s\S]*)?$/;
   /// #}}} @const _HOME
 
   /// #{{{ @func $hasHome
