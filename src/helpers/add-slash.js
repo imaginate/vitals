@@ -17,13 +17,13 @@
  */
 var $addSlash = (function __vitals$addSlash__() {
 
-    /// #{{{ @const _END_SLASH
-    /**
-     * @private
-     * @const {!RegExp}
-     */
-    var _END_SLASH = /\/$/;
-    /// #}}} @const _END_SLASH
+  /// #{{{ @const _END_SLASH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _END_SLASH = /\/$/;
+  /// #}}} @const _END_SLASH
 
   /// #{{{ @func $addSlash
   /**
