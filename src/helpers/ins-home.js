@@ -63,16 +63,16 @@ var $insHome = (function __vitals$insHome__() {
    */
   function $insHome(path, home) {
 
-    /// #{{{ @const DRIVE
+    /// #{{{ @const WIN_DRIVE
     /**
      * @private
      * @const {string}
      */
-    var DRIVE = $getDrive(path) || $getDrive(home);
-    /// #}}} @const DRIVE
+    var WIN_DRIVE = $getWinDrive(path) || $getWinDrive(home);
+    /// #}}} @const WIN_DRIVE
 
-    path = $trimDrive(path);
-    home = DRIVE + $trimDrive(home);
+    path = $trimWinDrive(path);
+    home = WIN_DRIVE + $trimWinDrive(home);
 
     if ( _TILDE_ONLY['test'](path) ) {
       return home;
