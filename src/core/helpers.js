@@ -34,7 +34,9 @@
 /// #include @helper $hasHome ../helpers/has-home.js
 /// #include @helper $hasUnc ../helpers/has-unc.js
 /// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #include @helper $getDrive ../helpers/get-drive.js
 /// #include @helper $getHome ../helpers/get-home.js
+/// #include @helper $trimDrive ../helpers/trim-drive.js
 /// #include @helper $resolve ../helpers/resolve.js
 /// #if}}} @scope FS
 /// #}}} @core helpers
