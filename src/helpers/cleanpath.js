@@ -17,21 +17,13 @@
  */
 var $cleanpath = (function __vitals$cleanpath__() {
 
-  /// #{{{ @const _LOW_DRIVE
+  /// #{{{ @const _LOWER_CASE_DRIVE
   /**
    * @private
    * @const {!RegExp}
    */
-  var _LOW_DRIVE = /^[a-z](?=:)/;
-  /// #}}} @const _LOW_DRIVE
-
-  /// #{{{ @const _UNC
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _UNC = /^[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]/;
-  /// #}}} @const _UNC
+  var _LOWER_CASE_DRIVE = /^[a-z](?=:)/;
+  /// #}}} @const _LOWER_CASE_DRIVE
 
   /// #{{{ @func _capitalizeDrive
   /**
@@ -57,11 +49,11 @@ var $cleanpath = (function __vitals$cleanpath__() {
     result = path['replace'](/\\+/g, '/');
     result = result['replace'](/\/\/+/g, '/');
 
-    if ( _UNC['test'](path) ) {
+    if ( $hasUnc(path) ) {
       result = '/' + result;
     }
-    else if ( _LOW_DRIVE['test'](path) ) {
-      result = result['replace'](_LOW_DRIVE, _capitalizeDrive);
+    else if ( _LOWER_CASE_DRIVE['test'](path) ) {
+      result = result['replace'](_LOWER_CASE_DRIVE, _capitalizeDrive);
     }
 
     return result;
