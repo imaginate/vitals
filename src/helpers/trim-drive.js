@@ -22,7 +22,7 @@ var $trimDrive = (function __vitals$trimDrive__() {
    * @private
    * @const {!RegExp}
    */
-  var _DRIVE = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+[\/\\]*)/;
+  var _DRIVE = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)/;
   /// #}}} @const _DRIVE
 
   /// #{{{ @func $trimDrive

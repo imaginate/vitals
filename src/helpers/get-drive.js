@@ -30,7 +30,7 @@ var $getDrive = (function __vitals$getDrive__() {
    * @private
    * @const {!RegExp}
    */
-  var _UNC_DRIVE = /^([\/\\][\/\\]+[^\/\\]+[\/\\])[\s\S]*$/;
+  var _UNC_DRIVE = /^([\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)[\s\S]*$/;
   /// #}}} @const _UNC_DRIVE
 
   /// #{{{ @func $getDrive

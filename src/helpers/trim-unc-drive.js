@@ -22,7 +22,7 @@ var $trimUncDrive = (function __vitals$trimUncDrive__() {
    * @private
    * @const {!RegExp}
    */
-  var _DRIVE = /^[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+[\/\\]*/;
+  var _DRIVE = /^[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+/;
   /// #}}} @const _DRIVE
 
   /// #{{{ @func $trimUncDrive
