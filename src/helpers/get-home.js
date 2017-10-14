@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $HOMEDIR HELPER
+ * $GET-HOME HELPER
  * ---------------------------------------------------------------------------
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,12 +9,12 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @helper $homedir
+/// #{{{ @helper $getHome
 /**
  * @private
  * @return {string}
  */
-var $homedir = (function __vitals$homedir__() {
+var $getHome = (function __vitals$getHome__() {
 
   /// #{{{ @func _homedir
   /**
@@ -28,11 +28,11 @@ var $homedir = (function __vitals$homedir__() {
       };
   /// #}}} @func _homedir
 
-  /// #{{{ @func $homedir
+  /// #{{{ @func $getHome
   /**
    * @return {string}
    */
-  function $homedir() {
+  function $getHome() {
 
     /** @type {string} */
     var result;
@@ -42,10 +42,10 @@ var $homedir = (function __vitals$homedir__() {
       ? $cleanpath(result)
       : '';
   }
-  /// #}}} @func $homedir
+  /// #}}} @func $getHome
 
-  return $homedir;
+  return $getHome;
 })();
-/// #}}} @helper $homedir
+/// #}}} @helper $getHome
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
