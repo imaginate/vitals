@@ -49,7 +49,7 @@ var $cleanpath = (function __vitals$cleanpath__() {
     result = path['replace'](/\\+/g, '/');
     result = result['replace'](/\/\/+/g, '/');
 
-    if ( $hasUnc(path) ) {
+    if ( $hasUncDrive(path) ) {
       result = '/' + result;
     }
     else if ( _LOWER_CASE_DRIVE['test'](path) ) {

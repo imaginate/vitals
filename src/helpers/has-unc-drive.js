@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $TRIM-DRIVE HELPER
+ * $HAS-UNC-DRIVE HELPER
  * ---------------------------------------------------------------------------
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,34 +9,34 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @helper $trimDrive
+/// #{{{ @helper $hasUncDrive
 /**
  * @private
  * @param {string} path
- * @return {string}
+ * @return {boolean}
  */
-var $trimDrive = (function __vitals$trimDrive__() {
+var $hasUncDrive = (function __vitals$hasUncDrive__() {
 
-  /// #{{{ @const _DRIVE
+  /// #{{{ @const _UNC
   /**
    * @private
    * @const {!RegExp}
    */
-  var _DRIVE = /^[a-zA-Z]:/;
-  /// #}}} @const _DRIVE
+  var _UNC = /^[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]/;
+  /// #}}} @const _UNC
 
-  /// #{{{ @func $trimDrive
+  /// #{{{ @func $hasUncDrive
   /**
    * @param {string} path
-   * @return {string}
+   * @return {boolean}
    */
-  function $trimDrive(path) {
-    return path && path['replace'](_DRIVE, '');
+  function $hasUncDrive(path) {
+    return _UNC['test'](path);
   }
-  /// #}}} @func $trimDrive
+  /// #}}} @func $hasUncDrive
 
-  return $trimDrive;
+  return $hasUncDrive;
 })();
-/// #}}} @helper $trimDrive
+/// #}}} @helper $hasUncDrive
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

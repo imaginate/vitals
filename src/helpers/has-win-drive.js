@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $HAS-DRIVE HELPER
+ * $HAS-WIN-DRIVE HELPER
  * ---------------------------------------------------------------------------
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,13 +9,13 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @helper $hasDrive
+/// #{{{ @helper $hasWinDrive
 /**
  * @private
  * @param {string} path
  * @return {boolean}
  */
-var $hasDrive = (function __vitals$hasDrive__() {
+var $hasWinDrive = (function __vitals$hasWinDrive__() {
 
   /// #{{{ @const _DRIVE
   /**
@@ -25,18 +25,18 @@ var $hasDrive = (function __vitals$hasDrive__() {
   var _DRIVE = /^[a-zA-Z]:/;
   /// #}}} @const _DRIVE
 
-  /// #{{{ @func $hasDrive
+  /// #{{{ @func $hasWinDrive
   /**
    * @param {string} path
    * @return {boolean}
    */
-  function $hasDrive(path) {
+  function $hasWinDrive(path) {
     return _DRIVE['test'](path);
   }
-  /// #}}} @func $hasDrive
+  /// #}}} @func $hasWinDrive
 
-  return $hasDrive;
+  return $hasWinDrive;
 })();
-/// #}}} @helper $hasDrive
+/// #}}} @helper $hasWinDrive
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
