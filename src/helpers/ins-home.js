@@ -13,41 +13,25 @@
 /**
  * @private
  * @param {string} path
- * @param {string=} home
+ * @param {string} home
  * @return {string}
  */
 var $insHome = (function __vitals$insHome__() {
 
-  /// #{{{ @const _DRIVE
+  /// #{{{ @const _END_SLASH
   /**
    * @private
    * @const {!RegExp}
    */
-  var _DRIVE = /^[a-zA-Z]:/;
-  /// #}}} @const _DRIVE
-
-    /// #{{{ @const _END_SLASH
-    /**
-     * @private
-     * @const {!RegExp}
-     */
-    var _END_SLASH = /[\/\\]$/;
-    /// #}}} @const _END_SLASH
-
-  /// #{{{ @const _NOT_DRIVE
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _NOT_DRIVE = /:[\s\S]*$/;
-  /// #}}} @const _NOT_DRIVE
+  var _END_SLASH = /[\/\\]$/;
+  /// #}}} @const _END_SLASH
 
   /// #{{{ @const _TILDE_ONLY
   /**
    * @private
    * @const {!RegExp}
    */
-  var _TILDE_ONLY = /^(?:[a-zA-Z]:)?~[\/\\]?$/;
+  var _TILDE_ONLY = /^~[\/\\]?$/;
   /// #}}} @const _TILDE_ONLY
 
   /// #{{{ @const _TILDE_START
@@ -55,38 +39,46 @@ var $insHome = (function __vitals$insHome__() {
    * @private
    * @const {!RegExp}
    */
-  var _TILDE_START = /^(?:[a-zA-Z]:)?~[\/\\]/;
+  var _TILDE_START = /^~[\/\\]/;
   /// #}}} @const _TILDE_START
+
+  /// #{{{ @func _addSlash
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _addSlash(path) {
+    return !!path && !_END_SLASH['test'](path)
+      ? path + '/'
+      : path;
+  }
+  /// #}}} @func _addSlash
 
   /// #{{{ @func $insHome
   /**
    * @param {string} path
-   * @param {string=} home
+   * @param {string} home
    * @return {string}
    */
   function $insHome(path, home) {
 
-    if ( !$hasHome(path) ) {
-      return path;
-    }
+    /// #{{{ @const DRIVE
+    /**
+     * @private
+     * @const {string}
+     */
+    var DRIVE = $getDrive(path) || $getDrive(home);
+    /// #}}} @const DRIVE
 
-    if ( !$is.str(home) ) {
-      home = $homedir();
-    }
-
-    if ( _DRIVE['test'](path) ) {
-      home = home['replace'](_DRIVE, '');
-      home = path['replace'](_NOT_DRIVE, '')['toUpperCase']() + ':' + home;
-    }
+    path = $trimDrive(path);
+    home = DRIVE + $trimDrive(home);
 
     if ( _TILDE_ONLY['test'](path) ) {
       return home;
     }
 
-    if ( !!home && !_END_SLASH['test'](home) ) {
-      home += '/';
-    }
-
+    home = _addSlash(home);
     return path['replace'](_TILDE_START, home);
   }
   /// #}}} @func $insHome
