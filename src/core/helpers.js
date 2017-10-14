@@ -30,7 +30,11 @@
 /// #include @helper $mkErr ../helpers/mk-err.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
+/// #include @helper $hasDrive ../helpers/has-drive.js
+/// #include @helper $hasHome ../helpers/has-home.js
+/// #include @helper $hasUnc ../helpers/has-unc.js
 /// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #include @helper $getHome ../helpers/get-home.js
 /// #include @helper $resolve ../helpers/resolve.js
 /// #if}}} @scope FS
 /// #}}} @core helpers
