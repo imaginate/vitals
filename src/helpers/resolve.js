@@ -23,36 +23,40 @@ var $resolve = (function __vitals$resolve__() {
   /// @docref [v7-9]:(https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
   /// #}}} @docrefs $resolve
 
-  /// #{{{ @func _mkPaths
+  /// #{{{ @const _ABS_PATH
   /**
    * @private
-   * @param {(!Array<(string|undefined)>|!Arguments<(string|undefined)>)} paths
-   * @return {!Array<string>}
+   * @const {!RegExp}
    */
-  function _mkPaths(paths) {
+  var _ABS_PATH = /^[\/\\]/;
+  /// #}}} @const _ABS_PATH
 
-    /** @type {!Array<string>} */
-    var result;
-    /** @type {(string|undefined)} */
-    var path;
-    /** @type {number} */
-    var len;
-    /** @type {number} */
-    var i;
+  /// #{{{ @func _getWinDrive
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _getWinDrive(path) {
 
-    result = [];
-    len = paths['length'];
-    i = -1;
-    while (++i < len) {
-      path = paths[i];
-      if ( $is._str(path) ) {
-        path = $insHome(path);
-        result['push'](path);
-      }
-    }
-    return result;
+    /** @type {string} */
+    var drive;
+
+    drive = $getWinDrive(path);
+    return drive && drive['toUpperCase']();
   }
-  /// #}}} @func _mkPaths
+  /// #}}} @func _getWinDrive
+
+  /// #{{{ @func _isAbsPath
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  function _isAbsPath(path) {
+    return _ABS_PATH['test'](path);
+  }
+  /// #}}} @func _isAbsPath
 
   /// #{{{ @func _resolve
   /**
@@ -76,16 +80,211 @@ var $resolve = (function __vitals$resolve__() {
    */
   function _resolvePaths(paths) {
 
-    paths = _mkPaths(paths);
+    /// #{{{ @step declare-variables
 
-    switch (paths['length']) {
-      case 0:
-        return process['cwd']();
-      case 1:
-        return _resolve(paths[0]);
+    /** @type {string} */
+    var uncDrive;
+    /** @type {string} */
+    var winDrive;
+    /** @type {!Array<string>} */
+    var valid;
+    /** @type {string} */
+    var drive;
+    /** @type {(string|undefined)} */
+    var path;
+    /** @type {number} */
+    var i;
+
+    /// #}}} @step declare-variables
+
+    /// #{{{ @step get-valid-paths
+
+    valid = [];
+    i = paths['length'];
+
+    mainloop:
+    while (i--) {
+      path = paths[i];
+
+      /// #{{{ @step skip-empty-paths
+
+      if (!path) {
+        continue mainloop;
+      }
+
+      /// #}}} @step skip-empty-paths
+
+      /// #{{{ @step handle-non-win32-drive-absolute-path
+
+      if ( _isAbsPath(path) ) {
+
+        /// #{{{ @step handle-defined-win32-drive
+
+        if (!!winDrive) {
+          if ( $hasUncDrive(path) ) {
+            continue mainloop;
+          }
+          valid['unshift'](path);
+          break mainloop;
+        }
+
+        /// #}}} @step handle-defined-win32-drive
+
+        /// #{{{ @step handle-unc-drive-path
+
+        uncDrive = $getUncDrive(path);
+
+        if (!!uncDrive) {
+          path = $trimUncDrive(path);
+          valid['unshift'](path);
+          break mainloop;
+        }
+
+        /// #}}} @step handle-unc-drive-path
+
+        /// #{{{ @step save-last-valid-path
+
+        valid['unshift'](path);
+
+        /// #}}} @step save-last-valid-path
+
+        /// #{{{ @step record-unc-or-win32-drive
+
+        while (i--) {
+          path = paths[i];
+          if (!!path) {
+            winDrive = _getWinDrive(path);
+            if (!!winDrive) {
+              break mainloop;
+            }
+            uncDrive = $getUncDrive(path);
+            if (!!uncDrive) {
+              break mainloop;
+            }
+          }
+        }
+
+        path = $getCwd();
+        winDrive = _getWinDrive(path);
+        if (!winDrive) {
+          uncDrive = $getUncDrive(path);
+        }
+
+        /// #}}} @step record-unc-or-win32-drive
+
+        i = 0;
+        break mainloop;
+      }
+
+      /// #}}} @step handle-non-win32-drive-absolute-path
+
+      drive = _getWinDrive(path);
+
+      /// #{{{ @step handle-non-win32-drive-relative-path
+
+      if (!drive) {
+        valid['unshift'](path);
+        continue mainloop;
+      }
+
+      /// #}}} @step handle-non-win32-drive-relative-path
+
+      /// #{{{ @step check-win32-drive
+
+      if (!!winDrive) {
+        if (drive !== winDrive) {
+          continue mainloop;
+        }
+      }
+
+      /// #}}} @step check-win32-drive
+
+      /// #{{{ @step record-win32-drive
+
+      else {
+        winDrive = drive;
+      }
+
+      /// #}}} @step record-win32-drive
+
+      path = $trimWinDrive(path);
+
+      /// #{{{ @step handle-win32-drive-absolute-path
+
+      if ( _isAbsPath(path) ) {
+        valid['unshift'](path);
+        break mainloop;
+      }
+
+      /// #}}} @step handle-win32-drive-absolute-path
+
+      /// #{{{ @step handle-win32-drive-relative-path
+
+      valid['unshift'](path);
+
+      /// #}}} @step handle-win32-drive-relative-path
+
     }
 
-    return _resolve['apply']($NIL, paths);
+    /// #}}} @step get-valid-paths
+
+    /// #{{{ @step check-no-valid-paths
+
+    if (!valid['length']) {
+      return $getCwd();
+    }
+
+    /// #}}} @step check-no-valid-paths
+
+    /// #{{{ @step save-cwd-to-valid-paths
+
+    if (i < 0) {
+      path = $getCwd();
+      if ( _isAbsPath(path) ) {
+        if (!!winDrive) {
+          if ( !$hasUncDrive(path) ) {
+            valid['unshift'](path);
+          }
+        }
+        else {
+          uncDrive = $getUncDrive(path);
+          if (!!uncDrive) {
+            path = $trimUncDrive(path);
+          }
+          valid['unshift'](path);
+        }
+      }
+      else {
+        drive = $getWinDrive(path);
+        if (!!drive) {
+          path = $trimWinDrive(path);
+          if (!!winDrive) {
+            if (drive === winDrive) {
+              valid['unshift'](path);
+            }
+          }
+          else {
+            winDrive = drive;
+            valid['unshift'](path);
+          }
+        }
+        else {
+          valid['unshift'](path);
+        }
+      }
+    }
+
+    /// #}}} @step save-cwd-to-valid-paths
+
+    /// #{{{ @step get-resolved-path
+
+    drive = uncDrive || winDrive || '';
+    path = _resolve['apply']($NIL, valid);
+    path = drive + $cleanpath(path);
+
+    /// #}}} @step get-resolved-path
+
+    return path;
   }
   /// #}}} @func _resolvePaths
 
@@ -101,25 +300,17 @@ var $resolve = (function __vitals$resolve__() {
 
     switch (arguments['length']) {
       case 0:
-        path = process['cwd']();
-        break;
+        return $getCwd();
       case 1:
         if (!path) {
-          path = process['cwd']();
+          return $getCwd();
         }
-        else if ( $is.str(path) ) {
-          path = $insHome(path);
-          path = _resolve(path);
+        if ( !$is.str(path) ) {
+          return _resolvePaths(path);
         }
-        else {
-          path = _resolvePaths(path);
-        }
-        break;
-      default:
-        path = _resolvePaths(arguments);
     }
 
-    return $cleanpath(path);
+    return _resolvePaths(arguments);
   }
   /// #}}} @func $resolve
 
