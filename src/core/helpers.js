@@ -30,13 +30,20 @@
 /// #include @helper $mkErr ../helpers/mk-err.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
-/// #include @helper $hasDrive ../helpers/has-drive.js
 /// #include @helper $hasHome ../helpers/has-home.js
-/// #include @helper $hasUnc ../helpers/has-unc.js
+/// #include @helper $hasUncDrive ../helpers/has-unc-drive.js
+/// #include @helper $hasWinDrive ../helpers/has-win-drive.js
+/// #include @helper $hasDrive ../helpers/has-drive.js
 /// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #include @helper $getCwd ../helpers/get-cwd.js
 /// #include @helper $getDrive ../helpers/get-drive.js
 /// #include @helper $getHome ../helpers/get-home.js
+/// #include @helper $getUncDrive ../helpers/get-unc-drive.js
+/// #include @helper $getWinDrive ../helpers/get-win-drive.js
 /// #include @helper $trimDrive ../helpers/trim-drive.js
+/// #include @helper $trimUncDrive ../helpers/trim-unc-drive.js
+/// #include @helper $trimWinDrive ../helpers/trim-win-drive.js
+/// #include @helper $insHome ../helpers/ins-home.js
 /// #include @helper $resolve ../helpers/resolve.js
 /// #if}}} @scope FS
 /// #}}} @core helpers
