@@ -113,6 +113,8 @@ var $resolve = (function __vitals$resolve__() {
     var winDrive;
     /** @type {string} */
     var drive;
+    /** @type {string} */
+    var home;
     /** @type {(string|undefined)} */
     var path;
     /** @type {number} */
@@ -136,6 +138,17 @@ var $resolve = (function __vitals$resolve__() {
       }
 
       /// #}}} @step skip-empty-paths
+
+      /// #{{{ @step insert-home-path
+
+      if ( $hasHome(path) ) {
+        if (!home) {
+          home = $getHome();
+        }
+        path = $insHome(path, home);
+      }
+
+      /// #}}} @step insert-home-path
 
       /// #{{{ @step handle-non-win32-drive-absolute-path
 
@@ -301,9 +314,23 @@ var $resolve = (function __vitals$resolve__() {
 
     /// #{{{ @step get-resolved-path
 
+    switch (validPaths['length']) {
+      case 1:
+        path = _resolve(validPaths[0]);
+        break;
+      case 2:
+        path = _resolve(validPaths[0], validPaths[1]);
+        break;
+      case 3:
+        path = _resolve(validPaths[0], validPaths[1], validPaths[2]);
+        break;
+      default:
+        path = _resolve['apply']($NIL, validPaths);
+    }
+
     drive = uncDrive || winDrive || '';
-    path = _resolve['apply']($NIL, valid);
-    path = drive + $cleanpath(path);
+    path = drive + path;
+    path = $cleanpath(path);
 
     /// #}}} @step get-resolved-path
 
