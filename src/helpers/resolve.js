@@ -31,6 +31,25 @@ var $resolve = (function __vitals$resolve__() {
   var _ABS_PATH = /^[\/\\]/;
   /// #}}} @const _ABS_PATH
 
+  /// #{{{ @const _LOWER_CASE_DRIVE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _LOWER_CASE_DRIVE = /^[a-z]/;
+  /// #}}} @const _LOWER_CASE_DRIVE
+
+  /// #{{{ @func _capitalizeDrive
+  /**
+   * @private
+   * @param {string} drive
+   * @return {string}
+   */
+  function _capitalizeDrive(drive) {
+    return drive['toUpperCase']();
+  }
+  /// #}}} @func _capitalizeDrive
+
   /// #{{{ @func _getWinDrive
   /**
    * @private
@@ -43,7 +62,11 @@ var $resolve = (function __vitals$resolve__() {
     var drive;
 
     drive = $getWinDrive(path);
-    return drive && drive['toUpperCase']();
+    return !!drive
+      ? _LOWER_CASE_DRIVE['test'](drive)
+        ? drive['replace'](_LOWER_CASE_DRIVE, _capitalizeDrive)
+        : drive
+      : '';
   }
   /// #}}} @func _getWinDrive
 
@@ -82,12 +105,12 @@ var $resolve = (function __vitals$resolve__() {
 
     /// #{{{ @step declare-variables
 
+    /** @type {!Array<string>} */
+    var validPaths;
     /** @type {string} */
     var uncDrive;
     /** @type {string} */
     var winDrive;
-    /** @type {!Array<string>} */
-    var valid;
     /** @type {string} */
     var drive;
     /** @type {(string|undefined)} */
@@ -99,7 +122,7 @@ var $resolve = (function __vitals$resolve__() {
 
     /// #{{{ @step get-valid-paths
 
-    valid = [];
+    validPaths = [];
     i = paths['length'];
 
     mainloop:
@@ -124,7 +147,7 @@ var $resolve = (function __vitals$resolve__() {
           if ( $hasUncDrive(path) ) {
             continue mainloop;
           }
-          valid['unshift'](path);
+          _unshift(validPaths, path);
           break mainloop;
         }
 
@@ -136,7 +159,7 @@ var $resolve = (function __vitals$resolve__() {
 
         if (!!uncDrive) {
           path = $trimUncDrive(path);
-          valid['unshift'](path);
+          _unshift(validPaths, path);
           break mainloop;
         }
 
@@ -144,7 +167,7 @@ var $resolve = (function __vitals$resolve__() {
 
         /// #{{{ @step save-last-valid-path
 
-        valid['unshift'](path);
+        _unshift(validPaths, path);
 
         /// #}}} @step save-last-valid-path
 
@@ -163,6 +186,7 @@ var $resolve = (function __vitals$resolve__() {
             }
           }
         }
+        i = 0;
 
         path = $getCwd();
         winDrive = _getWinDrive(path);
@@ -172,7 +196,6 @@ var $resolve = (function __vitals$resolve__() {
 
         /// #}}} @step record-unc-or-win32-drive
 
-        i = 0;
         break mainloop;
       }
 
@@ -183,7 +206,7 @@ var $resolve = (function __vitals$resolve__() {
       /// #{{{ @step handle-non-win32-drive-relative-path
 
       if (!drive) {
-        valid['unshift'](path);
+        _unshift(validPaths, path);
         continue mainloop;
       }
 
@@ -212,7 +235,7 @@ var $resolve = (function __vitals$resolve__() {
       /// #{{{ @step handle-win32-drive-absolute-path
 
       if ( _isAbsPath(path) ) {
-        valid['unshift'](path);
+        _unshift(validPaths, path);
         break mainloop;
       }
 
@@ -220,7 +243,7 @@ var $resolve = (function __vitals$resolve__() {
 
       /// #{{{ @step handle-win32-drive-relative-path
 
-      valid['unshift'](path);
+      _unshift(validPaths, path);
 
       /// #}}} @step handle-win32-drive-relative-path
 
@@ -230,7 +253,7 @@ var $resolve = (function __vitals$resolve__() {
 
     /// #{{{ @step check-no-valid-paths
 
-    if (!valid['length']) {
+    if (!validPaths['length']) {
       return $getCwd();
     }
 
@@ -243,7 +266,7 @@ var $resolve = (function __vitals$resolve__() {
       if ( _isAbsPath(path) ) {
         if (!!winDrive) {
           if ( !$hasUncDrive(path) ) {
-            valid['unshift'](path);
+            _unshift(validPaths, path);
           }
         }
         else {
@@ -251,7 +274,7 @@ var $resolve = (function __vitals$resolve__() {
           if (!!uncDrive) {
             path = $trimUncDrive(path);
           }
-          valid['unshift'](path);
+          _unshift(validPaths, path);
         }
       }
       else {
@@ -260,16 +283,16 @@ var $resolve = (function __vitals$resolve__() {
           path = $trimWinDrive(path);
           if (!!winDrive) {
             if (drive === winDrive) {
-              valid['unshift'](path);
+              _unshift(validPaths, path);
             }
           }
           else {
             winDrive = drive;
-            valid['unshift'](path);
+            _unshift(validPaths, path);
           }
         }
         else {
-          valid['unshift'](path);
+          _unshift(validPaths, path);
         }
       }
     }
@@ -287,6 +310,19 @@ var $resolve = (function __vitals$resolve__() {
     return path;
   }
   /// #}}} @func _resolvePaths
+
+  /// #{{{ @func _unshift
+  /**
+   * @private
+   * @param {!Array} src
+   * @param {*} val
+   * @return {!Array}
+   */
+  function _unshift(src, val) {
+    src['unshift'](val);
+    return src;
+  }
+  /// #}}} @func _unshift
 
   /// #{{{ @func $resolve
   /**
