@@ -26,6 +26,14 @@ var $insHome = (function __vitals$insHome__() {
   var _END_SLASH = /[\/\\]$/;
   /// #}}} @const _END_SLASH
 
+  /// #{{{ @const _LOWER_CASE_DRIVE
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _LOWER_CASE_DRIVE = /^[a-z]/;
+  /// #}}} @const _LOWER_CASE_DRIVE
+
   /// #{{{ @const _TILDE_ONLY
   /**
    * @private
@@ -55,6 +63,59 @@ var $insHome = (function __vitals$insHome__() {
   }
   /// #}}} @func _addSlash
 
+  /// #{{{ @func _capitalizeDrive
+  /**
+   * @private
+   * @param {string} drive
+   * @return {string}
+   */
+  function _capitalizeDrive(drive) {
+    return drive['toUpperCase']();
+  }
+  /// #}}} @func _capitalizeDrive
+
+  /// #{{{ @func _getWinDrive
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _getWinDrive(path) {
+
+    /** @type {string} */
+    var drive;
+
+    drive = $getWinDrive(path);
+    return !!drive
+      ? _LOWER_CASE_DRIVE['test'](drive)
+        ? drive['replace'](_LOWER_CASE_DRIVE, _capitalizeDrive)
+        : drive
+      : '';
+  }
+  /// #}}} @func _getWinDrive
+
+  /// #{{{ @func _prepHome
+  /**
+   * @private
+   * @param {string} PATH_DRIVE
+   * @param {string} home
+   * @return {string}
+   */
+  function _prepHome(PATH_DRIVE, home) {
+
+    /** @const {string} */
+    var HOME_DRIVE = _getWinDrive(home);
+
+    return !!HOME_DRIVE
+      ? HOME_DRIVE === PATH_DRIVE
+        ? home
+        : PATH_DRIVE
+      : $hasUncDrive(home)
+        ? PATH_DRIVE
+        : PATH_DRIVE + home;
+  }
+  /// #}}} @func _prepHome
+
   /// #{{{ @func $insHome
   /**
    * @param {string} path
@@ -63,16 +124,13 @@ var $insHome = (function __vitals$insHome__() {
    */
   function $insHome(path, home) {
 
-    /// #{{{ @const WIN_DRIVE
-    /**
-     * @private
-     * @const {string}
-     */
-    var WIN_DRIVE = $getWinDrive(path) || $getWinDrive(home);
-    /// #}}} @const WIN_DRIVE
+    /** @const {string} */
+    var PATH_DRIVE = _getWinDrive(path);
 
-    path = $trimWinDrive(path);
-    home = WIN_DRIVE + $trimWinDrive(home);
+    if (!!PATH_DRIVE) {
+      path = $trimWinDrive(path);
+      home = _prepHome(PATH_DRIVE, home);
+    }
 
     if ( _TILDE_ONLY['test'](path) ) {
       return home;
