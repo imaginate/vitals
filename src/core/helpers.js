@@ -45,6 +45,8 @@
 /// #include @helper $trimWinDrive ../helpers/trim-win-drive.js
 /// #include @helper $insHome ../helpers/ins-home.js
 /// #include @helper $resolve ../helpers/resolve.js
+/// #include @class VitalsFileClass ../classes/vitals-file-class.js
+/// #include @helper $mkVfc ../helpers/mk-vfc.js
 /// #if}}} @scope FS
 /// #}}} @core helpers
 
