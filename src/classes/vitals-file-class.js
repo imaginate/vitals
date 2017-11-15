@@ -59,7 +59,8 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
     initVitalsFileClass(this, path, opts);
   }
   VitalsFileClass['prototype'] = VFC_PROTO;
-  VitalsFileClass['prototype']['constructor'] = VitalsFileClass;
+  VFC_PROTO['constructor'] = VitalsFileClass;
+  VFC_PROTO['__VITALS_FILE_CLASS__'] = $YES;
   /// #if}}} @code constructor
   /// #}}} @constructor VitalsFileClass
 
