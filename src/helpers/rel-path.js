@@ -12,8 +12,8 @@
 /// #{{{ @helper $relPath
 /**
  * @private
- * @param {string} src
- * @param {string} dest
+ * @param {string} fromPath
+ * @param {string} toPath
  * @return {string}
  */
 var $relPath = (function __vitals$relPath__() {
@@ -39,50 +39,47 @@ var $relPath = (function __vitals$relPath__() {
   /// #{{{ @func $relPath
   /**
    * @description
-   *   Returns a relative path from a #src path to a #dest path. Note that
-   *   both **paths must be resolved** before calling this method.
-   * @param {string} src
-   *   A resolved path to start from.
-   * @param {string} dest
-   *   A resolved path to go to.
+   *   Returns a relative path from #fromPath to #toPath. Note that both
+   *   **paths must be resolved** before calling this method.
+   * @param {string} fromPath
+   * @param {string} toPath
    * @return {string}
    */
-  function $relPath(src, dest) {
+  function $relPath(fromPath, toPath) {
 
     /** @type {string} */
-    var srcDrive;
+    var fromDrive;
     /** @type {string} */
-    var drive;
+    var toDrive;
     /** @type {string} */
-    var path;
+    var relPath;
 
-    if (src === dest) {
-      return dest;
+    if (fromPath === toPath) {
+      return '';
     }
 
-    drive = $getDrive(dest);
-    srcDrive = $getDrive(src);
+    fromDrive = $getDrive(fromPath);
+    toDrive = $getDrive(toPath);
 
-    if (!!drive) {
-      if (!!srcDrive) {
-        if (drive !== srcDrive) {
-          return dest;
-        }
-        src = $trimDrive(src);
-      }
-      dest = $trimDrive(dest);
-    }
-    else if (!!srcDrive) {
-      drive = srcDrive;
-      src = $trimDrive(src);
+    if (!!fromDrive && !!toDrive && fromDrive !== toDrive) {
+      return toPath;
     }
 
-    path = _relative(src, dest);
-    path = $trimDrive(path);
-    path = $cleanpath(path);
-    path = drive + path;
+    if (!!fromDrive) {
+      fromPath = $trimDrive(fromPath);
+    }
+    if (!!toDrive) {
+      toPath = $trimDrive(toPath);
+    }
 
-    return path;
+    if (fromPath === toPath) {
+      return '';
+    }
+
+    relPath = _relative(fromPath, toPath);
+    relPath = $cleanpath(relPath);
+
+    return relPath;
   }
   /// #}}} @func $relPath
 
