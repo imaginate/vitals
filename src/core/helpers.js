@@ -44,6 +44,7 @@
 /// #include @helper $trimUncDrive ../helpers/trim-unc-drive.js
 /// #include @helper $trimWinDrive ../helpers/trim-win-drive.js
 /// #include @helper $insHome ../helpers/ins-home.js
+/// #include @helper $relPath ../helpers/rel-path.js
 /// #include @helper $resolve ../helpers/resolve.js
 /// #include @class VitalsFileClass ../classes/vitals-file-class.js
 /// #include @helper $mkVfc ../helpers/mk-vfc.js
