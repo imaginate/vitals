@@ -218,7 +218,7 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
      * @private
      * @const {string}
      */
-    var PATH = path && $cleanpath(path);
+    var PATH = _cleanPath(path);
     /// #}}} @const PATH
 
     /// #{{{ @const PWD
@@ -237,7 +237,7 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
      * @const {string}
      */
     var HOME_DIR = _hasStrOpt(opts, 'homedir')
-      ? opts['homedir'] && $cleanpath(opts['homedir'])
+      ? _cleanPath(opts['homedir'])
       : $getHome();
     /// #}}} @const HOME_DIR
 
@@ -247,7 +247,7 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
      * @const {string}
      */
     var BASE_DIR = _hasStrOpt(opts, 'basedir')
-      ? opts['basedir'] && $cleanpath(opts['basedir'])
+      ? _cleanPath(opts['basedir'])
       : '';
     /// #}}} @const BASE_DIR
 
@@ -478,6 +478,79 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
 
   /// #}}} @group constants
 
+  /// #{{{ @group path-updates
+
+  /// #{{{ @func _cleanPath
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _cleanPath(path) {
+    return path && $cleanpath(path);
+  }
+  /// #}}} @func _cleanPath
+
+  /// #{{{ @func _trimDirName
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _trimDirName(path) {
+    path = $trimDrive(path);
+    path = _trimNonRootEndSlash(path);
+    return _hasDirName(path)
+      ? path['replace'](_DIR_NAME, '')
+      : path;
+  }
+  /// #}}} @func _trimDirName
+
+  /// #{{{ @func _trimEndSlash
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _trimEndSlash(path) {
+    return _hasEndSlash(path)
+      ? path['replace'](_END_SLASH, '')
+      : path;
+  }
+  /// #}}} @func _trimEndSlash
+
+  /// #{{{ @func _trimNonRootEndSlash
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _trimNonRootEndSlash(path) {
+    return _hasEndSlash(path) && !_isRoot(path)
+      ? path['replace'](_END_SLASH, '')
+      : path;
+  }
+  /// #}}} @func _trimNonRootEndSlash
+
+  /// #{{{ @func _trimPathName
+  /**
+   * @private
+   * @param {string} path
+   * @return {string}
+   */
+  function _trimPathName(path) {
+    path = $trimDrive(path);
+    path = _trimNonRootEndSlash(path);
+    return _hasDirName(path)
+      ? path['replace'](_PATH_NAME, '')
+      : '';
+  }
+  /// #}}} @func _trimPathName
+
+  /// #}}} @group path-updates
+
+  /// #{{{ @group tests
+
   /// #{{{ @func _hasDirName
   /**
    * @private
@@ -545,61 +618,7 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
   }
   /// #}}} @func _isRoot
 
-  /// #{{{ @func _trimDirName
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  function _trimDirName(path) {
-    path = $trimDrive(path);
-    path = _trimNonRootEndSlash(path);
-    return _hasDirName(path)
-      ? path['replace'](_DIR_NAME, '')
-      : path;
-  }
-  /// #}}} @func _trimDirName
-
-  /// #{{{ @func _trimEndSlash
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  function _trimEndSlash(path) {
-    return _hasEndSlash(path)
-      ? path['replace'](_END_SLASH, '')
-      : path;
-  }
-  /// #}}} @func _trimEndSlash
-
-  /// #{{{ @func _trimNonRootEndSlash
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  function _trimNonRootEndSlash(path) {
-    return _hasEndSlash(path) && !_isRoot(path)
-      ? path['replace'](_END_SLASH, '')
-      : path;
-  }
-  /// #}}} @func _trimNonRootEndSlash
-
-  /// #{{{ @func _trimPathName
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  function _trimPathName(path) {
-    path = $trimDrive(path);
-    path = _trimNonRootEndSlash(path);
-    return _hasDirName(path)
-      ? path['replace'](_PATH_NAME, '')
-      : '';
-  }
-  /// #}}} @func _trimPathName
+  /// #}}} @group tests
 
   /// #{{{ @group errors
 
