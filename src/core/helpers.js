@@ -46,7 +46,7 @@
 /// #include @helper $insHome ../helpers/ins-home.js
 /// #include @helper $relPath ../helpers/rel-path.js
 /// #include @helper $resolve ../helpers/resolve.js
-/// #include @class VitalsFileClass ../classes/vitals-file-class.js
+/// #include @class File ../classes/file.js
 /// #include @helper $mkVfc ../helpers/mk-vfc.js
 /// #if}}} @scope FS
 /// #}}} @core helpers

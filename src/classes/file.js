@@ -4,42 +4,80 @@
  * ---------------------------------------------------------------------------
  * @section fs
  * @version 5.0.0
- * @see [VitalsFileClass](https://github.com/imaginate/vitals/wiki/vitals-file-class)
+ * @see [VitalsFileClass](https://github.com/imaginate/vitals/wiki/file-class)
  *
  * @author Adam Smith <adam@imaginate.life> (https://imaginate.life)
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @class VitalsFileClass
+/// #{{{ @class File
 /// #ifnot{{{ @scope DOCS_ONLY
 /**
  * @public
  * @const {!Function}
  * @dict
  */
-$VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
+$VFC = (function __vitalsFile__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
-  /// #if{{{ @docrefs VitalsFileClass
+  /// #if{{{ @docrefs File
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
+  /// @docref [jsdoc]:(https://en.wikipedia.org/wiki/JSDoc)
   /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
-  /// #if}}} @docrefs VitalsFileClass
+  /// @docref [closure-compiler]:(https://github.com/google/closure-compiler)
+  /// #if}}} @docrefs File
 
-  /// #ifnot{{{ @scope DOCS_ONLY
-  /// #{{{ @const VFC_PROTO
+  /// #{{{ @prototype File
+  /// #{{{ @docs prototype
   /**
+   * @description
+   *   The @File#prototype object is the prototype for all new @File
+   *   instances. Note that `vitals.File.prototype` should **never** be
+   *   redefined to another object or value. The original object for
+   *   @File#prototype is referenced internally via private variables instead
+   *   of the `vitals.File.prototype` property. You can easily extend the
+   *   @File class by using the @File#extend and @File#init methods, or you
+   *   can update the original prototype's properties to your desired values
+   *   (**warning:** read the appropriate documentation and code *before*
+   *   altering the original prototype as many places internally expect some
+   *   properties to be set with specific data types).
    * @public
    * @const {!Object}
    */
-  VFC_PROTO = $mkObj($NIL);
-  /// #}}} @const VFC_PROTO
-  /// #ifnot}}} @scope DOCS_ONLY
+  /// #}}} @docs prototype
+  /// #if{{{ @code prototype
+  var VFC_PROTO = $mkObj($NIL);
+  VitalsFileClass['prototype'] = VFC_PROTO;
+  VFC_PROTO['super_'] = $NIL;
+  VFC_PROTO['__VITALS_FILE_CLASS__'] = $YES;
+  /// #if}}} @code prototype
+  /// #}}} @prototype File
 
-  /// #{{{ @constructor VitalsFileClass
-  /// #{{{ @docs constructor
+  /// #{{{ @constructor File
+  /// #{{{ @docs main
   /// @section fs
-  /// @method vitals.VitalsFileClass
+  /// @method vitals.File
+  /// @alias vitals.File.main
+  /// @alias vitals.File.prototype.constructor
   /**
+   * @description
+   *   The @File class is a wrapper class for all generic files. It is used
+   *   extensively throughout the code base. Instances of the @File class are
+   *   accepted as values for many parameters by most methods within the @fs
+   *   and are often returned by methods in the @fs. The official name for
+   *   the @File class data type is `VitalsFileClass` which is used by all
+   *   of the internal [JSDoc][jsdoc] and all of the public exports (e.g.
+   *   [Google Closure Compiler][closure-compiler]). The abbreviation, `vfc`,
+   *   and the shorthand, `File`, are used for many property references to
+   *   @vitals methods that are relating to `VitalsFileClass` instances (e.g.
+   *   @is#vfc and @mk#File), and only the shorthand, `File`, is used for the
+   *   property reference to the class constructor (e.g. @File#main). The
+   *   abbreviation reference, `vfc`, is used for methods due to the
+   *   possibility for confusion between `file` and `File` references. All
+   *   property references using `file` (e.g. @is#file and @mk#file) are
+   *   relating to regular files and **not** `VitalsFileClass` instances. Note
+   *   that the `new` keyword is not required when calling the @File#main
+   *   constructor and will return a new `VitalsFileClass` instance.
    * @public
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
@@ -48,8 +86,8 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
    * @param {string=} opts.basedir
    * @constructor
    */
-  /// #}}} @docs constructor
-  /// #if{{{ @code constructor
+  /// #}}} @docs main
+  /// #if{{{ @code main
   function VitalsFileClass(path, opts) {
 
     if ( !$is.obj(this) || !(this instanceof VitalsFileClass) ) {
@@ -58,22 +96,22 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
 
     initVitalsFileClass(this, path, opts);
   }
-  VitalsFileClass['prototype'] = VFC_PROTO;
+  VitalsFileClass['main'] = VitalsFileClass;
   VFC_PROTO['constructor'] = VitalsFileClass;
-  VFC_PROTO['__VITALS_FILE_CLASS__'] = $YES;
-  /// #if}}} @code constructor
-  /// #}}} @constructor VitalsFileClass
+  /// #if}}} @code main
+  /// #}}} @constructor File
 
   /// #{{{ @submethod construct
   /// #{{{ @docs construct
-  /// @method vitals.VitalsFileClass.construct
+  /// @method vitals.File.construct
   /**
    * @description
-   *   The @VitalsFileClass#construct method creates a new `VitalsFileClass`
-   *   instance. It is the same as `new VitalsFileClass`.
+   *   The @File#construct method creates a new @File instance without the
+   *   `new` keyword. It is identical to calling `new vitals.File` (with the
+   *   exception for the `new` keyword).
    *   ```
-   *   VitalsFileClass.construct = function construct(path, opts) {
-   *     return new VitalsFileClass(path, opts);
+   *   vitals.File.construct = function construct(path, opts) {
+   *     return new vitals.File(path, opts);
    *   };
    *   ```
    * @public
@@ -95,16 +133,15 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
 
   /// #{{{ @submethod create
   /// #{{{ @docs create
-  /// @method vitals.VitalsFileClass.create
+  /// @method vitals.File.create
   /**
    * @description
-   *   The @VitalsFileClass#create method creates a new `object` that has its
-   *   `prototype` set to @VitalsFileClass#prototype. It is a polyfilled
-   *   shortcut for calling [Object.create][create] with
-   *   @VitalsFileClass#prototype.
+   *   The @File#create method creates a new empty object that has its
+   *   prototype set to @File#prototype. It is a polyfilled shortcut for
+   *   calling [Object.create][create] with a *proto* of @File#prototype.
    *   ```
-   *   VitalsFileClass.create = function create() {
-   *     return Object.create(VitalsFileClass.prototype);
+   *   vitals.File.create = function create() {
+   *     return Object.create(vitals.File.prototype);
    *   };
    *   ```
    * @public
@@ -121,19 +158,18 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
 
   /// #{{{ @submethod extend
   /// #{{{ @docs extend
-  /// @method vitals.VitalsFileClass.extend
+  /// @method vitals.File.extend
   /**
    * @description
-   *   The @VitalsFileClass#extend method sets the `prototype` property of the
-   *   #constructor `function` to a new `object` that has its `prototype` set
-   *   to @VitalsFileClass#prototype (see @VitalsFileClass#create). It also
-   *   sets `constructor.prototype.constructor` property to the #constructor
-   *   and the `constructor.prototype.super_` property to `VitalsFileClass`.
+   *   The @File#extend method sets the `"prototype"` property of the
+   *   user-defined #constructor to a new object that has its prototype set to
+   *   @File#prototype (see @File#create), its `"constructor"` property set to
+   *   the #constructor, and its `"super_"` property set to @File#main.
    *   ```
-   *   VitalsFileClass.extend = function extend(constructor) {
-   *     constructor.prototype = Object.create(VitalsFileClass.prototype);
+   *   vitals.File.extend = function extend(constructor) {
+   *     constructor.prototype = Object.create(vitals.File.prototype);
    *     constructor.prototype.constructor = constructor;
-   *     constructor.prototype.super_ = VitalsFileClass;
+   *     constructor.prototype.super_ = vitals.File;
    *     return constructor;
    *   };
    *   ```
@@ -159,7 +195,9 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
     proto = $mkObj(VFC_PROTO);
     proto['constructor'] = constructor;
     proto['super_'] = VitalsFileClass;
+
     constructor['prototype'] = proto;
+
     return constructor;
   }
   VitalsFileClass['extend'] = extendVitalsFileClass;
@@ -168,8 +206,118 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
 
   /// #{{{ @submethod init
   /// #{{{ @docs init
-  /// @method vitals.VitalsFileClass.init
+  /// @method vitals.File.init
   /**
+   * @description
+   *   The @File#init method is the method used to setup all new
+   *   `VitalsFileClass` instances. If you are extending the @File class,
+   *   you should **use the @File#init method to setup your new class
+   *   instance** instead of attempting any call to the @File#main
+   *   constructor. Calling the @File#main constructor on your new class
+   *   instance will either do nothing or overwrite your new class instance
+   *   with a new `VitalsFileClass` instance which will cause all sorts of
+   *   confusing bugs.
+   *   ```
+   *   // RUN THE VITALS FILE CLASS SETUP
+   *   
+   *   function YourExtendingClass() {
+   *   
+   *     // BAD - The Silent Nothing
+   *     //   This call will NOT define any properties for `this` and will
+   *     //   only throw `Error` instances for invalid parameter values.
+   *     vitals.File.call(this, path, opts);
+   *   
+   *     // BAD - The Quiet Wipe
+   *     //   This call will redefine the value of `this` from a new
+   *     //   `YourExtendingClass` instance to a new `VitalsFileClass`
+   *     //   instance (i.e. all prior setup for `this` is destroyed,
+   *     //   `YourExtendingClass.prototype` is removed from `this`,
+   *     //   and `this instanceof YourExtendingClass` will now fail).
+   *     this = vitals.File.call(this, path, opts);
+   *   
+   *     // GOOD - The Right Way
+   *     //   This call will run the `VitalsFileClass` setup on the new
+   *     //   `YourExtendingClass` instance which will define all of
+   *     //   the default `VitalsFileClass` properties on `this`.
+   *     vitals.File.init(this, path, opts);
+   *   
+   *   }
+   *   ```
+   *   Remember to call @File#extend on your new class constructor before
+   *   defining any prototype properties.
+   *   ```
+   *   // EXTEND YOUR NEW CLASS CONSTRUCTOR
+   *   
+   *   function YourExtendingClass() {
+   *     vitals.File.init(this, path, opts);
+   *   }
+   *   
+   *   // GOOD - The Proto Order
+   *   //   This call will set `YourExtendingClass.prototype` to a new object
+   *   //   with a `VitalsFileClass` prototype, a `"constructor"` property
+   *   //   set to `YourExtendingClass`, and a `"super_"` property set to
+   *   //   `VitalsFileClass` BEFORE defining any prototype methods.
+   *   vitals.File.extend(YourExtendingClass);
+   *   
+   *   // OK - The Unpaid Overtime
+   *   //   These calls will set `YourExtendingClass.prototype` to a new
+   *   //   object with a `VitalsFileClass` prototype, a `"constructor"`
+   *   //   property set to `YourExtendingClass`, and a `"super_"`
+   *   //   property set to `VitalsFileClass` BEFORE defining
+   *   //   any prototype methods.
+   *   YourExtendingClass.prototype = vitals.File.create();
+   *   YourExtendingClass.prototype.constructor = YourExtendingClass;
+   *   YourExtendingClass.prototype.super_ = vitals.File;
+   *   
+   *   YourExtendingClass.prototype.method = function method(){};
+   *   
+   *   // BAD - The Late Omission
+   *   //   This call will set `YourExtendingClass.prototype` to a new object
+   *   //   with a `VitalsFileClass` prototype, a `"constructor"` property
+   *   //   set to `YourExtendingClass`, and a `"super_"` property set to
+   *   //   `VitalsFileClass` AFTER defining a prototype method.
+   *   //   `YourExtendingClass.prototype.method` is deleted.
+   *   vitals.File.extend(YourExtendingClass);
+   *   
+   *   ```
+   *   Note that redefining `vitals.File.init` will **not** change any
+   *   internal behavior and will only prevent you from using the @File#init
+   *   method to easily setup your new class instance. To add custom logic to
+   *   the setup of the original `VitalsFileClass` and/or an extending class,
+   *   see the @File#prototype.init method. The @File#init method will call
+   *   the first defined `"init"` property in the #inst prototype chain
+   *   (unless an [owned][own] `"init"` property exists or the `"init"`
+   *   property is not a function) after the default `VitalsFileClass` setup
+   *   is completed.
+   *   ```
+   *   // CUSTOMIZE THE VITALS FILE CLASS SETUP
+   *   
+   *   function YourExtendingClass() {
+   *     vitals.File.init(this, path, opts);
+   *   }
+   *   vitals.File.extend(YourExtendingClass);
+   *   
+   *   function customInit() { "custom constructor logic" }
+   *   
+   *   // BAD - The Custom Downgrade
+   *   //   This assignment will NOT change the setup for `VitalsFileClass`
+   *   //   or `YourExtendingClass` and will remove the `vitals.File.init`
+   *   //   method from your reach.
+   *   vitals.File.init = customInit;
+   *   
+   *   // GOOD - The Local Upgrade
+   *   //   This assignment will add a call to `customInit` to the setup
+   *   //   for `YourExtendingClass` after the default `VitalsFileClass`
+   *   //   setup is complete.
+   *   YourExtendingClass.prototype.init = customInit;
+   *   
+   *   // GOOD - The Global Bonus
+   *   //   This assignment will add a call to `customInit` to the setup
+   *   //   for `VitalsFileClass` and `YourExtendingClass` after the
+   *   //   default `VitalsFileClass` setup is complete.
+   *   vitals.File.prototype.init = customInit;
+   *   
+   *   ```
    * @public
    * @param {(!VitalsFileClass|!Object)} inst
    * @param {string} path
@@ -409,7 +557,80 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
   /// #ifnot}}} @scope DOCS_ONLY
   /// #}}} @submethod init
 
-  /// #if{{{ @helpers VitalsFileClass
+  /// #{{{ @protomethod abspath
+  /// #{{{ @docs abspath
+  /// @method vitals.File.prototype.abspath
+  /// @alias vitals.File.prototype.absolutePath
+  /// @alias vitals.File.prototype.absolutepath
+  /// @alias vitals.File.prototype.absPath
+  /**
+   * @description
+   *   The @File#prototype.abspath method returns the absolute path
+   *   of a `VitalsFileClass` instance.
+   * @public
+   * @this {!VitalsFileClass}
+   * @return {string}
+   */
+  /// #}}} @docs abspath
+  /// #if{{{ @code abspath
+  function abspathVitalsFileClass() {
+    return this['__ABS_PATH__'];
+  }
+  VFC_PROTO['absolutePath'] = abspathVitalsFileClass;
+  VFC_PROTO['absolutepath'] = abspathVitalsFileClass;
+  VFC_PROTO['absPath'] = abspathVitalsFileClass;
+  VFC_PROTO['abspath'] = abspathVitalsFileClass;
+  /// #if}}} @code abspath
+  /// #}}} @protomethod abspath
+
+  /// #{{{ @protomethod relpath
+  /// #{{{ @docs relpath
+  /// @method vitals.File.prototype.relpath
+  /// @alias vitals.File.prototype.relativePath
+  /// @alias vitals.File.prototype.relativepath
+  /// @alias vitals.File.prototype.relPath
+  /**
+   * @description
+   *   The @File#prototype.relpath method returns the relative path
+   *   from the #frompath to the absolute path of a `VitalsFileClass`
+   *   instance.
+   * @public
+   * @this {!VitalsFileClass}
+   * @param {(!string|!VitalsFileClass|!undefined)=} frompath = `this.pwd()`
+   *   If the #frompath is a `string`, it is resolved to an absolute path
+   *   before the relative path is found. If the #frompath is a
+   *   `VitalsFileClass` instance, the absolute path (e.g.
+   *   `frompath.abspath()`) of the #frompath is used.
+   * @return {string}
+   */
+  /// #}}} @docs relpath
+  /// #if{{{ @code relpath
+  function relpathVitalsFileClass(frompath) {
+
+    if ( !arguments['length'] || $is.void(frompath) ) {
+      frompath = this['__PWD__'];
+    }
+    else if ( $is.str(frompath) ) {
+      frompath = $resolve(frompath);
+    }
+    else if ( $is.vfc(frompath) ) {
+      frompath = frompath['__ABS_PATH__'];
+    }
+    else {
+      throw _MKERR_REL.type(new $TYPE_ERR, 'frompath', frompath,
+        '(!string|!VitalsFileClass)=');
+    }
+
+    return $relPath(frompath, this['__ABS_PATH__']);
+  }
+  VFC_PROTO['relativePath'] = relpathVitalsFileClass;
+  VFC_PROTO['relativepath'] = relpathVitalsFileClass;
+  VFC_PROTO['relPath'] = relpathVitalsFileClass;
+  VFC_PROTO['relpath'] = relpathVitalsFileClass;
+  /// #if}}} @code relpath
+  /// #}}} @protomethod relpath
+
+  /// #if{{{ @helpers File
 
   /// #{{{ @group constants
 
@@ -629,7 +850,7 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
    * @const {!ErrorMaker}
    * @struct
    */
-  var _MKERR_EXTEND = $mkErr('VitalsFileClass', 'extend');
+  var _MKERR_EXTEND = $mkErr('File', 'extend');
   /// #}}} @const _MKERR_EXTEND
 
   /// #{{{ @const _MKERR_INIT
@@ -638,17 +859,27 @@ $VITALS['VitalsFileClass'] = (function __vitalsVitalsFileClass__() {
    * @const {!ErrorMaker}
    * @struct
    */
-  var _MKERR_INIT = $mkErr('VitalsFileClass', 'init');
+  var _MKERR_INIT = $mkErr('File', 'init');
   /// #}}} @const _MKERR_INIT
+
+  /// #{{{ @const _MKERR_REL
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_REL = $mkErr('File', 'prototype.relpath');
+  /// #}}} @const _MKERR_REL
 
   /// #}}} @group errors
 
-  /// #if}}} @helpers VitalsFileClass
+  /// #if}}} @helpers File
 
 /// #ifnot{{{ @scope DOCS_ONLY
   return VitalsFileClass;
 })();
+$VITALS['File'] = $VFC;
 /// #ifnot}}} @scope DOCS_ONLY
-/// #}}} @class VitalsFileClass
+/// #}}} @class File
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
