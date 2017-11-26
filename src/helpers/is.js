@@ -863,8 +863,8 @@ var $is = (function __vitals$is__() {
     /// #{{{ @group file-system
     dir:     isDirectory,
     vfc:     isFileClass,
-    file:    isRegularFile,
-    path:    isGenericFile,
+    genfile: isGenericFile,
+    regfile: isRegularFile,
     symlink: isSymbolicLink
     /// #}}} @group file-system
     /// #if}}} @scope FS
