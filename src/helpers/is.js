@@ -640,32 +640,217 @@ var $is = (function __vitals$is__() {
   /// #if{{{ @scope FS
   /// #{{{ @group file-system
 
-  /// #{{{ @func _getLinkStats
-  /**
-   * @private
-   * @param {string} path
-   * @return {!Object}
-   */
-  var _getLinkStats = $FS['lstatSync'];
-  /// #}}} @func _getLinkStats
-
-  /// #{{{ @func _getStats
-  /**
-   * @private
-   * @param {string} path
-   * @return {!Object}
-   */
-  var _getStats = $FS['statSync'];
-  /// #}}} @func _getStats
-
-  /// #{{{ @func _pathExists
+  /// #{{{ @func _isDirectory
   /**
    * @private
    * @param {string} path
    * @return {boolean}
    */
-  var _pathExists = $FS['existsSync'];
-  /// #}}} @func _pathExists
+  var _isDirectory = (function __vitals_isDirectory__() {
+
+    /// #{{{ @var _err
+    /**
+     * @private
+     * @type {*}
+     */
+    var _err;
+    /// #}}} @var _err
+
+    /// #{{{ @func _mkStat
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    var _mkStat = $FS['statSync'];
+    /// #}}} @func _mkStat
+
+    /// #{{{ @func _isDirectory
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    function _isDirectory(path) {
+      try {
+        return _mkStat(path)['isDirectory']();
+      }
+      catch (_err) {}
+    }
+    /// #}}} @func _isDirectory
+
+    /// #{{{ @func isDirectory
+    /**
+     * @param {string} path
+     * @return {boolean}
+     */
+    function isDirectory(path) {
+      return !!_isDirectory(path);
+    }
+    /// #}}} @func isDirectory
+
+    return isDirectory;
+  })();
+  /// #}}} @func _isDirectory
+
+  /// #{{{ @func _isGenericFile
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  var _isGenericFile = (function __vitals_isGenericFile__() {
+
+    /// #{{{ @var _err
+    /**
+     * @private
+     * @type {*}
+     */
+    var _err;
+    /// #}}} @var _err
+
+    /// #{{{ @func _exists
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    var _exists = $FS['existsSync'];
+    /// #}}} @func _exists
+
+    /// #{{{ @func _isGenericFile
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    function _isGenericFile(path) {
+      try {
+        return _exists(path);
+      }
+      catch (_err) {}
+    }
+    /// #}}} @func _isGenericFile
+
+    /// #{{{ @func isGenericFile
+    /**
+     * @param {string} path
+     * @return {boolean}
+     */
+    function isGenericFile(path) {
+      return !!_isGenericFile(path);
+    }
+    /// #}}} @func isGenericFile
+
+    return isGenericFile;
+  })();
+  /// #}}} @func _isGenericFile
+
+  /// #{{{ @func _isRegularFile
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  var _isRegularFile = (function __vitals_isRegularFile__() {
+
+    /// #{{{ @var _err
+    /**
+     * @private
+     * @type {*}
+     */
+    var _err;
+    /// #}}} @var _err
+
+    /// #{{{ @func _mkStat
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    var _mkStat = $FS['statSync'];
+    /// #}}} @func _mkStat
+
+    /// #{{{ @func _isRegularFile
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    function _isRegularFile(path) {
+      try {
+        return _mkStat(path)['isFile']();
+      }
+      catch (_err) {}
+    }
+    /// #}}} @func _isRegularFile
+
+    /// #{{{ @func isRegularFile
+    /**
+     * @param {string} path
+     * @return {boolean}
+     */
+    function isRegularFile(path) {
+      return !!_isRegularFile(path);
+    }
+    /// #}}} @func isRegularFile
+
+    return isRegularFile;
+  })();
+  /// #}}} @func _isRegularFile
+
+  /// #{{{ @func _isSymbolicLink
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  var _isSymbolicLink = (function __vitals_isSymbolicLink__() {
+
+    /// #{{{ @var _err
+    /**
+     * @private
+     * @type {*}
+     */
+    var _err;
+    /// #}}} @var _err
+
+    /// #{{{ @func _mkStat
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    var _mkStat = $FS['lstatSync'];
+    /// #}}} @func _mkStat
+
+    /// #{{{ @func _isSymbolicLink
+    /**
+     * @private
+     * @param {string} path
+     * @return {*}
+     */
+    function _isSymbolicLink(path) {
+      try {
+        return _mkStat(path)['isSymbolicLink']();
+      }
+      catch (_err) {}
+    }
+    /// #}}} @func _isSymbolicLink
+
+    /// #{{{ @func isSymbolicLink
+    /**
+     * @param {string} path
+     * @return {boolean}
+     */
+    function isSymbolicLink(path) {
+      return !!_isSymbolicLink(path);
+    }
+    /// #}}} @func isSymbolicLink
+
+    return isSymbolicLink;
+  })();
+  /// #}}} @func _isSymbolicLink
 
   /// #{{{ @func isDirectory
   /**
@@ -673,27 +858,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isDirectory(path) {
-
-    /** @type {*} */
-    var err;
-
-    if (!path) {
-      return $NO;
-    }
-
-    if ( isFileClass(path) ) {
-      path = path['__ABS_PATH__'];
-    }
-    else if ( !isString(path) ) {
-      return $NO;
-    }
-
-    try {
-      return _getStats(path)['isDirectory']();
-    }
-    catch (err) {
-      return $NO;
-    }
+    return isNonEmptyString(path) && _isDirectory(path);
   }
   /// #}}} @func isDirectory
 
@@ -705,6 +870,7 @@ var $is = (function __vitals$is__() {
   function isFileClass(val) {
     return isObject(val)
       && '__VITALS_FILE_CLASS__' in val
+      && !$own(val, '__VITALS_FILE_CLASS__')
       && val['__VITALS_FILE_CLASS__'] === $YES;
   }
   /// #}}} @func isFileClass
@@ -715,16 +881,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isGenericFile(path) {
-
-    if (!path) {
-      return $NO;
-    }
-
-    if ( isFileClass(path) ) {
-      path = path['__ABS_PATH__'];
-    }
-
-    return isString(path) && _pathExists(path);
+    return isNonEmptyString(path) && _isGenericFile(path);
   }
   /// #}}} @func isGenericFile
 
@@ -734,27 +891,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isRegularFile(path) {
-
-    /** @type {*} */
-    var err;
-
-    if (!path) {
-      return $NO;
-    }
-
-    if ( isFileClass(path) ) {
-      path = path['__ABS_PATH__'];
-    }
-    else if ( !isString(path) ) {
-      return $NO;
-    }
-
-    try {
-      return _getStats(path)['isFile']();
-    }
-    catch (err) {
-      return $NO;
-    }
+    return isNonEmptyString(path) && _isRegularFile(path);
   }
   /// #}}} @func isRegularFile
 
@@ -764,27 +901,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isSymbolicLink(path) {
-
-    /** @type {*} */
-    var err;
-
-    if (!path) {
-      return $NO;
-    }
-
-    if ( isFileClass(path) ) {
-      path = path['__ABS_PATH__'];
-    }
-    else if ( !isString(path) ) {
-      return $NO;
-    }
-
-    try {
-      return _getLinkStats(path)['isSymbolicLink']();
-    }
-    catch (err) {
-      return $NO;
-    }
+    return isNonEmptyString(path) && _isSymbolicLink(path);
   }
   /// #}}} @func isSymbolicLink
 
