@@ -637,7 +637,7 @@ var $is = (function __vitals$is__() {
 
   /// #}}} @group number-states
 
-  /// #if{{{ @build NODE
+  /// #if{{{ @scope FS
   /// #{{{ @group file-system
 
   /// #{{{ @func _getLinkStats
@@ -677,7 +677,14 @@ var $is = (function __vitals$is__() {
     /** @type {*} */
     var err;
 
-    if ( !path || !isString(path) ) {
+    if (!path) {
+      return $NO;
+    }
+
+    if ( isFileClass(path) ) {
+      path = path['__ABS_PATH__'];
+    }
+    else if ( !isString(path) ) {
       return $NO;
     }
 
@@ -690,17 +697,55 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isDirectory
 
-  /// #{{{ @func isFile
+  /// #{{{ @func isFileClass
   /**
-   * @param {string} path
+   * @param {*} val
    * @return {boolean}
    */
-  function isFile(path) {
+  function isFileClass(val) {
+    return isObject(val)
+      && '__VITALS_FILE_CLASS__' in val
+      && val['__VITALS_FILE_CLASS__'] === $YES;
+  }
+  /// #}}} @func isFileClass
+
+  /// #{{{ @func isGenericFile
+  /**
+   * @param {*} path
+   * @return {boolean}
+   */
+  function isGenericFile(path) {
+
+    if (!path) {
+      return $NO;
+    }
+
+    if ( isFileClass(path) ) {
+      path = path['__ABS_PATH__'];
+    }
+
+    return isString(path) && _pathExists(path);
+  }
+  /// #}}} @func isGenericFile
+
+  /// #{{{ @func isRegularFile
+  /**
+   * @param {*} path
+   * @return {boolean}
+   */
+  function isRegularFile(path) {
 
     /** @type {*} */
     var err;
 
-    if ( !path || !isString(path) ) {
+    if (!path) {
+      return $NO;
+    }
+
+    if ( isFileClass(path) ) {
+      path = path['__ABS_PATH__'];
+    }
+    else if ( !isString(path) ) {
       return $NO;
     }
 
@@ -711,29 +756,26 @@ var $is = (function __vitals$is__() {
       return $NO;
     }
   }
-  /// #}}} @func isFile
+  /// #}}} @func isRegularFile
 
-  /// #{{{ @func isFsPath
+  /// #{{{ @func isSymbolicLink
   /**
-   * @param {string} path
+   * @param {*} path
    * @return {boolean}
    */
-  function isFsPath(path) {
-    return !!path && isString(path) && _pathExists(path);
-  }
-  /// #}}} @func isFsPath
-
-  /// #{{{ @func isSymLink
-  /**
-   * @param {string} path
-   * @return {boolean}
-   */
-  function isSymLink(path) {
+  function isSymbolicLink(path) {
 
     /** @type {*} */
     var err;
 
-    if ( !path || !isString(path) ) {
+    if (!path) {
+      return $NO;
+    }
+
+    if ( isFileClass(path) ) {
+      path = path['__ABS_PATH__'];
+    }
+    else if ( !isString(path) ) {
       return $NO;
     }
 
@@ -744,10 +786,10 @@ var $is = (function __vitals$is__() {
       return $NO;
     }
   }
-  /// #}}} @func isSymLink
+  /// #}}} @func isSymbolicLink
 
   /// #}}} @group file-system
-  /// #if}}} @build NODE
+  /// #if}}} @scope FS
 
   /// #{{{ @const $is
   /**
@@ -817,14 +859,15 @@ var $is = (function __vitals$is__() {
     /// #if}}} @build NODE
     /// #}}} @group number-states
 
-    /// #if{{{ @build NODE
+    /// #if{{{ @scope FS
     /// #{{{ @group file-system
     dir:     isDirectory,
-    file:    isFile,
-    path:    isFsPath,
-    symlink: isSymLink
+    vfc:     isFileClass,
+    file:    isRegularFile,
+    path:    isGenericFile,
+    symlink: isSymbolicLink
     /// #}}} @group file-system
-    /// #if}}} @build NODE
+    /// #if}}} @scope FS
   };
   /// #}}} @const $is
 
