@@ -640,6 +640,14 @@ var $is = (function __vitals$is__() {
   /// #if{{{ @scope FS
   /// #{{{ @group file-system
 
+  /// #{{{ @const _ABS_PATH
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _ABS_PATH = /^(?:[a-zA-Z]:)?[\/\\]/;
+  /// #}}} @const _ABS_PATH
+
   /// #{{{ @func _isDirectory
   /**
    * @private
@@ -852,6 +860,16 @@ var $is = (function __vitals$is__() {
   })();
   /// #}}} @func _isSymbolicLink
 
+  /// #{{{ @func isAbsolutePath
+  /**
+   * @param {string} path
+   * @return {boolean}
+   */
+  function isAbsolutePath(path) {
+    return _ABS_PATH['test'](path);
+  }
+  /// #}}} @func isAbsolutePath
+
   /// #{{{ @func isDirectory
   /**
    * @param {*} path
@@ -978,6 +996,7 @@ var $is = (function __vitals$is__() {
 
     /// #if{{{ @scope FS
     /// #{{{ @group file-system
+    abspath: isAbsolutePath,
     dir:     isDirectory,
     vfc:     isFileClass,
     genfile: isGenericFile,
