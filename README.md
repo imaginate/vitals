@@ -80,25 +80,24 @@ v.assign(life, 's', 6, 'number'); // sets `life.s` to `6` with a
 life.s = 7;   // sets `life.v` to `7`
 life.s = '8'; // throws a `TypeError`
 
-var dir, file; // will always be instance of `VitalsFileClass` aka `VFC`
+var dir, file; // will always be instance of `VitalsFileClass`
 var path;      // will always be a primitive string
 
-path = v.resolve('path', '../to/dir'); // returns absolute path
-
-path = '../dir/path';
-dir = v.cd(path); // sets `process.cwd` to `v.resolve(path)`
+path = v.path.abs('path', '../to/dir');
+dir = v.cd(path); // sets `process.cwd`
 
 v.is.str(dir); // returns `false`
 v.is.obj(dir); // returns `true`
 v.is.vfc(dir); // returns `true`
 
-v.is.same(v.cwd, dir); // returns `true`
+v.is.same(v.cwd(), dir); // returns `false`
+v.is.sim(v.cwd(), dir);  // returns `true`
 
-dir = v.mk('../dir/path'); // returns new `VFC` instance
-dir = v.mk.dir(dir);       // makes directory at `dir.abspath`
+dir = v.mk('../dir/path'); // returns new `VitalsFileClass` instance
+dir = v.mk.dir(dir);       // makes directory at `dir.abspath()`
 
 path = '../dir/path';
-dir = v.mk.dir(path); // makes directory at `v.resolve(path)`
+dir = v.mk.dir(path); // makes directory at `v.path.abs(path)`
 
 dir.isDirectory(); // returns `true`
 dir.isSymlink();   // returns `false`
@@ -108,13 +107,13 @@ v.is.symlink(dir); // returns `false`
 v.is.file(path);   // returns `false`
 v.is.dir(path);    // returns `true`
 
-// note that all `vitals.ls` methods return an array of `VFC` instances
-v.ls();          // returns all immediate paths in `v.cwd.abspath`
-v.ls(dir);       // returns all immediate paths in `dir.abspath`
-v.ls(path);      // returns all immediate paths in `v.resolve(path)`
-v.ls(true);      // returns all paths in `v.cwd.abspath`
-v.ls(dir, true); // returns all paths in `dir.abspath`
-v.ls.file(dir, { // returns all files with `".js"` extension in `dir.abspath`
+// note `vitals.ls` methods return an array of `VitalsFileClass` instances
+v.ls();          // returns all immediate paths in `v.cwd().abspath()`
+v.ls(dir);       // returns all immediate paths in `dir.abspath()`
+v.ls(path);      // returns all immediate paths in `v.path.abs(path)`
+v.ls(true);      // returns all paths in `v.cwd().abspath()`
+v.ls(dir, true); // returns all paths in `dir.abspath()`
+v.ls.file(dir, { // returns all regular files with the `".js"` extension
   deep: true,
   ext: 'js'
 });
@@ -184,15 +183,15 @@ For help see:
 | [concat][vm-concat]     | [assign][vm-assign]     | [cd][vm-cd]             | [default][vm-default]   | [exec][vm-exec]         |
 | [copy][vm-copy]         | [cap][vm-cap]           | [ch][vm-ch]             | [env][vm-env]           | [exit][vm-exit]         |
 | [cut][vm-cut]           | [create][vm-create]     | [cp][vm-cp]             | [version][vm-version]   | [is][vm-is]             |
-| [each][vm-each]         | [freeze][vm-freeze]     | [is][vm-is]             |                         | [run][vm-run]           |
-| [fill][vm-fill]         | [is][vm-is]             | [ls][vm-ls]             |                         |                         |
-| [filter][vm-filter]     | [seal][vm-seal]         | [mk][vm-mk]             |                         |                         |
-| [has][vm-has]           |                         | [mv][vm-mv]             |                         |                         |
-| [insert][vm-insert]     |                         | [resolve][vm-resolve]   |                         |                         |
-| [invert][vm-invert]     |                         | [rm][vm-rm]             |                         |                         |
-| [is][vm-is]             |                         | [tee][vm-tee]           |                         |                         |
-| [join][vm-join]         |                         |                         |                         |                         |
-| [keys][vm-keys]         |                         |                         |                         |                         |
+| [each][vm-each]         | [freeze][vm-freeze]     | [cwd][vm-cwd]           |                         | [run][vm-run]           |
+| [fill][vm-fill]         | [is][vm-is]             | [homedir][vm-homedir]   |                         |                         |
+| [filter][vm-filter]     | [seal][vm-seal]         | [is][vm-is]             |                         |                         |
+| [has][vm-has]           |                         | [ls][vm-ls]             |                         |                         |
+| [insert][vm-insert]     |                         | [mk][vm-mk]             |                         |                         |
+| [invert][vm-invert]     |                         | [mv][vm-mv]             |                         |                         |
+| [is][vm-is]             |                         | [path][vm-path]         |                         |                         |
+| [join][vm-join]         |                         | [rm][vm-rm]             |                         |                         |
+| [keys][vm-keys]         |                         | [tee][vm-tee]           |                         |                         |
 | [match][vm-match]       |                         |                         |                         |                         |
 | [merge][vm-merge]       |                         |                         |                         |                         |
 | [owns][vm-owns]         |                         |                         |                         |                         |
@@ -295,6 +294,7 @@ Send an email to <dev@vitalsjs.com>.
 [vm-cp]: https://github.com/imaginate/vitals/wiki/vitals.cp
 [vm-create]: https://github.com/imaginate/vitals/wiki/vitals.create
 [vm-cut]: https://github.com/imaginate/vitals/wiki/vitals.cut
+[vm-cwd]: https://github.com/imaginate/vitals/wiki/vitals.cwd
 [vm-default]: https://github.com/imaginate/vitals/wiki/vitals.default
 [vm-each]: https://github.com/imaginate/vitals/wiki/vitals.each
 [vm-env]: https://github.com/imaginate/vitals/wiki/vitals.env
@@ -304,6 +304,7 @@ Send an email to <dev@vitalsjs.com>.
 [vm-filter]: https://github.com/imaginate/vitals/wiki/vitals.filter
 [vm-freeze]: https://github.com/imaginate/vitals/wiki/vitals.freeze
 [vm-has]: https://github.com/imaginate/vitals/wiki/vitals.has
+[vm-homedir]: https://github.com/imaginate/vitals/wiki/vitals.homedir
 [vm-inject]: https://github.com/imaginate/vitals/wiki/vitals.inject
 [vm-insert]: https://github.com/imaginate/vitals/wiki/vitals.insert
 [vm-invert]: https://github.com/imaginate/vitals/wiki/vitals.invert
@@ -317,11 +318,11 @@ Send an email to <dev@vitalsjs.com>.
 [vm-mk]: https://github.com/imaginate/vitals/wiki/vitals.mk
 [vm-mv]: https://github.com/imaginate/vitals/wiki/vitals.mv
 [vm-owns]: https://github.com/imaginate/vitals/wiki/vitals.owns
+[vm-path]: https://github.com/imaginate/vitals/wiki/vitals.path
 [vm-pop]: https://github.com/imaginate/vitals/wiki/vitals.pop
 [vm-push]: https://github.com/imaginate/vitals/wiki/vitals.push
 [vm-remap]: https://github.com/imaginate/vitals/wiki/vitals.remap
 [vm-replace]: https://github.com/imaginate/vitals/wiki/vitals.replace
-[vm-resolve]: https://github.com/imaginate/vitals/wiki/vitals.resolve
 [vm-rip]: https://github.com/imaginate/vitals/wiki/vitals.rip
 [vm-rm]: https://github.com/imaginate/vitals/wiki/vitals.rm
 [vm-roll]: https://github.com/imaginate/vitals/wiki/vitals.roll
