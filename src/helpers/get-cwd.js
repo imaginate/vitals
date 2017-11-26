@@ -20,7 +20,7 @@ function $getCwd() {
   var path;
 
   path = process['cwd']();
-  return $cleanpath(path);
+  return $cleanPath(path);
 }
 /// #}}} @helper $getCwd
 
