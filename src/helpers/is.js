@@ -648,6 +648,30 @@ var $is = (function __vitals$is__() {
   var _ABS_PATH = /^(?:[a-zA-Z]:)?[\/\\]/;
   /// #}}} @const _ABS_PATH
 
+  /// #{{{ @const _POSIX_PATH_FORMAT
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _POSIX_PATH_FORMAT = /^(?:p(?:osix)?|linux|unix)$/i;
+  /// #}}} @const _POSIX_PATH_FORMAT
+
+  /// #{{{ @const _UNIVERSAL_PATH_FORMAT
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _UNIVERSAL_PATH_FORMAT = /^u(?:ni(?:versal)?)?$/i;
+  /// #}}} @const _UNIVERSAL_PATH_FORMAT
+
+  /// #{{{ @const _WINDOWS_PATH_FORMAT
+  /**
+   * @private
+   * @const {!RegExp}
+   */
+  var _WINDOWS_PATH_FORMAT = /^w(?:in(?:32|dows)?)?$/i;
+  /// #}}} @const _WINDOWS_PATH_FORMAT
+
   /// #{{{ @func _isDirectory
   /**
    * @private
@@ -903,6 +927,28 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isGenericFile
 
+  /// #{{{ @func isPathFormat
+  /**
+   * @param {string} format
+   * @return {boolean}
+   */
+  function isPathFormat(format) {
+    return isUniversalPathFormat(format)
+      || isPosixPathFormat(format)
+      || isWindowsPathFormat(format);
+  }
+  /// #}}} @func isPathFormat
+
+  /// #{{{ @func isPosixPathFormat
+  /**
+   * @param {string} format
+   * @return {boolean}
+   */
+  function isPosixPathFormat(format) {
+    return _POSIX_PATH_FORMAT['test'](format);
+  }
+  /// #}}} @func isPosixPathFormat
+
   /// #{{{ @func isRegularFile
   /**
    * @param {*} path
@@ -922,6 +968,26 @@ var $is = (function __vitals$is__() {
     return isNonEmptyString(path) && _isSymbolicLink(path);
   }
   /// #}}} @func isSymbolicLink
+
+  /// #{{{ @func isUniversalPathFormat
+  /**
+   * @param {string} format
+   * @return {boolean}
+   */
+  function isUniversalPathFormat(format) {
+    return _UNIVERSAL_PATH_FORMAT['test'](format);
+  }
+  /// #}}} @func isUniversalPathFormat
+
+  /// #{{{ @func isWindowsPathFormat
+  /**
+   * @param {string} format
+   * @return {boolean}
+   */
+  function isWindowsPathFormat(format) {
+    return _WINDOWS_PATH_FORMAT['test'](format);
+  }
+  /// #}}} @func isWindowsPathFormat
 
   /// #}}} @group file-system
   /// #if}}} @scope FS
@@ -1000,8 +1066,12 @@ var $is = (function __vitals$is__() {
     dir:     isDirectory,
     vfc:     isFileClass,
     genfile: isGenericFile,
+    fmt:     isPathFormat,
+    pfmt:    isPosixPathFormat,
     regfile: isRegularFile,
-    symlink: isSymbolicLink
+    symlink: isSymbolicLink,
+    ufmt:    isUniversalPathFormat,
+    wfmt:    isWindowsPathFormat
     /// #}}} @group file-system
     /// #if}}} @scope FS
   };
