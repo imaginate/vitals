@@ -653,7 +653,7 @@ var $is = (function __vitals$is__() {
    * @private
    * @const {!RegExp}
    */
-  var _POSIX_PATH_FORMAT = /^(?:p(?:osix)?|linux|unix)$/i;
+  var _POSIX_PATH_FORMAT = /^(?:posi|linu|uni)?x$/i;
   /// #}}} @const _POSIX_PATH_FORMAT
 
   /// #{{{ @const _UNIVERSAL_PATH_FORMAT
