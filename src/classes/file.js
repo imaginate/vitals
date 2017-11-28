@@ -24,6 +24,7 @@ $File = (function __vitalsFile__() {
   /// @docref [own]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty)
   /// @docref [jsdoc]:(https://en.wikipedia.org/wiki/JSDoc)
   /// @docref [create]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create)
+  /// @docref [immutable]:(https://en.wikipedia.org/wiki/Immutable_object)
   /// @docref [closure-compiler]:(https://github.com/google/closure-compiler)
   /// #if}}} @docrefs File
 
@@ -82,7 +83,48 @@ $File = (function __vitalsFile__() {
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
    * @param {string=} opts.pwd
-   * @param {string=} opts.format
+   * @param {string=} opts.format = `vitals.File.default("format")`
+   *   The #opts.format option allows you to configure how primitive string
+   *   paths (e.g. paths returned by @File#prototype.abspath) are formatted
+   *   for a specific `VitalsFileClass` instance. The #opts.format option is
+   *   [immutable][immutable] (i.e. cannot be changed) after a
+   *   `VitalsFileClass` instance is created. It overrides the vitals scoped
+   *   default value and can only be overruled by format options passed to
+   *   individual method calls (see below example).
+   *   ```
+   *   // FORMAT OPTION HIERARCHY
+   *   //   1) GLOBAL: Per `Vitals` instance.
+   *   //   2) CLASS:  Per `VitalsFileClass` instance.
+   *   //   3) METHOD: Per function call.
+   *   
+   *   var xFMT = { format: "posix" };
+   *   var wFMT = { format: "windows" };
+   *   var uFMT = { format: "universal" };
+   *   
+   *   var vitals = require("@imaginate/vitals")({ File: xFMT });
+   *   var xINST = vitals.File("C:path/to/sample.js");
+   *   var uINST = vitals.File("C:path/to/sample.js", uFMT);
+   *   
+   *   xINST.path();     // returns `"path/to/sample.js"`
+   *   uINST.path();     // returns `"C:path/to/sample.js"`
+   *   xINST.path(wFMT); // returns `"C:path\\to\\sample.js"`
+   *   uINST.path(wFMT); // returns `"C:path\\to\\sample.js"`
+   *   xINST.path(uFMT); // returns `"C:path/to/sample.js"`
+   *   uINST.path(xFMT); // returns `"path/to/sample.js"`
+   *   ```
+   *   The #opts.format option accepts the following case insensitive values:
+   *   1) `u|uni|universal`!$
+   *     The *universal* path format will always use a forward slash for path
+   *     delimination, include defined Windows or UNC drives, and eliminate
+   *     all duplicate delimiters.
+   *   2) `x|posix|unix|linux`!$
+   *     The *posix* path format will always use a forward slash for path
+   *     delimination, hide defined Windows or UNC drives, and eliminate all
+   *     duplicate delimiters.
+   *   3) `w|win|win32|windows`!$
+   *     The *windows* path format will always use a backslash for path
+   *     delimination, include defined Windows or UNC drives, and eliminate
+   *     all duplicate delimiters.
    * @param {string=} opts.homedir
    * @param {string=} opts.basedir
    * @constructor
@@ -371,7 +413,7 @@ $File = (function __vitalsFile__() {
      * @const {string}
      */
     var FORMAT = _hasStrOpt(opts, 'format')
-      ? _cleanFormat(opts['format']) || _DFLT_MAIN['format']
+      ? _cleanPathFormat(opts['format']) || _DFLT_MAIN['format']
       : _DFLT_MAIN['format'];
     /// #}}} @const FORMAT
 
@@ -729,18 +771,18 @@ $File = (function __vitalsFile__() {
   }
   /// #}}} @func _absCleanPath
 
-  /// #{{{ @func _cleanFormat
+  /// #{{{ @func _cleanPathFormat
   /**
    * @private
    * @param {string} format
    * @return {string}
    */
-  function _cleanFormat(format) {
-    return $is.fmt(format)
-      ? $cleanFormat(format)
+  function _cleanPathFormat(format) {
+    return !!format && $is.fmt(format)
+      ? $cleanPathFormat(format)
       : '';
   }
-  /// #}}} @func _cleanFormat
+  /// #}}} @func _cleanPathFormat
 
   /// #{{{ @func _cleanPath
   /**
