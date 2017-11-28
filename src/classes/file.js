@@ -17,7 +17,7 @@
  * @const {!Function}
  * @dict
  */
-$VFC = (function __vitalsFile__() {
+$File = (function __vitalsFile__() {
 /// #ifnot}}} @scope DOCS_ONLY
 
   /// #if{{{ @docrefs File
@@ -82,6 +82,7 @@ $VFC = (function __vitalsFile__() {
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
    * @param {string=} opts.pwd
+   * @param {string=} opts.format
    * @param {string=} opts.homedir
    * @param {string=} opts.basedir
    * @constructor
@@ -118,6 +119,7 @@ $VFC = (function __vitalsFile__() {
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
    * @param {string=} opts.pwd
+   * @param {string=} opts.format
    * @param {string=} opts.homedir
    * @param {string=} opts.basedir
    * @return {!VitalsFileClass}
@@ -323,6 +325,7 @@ $VFC = (function __vitalsFile__() {
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
    * @param {string=} opts.pwd
+   * @param {string=} opts.format
    * @param {string=} opts.homedir
    * @param {string=} opts.basedir
    * @return {(!VitalsFileClass|!Object)}
@@ -362,6 +365,16 @@ $VFC = (function __vitalsFile__() {
 
     /// #if{{{ @code set-private-constants
 
+    /// #{{{ @const FORMAT
+    /**
+     * @private
+     * @const {string}
+     */
+    var FORMAT = _hasStrOpt(opts, 'format')
+      ? _cleanFormat(opts['format']) || _DFLT_MAIN['format']
+      : _DFLT_MAIN['format'];
+    /// #}}} @const FORMAT
+
     /// #{{{ @const PATH
     /**
      * @private
@@ -376,7 +389,7 @@ $VFC = (function __vitalsFile__() {
      * @const {string}
      */
     var PWD = _hasStrOpt(opts, 'pwd')
-      ? $resolve(opts['pwd'])
+      ? $absPath($VOID, _cleanPath(opts['pwd']), $NO)
       : $getCwd();
     /// #}}} @const PWD
 
@@ -387,7 +400,7 @@ $VFC = (function __vitalsFile__() {
      */
     var HOME_DIR = _hasStrOpt(opts, 'homedir')
       ? _cleanPath(opts['homedir'])
-      : $getHome();
+      : $getHomeDir();
     /// #}}} @const HOME_DIR
 
     /// #{{{ @const BASE_DIR
@@ -405,8 +418,8 @@ $VFC = (function __vitalsFile__() {
      * @private
      * @const {string}
      */
-    var REL_BASE_DIR = !!BASE_DIR && $hasHome(BASE_DIR)
-      ? $insHome(BASE_DIR, HOME_DIR)
+    var REL_BASE_DIR = !!BASE_DIR && $hasHomeDirMacro(BASE_DIR)
+      ? $insHomeDir(BASE_DIR, HOME_DIR)
       : BASE_DIR;
     /// #}}} @const REL_BASE_DIR
 
@@ -416,7 +429,7 @@ $VFC = (function __vitalsFile__() {
      * @const {string}
      */
     var ABS_BASE_DIR = !!REL_BASE_DIR
-      ? $resolve(PWD, REL_BASE_DIR)
+      ? $absPath(PWD, REL_BASE_DIR, $NO)
       : PWD;
     /// #}}} @const ABS_BASE_DIR
 
@@ -425,8 +438,8 @@ $VFC = (function __vitalsFile__() {
      * @private
      * @const {string}
      */
-    var REL_PATH = !!PATH && $hasHome(PATH)
-      ? $insHome(PATH, HOME_DIR)
+    var REL_PATH = !!PATH && $hasHomeDirMacro(PATH)
+      ? $insHomeDir(PATH, HOME_DIR)
       : PATH;
     /// #}}} @const REL_PATH
 
@@ -436,7 +449,7 @@ $VFC = (function __vitalsFile__() {
      * @const {string}
      */
     var ABS_PATH = !!REL_PATH
-      ? $resolve(ABS_BASE_DIR, REL_PATH)
+      ? $absPath(ABS_BASE_DIR, REL_PATH, $NO)
       : ABS_BASE_DIR;
     /// #}}} @const ABS_PATH
 
@@ -611,7 +624,8 @@ $VFC = (function __vitalsFile__() {
       frompath = this['__PWD__'];
     }
     else if ( $is.str(frompath) ) {
-      frompath = $resolve(frompath);
+      frompath = _cleanPath(frompath);
+      frompath = $absPath($VOID, frompath);
     }
     else if ( $is.vfc(frompath) ) {
       frompath = frompath['__ABS_PATH__'];
@@ -700,7 +714,20 @@ $VFC = (function __vitalsFile__() {
 
   /// #}}} @group constants
 
-  /// #{{{ @group path-updates
+  /// #{{{ @group paths
+
+  /// #{{{ @func _cleanFormat
+  /**
+   * @private
+   * @param {string} format
+   * @return {string}
+   */
+  function _cleanFormat(format) {
+    return $is.fmt(format)
+      ? $cleanFormat(format)
+      : '';
+  }
+  /// #}}} @func _cleanFormat
 
   /// #{{{ @func _cleanPath
   /**
@@ -709,7 +736,7 @@ $VFC = (function __vitalsFile__() {
    * @return {string}
    */
   function _cleanPath(path) {
-    return path && $cleanpath(path);
+    return path && $cleanPath(path);
   }
   /// #}}} @func _cleanPath
 
@@ -769,7 +796,7 @@ $VFC = (function __vitalsFile__() {
   }
   /// #}}} @func _trimPathName
 
-  /// #}}} @group path-updates
+  /// #}}} @group paths
 
   /// #{{{ @group tests
 
@@ -842,6 +869,18 @@ $VFC = (function __vitalsFile__() {
 
   /// #}}} @group tests
 
+  /// #{{{ @group defaults
+
+  /// #{{{ @const _DFLT_MAIN
+  /**
+   * @private
+   * @const {!Object}
+   */
+  var _DFLT_MAIN = $DFLT['File']['main'];
+  /// #}}} @const _DFLT_MAIN
+
+  /// #}}} @group defaults
+
   /// #{{{ @group errors
 
   /// #{{{ @const _MKERR_EXTEND
@@ -878,7 +917,7 @@ $VFC = (function __vitalsFile__() {
 /// #ifnot{{{ @scope DOCS_ONLY
   return VitalsFileClass;
 })();
-$VITALS['File'] = $VFC;
+$VITALS['File'] = $File;
 /// #ifnot}}} @scope DOCS_ONLY
 /// #}}} @class File
 
