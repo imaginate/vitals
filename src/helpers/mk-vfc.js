@@ -19,7 +19,7 @@
  * @param {string=} opts.basedir
  * @return {!VitalsFileClass}
  */
-var $mkVfc = $VITALS['VitalsFileClass']['construct'];
+var $mkVfc = $File['construct'];
 /// #}}} @helper $mkVfc
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
