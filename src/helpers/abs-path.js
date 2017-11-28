@@ -13,20 +13,8 @@
 /**
  * @private
  * @param {(?string|?undefined)} cwd
- *   If the #cwd is a non-empty primitive string, the #cwd must be cleaned
- *   with the `$cleanPath` helper **before** calling this method. If the #cwd
- *   is **not** a non-empty primitive string, the #cwd is set to the cleaned
- *   result of `process.cwd()`.
  * @param {(?string|?undefined)} path
- *   If the #path is a non-empty primitive string, the #path must be cleaned
- *   with the `$cleanPath` helper **before** calling this method. If the #path
- *   is **not** a non-empty primitive string, this method will return the
- *   cleaned result of `process.cwd()`.
  * @param {(?string|?undefined)=} homedir
- *   If the #homedir is a primitive string, the #homedir must be cleaned with
- *   the `$cleanPath` helper **before** calling this method. If the #homedir
- *   is `false`, this method will **not** replace an existing home directory
- *   macro within the #path.
  * @return {string}
  */
 var $absPath = (function __vitals$absPath__() {
