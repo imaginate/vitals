@@ -36,50 +36,57 @@ var $relPath = (function __vitals$relPath__() {
   var _relative = $PATH['relative'];
   /// #}}} @func _relative
 
+  /// #{{{ @func _relPath
+  /**
+   * @param {string} fromPath
+   * @param {string} toPath
+   * @return {string}
+   */
+  function _relPath(fromPath, toPath) {
+
+    /** @type {string} */
+    var relPath;
+
+    relPath = _relative(fromPath, toPath);
+    relPath = $cleanPath(relPath);
+    return relPath;
+  }
+  /// #}}} @func _relPath
+
   /// #{{{ @func $relPath
   /**
    * @description
-   *   Returns a relative path from #fromPath to #toPath. Note that both
-   *   **paths must be resolved** before calling this method.
+   *   Returns a relative path from the #fromPath to the #toPath. Note that
+   *   both **paths must be resolved** with the `$absPath` helper before
+   *   calling this method.
    * @param {string} fromPath
    * @param {string} toPath
    * @return {string}
    */
   function $relPath(fromPath, toPath) {
 
-    /** @type {string} */
-    var fromDrive;
-    /** @type {string} */
-    var toDrive;
-    /** @type {string} */
-    var relPath;
-
     if (fromPath === toPath) {
       return '';
     }
 
-    fromDrive = $getDrive(fromPath);
-    toDrive = $getDrive(toPath);
+    /** @const {string} */
+    var FROM_DRIVE = $getDrive(fromPath);
+    /** @const {string} */
+    var TO_DRIVE = $getDrive(toPath);
 
-    if (!!fromDrive && !!toDrive && fromDrive !== toDrive) {
-      return toPath;
-    }
-
-    if (!!fromDrive) {
+    if (!!FROM_DRIVE) {
+      if (!!TO_DRIVE && FROM_DRIVE !== TO_DRIVE) {
+        return toPath;
+      }
       fromPath = $trimDrive(fromPath);
     }
-    if (!!toDrive) {
+    if (!!TO_DRIVE) {
       toPath = $trimDrive(toPath);
     }
 
-    if (fromPath === toPath) {
-      return '';
-    }
-
-    relPath = _relative(fromPath, toPath);
-    relPath = $cleanpath(relPath);
-
-    return relPath;
+    return fromPath === toPath
+      ? ''
+      : _relPath(fromPath, toPath);
   }
   /// #}}} @func $relPath
 
