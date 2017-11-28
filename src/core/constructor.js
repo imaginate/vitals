@@ -1879,7 +1879,18 @@ function makeNewVitals() {
 
     /// #}}} @step verify-environment-root
 
-    /// #{{{ @step create-config-constants
+    /// #{{{ @step set-default-constants
+
+    /// #{{{ @const DFLT
+    /**
+     * @const {!Object}
+     */
+    var DFLT = {};
+    /// #}}} @const DFLT
+
+    /// #}}} @step set-default-constants
+
+    /// #{{{ @step set-config-constants
 
     /// #{{{ @const CONFIG
     /**
@@ -1888,12 +1899,12 @@ function makeNewVitals() {
     var CONFIG = {};
     /// #}}} @const CONFIG
 
-    /// #}}} @step create-config-constants
+    /// #}}} @step set-config-constants
 
     /// #{{{ @step create-new-vitals-instance
 
     newVitalsInstance = makeNewVitals();
-    makeVitals(newVitalsInstance, ENV.ROOT, ENV, CONFIG);
+    makeVitals(newVitalsInstance, ENV.ROOT, ENV, DFLT, CONFIG);
 
     /// #}}} @step create-new-vitals-instance
 

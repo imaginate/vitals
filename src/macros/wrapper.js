@@ -62,10 +62,11 @@
  * @param {!Function} $VITALS
  * @param {(!Object|!Function)} $ROOT
  * @param {!Object} $ENV
+ * @param {!Object} $DFLT
  * @param {!Object} $CONFIG
  * @return {!Function}
  */
-function makeVitals($VITALS, $ROOT, $ENV, $CONFIG) {
+function makeVitals($VITALS, $ROOT, $ENV, $DFLT, $CONFIG) {
 
 /// #def}}} @wrapper MAKE_OPEN
 
