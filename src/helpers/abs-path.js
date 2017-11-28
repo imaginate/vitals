@@ -19,22 +19,6 @@
  */
 var $absPath = (function __vitals$absPath__() {
 
-  /// #{{{ @const _HAS_REL_DIR
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _HAS_REL_DIR = /^\.\.?(?:\/[\s\S]*)?$/;
-  /// #}}} @const _HAS_REL_DIR
-
-  /// #{{{ @const _REL_DIR
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _REL_DIR = /^\.\.?\/?/;
-  /// #}}} @const _REL_DIR
-
   /// #{{{ @func _resolvePath
   /**
    * @private
@@ -44,39 +28,36 @@ var $absPath = (function __vitals$absPath__() {
    */
   function _resolvePath(cwd, path) {
 
-    /** @type {string} */
-    var pathDrive;
-    /** @type {string} */
-    var cwdDrive;
+    /** @const {string} */
+    var PATH_DRIVE = $getDrive(path);
+    /** @const {string} */
+    var CWD_DRIVE = $getDrive(cwd);
 
-    cwdDrive = $getDrive(cwd);
-    pathDrive = $getDrive(path);
-
-    if (!!pathDrive) {
+    if (!!PATH_DRIVE) {
       path = $trimDrive(path);
-      if (!!cwdDrive) {
-        if (pathDrive === cwdDrive) {
+      if (!!CWD_DRIVE) {
+        if (PATH_DRIVE === CWD_DRIVE) {
           cwd = $trimDrive(cwd);
           path = $resolvePath(cwd, path);
           path = $trimDrive(path);
-          path = pathDrive + path;
+          path = PATH_DRIVE + path;
         }
         else {
-          path = _trimRelDir(path);
-          path = pathDrive + '/' + path;
+          path = $trimRelDirs(path);
+          path = PATH_DRIVE + '/' + path;
         }
       }
       else {
         path = $resolvePath(cwd, path);
         path = $trimDrive(path);
-        path = pathDrive + path;
+        path = PATH_DRIVE + path;
       }
     }
-    else if (!!cwdDrive) {
+    else if (!!CWD_DRIVE) {
       cwd = $trimDrive(cwd);
       path = $resolvePath(cwd, path);
       path = $trimDrive(path);
-      path = cwdDrive + path;
+      path = CWD_DRIVE + path;
     }
     else {
       path = $resolvePath(cwd, path);
@@ -86,19 +67,6 @@ var $absPath = (function __vitals$absPath__() {
     return $cleanPath(path);
   }
   /// #}}} @func _resolvePath
-
-  /// #{{{ @func _trimRelDir
-  /**
-   * @private
-   * @param {string} path
-   * @return {string}
-   */
-  function _trimRelDir(path) {
-    return !!path && _HAS_REL_DIR['test'](path)
-      ? path['replace'](_REL_DIR, '')
-      : path;
-  }
-  /// #}}} @func _trimRelDir
 
   /// #{{{ @func $absPath
   /**
