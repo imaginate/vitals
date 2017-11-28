@@ -19,12 +19,6 @@
  */
 var $absPath = (function __vitals$absPath__() {
 
-  /// #{{{ @docrefs $absPath
-  /// @docref [node]:(https://nodejs.org/)
-  /// @docref [v0-10]:(https://nodejs.org/docs/v0.10.0/api/path.html#path_path_resolve_from_to)
-  /// @docref [v7-9]:(https://nodejs.org/docs/v7.9.0/api/path.html#path_path_resolve_paths)
-  /// #}}} @docrefs $absPath
-
   /// #{{{ @const _HAS_REL_DIR
   /**
    * @private
@@ -40,20 +34,6 @@ var $absPath = (function __vitals$absPath__() {
    */
   var _REL_DIR = /^\.\.?\/?/;
   /// #}}} @const _REL_DIR
-
-  /// #{{{ @func _resolve
-  /**
-   * @description
-   *   Resolves path segments into an absolute path. Note that older
-   *   [node.js][node] versions of `path.resolve` such as [v0.10][v0-10]
-   *   required a #path parameter (newer versions such as [v7.9][v7-9] do not
-   *   require a #path parameter).
-   * @private
-   * @param {...string} path
-   * @return {string}
-   */
-  var _resolve = $PATH['resolve'];
-  /// #}}} @func _resolve
 
   /// #{{{ @func _resolvePath
   /**
@@ -77,7 +57,7 @@ var $absPath = (function __vitals$absPath__() {
       if (!!cwdDrive) {
         if (pathDrive === cwdDrive) {
           cwd = $trimDrive(cwd);
-          path = _resolve(cwd, path);
+          path = $resolvePath(cwd, path);
           path = $trimDrive(path);
           path = pathDrive + path;
         }
@@ -87,19 +67,19 @@ var $absPath = (function __vitals$absPath__() {
         }
       }
       else {
-        path = _resolve(cwd, path);
+        path = $resolvePath(cwd, path);
         path = $trimDrive(path);
         path = pathDrive + path;
       }
     }
     else if (!!cwdDrive) {
       cwd = $trimDrive(cwd);
-      path = _resolve(cwd, path);
+      path = $resolvePath(cwd, path);
       path = $trimDrive(path);
       path = cwdDrive + path;
     }
     else {
-      path = _resolve(cwd, path);
+      path = $resolvePath(cwd, path);
       path = $trimDrive(path);
     }
 
