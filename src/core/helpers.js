@@ -45,6 +45,7 @@
 /// #include @helper $trimUncDrive ../helpers/trim-unc-drive.js
 /// #include @helper $trimWinDrive ../helpers/trim-win-drive.js
 /// #include @helper $trimRelDirs ../helpers/trim-rel-dirs.js
+/// #include @helper $flattenPath ../helpers/flatten-path.js
 /// #include @helper $getCwd ../helpers/get-cwd.js
 /// #include @helper $getHomeDir ../helpers/get-home-dir.js
 /// #include @helper $insHomeDir ../helpers/ins-home-dir.js
