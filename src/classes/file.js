@@ -389,7 +389,7 @@ $File = (function __vitalsFile__() {
      * @const {string}
      */
     var PWD = _hasStrOpt(opts, 'pwd')
-      ? $absPath($VOID, _cleanPath(opts['pwd']), $NO)
+      ? _absCleanPath($VOID, opts['pwd'], $NO)
       : $getCwd();
     /// #}}} @const PWD
 
@@ -418,7 +418,7 @@ $File = (function __vitalsFile__() {
      * @private
      * @const {string}
      */
-    var REL_BASE_DIR = !!BASE_DIR && $hasHomeDirMacro(BASE_DIR)
+    var REL_BASE_DIR = _hasHomeDirMacro(BASE_DIR)
       ? $insHomeDir(BASE_DIR, HOME_DIR)
       : BASE_DIR;
     /// #}}} @const REL_BASE_DIR
@@ -438,7 +438,7 @@ $File = (function __vitalsFile__() {
      * @private
      * @const {string}
      */
-    var REL_PATH = !!PATH && $hasHomeDirMacro(PATH)
+    var REL_PATH = _hasHomeDirMacro(PATH)
       ? $insHomeDir(PATH, HOME_DIR)
       : PATH;
     /// #}}} @const REL_PATH
@@ -624,8 +624,7 @@ $File = (function __vitalsFile__() {
       frompath = this['__PWD__'];
     }
     else if ( $is.str(frompath) ) {
-      frompath = _cleanPath(frompath);
-      frompath = $absPath($VOID, frompath);
+      frompath = _absCleanPath($VOID, frompath);
     }
     else if ( $is.vfc(frompath) ) {
       frompath = frompath['__ABS_PATH__'];
@@ -715,6 +714,20 @@ $File = (function __vitalsFile__() {
   /// #}}} @group constants
 
   /// #{{{ @group paths
+
+  /// #{{{ @func _absCleanPath
+  /**
+   * @private
+   * @param {(string|undefined)} cwd
+   * @param {string} path
+   * @param {(string|undefined|boolean)=} homedir
+   * @return {string}
+   */
+  function _absCleanPath(cwd, path, homedir) {
+    path = _cleanPath(path);
+    return $absPath(cwd, path, homedir);
+  }
+  /// #}}} @func _absCleanPath
 
   /// #{{{ @func _cleanFormat
   /**
@@ -821,6 +834,17 @@ $File = (function __vitalsFile__() {
     return !!path && _END_SLASH['test'](path);
   }
   /// #}}} @func _hasEndSlash
+
+  /// #{{{ @func _hasHomeDirMacro
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  function _hasHomeDirMacro(path) {
+    return !!path && $hasHomeDirMacro(path);
+  }
+  /// #}}} @func _hasHomeDirMacro
 
   /// #{{{ @func _hasSlash
   /**
