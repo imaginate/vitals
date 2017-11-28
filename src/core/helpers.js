@@ -30,22 +30,26 @@
 /// #include @helper $mkErr ../helpers/mk-err.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
-/// #include @helper $hasHome ../helpers/has-home.js
+/// #include @helper $resolvePath ../helpers/resolve-path.js
+/// #include @helper $hasHomeDirMacro ../helpers/has-home-dir-macro.js
 /// #include @helper $hasUncDrive ../helpers/has-unc-drive.js
 /// #include @helper $hasWinDrive ../helpers/has-win-drive.js
 /// #include @helper $hasDrive ../helpers/has-drive.js
-/// #include @helper $cleanpath ../helpers/cleanpath.js
+/// #include @helper $hasLowerWinDrive ../helpers/has-lower-win-drive.js
+/// #include @helper $capitalizeWinDrive ../helpers/capitalize-win-drive.js
+/// #include @helper $cleanPath ../helpers/clean-path.js
 /// #include @helper $getCwd ../helpers/get-cwd.js
 /// #include @helper $getDrive ../helpers/get-drive.js
-/// #include @helper $getHome ../helpers/get-home.js
+/// #include @helper $getHomeDir ../helpers/get-home-dir.js
 /// #include @helper $getUncDrive ../helpers/get-unc-drive.js
 /// #include @helper $getWinDrive ../helpers/get-win-drive.js
 /// #include @helper $trimDrive ../helpers/trim-drive.js
 /// #include @helper $trimUncDrive ../helpers/trim-unc-drive.js
 /// #include @helper $trimWinDrive ../helpers/trim-win-drive.js
-/// #include @helper $insHome ../helpers/ins-home.js
+/// #include @helper $insHomeDir ../helpers/ins-home-dir.js
+/// #include @helper $absPath ../helpers/abs-path.js
+/// #include @helper $absPaths ../helpers/abs-paths.js
 /// #include @helper $relPath ../helpers/rel-path.js
-/// #include @helper $resolve ../helpers/resolve.js
 /// #include @class File ../classes/file.js
 /// #include @helper $mkVfc ../helpers/mk-vfc.js
 /// #if}}} @scope FS
