@@ -12,15 +12,34 @@
 /// #{{{ @helper $getCwd
 /**
  * @private
+ * @param {(?Object|?undefined)=} proc = `process`
+ *   If the #proc is an object, its `"cwd"` property must be set to a function
+ *   that returns a primitive string (e.g. a node.js `ChildProcess` instance).
+ *   If the #proc is **not** an object, it is set to the global `process`.
  * @return {string}
  */
-function $getCwd() {
+function $getCwd(proc) {
 
   /** @type {string} */
-  var path;
+  var cwd;
 
-  path = process['cwd']();
-  return $cleanPath(path);
+  if (!proc) {
+    proc = process;
+  }
+
+  cwd = proc['cwd']();
+
+  if (!cwd) {
+    return '/';
+  }
+
+  cwd = $cleanPath(cwd);
+
+  if ( !$is.abspath(cwd) ) {
+    cwd = $flattenPath(cwd);
+  }
+
+  return cwd;
 }
 /// #}}} @helper $getCwd
 
