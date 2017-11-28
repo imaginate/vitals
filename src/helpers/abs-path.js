@@ -14,7 +14,7 @@
  * @private
  * @param {(?string|?undefined)} cwd
  * @param {(?string|?undefined)} path
- * @param {(?string|?undefined)=} homedir
+ * @param {(?string|?undefined|?boolean)=} homedir
  * @return {string}
  */
 var $absPath = (function __vitals$absPath__() {
