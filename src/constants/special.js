@@ -9,6 +9,26 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
+/// #{{{ @constant $FMTS
+/**
+ * @private
+ * @const {!Array<string>}
+ */
+var $FMTS = [
+  'universal',
+  'uni',
+  'u',
+  'posix',
+  'linux',
+  'unix',
+  'x',
+  'windows',
+  'win32',
+  'win',
+  'w'
+];
+/// #}}} @constant $FMTS
+
 /// #{{{ @constant $NIL
 /**
  * @private

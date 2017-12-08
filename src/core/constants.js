@@ -37,14 +37,17 @@
 /// #include @constant $VERSION ../constants/special.js
 /// #include @constant $VOID ../constants/special.js
 /// #include @constant $YES ../constants/special.js
-/// #if{{{ @build NODE
+/// #if{{{ @scope NODE
 /// #include @constant $BUFF ../constants/constructor.js
 /// #include @constant $REQUIRE ../constants/node.js
 /// #include @constant $CP ../constants/node.js
 /// #include @constant $FS ../constants/node.js
 /// #include @constant $OS ../constants/node.js
 /// #include @constant $PATH ../constants/node.js
-/// #if}}} @build NODE
+/// #if}}} @scope NODE
+/// #if{{{ @scope FS
+/// #include @constant $FMTS ../constants/special.js
+/// #if}}} @scope FS
 /// #}}} @core constants
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
