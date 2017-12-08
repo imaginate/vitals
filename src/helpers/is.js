@@ -1067,11 +1067,11 @@ var $is = (function __vitals$is__() {
     vfc:     isFileClass,
     genfile: isGenericFile,
     fmt:     isPathFormat,
-    pfmt:    isPosixPathFormat,
     regfile: isRegularFile,
     symlink: isSymbolicLink,
     ufmt:    isUniversalPathFormat,
-    wfmt:    isWindowsPathFormat
+    wfmt:    isWindowsPathFormat,
+    xfmt:    isPosixPathFormat
     /// #}}} @group file-system
     /// #if}}} @scope FS
   };

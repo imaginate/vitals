@@ -17,7 +17,7 @@
  */
 function $cleanPathFormat(format) {
   return !!format
-    ? $is.pfmt(format)
+    ? $is.xfmt(format)
       ? 'posix'
       : $is.wfmt(format)
         ? 'windows'
