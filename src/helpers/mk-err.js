@@ -330,13 +330,15 @@ var $mkErr = (function __vitals$mkErr__() {
    * @this {!ErrorMaker}
    * @param {!RangeError} err
    * @param {string} paramName
-   * @param {(!Array<*>|string|undefined)=} validRange
+   * @param {(?Array<*>|?string|?undefined)=} validRange
    *   An `array` of actual valid options or a `string` stating the valid
-   *   range. If `undefined` this option is skipped.
+   *   range. If `undefined` or `null` this option is skipped.
+   * @param {*=} paramValue
+   *   If the #paramValue is defined, its value is printed.
    * @return {!RangeError}
    */
   ErrorMaker['prototype'].range = function makeRangeError(
-      err, paramName, validRange) {
+      err, paramName, validRange, paramValue) {
 
     /** @type {string} */
     var method;
@@ -344,11 +346,19 @@ var $mkErr = (function __vitals$mkErr__() {
     var param;
     /** @type {string} */
     var msg;
+    /** @type {string} */
+    var val;
 
     method = this.METHOD;
     param = _prepParam(paramName);
 
     msg = 'out-of-range ' + param + ' for ' + method + ' call';
+
+    if (arguments['length'] > 3) {
+      paramName = _prepParamName(param);
+      val = $print(paramValue, 1);
+      msg += '    invalid-' + paramName + '-value: `' + val + '`';
+    }
 
     if ( $is.str(validRange) ) {
       msg += '\n    valid-range: `' + validRange + '`';
@@ -357,7 +367,9 @@ var $mkErr = (function __vitals$mkErr__() {
       msg += '\n    valid-options:' + _mkOptions(validRange);
     }
 
-    return _setErrorProps(err, 'RangeError', msg);
+    return $is.void(val)
+      ? _setErrorProps(err, 'RangeError', msg)
+      : _setErrorProps(err, 'RangeError', msg, paramValue);
   };
   /// #}}} @func ErrorMaker.prototype.range
 
@@ -366,12 +378,12 @@ var $mkErr = (function __vitals$mkErr__() {
    * @this {!ErrorMaker}
    * @param {!TypeError} err
    * @param {string} paramName
-   * @param {*} paramVal
+   * @param {*} paramValue
    * @param {string} validTypes
    * @return {!TypeError}
    */
   ErrorMaker['prototype'].type = function makeParamTypeError(
-      err, paramName, paramVal, validTypes) {
+      err, paramName, paramValue, validTypes) {
 
     /** @type {string} */
     var method;
@@ -385,13 +397,13 @@ var $mkErr = (function __vitals$mkErr__() {
     method = this.METHOD;
     param = _prepParam(paramName);
     paramName = _prepParamName(param);
-    val = $print(paramVal, 1);
+    val = $print(paramValue, 1);
 
     msg = 'invalid ' + param + ' data type for ' + method + ' call\n'
       + '    valid-data-types: `' + validTypes + '`\n'
       + '    invalid-' + paramName + '-value: `' + val + '`';
 
-    return _setErrorProps(err, 'TypeError', msg, paramVal);
+    return _setErrorProps(err, 'TypeError', msg, paramValue);
   };
   /// #}}} @func ErrorMaker.prototype.type
 
