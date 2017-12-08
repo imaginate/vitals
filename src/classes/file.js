@@ -82,7 +82,12 @@ $File = (function __vitalsFile__() {
    * @public
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
-   * @param {string=} opts.pwd
+   * @param {string=} opts.pwd = `vitals.cwd()`
+   *   The #opts.pwd option allows you to override the value of the present
+   *   working directory for the new `VitalsFileClass` instance.
+   * @param {string=} opts.basedir = `vitals.File.default("basedir")`
+   *   The #opts.basedir option allows you to override the value of the base
+   *   directory for the new `VitalsFileClass` instance.
    * @param {string=} opts.format = `vitals.File.default("format")`
    *   The #opts.format option allows you to configure how primitive string
    *   paths (e.g. paths returned by @File#prototype.abspath) are formatted
@@ -125,8 +130,14 @@ $File = (function __vitalsFile__() {
    *     The *windows* path format will always use a backslash for path
    *     delimination, include defined Windows or UNC drives, and eliminate
    *     all duplicate delimiters.
-   * @param {string=} opts.homedir
-   * @param {string=} opts.basedir
+   * @param {string=} opts.homedir = `vitals.homedir()`
+   *   The #opts.homedir option allows you to override the value of the home
+   *   directory path for the new `VitalsFileClass` instance.
+   * @param {boolean=} opts.inshomedir = `vitals.File.default("inshomedir")`
+   *   The #opts.inshomedir option allows you to disable the automatic
+   *   insertion of the home directory path for all paths returned by the new
+   *   `VitalsFileClass` instance that contain the home directory macro and
+   *   are **not** an absolute or resolved path (e.g. @File#prototype.path).
    * @constructor
    */
   /// #}}} @docs main
@@ -160,10 +171,16 @@ $File = (function __vitalsFile__() {
    * @public
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
-   * @param {string=} opts.pwd
-   * @param {string=} opts.format
-   * @param {string=} opts.homedir
-   * @param {string=} opts.basedir
+   * @param {string=} opts.pwd = `vitals.cwd()`
+   *   See the main @File#main-params-opts.pwd option for details.
+   * @param {string=} opts.basedir = `vitals.File.default("basedir")`
+   *   See the main @File#main-params-opts.basedir option for details.
+   * @param {string=} opts.format = `vitals.File.default("format")`
+   *   See the main @File#main-params-opts.format option for details.
+   * @param {string=} opts.homedir = `vitals.homedir()`
+   *   See the main @File#main-params-opts.homedir option for details.
+   * @param {boolean=} opts.inshomedir = `vitals.File.default("inshomedir")`
+   *   See the main @File#main-params-opts.inshomedir option for details.
    * @return {!VitalsFileClass}
    */
   /// #}}} @docs construct
@@ -366,10 +383,16 @@ $File = (function __vitalsFile__() {
    * @param {(!VitalsFileClass|!Object)} inst
    * @param {string} path
    * @param {(?Object|?undefined)=} opts
-   * @param {string=} opts.pwd
-   * @param {string=} opts.format
-   * @param {string=} opts.homedir
-   * @param {string=} opts.basedir
+   * @param {string=} opts.pwd = `vitals.cwd()`
+   *   See the main @File#main-params-opts.pwd option for details.
+   * @param {string=} opts.basedir = `vitals.File.default("basedir")`
+   *   See the main @File#main-params-opts.basedir option for details.
+   * @param {string=} opts.format = `vitals.File.default("format")`
+   *   See the main @File#main-params-opts.format option for details.
+   * @param {string=} opts.homedir = `vitals.homedir()`
+   *   See the main @File#main-params-opts.homedir option for details.
+   * @param {boolean=} opts.inshomedir = `vitals.File.default("inshomedir")`
+   *   See the main @File#main-params-opts.inshomedir option for details.
    * @return {(!VitalsFileClass|!Object)}
    */
   /// #}}} @docs init
@@ -417,14 +440,6 @@ $File = (function __vitalsFile__() {
       : _DFLT_MAIN['format'];
     /// #}}} @const FORMAT
 
-    /// #{{{ @const PATH
-    /**
-     * @private
-     * @const {string}
-     */
-    var PATH = _cleanPath(path);
-    /// #}}} @const PATH
-
     /// #{{{ @const PWD
     /**
      * @private
@@ -434,6 +449,24 @@ $File = (function __vitalsFile__() {
       ? _absCleanPath($VOID, opts['pwd'], $NO)
       : $getCwd();
     /// #}}} @const PWD
+
+    /// #{{{ @const ORIG_PATH
+    /**
+     * @private
+     * @const {string}
+     */
+    var ORIG_PATH = _cleanPath(path);
+    /// #}}} @const ORIG_PATH
+
+    /// #{{{ @const ORIG_BASE_DIR
+    /**
+     * @private
+     * @const {string}
+     */
+    var ORIG_BASE_DIR = _hasStrOpt(opts, 'basedir')
+      ? _cleanPath(opts['basedir'])
+      : _DFLT_MAIN['basedir'];
+    /// #}}} @const ORIG_BASE_DIR
 
     /// #{{{ @const HOME_DIR
     /**
@@ -445,53 +478,53 @@ $File = (function __vitalsFile__() {
       : $getHomeDir();
     /// #}}} @const HOME_DIR
 
+    /// #{{{ @const INS_HOME_DIR
+    /**
+     * @private
+     * @const {boolean}
+     */
+    var INS_HOME_DIR = _hasBoolOpt(opts, 'inshomedir')
+      ? opts['inshomedir']
+      : _DFLT_MAIN['inshomedir'];
+    /// #}}} @const INS_HOME_DIR
+
     /// #{{{ @const BASE_DIR
     /**
      * @private
      * @const {string}
      */
-    var BASE_DIR = _hasStrOpt(opts, 'basedir')
-      ? _cleanPath(opts['basedir'])
-      : '';
+    var BASE_DIR = _hasHomeDirMacro(ORIG_BASE_DIR)
+      ? $insHomeDir(ORIG_BASE_DIR, HOME_DIR)
+      : ORIG_BASE_DIR;
     /// #}}} @const BASE_DIR
-
-    /// #{{{ @const REL_BASE_DIR
-    /**
-     * @private
-     * @const {string}
-     */
-    var REL_BASE_DIR = _hasHomeDirMacro(BASE_DIR)
-      ? $insHomeDir(BASE_DIR, HOME_DIR)
-      : BASE_DIR;
-    /// #}}} @const REL_BASE_DIR
 
     /// #{{{ @const ABS_BASE_DIR
     /**
      * @private
      * @const {string}
      */
-    var ABS_BASE_DIR = !!REL_BASE_DIR
-      ? $absPath(PWD, REL_BASE_DIR, $NO)
+    var ABS_BASE_DIR = !!BASE_DIR
+      ? $absPath(PWD, BASE_DIR, $NO)
       : PWD;
     /// #}}} @const ABS_BASE_DIR
 
-    /// #{{{ @const REL_PATH
+    /// #{{{ @const PATH
     /**
      * @private
      * @const {string}
      */
-    var REL_PATH = _hasHomeDirMacro(PATH)
-      ? $insHomeDir(PATH, HOME_DIR)
-      : PATH;
-    /// #}}} @const REL_PATH
+    var PATH = _hasHomeDirMacro(ORIG_PATH)
+      ? $insHomeDir(ORIG_PATH, HOME_DIR)
+      : ORIG_PATH;
+    /// #}}} @const PATH
 
     /// #{{{ @const ABS_PATH
     /**
      * @private
      * @const {string}
      */
-    var ABS_PATH = !!REL_PATH
-      ? $absPath(ABS_BASE_DIR, REL_PATH, $NO)
+    var ABS_PATH = !!PATH
+      ? $absPath(ABS_BASE_DIR, PATH, $NO)
       : ABS_BASE_DIR;
     /// #}}} @const ABS_PATH
 
@@ -529,9 +562,21 @@ $File = (function __vitalsFile__() {
      */
     /// #}}} @docs __BASE_DIR__
     /// #if{{{ @code __BASE_DIR__
-    inst['__BASE_DIR__'] = REL_BASE_DIR;
+    inst['__BASE_DIR__'] = BASE_DIR;
     /// #if}}} @code __BASE_DIR__
     /// #}}} @member __BASE_DIR__
+
+    /// #{{{ @member __FORMAT__
+    /// #{{{ @docs __FORMAT__
+    /// @member __FORMAT__
+    /**
+     * @const {string}
+     */
+    /// #}}} @docs __FORMAT__
+    /// #if{{{ @code __FORMAT__
+    inst['__FORMAT__'] = FORMAT;
+    /// #if}}} @code __FORMAT__
+    /// #}}} @member __FORMAT__
 
     /// #{{{ @member __HOME_DIR__
     /// #{{{ @docs __HOME_DIR__
@@ -545,6 +590,18 @@ $File = (function __vitalsFile__() {
     /// #if}}} @code __HOME_DIR__
     /// #}}} @member __HOME_DIR__
 
+    /// #{{{ @member __INS_HOME_DIR__
+    /// #{{{ @docs __INS_HOME_DIR__
+    /// @member __INS_HOME_DIR__
+    /**
+     * @const {boolean}
+     */
+    /// #}}} @docs __INS_HOME_DIR__
+    /// #if{{{ @code __INS_HOME_DIR__
+    inst['__INS_HOME_DIR__'] = INS_HOME_DIR;
+    /// #if}}} @code __INS_HOME_DIR__
+    /// #}}} @member __INS_HOME_DIR__
+
     /// #{{{ @member __ORIG_BASE_DIR__
     /// #{{{ @docs __ORIG_BASE_DIR__
     /// @member __ORIG_BASE_DIR__
@@ -553,7 +610,7 @@ $File = (function __vitalsFile__() {
      */
     /// #}}} @docs __ORIG_BASE_DIR__
     /// #if{{{ @code __ORIG_BASE_DIR__
-    inst['__ORIG_BASE_DIR__'] = BASE_DIR;
+    inst['__ORIG_BASE_DIR__'] = ORIG_BASE_DIR;
     /// #if}}} @code __ORIG_BASE_DIR__
     /// #}}} @member __ORIG_BASE_DIR__
 
@@ -565,7 +622,7 @@ $File = (function __vitalsFile__() {
      */
     /// #}}} @docs __ORIG_PATH__
     /// #if{{{ @code __ORIG_PATH__
-    inst['__ORIG_PATH__'] = PATH;
+    inst['__ORIG_PATH__'] = ORIG_PATH;
     /// #if}}} @code __ORIG_PATH__
     /// #}}} @member __ORIG_PATH__
 
@@ -577,7 +634,7 @@ $File = (function __vitalsFile__() {
      */
     /// #}}} @docs __PATH__
     /// #if{{{ @code __PATH__
-    inst['__PATH__'] = REL_PATH;
+    inst['__PATH__'] = PATH;
     /// #if}}} @code __PATH__
     /// #}}} @member __PATH__
 
@@ -624,12 +681,32 @@ $File = (function __vitalsFile__() {
    *   of a `VitalsFileClass` instance.
    * @public
    * @this {!VitalsFileClass}
+   * @param {(?Object|?undefined)=} opts
+   * @param {string=} opts.format = `this.format()`
+   *   The #opts.format option allows you to override the default path format
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details.
+   * @param {string=} opts.fmt
+   *   An alias for the #opts.format option.
    * @return {string}
    */
   /// #}}} @docs abspath
   /// #if{{{ @code abspath
-  function abspathVitalsFileClass() {
-    return this['__ABS_PATH__'];
+  function abspathVitalsFileClass(opts) {
+
+    /** @type {string} */
+    var fmt;
+
+    fmt = this['__FORMAT__'];
+
+    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
+      if ( !$is.obj(opts) ) {
+        throw _MKERR_ABSPATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
+      }
+      fmt = _getFmt(_MKERR_ABSPATH, opts, fmt);
+    }
+
+    return $fmtPath(this['__ABS_PATH__'], fmt);
   }
   VFC_PROTO['absolutePath'] = abspathVitalsFileClass;
   VFC_PROTO['absolutepath'] = abspathVitalsFileClass;
@@ -637,6 +714,63 @@ $File = (function __vitalsFile__() {
   VFC_PROTO['abspath'] = abspathVitalsFileClass;
   /// #if}}} @code abspath
   /// #}}} @protomethod abspath
+
+  /// #{{{ @protomethod path
+  /// #{{{ @docs path
+  /// @method vitals.File.prototype.path
+  /**
+   * @description
+   *   The @File#prototype.path method returns the original path set for a
+   *   `VitalsFileClass` instance.
+   * @public
+   * @this {!VitalsFileClass}
+   * @param {(?Object|?undefined)=} opts
+   * @param {string=} opts.format = `this.format()`
+   *   The #opts.format option allows you to override the default path format
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details.
+   * @param {string=} opts.fmt
+   *   An alias for the #opts.format option.
+   * @param {boolean=} opts.inshomedir = `this.inshomedir()`
+   *   The #opts.inshomedir option allows you to override the state of the
+   *   automatic home directory insertion set for the `VitalsFileClass`
+   *   instance. See the main @File#main-params-opts.inshomedir option for
+   *   more details.
+   * @param {boolean=} opts.homedir
+   *   An alias for the #opts.inshomedir option.
+   * @param {boolean=} opts.insertHomeDirectory
+   *   An alias for the #opts.inshomedir option.
+   * @return {string}
+   */
+  /// #}}} @docs path
+  /// #if{{{ @code path
+  function pathVitalsFileClass(opts) {
+
+    /** @type {string} */
+    var fmt;
+    /** @type {boolean} */
+    var ins;
+
+    fmt = this['__FORMAT__'];
+    ins = this['__INS_HOME_DIR__'];
+
+    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
+      if ( !$is.obj(opts) ) {
+        throw _MKERR_PATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
+      }
+      fmt = _getFmt(_MKERR_PATH, opts, fmt);
+      ins = _getIns(_MKERR_PATH, opts, ins);
+    }
+
+    return $fmtPath(
+      ins
+        ? this['__PATH__']
+        : this['__ORIG_PATH__'],
+      fmt);
+  }
+  VFC_PROTO['path'] = pathVitalsFileClass;
+  /// #if}}} @code path
+  /// #}}} @protomethod path
 
   /// #{{{ @protomethod relpath
   /// #{{{ @docs relpath
@@ -651,18 +785,37 @@ $File = (function __vitalsFile__() {
    *   instance.
    * @public
    * @this {!VitalsFileClass}
-   * @param {(!string|!VitalsFileClass|!undefined)=} frompath = `this.pwd()`
+   * @param {(?string|?VitalsFileClass|?undefined)=} frompath = `this.pwd()`
    *   If the #frompath is a `string`, it is resolved to an absolute path
    *   before the relative path is found. If the #frompath is a
    *   `VitalsFileClass` instance, the absolute path (e.g.
    *   `frompath.abspath()`) of the #frompath is used.
+   * @param {(?Object|?undefined)=} opts
+   * @param {string=} opts.format = `this.format()`
+   *   The #opts.format option allows you to override the default path format
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details.
+   * @param {string=} opts.fmt
+   *   An alias for the #opts.format option.
    * @return {string}
    */
   /// #}}} @docs relpath
   /// #if{{{ @code relpath
-  function relpathVitalsFileClass(frompath) {
+  function relpathVitalsFileClass(frompath, opts) {
 
-    if ( !arguments['length'] || $is.void(frompath) ) {
+    /** @type {string} */
+    var path;
+    /** @type {string} */
+    var fmt;
+
+    if (arguments['length'] === 1
+        && $is.obj(frompath)
+        && !$is.vfc(frompath) ) {
+      opts = frompath;
+      frompath = $NIL;
+    }
+
+    if ( $is.nil(frompath) || $is.void(frompath) ) {
       frompath = this['__PWD__'];
     }
     else if ( $is.str(frompath) ) {
@@ -672,11 +825,22 @@ $File = (function __vitalsFile__() {
       frompath = frompath['__ABS_PATH__'];
     }
     else {
-      throw _MKERR_REL.type(new $TYPE_ERR, 'frompath', frompath,
-        '(!string|!VitalsFileClass)=');
+      throw _MKERR_RELPATH.type(new $TYPE_ERR, 'frompath', frompath,
+        '(?string|?VitalsFileClass)=');
     }
 
-    return $relPath(frompath, this['__ABS_PATH__']);
+    fmt = this['__FORMAT__'];
+
+    if ( !$is.nil(opts) && !$is.void(opts) ) {
+      if ( !$is.obj(opts) ) {
+        throw _MKERR_RELPATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
+      }
+      fmt = _getFmt(_MKERR_RELPATH, opts, fmt);
+    }
+
+    path = this['__ABS_PATH__'];
+    path = $relPath(frompath, path);
+    return $fmtPath(path, fmt);
   }
   VFC_PROTO['relativePath'] = relpathVitalsFileClass;
   VFC_PROTO['relativepath'] = relpathVitalsFileClass;
@@ -853,7 +1017,103 @@ $File = (function __vitalsFile__() {
 
   /// #}}} @group paths
 
+  /// #{{{ @group options
+
+  /// #{{{ @func _getFmt
+  /**
+   * @private
+   * @param {!ErrorMaker} mkerr
+   * @param {!Object} opts
+   * @param {string} fmt
+   * @return {string}
+   */
+  function _getFmt(mkerr, opts, fmt) {
+    fmt = _getFmtOpt(mkerr, opts, 'fmt', fmt);
+    return _getFmtOpt(mkerr, opts, 'format', fmt);
+  }
+  /// #}}} @func _getFmt
+
+  /// #{{{ @func _getFmtOpt
+  /**
+   * @private
+   * @param {!ErrorMaker} mkerr
+   * @param {!Object} opts
+   * @param {string} key
+   * @param {string} fmt
+   * @return {string}
+   */
+  function _getFmtOpt(mkerr, opts, key, fmt) {
+
+    if ( !$hasOpt(opts, key) ) {
+      return fmt;
+    }
+
+    fmt = opts[key];
+    key = 'opts.' + key;
+
+    if ( !$is.str(fmt) ) {
+      throw mkerr.type(new $TYPE_ERR, key, fmt, 'string=');
+    }
+    if ( !$is.fmt(fmt) ) {
+      throw mkerr.range(new $RANGE_ERR, key, $FMTS, fmt);
+    }
+
+    return $cleanPathFormat(fmt);
+  }
+  /// #}}} @func _getFmtOpt
+
+  /// #{{{ @func _getIns
+  /**
+   * @private
+   * @param {!ErrorMaker} mkerr
+   * @param {!Object} opts
+   * @param {boolean} ins
+   * @return {boolean}
+   */
+  function _getIns(mkerr, opts, ins) {
+    ins = _getInsOpt(mkerr, opts, 'homedir', ins);
+    ins = _getInsOpt(mkerr, opts, 'inshomedir', ins);
+    return _getInsOpt(mkerr, opts, 'insertHomeDirectory', ins);
+  }
+  /// #}}} @func _getIns
+
+  /// #{{{ @func _getInsOpt
+  /**
+   * @private
+   * @param {!ErrorMaker} mkerr
+   * @param {!Object} opts
+   * @param {string} key
+   * @param {boolean} ins
+   * @return {boolean}
+   */
+  function _getInsOpt(mkerr, opts, key, ins) {
+
+    if ( $hasOpt(opts, key) ) {
+      ins = opts[key];
+      if ( !$is.bool(ins) ) {
+        throw mkerr.type(new $TYPE_ERR, 'opts.' + key, ins, 'boolean=');
+      }
+    }
+
+    return ins;
+  }
+  /// #}}} @func _getInsOpt
+
+  /// #}}} @group options
+
   /// #{{{ @group tests
+
+  /// #{{{ @func _hasBoolOpt
+  /**
+   * @private
+   * @param {?Object} opts
+   * @param {string} key
+   * @return {boolean}
+   */
+  function _hasBoolOpt(opts, key) {
+    return _hasOpt(opts, key) && $is.bool(opts[key]);
+  }
+  /// #}}} @func _hasBoolOpt
 
   /// #{{{ @func _hasDirName
   /**
@@ -888,6 +1148,18 @@ $File = (function __vitalsFile__() {
   }
   /// #}}} @func _hasHomeDirMacro
 
+  /// #{{{ @func _hasOpt
+  /**
+   * @private
+   * @param {?Object} opts
+   * @param {string} key
+   * @return {boolean}
+   */
+  function _hasOpt(opts, key) {
+    return !!opts && $ownEnum(opts, key);
+  }
+  /// #}}} @func _hasOpt
+
   /// #{{{ @func _hasSlash
   /**
    * @private
@@ -907,7 +1179,7 @@ $File = (function __vitalsFile__() {
    * @return {boolean}
    */
   function _hasStrOpt(opts, key) {
-    return !!opts && $own(opts, key) && $is.str(opts[key]);
+    return _hasOpt(opts, key) && $is.str(opts[key]);
   }
   /// #}}} @func _hasStrOpt
 
@@ -949,6 +1221,15 @@ $File = (function __vitalsFile__() {
 
   /// #{{{ @group errors
 
+  /// #{{{ @const _MKERR_ABSPATH
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_ABSPATH = $mkErr('File', 'prototype.abspath');
+  /// #}}} @const _MKERR_ABSPATH
+
   /// #{{{ @const _MKERR_EXTEND
   /**
    * @private
@@ -967,14 +1248,14 @@ $File = (function __vitalsFile__() {
   var _MKERR_INIT = $mkErr('File', 'init');
   /// #}}} @const _MKERR_INIT
 
-  /// #{{{ @const _MKERR_REL
+  /// #{{{ @const _MKERR_RELPATH
   /**
    * @private
    * @const {!ErrorMaker}
    * @struct
    */
-  var _MKERR_REL = $mkErr('File', 'prototype.relpath');
-  /// #}}} @const _MKERR_REL
+  var _MKERR_RELPATH = $mkErr('File', 'prototype.relpath');
+  /// #}}} @const _MKERR_RELPATH
 
   /// #}}} @group errors
 
