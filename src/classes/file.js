@@ -715,6 +715,87 @@ $File = (function __vitalsFile__() {
   /// #if}}} @code abspath
   /// #}}} @protomethod abspath
 
+  /// #{{{ @protomethod drive
+  /// #{{{ @docs drive
+  /// @method vitals.File.prototype.drive
+  /**
+   * @description
+   *   The @File#prototype.drive method returns the value of the path's drive.
+   *   It uses the absolute form of the path (see @File#prototype.abspath)
+   *   when checking for a drive. If a drive is not found, an empty primitive
+   *   string is returned. The windows single letter and UNC formats are the
+   *   only accepted drive names. A UNC drive must include the *server* and
+   *   *share* path names to be recognized and will return the *server* and
+   *   *share* names if this method is invoked. If the #opts.format is set to
+   *   `"posix"`, this method will always return an empty primitive string.
+   * @public
+   * @this {!VitalsFileClass}
+   * @param {(?Object|?undefined)=} opts
+   * @param {string=} opts.format = `this.format()`
+   *   The #opts.format option allows you to override the default path format
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details.
+   * @param {string=} opts.fmt
+   *   An alias for the #opts.format option.
+   * @return {string}
+   *   See the @File#prototype.drive method description for all details
+   *   regarding the primitive string returned by this method.
+   */
+  /// #}}} @docs drive
+  /// #if{{{ @code drive
+  function driveVitalsFileClass(opts) {
+
+    /** @type {string} */
+    var fmt;
+
+    fmt = this['__FORMAT__'];
+
+    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
+      if ( !$is.obj(opts) ) {
+        throw _MKERR_DRIVE.type(new $TYPE_ERR, 'opts', opts, '?Object=');
+      }
+      fmt = _getFmt(_MKERR_DRIVE, opts, fmt);
+    }
+
+    if ( !_hasStrProp(this, '__DRIVE__') ) {
+      this['__DRIVE__'] = $getDrive(this['__ABS_PATH__']);
+    }
+
+    return $fmtPath(this['__DRIVE__'], fmt);
+  }
+  VFC_PROTO['drive'] = driveVitalsFileClass;
+  /// #if}}} @code drive
+  /// #}}} @protomethod drive
+
+  /// #{{{ @protomethod format
+  /// #{{{ @docs format
+  /// @method vitals.File.prototype.format
+  /**
+   * @description
+   *   The @File#prototype.format method shares the default path format value
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details about path
+   *   formats.
+   * @public
+   * @this {!VitalsFileClass}
+   * @return {string}
+   *   The @File#prototype.format method returns the long-hand form of the
+   *   available path format values (see main @File#main-params-opts.format).
+   *   The three long-hand path format values are:
+   *   - `"universal"`
+   *   - `"posix"`
+   *   - `"windows"`
+   */
+  /// #}}} @docs format
+  /// #if{{{ @code format
+  function formatVitalsFileClass() {
+    return this['__FORMAT__'];
+  }
+  VFC_PROTO['format'] = formatVitalsFileClass;
+  VFC_PROTO['fmt'] = formatVitalsFileClass;
+  /// #if}}} @code format
+  /// #}}} @protomethod format
+
   /// #{{{ @protomethod path
   /// #{{{ @docs path
   /// @method vitals.File.prototype.path
@@ -1160,6 +1241,18 @@ $File = (function __vitalsFile__() {
   }
   /// #}}} @func _hasOpt
 
+  /// #{{{ @func _hasProp
+  /**
+   * @private
+   * @param {(!VitalsFileClass|!Object)} inst
+   * @param {string} key
+   * @return {boolean}
+   */
+  function _hasProp(inst, key) {
+    return key in inst;
+  }
+  /// #}}} @func _hasProp
+
   /// #{{{ @func _hasSlash
   /**
    * @private
@@ -1182,6 +1275,18 @@ $File = (function __vitalsFile__() {
     return _hasOpt(opts, key) && $is.str(opts[key]);
   }
   /// #}}} @func _hasStrOpt
+
+  /// #{{{ @func _hasStrProp
+  /**
+   * @private
+   * @param {(!VitalsFileClass|!Object)} inst
+   * @param {string} key
+   * @return {boolean}
+   */
+  function _hasStrProp(inst, key) {
+    return _hasProp(inst, key) && $is.str(inst[key]);
+  }
+  /// #}}} @func _hasStrProp
 
   /// #{{{ @func _isHidden
   /**
@@ -1247,6 +1352,15 @@ $File = (function __vitalsFile__() {
    */
   var _MKERR_INIT = $mkErr('File', 'init');
   /// #}}} @const _MKERR_INIT
+
+  /// #{{{ @const _MKERR_PATH
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_PATH = $mkErr('File', 'prototype.path');
+  /// #}}} @const _MKERR_PATH
 
   /// #{{{ @const _MKERR_RELPATH
   /**
