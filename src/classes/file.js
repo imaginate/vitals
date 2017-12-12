@@ -143,12 +143,12 @@ $File = (function __vitalsFile__() {
   /// #}}} @docs main
   /// #if{{{ @code main
   function VitalsFileClass(path, opts) {
-
-    if ( !$is.obj(this) || !(this instanceof VitalsFileClass) ) {
+    if ( $isInst(this, VitalsFileClass) ) {
+      initVitalsFileClass(this, path, opts);
+    }
+    else {
       return constructVitalsFileClass(path, opts);
     }
-
-    initVitalsFileClass(this, path, opts);
   }
   VitalsFileClass['main'] = VitalsFileClass;
   VFC_PROTO['constructor'] = VitalsFileClass;
@@ -248,7 +248,7 @@ $File = (function __vitalsFile__() {
     if (!arguments['length']) {
       throw _MKERR_EXTEND.noArg(new $ERR, 'constructor');
     }
-    if ( !$is.fun(constructor) ) {
+    if ( $isNotFun(constructor) ) {
       throw _MKERR_EXTEND.type(new $TYPE_ERR, 'constructor', constructor,
         '!Function');
     }
@@ -411,18 +411,13 @@ $File = (function __vitalsFile__() {
         opts = $NIL;
         break;
       default:
-        if ( $is.void(opts) ) {
-          opts = $NIL;
-        }
-        else if ( !$is.nil(opts) && !$is.obj(opts) ) {
-          throw _MKERR_INIT.type(new $TYPE_ERR, 'opts', opts, '?Object=');
-        }
+        opts = _getOpts(_MKERR_INIT, opts);
     }
 
-    if ( !$is.obj(inst) ) {
+    if ( $isNotObj(inst) ) {
       throw _MKERR_INIT.type(new $TYPE_ERR, 'inst', inst, '!Object');
     }
-    if ( !$is.str(path) ) {
+    if ( $isNotStr(path) ) {
       throw _MKERR_INIT.type(new $TYPE_ERR, 'path', path, 'string');
     }
 
@@ -652,7 +647,7 @@ $File = (function __vitalsFile__() {
 
     /// #if{{{ @code run-init-member
 
-    if ( 'init' in inst && !$own(inst, 'init') && $is.fun(inst['init']) ) {
+    if ( 'init' in inst && !$own(inst, 'init') && $isFun(inst['init']) ) {
       inst['init']();
     }
 
@@ -697,12 +692,11 @@ $File = (function __vitalsFile__() {
     /** @type {string} */
     var fmt;
 
+    opts = _getOpts(_MKERR_ABSPATH, opts);
+
     fmt = this['__FORMAT__'];
 
-    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
-      if ( !$is.obj(opts) ) {
-        throw _MKERR_ABSPATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
-      }
+    if (!!opts) {
       fmt = _getFmt(_MKERR_ABSPATH, opts, fmt);
     }
 
@@ -748,16 +742,15 @@ $File = (function __vitalsFile__() {
     /** @type {string} */
     var fmt;
 
+    opts = _getOpts(_MKERR_DRIVE, opts);
+
     fmt = this['__FORMAT__'];
 
-    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
-      if ( !$is.obj(opts) ) {
-        throw _MKERR_DRIVE.type(new $TYPE_ERR, 'opts', opts, '?Object=');
-      }
+    if (!!opts) {
       fmt = _getFmt(_MKERR_DRIVE, opts, fmt);
     }
 
-    if ( !_hasStrProp(this, '__DRIVE__') ) {
+    if ( !_isStrProp(this, '__DRIVE__') ) {
       this['__DRIVE__'] = $getDrive(this['__ABS_PATH__']);
     }
 
@@ -796,6 +789,51 @@ $File = (function __vitalsFile__() {
   /// #if}}} @code format
   /// #}}} @protomethod format
 
+  /// #{{{ @protomethod homedir
+  /// #{{{ @docs homedir
+  /// @method vitals.File.prototype.homedir
+  /// @alias vitals.File.prototype.homeDirectory
+  /// @alias vitals.File.prototype.homedirectory
+  /// @alias vitals.File.prototype.homeDir
+  /**
+   * @description
+   *   The @File#prototype.homedir method returns the original home directory
+   *   path set for a `VitalsFileClass` instance.
+   * @public
+   * @this {!VitalsFileClass}
+   * @param {(?Object|?undefined)=} opts
+   * @param {string=} opts.format = `this.format()`
+   *   The #opts.format option allows you to override the default path format
+   *   set for the `VitalsFileClass` instance. See the main
+   *   @File#main-params-opts.format option for more details.
+   * @param {string=} opts.fmt
+   *   An alias for the #opts.format option.
+   * @return {string}
+   */
+  /// #}}} @docs homedir
+  /// #if{{{ @code homedir
+  function homedirVitalsFileClass(opts) {
+
+    /** @type {string} */
+    var fmt;
+
+    opts = _getOpts(_MKERR_HOMEDIR, opts);
+
+    fmt = this['__FORMAT__'];
+
+    if (!!opts) {
+      fmt = _getFmt(_MKERR_HOMEDIR, opts, fmt);
+    }
+
+    return $fmtPath(this['__HOME_DIR__'], fmt);
+  }
+  VFC_PROTO['homeDirectory'] = homedirVitalsFileClass;
+  VFC_PROTO['homedirectory'] = homedirVitalsFileClass;
+  VFC_PROTO['homeDir'] = homedirVitalsFileClass;
+  VFC_PROTO['homedir'] = homedirVitalsFileClass;
+  /// #if}}} @code homedir
+  /// #}}} @protomethod homedir
+
   /// #{{{ @protomethod path
   /// #{{{ @docs path
   /// @method vitals.File.prototype.path
@@ -832,21 +870,21 @@ $File = (function __vitalsFile__() {
     /** @type {boolean} */
     var ins;
 
+    opts = _getOpts(_MKERR_PATH, opts);
+
     fmt = this['__FORMAT__'];
     ins = this['__INS_HOME_DIR__'];
 
-    if ( !!arguments['length'] && !$is.void(opts) && !$is.null(opts) ) {
-      if ( !$is.obj(opts) ) {
-        throw _MKERR_PATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
-      }
+    if (!!opts) {
       fmt = _getFmt(_MKERR_PATH, opts, fmt);
       ins = _getIns(_MKERR_PATH, opts, ins);
     }
 
     return $fmtPath(
-      ins
-        ? this['__PATH__']
-        : this['__ORIG_PATH__'],
+      this[
+        ins
+          ? '__PATH__'
+          : '__ORIG_PATH__'],
       fmt);
   }
   VFC_PROTO['path'] = pathVitalsFileClass;
@@ -890,19 +928,19 @@ $File = (function __vitalsFile__() {
     var fmt;
 
     if (arguments['length'] === 1
-        && $is.obj(frompath)
-        && !$is.vfc(frompath) ) {
+        && $isObj(frompath)
+        && $isNotVfc(frompath) ) {
       opts = frompath;
       frompath = $NIL;
     }
 
-    if ( $is.nil(frompath) || $is.void(frompath) ) {
+    if ( $isNoid(frompath) ) {
       frompath = this['__PWD__'];
     }
-    else if ( $is.str(frompath) ) {
+    else if ( $isStr(frompath) ) {
       frompath = _absCleanPath($VOID, frompath);
     }
-    else if ( $is.vfc(frompath) ) {
+    else if ( $isVfc(frompath) ) {
       frompath = frompath['__ABS_PATH__'];
     }
     else {
@@ -910,12 +948,11 @@ $File = (function __vitalsFile__() {
         '(?string|?VitalsFileClass)=');
     }
 
+    opts = _getOpts(_MKERR_RELPATH, opts);
+
     fmt = this['__FORMAT__'];
 
-    if ( !$is.nil(opts) && !$is.void(opts) ) {
-      if ( !$is.obj(opts) ) {
-        throw _MKERR_RELPATH.type(new $TYPE_ERR, 'opts', opts, '?Object=');
-      }
+    if (!!opts) {
       fmt = _getFmt(_MKERR_RELPATH, opts, fmt);
     }
 
@@ -1023,7 +1060,7 @@ $File = (function __vitalsFile__() {
    * @return {string}
    */
   function _cleanPathFormat(format) {
-    return !!format && $is.fmt(format)
+    return !!format && $isPathFmt(format)
       ? $cleanPathFormat(format)
       : '';
   }
@@ -1125,21 +1162,18 @@ $File = (function __vitalsFile__() {
    */
   function _getFmtOpt(mkerr, opts, key, fmt) {
 
-    if ( !$hasOpt(opts, key) ) {
-      return fmt;
+    if ( $hasOpt(opts, key) ) {
+      fmt = opts[key];
+      if ( $isNotStr(fmt) ) {
+        throw mkerr.type(new $TYPE_ERR, 'opts.' + key, fmt, 'string=');
+      }
+      if ( $isNotPathFmt(fmt) ) {
+        throw mkerr.range(new $RANGE_ERR, 'opts.' + key, $FMTS, fmt);
+      }
+      fmt = $cleanPathFormat(fmt);
     }
 
-    fmt = opts[key];
-    key = 'opts.' + key;
-
-    if ( !$is.str(fmt) ) {
-      throw mkerr.type(new $TYPE_ERR, key, fmt, 'string=');
-    }
-    if ( !$is.fmt(fmt) ) {
-      throw mkerr.range(new $RANGE_ERR, key, $FMTS, fmt);
-    }
-
-    return $cleanPathFormat(fmt);
+    return fmt;
   }
   /// #}}} @func _getFmtOpt
 
@@ -1171,7 +1205,7 @@ $File = (function __vitalsFile__() {
 
     if ( $hasOpt(opts, key) ) {
       ins = opts[key];
-      if ( !$is.bool(ins) ) {
+      if ( $isNotBool(ins) ) {
         throw mkerr.type(new $TYPE_ERR, 'opts.' + key, ins, 'boolean=');
       }
     }
@@ -1179,6 +1213,26 @@ $File = (function __vitalsFile__() {
     return ins;
   }
   /// #}}} @func _getInsOpt
+
+  /// #{{{ @func _getOpts
+  /**
+   * @private
+   * @param {!ErrorMaker} mkerr
+   * @param {(?Object|?undefined)} opts
+   * @return {?Object}
+   */
+  function _getOpts(mkerr, opts) {
+
+    if ( $isVoid(opts) ) {
+      opts = $NIL;
+    }
+    else if ( $isNotPoint(opts) ) {
+      throw mkerr.type(new $TYPE_ERR, 'opts', opts, '?Object=');
+    }
+
+    return opts;
+  }
+  /// #}}} @func _getOpts
 
   /// #}}} @group options
 
@@ -1192,7 +1246,7 @@ $File = (function __vitalsFile__() {
    * @return {boolean}
    */
   function _hasBoolOpt(opts, key) {
-    return _hasOpt(opts, key) && $is.bool(opts[key]);
+    return _hasOpt(opts, key) && $isBool(opts[key]);
   }
   /// #}}} @func _hasBoolOpt
 
@@ -1237,21 +1291,9 @@ $File = (function __vitalsFile__() {
    * @return {boolean}
    */
   function _hasOpt(opts, key) {
-    return !!opts && $ownEnum(opts, key);
+    return !!opts && $enown(opts, key);
   }
   /// #}}} @func _hasOpt
-
-  /// #{{{ @func _hasProp
-  /**
-   * @private
-   * @param {(!VitalsFileClass|!Object)} inst
-   * @param {string} key
-   * @return {boolean}
-   */
-  function _hasProp(inst, key) {
-    return key in inst;
-  }
-  /// #}}} @func _hasProp
 
   /// #{{{ @func _hasSlash
   /**
@@ -1272,21 +1314,9 @@ $File = (function __vitalsFile__() {
    * @return {boolean}
    */
   function _hasStrOpt(opts, key) {
-    return _hasOpt(opts, key) && $is.str(opts[key]);
+    return _hasOpt(opts, key) && $isStr(opts[key]);
   }
   /// #}}} @func _hasStrOpt
-
-  /// #{{{ @func _hasStrProp
-  /**
-   * @private
-   * @param {(!VitalsFileClass|!Object)} inst
-   * @param {string} key
-   * @return {boolean}
-   */
-  function _hasStrProp(inst, key) {
-    return _hasProp(inst, key) && $is.str(inst[key]);
-  }
-  /// #}}} @func _hasStrProp
 
   /// #{{{ @func _isHidden
   /**
@@ -1309,6 +1339,18 @@ $File = (function __vitalsFile__() {
     return _ROOT['test'](path);
   }
   /// #}}} @func _isRoot
+
+  /// #{{{ @func _isStrProp
+  /**
+   * @private
+   * @param {(!VitalsFileClass|!Object)} inst
+   * @param {string} key
+   * @return {boolean}
+   */
+  function _isStrProp(inst, key) {
+    return key in inst && $isStr(inst[key]);
+  }
+  /// #}}} @func _isStrProp
 
   /// #}}} @group tests
 
@@ -1335,6 +1377,15 @@ $File = (function __vitalsFile__() {
   var _MKERR_ABSPATH = $mkErr('File', 'prototype.abspath');
   /// #}}} @const _MKERR_ABSPATH
 
+  /// #{{{ @const _MKERR_DRIVE
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_DRIVE = $mkErr('File', 'prototype.drive');
+  /// #}}} @const _MKERR_DRIVE
+
   /// #{{{ @const _MKERR_EXTEND
   /**
    * @private
@@ -1343,6 +1394,15 @@ $File = (function __vitalsFile__() {
    */
   var _MKERR_EXTEND = $mkErr('File', 'extend');
   /// #}}} @const _MKERR_EXTEND
+
+  /// #{{{ @const _MKERR_HOMEDIR
+  /**
+   * @private
+   * @const {!ErrorMaker}
+   * @struct
+   */
+  var _MKERR_HOMEDIR = $mkErr('File', 'prototype.homedir');
+  /// #}}} @const _MKERR_HOMEDIR
 
   /// #{{{ @const _MKERR_INIT
   /**
