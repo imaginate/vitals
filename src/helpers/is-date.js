@@ -15,28 +15,9 @@
  * @param {*} val
  * @return {boolean}
  */
-var $isDate = (function __vitals$isDate__() {
-
-  /// #{{{ @const _REF
-  /**
-   * @private
-   * @const {string}
-   */
-  var _REF = $objStrRef('Date');
-  /// #}}} @const _REF
-
-  /// #{{{ @func $isDate
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function $isDate(val) {
-    return $isObj(val) && $objStr(val) === _REF;
-  }
-  /// #}}} @func $isDate
-
-  return $isDate;
-})();
+function $isDate(val) {
+  return $isObj(val) && $objStr(val) === $OBJ_STR_REF_DATE;
+}
 /// #}}} @helper $isDate
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

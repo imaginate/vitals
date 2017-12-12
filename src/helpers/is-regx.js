@@ -15,28 +15,9 @@
  * @param {*} val
  * @return {boolean}
  */
-var $isRegx = (function __vitals$isRegx__() {
-
-  /// #{{{ @const _REF
-  /**
-   * @private
-   * @const {string}
-   */
-  var _REF = $objStrRef('RegExp');
-  /// #}}} @const _REF
-
-  /// #{{{ @func $isRegx
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function $isRegx(val) {
-    return $isObj(val) && $objStr(val) === _REF;
-  }
-  /// #}}} @func $isRegx
-
-  return $isRegx;
-})();
+function $isRegx(val) {
+  return $isObj(val) && $objStr(val) === $OBJ_STR_REF_REGX;
+}
 /// #}}} @helper $isRegx
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

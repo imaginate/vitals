@@ -15,28 +15,9 @@
  * @param {*} val
  * @return {boolean}
  */
-var $isArr = (function __vitals$isArr__() {
-
-  /// #{{{ @const _REF
-  /**
-   * @private
-   * @const {string}
-   */
-  var _REF = $objStrRef('Array');
-  /// #}}} @const _REF
-
-  /// #{{{ @func $isArr
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function $isArr(val) {
-    return $isObj(val) && $objStr(val) === _REF;
-  }
-  /// #}}} @func $isArr
-
-  return $isArr;
-})();
+function $isArr(val) {
+  return $isObj(val) && $objStr(val) === $OBJ_STR_REF_ARR;
+}
 /// #}}} @helper $isArr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol

@@ -15,28 +15,9 @@
  * @param {*} val
  * @return {boolean}
  */
-var $isErr = (function __vitals$isErr__() {
-
-  /// #{{{ @const _REF
-  /**
-   * @private
-   * @const {string}
-   */
-  var _REF = $objStrRef('Error');
-  /// #}}} @const _REF
-
-  /// #{{{ @func $isErr
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function $isErr(val) {
-    return $isObj(val) && $objStr(val) === _REF;
-  }
-  /// #}}} @func $isErr
-
-  return $isErr;
-})();
+function $isErr(val) {
+  return $isObj(val) && $objStr(val) === $OBJ_STR_REF_ERR;
+}
 /// #}}} @helper $isErr
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
