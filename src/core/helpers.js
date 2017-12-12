@@ -24,6 +24,7 @@
 /// #include @helper $hasEnum ../helpers/has-enum.js
 /// #include @helper $ownEnum ../helpers/own-enum.js
 /// #include @helper $isNull ../helpers/is-null.js
+/// #include @helper $isNotNull ../helpers/is-not-null.js
 /// #include @helper $is ../helpers/is.js
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
