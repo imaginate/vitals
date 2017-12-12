@@ -45,6 +45,7 @@
 /// #include @helper $isNum ../helpers/is-num.js
 /// #include @helper $isObj ../helpers/is-obj.js
 /// #include @helper $isObjInst ../helpers/is-obj-inst.js
+/// #include @helper $isPoint ../helpers/is-point.js
 /// #include @helper $isRegx ../helpers/is-regx.js
 /// #include @helper $isSame ../helpers/is-same.js
 /// #include @helper $isStr ../helpers/is-str.js
@@ -64,6 +65,7 @@
 /// #include @helper $isNotNum ../helpers/is-not-num.js
 /// #include @helper $isNotObj ../helpers/is-not-obj.js
 /// #include @helper $isNotObjInst ../helpers/is-not-obj-inst.js
+/// #include @helper $isNotPoint ../helpers/is-not-point.js
 /// #include @helper $isNotRegx ../helpers/is-not-regx.js
 /// #include @helper $isNotStr ../helpers/is-not-str.js
 /// #include @helper $isNotVoid ../helpers/is-not-void.js
