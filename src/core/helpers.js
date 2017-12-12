@@ -26,11 +26,15 @@
 /// #include @helper $typeof ../helpers/typeof.js
 /// #include @helper $objStr ../helpers/obj-str.js
 /// #include @helper $objStrRef ../helpers/obj-str-ref.js
+/// #include @helper $isArgs ../helpers/is-args.js
 /// #include @helper $isArr ../helpers/is-arr.js
+/// #include @helper $isArrgs ../helpers/is-arrgs.js
 /// #include @helper $isBool ../helpers/is-bool.js
 /// #include @helper $isChar ../helpers/is-char.js
 /// #include @helper $isDate ../helpers/is-date.js
 /// #include @helper $isDiff ../helpers/is-diff.js
+/// #include @helper $isDomDoc ../helpers/is-dom-doc.js
+/// #include @helper $isDomElem ../helpers/is-dom-elem.js
 /// #include @helper $isErr ../helpers/is-err.js
 /// #include @helper $isFun ../helpers/is-fun.js
 /// #include @helper $isFunObj ../helpers/is-fun-obj.js
@@ -46,7 +50,9 @@
 /// #include @helper $isStr ../helpers/is-str.js
 /// #include @helper $isVoid ../helpers/is-void.js
 /// #include @helper $isZeroStr ../helpers/is-zero-str.js
+/// #include @helper $isNotArgs ../helpers/is-not-args.js
 /// #include @helper $isNotArr ../helpers/is-not-arr.js
+/// #include @helper $isNotArrgs ../helpers/is-not-arrgs.js
 /// #include @helper $isNotBool ../helpers/is-not-bool.js
 /// #include @helper $isNotDate ../helpers/is-not-date.js
 /// #include @helper $isNotErr ../helpers/is-not-err.js
