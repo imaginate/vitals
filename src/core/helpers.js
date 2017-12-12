@@ -19,6 +19,7 @@
  */
 
 /// #{{{ @core helpers
+/// #include @helper $isDiff ../helpers/is-diff.js
 /// #include @helper $isSame ../helpers/is-same.js
 /// #include @helper $objStr ../helpers/obj-str.js
 /// #include @helper $own ../helpers/own.js
