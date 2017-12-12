@@ -17,88 +17,6 @@
  */
 var $is = (function __vitals$is__() {
 
-  /// #{{{ @func isArguments
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  var isArguments = $ENV.HAS.ARGUMENTS_CLASS
-    ? function isArguments(val) {
-        return $isObj(val) && $objStr(val) === '[object Arguments]';
-      }
-    /// #if{{{ @env ARGS_POLYFILL
-    : $ENV.HAS.ARGUMENTS_CALLEE
-      ? function isArguments(val) {
-          return $isObj(val) && 'callee' in val;
-        }
-      : function isArguments(val) {
-          return $NO;
-        };
-    /// #if}}} @env ARGS_POLYFILL
-    /// #ifnot{{{ @env ARGS_POLYFILL
-    : function isArguments(val) {
-        return $NO;
-      };
-    /// #ifnot}}} @env ARGS_POLYFILL
-  /// #}}} @func isArguments
-
-  /// #{{{ @func isArrayOrArguments
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  var isArrayOrArguments = $ENV.HAS.ARGUMENTS_CLASS
-    ? function isArrayOrArguments(val) {
-
-        if ( !$isObj(val) ) {
-          return $NO;
-        }
-
-        switch ( $objStr(val) ) {
-          case '[object Array]':
-          case '[object Arguments]':
-            return $YES;
-        }
-        return $NO;
-      }
-    /// #if{{{ @env ARGS_POLYFILL
-    : $ENV.HAS.ARGUMENTS_CALLEE
-      ? function isArrayOrArguments(val) {
-          return $isObj(val) && (
-            $objStr(val) === '[object Array]'
-            || 'callee' in val );
-        }
-      : function isArrayOrArguments(val) {
-          return $isArr(val);
-        };
-    /// #if}}} @env ARGS_POLYFILL
-    /// #ifnot{{{ @env ARGS_POLYFILL
-    : function isArrayOrArguments(val) {
-        return isObject(val) && $objStr(val) === '[object Array]';
-      };
-    /// #ifnot}}} @env ARGS_POLYFILL
-  /// #}}} @func isArrayOrArguments
-
-  /// #{{{ @func isDomDocument
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isDomDocument(val) {
-    return $isObj(val) && 'nodeType' in val && val['nodeType'] === 9;
-  }
-  /// #}}} @func isDomDocument
-
-  /// #{{{ @func isDomElement
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isDomElement(val) {
-    return $isObj(val) && 'nodeType' in val && val['nodeType'] === 1;
-  }
-  /// #}}} @func isDomElement
-
   /// #if{{{ @build NODE
 
   /// #{{{ @func isAuthorityError
@@ -811,16 +729,16 @@ var $is = (function __vitals$is__() {
     _obj:  $isFunObj,
     fun:   $isFun,
     arr:   $isArr,
-    _arr:  isArrayOrArguments,
-    args:  isArguments,
+    _arr:  $isArrgs,
+    args:  $isArgs,
     regx:  $isRegx,
     date:  $isDate,
     err:   $isErr,
     /// #}}} @group js-objects
 
     /// #{{{ @group dom-objects
-    doc:  isDomDocument,
-    elem: isDomElement,
+    doc:  $isDomDoc,
+    elem: $isDomElem,
     /// #}}} @group dom-objects
 
     /// #if{{{ @build NODE
