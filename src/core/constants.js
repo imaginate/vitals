@@ -53,6 +53,7 @@
 /// #include @constant $OBJ_STR_REF_DATE ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_ERR ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_REGX ../constants/object-to-string.js
+/// #include @constant $KEY_NODE_TYPE ../constants/key.js
 /// #}}} @core constants
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
