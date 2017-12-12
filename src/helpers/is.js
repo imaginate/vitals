@@ -17,182 +17,6 @@
  */
 var $is = (function __vitals$is__() {
 
-  /// #{{{ @group primitives
-
-  /// #{{{ @func isNull
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isNull(val) {
-    return val === $NIL;
-  }
-  /// #}}} @func isNull
-
-  /// #{{{ @func isUndefined
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isUndefined(val) {
-    return val === $VOID;
-  }
-  /// #}}} @func isUndefined
-
-  /// #{{{ @func isBoolean
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isBoolean(val) {
-    return typeof val === 'boolean';
-  }
-  /// #}}} @func isBoolean
-
-  /// #{{{ @func isString
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isString(val) {
-    return typeof val === 'string';
-  }
-  /// #}}} @func isString
-
-  /// #{{{ @func isNonEmptyString
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isNonEmptyString(val) {
-    return !!val && typeof val === 'string';
-  }
-  /// #}}} @func isNonEmptyString
-
-  /// #{{{ @func isNumber
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isNumber(val) {
-    return typeof val === 'number' && val === val && isFinite(val);
-  }
-  /// #}}} @func isNumber
-
-  /// #{{{ @func isNonZeroNumber
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isNonZeroNumber(val) {
-    return !!val && typeof val === 'number' && val === val && isFinite(val);
-  }
-  /// #}}} @func isNonZeroNumber
-
-  /// #{{{ @func isNan
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isNan(val) {
-    return val !== val;
-  }
-  /// #}}} @func isNan
-
-  /// #}}} @group primitives
-
-  /// #{{{ @group js-objects
-
-  /// #{{{ @func isObject
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isObject(val) {
-    return !!val && typeof val === 'object';
-  }
-  /// #}}} @func isObject
-
-  /// #{{{ @func isPlainObject
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isPlainObject(val) {
-    return isObject(val) && val instanceof $OBJ;
-  }
-  /// #}}} @func isPlainObject
-
-  /// #{{{ @func isObjectOrFunction
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isObjectOrFunction(val) {
-
-    if (!val) {
-      return $NO;
-    }
-
-    switch (typeof val) {
-      case 'object':
-      case 'function':
-        return $YES;
-    }
-    return $NO;
-  }
-  /// #}}} @func isObjectOrFunction
-
-  /// #{{{ @func isFunction
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isFunction(val) {
-    return !!val && typeof val === 'function';
-  }
-  /// #}}} @func isFunction
-
-  /// #{{{ @func isArray
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isArray(val) {
-    return isObject(val) && $objStr(val) === '[object Array]';
-  }
-  /// #}}} @func isArray
-
-  /// #{{{ @func isRegExp
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isRegExp(val) {
-    return isObject(val) && $objStr(val) === '[object RegExp]';
-  }
-  /// #}}} @func isRegExp
-
-  /// #{{{ @func isDate
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isDate(val) {
-    return isObject(val) && $objStr(val) === '[object Date]';
-  }
-  /// #}}} @func isDate
-
-  /// #{{{ @func isError
-  /**
-   * @param {*} val
-   * @return {boolean}
-   */
-  function isError(val) {
-    return isObject(val) && $objStr(val) === '[object Error]';
-  }
-  /// #}}} @func isError
-
   /// #{{{ @func isArguments
   /**
    * @param {*} val
@@ -200,12 +24,12 @@ var $is = (function __vitals$is__() {
    */
   var isArguments = $ENV.HAS.ARGUMENTS_CLASS
     ? function isArguments(val) {
-        return isObject(val) && $objStr(val) === '[object Arguments]';
+        return $isObj(val) && $objStr(val) === '[object Arguments]';
       }
     /// #if{{{ @env ARGS_POLYFILL
     : $ENV.HAS.ARGUMENTS_CALLEE
       ? function isArguments(val) {
-          return isObject(val) && 'callee' in val;
+          return $isObj(val) && 'callee' in val;
         }
       : function isArguments(val) {
           return $NO;
@@ -226,7 +50,7 @@ var $is = (function __vitals$is__() {
   var isArrayOrArguments = $ENV.HAS.ARGUMENTS_CLASS
     ? function isArrayOrArguments(val) {
 
-        if ( !isObject(val) ) {
+        if ( !$isObj(val) ) {
           return $NO;
         }
 
@@ -240,11 +64,12 @@ var $is = (function __vitals$is__() {
     /// #if{{{ @env ARGS_POLYFILL
     : $ENV.HAS.ARGUMENTS_CALLEE
       ? function isArrayOrArguments(val) {
-          return isObject(val)
-            && ( $objStr(val) === '[object Array]' || 'callee' in val );
+          return $isObj(val) && (
+            $objStr(val) === '[object Array]'
+            || 'callee' in val );
         }
       : function isArrayOrArguments(val) {
-          return isObject(val) && $objStr(val) === '[object Array]';
+          return $isArr(val);
         };
     /// #if}}} @env ARGS_POLYFILL
     /// #ifnot{{{ @env ARGS_POLYFILL
@@ -254,17 +79,13 @@ var $is = (function __vitals$is__() {
     /// #ifnot}}} @env ARGS_POLYFILL
   /// #}}} @func isArrayOrArguments
 
-  /// #}}} @group js-objects
-
-  /// #{{{ @group dom-objects
-
   /// #{{{ @func isDomDocument
   /**
    * @param {*} val
    * @return {boolean}
    */
   function isDomDocument(val) {
-    return isObject(val) && 'nodeType' in val && val['nodeType'] === 9;
+    return $isObj(val) && 'nodeType' in val && val['nodeType'] === 9;
   }
   /// #}}} @func isDomDocument
 
@@ -274,14 +95,11 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isDomElement(val) {
-    return isObject(val) && 'nodeType' in val && val['nodeType'] === 1;
+    return $isObj(val) && 'nodeType' in val && val['nodeType'] === 1;
   }
   /// #}}} @func isDomElement
 
-  /// #}}} @group dom-objects
-
   /// #if{{{ @build NODE
-  /// #{{{ @group node-objects
 
   /// #{{{ @func isAuthorityError
   /**
@@ -317,7 +135,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isCodedError(val) {
-    return isError(val) && $own(val, 'code') && isString(val['code']);
+    return $isErr(val) && $own(val, 'code') && $isStr(val['code']);
   }
   /// #}}} @func isCodedError
 
@@ -331,10 +149,7 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isExistError
 
-  /// #}}} @group node-objects
   /// #if}}} @build NODE
-
-  /// #{{{ @group special
 
   /// #{{{ @func isArrayLike
   /**
@@ -346,7 +161,7 @@ var $is = (function __vitals$is__() {
     /** @type {number} */
     var len;
 
-    if ( isArray(val) ) {
+    if ( $isArr(val) ) {
       return $YES;
     }
 
@@ -355,7 +170,7 @@ var $is = (function __vitals$is__() {
     }
 
     len = val['length'];
-    return isNumber(len) && isWholeNumber(len) && len >= 0;
+    return $isNum(len) && isWholeNumber(len) && len >= 0;
   }
   /// #}}} @func isArrayLike
 
@@ -392,29 +207,22 @@ var $is = (function __vitals$is__() {
     /** @type {string} */
     var key;
 
-    // empty primitives - 0, "", null, undefined, false, NaN
-    if (!val) {
-      return $YES;
-    }
-
-    if (typeof val === 'function') {
-      return val['length'] === 0;
-    }
-
-    // remaining primitives
-    if (typeof val !== 'object') {
-      return $NO;
-    }
-
-    // arrays
-    if ($objStr(val) === '[object Array]') {
-      return val['length'] === 0;
-    }
-
-    // remaining objects
-    for (key in val) {
-      if ( $own(val, key) ) {
-        return $NO;
+    if (!!val) {
+      switch ( $typeof(val) ) {
+        case 'function':
+          return val['length'] === 0;
+        case 'object':
+          if ($objStr(val) === '[object Array]') {
+            return val['length'] === 0;
+          }
+          for (key in val) {
+            if ( $own(val, key) ) {
+              return $NO;
+            }
+          }
+          break;
+        default:
+          return $NO;
       }
     }
     return $YES;
@@ -489,10 +297,6 @@ var $is = (function __vitals$is__() {
   isRegExpFlags.SRC = _FLAGS.SRC;
   /// #}}} @func isRegExpFlags
 
-  /// #}}} @group special
-
-  /// #{{{ @group object-states
-
   /// #{{{ @func isExtensible
   /**
    * @param {(!Object|!Function)} src
@@ -518,7 +322,7 @@ var $is = (function __vitals$is__() {
            * @return {boolean}
            */
           function isExtensible(src) {
-            return typeof src === 'object' && _isExtensible(src);
+            return $typeof(src) === 'object' && _isExtensible(src);
           }
           /// #}}} @func isExtensible
 
@@ -554,7 +358,7 @@ var $is = (function __vitals$is__() {
            * @return {boolean}
            */
           function isFrozen(src) {
-            return typeof src === 'object' && _isFrozen(src);
+            return $typeof(src) === 'object' && _isFrozen(src);
           }
           /// #}}} @func isFrozen
 
@@ -590,7 +394,7 @@ var $is = (function __vitals$is__() {
            * @return {boolean}
            */
           function isSealed(src) {
-            return typeof src === 'object' && _isSealed(src);
+            return $typeof(src) === 'object' && _isSealed(src);
           }
           /// #}}} @func isSealed
 
@@ -600,10 +404,6 @@ var $is = (function __vitals$is__() {
           return $NO;
         };
   /// #}}} @func isSealed
-
-  /// #}}} @group object-states
-
-  /// #{{{ @group number-states
 
   /// #{{{ @func isWholeNumber
   /**
@@ -635,10 +435,7 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isEvenNumber
 
-  /// #}}} @group number-states
-
   /// #if{{{ @scope FS
-  /// #{{{ @group file-system
 
   /// #{{{ @const _ABS_PATH
   /**
@@ -900,7 +697,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isDirectory(path) {
-    return isNonEmptyString(path) && _isDirectory(path);
+    return $isChar(path) && _isDirectory(path);
   }
   /// #}}} @func isDirectory
 
@@ -910,7 +707,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isFileClass(val) {
-    return isObject(val)
+    return $isObj(val)
       && '__VITALS_FILE_CLASS__' in val
       && !$own(val, '__VITALS_FILE_CLASS__')
       && val['__VITALS_FILE_CLASS__'] === $YES;
@@ -923,7 +720,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isGenericFile(path) {
-    return isNonEmptyString(path) && _isGenericFile(path);
+    return $isChar(path) && _isGenericFile(path);
   }
   /// #}}} @func isGenericFile
 
@@ -955,7 +752,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isRegularFile(path) {
-    return isNonEmptyString(path) && _isRegularFile(path);
+    return $isChar(path) && _isRegularFile(path);
   }
   /// #}}} @func isRegularFile
 
@@ -965,7 +762,7 @@ var $is = (function __vitals$is__() {
    * @return {boolean}
    */
   function isSymbolicLink(path) {
-    return isNonEmptyString(path) && _isSymbolicLink(path);
+    return $isChar(path) && _isSymbolicLink(path);
   }
   /// #}}} @func isSymbolicLink
 
@@ -989,7 +786,6 @@ var $is = (function __vitals$is__() {
   }
   /// #}}} @func isWindowsPathFormat
 
-  /// #}}} @group file-system
   /// #if}}} @scope FS
 
   /// #{{{ @const $is
@@ -998,28 +794,28 @@ var $is = (function __vitals$is__() {
    * @struct
    */
   var $is = {
+
     /// #{{{ @group primitives
-    nil:  isNull,
-    void: isUndefined,
-    bool: isBoolean,
-    str:  isString,
-    _str: isNonEmptyString,
-    num:  isNumber,
-    _num: isNonZeroNumber,
-    nan:  isNan,
+    nil:  $isNull,
+    void: $isVoid,
+    bool: $isBool,
+    str:  $isStr,
+    _str: $isChar,
+    num:  $isNum,
+    nan:  $isNan,
     /// #}}} @group primitives
 
     /// #{{{ @group js-objects
-    obj:   isObject,
-    plain: isPlainObject,
-    _obj:  isObjectOrFunction,
-    fun:   isFunction,
-    arr:   isArray,
+    obj:   $isObj,
+    plain: $isObjInst,
+    _obj:  $isFunObj,
+    fun:   $isFun,
+    arr:   $isArr,
     _arr:  isArrayOrArguments,
     args:  isArguments,
-    regx:  isRegExp,
-    date:  isDate,
-    err:   isError,
+    regx:  $isRegx,
+    date:  $isDate,
+    err:   $isErr,
     /// #}}} @group js-objects
 
     /// #{{{ @group dom-objects
