@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $isBool(val) {
-  return $isSame($typeOf(val), 'boolean');
+  return $typeof(val) === 'boolean';
 }
 /// #}}} @helper $isBool
 
