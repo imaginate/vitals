@@ -1,6 +1,6 @@
 /**
  * ---------------------------------------------------------------------------
- * $HAS-ENUM HELPER
+ * $ENUM HELPER
  * ---------------------------------------------------------------------------
  * @version 5.0.0
  * @see [vitals](https://github.com/imaginate/vitals)
@@ -9,18 +9,18 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
-/// #{{{ @helper $hasEnum
+/// #{{{ @helper $enum
 /**
  * @private
  * @param {(!Object|!Function)} src
  * @param {*} key
  * @return {boolean}
  */
-var $hasEnum = (function __vitals$hasEnum__() {
+var $enum = (function __vitals$enum__() {
 
-  /// #{{{ @docrefs $hasEnum
+  /// #{{{ @docrefs $enum
   /// @docref [enum]:(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable)
-  /// #}}} @docrefs $hasEnum
+  /// #}}} @docrefs $enum
 
   /// #{{{ @func _hasEnum
   /**
@@ -32,7 +32,7 @@ var $hasEnum = (function __vitals$hasEnum__() {
   var _hasEnum = $OBJ_PROTO['propertyIsEnumerable'];
   /// #}}} @func _hasEnum
 
-  /// #{{{ @func $hasEnum
+  /// #{{{ @func $enum
   /**
    * @description
    *   A safe way to call [Object.prototype.propertyIsEnumerable][enum].
@@ -40,13 +40,13 @@ var $hasEnum = (function __vitals$hasEnum__() {
    * @param {*} key
    * @return {boolean}
    */
-  function $hasEnum(src, key) {
+  function $enum(src, key) {
     return _hasEnum['call'](src, key);
   }
-  /// #}}} @func $hasEnum
+  /// #}}} @func $enum
 
-  return $hasEnum;
+  return $enum;
 })();
-/// #}}} @helper $hasEnum
+/// #}}} @helper $enum
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
