@@ -27,6 +27,7 @@
 /// #include @helper $isNotNull ../helpers/is-not-null.js
 /// #include @helper $isVoid ../helpers/is-void.js
 /// #include @helper $isNotVoid ../helpers/is-not-void.js
+/// #include @helper $isBool ../helpers/is-bool.js
 /// #include @helper $is ../helpers/is.js
 /// #include @helper $mkStr ../helpers/mk-str.js
 /// #include @helper $print ../helpers/print.js
