@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $isNotStr(val) {
-  return $typeof(val) !== 'string';
+  return !$isStr(val);
 }
 /// #}}} @helper $isNotStr
 

@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $isNotNull(val) {
-  return val !== $NIL;
+  return !$isNull(val);
 }
 /// #}}} @helper $isNotNull
 

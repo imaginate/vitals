@@ -16,12 +16,7 @@
  * @return {boolean}
  */
 function $isNotNoid(val) {
-  switch (val) {
-    case $NIL:
-    case $VOID:
-      return $NO;
-  }
-  return $YES;
+  return !$isNoid(val);
 }
 /// #}}} @helper $isNotNoid
 

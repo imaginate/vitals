@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $isNotBool(val) {
-  return $typeof(val) !== 'boolean';
+  return !$isBool(val);
 }
 /// #}}} @helper $isNotBool
 

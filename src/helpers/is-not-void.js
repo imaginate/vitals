@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $isNotVoid(val) {
-  return val !== $VOID;
+  return !$isVoid(val);
 }
 /// #}}} @helper $isNotVoid
 
