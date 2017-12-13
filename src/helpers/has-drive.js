@@ -16,7 +16,7 @@
  * @return {boolean}
  */
 function $hasDrive(path) {
-  return $hasWinDrive(path) || $hasUncDrive(path);
+  return $test($PATT_DRIVE, path);
 }
 /// #}}} @helper $hasDrive
 

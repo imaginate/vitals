@@ -15,28 +15,9 @@
  * @param {string} path
  * @return {string}
  */
-var $trimDrive = (function __vitals$trimDrive__() {
-
-  /// #{{{ @const _DRIVE
-  /**
-   * @private
-   * @const {!RegExp}
-   */
-  var _DRIVE = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)/;
-  /// #}}} @const _DRIVE
-
-  /// #{{{ @func $trimDrive
-  /**
-   * @param {string} path
-   * @return {string}
-   */
-  function $trimDrive(path) {
-    return path && path['replace'](_DRIVE, '');
-  }
-  /// #}}} @func $trimDrive
-
-  return $trimDrive;
-})();
+function $trimDrive(path) {
+  return path && $trim($PATT_DRIVE, path);
+}
 /// #}}} @helper $trimDrive
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
