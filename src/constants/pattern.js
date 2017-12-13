@@ -30,7 +30,7 @@ var $PATT_END_SLASHES = /[\/\\]+$/;
  * @private
  * @const {!RegExp}
  */
-var $PATT_PATH_NAME = /[^\/]+$/;
+var $PATT_PATH_NAME = /[^\/\\]+$/;
 /// #}}} @constant $PATT_PATH_NAME
 
 /// #{{{ @constant $PATT_ROOT_DIR
