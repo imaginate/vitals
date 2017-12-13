@@ -38,7 +38,7 @@ var $PATT_FILE_NAME = /[^\/\\]+$/;
  * @private
  * @const {!RegExp}
  */
-var $PATT_ROOT_DIR = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)?[\/\\]$/;
+var $PATT_ROOT_DIR = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)?[\/\\]+$/;
 /// #}}} @constant $PATT_ROOT_DIR
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
