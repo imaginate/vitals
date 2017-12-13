@@ -25,6 +25,14 @@ var $PATT_END_SLASH = /[\/\\]$/;
 var $PATT_END_SLASHES = /[\/\\]+$/;
 /// #}}} @constant $PATT_END_SLASHES
 
+/// #{{{ @constant $PATT_PATH_NAME
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var $PATT_PATH_NAME = /[^\/]+$/;
+/// #}}} @constant $PATT_PATH_NAME
+
 /// #{{{ @constant $PATT_ROOT_DIR
 /**
  * @private

@@ -55,6 +55,7 @@
 /// #include @constant $FMTS ../constants/special.js
 /// #include @constant $PATT_END_SLASH ../constants/pattern.js
 /// #include @constant $PATT_END_SLASHES ../constants/pattern.js
+/// #include @constant $PATT_PATH_NAME ../constants/pattern.js
 /// #include @constant $PATT_ROOT_DIR ../constants/pattern.js
 /// #if}}} @scope FS
 /// #}}} @core constants
