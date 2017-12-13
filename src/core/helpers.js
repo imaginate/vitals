@@ -80,6 +80,7 @@
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
 /// #include @helper $isRootDir ../helpers/is-root-dir.js
+/// #include @helper $hasEndSlash ../helpers/has-end-slash.js
 /// #include @helper $resolvePath ../helpers/resolve-path.js
 /// #include @helper $hasHomeDirMacro ../helpers/has-home-dir-macro.js
 /// #include @helper $hasUncDrive ../helpers/has-unc-drive.js
