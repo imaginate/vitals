@@ -19,7 +19,7 @@ function $getDirName(path) {
 
   if (!!path) {
     path = $trimEndSlash(path);
-    path = $replace(path, $PATT_PATH_NAME, '');
+    path = $replace(path, $PATT_FILE_NAME, '');
     path = $trimEndSlash(path);
   }
 
