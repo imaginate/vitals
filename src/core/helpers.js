@@ -19,6 +19,7 @@
  */
 
 /// #{{{ @core helpers
+/// #include @helper $length ../helpers/length.js
 /// #include @helper $own ../helpers/own.js
 /// #include @helper $enum ../helpers/enum.js
 /// #include @helper $enown ../helpers/enown.js
