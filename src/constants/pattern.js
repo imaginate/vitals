@@ -17,6 +17,14 @@
 var $PATT_DIR_NAME = /^[\s\S]*[\/\\]+/;
 /// #}}} @constant $PATT_DIR_NAME
 
+/// #{{{ @constant $PATT_DRIVE
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var $PATT_DRIVE = /^(?:[a-zA-Z]:|[\/\\][\/\\]+[^\/\\]+[\/\\]+[^\/\\]+)/;
+/// #}}} @constant $PATT_DRIVE
+
 /// #{{{ @constant $PATT_END_SLASH
 /**
  * @private
