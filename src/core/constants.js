@@ -45,15 +45,16 @@
 /// #include @constant $OS ../constants/node.js
 /// #include @constant $PATH ../constants/node.js
 /// #if}}} @scope NODE
-/// #if{{{ @scope FS
-/// #include @constant $FMTS ../constants/special.js
-/// #if}}} @scope FS
 /// #include @constant $OBJ_STR_REF_ARGS ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_ARR ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_DATE ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_ERR ../constants/object-to-string.js
 /// #include @constant $OBJ_STR_REF_REGX ../constants/object-to-string.js
 /// #include @constant $KEY_NODE_TYPE ../constants/key.js
+/// #if{{{ @scope FS
+/// #include @constant $FMTS ../constants/special.js
+/// #include @constant $PATT_ROOT_DIR ../constants/pattern.js
+/// #if}}} @scope FS
 /// #}}} @core constants
 
 // vim:ts=2:et:ai:cc=79:fen:fdm=marker:eol
