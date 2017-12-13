@@ -22,6 +22,7 @@
 /// #include @helper $own ../helpers/own.js
 /// #include @helper $enum ../helpers/enum.js
 /// #include @helper $enown ../helpers/enown.js
+/// #include @helper $test ../helpers/test.js
 /// #include @helper $instof ../helpers/instof.js
 /// #include @helper $typeof ../helpers/typeof.js
 /// #include @helper $objStr ../helpers/obj-str.js
