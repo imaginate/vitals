@@ -23,6 +23,7 @@
 /// #include @helper $enum ../helpers/enum.js
 /// #include @helper $enown ../helpers/enown.js
 /// #include @helper $test ../helpers/test.js
+/// #include @helper $replace ../helpers/replace.js
 /// #include @helper $instof ../helpers/instof.js
 /// #include @helper $typeof ../helpers/typeof.js
 /// #include @helper $objStr ../helpers/obj-str.js
