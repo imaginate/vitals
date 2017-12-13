@@ -9,6 +9,14 @@
  * @copyright 2014-2017 Adam A Smith <adam@imaginate.life>
  */
 
+/// #{{{ @constant $PATT_DIR_NAME
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var $PATT_DIR_NAME = /^[\s\S]*[\/\\]+/;
+/// #}}} @constant $PATT_DIR_NAME
+
 /// #{{{ @constant $PATT_END_SLASH
 /**
  * @private
