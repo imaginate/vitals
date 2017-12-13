@@ -17,6 +17,14 @@
 var $PATT_END_SLASH = /[\/\\]$/;
 /// #}}} @constant $PATT_END_SLASH
 
+/// #{{{ @constant $PATT_END_SLASHES
+/**
+ * @private
+ * @const {!RegExp}
+ */
+var $PATT_END_SLASHES = /[\/\\]+$/;
+/// #}}} @constant $PATT_END_SLASHES
+
 /// #{{{ @constant $PATT_ROOT_DIR
 /**
  * @private
