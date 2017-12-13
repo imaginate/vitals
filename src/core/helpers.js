@@ -80,6 +80,7 @@
 /// #include @helper $mkErr ../helpers/mk-err.js
 /// #include @helper $strIncl ../helpers/str-incl.js
 /// #if{{{ @scope FS
+/// #include @helper $hasSlash ../helpers/has-slash.js
 /// #include @helper $isRootDir ../helpers/is-root-dir.js
 /// #include @helper $hasEndSlash ../helpers/has-end-slash.js
 /// #include @helper $trimEndSlash ../helpers/trim-end-slash.js
